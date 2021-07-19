@@ -1,12 +1,9 @@
-{
+[{
         "a_record": "4.4.4.4",
-        "a_record_geo": "",
         "account": "free",
         "created": "2019-03-30T14:39:49Z",
-        "created_geo": "",
         "created_ip": "78.191.27.210",
         "domain": "seyir.duckdns.org",
-        "domain_creator_geo": "",
         "domain_creator_ip": "78.191.25.0",
         "email": "halbayrak75@gmail.com"
-}
+}]

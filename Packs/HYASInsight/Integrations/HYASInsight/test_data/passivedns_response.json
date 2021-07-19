@@ -1,5 +1,5 @@
-{
-        "count": 10570,
+[{
+        "count": "10570",
         "domain": "edubolivia.org",
         "first_seen": "2019-03-14T23:36:40Z",
         "ip": {
@@ -26,4 +26,5 @@
             "hyas",
             "farsight"
         ]
-    }
+}
+]

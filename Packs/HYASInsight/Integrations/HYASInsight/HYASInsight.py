@@ -56,9 +56,10 @@ class Client(BaseClient):
         self.apikey = apikey
 
     def fetch_data_from_hyas_api(self, end_point: str, ind_type: str, ind_value: str, current: bool,
-                                 req_method: str) -> List[Dict]:
+                                 req_method: str, limit=0) -> List[Dict]:
         """
 
+        :param limit: "limit the number of records returned, default to 50"
         :param end_point: HYAS endpoint
         :param ind_type: indicator_type provided in the command
         :param ind_value: indicator_value provided in the command
@@ -66,10 +67,13 @@ class Client(BaseClient):
         :param req_method: request method POST,GET
         :return: return the raw api response from HYAS API.
         """
-        return self.query(end_point, ind_type, ind_value, current, req_method)
+        return self.query(end_point, ind_type, ind_value, current, req_method, limit)
 
-    def query(self, end_point: str, ind_type: str, ind_value: str, current: bool, method: str) -> List[Dict]:
+    def query(self, end_point: str, ind_type: str, ind_value: str, current: bool, method: str, limit: int) -> List[
+            Dict]:
         """
+
+        :param limit: "limit the number of records returned, default to 50"
         :param end_point: HYAS endpoint
         :param ind_type: indicator_type provided in the command
         :param ind_value: indicator_value provided in the command
@@ -95,7 +99,8 @@ class Client(BaseClient):
                 json_data=req_body,
                 timeout=TIMEOUT
             )
-
+        if limit != 0:
+            return response[:limit]
         return response
 
     @staticmethod
@@ -127,7 +132,7 @@ class Client(BaseClient):
         """
 
         try:
-            self.query(DYNAMIC_DNS_ENDPOINT, domain, value, False, 'POST')
+            self.query(DYNAMIC_DNS_ENDPOINT, domain, value, False, 'POST', 2)
         except DemistoException as e:
             if '401' in str(e):
                 return 'Authorization Error: Provided apikey is not valid'
@@ -251,27 +256,13 @@ def get_flatten_json_response(raw_api_response: List[Dict]) -> List[Dict]:
 def passive_dns_build_result_context(results: Dict) -> Dict:
     ctx = {}
     for ckey, rkey, f in (
-            ('Cert Name', 'cert_name', str),
-            ('Count', 'count', str),
-            ('Domain', 'domain', str),
-            ('First seen', 'first_seen', str),
-            ('City Name', 'ip_geo_city_name', str),
-            ('Country Code', 'ip_geo_country_iso_code', str),
-            ('Country Name', 'ip_geo_country_name', str),
-            ('Latitude', 'ip_geo_location_latitude', str),
-            ('Longitude', 'ip_geo_location_longitude', str),
-            ('Postal Code', 'ip_geo_postal_code', str),
-            ('IP', 'ip_ip', str),
-            ('ISP ASN', 'ip_isp_autonomous_system_number', str),
-            ('ISP ASN Organization', 'ip_isp_autonomous_system_organization', str),
-            ('ISP IP Address', 'ip_isp_ip_address', str),
-            ('ISP', 'ip_isp_isp', str),
-            ('ISP Organization', 'ip_isp_organization', str),
-            ('IPV4', 'ipv4', str),
-            ('IPV6', 'ipv6', str),
-            ('Last Seen', 'last_seen', str),
-            ('SHA1', 'sha1', str),
-            ('Sources', 'sources', list),
+            ('count', 'count', str),
+            ('domain', 'domain', str),
+            ('first_seen', 'first_seen', str),
+            ('ip', 'ip', dict),
+            ('ipv4', 'ipv4', str),
+            ('last_seen', 'last_seen', str),
+            ('sources', 'sources', list),
 
     ):
         if rkey in results:
@@ -285,7 +276,6 @@ def passive_dns_lookup_to_markdown(results: List[Dict], title: str) -> str:
     out = []
 
     keys = [
-        ('Cert Name', 'cert_name', str),
         ('Count', 'count', str),
         ('Domain', 'domain', str),
         ('First seen', 'first_seen', str),
@@ -302,9 +292,7 @@ def passive_dns_lookup_to_markdown(results: List[Dict], title: str) -> str:
         ('ISP', 'ip_isp_isp', str),
         ('ISP Organization', 'ip_isp_organization', str),
         ('IPV4', 'ipv4', str),
-        ('IPV6', 'ipv6', str),
         ('Last Seen', 'last_seen', str),
-        ('SHA1', 'sha1', str),
         ('Sources', 'sources', list),
 
     ]  # type: List[Tuple[str, str, Callable]]
@@ -324,13 +312,13 @@ def passive_dns_lookup_to_markdown(results: List[Dict], title: str) -> str:
 def dynamic_dns_build_result_context(results: Dict) -> Dict:
     ctx = {}
     for ckey, rkey, f in (
-            ('A Record', 'a_record', str),
-            ('Account', 'account', str),
-            ('Created Date', 'created', str),
-            ('Account Holder IP Address', 'created_ip', str),
-            ('Domain', 'domain', str),
-            ('Domain Creator IP Address', 'domain_creator_ip', str),
-            ('Email Address', 'email', str),
+            ('a_record', 'a_record', str),
+            ('account', 'account', str),
+            ('created', 'created', str),
+            ('created_ip', 'created_ip', str),
+            ('domain', 'domain', str),
+            ('domain_creator_ip', 'domain_creator_ip', str),
+            ('email', 'email', str),
 
     ):
         if rkey in results:
@@ -369,25 +357,20 @@ def dynamic_dns_lookup_to_markdown(results: List[Dict], title: str) -> str:
 def whois_historic_build_result_context(results: Dict) -> Dict:
     ctx = {}
     for ckey, rkey, f in (
-            ('Address', 'address', list),
-            ('City', 'city', list),
-            ('Country', 'country', list),
-            ('Domain', 'domain', str),
-            ('Domain_2tld', 'domain_2tld', str),
-            ('Domain Created Time', 'domain_created_datetime', str),
-            ('Domain Expires Time', 'domain_expires_datetime', str),
-            ('Domain Updated Time', 'domain_updated_datetime', str),
-            ('Email Address', 'email', list),
-            ('IDN Name', 'idn_name', str),
-            ('Nameserver', 'nameserver', list),
-            ('Phone Info', 'phone', list),
-
-            # ('Phone Number', 'phone_phone', str),
-            # ('Phone Number Carrier', 'phone_phone_info.carrier', str),
-            # ('Phone Number Country', 'phone_phone_info.country', str),
-            # ('Phone Number Geo', 'phone_phone_info.geo', str),
-            ('Privacy_punch', 'privacy_punch', bool),
-            ('Registrar', 'registrar', str),
+            ('address', 'address', list),
+            ('city', 'city', list),
+            ('country', 'country', list),
+            ('domain', 'domain', str),
+            ('domain_2tld', 'domain_2tld', str),
+            ('domain_created_datetime', 'domain_created_datetime', str),
+            ('domain_expires_datetime', 'domain_expires_datetime', str),
+            ('domain_updated_datetime', 'domain_updated_datetime', str),
+            ('email', 'email', list),
+            ('idn_name', 'idn_name', str),
+            ('nameserver', 'nameserver', list),
+            ('phone', 'phone', list),
+            ('privacy_punch', 'privacy_punch', bool),
+            ('registrar', 'registrar', str),
 
     ):
         if rkey in results:
@@ -413,10 +396,6 @@ def whois_historic_lookup_to_markdown(results: List[Dict], title: str) -> str:
         ('IDN Name', 'idn_name', str),
         ('Nameserver', 'nameserver', list),
         ('Phone Info', 'phone', list),
-        # ('Phone Number', 'phone.phone', str),
-        # ('Phone Number Carrier', 'phone.phone_info.carrier', str),
-        # ('Phone Number Country', 'phone.phone_info.country', str),
-        # ('Phone Number Geo', 'phone.phone_info.geo', str),
         ('Privacy_punch', 'privacy_punch', bool),
         ('Registrar', 'registrar', str),
 
@@ -437,31 +416,22 @@ def whois_historic_lookup_to_markdown(results: List[Dict], title: str) -> str:
 def whois_current_build_result_context(results: Dict) -> Dict:
     ctx = {}
     for ckey, rkey, f in (
-            ('Abuse Emails', 'abuse_emails', list),
-            ('Address', 'address', list),
-            ('City', 'city', list),
-            ('Country', 'country', list),
-            ('Data', 'data', str),
-            ('Datetime', 'datetime', str),
-            ('Domain', 'domain', str),
-            ('Domain_2tld', 'domain_2tld', str),
-            ('Domain Created Time', 'domain_created_datetime', str),
-            ('Domain Expires Time', 'domain_expires_datetime', str),
-            ('Domain Updated Time', 'domain_updated_datetime', str),
-            ('Email Address', 'email', list),
-            ('IDN Name', 'idn_name', str),
-            ('Meta Data', 'meta_data', str),
-            ('Name', 'name', list),
-            ('Nameserver', 'nameserver', list),
-            ('Organization', 'organization', list),
-            ('Phone Number', 'phone', list),
-            ('Registrar', 'registrar', str),
-            ('State', 'state', list),
-            ('Whois Hash', 'whois_hash', str),
-            ('Whois ID', 'whois_id', str),
-            ('Whois Nameserver', 'whois_nameserver', list),
-            ('Whois PII', 'whois_pii', list),
-
+            ('abuse_emails', 'abuse_emails', list),
+            ('address', 'address', list),
+            ('city', 'city', list),
+            ('country', 'country', list),
+            ('domain', 'domain', str),
+            ('domain_2tld', 'domain_2tld', str),
+            ('domain_created_datetime', 'domain_created_datetime', str),
+            ('domain_expires_datetime', 'domain_expires_datetime', str),
+            ('domain_updated_datetime', 'domain_updated_datetime', str),
+            ('email', 'email', list),
+            ('idn_name', 'idn_name', str),
+            ('nameserver', 'nameserver', list),
+            ('organization', 'organization', list),
+            ('phone', 'phone', list),
+            ('registrar', 'registrar', str),
+            ('state', 'state', list),
     ):
         if rkey in results:
             ctx[ckey] = f(results[rkey])  # type: ignore[operator]
@@ -478,8 +448,6 @@ def whois_current_lookup_to_markdown(results: List[Dict], title: str) -> str:
         ('Address', 'address', list),
         ('City', 'city', list),
         ('Country', 'country', list),
-        ('Data', 'data', str),
-        ('Datetime', 'datetime', str),
         ('Domain', 'domain', str),
         ('Domain_2tld', 'domain_2tld', str),
         ('Domain Created Time', 'domain_created_datetime', str),
@@ -487,17 +455,11 @@ def whois_current_lookup_to_markdown(results: List[Dict], title: str) -> str:
         ('Domain Updated Time', 'domain_updated_datetime', str),
         ('Email Address', 'email', list),
         ('IDN Name', 'idn_name', str),
-        ('Meta Data', 'meta_data', str),
-        ('Name', 'name', list),
         ('Nameserver', 'nameserver', list),
         ('Organization', 'organization', list),
-        ('Phone Number', 'phone', list),
+        ('Phone Info', 'phone', list),
         ('Registrar', 'registrar', str),
         ('State', 'state', list),
-        ('Whois Hash', 'whois_hash', str),
-        ('Whois ID', 'whois_id', str),
-        ('Whois Nameserver', 'whois_nameserver', list),
-        ('Whois PII', 'whois_pii', list),
 
     ]  # type: List[Tuple[str, str, Callable]]
 
@@ -516,13 +478,13 @@ def whois_current_lookup_to_markdown(results: List[Dict], title: str) -> str:
 def malware_samples_build_result_context(results: Dict) -> Dict:
     ctx = {}
     for ckey, rkey, f in (
-            ('Datetime', 'datetime', str),
-            ('Domain', 'domain', str),
-            ('IPV4 Address', 'ipv4', str),
-            ('IPV6 Address', 'ipv6', str),
-            ('MD5 Value', 'md5', str),
-            ('SHA1 Value', 'sha1', str),
-            ('SHA256 Value', 'sha256', str),
+            ('datetime', 'datetime', str),
+            ('domain', 'domain', str),
+            ('ipv4', 'ipv4', str),
+            ('ipv6', 'ipv6', str),
+            ('md5', 'md5', str),
+            ('sha1', 'sha1', str),
+            ('sha256', 'sha256', str),
 
     ):
         if rkey in results:
@@ -561,7 +523,7 @@ def malware_samples_lookup_to_markdown(results: List[Dict], title: str) -> str:
 def associated_ips_build_result_context(results: Dict) -> Dict:
     ctx = {}
     for ckey, rkey, f in (
-            ('Associated IPs', 'ip', str),
+            ('Associated IPs', 'ips', str),
     ):
         if rkey in results:
             ctx[ckey] = f(results[rkey])  # type: ignore[operator]
@@ -570,21 +532,9 @@ def associated_ips_build_result_context(results: Dict) -> Dict:
 
 
 @logger
-def associated_ips_lookup_to_markdown(results: List[Dict], title: str) -> str:
-    out = []
-
-    keys = [
-        ('Associated IPs', 'ip', str),
-    ]  # type: List[Tuple[str, str, Callable]]
-
-    headers = [k[0] for k in keys]
-    for result in results:
-        row = dict()  # type: Dict[str, Any]
-        for ckey, rkey, f in keys:
-            if rkey in result:
-                row[ckey] = f(result[rkey])
-        out.append(row)
-
+def associated_ips_lookup_to_markdown(results: List, title: str) -> str:
+    headers = 'Associated IPs'
+    out = results
     return tableToMarkdown(title, out, headers=headers)
 
 
@@ -592,7 +542,7 @@ def associated_ips_lookup_to_markdown(results: List[Dict], title: str) -> str:
 def associated_domains_build_result_context(results: Dict) -> Dict:
     ctx = {}
     for ckey, rkey, f in (
-            ('Associated Domains', 'domain', str),
+            ('Associated Domains', 'domains', str),
     ):
         if rkey in results:
             ctx[ckey] = f(results[rkey])  # type: ignore[operator]
@@ -602,20 +552,8 @@ def associated_domains_build_result_context(results: Dict) -> Dict:
 
 @logger
 def associated_domains_lookup_to_markdown(results: List[Dict], title: str) -> str:
-    out = []
-
-    keys = [
-        ('Associated Domains', 'domain', str),
-    ]  # type: List[Tuple[str, str, Callable]]
-
-    headers = [k[0] for k in keys]
-    for result in results:
-        row = dict()  # type: Dict[str, Any]
-        for ckey, rkey, f in keys:
-            if rkey in result:
-                row[ckey] = f(result[rkey])
-        out.append(row)
-
+    headers = 'Associated Domains'
+    out = results
     return tableToMarkdown(title, out, headers=headers)
 
 
@@ -624,13 +562,16 @@ def get_passive_dns_records_by_indicator(client, args):
     flatten_json_response = []
     indicator_type = args.get('indicator_type')
     indicator_value = args.get('indicator_value')
+    limit = 0
+    if args.get('limit'):
+        limit = int(args.get('limit'))
 
     check_valid_indicator_type(indicator_type, PASSIVE_DNS_QUERY_PARAMS)
     check_valid_indicator_value(indicator_type, indicator_value)
     title = get_command_title_string(PASSIVE_DNS_SUB_CONTEXT, indicator_type, indicator_value)
 
     end_point = PASSIVE_DNS_ENDPOINT
-    raw_api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST')
+    raw_api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST', limit)
     if raw_api_response:
         flatten_json_response = get_flatten_json_response(raw_api_response)
 
@@ -638,8 +579,8 @@ def get_passive_dns_records_by_indicator(client, args):
         readable_output=passive_dns_lookup_to_markdown(flatten_json_response, title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{PASSIVE_DNS_SUB_CONTEXT}',
         outputs_key_field='',
-        outputs=raw_api_response,
-        # outputs=[dynamic_dns_build_result_context(r) for r in new_response],
+        # outputs=raw_api_response,
+        outputs=[passive_dns_build_result_context(r) for r in raw_api_response],
     )
 
 
@@ -648,12 +589,15 @@ def get_dynamic_dns_records_by_indicator(client, args):
     flatten_json_response = []
     indicator_type = args.get('indicator_type')
     indicator_value = args.get('indicator_value')
+    limit = 0
+    if args.get('limit'):
+        limit = int(args.get('limit'))
 
     check_valid_indicator_type(indicator_type, DYNAMIC_DNS_QUERY_PARAMS)
     check_valid_indicator_value(indicator_type, indicator_value)
     title = get_command_title_string(DYNAMIC_DNS_SUB_CONTEXT, indicator_type, indicator_value)
     end_point = DYNAMIC_DNS_ENDPOINT
-    raw_api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST')
+    raw_api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST', limit)
     if raw_api_response:
         flatten_json_response = get_flatten_json_response(raw_api_response)
 
@@ -661,8 +605,8 @@ def get_dynamic_dns_records_by_indicator(client, args):
         readable_output=dynamic_dns_lookup_to_markdown(flatten_json_response, title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{DYNAMIC_DNS_SUB_CONTEXT}',
         outputs_key_field='',
-        outputs=raw_api_response,
-        # outputs=[passive_dns_build_result_context(r) for r in new_response],
+        # outputs=raw_api_response,
+        outputs=[dynamic_dns_build_result_context(r) for r in raw_api_response],
     )
 
 
@@ -671,13 +615,15 @@ def get_whois_records_by_indicator(client, args):
     flatten_json_response = []
     indicator_type = args.get('indicator_type')
     indicator_value = args.get('indicator_value')
-
+    limit = 0
+    if args.get('limit'):
+        limit = int(args.get('limit'))
     check_valid_indicator_type(indicator_type, WHOIS_QUERY_PARAMS)
     check_valid_indicator_value(indicator_type, indicator_value)
     title = get_command_title_string(WHOIS_SUB_CONTEXT, indicator_type, indicator_value)
     end_point = WHOIS_ENDPOINT
 
-    raw_api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST')
+    raw_api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST', limit)
     if raw_api_response:
         flatten_json_response = get_flatten_json_response(raw_api_response)
 
@@ -685,8 +631,8 @@ def get_whois_records_by_indicator(client, args):
         readable_output=whois_historic_lookup_to_markdown(flatten_json_response, title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{WHOIS_SUB_CONTEXT}',
         outputs_key_field='',
-        outputs=raw_api_response,
-        # outputs=[whois_historic_build_result_context(r) for r in new_response],
+        # outputs=raw_api_response,
+        outputs=[whois_historic_build_result_context(r) for r in raw_api_response],
     )
 
 
@@ -706,9 +652,9 @@ def get_whois_current_records_by_domain(client, args):
     return CommandResults(
         readable_output=whois_current_lookup_to_markdown(whois_current_record, title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{WHOIS_CURRENT_SUB_CONTEXT}',
-        outputs_key_field='',
-        outputs=api_response,
-        # outputs=[whois_current_build_result_context(r) for r in new_response],
+        outputs_key_field='domain',
+        # outputs=api_response,
+        outputs=[whois_current_build_result_context(r) for r in whois_current_record],
     )
 
 
@@ -716,13 +662,15 @@ def get_whois_current_records_by_domain(client, args):
 def get_malware_samples_records_by_indicator(client, args):
     indicator_type = args.get('indicator_type')
     indicator_value = args.get('indicator_value')
-
+    limit = 0
+    if args.get('limit'):
+        limit = int(args.get('limit'))
     check_valid_indicator_type(indicator_type, MALWARE_QUERY_PARAMS)
     check_valid_indicator_value(indicator_type, indicator_value)
     title = get_command_title_string(MALWARE_SUB_CONTEXT, indicator_type, indicator_value)
     end_point = MALWARE_ENDPOINT
 
-    api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST')
+    api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST', limit)
 
     return CommandResults(
         readable_output=malware_samples_lookup_to_markdown(api_response, title),
@@ -742,18 +690,15 @@ def get_associated_ips_by_hash(client, args):
     title = get_command_title_string(HASH_IP_SUB_CONTEXT, indicator_type, indicator_value)
     end_point = MALWARE_ENDPOINT
 
-    associated_ips = []
     api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST')
-    if api_response:
-        for obj in api_response:
-            if obj['ipv4']:
-                associated_ips.append({'ip': str(obj['ipv4'])})
 
+    associated_ips = [str(obj['ipv4']) for obj in api_response if obj['ipv4']]
+    outputs = {'md5': indicator_value, 'ips': associated_ips}
     return CommandResults(
         readable_output=associated_ips_lookup_to_markdown(associated_ips, title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{HASH_IP_SUB_CONTEXT}',
-        outputs_key_field='',
-        outputs=associated_ips,
+        outputs_key_field='md5',
+        outputs=outputs,
         # outputs=[malware_samples_build_result_context(r) for r in new_response],
     )
 
@@ -767,22 +712,14 @@ def get_associated_domains_by_hash(client, args):
     title = get_command_title_string(HASH_DOMAIN_SUB_CONTEXT, indicator_type, indicator_value)
 
     end_point = MALWARE_ENDPOINT
-    if not re.match(md5Regex, indicator_value):
-        raise Exception(
-            f'Invalid indicator_value: {indicator_value} for indicator_type {indicator_type}')
-
-    associated_domains = []
     api_response = client.fetch_data_from_hyas_api(end_point, indicator_type, indicator_value, False, 'POST')
-    if api_response:
-        for obj in api_response:
-            if obj['domain']:
-                associated_domains.append({'domain': str(obj['domain'])})
-
+    associated_domains = [str(obj['domain']) for obj in api_response if obj['domain']]
+    outputs = {'md5': indicator_value, 'domains': associated_domains}
     return CommandResults(
         readable_output=associated_domains_lookup_to_markdown(associated_domains, title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{HASH_DOMAIN_SUB_CONTEXT}',
-        outputs_key_field='',
-        outputs=associated_domains,
+        outputs_key_field='md5',
+        outputs=outputs,
         # outputs=[malware_samples_build_result_context(r) for r in new_response],
     )
 

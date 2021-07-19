@@ -2,7 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: HYAS Insight
   version: -1
-fromversion: 5.0.0
+fromversion: 6.0.0
 configuration:
 - display: HYAS Insight Api Key
   name: X-API-Key
@@ -16,7 +16,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the HYAS Insight integration to interactively lookup PassiveDNS, DynamicDNS, WHOIS, Malware Information – either as playbook tasks or through API calls in the War Room.
+description: Use the HYAS Insight integration to interactively lookup PassiveDNS,
+  DynamicDNS, WHOIS, Malware Information – either as playbook tasks or through API
+  calls in the War Room.
 display: HYAS Insight
 name: HYAS Insight
 script:
@@ -24,8 +26,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Indicator Type. Possible values are: IPv4, Domain'
-      isArray: true
+      description: Indicator Type.
+      isArray: false
       name: indicator_type
       predefined:
       - ipv4
@@ -38,23 +40,26 @@ script:
       name: indicator_value
       required: true
       secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Returns PassiveDNS records for the provided indicator value.
     execution: false
     name: hyas-get-passive-dns-records-by-indicator
     outputs:
-    - contextPath: HYAS.PassiveDNS.cert_name
-      description: The certificate provider name
-      type: String
     - contextPath: HYAS.PassiveDNS.count
       description: The passive dns count
-      type: String
+      type: Number
     - contextPath: HYAS.PassiveDNS.domain
       description: The domain of the passive dns information requested
       type: String
     - contextPath: HYAS.PassiveDNS.first_seen
       description: The first time this domain was seen
-      type: String
+      type: Date
     - contextPath: HYAS.PassiveDNS.ip.geo.city_name
       description: City of the ip organization
       type: String
@@ -66,47 +71,44 @@ script:
       type: String
     - contextPath: HYAS.PassiveDNS.ip.geo.location_latitude
       description: The latitude of the ip organization
-      type: String
+      type: Number
     - contextPath: HYAS.PassiveDNS.ip.geo.location_longitude
       description: The longitude of the ip organization
-      type: String
+      type: Number
     - contextPath: HYAS.PassiveDNS.ip.geo.postal_code
       description: The longitude of the ip organization
       type: String
-    - contextPath: HYAS.PassiveDNS.ip
+    - contextPath: HYAS.PassiveDNS.ip.ip
       description: IP of the organization
       type: String
-    - contextPath: HYAS.PassiveDNS.isp.autonomous_system_number
+    - contextPath: HYAS.PassiveDNS.ip.isp.autonomous_system_number
       description: The ASN of the ip
       type: String
-    - contextPath: HYAS.PassiveDNS.isp.autonomous_system_organization
+    - contextPath: HYAS.PassiveDNS.ip.isp.autonomous_system_organization
       description: The ASO of the ip
       type: String
-    - contextPath: HYAS.PassiveDNS.isp.ip_address
+    - contextPath: HYAS.PassiveDNS.ip.isp.ip_address
       description: The IP
       type: String
-    - contextPath: HYAS.PassiveDNS.isp.isp
+    - contextPath: HYAS.PassiveDNS.ip.isp.isp
       description: The Internet Service Provider
       type: String
-    - contextPath: HYAS.PassiveDNS.isp.organization
+    - contextPath: HYAS.PassiveDNS.ip.isp.organization
       description: The ISP organization
       type: String
     - contextPath: HYAS.PassiveDNS.ipv4
       description: The ipv4 address of the passive dns record
       type: String
-    - contextPath: HYAS.PassiveDNS.ipv6
-      description: The ipv6 address of the passive dns record
-      type: String
     - contextPath: HYAS.PassiveDNS.last_seen
       description: The last time this domain was seen
-      type: String
+      type: Date
     - contextPath: HYAS.PassiveDNS.sources
       description: A list of pDNS providers which the data came from
       type: Unknown
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Indicator Type. Possible values are: IP, Domain, Email'
+      description: Indicator Type.
       isArray: false
       name: indicator_type
       predefined:
@@ -121,6 +123,12 @@ script:
       name: indicator_value
       required: true
       secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Returns DynamicDNS records for the provided indicator value.
     execution: false
@@ -134,7 +142,7 @@ script:
       type: String
     - contextPath: HYAS.DynamicDNS.created
       description: The date which the domain was created
-      type: String
+      type: Date
     - contextPath: HYAS.DynamicDNS.created_ip
       description: The ip address of the account holder
       type: String
@@ -150,7 +158,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Indicator Type. Possible values are: Domain, Email, Phone'
+      description: Indicator Type.
       isArray: false
       name: indicator_type
       predefined:
@@ -164,6 +172,12 @@ script:
       isArray: false
       name: indicator_value
       required: true
+      secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
       secret: false
     deprecated: false
     description: Returns WHOIS records for the provided indicator value.
@@ -187,13 +201,13 @@ script:
       type: String
     - contextPath: HYAS.WHOIS.domain_created_datetime
       description: The date and time when the whois record was created
-      type: String
+      type: Date
     - contextPath: HYAS.WHOIS.domain_expires_datetime
       description: The date and time when the whois record expires
-      type: String
+      type: Date
     - contextPath: HYAS.WHOIS.domain_updated_datetime
       description: The date and time when the whois record was last updated
-      type: String
+      type: Date
     - contextPath: HYAS.WHOIS.email
       description: email
       type: Unknown
@@ -246,12 +260,6 @@ script:
     - contextPath: HYAS.WHOISCurrent.items.country
       description: country
       type: Unknown
-    - contextPath: HYAS.WHOISCurrent.items.data
-      description: country
-      type: String
-    - contextPath: HYAS.WHOISCurrent.items.datetime
-      description: datetime
-      type: String
     - contextPath: HYAS.WHOISCurrent.items.domain
       description: The domain of the registrant
       type: String
@@ -260,25 +268,19 @@ script:
       type: String
     - contextPath: HYAS.WHOISCurrent.items.domain_created_datetime
       description: The date and time when the whois record was created
-      type: String
+      type: Date
     - contextPath: HYAS.WHOISCurrent.items.domain_expires_datetime
       description: The date and time when the whois record expires
-      type: String
+      type: Date
     - contextPath: HYAS.WHOISCurrent.items.domain_updated_datetime
       description: The date and time when the whois record was last updated
-      type: String
+      type: Date
     - contextPath: HYAS.WHOISCurrent.items.email
       description: email
       type: Unknown
     - contextPath: HYAS.WHOISCurrent.items.idn_name
       description: The international domain name
       type: String
-    - contextPath: HYAS.WHOISCurrent.items.meta_data
-      description: Meta Data
-      type: String
-    - contextPath: HYAS.WHOISCurrent.items.name
-      description: name
-      type: Unknown
     - contextPath: HYAS.WHOISCurrent.items.nameserver
       description: nameserver
       type: Unknown
@@ -287,29 +289,17 @@ script:
       type: Unknown
     - contextPath: HYAS.WHOISCurrent.items.phone
       description: The phone number
-      type: String
+      type: Unknown
     - contextPath: HYAS.WHOISCurrent.items.registrar
       description: The domain registrar
       type: String
     - contextPath: HYAS.WHOISCurrent.items.state
       description: The state
       type: Unknown
-    - contextPath: HYAS.WHOISCurrent.items.whois_hash
-      description: The whois hash
-      type: String
-    - contextPath: HYAS.WHOISCurrent.items.whois_id
-      description: The whois id
-      type: String
-    - contextPath: HYAS.WHOISCurrent.items.whois_nameserver
-      description: The whois nameserver details
-      type: Unknown
-    - contextPath: HYAS.WHOISCurrent.items.whois_pii
-      description: The whois pii details
-      type: Unknown
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Indicator Type. Possible values are: Domain, IPV4, HASH'
+      description: Indicator Type.
       isArray: false
       name: indicator_type
       predefined:
@@ -324,30 +314,36 @@ script:
       name: indicator_value
       required: true
       secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Returns Malware Sample records for the provided indicator value.
     execution: false
     name: hyas-get-malware-samples-records-by-indicator
     outputs:
-    - contextPath: HYAS.MALWARESAMPLES.datetime
+    - contextPath: HYAS.MalwareSamples.datetime
       description: The date which the sample was processed
-      type: String
-    - contextPath: HYAS.MALWARESAMPLES.domain
+      type: Date
+    - contextPath: HYAS.MalwareSamples.domain
       description: The domain of the sample
       type: String
-    - contextPath: HYAS.MALWARESAMPLES.ipv4
+    - contextPath: HYAS.MalwareSamples.ipv4
       description: The ipv4 of the sample
       type: String
-    - contextPath: HYAS.MALWARESAMPLES.ipv6
+    - contextPath: HYAS.MalwareSamples.ipv6
       description: The ipv6 of the sample
       type: String
-    - contextPath: HYAS.MALWARESAMPLES.md5
+    - contextPath: HYAS.MalwareSamples.md5
       description: The md5 of the sample
       type: String
-    - contextPath: HYAS.MALWARESAMPLES.sha1
+    - contextPath: HYAS.MalwareSamples.sha1
       description: The sha1  of the sample
       type: String
-    - contextPath: HYAS.MALWARESAMPLES.sha256
+    - contextPath: HYAS.MalwareSamples.sha256
       description: The sha256 of the sample
       type: String
   - arguments:
@@ -362,8 +358,11 @@ script:
     execution: false
     name: hyas-get-associated-ips-by-hash
     outputs:
-    - contextPath: HYAS.HASH-IP.ip
-      description: Associated IP's for the provided MD5 value
+    - contextPath: HYAS.HASH-IP.md5
+      description: The provided MD5 value
+      type: String
+    - contextPath: HYAS.HASH-IP.ips
+      description: Associated IPS  for the provided MD5 value
       type: String
   - arguments:
     - default: false
@@ -377,10 +376,13 @@ script:
     execution: false
     name: hyas-get-associated-domains-by-hash
     outputs:
-    - contextPath: HYAS.HASH-DOMAIN.domain
+    - contextPath: HYAS.HASH-DOMAIN.domains
       description: Associated Domains for the provided MD5 value
       type: String
-  dockerimage: demisto/python3:3.9.5.21272
+    - contextPath: HYAS.HASH-DOMAIN.md5
+      description: The provided MD5 value
+      type: String
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
   longRunning: false

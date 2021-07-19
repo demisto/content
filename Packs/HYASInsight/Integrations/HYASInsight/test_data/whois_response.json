@@ -1,11 +1,9 @@
-{
+[{
         "address": [],
         "city": [
             "ha noi"
         ],
         "country": [],
-        "data": "",
-        "datetime": "2016-12-07T06:05:05.230927Z",
         "domain": "dulieuonline.net",
         "domain_2tld": "",
         "domain_created_datetime": "2015-05-22T00:00:00Z",
@@ -15,62 +13,6 @@
             "ngoc.mycomputer@gmail.com"
         ],
         "idn_name": "",
-        "meta_data": {
-            "data": {
-                "city": [
-                    "ha noi"
-                ],
-                "collected_date": "2015-05-23T00:00:00+00:00",
-                "country": [
-                    {
-                        "alpha_2": "VIETNAM",
-                        "alpha_3": "VIETNAM",
-                        "name": "VIETNAM",
-                        "numeric": -1
-                    },
-                    {
-                        "alpha_2": "VIETNAM",
-                        "alpha_3": "VIETNAM",
-                        "name": "VIETNAM",
-                        "numeric": -1
-                    },
-                    {
-                        "alpha_2": "VIETNAM",
-                        "alpha_3": "VIETNAM",
-                        "name": "VIETNAM",
-                        "numeric": -1
-                    }
-                ],
-                "create_date": "2015-05-22T00:00:00+00:00",
-                "email": [
-                    "ngoc.mycomputer@gmail.com"
-                ],
-                "expire_date": "2016-05-22T00:00:00+00:00",
-                "name": [
-                    "ong phan van ngoc"
-                ],
-                "nameservers": [
-                    "ns1.inet.vn",
-                    "ns2.inet.vn"
-                ],
-                "phone": [
-                    "+84986386242"
-                ],
-                "postal_code": [
-                    "10000"
-                ],
-                "registrar_name": "onlinenic, inc.",
-                "state": [
-                    "hni"
-                ],
-                "update_date": "2015-05-22T00:00:00+00:00"
-            },
-            "updated": "2017-06-14T19:06:36.577650",
-            "version": "1.03"
-        },
-        "name": [
-            "ong phan van ngoc"
-        ],
         "nameserver": [
             "ns2.inet.vn",
             "ns1.inet.vn"
@@ -86,7 +28,5 @@
             }
         ],
         "privacy_punch": false,
-        "registrar": "onlinenic, inc.",
-        "whois_hash": "",
-        "whois_id": ""
-    }
+        "registrar": "onlinenic, inc."
+}]
