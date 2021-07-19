@@ -1,9 +1,9 @@
 id: Playbook-HYASInsight-Test
-version: 35
+version: 36
 vcShouldKeepItemLegacyProdMachine: false
 name: Playbook-HYASInsight-Test
-starttaskid: "0"
 fromversion: 6.0.0
+starttaskid: "0"
 tasks:
   "0":
     id: "0"
@@ -705,10 +705,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 71d9560a-a399-43dc-84dc-7fab8c86cf10
+    taskid: fa85732d-0f05-49f7-8d9b-adae0ab6a02f
     type: condition
     task:
-      id: 71d9560a-a399-43dc-84dc-7fab8c86cf10
+      id: fa85732d-0f05-49f7-8d9b-adae0ab6a02f
       version: -1
       name: Whois Current Outputs
       type: condition
@@ -724,102 +724,102 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.abuse_emails
+              simple: HYAS.WHOISCurrent.abuse_emails
             iscontext: true
         - operator: isEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.abuse_emails
+              simple: HYAS.WHOISCurrent.abuse_emails
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.address
+              simple: HYAS.WHOISCurrent.address
             iscontext: true
         - operator: isEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.address
+              simple: HYAS.WHOISCurrent.address
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.city
+              simple: HYAS.WHOISCurrent.city
             iscontext: true
         - operator: isEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.city
+              simple: HYAS.WHOISCurrent.city
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.country
+              simple: HYAS.WHOISCurrent.country
             iscontext: true
         - operator: isEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.country
+              simple: HYAS.WHOISCurrent.country
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.domain
+              simple: HYAS.WHOISCurrent.domain
             iscontext: true
         - operator: isEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.domain
+              simple: HYAS.WHOISCurrent.domain
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.domain_2tld
+              simple: HYAS.WHOISCurrent.domain_2tld
             iscontext: true
         - operator: isEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.domain_2tld
+              simple: HYAS.WHOISCurrent.domain_2tld
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.domain_created_datetime
+              simple: HYAS.WHOISCurrent.domain_created_datetime
             iscontext: true
         - operator: isEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.domain_created_datetime
+              simple: HYAS.WHOISCurrent.domain_created_datetime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.domain_expires_datetime
+              simple: HYAS.WHOISCurrent.domain_expires_datetime
             iscontext: true
         - operator: isEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.domain_expires_datetime
+              simple: HYAS.WHOISCurrent.domain_expires_datetime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.domain_updated_datetime
+              simple: HYAS.WHOISCurrent.domain_updated_datetime
             iscontext: true
         - operator: isEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.domain_updated_datetime
+              simple: HYAS.WHOISCurrent.domain_updated_datetime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.email
+              simple: HYAS.WHOISCurrent.email
             iscontext: true
         - operator: isEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.email
+              simple: HYAS.WHOISCurrent.email
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -834,52 +834,52 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.nameserver
+              simple: HYAS.WHOISCurrent.nameserver
             iscontext: true
         - operator: isEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.nameserver
+              simple: HYAS.WHOISCurrent.nameserver
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.organization
+              simple: HYAS.WHOISCurrent.organization
             iscontext: true
         - operator: isEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.organization
+              simple: HYAS.WHOISCurrent.organization
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.phone
+              simple: HYAS.WHOISCurrent.phone
             iscontext: true
         - operator: isEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.phone
+              simple: HYAS.WHOISCurrent.phone
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.registrar
+              simple: HYAS.WHOISCurrent.registrar
             iscontext: true
         - operator: isEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.registrar
+              simple: HYAS.WHOISCurrent.registrar
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.state
+              simple: HYAS.WHOISCurrent.state
             iscontext: true
         - operator: isEmpty
           left:
             value:
-              simple: HYAS.WHOISCurrent.items.state
+              simple: HYAS.WHOISCurrent.state
             iscontext: true
     view: |-
       {

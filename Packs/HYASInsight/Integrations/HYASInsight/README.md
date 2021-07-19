@@ -434,22 +434,22 @@ Returns WHOIS Current records for the provided indicator value.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HYAS.WHOISCurrent.items.abuse_emails | Unknown | abuse emails | 
-| HYAS.WHOISCurrent.items.address | Unknown | address | 
-| HYAS.WHOISCurrent.items.city | Unknown | city | 
-| HYAS.WHOISCurrent.items.country | Unknown | country | 
-| HYAS.WHOISCurrent.items.domain | String | The domain of the registrant | 
-| HYAS.WHOISCurrent.items.domain_2tld | String | The second-level domain of the registrant | 
-| HYAS.WHOISCurrent.items.domain_created_datetime | Date | The date and time when the whois record was created | 
-| HYAS.WHOISCurrent.items.domain_expires_datetime | Date | The date and time when the whois record expires | 
-| HYAS.WHOISCurrent.items.domain_updated_datetime | Date | The date and time when the whois record was last updated | 
-| HYAS.WHOISCurrent.items.email | Unknown | email | 
-| HYAS.WHOISCurrent.items.idn_name | String | The international domain name | 
-| HYAS.WHOISCurrent.items.nameserver | Unknown | nameserver | 
-| HYAS.WHOISCurrent.items.organization | Unknown | organization | 
-| HYAS.WHOISCurrent.items.phone | Unknown | The phone number | 
-| HYAS.WHOISCurrent.items.registrar | String | The domain registrar | 
-| HYAS.WHOISCurrent.items.state | Unknown | The state | 
+| HYAS.WHOISCurrent.abuse_emails | Unknown | abuse emails | 
+| HYAS.WHOISCurrent.address | Unknown | address | 
+| HYAS.WHOISCurrent.city | Unknown | city | 
+| HYAS.WHOISCurrent.country | Unknown | country | 
+| HYAS.WHOISCurrent.domain | String | The domain of the registrant | 
+| HYAS.WHOISCurrent.domain_2tld | String | The second-level domain of the registrant | 
+| HYAS.WHOISCurrent.domain_created_datetime | Date | The date and time when the whois record was created | 
+| HYAS.WHOISCurrent.domain_expires_datetime | Date | The date and time when the whois record expires | 
+| HYAS.WHOISCurrent.domain_updated_datetime | Date | The date and time when the whois record was last updated | 
+| HYAS.WHOISCurrent.email | Unknown | email | 
+| HYAS.WHOISCurrent.idn_name | String | The international domain name | 
+| HYAS.WHOISCurrent.nameserver | Unknown | nameserver | 
+| HYAS.WHOISCurrent.organization | Unknown | organization | 
+| HYAS.WHOISCurrent.phone | Unknown | The phone number | 
+| HYAS.WHOISCurrent.registrar | String | The domain registrar | 
+| HYAS.WHOISCurrent.state | Unknown | The state | 
 
 
 #### Command Example
@@ -612,7 +612,7 @@ Returns associated IP's for the provided hash value.
     "HYAS": {
         "HASH-IP": {
             "ips": [
-                "1.1.1.1"
+                "106.187.43.98"
             ],
             "md5": "1d0a97c41afe5540edd0a8c1fb9a0f1c"
         }
@@ -625,7 +625,7 @@ Returns associated IP's for the provided hash value.
 >### HYAS HASH-IP records for md5 : 1d0a97c41afe5540edd0a8c1fb9a0f1c
 >|Associated IPs|
 >|---|
->| 1.1.1.1 |
+>| 106.187.43.98 |
 
 
 ### hyas-get-associated-domains-by-hash

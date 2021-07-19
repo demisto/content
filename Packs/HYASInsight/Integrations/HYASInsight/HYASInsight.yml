@@ -248,52 +248,52 @@ script:
     execution: false
     name: hyas-get-whois-current-records-by-domain
     outputs:
-    - contextPath: HYAS.WHOISCurrent.items.abuse_emails
+    - contextPath: HYAS.WHOISCurrent.abuse_emails
       description: abuse emails
       type: Unknown
-    - contextPath: HYAS.WHOISCurrent.items.address
+    - contextPath: HYAS.WHOISCurrent.address
       description: address
       type: Unknown
-    - contextPath: HYAS.WHOISCurrent.items.city
+    - contextPath: HYAS.WHOISCurrent.city
       description: city
       type: Unknown
-    - contextPath: HYAS.WHOISCurrent.items.country
+    - contextPath: HYAS.WHOISCurrent.country
       description: country
       type: Unknown
-    - contextPath: HYAS.WHOISCurrent.items.domain
+    - contextPath: HYAS.WHOISCurrent.domain
       description: The domain of the registrant
       type: String
-    - contextPath: HYAS.WHOISCurrent.items.domain_2tld
+    - contextPath: HYAS.WHOISCurrent.domain_2tld
       description: The second-level domain of the registrant
       type: String
-    - contextPath: HYAS.WHOISCurrent.items.domain_created_datetime
+    - contextPath: HYAS.WHOISCurrent.domain_created_datetime
       description: The date and time when the whois record was created
       type: Date
-    - contextPath: HYAS.WHOISCurrent.items.domain_expires_datetime
+    - contextPath: HYAS.WHOISCurrent.domain_expires_datetime
       description: The date and time when the whois record expires
       type: Date
-    - contextPath: HYAS.WHOISCurrent.items.domain_updated_datetime
+    - contextPath: HYAS.WHOISCurrent.domain_updated_datetime
       description: The date and time when the whois record was last updated
       type: Date
-    - contextPath: HYAS.WHOISCurrent.items.email
+    - contextPath: HYAS.WHOISCurrent.email
       description: email
       type: Unknown
-    - contextPath: HYAS.WHOISCurrent.items.idn_name
+    - contextPath: HYAS.WHOISCurrent.idn_name
       description: The international domain name
       type: String
-    - contextPath: HYAS.WHOISCurrent.items.nameserver
+    - contextPath: HYAS.WHOISCurrent.nameserver
       description: nameserver
       type: Unknown
-    - contextPath: HYAS.WHOISCurrent.items.organization
+    - contextPath: HYAS.WHOISCurrent.organization
       description: organization
       type: Unknown
-    - contextPath: HYAS.WHOISCurrent.items.phone
+    - contextPath: HYAS.WHOISCurrent.phone
       description: The phone number
       type: Unknown
-    - contextPath: HYAS.WHOISCurrent.items.registrar
+    - contextPath: HYAS.WHOISCurrent.registrar
       description: The domain registrar
       type: String
-    - contextPath: HYAS.WHOISCurrent.items.state
+    - contextPath: HYAS.WHOISCurrent.state
       description: The state
       type: Unknown
   - arguments:
@@ -363,7 +363,7 @@ script:
       type: String
     - contextPath: HYAS.HASH-IP.ips
       description: Associated IPS  for the provided MD5 value
-      type: String
+      type: Unknown
   - arguments:
     - default: false
       description: The md5 value to query
@@ -378,7 +378,7 @@ script:
     outputs:
     - contextPath: HYAS.HASH-DOMAIN.domains
       description: Associated Domains for the provided MD5 value
-      type: String
+      type: Unknown
     - contextPath: HYAS.HASH-DOMAIN.md5
       description: The provided MD5 value
       type: String

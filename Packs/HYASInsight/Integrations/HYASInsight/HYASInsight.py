@@ -579,7 +579,6 @@ def get_passive_dns_records_by_indicator(client, args):
         readable_output=passive_dns_lookup_to_markdown(flatten_json_response, title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{PASSIVE_DNS_SUB_CONTEXT}',
         outputs_key_field='',
-        # outputs=raw_api_response,
         outputs=[passive_dns_build_result_context(r) for r in raw_api_response],
     )
 
@@ -605,7 +604,6 @@ def get_dynamic_dns_records_by_indicator(client, args):
         readable_output=dynamic_dns_lookup_to_markdown(flatten_json_response, title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{DYNAMIC_DNS_SUB_CONTEXT}',
         outputs_key_field='',
-        # outputs=raw_api_response,
         outputs=[dynamic_dns_build_result_context(r) for r in raw_api_response],
     )
 
@@ -631,7 +629,6 @@ def get_whois_records_by_indicator(client, args):
         readable_output=whois_historic_lookup_to_markdown(flatten_json_response, title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{WHOIS_SUB_CONTEXT}',
         outputs_key_field='',
-        # outputs=raw_api_response,
         outputs=[whois_historic_build_result_context(r) for r in raw_api_response],
     )
 
@@ -653,7 +650,6 @@ def get_whois_current_records_by_domain(client, args):
         readable_output=whois_current_lookup_to_markdown(whois_current_record, title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{WHOIS_CURRENT_SUB_CONTEXT}',
         outputs_key_field='domain',
-        # outputs=api_response,
         outputs=[whois_current_build_result_context(r) for r in whois_current_record],
     )
 
@@ -676,8 +672,7 @@ def get_malware_samples_records_by_indicator(client, args):
         readable_output=malware_samples_lookup_to_markdown(api_response, title),
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{MALWARE_SUB_CONTEXT}',
         outputs_key_field='',
-        outputs=api_response,
-        # outputs=[malware_samples_build_result_context(r) for r in new_response],
+        outputs=[malware_samples_build_result_context(r) for r in api_response],
     )
 
 
@@ -699,7 +694,6 @@ def get_associated_ips_by_hash(client, args):
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{HASH_IP_SUB_CONTEXT}',
         outputs_key_field='md5',
         outputs=outputs,
-        # outputs=[malware_samples_build_result_context(r) for r in new_response],
     )
 
 
@@ -720,7 +714,6 @@ def get_associated_domains_by_hash(client, args):
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{HASH_DOMAIN_SUB_CONTEXT}',
         outputs_key_field='md5',
         outputs=outputs,
-        # outputs=[malware_samples_build_result_context(r) for r in new_response],
     )
 
 
