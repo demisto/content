@@ -118,7 +118,7 @@ def get_artifact_data(artifact_relative_path: str) -> Optional[str]:
     """
     Retrieves artifact data according to the artifact relative path from 'ARTIFACTS_FOLDER' given.
     Args:
-        artifact_relative_path (str): Artifact suffix.
+        artifact_relative_path (str): Relative path of an artifact file.
 
     Returns:
         (Optional[str]): data of the artifact as str if exists, None otherwise.
