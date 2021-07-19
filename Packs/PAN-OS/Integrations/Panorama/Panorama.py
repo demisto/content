@@ -26,12 +26,6 @@ DEVICE_GROUP = ''
 XPATH_OBJECTS = ''
 XPATH_RULEBASE = ''
 
-''' FETCH INCIDENTS GLOBALS '''
-RESET_KEY = 'reset'
-SAMPLE_SIZE = 10  # number of samples to store in integration context
-FETCH_SLEEP = 120  # sleep between fetches
-LAST_FETCH_KEY = 'TimeGenerated'
-
 # Security rule arguments for output handling
 SECURITY_RULE_ARGS = {
     'rulename': 'Name',
@@ -7013,134 +7007,113 @@ def panorama_install_file_content_update_command(args: dict):
         return_results(result['response']['msg'])
 
 
-def is_reset_triggered(handle_reset: bool = False):
-    """
-    Checks if reset of integration context have been made by the user.
-    Because fetch is long running execution, user communicates with us
-    by calling 'panorama-reset-last-run' command which sets reset flag in
-    context.
-    Args:
-        handle_reset (bool): Whether the reset should be handled by the caller.
-
-    Returns:
-        (bool):
-        - True if reset flag was set. If 'handle_reset' is true, also resets integration context.
-        - False if reset flag was not found in integration context.
-    """
-    ctx = get_integration_context()
-    if ctx and RESET_KEY in ctx:
-        if handle_reset:
-            demisto.debug('Reset fetch-incidents in PAN-OS.')
-            set_integration_context({'samples': ctx.get('samples', [])})
-        return True
-    return False
-
-
-def parse_logs_to_incidents(logs: dict, incident_type: str) -> Tuple[Optional[List[Dict]], Optional[str]]:
+def parse_logs_to_incidents(result: dict, last_run: dict) -> Tuple[Optional[List[Dict]], Optional[str]]:
     """parses logs from PAN-OS, and transforms them to incidents in a long running execution.
 
     Args:
-        logs: Dictionary containing the logs.
-        incident_type: Incident type.
+        result: Dictionary containing the logs.
+        last_run (dict): last run data including the status, job_id and time.
 
     Returns:
         (List[Dict], int): List of the incidents, and the new latest time generated logs for the next fetch.
         (None, None): if reset was triggered
     """
-    if logs['response']['result']['job']['status'] != 'FIN':  # if fetch is not over, keep the context as is
+    if result['response']['result']['job']['status'] != 'FIN':  # if fetch is not over, keep the context as is
         demisto.debug('Querying the logs job is in progress to fetch PAN-OS logs as incidents.')
-        return None, get_integration_context()[LAST_FETCH_KEY]
+        return None, last_run
 
-    if 'response' not in logs or 'result' not in logs['response'] or 'log' not in logs['response']['result']\
-            or 'logs' not in logs['response']['result']['log']:
-        # if no logs, querying the logs failed for an unknown reason
+    if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result']\
+            or 'logs' not in result['response']['result']['log']:
+        # if no logs, querying the logs failed for an unknown reason. reset the status and job id
+        demisto.setLastRun(None)
         raise DemistoException('Missing logs in response.')
 
-    logs_dict = logs['response']['result']['log']['logs']
-    if logs_dict['@count'] == '0':  # fetch is over, no new logs found, keep the context as is
+    logs_dict = result['response']['result']['log']['logs']
+    if logs_dict['@count'] == '0':  # fetch is over, no new logs found. reset the status and job id
         demisto.debug('Querying the logs job to fetch PAN-OS logs as incidents did not find any new logs.')
-        return None, get_integration_context()[LAST_FETCH_KEY]
+        last_run['status'] = 'new'
+        last_run['job_id'] = '-1'
+        return None, last_run
 
+    # logs where retrieved successfully. reset the status and job id
     raw_logs = logs_dict['entry']
-    demisto.debug(f'Creating {len(raw_logs)} PAN_OS logs as incidents')
+    demisto.debug(f'Creating {len(raw_logs)} PAN-OS logs as incidents')
+    last_run['status'] = 'new'
+    last_run['job_id'] = '-1'
     incidents = [{
-        'name': f'{raw_log.get("TimeGenerated")} PAN-OS log',
+        'name': f'{raw_log.get("TimeReceived")} PAN-OS log',
         'rawJSON': json.dumps(raw_log),
-        'occurred': raw_log.get("TimeGenerated"),
-        'type': incident_type
+        'occurred': raw_log.get("TimeReceived")
     } for raw_log in raw_logs]
-
-    if is_reset_triggered(handle_reset=True):
-        return None, None
-
-    return incidents, incidents[-1].get("TimeGenerated")
+    # TODO set the last_run['last_time'] correctly
+    return incidents, last_run
 
 
-def long_running_execution_command(params: dict):
+def fetch_incidents(params: dict, last_run: dict) -> Tuple[dict, list]:
     """
-    Long running execution of fetching incidents from PAN-OS.
-    Will continue to fetch in an infinite loop logs from PAN-OS,
-    according to the query given in the integration params.
-    transforming the logs into incidents.
+    Fetching incidents from PAN-OS.
+    Will first execute a query. than, as long as the query is not 'completed' will pull on it in the next fetch.
+    When completed - will return the logs as incidents, reset the KEY and will execute a new query in the next fetch.
+
     Args:
         params (Dict): instance params.
+        last_run (dict): last run data including the status, job_id and time.
 
+    Returns:
+        next_run: This will be last_run in the next fetch-incidents
+        incidents: Incidents that will be created in Cortex XSOAR
     """
     query = str(params.get('query', ''))
+    first_fetch_time = params.get('fetch_time', '3 days').strip()
     number_of_logs = int(params.get('max_fetch', '50'))
     log_type = str(params.get('log_type', ''))
-    incident_type = str(params.get('incident_type', ''))
 
+    fetch_status = last_run.get('status')
+    job_id = last_run.get('job_id')
+
+    if fetch_status != 'new':  # if we do not need to initiate a new query, try to get the logs
+        result = panorama_get_logs(job_id)
+        return parse_logs_to_incidents(result, last_run)
+
+    # create a new job query time filters
+    if not last_run:  # first time fetch
+        last_time = to_pan_os_format_converter(first_fetch_time)
+    else:
+        last_time = last_run['last_time']
+    now = to_pan_os_format_converter()
+
+    # All Traffic Received Between The Date-Time Range Of:
+    # (receive_time geq 'yyyy/mm/dd hh:mm:ss') and (receive_time leq 'YYYY/MM/DD HH:MM:SS')
+    # example: (receive_time geq '2015/08/30 08:30:00') and (receive_time leq '2015/08/31 01:25:00')
+    query += f'and ((receive_time geq {last_time}) and (receive_time leq {now}))'
     submitted_job = panorama_query_logs(log_type=log_type, number_of_logs=number_of_logs, query=query)
     job_id = submitted_job['response']['result']['job']  # get the job id
 
-    while True:
-        try:
-            is_reset_triggered(handle_reset=True)
-            ctx = get_integration_context()
-            demisto.debug(f'Starting fetch loop. With log-type: {log_type} and query {query}.')
-            logs = panorama_get_logs(job_id=job_id)
-            incidents, latest_occurred_log = parse_logs_to_incidents(logs=logs, incident_type=incident_type)
-            # Reset was called during execution, skip creating incidents.
-            if not incidents and not latest_occurred_log:
-                continue
+    # update the last_run time to now
+    next_run = {'fetch_status': 'pending', 'job_id': job_id, 'last_time': now}
 
-            incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
-            set_integration_context({LAST_FETCH_KEY: latest_occurred_log, 'samples': incident_batch_for_sample})
-
-            demisto.createIncidents(incidents)
-
-        except Exception as err:
-            demisto.error(str(err))
-
-        finally:
-            time.sleep(FETCH_SLEEP)
+    return [], next_run
 
 
-def fetch_incidents_command() -> List[Dict]:
-    """
-    Fetch incidents implemented, for mapping purposes only.
-    Returns list of samples saved by long running execution.
+def to_pan_os_format_converter(time_given: str = 'now') -> str:
+    """Generates a string in the PAN-OS format, e.g: 2015/08/30 08:30:00
 
-    Returns:
-        (List[Dict]): List of incidents samples.
-    """
-    return get_integration_context().get('samples', [])
+        Examples:
+            >>> to_pan_os_format_converter('3 days ago')
+            2021/07/10 08:30:00
 
+        Args:
+            time_given: the time given, if none given, the default is now.
 
-def panorama_reset_last_run_command() -> CommandResults:
-    """
-    Puts the reset flag inside integration context.
-    Returns:
-        (str): 'fetch-incidents was reset successfully'.
-    """
-    ctx = get_integration_context()
-    ctx[RESET_KEY] = True
-    set_integration_context(ctx)
-    return CommandResults('fetch-incidents was reset successfully.')
+        Returns:
+            The time given in PAN-OS format.
+        """
+    pan_os_date_format = '%Y/%m/%d %H:%M:%S'
+    date_obj = dateparser.parse(time_given)
+    return date_obj.strftime(pan_os_date_format)
 
 
-def main():
+def main() -> None:
     try:
         args = demisto.args()
         params = demisto.params()
@@ -7508,16 +7481,11 @@ def main():
             panorama_install_file_content_update_command(args)
 
         # Fetch
-        elif command == 'long-running-execution':
-            long_running_execution_command(params)
-
         elif command == 'fetch-incidents':
-            demisto.incidents(fetch_incidents_command())
+            next_run, incidents = fetch_incidents(params=params, last_run=demisto.getLastRun())
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
 
-        elif command == 'panorama-reset-last-run':
-            long_running_execution_command(params)  # to remove
-            return_results(panorama_reset_last_run_command())
-        
         else:
             raise NotImplementedError(f'Command {command} was not implemented.')
 
