@@ -1,0 +1,920 @@
+id: VMware Workspace ONE UEM (AirWatch MDM)-Test
+version: -1
+name: VMware Workspace ONE UEM (AirWatch MDM)-Test
+description: This playbook uses the VMware Workspace ONE UEM (AirWatch MDM) integration
+  and tests all the commands of the integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7c69be7b-fbb4-4a15-8819-da2eeb53ed72
+    type: start
+    task:
+      id: 7c69be7b-fbb4-4a15-8819-da2eeb53ed72
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: bf054164-de3f-4c2b-8e74-69ec2db8f819
+    type: regular
+    task:
+      id: bf054164-de3f-4c2b-8e74-69ec2db8f819
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: c6019abf-6466-456b-8216-d01b6ab94b99
+    type: regular
+    task:
+      id: c6019abf-6466-456b-8216-d01b6ab94b99
+      version: -1
+      name: vmwuem-devices-search
+      script: '|||vmwuem-devices-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      last_seen: {}
+      lgid: {}
+      model: {}
+      order_by: {}
+      ownership: {}
+      page: {}
+      page_size: {}
+      platform: {}
+      sort_order: {}
+      user: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 01260801-41b3-4102-8481-8a46b0961529
+    type: condition
+    task:
+      id: 01260801-41b3-4102-8481-8a46b0961529
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: Uuid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.Id
+                accessor: Value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: Udid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: SerialNumber
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: MacAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: DeviceFriendlyName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: DeviceReportedName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.LocationGroupId.Id
+                accessor: Value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.LocationGroupId
+                accessor: Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.LocationGroupId
+                accessor: Uuid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: LocationGroupName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.UserId.Id
+                accessor: Value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.UserId
+                accessor: Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.UserId
+                accessor: Uuid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: UserName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: DataProtectionStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: UserEmailAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: Ownership
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.PlatformId.Id
+                accessor: Value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.PlatformId
+                accessor: Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: Platform
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.ModelId.Id
+                accessor: Value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.ModelId
+                accessor: Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: Model
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: OperatingSystem
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: LastSeen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: EnrollmentStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: ComplianceStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: LastEnrolledOn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: LastComplianceCheckOn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: LastCompromisedCheckOn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: VirtualMemory
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: OEMInfo
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: ProcessorArchitecture
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: TotalPhysicalMemory
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: AvailablePhysicalMemory
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: OSBuildVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: EnrollmentUserUuid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: ManagedBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: DepTokenSource
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ec4fce7c-ac2a-4352-8949-45be115f7948
+    type: regular
+    task:
+      id: ec4fce7c-ac2a-4352-8949-45be115f7948
+      version: -1
+      name: vmwuem-device-get
+      script: '|||vmwuem-device-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      uuid:
+        complex:
+          root: VMwareWorkspaceONEUEM.Device.[0]
+          accessor: Uuid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 222ecf1c-87da-4b80-8a7b-2018df8bb3d8
+    type: condition
+    task:
+      id: 222ecf1c-87da-4b80-8a7b-2018df8bb3d8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: Uuid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: Udid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: SerialNumber
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: MacAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: FriendlyName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: OrganizationGroupName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: BatteryLevelPercentage
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.PlatformInfo
+                accessor: DeviceType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.PlatformInfo
+                accessor: OsVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.EnrollmentInfo
+                accessor: EnrollmentStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.EnrollmentInfo
+                accessor: EnrollmentTimestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.EnrollmentInfo
+                accessor: LastSeenTimestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.EnrollmentInfo
+                accessor: Ownership
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.EnrollmentInfo
+                accessor: OrganizationGroupId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.EnrollmentInfo
+                accessor: OrganizationGroupName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.EnrollmentInfo
+                accessor: UserName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.EnrollmentInfo
+                accessor: UserEmailAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.EnrollmentInfo
+                accessor: EnrollmentUserUuid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.EnrollmentInfo
+                accessor: ManagedBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device
+                accessor: OSBuildVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.Links
+                accessor: Rel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.Device.Links
+                accessor: Href
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 4208d861-baaa-44e4-8c2d-187d62611db3
+    type: regular
+    task:
+      id: 4208d861-baaa-44e4-8c2d-187d62611db3
+      version: -1
+      name: vmwuem-device-os-updates-list
+      script: '|||vmwuem-device-os-updates-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      uuid:
+        complex:
+          root: VMwareWorkspaceONEUEM.Device.[2]
+          accessor: Uuid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 42f69f6c-86c3-40c8-8bca-51dc4b803b98
+    type: condition
+    task:
+      id: 42f69f6c-86c3-40c8-8bca-51dc4b803b98
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.OSUpdate
+                accessor: Uuid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList
+                accessor: DownloadSize
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList
+                accessor: InstallSize
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList
+                accessor: DeviceUpdateName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList
+                accessor: ReleaseDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList
+                accessor: ExpiationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList
+                accessor: DownloadPercentComplete
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList
+                accessor: SampleTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList
+                accessor: StatusTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList
+                accessor: DeviceUpdateVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList
+                accessor: DeviceUpdateUuid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 973d3e5c-0a6f-4ae7-8820-2daef615f02c
+    type: title
+    task:
+      id: 973d3e5c-0a6f-4ae7-8820-2daef615f02c
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: ad4f0ec4-cb39-49b4-8308-d3535513afb5
+    type: regular
+    task:
+      id: ad4f0ec4-cb39-49b4-8308-d3535513afb5
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: bb98792b-2639-4b0c-8f73-0e880bd62156
+    type: condition
+    task:
+      id: bb98792b-2639-4b0c-8f73-0e880bd62156
+      version: -1
+      name: Is device list empty?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM
+                accessor: Device
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 181b35b8-54e0-4fb4-8c36-ac04620546a5
+    type: condition
+    task:
+      id: 181b35b8-54e0-4fb4-8c36-ac04620546a5
+      version: -1
+      name: Is OS update list empty?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: VMwareWorkspaceONEUEM
+                accessor: OSUpdate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2075,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
