@@ -487,7 +487,7 @@ class TestHelperFunctions:
                                                                          category_attribute='')
             returned_output = returned_dict.get(CTX_VALUES_KEY)
             assert returned_output == "define category category2\n1.2.3.4:89/wget\nend\n" \
-                                      "define category category1\nhttps://www.demisto.com/cool\nend\n"
+                                      "define category category1\nwww.demisto.com/cool\nend\n"
 
             assert num_of_indicators == 2
 
@@ -496,7 +496,7 @@ class TestHelperFunctions:
                                                                          category_attribute="category3")
             returned_output = returned_dict.get(CTX_VALUES_KEY)
             assert returned_output == "define category default\n1.2.3.4:89/wget\n" \
-                                      "https://www.demisto.com/cool\nend\n"
+                                      "www.demisto.com/cool\nend\n"
             assert num_of_indicators == 2
 
             # list category2 only, the rest go to default
@@ -504,7 +504,7 @@ class TestHelperFunctions:
                                                                          category_attribute="category2")
             returned_output = returned_dict.get(CTX_VALUES_KEY)
             assert returned_output == "define category category2\n1.2.3.4:89/wget\nend\n" \
-                                      "define category default\nhttps://www.demisto.com/cool\nend\n"
+                                      "define category default\nwww.demisto.com/cool\nend\n"
 
             assert num_of_indicators == 2
 

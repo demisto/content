@@ -3,6 +3,7 @@ import argparse
 import os
 import shutil
 import sys
+from subprocess import Popen
 from typing import List
 
 import requests
@@ -14,11 +15,13 @@ def main():
     parser.add_argument('-p', '--pr_number', help='Contrib PR number')
     parser.add_argument('-b', '--branch', help='The contrib branch')
     parser.add_argument('-c', '--contrib_repo', help='The contrib repo')
+    parser.add_argument('-t', '--github_token', help='github token (used to fetch from forked repositories).')
     args = parser.parse_args()
 
     pr_number = args.pr_number
     repo = args.contrib_repo
     branch = args.branch
+    token = args.github_token
     packs_dir_names = get_pack_dir(branch, pr_number, repo)
     if not packs_dir_names:
         print_error('Did not find a pack in the PR')
@@ -35,15 +38,14 @@ def main():
         # string_dir_names will be 'Packs/pack_a Packs/pack_b Packs/pack_c'
         string_dir_names = f'Packs/{" Packs/".join(packs_dir_names)}'
 
-        commands = [
-            f'git remote add {repo} git@github.com:{repo}/content.git',
-            f'git fetch {repo} {branch}',
-            f'git checkout {repo}/{branch} {string_dir_names}'
-        ]
-
-        for command in commands:
-            print(f'Running command {command}')
-            run_command(command, is_silenced=False)
+        try:
+            with open('/dev/null', 'w') as dev_null:
+                Popen(f'git fetch https://{token}@github.com/{repo}/content.git :{repo}/{branch}'.split(), stdout=dev_null)
+        except SystemExit:
+            pass
+        command = f'git checkout {repo}/{branch} -- {string_dir_names}'
+        print(f'Running command {command}')
+        run_command(command)
     except Exception as e:
         print_error(f'Failed to deploy contributed pack to base branch: {e}')
         sys.exit(1)

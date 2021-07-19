@@ -1,9 +1,9 @@
+from requests import Response
+
+import demistomock as demisto
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
     create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
     file_args_handler, wildfire_get_sample_command, wildfire_get_report_command
-
-import demistomock as demisto
-from requests import Response
 
 
 def test_will_return_ok():
@@ -35,9 +35,15 @@ def test_prettify_verdict():
 
 
 def test_create_dbot_score_from_verdict():
-    expected_dbot_score = [{
-        'Indicator': "sha256_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 3},
-        {'Indicator': "sha256_hash", 'Type': "file", 'Vendor': "WildFire", 'Score': 3},
+    expected_dbot_score = [
+        {
+            'Indicator': "sha256_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 3,
+            'Reliability': 'B - Usually reliable'
+        },
+        {
+            'Indicator': "sha256_hash", 'Type': "file", 'Vendor': "WildFire", 'Score': 3,
+            'Reliability': 'B - Usually reliable'
+        },
     ]
     dbot_score_dict = create_dbot_score_from_verdict({'SHA256': "sha256_hash", 'Verdict': "1"})
     assert expected_dbot_score == dbot_score_dict
@@ -52,12 +58,16 @@ def test_prettify_verdicts():
 
 
 def test_create_dbot_score_from_verdicts():
-    expected_dbot_scores = [{'Indicator': "sha256_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 3},
-                            {'Indicator': "sha256_hash", 'Type': "file", 'Vendor': "WildFire", 'Score': 3},
-                            {'Indicator': "md5_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 1},
-                            {'Indicator': "md5_hash", 'Type': "file", 'Vendor': "WildFire", 'Score': 1}]
+    expected_dbot_scores = [{'Indicator': "sha256_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 3,
+                             'Reliability': 'B - Usually reliable'},
+                            {'Indicator': "sha256_hash", 'Type': "file", 'Vendor': "WildFire", 'Score': 3,
+                             'Reliability': 'B - Usually reliable'},
+                            {'Indicator': "md5_hash", 'Type': "hash", 'Vendor': "WildFire", 'Score': 1,
+                             'Reliability': 'B - Usually reliable'},
+                            {'Indicator': "md5_hash", 'Type': "file", 'Vendor': "WildFire", 'Score': 1,
+                             'Reliability': 'B - Usually reliable'}]
     dbot_score_dict = create_dbot_score_from_verdicts(
-        [{'SHA256': "sha256_hash", 'Verdict': "1"}, {'MD5': "md5_hash", 'Verdict': "0"}])
+        [{'SHA256': "sha256_hash", 'Verdict': '1'}, {'MD5': "md5_hash", 'Verdict': '0'}])
     assert expected_dbot_scores == dbot_score_dict
 
 
@@ -170,9 +180,11 @@ def test_report_chunked_response(mocker):
                   {'WildFire.Report(val.SHA256 === obj.SHA256)': {
                       'Status': 'Success',
                       'SHA256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51'},
-                   'DBotScore': [
-                       {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51', 'Type': 'hash',
-                        'Vendor': 'WildFire', 'Score': 1},
-                       {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51', 'Type': 'file',
-                        'Vendor': 'WildFire', 'Score': 1}]}}
+                      'DBotScore': [
+                          {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+                           'Type': 'hash',
+                           'Vendor': 'WildFire', 'Score': 1, 'Reliability': 'B - Usually reliable'},
+                          {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+                           'Type': 'file',
+                           'Vendor': 'WildFire', 'Score': 1, 'Reliability': 'B - Usually reliable'}]}}
     assert demisto.results.call_args[0][0] == result

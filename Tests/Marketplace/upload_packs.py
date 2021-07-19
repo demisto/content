@@ -285,6 +285,8 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
 
     logging.debug(f'commit hash is: {commit}')
     index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
+    logging.info(f'index json path: {index_json_path}')
+    logging.info(f'Private packs are: {private_packs}')
     with open(index_json_path, "w+") as index_file:
         index = {
             'revision': build_number,
@@ -299,15 +301,15 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
     try:
+        logging.info(f'index zip path: {index_zip_path}')
         index_blob.reload()
         current_index_generation = index_blob.generation
         index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
 
         if is_private or current_index_generation == index_generation:
             # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
-            if storage_bucket:
-                index_blob.upload_from_filename(index_zip_path)
-                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
+            index_blob.upload_from_filename(index_zip_path)
+            logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
         else:
             logging.critical(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation.")
             logging.critical(f"Downloaded index generation: {index_generation}")
@@ -460,14 +462,9 @@ def add_private_content_to_index(private_index_path: str, extract_destination_pa
     updated_private_packs = []
 
     try:
-        logging.info("get_private_packs")
         private_packs = get_private_packs(private_index_path, pack_names,
                                           extract_destination_path)
-
-        logging.info("get_updated_private_packs")
         updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
-
-        logging.info("add_private_packs_to_index")
         add_private_packs_to_index(index_folder_path, private_index_path)
 
     except Exception as e:
@@ -523,6 +520,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
     :param extract_destination_path: Path to where the files should be extracted to.
     :return: List of dicts containing pack metadata information.
     """
+    logging.info(f'getting all private packs. private_index_path: {private_index_path}')
     try:
         metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
     except Exception:
@@ -533,6 +531,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
         logging.warning(f'No metadata files found in [{private_index_path}]')
 
     private_packs = []
+    logging.info(f'all metadata files found: {metadata_files}')
     for metadata_file_path in metadata_files:
         try:
             with open(metadata_file_path, "r") as metadata_file:
@@ -543,6 +542,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
                           "r") as metadata_file:
                     metadata = json.load(metadata_file)
+            logging.info(f'metadata of changed private pack: {metadata}')
             if metadata:
                 private_packs.append({
                     'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),

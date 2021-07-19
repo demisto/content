@@ -27,7 +27,3 @@ This playbook does not use any scripts.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![Hunt Extracted Hashes V2](Insert the link to your image here)

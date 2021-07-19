@@ -1,9 +1,11 @@
 id: PS Remote Get File Sample From Path
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: PS Remote Get File Sample From Path
 description: This playbook leverages the Windows built-in PowerShell and WinRM capabilities
-  to connect to a Windows host to acquire a file as forensic evidence
-  for further analysis.
+  to connect to a Windows host to acquire a file as forensic evidence for further
+  analysis.
 starttaskid: "0"
 tasks:
   "0":
@@ -292,10 +294,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 4d7bbf1a-623d-46a1-8594-63a1c8fc32ea
+    taskid: 71dffd59-498c-491d-83e2-663ba0cf2642
     type: regular
     task:
-      id: 4d7bbf1a-623d-46a1-8594-63a1c8fc32ea
+      id: 71dffd59-498c-491d-83e2-663ba0cf2642
       version: -1
       name: Set acquired file details
       description: Set a value in the context under the key you entered.
@@ -324,6 +326,11 @@ tasks:
               right:
                 value:
                   simple: zip
+            - operator: isEmpty
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
     separatecontext: false
     view: |-
       {
@@ -339,10 +346,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: b5e2a7f1-6e09-4480-8828-b4a95e7a85ea
+    taskid: de8f7975-6c09-486e-8dd3-42a456230a19
     type: regular
     task:
-      id: b5e2a7f1-6e09-4480-8828-b4a95e7a85ea
+      id: de8f7975-6c09-486e-8dd3-42a456230a19
       version: -1
       name: Mark and tag Acquired File
       description: |
@@ -376,6 +383,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -392,14 +400,15 @@ inputs:
 - key: Host
   value: {}
   required: false
-  description: A single hostname or IP address of the machine on which the file is located. For example, testpc01
+  description: A single hostname or IP address of the machine on which the file is
+    located. For example, testpc01
   playbookInputQuery:
 - key: FilePath
   value: {}
   required: false
   description: "The path on the host from which to retrieve the file. \nFor example,\
-    \ c:\\tmp\\test.txt.\nIn case you configure the AddHostNameToFile input as true, the file\
-    \ downloaded to XSOAR will contain the hostname."
+    \ c:\\tmp\\test.txt.\nIn case you configure the AddHostNameToFile input as true,\
+    \ the file downloaded to XSOAR will contain the hostname."
   playbookInputQuery:
 - key: ZipFile
   value:
