@@ -102,6 +102,56 @@ def test_fetch_incidents_orphan_user(requests_mock, mocker):
     assert fetch_events == event_data
 
 
+def test_fetch_incidents_source_priority(requests_mock, mocker):
+    """
+    Given
+    - A workday full report of employees.
+    When
+    - Workday IAM configured source priority is 2.
+    - A user profile with email rrahardjo@paloaltonetworks.com has a source priority 1.
+    Then
+    - Ensure the event for rrahardjo@paloaltonetworks.com is dropped.
+    """
+    from test_data.fetch_incidents_source_priority_mock_data import full_report, email_to_user_profile, \
+        employee_id_to_user_profile, mapped_workday_user, event_data
+
+    requests_mock.get('https://test.com', json=full_report)
+    mocker.patch.object(demisto, 'mapObject', return_value=mapped_workday_user)
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, employee_id_to_user_profile,
+                                                                    email_to_user_profile))
+    client = Client(base_url="", verify="verify", headers={}, proxy=False,
+                    ok_codes=(200, 204), auth=None)
+
+    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None,
+                                   source_priority=2)
+    assert fetch_events == event_data
+
+
+def test_fetch_incidents_partial_name_match(requests_mock, mocker):
+    """
+    Given
+    - A workday full report of employees.
+    When
+    - A new hire is detected with the same display name as an existing active user.
+    Then
+    - Ensure an "IAM - Sync user" event is detected with the partial name match details.
+    """
+    from test_data.fetch_incidents_partial_name_match_mock_data import full_report, email_to_user_profile, \
+        employee_id_to_user_profile, display_name_to_user_profile, mapped_workday_user, event_data
+
+    requests_mock.get('https://test.com', json=full_report)
+    mocker.patch.object(demisto, 'mapObject', return_value=mapped_workday_user)
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=(display_name_to_user_profile,
+                                                                    employee_id_to_user_profile,
+                                                                    email_to_user_profile))
+    mocker.patch('Workday_IAM.get_orphan_users', return_value=[])  # skip the orphan user detection
+    client = Client(base_url="", verify="verify", headers={}, proxy=False,
+                    ok_codes=(200, 204), auth=None)
+
+    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None, 1)
+    assert fetch_events == event_data
+
+
 @pytest.mark.parametrize(
     'demisto_user, workday_user, expected_result',
     [

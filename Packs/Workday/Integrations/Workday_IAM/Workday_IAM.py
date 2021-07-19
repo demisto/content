@@ -433,8 +433,9 @@ def get_event_details(entry, workday_user, demisto_user, days_before_hire_to_syn
 
     if is_display_name_already_taken(demisto_user, workday_user, display_name_to_user_profile) \
             and event_type in [NEW_HIRE_EVENT_TYPE, REHIRE_USER_EVENT_TYPE, UPDATE_USER_EVENT_TYPE]:
-        event_details = f'Detected an "{event_type}" event, but display name already exists. Please review.\n' \
-                        f'{changed_fields}'
+        event_details = f'Detected an "{event_type}" event, but display name already exists. Please review.'
+        if changed_fields:
+            event_details += f'\n{changed_fields}'
         event_type = DEFAULT_INCIDENT_TYPE
 
     entry[USER_PROFILE_INC_FIELD] = workday_user
