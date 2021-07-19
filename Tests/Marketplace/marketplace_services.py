@@ -380,6 +380,14 @@ class Pack(object):
                     if dep_int_img not in all_dep_int_imgs:  # avoid duplicates
                         all_dep_int_imgs.append(dep_int_img)
 
+        for dep_pack_name in pack_dependencies_integration_images_dict.keys():
+            if dep_pack_name not in pack_dependencies_by_download_count:
+                logging.info(f'Adding {dep_pack_name} to deps int imgs')
+                dep_int_imgs = sorted(pack_dependencies_integration_images_dict[dep_pack_name], key=sort_by_name)
+                for dep_int_img in dep_int_imgs:
+                    if dep_int_img not in all_dep_int_imgs:  # avoid duplicates
+                        all_dep_int_imgs.append(dep_int_img)
+
         logging.info(f'all_dep_int_imgs:{all_dep_int_imgs}==')
         return all_dep_int_imgs
 
