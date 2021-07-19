@@ -70,17 +70,16 @@ class AzureADClient:
                                           values,
                                           headers=headers,
                                           headerTransform=pascalToSpace)
-        outputs = {'values': values}
+        outputs = {f'{OUTPUTS_PREFIX}.values(val.id === obj.id)': values}
 
         # removing whitespaces so they aren't mistakenly considered as argument separators in CLI
         next_link = raw_response.get('nextLink', '').replace(' ', '%20')
         if next_link:
-            next_link_key = f'{OUTPUTS_PREFIX}.NextLink(val.Description == "{NEXT_LINK_DESCRIPTION}")'
+            next_link_key = f'{OUTPUTS_PREFIX}.NextLink(val.Description === "{NEXT_LINK_DESCRIPTION}")'
             next_link_value = {'Description': NEXT_LINK_DESCRIPTION, 'URL': next_link}
             outputs[next_link_key] = next_link_value
 
-        return CommandResults(outputs_prefix=OUTPUTS_PREFIX,
-                              outputs=outputs,
+        return CommandResults(outputs=outputs,
                               readable_output=readable_output,
                               raw_response=raw_response)
 
