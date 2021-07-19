@@ -7077,7 +7077,7 @@ def fetch_incidents(params: dict, last_run: dict) -> Tuple[list, dict]:
         next_run: This will be last_run in the next fetch-incidents
     """
     query = str(params.get('query', ''))
-    first_fetch_time = params.get('fetch_time', '3 days').strip()
+    first_fetch_time = params.get('first_fetch', '3 days').strip()
     number_of_logs = int(params.get('max_fetch', '50'))
     log_type = str(params.get('log_type', 'threat'))
 

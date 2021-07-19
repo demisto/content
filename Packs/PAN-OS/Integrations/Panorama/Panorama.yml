@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Panorama
+  id: Panorama1
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
@@ -52,8 +52,8 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Incident Type
-  name: incident_type
+- display: Incident type
+  name: incidentType
   required: false
   type: 13
 - defaultvalue: 'threat'
@@ -78,9 +78,9 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 7 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
     months, 1 year)
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -93,8 +93,8 @@ configuration:
   type: 8
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
-display: Palo Alto Networks PAN-OS
-name: Panorama
+display: Palo Alto Networks PAN-OS1
+name: Panorama1
 script:
   commands:
   - arguments:
@@ -4695,7 +4695,7 @@ script:
       description: Installation status.
       type: string
     description: Installs specific content update file.
-  dockerimage: demisto/python3:3.9.5.22665
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: true
   longRunning: false
