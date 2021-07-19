@@ -360,7 +360,7 @@ def test_prettify_configured_user_id_agents__single_result():
     assert response == expected
 
 
-@freeze_time("2021-07-10T13:34:14.758295Z")
+@freeze_time("2021-07-10T16:34:14.758295Z", tz_offset=-3)
 def test_fetch_incidents_first_time_fetch(mocker):
     """Unit test
     Given
