@@ -577,7 +577,7 @@ script:
       - 'false'
       required: false
       secret: false
-    - default: '10'
+    - defaultValue: '10'
       description: The maximum number of channels to return
       isArray: false
       name: limit
