@@ -829,6 +829,8 @@ TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAA
 TEST_SSH_KEY = '-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
                'AAAAdzc2gtcn\n-----END OPENSSH PRIVATE KEY-----'
 
+TEST_PASS_JSON_CHARS = 'json_chars'
+
 SENSITIVE_PARAM = {
     'app': None,
     'authentication': {
@@ -852,6 +854,7 @@ SENSITIVE_PARAM = {
         'password': 'ident_pass',
         'passwordChanged': False
     },
+    'password': TEST_PASS_JSON_CHARS + '\\"',
 }
 
 
@@ -876,7 +879,8 @@ def test_debug_logger_replace_strs(mocker):
     msg = debug_logger.int_logger.messages[0]
     assert 'debug-mode started' in msg
     assert 'Params:' in msg
-    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass', TEST_SSH_KEY, TEST_SSH_KEY_ESC):
+    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass', TEST_SSH_KEY,
+              TEST_SSH_KEY_ESC, TEST_PASS_JSON_CHARS):
         assert s not in msg
 
 
