@@ -82,7 +82,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Country of the activity.
+      description: Country or region of the activity. for example, `US` or `UK`. For futher details, see https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-beta
       isArray: false
       name: country
       required: false
@@ -101,7 +101,6 @@ script:
       name: limit
       required: false
       secret: false
-      defaultvalue: 50
     - default: false
       description: A link that specifies a starting point to use for subsequent calls.
         Using this argument overrides all other arguments.
