@@ -1785,7 +1785,7 @@ script:
     arguments:
     - name: page_size
       description: "Maximum number of shared drives to return. Acceptable values are\
-        \ 1 to 100, inclusive. (Default: 100)"
+        \ 1 to 100, inclusive."
       required: false
       isArray: false
       defaultValue: "100"
