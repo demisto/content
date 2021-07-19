@@ -1224,7 +1224,7 @@ jobs:
       - run:
           name: Zip and upload a pack to the Cortex XSOAR's marketpalce
           command: |
-            demisto-sdk init -n ZipPackTest \\<<< $'y\nZipPackTest\nZipPackTest\n1\n1\ny\ny\nZipPackTest\ny\n6.0.0'
+            demisto-sdk init -n ZipPackTest \<\<\< $'y\nZipPackTest\nZipPackTest\n1\n1\ny\ny\nZipPackTest\ny\n6.0.0'
             demisto-sdk upload -i Packs/ZipPackTest -z
       - run:
           name: Download entities from Cortex XSOAR
