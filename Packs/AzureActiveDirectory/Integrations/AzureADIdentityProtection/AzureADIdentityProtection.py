@@ -4,9 +4,8 @@ import urllib3
 
 urllib3.disable_warnings()
 
-OUTPUTS_PREFIX = "AZURE_AD_IP"
+OUTPUTS_PREFIX = "Azure_AD"
 BASE_URL = 'https://graph.microsoft.com/beta'
-NEXT_LINK_DESCRIPTION = 'next_link value for listing commands'
 
 
 class AzureADClient:
@@ -45,6 +44,7 @@ class AzureADClient:
                    url_suffix: str,
                    human_readable_title: str,
                    limit: int,
+                   next_link_description: str,  # unique for every method calling this one.
                    filter_arguments: Optional[Dict[str, Optional[Any]]] = None,
                    filter_expression: Optional[str] = None,
                    next_link: Optional[str] = None):
@@ -70,10 +70,10 @@ class AzureADClient:
         outputs = {f'{OUTPUTS_PREFIX}.values(val.id === obj.id)': values}
 
         # removing whitespaces so they aren't mistakenly considered as argument separators in CLI
-        next_link = raw_response.get('nextLink', '').replace(' ', '%20')
+        next_link = raw_response.get('@odata.nextLink', '').replace(' ', '%20')
         if next_link:
-            next_link_key = f'{OUTPUTS_PREFIX}.NextLink(val.Description === "{NEXT_LINK_DESCRIPTION}")'
-            next_link_value = {'Description': NEXT_LINK_DESCRIPTION, 'URL': next_link}
+            next_link_key = f'{OUTPUTS_PREFIX}.NextLink(val.Description === "{next_link_description}")'
+            next_link_value = {'Description': next_link_description, 'URL': next_link}
             outputs[next_link_key] = next_link_value
 
         return CommandResults(outputs=outputs,
@@ -94,6 +94,7 @@ class AzureADClient:
                 'userPrincipalName': user_principal_name,
                 'location/countryOrRegion': country
             },
+            next_link_description="risk_detection_list",
             human_readable_title="Risks",
             limit=limit,
             filter_expression=filter_expression,
@@ -120,6 +121,7 @@ class AzureADClient:
                 'userPrincipalName': user_principal_name
             },
             human_readable_title='Risky Users',
+            next_link_description='risky_user_list',
             limit=limit,
             filter_expression=filter_expression,
             next_link=next_link,
@@ -132,6 +134,7 @@ class AzureADClient:
                                                               next_link: Optional[str] = None) -> CommandResults:
 
         return self.query_list(limit=limit, filter_expression=filter_expression,
+                               next_link_description="risky_users_history_list",
                                next_link=next_link, human_readable_title=f'Risky user history for {user_id}',
                                url_suffix=f'RiskyUsers/{user_id}/history')
 
