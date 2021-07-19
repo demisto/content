@@ -2,8 +2,6 @@ from CommonServerPython import *
 
 import urllib3
 
-LIMIT_DEFAULT = 50
-
 urllib3.disable_warnings()
 
 OUTPUTS_PREFIX = "AZURE_AD_IP"
@@ -46,7 +44,7 @@ class AzureADClient:
                    url_suffix: str,
                    headers: List[str],
                    human_readable_header: str,
-                   limit: int = LIMIT_DEFAULT,
+                   limit: int,
                    filter_arguments: Optional[Dict[str, Optional[Any]]] = None,
                    filter_expression: Optional[str] = None,
                    next_link: Optional[str] = None):
@@ -84,7 +82,7 @@ class AzureADClient:
                               raw_response=raw_response)
 
     def azure_ad_identity_protection_risk_detection_list(self,
-                                                         limit: int = LIMIT_DEFAULT,
+                                                         limit: int,
                                                          filter_expression: Optional[str] = None,
                                                          next_link: Optional[str] = None,
                                                          user_id: Optional[str] = None,
@@ -110,7 +108,7 @@ class AzureADClient:
         )
 
     def azure_ad_identity_protection_risky_users_list(self,
-                                                      limit: int = LIMIT_DEFAULT,
+                                                      limit:int,
                                                       filter_expression: Optional[str] = None,
                                                       next_link: Optional[str] = None,
                                                       updated_time: Optional[str] = None,
@@ -139,7 +137,7 @@ class AzureADClient:
         )
 
     def azure_ad_identity_protection_risky_users_history_list(self,
-                                                              limit: int = LIMIT_DEFAULT,
+                                                              limit: int,
                                                               user_id: Optional[str] = None,
                                                               filter_expression: Optional[str] = None,
                                                               next_link: Optional[str] = None) -> CommandResults:
