@@ -204,6 +204,26 @@ script:
         required: true
         secret: false
         description: Unique ID of the user.
+      - default: false
+        defaultValue: '50'
+        description: Number of results to provide
+        isArray: false
+        name: limit
+        required: false
+        secret: false
+      - default: false
+        description: A custom query by the the OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters.
+        isArray: false
+        name: filter_expression
+        required: false
+        secret: false
+      - default: false
+        description: A link that specifies a starting point to use for subsequent calls.
+          Using this argument overrides all other arguments.
+        isArray: false
+        name: next_link
+        required: false
+        secret: false
     deprecated: false
     description: Get the risk history of a riskyUser resource.
     execution: false

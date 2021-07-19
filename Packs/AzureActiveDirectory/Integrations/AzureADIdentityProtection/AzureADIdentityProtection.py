@@ -43,8 +43,7 @@ class AzureADClient:
 
     def query_list(self,
                    url_suffix: str,
-                   headers: List[str],
-                   human_readable_header: str,
+                   human_readable_title: str,
                    limit: int,
                    filter_arguments: Optional[Dict[str, Optional[Any]]] = None,
                    filter_expression: Optional[str] = None,
@@ -63,11 +62,10 @@ class AzureADClient:
             params['$filter'] = filter_expression
             remove_nulls_from_dictionary(params)
             raw_response = self.http_request(method='GET', url_suffix=url_suffix, params=params)
-
         values = raw_response.get('value', [])
-        readable_output = tableToMarkdown(f'{human_readable_header.title()} ({len(values)} results)',
+        readable_output = tableToMarkdown(f'{human_readable_title.title()} ({len(values)} results)',
                                           values,
-                                          headers=headers,
+                                          removeNull=True,
                                           headerTransform=pascalToSpace)
         outputs = {f'{OUTPUTS_PREFIX}.values(val.id === obj.id)': values}
 
@@ -91,25 +89,19 @@ class AzureADClient:
                                                          country: Optional[str] = None) -> CommandResults:
         return self.query_list(
             url_suffix='riskDetections',
-            headers=[
-                'activity', 'activityDateTime', 'additionalInfo', 'correlationId', 'detectedDateTime',
-                'detectionTimingType', 'id', 'ipAddress', 'lastUpdatedDateTime', 'location', 'requestId',
-                'riskDetail', 'riskEventType', 'riskLevel', 'riskState', 'riskType', 'source', 'tokenIssuerType',
-                'userDisplayName', 'userId', 'userPrincipalName'
-            ],
             filter_arguments={
                 'userId': user_id,
                 'userPrincipalName': user_principal_name,
                 'location/countryOrRegion': country
             },
-            human_readable_header="Risks",
+            human_readable_title="Risks",
             limit=limit,
             filter_expression=filter_expression,
             next_link=next_link,
         )
 
     def azure_ad_identity_protection_risky_users_list(self,
-                                                      limit:int,
+                                                      limit: int,
                                                       filter_expression: Optional[str] = None,
                                                       next_link: Optional[str] = None,
                                                       updated_time: Optional[str] = None,
@@ -120,10 +112,6 @@ class AzureADClient:
 
         return self.query_list(
             url_suffix='RiskyUsers',
-            headers=['id', 'requestId', 'correlationId', 'riskEventType', 'riskState', 'riskLevel', 'riskDetail',
-                     'source', 'detectionTimingType', 'activity', 'tokenIssuerType', 'ipAddress', 'location',
-                     'activityDateTime', 'detectedDateTime', 'lastUpdatedDateTime', 'userId', 'userDisplayName',
-                     'userPrincipalName', 'additionalInfo'],
             filter_arguments={
                 'riskLastUpdatedDateTime': updated_time,
                 'riskLevel': risk_level,
@@ -131,7 +119,7 @@ class AzureADClient:
                 'riskDetail': risk_detail,
                 'userPrincipalName': user_principal_name
             },
-            human_readable_header='Risky Users',
+            human_readable_title='Risky Users',
             limit=limit,
             filter_expression=filter_expression,
             next_link=next_link,
@@ -143,15 +131,8 @@ class AzureADClient:
                                                               filter_expression: Optional[str] = None,
                                                               next_link: Optional[str] = None) -> CommandResults:
 
-        headers = [
-            'id', 'idDeleted', 'isGuest', 'isProcessing',
-            'riskLevel', 'riskState', 'riskDetail', 'riskLastUpdatedDateTime',
-            'userDisplayName', 'userPrincipalName', 'userId',
-            'initiatedBy', 'activity'
-        ]
-
-        return self.query_list(headers=headers, limit=limit, filter_expression=filter_expression,
-                               next_link=next_link, human_readable_header=f'Risky user history for {user_id}',
+        return self.query_list(limit=limit, filter_expression=filter_expression,
+                               next_link=next_link, human_readable_title=f'Risky user history for {user_id}',
                                url_suffix=f'RiskyUsers/{user_id}/history')
 
     def azure_ad_identity_protection_risky_users_confirm_compromised(self, user_ids: Union[str, List[str]]):
