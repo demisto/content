@@ -765,25 +765,25 @@ def drive_changes_list_command(client: GSuiteClient, args: Dict[str, Any]) -> Co
 
     outputs, drive_changes_hr_files_list, drive_changes_hr_drives_list = \
         prepare_drive_changes_output(response, args.get('drive_id', ''), user_id)
-    readable_hr = ''
+    readable_output = ''
     if response.get('nextPageToken'):
-        readable_hr += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
+        readable_output += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
     if response.get('newStartPageToken'):
-        readable_hr += '### New Start Page Token: {}\n'.format(response.get('newStartPageToken'))
+        readable_output += '### New Start Page Token: {}\n'.format(response.get('newStartPageToken'))
 
-    readable_hr += tableToMarkdown('Files(s)',
+    readable_output += tableToMarkdown('Files(s)',
                                    drive_changes_hr_files_list,
                                    ['Id', 'Name', 'Size(bytes)', 'Modified Time', 'lastModifyingUser'],
                                    headerTransform=pascalToSpace,
                                    removeNull=True)
 
-    readable_hr += tableToMarkdown('Drive(s)', drive_changes_hr_drives_list,
+    readable_output += tableToMarkdown('Drive(s)', drive_changes_hr_drives_list,
                                    ['Id', 'Name', 'ThemeId', COLOR_RGB],
                                    headerTransform=pascalToSpace,
                                    removeNull=True)
     return CommandResults(
         outputs=outputs,
-        readable_output=readable_hr,
+        readable_output=readable_output,
         raw_response=response,
     )
 
@@ -861,7 +861,7 @@ def drive_get_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResu
 def handle_response_drive_list(response: Dict[str, Any]) -> CommandResults:
 
     outputs_context = []
-    readable_hr = ''
+    readable_output = ''
 
     drives_context = set_true_for_empty_dict(response)
     cleaned_drives_context = GSuiteClient.remove_empty_entities(drives_context)
@@ -875,14 +875,14 @@ def handle_response_drive_list(response: Dict[str, Any]) -> CommandResults:
     }
     if response.get('nextPageToken', ''):
         outputs[OUTPUT_PREFIX['DRIVES_LIST_PAGE_TOKEN']] = response['nextPageToken']
-        readable_hr += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
+        readable_output += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
     outputs = GSuiteClient.remove_empty_entities(outputs)
-    readable_hr += drives_hr if response.get('drives', '') \
+    readable_output += drives_hr if response.get('drives', '') \
         else HR_MESSAGES['NOT_FOUND'].format('Drives')
 
     return CommandResults(
         outputs=outputs,
-        readable_output=readable_hr,
+        readable_output=readable_output,
         raw_response=response,
     )
 
@@ -899,13 +899,13 @@ def handle_response_single_drive(response: Dict[str, Any], args: Dict[str, str])
 
     outputs = GSuiteClient.remove_empty_entities(outputs)
 
-    readable_hr = ''
-    readable_hr += drive_hr if response.get('id', '') \
+    readable_output = ''
+    readable_output += drive_hr if response.get('id', '') \
         else HR_MESSAGES['NOT_FOUND'].format('Drive')
 
     return CommandResults(
         outputs=outputs,
-        readable_output=readable_hr,
+        readable_output=readable_output,
         raw_response=response,
     )
 
@@ -1016,7 +1016,7 @@ def file_get_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResul
 def handle_response_files_list(response: Dict[str, Any]) -> CommandResults:
 
     outputs_context = []
-    readable_hr = ''
+    readable_output = ''
 
     for current_file in response.get('files', []):
         # outputs_context.append(prepare_file_output(current_file))
@@ -1029,14 +1029,14 @@ def handle_response_files_list(response: Dict[str, Any]) -> CommandResults:
     }
     if response.get('nextPageToken', ''):
         outputs[OUTPUT_PREFIX['FILES_LIST_PAGE_TOKEN']] = response['nextPageToken']
-        readable_hr += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
+        readable_output += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
     outputs = GSuiteClient.remove_empty_entities(outputs)
-    readable_hr += files_hr if response.get('files', '') \
+    readable_output += files_hr if response.get('files', '') \
         else HR_MESSAGES['NOT_FOUND'].format('Files')
 
     return CommandResults(
         outputs=outputs,
-        readable_output=readable_hr,
+        readable_output=readable_output,
         raw_response=response,
     )
 
@@ -1052,12 +1052,12 @@ def handle_response_single_file(response: Dict[str, Any], args: Dict[str, str]):
 
     outputs = GSuiteClient.remove_empty_entities(outputs)
 
-    readable_hr = file_hr if response.get('id', '') \
+    readable_output = file_hr if response.get('id', '') \
         else HR_MESSAGES['NOT_FOUND'].format('File')
 
     return CommandResults(
         outputs=outputs,
-        readable_output=readable_hr,
+        readable_output=readable_output,
         raw_response=response,
     )
 
@@ -1284,7 +1284,7 @@ def handle_response_file_single(response: Dict[str, Any], args: Dict[str, str]) 
     #     # demisto.info('Not a file kind, ignoring. permission: ' + str(response))
     #     return {}
 
-    readable_hr = ''
+    readable_output = ''
 
     outputs_context = prepare_file_single_output(response)
 
@@ -1294,11 +1294,11 @@ def handle_response_file_single(response: Dict[str, Any], args: Dict[str, str]) 
         OUTPUT_PREFIX['FILE']: outputs_context
     }
     outputs = GSuiteClient.remove_empty_entities(outputs)
-    readable_hr += files_hr
+    readable_output += files_hr
 
     return CommandResults(
         outputs=outputs,
-        readable_output=readable_hr,
+        readable_output=readable_output,
         raw_response=response,
     )
 
@@ -1490,7 +1490,7 @@ def handle_response_permissions_list(response: Dict[str, Any], args: Dict[str, s
     #     return {}
 
     outputs_context = []
-    readable_hr = ''
+    readable_output = ''
 
     for current_permission in response.get('permissions', []):
         outputs_context.append(prepare_permission_output(current_permission))
@@ -1502,14 +1502,14 @@ def handle_response_permissions_list(response: Dict[str, Any], args: Dict[str, s
     }
     if response.get('nextPageToken', ''):
         outputs[OUTPUT_PREFIX['FILE_PERMISSIONS_LIST_PAGE_TOKEN']] = response['nextPageToken']
-        readable_hr += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
+        readable_output += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
     outputs = GSuiteClient.remove_empty_entities(outputs)
-    readable_hr += files_hr if response.get('permissions', '') \
+    readable_output += files_hr if response.get('permissions', '') \
         else HR_MESSAGES['NOT_FOUND'].format('Permissions')
 
     return CommandResults(
         outputs=outputs,
-        readable_output=readable_hr,
+        readable_output=readable_output,
         raw_response=response,
     )
 
@@ -1544,7 +1544,7 @@ def handle_response_permission_single(response: Dict[str, Any], args: Dict[str, 
     #     # demisto.info('Not a permission kind, ignoring. permission: ' + str(response))
     #     return {}
 
-    readable_hr = ''
+    readable_output = ''
 
     outputs_context = prepare_permission_output(response)
 
@@ -1554,11 +1554,11 @@ def handle_response_permission_single(response: Dict[str, Any], args: Dict[str, 
         OUTPUT_PREFIX['FILE_PERMISSION']: outputs_context
     }
     outputs = GSuiteClient.remove_empty_entities(outputs)
-    readable_hr += files_hr
+    readable_output += files_hr
 
     return CommandResults(
         outputs=outputs,
-        readable_output=readable_hr,
+        readable_output=readable_output,
         raw_response=response,
     )
 
@@ -1620,7 +1620,7 @@ def drive_activity_list_command(client: GSuiteClient, args: Dict[str, str]) -> C
     response = client.http_request(full_url=URLS['DRIVE_ACTIVITY'], method='POST', body=body)
 
     outputs_context = []
-    readable_hr = ''
+    readable_output = ''
 
     for activity in response.get('activities', []):
         outputs_context.append(prepare_drive_activity_output(activity))
@@ -1632,14 +1632,14 @@ def drive_activity_list_command(client: GSuiteClient, args: Dict[str, str]) -> C
     }
     if response.get('nextPageToken', ''):
         outputs[OUTPUT_PREFIX['DRIVE_ACTIVITY_LIST_PAGE_TOKEN']] = {'nextPageToken': response['nextPageToken']}
-        readable_hr += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
+        readable_output += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
     outputs = GSuiteClient.remove_empty_entities(outputs)
-    readable_hr += drive_activity_hr if response.get('activities', '') \
+    readable_output += drive_activity_hr if response.get('activities', '') \
         else HR_MESSAGES['NOT_FOUND'].format('Drive Activity')
 
     return CommandResults(
         outputs=outputs,
-        readable_output=readable_hr,
+        readable_output=readable_output,
         raw_response=response,
     )
 
