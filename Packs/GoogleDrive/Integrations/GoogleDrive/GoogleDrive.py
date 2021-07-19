@@ -332,7 +332,7 @@ def set_true_for_empty_dict(d):
 
 def copy_dict_value(source_dict: Dict[str, Any], dest_dict: Dict[str, Any], source_dict_key: str, dest_dict_key: str = None):
     if not source_dict_key:
-        return None
+        return
 
     param_value = source_dict.get(source_dict_key)
     if param_value:
