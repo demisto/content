@@ -52,6 +52,14 @@ configuration:
   defaultvalue: "25"
   type: 0
   required: false
+- display: Fetch Incident Cases
+  name: fetch_incident_cases
+  defaultvalue: Case Per Anomaly
+  type: 15
+  required: false
+  options:
+  - Case Per Anomaly
+  - Case For All Anomalies
 script:
   script: ''
   type: python
@@ -772,6 +780,9 @@ script:
       type: date
     - contextPath: Gra.Cases.status
       description: satus
+      type: string
+    - contextPath: Gra.Cases.anomalies
+      description: Anomalies
       type: string
     description: Retrieve List of All Cases for a Given Status
   - name: gra-user-anomalies
