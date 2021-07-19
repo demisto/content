@@ -2169,7 +2169,9 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
         if isinstance(last_run_time, EWSDateTime):
             last_run_time = last_run_time.ewsformat()
 
-        if last_run_time > LAST_RUN_TIME:
+        # If we didn't get all result with same creation time (due to max_fetch limitation),
+        # we save the ones we already got to avoid duplicates.
+        if last_run_time > last_run.get(LAST_RUN_TIME):
             ids = current_fetch_ids
         else:
             ids = current_fetch_ids | excluded_ids
@@ -2221,15 +2223,13 @@ def fetch_last_emails(
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
     demisto.debug(f'{APP_NAME} - Exclude ID list: {exclude_ids}')
-    counter = 0
     for item in qs:
-        counter += 1
         if isinstance(item, Message) and item.message_id not in exclude_ids:
             result.append(item)
             if len(result) >= client.max_fetch:
                 break
 
-    demisto.debug(f'{APP_NAME} - Got total of {counter} from ews query. {len(result)} results not excluded.')
+    demisto.debug(f'{APP_NAME} - Got total of {len(qs)} from ews query. {len(result)} results not excluded.')
     return result
 
 

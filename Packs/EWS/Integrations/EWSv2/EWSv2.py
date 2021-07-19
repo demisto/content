@@ -1264,7 +1264,9 @@ def fetch_emails_as_incidents(account_email, folder_name):
         if isinstance(last_run_time, EWSDateTime):
             last_run_time = last_run_time.ewsformat()
 
-        if last_run_time > LAST_RUN_TIME:
+        # If creation time is not different and we didn't get all result (due to max_fetch limitation),
+        # we save the ones we already got to avoid duplicates.
+        if last_run_time > last_run.get(LAST_RUN_TIME):
             ids = current_fetch_ids
         else:
             ids = current_fetch_ids | excluded_ids
