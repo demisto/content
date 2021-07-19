@@ -143,7 +143,7 @@ def decode_str_using_chardet(decrypted_text):
         out = decrypted_text.decode(encoding)
     except UnicodeDecodeError:
         # In case the detected encoding fails apply the default encoding
-        demisto.info(f'Could not decode dile using detected encoding:{encoding}, retrying '
+        demisto.info(f'Could not decode file using detected encoding:{encoding}, retrying '
                      f'using utf-8.\n')
         out = decrypted_text.decode('utf-8')
     return out
