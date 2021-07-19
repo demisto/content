@@ -86,13 +86,12 @@ class TestMetadataParsing:
         dummy_pack._server_min_version = Metadata.SERVER_DEFAULT_MIN_VERSION
         dummy_pack._downloads_count = 10
         dummy_pack._displayed_integration_images = []
+        dummy_pack._user_metadata = dummy_pack_metadata
         dummy_pack._enhance_pack_attributes(
-            user_metadata=dummy_pack_metadata, index_folder_path="", pack_was_modified=False,
+            index_folder_path="", pack_was_modified=False,
             dependencies_data={}, statistics_handler=None
         )
-        parsed_metadata = dummy_pack._parse_pack_metadata(
-            user_metadata=dummy_pack_metadata, build_number="dummy_build_number", commit_hash="dummy_commit"
-        )
+        parsed_metadata = dummy_pack._parse_pack_metadata(build_number="dummy_build_number", commit_hash="dummy_commit")
 
         assert parsed_metadata['name'] == 'Test Pack Name'
         assert parsed_metadata['id'] == 'Test Pack Name'
@@ -126,9 +125,9 @@ class TestMetadataParsing:
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
         """
         dummy_pack._displayed_integration_images = []
+        dummy_pack._user_metadata = dummy_pack_metadata
         dummy_pack._enhance_pack_attributes(
-            user_metadata=dummy_pack_metadata, index_folder_path="", pack_was_modified=False,
-            dependencies_data={}, statistics_handler=None
+            index_folder_path="", pack_was_modified=False, dependencies_data={}, statistics_handler=None
         )
 
         assert dummy_pack._pack_name == 'Test Pack Name'
@@ -152,9 +151,9 @@ class TestMetadataParsing:
         """
 
         dummy_pack._displayed_integration_images = []
+        dummy_pack._user_metadata = {}
         dummy_pack._enhance_pack_attributes(
-            user_metadata={}, index_folder_path="", pack_was_modified=False,
-            dependencies_data={}, statistics_handler=None
+            index_folder_path="", pack_was_modified=False, dependencies_data={}, statistics_handler=None
         )
 
         assert dummy_pack._support_type == Metadata.XSOAR_SUPPORT
@@ -1334,10 +1333,10 @@ class TestSetDependencies:
         dependencies = json.dumps(metadata['dependencies'])
         dependencies = json.loads(dependencies)
         dependencies.update(generated_dependencies['ImpossibleTraveler']['dependencies'])
+        p._user_metadata = metadata
+        p.set_pack_dependencies(generated_dependencies)
 
-        p.set_pack_dependencies(metadata, generated_dependencies)
-
-        assert metadata['dependencies'] == dependencies
+        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_no_user_dependencies(self):
         """
@@ -1390,10 +1389,10 @@ class TestSetDependencies:
 
         metadata['dependencies'] = {}
         p = Pack('ImpossibleTraveler', 'dummy_path')
+        p._user_metadata = metadata
+        p.set_pack_dependencies(generated_dependencies)
 
-        p.set_pack_dependencies(metadata, generated_dependencies)
-
-        assert metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
+        assert p.user_metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
 
     def test_set_dependencies_no_generated_dependencies(self):
         """
@@ -1410,9 +1409,9 @@ class TestSetDependencies:
         metadata = self.get_pack_metadata()
         dependencies = metadata['dependencies']
         p = Pack('ImpossibleTraveler', 'dummy_path')
-        p.set_pack_dependencies(metadata, {})
-
-        assert metadata['dependencies'] == dependencies
+        p._user_metadata = metadata
+        p.set_pack_dependencies({})
+        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_core_pack(self):
         """
@@ -1446,12 +1445,13 @@ class TestSetDependencies:
         metadata['name'] = 'HelloWorld'
         metadata['id'] = 'HelloWorld'
         p = Pack('HelloWorld', 'dummy_path')
+        p._user_metadata = metadata
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
 
-        p.set_pack_dependencies(metadata, generated_dependencies)
+        p.set_pack_dependencies(generated_dependencies)
 
-        assert metadata['dependencies'] == dependencies
+        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_core_pack_new_mandatory_dependency(self):
         """
@@ -1490,9 +1490,10 @@ class TestSetDependencies:
 
         metadata['dependencies'] = {}
         p = Pack('HelloWorld', 'dummy_path')
+        p._user_metadata = metadata
 
         with pytest.raises(Exception) as e:
-            p.set_pack_dependencies(metadata, generated_dependencies)
+            p.set_pack_dependencies(generated_dependencies)
 
         assert str(e.value) == "New mandatory dependencies ['SlackV2'] were found in the core pack HelloWorld"
 
@@ -1536,10 +1537,11 @@ class TestSetDependencies:
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
         dependencies.update(user_dependencies)
+        p._user_metadata = metadata
 
-        p.set_pack_dependencies(metadata, generated_dependencies)
+        p.set_pack_dependencies(generated_dependencies)
 
-        assert metadata['dependencies'] == dependencies
+        assert p.user_metadata['dependencies'] == dependencies
 
 
 class TestReleaseNotes:
