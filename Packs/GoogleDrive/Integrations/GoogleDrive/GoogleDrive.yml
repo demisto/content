@@ -1955,7 +1955,7 @@ script:
       predefined:
       - ""
     - name: fields
-      description: The paths of the fields you want included in the response.
+      description: The fields you want included in the response.
       required: false
       isArray: false
       defaultValue: kind, id, name, themeId, capabilities, createdTime, hidden, restrictions
@@ -2101,7 +2101,7 @@ script:
       predefined:
       - ""
     - name: fields
-      description: The paths of the fields you want included in the response.
+      description: The fields you want included in the response.
       required: false
       isArray: false
       defaultValue: kind, id, name, mimeType, description, starred, trashed, explicitlyTrashed,
@@ -2163,7 +2163,7 @@ script:
       predefined:
       - ""
     - name: fields
-      description: The paths of the fields you want included in the response.
+      description: The fields you want included in the response.
       required: false
       isArray: false
       defaultValue: kind, id, name, mimeType, description, starred, trashed, explicitlyTrashed,
