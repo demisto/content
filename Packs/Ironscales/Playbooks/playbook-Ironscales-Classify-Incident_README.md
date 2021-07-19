@@ -23,7 +23,3 @@ There are no inputs for this playbook.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![Ironscales-Classify-Incident-Playbook](Insert the link to your image here)
