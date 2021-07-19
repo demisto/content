@@ -7020,7 +7020,7 @@ def panorama_install_file_content_update_command(args: dict):
         return_results(result['response']['msg'])
 
 
-def parse_logs_to_incidents(result: dict, last_run: dict) -> Tuple[Optional[List[Dict[Any, Any]]], Optional[str]]:
+def parse_logs_to_incidents(result: dict, last_run: dict) -> Tuple[Optional[List], Optional[Dict]]:
     """parses logs from PAN-OS, and transforms them to incidents in a long running execution.
 
     Args:
@@ -7062,7 +7062,7 @@ def parse_logs_to_incidents(result: dict, last_run: dict) -> Tuple[Optional[List
     return incidents, next_run
 
 
-def fetch_incidents(params: dict, last_run: dict) -> Tuple[Optional[List[Dict[Any, Any]]], Optional[str]]:
+def fetch_incidents(params: dict, last_run: dict) -> Tuple[Optional[List], Optional[Dict]]:
     """
     Fetching incidents from PAN-OS.
     Will first execute a query. than, as long as the query is not 'completed' will pull on it in the next fetch.
