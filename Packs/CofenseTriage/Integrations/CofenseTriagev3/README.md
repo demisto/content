@@ -1,5 +1,20 @@
-The integration uses the Cofense Triage v2 API that allows users to ingest phishing reports as incident alerts and execute commands such as threat indicators, reporters, categorize reports, and more.
-This integration was integrated and tested with version 1.22.0 of Cofense Triage.
+The Cofense Triage v3 integration uses the Cofense Triage v2 API (previous integrations were limited to Triage v1 API) that allows users to ingest phishing reports as incident alerts and execute commands.
+
+Security teams can ingest data from Triage such as email reporters, email reports and clusters, threat indicators, and rule matching to name a few. In addition, ingest and create threat indicators, categorize reports, and obtain second stage threat indicators from malicious emails. This integration was integrated and tested with version 1.22.0 of Cofense Triage.
+
+## What's new in Cofense Triage v3?
+Use Cofense Triage v3 XSOAR integration application to take advantage of Cofense Triage v2 API for bidirectional communication between Triage and XSOAR. 
+Earlier, the Cofense Triage v2 was only capable of pulling the indicators from Cofense. The new integration provides:
+ - Report Categorization playbook investigates reports that are unprocessed or uncategorized on Cofense Triage as incident alerts in XSOAR and categorizes them based on the severity of the incident.
+ - Cluster Report Categorization playbook is used to retrieve the reports of specific clusters and perform the categorization of reports.
+ - Automation scripts that download all reports associated with the email address and enrich the threat indicators.
+ - Mirroring feature that updates the XSOAR incidents when Cofense Triage reports are updated.
+
+## What Mirroring functionality does?
+This feature is compliant with XSOAR version 6.0 and above. This feature automatically updates the Cortex XSOAR incidents if any report is changed or updated in Cofense Triage. 
+ - Users can enable or disable this feature from the integration parameters.
+ - Supports only incoming data that are updated in Cofense Triage.
+
 ## Configure Cofense Triage v3 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -17,6 +32,7 @@ This integration was integrated and tested with version 1.22.0 of Cofense Triage
     | Category ID | Fetches reports based on the unique identifier of the category. If not specified, it fetches all the reports. Note: Only the reports that have been processed will be retrieved. | False |
     | Tags | Fetches reports based on the tags associated with the reports. If not specified, it fetches all the reports. Supports comma separated values. Note: Tags are associated with reports which are in Reconnaissance. | False |
     | Categorization Tags | Fetches reports based on the tags assigned when the reported email was processed. If not specified, it fetches all the reports. Supports comma separated values. Note: Categorization tags are associated with the reports which are processed. | False |
+    | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming (from Cofens Triage to XSOAR). | False |
     | Advanced Filters | Fetches incidents based on the advanced filters and type of the incident to be fetched. Specify the filters to filter the incidents by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Format accepted: \{"attribute1_operator": "value1, value2", "attribute2_operator" : "value3, value4"\} For example: \{"updated_at_gt":"2020-10-26T10:48:16.834Z","categorization_tags_any":"test, snow"\} | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
@@ -94,8 +110,8 @@ comparison operators:
 
 ## Mirroring Integration Feature
 - All users with 6.0.0 and higher would be able to get the updated reports from Cofense Triage (called Mirroring Integration feature).
-- The integration imports reported emails as incidents. It allows to mirror incidents from Cofense Triage to Cortex SOAR. This can be made possible by enabling the following option:
-    - Can sync mirror in
+- The integration imports reported emails as incidents. It allows to mirror incidents from Cofense Triage to Cortex SOAR. This can be made possible by selecting `Incoming` in the following option:
+    - Incident Mirroring Direction
     ![Mirroring Configuration](./../../doc_files/mirroring_configuration.png)
 
 ## Commands

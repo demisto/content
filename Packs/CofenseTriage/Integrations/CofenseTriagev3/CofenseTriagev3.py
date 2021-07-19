@@ -81,6 +81,10 @@ INTEGRATION_SUBMISSION_TYPE = ["urls", "attachment_payloads"]
 DEFAULT_THREAT_SOURCE = "XSOAR-UI"
 DEFAULT_REPORT_IMAGE_TYPE = "png"
 VALID_IMAGE_TYPE = ["png", "jpg"]
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In'
+}
 
 HTTP_ERRORS = {
     400: "Bad request: an error occurred while fetching the data.",
@@ -1381,7 +1385,7 @@ def fetch_incidents(client: Client, last_run: dict, params: Dict) -> Tuple[dict,
     next_run = last_run
     incidents = []
     for result in results:
-        result['mirror_direction'] = "In"
+        result['mirror_direction'] = MIRROR_DIRECTION.get(params.get('mirror_direction', 'None'))
         result['mirror_instance'] = demisto.integrationInstance()
         incidents.append({
             'name': result.get('attributes').get('subject', ''),

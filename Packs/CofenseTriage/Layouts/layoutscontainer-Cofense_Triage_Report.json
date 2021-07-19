@@ -1,4 +1,5 @@
 {
+    "description": "Cofense Triage Report Layout",
     "detailsV2": {
         "tabs": [
             {
@@ -103,8 +104,8 @@
                         "static": false,
                         "type": "notes",
                         "w": 1,
-                        "x": 2,
-                        "y": 2
+                        "x": 1,
+                        "y": 4
                     },
                     {
                         "displayType": "ROW",
@@ -137,7 +138,7 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 6
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
@@ -185,7 +186,7 @@
                         "static": false,
                         "type": "team",
                         "w": 1,
-                        "x": 0,
+                        "x": 2,
                         "y": 8
                     },
                     {
@@ -204,7 +205,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 4
+                        "y": 6
                     },
                     {
                         "displayType": "CARD",
@@ -265,7 +266,7 @@
                         "name": "Timeline Information",
                         "static": false,
                         "w": 1,
-                        "x": 0,
+                        "x": 2,
                         "y": 2
                     },
                     {
@@ -311,7 +312,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 6
+                        "y": 8
                     },
                     {
                         "displayType": "CARD",
@@ -320,11 +321,13 @@
                         "isVisible": true,
                         "items": [
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "details",
-                                "height": 22,
+                                "height": 106,
                                 "id": "incident-details-field",
                                 "index": 0,
+                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -337,8 +340,8 @@
                         "name": "Investigation Data",
                         "static": false,
                         "w": 1,
-                        "x": 1,
-                        "y": 2
+                        "x": 0,
+                        "y": 4
                     },
                     {
                         "displayType": "ROW",
@@ -402,6 +405,35 @@
                         "w": 1,
                         "x": 1,
                         "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-fa8397b0-e5ed-11eb-8d13-3dc6371a4bd6",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "cofensetriagereportattachmentinformation",
+                                "height": 106,
+                                "id": "28c2e310-e5ee-11eb-8d13-3dc6371a4bd6",
+                                "index": 0,
+                                "listId": "caseinfoid-fa8397b0-e5ed-11eb-8d13-3dc6371a4bd6",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Report Attachment Hash Signatures",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 2
                     }
                 ],
                 "type": "custom"
@@ -661,7 +693,8 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -681,6 +714,5 @@
     "name": "Cofense Triage Report",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": "Cofense Triage Report Layout"
+    "fromVersion": "6.0.0"
 }

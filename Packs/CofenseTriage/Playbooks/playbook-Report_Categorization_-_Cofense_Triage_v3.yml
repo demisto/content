@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fa70b0a8-e58b-4d39-879c-7797e0fb856f
+    taskid: fd8ecd22-bfe9-4166-852f-873250c7d36b
     type: start
     task:
-      id: fa70b0a8-e58b-4d39-879c-7797e0fb856f
+      id: fd8ecd22-bfe9-4166-852f-873250c7d36b
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 6d6f800f-c69b-446b-8fd9-8bfd78d2d0a9
+    taskid: 79fc2c47-dd1e-48f2-8fcb-067e15e11fd1
     type: regular
     task:
-      id: 6d6f800f-c69b-446b-8fd9-8bfd78d2d0a9
+      id: 79fc2c47-dd1e-48f2-8fcb-067e15e11fd1
       version: -1
       name: Assign analyst to incident
       description: Assigns a random analyst to the incident.
@@ -52,19 +52,16 @@ tasks:
     scriptarguments:
       assignBy:
         simple: random
-      email: {}
       onCall:
         complex:
           root: inputs.OnCall
-      roles: {}
-      username: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 1420
+          "x": 2280,
+          "y": 1010
         }
       }
     note: false
@@ -74,10 +71,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 0e1a922f-f085-4733-84e9-69a22a551b25
+    taskid: 4e92dc29-c958-4154-8343-5e9eebbe54c2
     type: regular
     task:
-      id: 0e1a922f-f085-4733-84e9-69a22a551b25
+      id: 4e92dc29-c958-4154-8343-5e9eebbe54c2
       version: -1
       name: Extract indicators from incident
       description: Extract all indicators according to server indicators configuration.
@@ -100,8 +97,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 470
+          "x": 2280,
+          "y": 340
         }
       }
     note: false
@@ -111,10 +108,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 117c744c-c946-4a63-81eb-ed5e1f7c75c5
+    taskid: 84966100-069c-4e76-83b9-2ccf24ce6b3a
     type: playbook
     task:
-      id: 117c744c-c946-4a63-81eb-ed5e1f7c75c5
+      id: 84966100-069c-4e76-83b9-2ccf24ce6b3a
       version: -1
       name: Calculate Severity - Generic v2
       description: |-
@@ -166,8 +163,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 1255
+          "x": 2280,
+          "y": 835
         }
       }
     note: false
@@ -177,10 +174,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 00259e72-803d-4d79-8ea2-67e4c3fea1aa
+    taskid: 0ebd171a-5b1b-4f6e-8216-31158b785ee3
     type: title
     task:
-      id: 00259e72-803d-4d79-8ea2-67e4c3fea1aa
+      id: 0ebd171a-5b1b-4f6e-8216-31158b785ee3
       version: -1
       name: Done
       type: title
@@ -191,8 +188,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 3550
+          "x": 840,
+          "y": 2540
         }
       }
     note: false
@@ -202,10 +199,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 5ccf9ed4-364f-45b2-8741-6db47ffe994a
+    taskid: 0f63c17f-a2cc-4341-871c-67653506259a
     type: regular
     task:
-      id: 5ccf9ed4-364f-45b2-8741-6db47ffe994a
+      id: 0f63c17f-a2cc-4341-871c-67653506259a
       version: -1
       name: Report Download
       description: Downloads the raw email for the report that matches the specified
@@ -226,8 +223,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 70
+          "x": 1660,
+          "y": -20
         }
       }
     note: false
@@ -237,10 +234,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: b8efccf3-4bed-4e13-88c1-0f43af53294b
+    taskid: 45ff57c3-c414-4868-8ae5-692bec160146
     type: regular
     task:
-      id: b8efccf3-4bed-4e13-88c1-0f43af53294b
+      id: 45ff57c3-c414-4868-8ae5-692bec160146
       version: -1
       name: Parse Email
       description: Parse an email from an eml or msg file and populate all relevant
@@ -271,21 +268,38 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 270
+          "x": 1660,
+          "y": 160
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Cofense Triage Report Attachment Information
+      output:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: Email.AttachmentNames
+                iscontext: true
+          transformers:
+          - operator: ConvertKeysToTableFieldFormat
     skipunavailable: false
     quietmode: 0
   "15":
     id: "15"
-    taskid: 2d835181-4995-4a2c-8f78-5125b50a9d61
+    taskid: dc1a8043-f371-440d-8a03-4a5b238b2c3d
     type: regular
     task:
-      id: 2d835181-4995-4a2c-8f78-5125b50a9d61
+      id: dc1a8043-f371-440d-8a03-4a5b238b2c3d
       version: -1
       name: Rasterize Email
       description: Converts the body of an email to an image file or a PDF file.
@@ -306,12 +320,13 @@ tasks:
       type: {}
       width: {}
     reputationcalc: 1
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1260,
-          "y": 860
+          "x": 1030,
+          "y": 510
         }
       }
     note: false
@@ -321,10 +336,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 1421088a-874c-4301-867b-587171500fbd
+    taskid: 5ba0b2b3-7a2a-4eed-8b1a-91d99ee054df
     type: regular
     task:
-      id: 1421088a-874c-4301-867b-587171500fbd
+      id: 5ba0b2b3-7a2a-4eed-8b1a-91d99ee054df
       version: -1
       name: Rasterize Attachments
       description: Converts an image file to a PDF file.
@@ -343,12 +358,13 @@ tasks:
       height: {}
       width: {}
     reputationcalc: 1
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1740,
-          "y": 860
+          "x": 1570,
+          "y": 510
         }
       }
     note: false
@@ -358,10 +374,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 57ec32b2-f472-433a-8cec-7e8863875457
+    taskid: 02b97a9a-1430-44bf-8833-b3d4e45fb6de
     type: regular
     task:
-      id: 57ec32b2-f472-433a-8cec-7e8863875457
+      id: 02b97a9a-1430-44bf-8833-b3d4e45fb6de
       version: -1
       name: Check Email Authenticity
       description: Checks the authenticity of an email based on the email's SPF, DMARC,
@@ -374,25 +390,6 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      DKIM_override_fail: {}
-      DKIM_override_neutral: {}
-      DKIM_override_none: {}
-      DKIM_override_pass: {}
-      DKIM_override_permerror: {}
-      DKIM_override_policy: {}
-      DKIM_override_temperror: {}
-      DMARC_override_fail: {}
-      DMARC_override_none: {}
-      DMARC_override_pass: {}
-      DMARC_override_permerror: {}
-      DMARC_override_temperror: {}
-      SPF_override_fail: {}
-      SPF_override_neutral: {}
-      SPF_override_none: {}
-      SPF_override_pass: {}
-      SPF_override_permerror: {}
-      SPF_override_softfail: {}
-      SPF_override_temperror: {}
       headers:
         complex:
           root: Email
@@ -402,8 +399,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 895
+          "x": 2280,
+          "y": 680
         }
       }
     note: false
@@ -419,10 +416,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: bbcb1539-5127-438d-8565-38a0e7fbed83
+    taskid: 046d92ac-dded-4519-8351-0b2586408801
     type: playbook
     task:
-      id: bbcb1539-5127-438d-8565-38a0e7fbed83
+      id: 046d92ac-dded-4519-8351-0b2586408801
       version: -1
       name: Send Indicators - Cofense Triage v3
       playbookName: Send Indicators - Cofense Triage v3
@@ -478,8 +475,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 735
+          "x": 2280,
+          "y": 510
         }
       }
     note: false
@@ -489,10 +486,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 4a3ff395-00b9-42c2-8366-78aed832934c
+    taskid: e7afefec-d160-4d51-8a0a-5afe246cb4f9
     type: condition
     task:
-      id: 4a3ff395-00b9-42c2-8366-78aed832934c
+      id: e7afefec-d160-4d51-8a0a-5afe246cb4f9
       version: -1
       name: Is Category ID empty?
       description: Whether the provided category exists or not.
@@ -518,8 +515,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 2360
+          "x": 2290,
+          "y": 1940
         }
       }
     note: false
@@ -529,10 +526,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: c9492bfe-a30d-4ad3-8e9d-5bb864aa88b2
+    taskid: 0f72dc08-3e41-4f1a-8a96-6416aa7c8986
     type: regular
     task:
-      id: c9492bfe-a30d-4ad3-8e9d-5bb864aa88b2
+      id: 0f72dc08-3e41-4f1a-8a96-6416aa7c8986
       version: -1
       name: Categorize Report
       description: Categorizes a report into a specific category provided by the user.
@@ -544,7 +541,6 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      categorization_tags: {}
       category_id:
         complex:
           root: Cofense.Category
@@ -552,16 +548,13 @@ tasks:
       id:
         complex:
           root: inputs.ReportID
-      response_id:
-        complex:
-          root: inputs.ResponseID
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 2590
+          "x": 2590,
+          "y": 2120
         }
       }
     note: false
@@ -571,10 +564,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 3eb17d07-8ced-4c45-8495-604bdc9d931d
+    taskid: cc292de2-5433-4f12-841c-da81f9982856
     type: condition
     task:
-      id: 3eb17d07-8ced-4c45-8495-604bdc9d931d
+      id: cc292de2-5433-4f12-841c-da81f9982856
       version: -1
       name: Is AutoCategorize true?
       description: Whether the report should be automatically categorized.
@@ -608,8 +601,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 1790
+          "x": 1810,
+          "y": 1360
         }
       }
     note: false
@@ -619,10 +612,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 35d93f11-338e-4865-897f-a1a3e259167e
+    taskid: 2d37a2b7-d3f4-401b-8573-c38e6a776f93
     type: condition
     task:
-      id: 35d93f11-338e-4865-897f-a1a3e259167e
+      id: 2d37a2b7-d3f4-401b-8573-c38e6a776f93
       version: -1
       name: Is Email Malicious or Non-Malicious?
       description: Whether the reported email is malicious or not.
@@ -661,8 +654,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 1595
+          "x": 2280,
+          "y": 1170
         }
       }
     note: false
@@ -672,10 +665,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 8a0891b7-6f6c-4ce5-8869-354ad2d73821
+    taskid: 43d75ae4-d4b0-46d3-8ad2-58d713b0e995
     type: regular
     task:
-      id: 8a0891b7-6f6c-4ce5-8869-354ad2d73821
+      id: 43d75ae4-d4b0-46d3-8ad2-58d713b0e995
       version: -1
       name: Get Category ID
       description: |-
@@ -689,26 +682,16 @@ tasks:
       '#none#':
       - "31"
     scriptarguments:
-      created_at: {}
-      fields_to_retrieve: {}
-      filter_by: {}
-      id: {}
-      is_malicious: {}
       name:
         complex:
           root: inputs.MaliciousCategory
-      page_number: {}
-      page_size: {}
-      score: {}
-      sort_by: {}
-      updated_at: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 1960
+          "x": 1650,
+          "y": 1565
         }
       }
     note: false
@@ -718,10 +701,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 201bc07b-f29b-4033-8a1d-f1bf46436fd4
+    taskid: 41ea93f7-d246-4e26-8304-15de27e41c39
     type: collection
     task:
-      id: 201bc07b-f29b-4033-8a1d-f1bf46436fd4
+      id: 41ea93f7-d246-4e26-8304-15de27e41c39
       version: -1
       name: Provide a category to categorize a report as malicious
       description: Gets the category name to categorize the report.
@@ -741,8 +724,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 590,
-          "y": 1960
+          "x": 2050,
+          "y": 1550
         }
       }
     note: false
@@ -785,10 +768,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: d665705a-7825-408e-8477-38d1788e5019
+    taskid: 2db1bcc2-e648-413e-8aa0-887af7d2d3d7
     type: regular
     task:
-      id: d665705a-7825-408e-8477-38d1788e5019
+      id: 2db1bcc2-e648-413e-8aa0-887af7d2d3d7
       version: -1
       name: Get Category ID
       description: |-
@@ -802,29 +785,19 @@ tasks:
       '#none#':
       - "31"
     scriptarguments:
-      created_at: {}
-      fields_to_retrieve: {}
-      filter_by: {}
-      id: {}
-      is_malicious: {}
       name:
         complex:
           root: Categorize Report.Answers
           accessor: "0"
           transformers:
           - operator: FirstArrayElement
-      page_number: {}
-      page_size: {}
-      score: {}
-      sort_by: {}
-      updated_at: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 2150
+          "x": 2290,
+          "y": 1740
         }
       }
     note: false
@@ -834,10 +807,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: c164ab13-2ee2-4a5e-85fe-911fda04413c
+    taskid: 8b92f25a-feeb-470e-8cd0-826496e0c739
     type: regular
     task:
-      id: c164ab13-2ee2-4a5e-85fe-911fda04413c
+      id: 8b92f25a-feeb-470e-8cd0-826496e0c739
       version: -1
       name: Get Category ID
       description: |-
@@ -851,26 +824,16 @@ tasks:
       '#none#':
       - "31"
     scriptarguments:
-      created_at: {}
-      fields_to_retrieve: {}
-      filter_by: {}
-      id: {}
-      is_malicious: {}
       name:
         complex:
           root: inputs.NonMaliciousCategory
-      page_number: {}
-      page_size: {}
-      score: {}
-      sort_by: {}
-      updated_at: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1410,
-          "y": 1960
+          "x": 2930,
+          "y": 1565
         }
       }
     note: false
@@ -880,10 +843,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: fe88490c-f7b7-466c-8d6a-63344f96625d
+    taskid: 0e6f19c7-9ec2-4297-84da-c9bbd899babd
     type: collection
     task:
-      id: fe88490c-f7b7-466c-8d6a-63344f96625d
+      id: 0e6f19c7-9ec2-4297-84da-c9bbd899babd
       version: -1
       name: Provide a category to categorize a report as non-malicious
       description: Gets the category name to categorize the report.
@@ -903,8 +866,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1000,
-          "y": 1960
+          "x": 2490,
+          "y": 1565
         }
       }
     note: false
@@ -947,10 +910,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: 696707a9-0c99-4abb-87be-b3ea991be0cf
+    taskid: 2caeb8ba-fe11-4049-8988-7cee6266d708
     type: condition
     task:
-      id: 696707a9-0c99-4abb-87be-b3ea991be0cf
+      id: 2caeb8ba-fe11-4049-8988-7cee6266d708
       version: -1
       name: Is AutoCategorize true?
       description: Whether the report should be automatically categorized.
@@ -984,8 +947,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
-          "y": 1780
+          "x": 2760,
+          "y": 1340
         }
       }
     note: false
@@ -995,10 +958,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: 0130b75f-7dc2-4427-8e7e-45830661a0eb
+    taskid: 5dd3b06e-9cd8-4169-8db2-995c75d462c7
     type: condition
     task:
-      id: 0130b75f-7dc2-4427-8e7e-45830661a0eb
+      id: 5dd3b06e-9cd8-4169-8db2-995c75d462c7
       version: -1
       name: Is Cofense Triage v3 Integration Enable?
       description: 'Whether Cofense Triage v3 integration is enabled or not. '
@@ -1052,10 +1015,10 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: dfc2a789-041a-49ca-819b-a3aad91db618
+    taskid: bcad9a81-ad5d-4538-8f82-f61976311486
     type: condition
     task:
-      id: dfc2a789-041a-49ca-819b-a3aad91db618
+      id: bcad9a81-ad5d-4538-8f82-f61976311486
       version: -1
       name: Is Rasterize Integration Enable?
       description: Whether Rasterize integration is enabled or not.
@@ -1100,7 +1063,7 @@ tasks:
       {
         "position": {
           "x": 1260,
-          "y": 610
+          "y": 330
         }
       }
     note: false
@@ -1110,12 +1073,17 @@ tasks:
     quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "31_12_#default#": 0.1,
+      "46_12_#default#": 0.1,
+      "47_12_#default#": 0.1,
+      "47_15_yes": 0.5
+    },
     "paper": {
       "dimensions": {
-        "height": 4005,
-        "width": 1920,
-        "x": 200,
+        "height": 2995,
+        "width": 2502.5,
+        "x": 807.5,
         "y": -390
       }
     }

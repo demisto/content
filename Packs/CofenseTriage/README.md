@@ -27,7 +27,7 @@ Report Categorization playbook investigates reports that are unprocessed or unca
 ![Report Categorization - Cofense Triage v3](./doc_files/Report_Categorization_-_Cofense_Triage_v3.png)
 
 #### Send Indicators - Cofense Triage v3
-Send Indicators playbook is used to create or update threat indicators in Cofense Triage as a result of the analysis.
+Send Indicators playbook is used to create or update threat indicators in Cofense Triage that have been identified as malicious or suspicious by the analysis.
 ![Send Indicators - Cofense Triage v3](./doc_files/Send_Indicators_-_Cofense_Triage_v3.png)
 
 #### Cluster Report Categorization - Cofense Triage v3

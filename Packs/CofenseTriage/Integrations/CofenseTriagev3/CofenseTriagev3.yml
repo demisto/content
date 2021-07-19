@@ -13,8 +13,8 @@ configuration:
   display: Client ID
   displaypassword: Client Secret
   name: credentials
-  type: 9
   required: true
+  type: 9
 - additionalinfo: The maximum limit is 200.
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
@@ -77,6 +77,17 @@ configuration:
   name: categorization_tags
   required: false
   type: 0
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Cofense
+    Triage to XSOAR).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  required: false
+  type: 15
 - additionalinfo: |-
     Fetches incidents based on the advanced filters and type of the incident to be fetched. Specify the filters to filter the incidents by attribute values. Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas.
     Format accepted: {"attribute1_operator": "value1, value2", "attribute2_operator" : "value3, value4"}
@@ -2368,7 +2379,7 @@ script:
     - contextPath: InfoFile.Extension
       description: File extension.
       type: String
-  dockerimage: demisto/python3:3.9.5.22569
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: true
   isremotesyncin: true

@@ -472,19 +472,21 @@ def test_validate_fetch_incident_parameters_when_invalid_args_are_provided(args,
     assert str(err.value) == err_msg
 
 
+@patch("demistomock.integrationInstance", create=True)
 @patch(MOCKER_HTTP_METHOD)
-def test_fetch_incidents_when_valid_response_is_returned(mocker_http_request, client):
+def test_fetch_incidents_when_valid_response_is_returned(mocker_http_request, mocker_integration_instance, client):
     """Test case scenario for successful execution of fetch_incident."""
     from CofenseTriagev3 import fetch_incidents
     response = util_load_json(
         os.path.join("test_data", "fetch_incidents/fetch_incidents_response.json"))
 
     mocker_http_request.return_value = response
+    mocker_integration_instance.return_value = "Cofense Triage v3_instance_1"
 
     context_output = util_load_json(
         os.path.join("test_data", "fetch_incidents/fetch_incidents.json"))
 
-    params = {'max_fetch': '2', 'first_fetch': '1 year'}
+    params = {'max_fetch': '2', 'first_fetch': '1 year', 'mirror_direction': 'Incoming'}
 
     _, incidents = fetch_incidents(client, {}, params)
 
