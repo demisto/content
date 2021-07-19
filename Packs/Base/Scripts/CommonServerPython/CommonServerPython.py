@@ -2359,7 +2359,7 @@ class Common(object):
         :param indicator_type: use DBotScoreType class
 
         :type integration_name: ``str``
-        :param integration_name: integration name
+        :param integration_name: DEPRECATED: Don't use this argument, the class will automatically determine the integration name.
 
         :type score: ``DBotScore``
         :param score: DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD
@@ -2383,8 +2383,15 @@ class Common(object):
 
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
-        def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None,
-                     reliability=None):
+        def __init__(
+            self,
+            indicator,
+            indicator_type,
+            integration_name='',
+            score=0,
+            malicious_description=None,
+            reliability=None
+        ):
 
             if not DBotScoreType.is_valid_type(indicator_type):
                 raise TypeError('indicator_type must be of type DBotScoreType enum')
@@ -2397,7 +2404,11 @@ class Common(object):
 
             self.indicator = indicator
             self.indicator_type = indicator_type
-            self.integration_name = integration_name or get_integration_name()
+            if integration_name:
+                demisto.debug('CommonServerPython::DBotScore: Do not use integration_name argument')
+                self.integration_name = integration_name
+            else:
+                self.integration_name = get_integration_name()
             self.score = score
             self.malicious_description = malicious_description
             self.reliability = reliability

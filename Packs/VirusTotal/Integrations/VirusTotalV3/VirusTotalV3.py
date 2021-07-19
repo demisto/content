@@ -906,7 +906,7 @@ class ScoreCalculator:
         return self.score_by_results_and_stats(indicator, raw_response, self.domain_threshold)
 
     # region Premium analysis
-    def is_malicious_or_suspicious_by_relationship_files(self, relationship_files_response: dict, lookback=20) -> int:
+    def is_malicious_or_suspicious_by_relationship_files(self, relationship_files_response: dict, lookback: int = 20) -> int:
         """Checks maliciousness of indicator on relationship files. Look on the recent 20 results returned.
             if (number of relationship files that are malicious > threshold) -> Bad
             if (number of relationship files that are malicious > threshold / 2) -> suspicious
@@ -1174,7 +1174,7 @@ def build_domain_output(
         dbot_score=Common.DBotScore(
             domain,
             DBotScoreType.DOMAIN,
-            INTEGRATION_NAME,
+            None,  # Don't give integration name - It will be taken automatically
             score=score,
             malicious_description=logs,
             reliability=client.reliability
@@ -1243,7 +1243,7 @@ def build_url_output(
         dbot_score=Common.DBotScore(
             url,
             DBotScoreType.URL,
-            INTEGRATION_NAME,
+            None,  # Don't give integration name - It will be taken automatically
             score=score,
             reliability=client.reliability,
             malicious_description=logs
@@ -1308,7 +1308,7 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
         dbot_score=Common.DBotScore(
             ip,
             DBotScoreType.IP,
-            INTEGRATION_NAME,
+            None,  # Don't give integration name - It will be taken automatically
             score=score,
             malicious_description=logs,
             reliability=client.reliability
@@ -1359,7 +1359,7 @@ def build_file_output(
         dbot_score=Common.DBotScore(
             file_hash,
             DBotScoreType.FILE,
-            integration_name=INTEGRATION_NAME,
+            None,  # Don't give integration name - It will be taken automatically
             score=score,
             malicious_description=logs,
             reliability=client.reliability
