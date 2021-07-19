@@ -125,7 +125,7 @@ def get_artifact_data(artifact_suffix: str) -> Optional[str]:
     """
     artifact_data = None
     try:
-        file_name = f'{ARTIFACTS_FOLDER}/{artifact_suffix}'
+        file_name = os.path.join(ARTIFACTS_FOLDER, artifact_suffix)
         if os.path.isfile(file_name):
             logging.info(f'Extracting {artifact_suffix}')
             with open(file_name, 'r') as file_data:
