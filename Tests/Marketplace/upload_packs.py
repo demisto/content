@@ -1074,7 +1074,7 @@ def main():
             continue
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
-        if skipped_upload and exists_in_index:
+        if skipped_upload and exists_in_index and pack not in packs_missing_dependencies:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue

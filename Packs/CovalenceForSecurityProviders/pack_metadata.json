@@ -1,0 +1,20 @@
+{
+    "name": "Covalence For Security Providers",
+    "description": "Triggers by any alert from endpoint, cloud, and network security monitoring, with mitigation steps where applicable. Query Covalence for more detail.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Field Effect Security",
+    "url": "https://fieldeffect.com/products/covalence-cyber-security/",
+    "email": "support@fieldeffect.com",
+    "categories": [
+        "Endpoint",
+        "Network Security",
+        "Vulnerability Management"
+    ],
+    "tags": [],
+    "created": "2021-06-18T00:00:00Z",
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {},
+    "displayedImages": []
+}

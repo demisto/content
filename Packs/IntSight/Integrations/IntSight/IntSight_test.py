@@ -1,11 +1,12 @@
 from mock import Mock, patch
-
+import pytest
 import demistomock as demisto
 
 
 INTSIGHTS_PARAMS = {
     'server': 'https://api.test.com',
     'proxy': 'no_proxy',
+    'insecure': True,
     'credentials': {
         'identifier': "some_id",
         'password': 'some_password'
@@ -13,6 +14,7 @@ INTSIGHTS_PARAMS = {
 }
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_add_comment(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -30,6 +32,7 @@ def test_add_comment(mocker_results, mocker):
     assert(comment == mocker_results.call_args[0][0]['Contents']['Comment'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_add_tag(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -57,6 +60,7 @@ def test_add_tag(mocker_results, mocker):
         assert(tag_id == mocker_results.call_args[0][0]['Contents']['Tags']['ID'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_get_alert_takedown_status(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -70,6 +74,7 @@ def test_get_alert_takedown_status(mocker_results, mocker):
     assert('TakedownStatus' in mocker_results.call_args[0][0]['Contents'] and not None)
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_ask_analyst(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -84,6 +89,7 @@ def test_ask_analyst(mocker_results, mocker):
     assert(question == mocker_results.call_args[0][0]['Contents']['Question'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_close_alert(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -98,6 +104,7 @@ def test_close_alert(mocker_results, mocker):
     assert(reason == mocker_results.call_args[0][0]['Contents']['Closed']['Reason'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_get_alert_image(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -112,6 +119,7 @@ def test_get_alert_image(mocker_results, mocker):
     assert(image_id + '-image.jpeg' == mocker_results.call_args[0][0]['File'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_takedown_request(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -126,6 +134,7 @@ def test_takedown_request(mocker_results, mocker):
     assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_get_ioc_blocklist_status(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -145,6 +154,7 @@ def test_get_ioc_blocklist_status(mocker_results, mocker):
         assert(mock_response in mocker_results.call_args[0][0]['Contents'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_search_for_ioc(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -183,6 +193,7 @@ def test_search_for_ioc(mocker_results, mocker):
         assert(value == mocker_results.call_args[0][0]['Contents']['Value'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_remove_tag(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -197,6 +208,7 @@ def test_remove_tag(mocker_results, mocker):
     assert(tag_id == mocker_results.call_args[0][0]['Contents']['Tags']['ID'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_request_for_ioc_enrichment(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -307,6 +319,7 @@ def test_request_for_ioc_enrichment(mocker_results, mocker):
         assert(mock_response['OriginalValue'] == mocker_results.call_args[0][0]['Contents']['OriginalValue'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_send_mail(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -326,6 +339,7 @@ def test_send_mail(mocker_results, mocker):
     assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_unassign_alert(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -361,6 +375,7 @@ def test_change_severity(mocker_results, mocker):
     assert(severity == mocker_results.call_args[0][0]['Contents']['Severity'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_update_ioc_blocklist_status(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -381,6 +396,7 @@ def test_update_ioc_blocklist_status(mocker_results, mocker):
     assert(alert_id == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 def get_mssp_sub_accounts_http_response(method, path, **kwargs):
     if path == 'public/v1/account/used-assets':
         return {
@@ -399,6 +415,7 @@ def get_mssp_sub_accounts_http_response(method, path, **kwargs):
         return None
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch('IntSight.http_request')
 def run_mocked_https_request(mocked_http_request, action, side_effect=None, return_value=None):
     if side_effect:
@@ -409,6 +426,7 @@ def run_mocked_https_request(mocked_http_request, action, side_effect=None, retu
     action()
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_get_mssp_sub_accounts(mocker_results, mocker):
     INTSIGHTS_PARAMS['mssp_sub_account_id'] = '123456789'
@@ -425,6 +443,7 @@ def test_get_mssp_sub_accounts(mocker_results, mocker):
     assert(10 == mocker_results.call_args[0][0]['Contents'][0]['AssetsLimit'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_get_iocs(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -464,6 +483,7 @@ def test_get_iocs(mocker_results, mocker):
         assert(value == mocker_results.call_args[0][0]['Contents']['Value'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 def get_alerts_http_response(method, path, **kwargs):
     if path == 'public/v1/data/alerts/get-complete-alert/123456789':
         return {
@@ -516,6 +536,7 @@ def get_alerts_http_response(method, path, **kwargs):
         return None
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_get_alerts(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -531,6 +552,7 @@ def test_get_alerts(mocker_results, mocker):
     assert(alert_id == mocker_results.call_args[0][0]['Contents'][0]['ID'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_get_alert_by_id(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -589,6 +611,7 @@ def test_get_alert_by_id(mocker_results, mocker):
         assert(complete_alert['_id'] == mocker_results.call_args[0][0]['Contents']['ID'])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_get_alert_activity(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')
@@ -632,6 +655,7 @@ def test_get_alert_activity(mocker_results, mocker):
         assert('Activities' in mocker_results.call_args[0][0]['Contents'][0])
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 @patch.object(demisto, "results")
 def test_assign_alert(mocker_results, mocker):
     mocker.patch.object(demisto, 'command', return_value='intsights-test-action')

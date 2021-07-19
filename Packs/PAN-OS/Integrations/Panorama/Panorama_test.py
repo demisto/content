@@ -1,5 +1,6 @@
 import pytest
 import demistomock as demisto
+from CommonServerPython import DemistoException
 
 integration_params = {
     'port': '443',
@@ -118,10 +119,12 @@ def test_add_argument_target():
 def test_prettify_addresses_arr():
     from Panorama import prettify_addresses_arr
     addresses_arr = [{'@name': 'my_name', 'fqdn': 'a.com'},
-                     {'@name': 'my_name2', 'fqdn': 'b.com'}]
+                     {'@name': 'my_name2', 'fqdn': 'b.com'},
+                     {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}]
     response = prettify_addresses_arr(addresses_arr)
     expected = [{'Name': 'my_name', 'FQDN': 'a.com'},
-                {'Name': 'my_name2', 'FQDN': 'b.com'}]
+                {'Name': 'my_name2', 'FQDN': 'b.com'},
+                {'Name': 'test', 'IP_Netmask': '1.1.1.1'}]
     assert response == expected
 
 
@@ -130,6 +133,14 @@ def test_prettify_address():
     address = {'@name': 'my_name', 'ip-netmask': '1.1.1.1', 'description': 'lala'}
     response = prettify_address(address)
     expected = {'Name': 'my_name', 'IP_Netmask': '1.1.1.1', 'Description': 'lala'}
+    assert response == expected
+
+
+def test_prettify_address_tag_none():
+    from Panorama import prettify_address
+    address = {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}
+    response = prettify_address(address)
+    expected = {'Name': 'test', 'IP_Netmask': '1.1.1.1'}
     assert response == expected
 
 
@@ -145,10 +156,23 @@ def test_prettify_address_group():
     expected_address_group_dynamic = {'Name': 'foo', 'Type': 'dynamic', 'Match': '1.1.1.1 and 2.2.2.2'}
     assert response_dynamic == expected_address_group_dynamic
 
+    address_group_dynamic_tag_none = {'@name': 'foo', 'dynamic': {'filter': '1.1.1.1 or 2.2.2.2'}, 'tag': None}
+    response_dynamic_tag_none = prettify_address_group(address_group_dynamic_tag_none)
+    expected_address_group_dynamic_tag_none = {'Name': 'foo', 'Type': 'dynamic', 'Match': '1.1.1.1 or 2.2.2.2'}
+    assert response_dynamic_tag_none == expected_address_group_dynamic_tag_none
+
 
 def test_prettify_service():
     from Panorama import prettify_service
     service = {'@name': 'service_name', 'description': 'foo', 'protocol': {'tcp': {'port': '443'}}}
+    response = prettify_service(service)
+    expected = {'Name': 'service_name', 'Description': 'foo', 'Protocol': 'tcp', 'DestinationPort': '443'}
+    assert response == expected
+
+
+def test_prettify_service_tag_none():
+    from Panorama import prettify_service
+    service = {'@name': 'service_name', 'description': 'foo', 'protocol': {'tcp': {'port': '443'}}, 'tag': None}
     response = prettify_service(service)
     expected = {'Name': 'service_name', 'Description': 'foo', 'Protocol': 'tcp', 'DestinationPort': '443'}
     assert response == expected
@@ -159,6 +183,14 @@ def test_prettify_service_group():
     service_group = {'@name': 'sg', 'members': {'member': ['service1', 'service2']}}
     response = prettify_service_group(service_group)
     expected = {'Name': 'sg', 'Services': ['service1', 'service2']}
+    assert response == expected
+
+
+def test_prettify_service_group_tag_none():
+    from Panorama import prettify_service_group
+    service_group = {'@name': 'sg_group', 'members': {'member': ['service1', 'service2']}, 'tag': None}
+    response = prettify_service_group(service_group)
+    expected = {'Name': 'sg_group', 'Services': ['service1', 'service2']}
     assert response == expected
 
 
@@ -215,6 +247,16 @@ def test_prettify_logs():
 
 
 def test_build_policy_match_query():
+    """
+    Given:
+     - a valid arguments for policy match query generation
+
+    When:
+     - running the build_policy_match_query utility function
+
+    Then:
+     - a proper xml is generated
+    """
     from Panorama import build_policy_match_query
     source = '1.1.1.1'
     destination = '6.7.8.9'
@@ -224,6 +266,24 @@ def test_build_policy_match_query():
     expected = '<test><security-policy-match><source>1.1.1.1</source><destination>6.7.8.9</destination>' \
                '<protocol>1</protocol><application>gmail-base</application></security-policy-match></test>'
     assert response == expected
+
+
+def test_panorama_security_policy_match_command_no_target():
+    """
+    Given:
+     - a Panorama instance(mocked parameter) without the target argument
+
+    When:
+     - running the panorama-security-policy-match command
+
+    Then:
+     - Validate a proper error is raised
+    """
+    from Panorama import panorama_security_policy_match_command
+    err_msg = "The 'panorama-security-policy-match' command is relevant for a Firewall instance " \
+              "or for a Panorama instance, to be used with the target argument."
+    with pytest.raises(DemistoException, match=err_msg):
+        panorama_security_policy_match_command(demisto.args())
 
 
 def test_prettify_matching_rule():

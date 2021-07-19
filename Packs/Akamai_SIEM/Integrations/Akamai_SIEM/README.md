@@ -525,10 +525,3 @@
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-
