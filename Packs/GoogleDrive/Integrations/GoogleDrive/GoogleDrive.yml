@@ -1948,7 +1948,7 @@ script:
       predefined:
       - ""
     - name: drive_id
-      description: id of the shared drive.
+      description: id of the shared drive. Use the command google-drive-drives-list to get drives details.
       required: false
       isArray: false
       defaultValue: ""
