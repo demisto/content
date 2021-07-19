@@ -5,6 +5,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+DEFAULT_INVALID_CONFIDENCE = -1
+
 REPUTATION_COMANDS = ['ip', 'domain', 'file', 'url', 'threatstream-email-reputation']
 GOOD_SCORE = 1
 SUSPICIOUS_SCORE = 2
@@ -18,7 +20,6 @@ requests.packages.urllib3.disable_warnings()
 USERNAME = demisto.params().get('username')
 API_KEY = demisto.params().get('apikey')
 SERVER = demisto.params().get('url', '').strip('/')
-DEFAULT_INCLUDE_INACTIVE = demisto.params().get('include_inactive', False)
 USE_SSL = not demisto.params().get('insecure', False)
 BASE_URL = SERVER + '/api/'
 DEFAULT_MALICIOUS_THRESHOLD = 65
@@ -51,6 +52,18 @@ DBOT_MAPPING = {
     'value': 'Indicator',
     'type': 'Type',
     'source': 'Vendor',
+}
+DEFAULT_CONTEXT_MAPPING = {
+    'MalwareFamily': 'meta.maltype',
+    'TrafficLightProtocol': 'tlp'
+}
+IP_MAPPING = {
+    'ASN': 'asn',
+    'Address': 'value',
+    'Organization.Name': 'org',
+    'FeedRelatedIndicators.value': 'rdns',
+    'Geo.Country': 'country',
+    'ThreatTypes': 'threat_type'
 }
 
 DEFAULT_INDICATOR_MAPPING = {
@@ -134,9 +147,9 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, files
 def find_worst_indicator(indicators):
     """
         Sorts list of indicators by confidence score and returns one indicator with the highest confidence.
-        In case the indicator has no confidence value, the indicator severity score is set to 0 (low).
+        In case the indicator has no confidence value, the indicator score is set to 1 (good).
     """
-    indicators.sort(key=lambda ioc: ioc.get('confidence'), reverse=True)
+    indicators.sort(key=lambda ioc: ioc.get('confidence', DEFAULT_INVALID_CONFIDENCE), reverse=True)
     return indicators[0]
 
 
@@ -146,7 +159,8 @@ def prepare_args(args):
 
     # special handling for ip, domain, file, url and threatstream-email-reputation commands
     if demisto.command() in REPUTATION_COMANDS:
-        include_inactive = argToBoolean(args.pop('include_inactive', DEFAULT_INCLUDE_INACTIVE))
+        default_include_inactive = demisto.params().get('include_inactive', False)
+        include_inactive = argToBoolean(args.pop('include_inactive', default_include_inactive))
         args['status'] = "active,inactive" if include_inactive else "active"
     if 'indicator_severity' in args:
         # special handling for threatstream-get-indicators
@@ -179,7 +193,7 @@ def get_dbot_context(indicator, threshold=None, mapping=None):
     if not mapping:
         mapping = DBOT_MAPPING
     dbot_context = {mapping[k]: v for (k, v) in indicator.items() if k in mapping.keys()}
-    confidence = indicator['confidence']
+    confidence = indicator.get('confidence', DEFAULT_INVALID_CONFIDENCE)
     # in case threshold was defined in the instance or passed as argument
     # we have only two scores levels - malicious or good
     # if threshold wasn't defined we have three score levels malicious suspicious and good
@@ -205,9 +219,10 @@ def mark_as_malicious(indicator, threshold, context):
         Marks indicator as malicious if confidence of indicator is greater to threshold and
         adds Malicious key to returned dictionary (context) in such case.
     """
-    confidence = indicator['confidence']
+    confidence = indicator.get('confidence', DEFAULT_INVALID_CONFIDENCE)
     threshold = threshold or THRESHOLDS_FROM_PARAM.get(demisto.command()) or DEFAULT_MALICIOUS_THRESHOLD
     if confidence > threshold:
+        # 1/(threshold - 65)
         context['Malicious'] = {
             'Vendor': 'ThreatStream'
         }
@@ -231,17 +246,17 @@ def get_ip_context(indicator, threshold):
     """
         Builds and returns dictionary that will be set to IP generic context.
     """
-    ip_context = {}
-    ip_context['ASN'] = indicator.get('asn', '')
-    ip_context['Address'] = indicator.get('value', '')
-    ip_context['Geo'] = {
-        'Country': indicator.get('country', ''),
-        'Location': F"{indicator.get('latitude', '')},{indicator.get('longitude', '')}"
-    }
+    ip_context_mapping = IP_MAPPING.copy()
+    ip_context_mapping.update(DEFAULT_CONTEXT_MAPPING)
+    ip_context = {key: demisto.get(indicator, key_in_indecator)
+                  for (key, key_in_indecator) in ip_context_mapping.items()}
+    ip_context['Geo.Location'] = F"{indicator.get('latitude', '')},{indicator.get('longitude', '')}"
+
     indicator_tags = indicator.get('tags', [])
     if indicator_tags:
         ip_context['Tags'] = [str(tag.get('name', '')) for tag in indicator_tags]
 
+    ip_context = createContextSingle(ip_context)
     mark_as_malicious(indicator, threshold, ip_context)
 
     return ip_context
