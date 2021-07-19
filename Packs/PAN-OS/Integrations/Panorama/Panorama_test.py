@@ -360,7 +360,7 @@ def test_prettify_configured_user_id_agents__single_result():
     assert response == expected
 
 
-@freeze_time("2021-07-10T16:34:14.758295Z", tz_offset=-3)
+@freeze_time("2021-07-10T16:34:14.758295 UTC+1")
 def test_fetch_incidents_first_time_fetch(mocker):
     """Unit test
     Given
@@ -384,7 +384,7 @@ def test_fetch_incidents_first_time_fetch(mocker):
     # {'fetch_status': 'pending', 'job_id': '9440', 'last_time': '2021/07/19 16:29:16'}
     assert next_run.get('fetch_status') == 'pending'
     assert next_run.get('job_id') == '9440'
-    assert next_run.get('last_time') == '2021/07/10 16:34:14'
+    assert next_run.get('last_time') == '2021/07/10 17:34:14'
 
 
 def test_fetch_incidents_second_time_fetch_no_logs(mocker):
