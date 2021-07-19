@@ -45,9 +45,9 @@ class AzureADClient:
     def query_list(self,
                    url_suffix: str,
                    headers: List[str],
-                   filter_arguments: Dict[str, Optional[Any]],
                    human_readable_header: str,
                    limit: int = LIMIT_DEFAULT,
+                   filter_arguments: Optional[Dict[str, Optional[Any]]] = None,
                    filter_expression: Optional[str] = None,
                    next_link: Optional[str] = None):
         if next_link:
@@ -57,11 +57,10 @@ class AzureADClient:
         else:
             params: Dict[str, Optional[Any]] = {'$top': limit}
 
-            if filter_expression is None:
+            if filter_expression is None and filter_arguments is not None:
                 filter_expression = ' and '.join([f'{key} eq \'{value}\''
                                                   for key, value in filter_arguments.items()
                                                   if value is not None])
-
             params['$filter'] = filter_expression
             remove_nulls_from_dictionary(params)
             raw_response = self.http_request(method='GET', url_suffix=url_suffix, params=params)
@@ -153,11 +152,9 @@ class AzureADClient:
             'initiatedBy', 'activity'
         ]
 
-        filter_arguments = {}
         return self.query_list(headers=headers, limit=limit, filter_expression=filter_expression,
                                next_link=next_link, human_readable_header=f'Risky user history for {user_id}',
-                               url_suffix=f'RiskyUsers/{user_id}/history',
-                               filter_arguments=filter_arguments)
+                               url_suffix=f'RiskyUsers/{user_id}/history')
 
     def azure_ad_identity_protection_risky_users_confirm_compromised(self, user_ids: Union[str, List[str]]):
         self.http_request(method='POST',
