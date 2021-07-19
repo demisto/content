@@ -2,7 +2,7 @@ import base64
 import json
 
 import pytest
-from exchangelib import EWSDate, EWSDateTime
+from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
 from exchangelib.attachments import AttachmentId, ItemAttachment
 from exchangelib.items import Item, Message
 from freezegun import freeze_time
@@ -374,3 +374,70 @@ def test_parse_incident_from_item():
     )
     incident = parse_incident_from_item(message)
     assert incident['attachment']
+
+
+@freeze_time('2021-07-15 13:18:14.901293+00:00')
+@pytest.mark.parametrize('since_datetime, filter_arg, expected_result',
+                         [('', 'last_modified_time__gte', EWSDateTime.from_string('2021-05-23 13:08:14.901293+00:00')),
+                          ('2021-05-23 21:28:14.901293+00:00', 'datetime_received__gte',
+                           '2021-05-23 21:28:14.901293+00:00')
+                          ])
+def test_fetch_last_emails_paging(mocker, since_datetime, filter_arg, expected_result):
+    """
+    Given:
+        - Incidents with the same creation time
+        - Low max_fetch value
+
+    When:
+        - Fetching last emails
+
+    Then:
+        - Verify each run bring the next incidents
+    """
+
+    class MockObject:
+        def filter(self, last_modified_time__gte='', datetime_received__gte=''):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            # Return a list of emails
+            return messages
+
+    def mock_get_folder_by_path(path, account=None, is_public=False):
+        return MockObject()
+
+    messages = [
+        Message(subject='test1',
+                message_id='test1',
+                text_body='Hello World',
+                body='Test1',
+                datetime_received=EWSDateTime(2021, 7, 14, 1, 47, 17, tzinfo=EWSTimeZone(key='UTC')),
+                datetime_sent=EWSDateTime(2021, 7, 14, 1, 47, 15, tzinfo=EWSTimeZone(key='UTC')),
+                datetime_created=EWSDateTime(2021, 7, 14, 1, 47, 17, tzinfo=EWSTimeZone(key='UTC'))
+                ),
+        Message(subject='test2',
+                message_id='test2',
+                text_body='Hello World',
+                body='Test2',
+                datetime_received=EWSDateTime(2021, 7, 14, 1, 47, 17, tzinfo=EWSTimeZone(key='UTC')),
+                datetime_sent=EWSDateTime(2021, 7, 14, 1, 47, 15, tzinfo=EWSTimeZone(key='UTC')),
+                datetime_created=EWSDateTime(2021, 7, 14, 1, 47, 17, tzinfo=EWSTimeZone(key='UTC'))
+                )]
+
+    client = TestNormalCommands.MockClient()
+    client.max_fetch = 1
+    client.get_folder_by_path = mock_get_folder_by_path
+
+    res = fetch_last_emails(client, since_datetime=since_datetime)
+    assert res[0].subject == 'test1'
+    res = fetch_last_emails(client, since_datetime=since_datetime,exclude_ids=['test1'])
+    assert res[0].subject == 'test2'
+
+
