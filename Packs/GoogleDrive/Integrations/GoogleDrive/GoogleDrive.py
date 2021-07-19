@@ -1155,9 +1155,6 @@ def file_upload_command(client: GSuiteClient, args: Dict[str, str]) -> CommandRe
     :return: Command Result.
     """
 
-    prepare_file_command_res = prepare_file_command_request(client, args, scopes=COMMAND_SCOPES['FILES'])
-    http_request_params = prepare_file_command_res['http_request_params']
-    http_request_params['uploadType'] = 'multipart'
     file_entry_id = args.get('entry_id')
     file_path = demisto.getFilePath(file_entry_id)
 
@@ -1209,10 +1206,6 @@ def file_replace_existing_command(client: GSuiteClient, args: Dict[str, str]) ->
 
     :return: Command Result.
     """
-
-    prepare_file_command_res = prepare_file_command_request(client, args, scopes=COMMAND_SCOPES['FILES'])
-    http_request_params = prepare_file_command_res['http_request_params']
-    http_request_params['uploadType'] = 'multipart'
 
     file_entry_id = args.get('entry_id')
     file_path = demisto.getFilePath(file_entry_id)
