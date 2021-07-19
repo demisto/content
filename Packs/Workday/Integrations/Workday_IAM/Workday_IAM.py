@@ -312,6 +312,7 @@ def get_demisto_user(email_to_user_profile, employee_id_to_user_profile, workday
     if not demisto_user:
         if (email := workday_user.get(EMAIL_ADDRESS_FIELD)):
             demisto_user = email_to_user_profile.get(email)
+
     return demisto_user
 
 
