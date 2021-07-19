@@ -11,7 +11,7 @@ USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 
 BASE_URL = SERVER_NAME + 'centreon/api/index.php?'
-USE_SSL = True if demisto.params().get('insecure') else False
+USE_SSL = False if demisto.params().get('insecure') else True
 DEFAULT_HEADERS = {
     'Content-Type': 'application/json'
 }
