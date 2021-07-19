@@ -27,11 +27,12 @@ class AzureADClient:
             verify=verify,
             proxy=proxy,
             resource=f'{BASE_URL}/{resource_group_name}',
-            scope=' '.join(('offline_access',  # allows device-flow login
-                            'IdentityRiskEvent.Read.All',
-                            'IdentityRiskyUser.ReadWrite.All'
-                            )
-                           ),
+            scope=' '.join(
+                ('offline_access',  # allows device-flow login
+                 'IdentityRiskEvent.Read.All',
+                 'IdentityRiskyUser.ReadWrite.All'
+                 )
+            ),
             azure_ad_endpoint=azure_ad_endpoint
         )
         self.subscription_id = subscription_id
