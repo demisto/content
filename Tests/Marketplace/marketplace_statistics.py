@@ -42,6 +42,11 @@ class PackStatisticsHandler:
         full_series_index = self._packs_dc_desc.index
         packs_dependencies_sorted_series = self._packs_dc_desc.loc[full_series_index.isin(self._displayed_dependencies)]
         packs_dependencies_sorted = list(packs_dependencies_sorted_series.index.array)
+        # Adds a new packs that does not yet exist in the market place
+        for dep_pack_name in self._displayed_dependencies:
+            if dep_pack_name not in packs_dependencies_sorted:
+                packs_dependencies_sorted.append(dep_pack_name)
+
         logging.info(f'{self.pack_name} pack sorted deps: {packs_dependencies_sorted}')
         return packs_dependencies_sorted
 

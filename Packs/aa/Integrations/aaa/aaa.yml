@@ -1,22 +1,8 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: aaaa
+  id: aaa
   version: -1
 configuration:
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: A - Completely reliable
-  display: Source Reliability
-  name: integrationReliability
-  options:
-  - A+ - 3rd party enrichment
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: true
-  type: 15
 - defaultvalue: '2000000'
   display: Sensitivity threshold for configuring which domains are suspicious versus trusted.
   name: threshold
@@ -37,8 +23,8 @@ configuration:
   required: false
   type: 8
 description: Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence.
-display: aaaa
-name: aaaa
+display: aaa
+name: aaa
 script:
   commands:
   - arguments:
@@ -51,33 +37,18 @@ script:
     deprecated: false
     description: Provides an Alexa ranking of the Domain in question.
     execution: false
-    name: domain
+    name: aaa-get
     outputs:
-    - contextPath: Domain.Name
+    - contextPath: aaa.Name
       description: The Domain being checked
       type: string
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: number
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: string
-    - contextPath: DBotScore.Domain
-      description: Domain being reported
-      type: string
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: string
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: string
-    - contextPath: Alexa.Domain.Indicator
+    - contextPath: aaa.Domain.Indicator
       description: The Domain being checked
       type: string
-    - contextPath: Alexa.Domain.Name
+    - contextPath: aaa.Domain.Name
       description: The Domain being checked
       type: string
-    - contextPath: Alexa.Domain.Rank
+    - contextPath: aaa.Domain.Rank
       description: Alexa rank as determined by Amazon
       type: string
   isfetch: false
