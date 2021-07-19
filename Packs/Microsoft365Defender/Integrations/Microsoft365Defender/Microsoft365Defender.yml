@@ -19,8 +19,7 @@ configuration:
   name: base_url
   required: true
   type: 0
-- additionalinfo: |-
-  Use a self-deployed Azure application and authenticate using the Client Credentials flow.
+- additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
   display: client-credentials
   name: client_credentials
   required: false
