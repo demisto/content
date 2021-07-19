@@ -1,4 +1,4 @@
-This  ingratiation requires a Stealth account with the Portal Administrator role. Also, you must ensure that a Global isolation role has been created. Please see EcoAPI documentation for you specific Stealth version. 
+This ingratiation requires a Stealth account with the Portal Administrator role. Also, you must ensure that a Global isolation role has been created. Please see EcoAPI documentation for you specific Stealth version. 
 
 ## Setting Up XOAR Engine: 
 1. Ensure that you have at least one XSOAR engine installed on your corporate network. 
