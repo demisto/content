@@ -48,6 +48,7 @@ class AzureADClient:
                    filter_arguments: Optional[Dict[str, Optional[Any]]] = None,
                    filter_expression: Optional[str] = None,
                    next_link: Optional[str] = None):
+        """ Used for querying when the result is a collection (list) of items, for example RiskyUsers. """
         if next_link:
             next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
             raw_response = self.http_request(method='GET', full_url=next_link)
