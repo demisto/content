@@ -4211,7 +4211,7 @@ def panorama_query_logs(log_type: str, number_of_logs: str, query: str):
 
     if number_of_logs:
         params['nlogs'] = number_of_logs
-    # raise DemistoException(str(params))
+
     result = http_request(
         URL,
         'GET',
@@ -7045,14 +7045,14 @@ def parse_logs_to_incidents(result: dict, last_run: dict) -> Tuple[Optional[List
     logs_dict = result['response']['result']['log']['logs']
     if logs_dict['@count'] == '0':  # fetch is over, no new logs found. reset the status and job id
         demisto.debug('Querying the logs job to fetch PAN-OS logs as incidents did not find any new logs.')
-        last_run['status'] = 'new'
+        last_run['fetch_status'] = 'new'
         last_run['job_id'] = '-1'
         return [], last_run
 
     # logs where retrieved successfully. reset the status and job id
     raw_logs = logs_dict['entry']
     demisto.debug(f'Creating {len(raw_logs)} PAN-OS logs as incidents')
-    next_run = {'status': 'new'}
+    next_run = {'fetch_status': 'new'}
     incidents = [{
         'name': f'{raw_log.get("TimeReceived")} PAN-OS log',
         'occurred': raw_log.get("TimeReceived"),
@@ -7081,7 +7081,7 @@ def fetch_incidents(params: dict, last_run: dict) -> Tuple[list, dict]:
     number_of_logs = int(params.get('max_fetch', '50'))
     log_type = str(params.get('log_type', 'threat'))
 
-    fetch_status = last_run.get('status')
+    fetch_status = last_run.get('fetch_status')
     job_id = last_run.get('job_id')
     if fetch_status and fetch_status != 'new':  # if we do not need to initiate a new query, try to get the logs
         result = panorama_get_logs(job_id)
@@ -7102,7 +7102,7 @@ def fetch_incidents(params: dict, last_run: dict) -> Tuple[list, dict]:
     demisto.info(f'PAN-OS executing fetch with logs_type: {log_type} and query: {str(query)}')
     submitted_job = panorama_query_logs(log_type=log_type, number_of_logs=number_of_logs, query=query)
     job_id = submitted_job['response']['result']['job']  # get the job id
-
+    demisto.info(f'PAN-OS executed fetch job_id is: {job_id}')
     # update the last_run time to now
     next_run = {'fetch_status': 'pending', 'job_id': job_id, 'last_time': now}
 
