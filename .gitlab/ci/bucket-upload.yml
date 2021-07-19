@@ -103,6 +103,12 @@ create-instances-upload-flow:
     - exit "$EXIT_CODE"
 
 
+install-packs-in-server6_2:
+  extends: .install_packs_in_server
+  variables:
+    INSTANCE_ROLE: "Server 6.2"
+
+
 install-packs-in-server6_1:
   extends: .install_packs_in_server
   variables:
@@ -122,7 +128,12 @@ install-packs-in-server-master:
 
 
 upload-packs-to-marketplace:
-  needs: ["run-validations-upload-flow", "install-packs-in-server6_1", "install-packs-in-server6_0", "install-packs-in-server-master"] # add "run-unittests-and-lint-upload-flow" after docker in docker is resolved.
+  needs: ["run-validations-upload-flow",
+          "install-packs-in-server6_2",
+          "install-packs-in-server6_1",
+          "install-packs-in-server6_0",
+          "install-packs-in-server-master"
+  ] # add "run-unittests-and-lint-upload-flow" after docker in docker is resolved.
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
