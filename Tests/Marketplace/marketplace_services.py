@@ -619,8 +619,10 @@ class Pack(object):
 
         """
         dependencies_data_result = {}
-        dependencies_ids = {d for d in self.user_metadata.get('dependencies', {}).keys()}
-        dependencies_ids.update(self.user_metadata.get('displayedImages', []))
+        first_level_dependencies = self.user_metadata.get('dependencies', {})
+        all_level_displayed_dependencies = self.user_metadata.get('displayedImages', [])
+        dependencies_ids = {d for d in first_level_dependencies.keys()}
+        dependencies_ids.update(all_level_displayed_dependencies)
 
         if self._pack_name != GCPConfig.BASE_PACK:  # check that current pack isn't Base Pack in order to prevent loop
             dependencies_ids.add(GCPConfig.BASE_PACK)  # Base pack is always added as pack dependency
@@ -1735,7 +1737,6 @@ class Pack(object):
         self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
             tags=self._tags, certification=self._certification, content_items=self._content_items
         )
-
         self._related_integration_images = self._get_all_pack_images(
             self._displayed_integration_images, displayed_dependencies, dependencies_data,
             pack_dependencies_by_download_count
@@ -1765,7 +1766,7 @@ class Pack(object):
         try:
             self.set_pack_dependencies(packs_dependencies_mapping)
             if 'displayedImages' not in self.user_metadata:
-                self.user_metadata['displayedImages'] = packs_dependencies_mapping.get(
+                self._user_metadata['displayedImages'] = packs_dependencies_mapping.get(
                     self._pack_name, {}).get('displayedImages', [])
                 logging.info(f"Adding auto generated display images for {self._pack_name} pack")
             dependencies_data, is_missing_dependencies = \
