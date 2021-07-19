@@ -2223,7 +2223,7 @@ def fetch_last_emails(
     exclude_ids = exclude_ids if exclude_ids else set()
     demisto.debug(f'{APP_NAME} - Exclude ID list: {exclude_ids}')
     counter = 0
-    for item in qs.iterator():
+    for item in qs:
         counter += 1
         if isinstance(item, Message) and item.message_id not in exclude_ids:
             result.append(item)

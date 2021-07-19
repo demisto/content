@@ -917,9 +917,11 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
     qs = qs.filter().order_by('datetime_received')
 
     result = []
+    counter = 0
     for item in qs:
+        counter += 1
         try:
-            if isinstance(item, Message):
+            if isinstance(item, Message) and item.message_id not in exclude_ids:
                 result.append(item)
                 if len(result) >= MAX_FETCH:
                     break
@@ -927,12 +929,9 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
             future_utils.raise_from(ValueError(
                 'Got an error when pulling incidents. You might be using the wrong exchange version.'
             ), exc)
-
-    if exclude_ids and len(exclude_ids) > 0:
-        exclude_ids = set(exclude_ids)
-        result = [x for x in result if x.message_id not in exclude_ids]
+    demisto.debug(f'EWS V2 - Got total of {counter} from ews query. '
+                  f'{len(result)} results not excluded. ')
     return result
-
 
 def keys_to_camel_case(value):
     def str_to_camel_case(snake_str):
@@ -1241,17 +1240,19 @@ def parse_incident_from_item(item, is_fetch):
 
 def fetch_emails_as_incidents(account_email, folder_name):
     last_run = get_last_run()
+    excluded_ids = set(last_run.get(LAST_RUN_IDS))
 
     try:
         account = get_account(account_email)
         last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
-        ids = deque(last_run.get(LAST_RUN_IDS, []), maxlen=LAST_RUN_IDS_QUEUE_SIZE)
         incidents = []
         incident = {}  # type: Dict[Any, Any]
+        current_fetch_ids = set()
+
         for item in last_emails:
             if item.message_id:
-                ids.append(item.message_id)
+                current_fetch_ids.add(item.message_id)
                 incident = parse_incident_from_item(item, True)
                 if incident:
                     incidents.append(incident)
@@ -1259,16 +1260,22 @@ def fetch_emails_as_incidents(account_email, folder_name):
                 if len(incidents) >= MAX_FETCH:
                     break
 
-        last_run_time = incident.get('occurred', last_run.get(LAST_RUN_TIME))
+        demisto.debug(f'EWS V2 - ending fetch - got {len(incidents)} incidents.')
+        last_run_time = incident.get("occurred", last_run.get(LAST_RUN_TIME))
         if isinstance(last_run_time, EWSDateTime):
             last_run_time = last_run_time.ewsformat()
 
+        if last_run_time > LAST_RUN_TIME:
+            ids = current_fetch_ids
+        else:
+            ids = current_fetch_ids | excluded_ids
+
         new_last_run = {
-            LAST_RUN_TIME: last_run_time,
-            LAST_RUN_FOLDER: folder_name,
-            LAST_RUN_IDS: list(ids),
-            ERROR_COUNTER: 0
-        }
+                LAST_RUN_TIME: last_run_time,
+                LAST_RUN_FOLDER: folder_name,
+                LAST_RUN_IDS: list(ids),
+                ERROR_COUNTER: 0
+            }
 
         demisto.setLastRun(new_last_run)
         return incidents
