@@ -38,8 +38,8 @@ class Client:
     tlp_color = None
     error_codes: Dict[int, str] = {
         500: 'XDR internal server error.',
-        401: 'Unauthorized access. An issue occurred during authentication. This can indicate an ' +    # noqa: W504
-             'incorrect key, id, or other invalid authentication parameters.',
+        401: 'Unauthorized access. An issue occurred during authentication. This can indicate an '    # noqa: W504
+             + 'incorrect key, id, or other invalid authentication parameters.',
         402: 'Unauthorized access. User does not have the required license type to run this API.',
         403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.'
     }
@@ -47,7 +47,7 @@ class Client:
     def __init__(self, params: Dict):
         self._base_url: str = urljoin(params.get('url'), '/public_api/v1/indicators/')
         self._verify_cert: bool = not params.get('insecure', False)
-        self._headers: Dict = get_headers(params)
+        self._params = params
         handle_proxy()
 
     def http_request(self, url_suffix: str, requests_kwargs) -> Dict:
@@ -64,6 +64,10 @@ class Client:
         except json.decoder.JSONDecodeError as error:
             demisto.error(str(res.content))
             raise error
+
+    @property
+    def _headers(self):
+        return get_headers(self._params)
 
 
 def get_headers(params: Dict) -> Dict:
