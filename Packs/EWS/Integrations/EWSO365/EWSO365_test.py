@@ -386,7 +386,7 @@ def test_fetch_last_emails_paging(mocker, since_datetime, filter_arg, expected_r
     """
     Given:
         - Incidents with the same creation time
-        - Low max_fetch value
+        - max_fetch value = 1
 
     When:
         - Fetching last emails
@@ -437,5 +437,5 @@ def test_fetch_last_emails_paging(mocker, since_datetime, filter_arg, expected_r
 
     res = fetch_last_emails(client, since_datetime=since_datetime)
     assert res[0].subject == 'test1'
-    res = fetch_last_emails(client, since_datetime=since_datetime,exclude_ids=['test1'])
+    res = fetch_last_emails(client, since_datetime=since_datetime, exclude_ids=['test1'])
     assert res[0].subject == 'test2'
