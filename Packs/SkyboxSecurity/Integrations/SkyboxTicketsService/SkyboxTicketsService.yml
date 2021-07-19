@@ -1,4 +1,4 @@
-category: Ticketing
+category: IT Services
 commonfields:
   id: SkyboxTicketsService
   version: -1
@@ -16,14 +16,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 1c6fd8b8-71b1-4040-8ebf-43d23f7bd4f9
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: Skybox® Change Manager workflows for firewall rule creation, recertification
   and deprovisioning help maintain continuous compliance, close security gaps and
   limit vulnerability exposures.
@@ -32,33 +24,48 @@ name: SkyboxTicketsService
 script:
   commands:
   - arguments:
-    - description: The ticket ID
+    - default: false
+      description: The ticket ID
+      isArray: false
       name: ticketId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the list of ticket workflows in Skybox,
       including an ID and a name for each ticket.
+    execution: false
     name: skybox-getTicketWorkflow
     outputs:
     - contextPath: Skybox.getTicketWorkflow.getTicketWorkflow
       type: String
   - arguments:
-    - description: The ID of the ticket
+    - default: false
+      description: The ID of the ticket
+      isArray: false
       name: ticketId
       required: true
-    - description: The ID of the original change request
+      secret: false
+    - default: false
+      description: The ID of the original change request
+      isArray: false
       name: changeRequestId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the route information from an original
       change request.
+    execution: false
     name: skybox-getOriginalChangeRequestRouteInfoV1
     outputs:
     - contextPath: Skybox.getOriginalChangeRequestRouteInfoV1.getOriginalChangeRequestRouteInfoV1
       type: String
   - arguments:
     - auto: PREDEFINED
+      default: false
       description: The Ticket Type
+      isArray: false
       name: ticketType
       predefined:
       - VulnerabilityTicket
@@ -66,84 +73,147 @@ script:
       - VulnerabilityDefinitionTicket
       - AccessChangeTicket
       - PolicyViolationTicket
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the list of phases for the specified ticket
       type.
+    execution: false
     name: skybox-getTicketTypePhasesByTicketType
     outputs:
     - contextPath: Skybox.getTicketTypePhasesByTicketType
       type: String
   - arguments:
-    - description: The ID of the ticket
+    - default: false
+      description: The ID of the ticket
+      isArray: false
       name: ticketId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the (original) change requests in the
       specified ticket.
+    execution: false
     name: skybox-getOriginalChangeRequestV7
     outputs:
     - contextPath: Skybox.getOriginalChangeRequestV7.getOriginalChangeRequestV7
       type: String
   - arguments:
-    - description: The ID of the ticket
+    - default: false
+      description: The ID of the ticket
+      isArray: false
       name: ticketId
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: |-
         Specifies whether the ticket ID is the Skybox ticket ID or the ID from the
         external ticketing system
         Possible values:
         l SBV
         l EXTERNAL
+      isArray: false
       name: ticketIdType
       predefined:
       - SBV
       - EXTERNAL
       required: true
-    - description: The Code type of the field
+      secret: false
+    - default: false
+      description: The Code type of the field
+      isArray: false
       name: ticketFields_typeCode
-    - description: The field value
+      required: false
+      secret: false
+    - default: false
+      description: The field value
+      isArray: false
       name: ticketFields_value
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Sets ticket data in Skybox.
       You can use this method with all ticket types.
+    execution: false
     name: skybox-setTicketFields
     outputs:
     - contextPath: Skybox.setTicketFields.setTicketFields
       type: String
   - arguments:
-    - defaultValue: The access Chagne Ticket ID
+    - default: false
+      defaultValue: The access Chagne Ticket ID
       description: The change ticket ID
+      isArray: false
       name: accessChangeTicket_id
-    - defaultValue: The access Change Ticket comment
+      required: false
+      secret: false
+    - default: false
+      defaultValue: The access Change Ticket comment
       description: The Change ticket comment
+      isArray: false
       name: accessChangeTicket_comment
-    - defaultValue: The access Change Ticket description
+      required: false
+      secret: false
+    - default: false
+      defaultValue: The access Change Ticket description
       description: The Change ticket description
+      isArray: false
       name: accessChangeTicket_description
-    - defaultValue: The access Change Ticket creator
+      required: false
+      secret: false
+    - default: false
+      defaultValue: The access Change Ticket creator
       description: The Change ticket author
+      isArray: false
       name: accessChangeTicket_createdBy
-    - defaultValue: The access Change Ticket creation time
+      required: false
+      secret: false
+    - default: false
+      defaultValue: The access Change Ticket creation time
       description: The creation time
+      isArray: false
       name: accessChangeTicket_creationTime
-    - defaultValue: The access Change Ticket last modification author
+      required: false
+      secret: false
+    - default: false
+      defaultValue: The access Change Ticket last modification author
       description: The last modification author
+      isArray: false
       name: accessChangeTicket_lastModifiedBy
-    - defaultValue: The change ticket last modification time
+      required: false
+      secret: false
+    - default: false
+      defaultValue: The change ticket last modification time
       description: The time of the last modification
+      isArray: false
       name: accessChangeTicket_lastModificationTime
-    - defaultValue: The acess Change Ticket external ticket ID
+      required: false
+      secret: false
+    - default: false
+      defaultValue: The acess Change Ticket external ticket ID
       description: The external ticket ID
+      isArray: false
       name: accessChangeTicket_externalTicketId
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l Pending
         l Open
         l Closed
         l Error
         l Rejected
+      isArray: false
       name: accessChangeTicket_externalTicketStatus
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l New
         l InProgress
@@ -154,12 +224,24 @@ script:
         l Verified
         l Reopened
         l Demoted
+      isArray: false
       name: accessChangeTicket_status
-    - description: The Change ticket title
+      required: false
+      secret: false
+    - default: false
+      description: The Change ticket title
+      isArray: false
       name: accessChangeTicket_title
-    - description: The change ticket details
+      required: false
+      secret: false
+    - default: false
+      description: The change ticket details
+      isArray: false
       name: accessChangeTicket_changeDetails
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The Priority
         Possible values:
         l P1
@@ -167,14 +249,30 @@ script:
         l P3
         l P4
         l P5
+      isArray: false
       name: accessChangeTicket_priority
-    - description: The Change ticket owner
+      required: false
+      secret: false
+    - default: false
+      description: The Change ticket owner
+      isArray: false
       name: accessChangeTicket_owner
-    - description: The Change ticket due date
+      required: false
+      secret: false
+    - default: false
+      description: The Change ticket due date
+      isArray: false
       name: accessChangeTicket_dueDate
-    - description: The change ticket done date
+      required: false
+      secret: false
+    - default: false
+      description: The change ticket done date
+      isArray: false
       name: accessChangeTicket_doneDate
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The likelihood
         Possible values:
         l Unknown
@@ -183,118 +281,312 @@ script:
         l High
         l Priority
         l Critica
+      isArray: false
       name: accessChangeTicket_likelihood
-    - description: The CC list email address.
+      required: false
+      secret: false
+    - default: false
+      description: The CC list email address.
+      isArray: false
       name: accessChangeTicket_ccList_email
-    - description: The CC list username
+      required: false
+      secret: false
+    - default: false
+      description: The CC list username
+      isArray: false
       name: accessChangeTicket_ccList_userName
-    - description: The custom field comment
+      required: false
+      secret: false
+    - default: false
+      description: The custom field comment
+      isArray: false
       name: accessChangeTicket_customFields_comment
-    - description: The custom field author
+      required: false
+      secret: false
+    - default: false
+      description: The custom field author
+      isArray: false
       name: accessChangeTicket_customFields_createdBy
-    - description: The custom field creation time
+      required: false
+      secret: false
+    - default: false
+      description: The custom field creation time
+      isArray: false
       name: accessChangeTicket_customFields_creationTime
-    - description: The custom field description
+      required: false
+      secret: false
+    - default: false
+      description: The custom field description
+      isArray: false
       name: accessChangeTicket_customFields_description
-    - description: The custom field id
+      required: false
+      secret: false
+    - default: false
+      description: The custom field id
+      isArray: false
       name: accessChangeTicket_customFields_id
-    - description: The custom field last modification time
+      required: false
+      secret: false
+    - default: false
+      description: The custom field last modification time
+      isArray: false
       name: accessChangeTicket_customFields_lastModificationTime
-    - description: The custom field last modification author
+      required: false
+      secret: false
+    - default: false
+      description: The custom field last modification author
+      isArray: false
       name: accessChangeTicket_customFields_lastModifiedBy
-    - description: The custom field name
+      required: false
+      secret: false
+    - default: false
+      description: The custom field name
+      isArray: false
       name: accessChangeTicket_customFields_name
-    - description: The custom field type code
+      required: false
+      secret: false
+    - default: false
+      description: The custom field type code
+      isArray: false
       name: accessChangeTicket_customFields_typeCode
-    - description: The custom field value
+      required: false
+      secret: false
+    - default: false
+      description: The custom field value
+      isArray: false
       name: accessChangeTicket_customFields_value
-    - description: The access Change Ticket current phase name
+      required: false
+      secret: false
+    - default: false
+      description: The access Change Ticket current phase name
+      isArray: false
       name: accessChangeTicket_currentPhaseName
-    - description: Phase comment
+      required: false
+      secret: false
+    - default: false
+      description: Phase comment
+      isArray: false
       name: phases_comment
-    - description: Phase author
+      required: false
+      secret: false
+    - default: false
+      description: Phase author
+      isArray: false
       name: phases_createdBy
-    - description: Phase creation time
+      required: false
+      secret: false
+    - default: false
+      description: Phase creation time
+      isArray: false
       name: phases_creationTime
-    - description: Current phase
+      required: false
+      secret: false
+    - default: false
+      description: Current phase
+      isArray: false
       name: phases_current
-    - description: Phase demotions count
+      required: false
+      secret: false
+    - default: false
+      description: Phase demotions count
+      isArray: false
       name: phases_demotionsCount
-    - description: Phase description
+      required: false
+      secret: false
+    - default: false
+      description: Phase description
+      isArray: false
       name: phases_description
-    - description: Phase due date
+      required: false
+      secret: false
+    - default: false
+      description: Phase due date
+      isArray: false
       name: phases_dueDate
-    - description: Phase end date
+      required: false
+      secret: false
+    - default: false
+      description: Phase end date
+      isArray: false
       name: phases_endDate
-    - description: The Phase ID
+      required: false
+      secret: false
+    - default: false
+      description: The Phase ID
+      isArray: false
       name: phases_id
-    - description: The Phase last modification time
+      required: false
+      secret: false
+    - default: false
+      description: The Phase last modification time
+      isArray: false
       name: phases_lastModificationTime
-    - description: The phase last modification author
+      required: false
+      secret: false
+    - default: false
+      description: The phase last modification author
+      isArray: false
       name: phases_lastModifiedBy
-    - description: The phase owner
+      required: false
+      secret: false
+    - default: false
+      description: The phase owner
+      isArray: false
       name: phases_owner
-    - description: The phase revised due date
+      required: false
+      secret: false
+    - default: false
+      description: The phase revised due date
+      isArray: false
       name: phases_revisedDueDate
-    - description: The phase start date
+      required: false
+      secret: false
+    - default: false
+      description: The phase start date
+      isArray: false
       name: phases_startDate
-    - description: The phase ticket type default owner
+      required: false
+      secret: false
+    - default: false
+      description: The phase ticket type default owner
+      isArray: false
       name: phases_ticketTypePhase_defaultOwner
-    - description: The phase ticket type ID
+      required: false
+      secret: false
+    - default: false
+      description: The phase ticket type ID
+      isArray: false
       name: phases_ticketTypePhase_id
-    - description: The phase ticket type name
+      required: false
+      secret: false
+    - default: false
+      description: The phase ticket type name
+      isArray: false
       name: phases_ticketTypePhase_name
-    - description: The phase ticket type order
+      required: false
+      secret: false
+    - default: false
+      description: The phase ticket type order
+      isArray: false
       name: phases_ticketTypePhase_order
-    - description: The phase ticket type
+      required: false
+      secret: false
+    - default: false
+      description: The phase ticket type
+      isArray: false
       name: phases_ticketTypePhase_ticketType
-    - description: The phase closure waiting status
+      required: false
+      secret: false
+    - default: false
+      description: The phase closure waiting status
+      isArray: false
       name: phases_ticketTypePhase_waitingForClosure
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Creates an Access Change ticket with a workflow
       and phases.
+    execution: false
     name: skybox-createAccessChangeTicket
     outputs:
     - contextPath: Skybox.createAccessChangeTicket.createAccessChangeTicket
       type: String
   - arguments:
-    - name: attachmentId
+    - default: false
+      isArray: false
+      name: attachmentId
       required: true
-    - defaultValue: output.file
+      secret: false
+    - default: false
+      defaultValue: output.file
       description: The filename to save the attachment as
+      isArray: false
       name: output_filename
       required: true
+      secret: false
+    deprecated: false
     description: Retrieves the specified attachment from Skybox.
+    execution: false
     name: skybox-getAttachmentFile
     outputs:
     - contextPath: Skybox.getAttachmentFile.getAttachmentFile
       type: String
   - arguments:
-    - description: The access Change Ticket ID
+    - default: false
+      description: The access Change Ticket ID
+      isArray: false
       name: accessChangeTicket_id
-    - description: The access Change Ticket comment
+      required: false
+      secret: false
+    - default: false
+      description: The access Change Ticket comment
+      isArray: false
       name: accessChangeTicket_comment
-    - description: The access Change Ticket description
+      required: false
+      secret: false
+    - default: false
+      description: The access Change Ticket description
+      isArray: false
       name: accessChangeTicket_description
-    - description: The access Change ticket creator
+      required: false
+      secret: false
+    - default: false
+      description: The access Change ticket creator
+      isArray: false
       name: accessChangeTicket_createdBy
-    - description: The access Change Ticket creation Time
+      required: false
+      secret: false
+    - default: false
+      description: The access Change Ticket creation Time
+      isArray: false
       name: accessChangeTicket_creationTime
-    - description: The access Change Ticket last modification author
+      required: false
+      secret: false
+    - default: false
+      description: The access Change Ticket last modification author
+      isArray: false
       name: accessChangeTicket_lastModifiedBy
-    - description: The access Change Ticket last modification time
+      required: false
+      secret: false
+    - default: false
+      description: The access Change Ticket last modification time
+      isArray: false
       name: accessChangeTicket_lastModificationTime
-    - description: The access Change Ticket external ticket ID
+      required: false
+      secret: false
+    - default: false
+      description: The access Change Ticket external ticket ID
+      isArray: false
       name: accessChangeTicket_externalTicketId
-    - description: The access Change Ticket external Ticket Status
+      required: false
+      secret: false
+    - default: false
+      description: The access Change Ticket external Ticket Status
+      isArray: false
       name: accessChangeTicket_externalTicketStatus
-    - description: The access Change Ticket status
+      required: false
+      secret: false
+    - default: false
+      description: The access Change Ticket status
+      isArray: false
       name: accessChangeTicket_status
-    - description: The access Change Ticket title
+      required: false
+      secret: false
+    - default: false
+      description: The access Change Ticket title
+      isArray: false
       name: accessChangeTicket_title
-    - description: The access change ticket details
+      required: false
+      secret: false
+    - default: false
+      description: The access change ticket details
+      isArray: false
       name: accessChangeTicket_changeDetails
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The access Change Ticket priority
         Possible values:
         l P1
@@ -302,14 +594,30 @@ script:
         l P3
         l P4
         l P5
+      isArray: false
       name: accessChangeTicket_priority
-    - description: The access Change Ticket owner
+      required: false
+      secret: false
+    - default: false
+      description: The access Change Ticket owner
+      isArray: false
       name: accessChangeTicket_owner
-    - description: The access Change Ticket due Date
+      required: false
+      secret: false
+    - default: false
+      description: The access Change Ticket due Date
+      isArray: false
       name: accessChangeTicket_dueDate
-    - description: The access Change Ticket done date
+      required: false
+      secret: false
+    - default: false
+      description: The access Change Ticket done date
+      isArray: false
       name: accessChangeTicket_doneDate
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The access Change Ticket likelihood
         Possible values:
         l Unknown
@@ -318,277 +626,473 @@ script:
         l High
         l Priority
         l Critical
+      isArray: false
       name: accessChangeTicket_likelihood
-    - description: The access Change Ticket CC email
+      required: false
+      secret: false
+    - default: false
+      description: The access Change Ticket CC email
+      isArray: false
       name: accessChangeTicket_ccList_email
-    - description: The access Change Ticket CC username
+      required: false
+      secret: false
+    - default: false
+      description: The access Change Ticket CC username
+      isArray: false
       name: accessChangeTicket_ccList_userName
-    - description: The custom field comment
+      required: false
+      secret: false
+    - default: false
+      description: The custom field comment
+      isArray: false
       name: accessChangeTicket_customFields_comment
-    - description: The custom field crated by
+      required: false
+      secret: false
+    - default: false
+      description: The custom field crated by
+      isArray: false
       name: accessChangeTicket_customFields_createdBy
-    - description: The custom field creation time
+      required: false
+      secret: false
+    - default: false
+      description: The custom field creation time
+      isArray: false
       name: accessChangeTicket_customFields_creationTime
-    - description: The custom field description
+      required: false
+      secret: false
+    - default: false
+      description: The custom field description
+      isArray: false
       name: accessChangeTicket_customFields_description
-    - description: The custom field ID
+      required: false
+      secret: false
+    - default: false
+      description: The custom field ID
+      isArray: false
       name: accessChangeTicket_customFields_id
-    - description: The custom field last modification time
+      required: false
+      secret: false
+    - default: false
+      description: The custom field last modification time
+      isArray: false
       name: accessChangeTicket_customFields_lastModificationTime
-    - description: The custom field last modification author
+      required: false
+      secret: false
+    - default: false
+      description: The custom field last modification author
+      isArray: false
       name: accessChangeTicket_customFields_lastModifiedBy
-    - description: The custom fields ame
+      required: false
+      secret: false
+    - default: false
+      description: The custom fields ame
+      isArray: false
       name: accessChangeTicket_customFields_name
-    - description: The cusotm fields type code
+      required: false
+      secret: false
+    - default: false
+      description: The cusotm fields type code
+      isArray: false
       name: accessChangeTicket_customFields_typeCode
-    - description: The custom field value
+      required: false
+      secret: false
+    - default: false
+      description: The custom field value
+      isArray: false
       name: accessChangeTicket_customFields_value
-    - description: The current phase name
+      required: false
+      secret: false
+    - default: false
+      description: The current phase name
+      isArray: false
       name: accessChangeTicket_currentPhaseName
-    - description: The access rule action
+      required: false
+      secret: false
+    - default: false
+      description: The access rule action
+      isArray: false
       name: accessRuleElements_action
-    - description: The access rule comment
+      required: false
+      secret: false
+    - default: false
+      description: The access rule comment
+      isArray: false
       name: accessRuleElements_comment
-    - description: The access rule description
+      required: false
+      secret: false
+    - default: false
+      description: The access rule description
+      isArray: false
       name: accessRuleElements_description
-    - description: The access rule destination address
+      required: false
+      secret: false
+    - default: false
+      description: The access rule destination address
+      isArray: false
       name: accessRuleElements_destinationAddresses
-    - description: The access rule direction
+      required: false
+      secret: false
+    - default: false
+      description: The access rule direction
+      isArray: false
       name: accessRuleElements_direction
-    - description: The access rule enablement status
+      required: false
+      secret: false
+    - default: false
+      description: The access rule enablement status
+      isArray: false
       name: accessRuleElements_disabled
-    - description: The firewall ID
+      required: false
+      secret: false
+    - default: false
+      description: The firewall ID
+      isArray: false
       name: accessRuleElements_firewall_id
-    - description: The firewall name
+      required: false
+      secret: false
+    - default: false
+      description: The firewall name
+      isArray: false
       name: accessRuleElements_firewall_name
-    - description: The firewall path
+      required: false
+      secret: false
+    - default: false
+      description: The firewall path
+      isArray: false
       name: accessRuleElements_firewall_path
-    - description: The access rule global unique ID
+      required: false
+      secret: false
+    - default: false
+      description: The access rule global unique ID
+      isArray: false
       name: accessRuleElements_globalUniqueId
-    - description: The access rule ID
+      required: false
+      secret: false
+    - default: false
+      description: The access rule ID
+      isArray: false
       name: accessRuleElements_id
-    - description: The access rule implied
+      required: false
+      secret: false
+    - default: false
+      description: The access rule implied
+      isArray: false
       name: accessRuleElements_implied
-    - description: The access rule authentication status
+      required: false
+      secret: false
+    - default: false
+      description: The access rule authentication status
+      isArray: false
       name: accessRuleElements_isAuthenticated
-    - description: The access rule network interfaces
+      required: false
+      secret: false
+    - default: false
+      description: The access rule network interfaces
+      isArray: false
       name: accessRuleElements_netInterfaces
-    - description: The original text in the destination field
+      required: false
+      secret: false
+    - default: false
+      description: The original text in the destination field
+      isArray: false
       name: accessRuleElements_orgDestinationText
       required: true
-    - description: The original text in the services field.
+      secret: false
+    - default: false
+      description: The original text in the services field.
+      isArray: false
       name: accessRuleElements_orgPortsText
-    - name: accessRuleElements_orgRuleNumber
-    - description: The original rule ID as taken from device.
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: accessRuleElements_orgRuleNumber
+      required: false
+      secret: false
+    - default: false
+      description: The original rule ID as taken from device.
+      isArray: false
       name: accessRuleElements_orgRuleText
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The text (definition) of the access rule as taken from
         the device.
+      isArray: false
       name: accessRuleElements_orgSourceText
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Services resolved to object names, in the form of
         80/TCP or 80-80/TCP.
+      isArray: false
       name: accessRuleElements_ports
-    - description: The name of the rule chain.
+      required: false
+      secret: false
+    - default: false
+      description: The name of the rule chain.
+      isArray: false
       name: accessRuleElements_ruleChain
-    - description: The order of the rule in its chain
+      required: false
+      secret: false
+    - default: false
+      description: The order of the rule in its chain
+      isArray: false
       name: accessRuleElements_sbOrder
-    - description: The services (ports) used by the rule
+      required: false
+      secret: false
+    - default: false
+      description: The services (ports) used by the rule
+      isArray: false
       name: accessRuleElements_services
-    - description: Addresses are resolved to ranges.
+      required: false
+      secret: false
+    - default: false
+      description: Addresses are resolved to ranges.
+      isArray: false
       name: accessRuleElements_sourceAddresses
-    - description: The source network interfaces
+      required: false
+      secret: false
+    - default: false
+      description: The source network interfaces
+      isArray: false
       name: accessRuleElements_sourceNetInterfaces
-    - name: workflowId
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: workflowId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Creates tickets for certification of a firewall’s
       access rules.
+    execution: false
     name: skybox-createRecertifyTicketV2
     outputs:
     - contextPath: Skybox.createRecertifyTicketV2.createRecertifyTicketV2
       type: String
   - arguments:
-    - description: The ticket ID
+    - default: false
+      description: The ticket ID
+      isArray: false
       name: ticketId
       required: true
+      secret: false
+    deprecated: false
     description: Retrieves an Access Change ticket from Skybox.
+    execution: false
     name: skybox-getAccessChangeTicket
     outputs:
     - contextPath: Skybox.getAccessChangeTicket.getAccessChangeTicket
       type: String
   - arguments:
-    - description: The access request IDs
+    - default: false
+      description: The access request IDs
+      isArray: false
       name: accessRequestIds
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Retrieves change requests according to their ID
       numbers.
+    execution: false
     name: skybox-getAccessRequests
     outputs:
     - contextPath: Skybox.getAccessRequests.getAccessRequests
       type: String
   - arguments:
-    - description: The ticket ID
+    - default: false
+      description: The ticket ID
+      isArray: false
       name: ticketId
       required: true
-    - description: The change request ID
+      secret: false
+    - default: false
+      description: The change request ID
+      isArray: false
       name: changeRequestId
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the list of Vulnerability Definitions that, if
       the requested change is made, are directly
       exposed to assets.
+    execution: false
     name: skybox-getPotentialVulnerabilitiesV2
     outputs:
     - contextPath: Skybox.getPotentialVulnerabilitiesV2.getPotentialVulnerabilitiesV2
       type: String
   - arguments:
-    - description: The ticket ID
+    - default: false
+      description: The ticket ID
+      isArray: false
       name: ticketId
       required: true
-    - description: The change request IDs
+      secret: false
+    - default: false
+      description: The change request IDs
+      isArray: false
       name: changeRequestIds
+      required: true
+      secret: false
+    deprecated: false
     description: Deletes change requests from a ticket
+    execution: false
     name: skybox-deleteChangeRequests
     outputs:
     - contextPath: Skybox.deleteChangeRequests.deleteChangeRequests
       type: String
   - arguments:
-    - description: The ticket ID
+    - default: false
+      description: The ticket ID
+      isArray: false
       name: ticketId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Deletes the specified Access Change ticket in
       Skybox.
+    execution: false
     name: skybox-deleteAccessChangeTicket
     outputs:
-    - contextPath: Skybox.deleteAccessChangeTicket.deleteAccessChangeTicket
+    - contextPath: Skybox.deleteAccessChangeTicket
       type: String
-  - arguments: []
+  - deprecated: false
     description: |-
       Retrieves the list of unimplemented change
       requests in Skybox Change Manager according
       to the permissions of the user sending the
       request. The information retrieved includes the
       reasons that the changes were not implemented.
+    execution: false
     name: skybox-getNotImplementedChangeRequestsV2
     outputs:
-    - contextPath: Skybox.getNotImplementedChangeRequestsV2.getNotImplementedChangeRequestsV2
+    - contextPath: Skybox.getNotImplementedChangeRequestsV2
       type: String
   - arguments:
-    - description: The ticket ID
+    - default: false
+      description: The ticket ID
+      isArray: false
       name: ticketId
       required: true
+      secret: false
+    deprecated: false
     description: Retrieves the history of a ticket.
+    execution: false
     name: skybox-getTicketEvents
     outputs:
-    - contextPath: Skybox.getTicketEvents.getTicketEvents
+    - contextPath: Skybox.getTicketEvents
       type: String
   - arguments:
-    - description: The ticket ID
+    - default: false
+      description: The ticket ID
+      isArray: false
       name: ticketId
       required: true
-    - description: The change request IDs
+      secret: false
+    - default: false
+      description: The change request IDs
+      isArray: false
       name: changeRequestId
       required: true
+      secret: false
+    deprecated: false
     description: Retriev the Change Request Reviewers
+    execution: false
     name: skybox-getChangeRequestReviewers
     outputs:
     - contextPath: Skybox.getChangeRequestReviewers.getChangeRequestReviewers
       type: String
   - arguments:
-    - description: The ticket ID
+    - default: false
+      description: The ticket ID
+      isArray: false
       name: ticketId
       required: true
-    - description: The change request ID
+      secret: false
+    - default: false
+      description: The change request ID
+      isArray: false
       name: changeRequestId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the rule attributes for the access rule in
       a change request.
+    execution: false
     name: skybox-getChangeRequestRuleAttributes
     outputs:
-    - contextPath: Skybox.getChangeRequestRuleAttributes.getChangeRequestRuleAttributes
+    - contextPath: Skybox.getChangeRequestRuleAttributes
       type: String
   - arguments:
-    - description: The ticket ID
+    - default: false
+      description: The ticket ID
+      isArray: false
       name: ticketId
       required: true
-    - description: The change request ID
+      secret: false
+    - default: false
+      description: The change request ID
+      isArray: false
       name: changeRequestId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the generated command output for the
       given change request. For Cisco firewalls, the
       command is in Cisco format. For other firewalls,
       the command is in a generic format.
+    execution: false
     name: skybox-getGeneratedCommands
     outputs:
-    - contextPath: Skybox.getGeneratedCommands.getGeneratedCommands
+    - contextPath: Skybox.getGeneratedCommands
       type: String
-  - arguments: []
+  - deprecated: false
     description: |-
       Retrieves the list of implemented change requests
       in Skybox Change Manager according to the
       permissions of the user sending the request.
+    execution: false
     name: skybox-getImplementedChangeRequests
     outputs:
-    - contextPath: Skybox.getImplementedChangeRequests.getImplementedChangeRequests
+    - contextPath: Skybox.getImplementedChangeRequests
       type: String
   - arguments:
-    - description: The ticket ID
+    - default: false
+      description: The ticket ID
+      isArray: false
       name: ticketId
       required: true
-    - description: The change request comment
-      name: changeRequests_comment
-    - description: The change request compliance status
-      name: changeRequests_complianceStatus
-    - description: The change request author
-      name: changeRequests_createdBy
-    - description: The change request creation time
-      name: changeRequests_creationTime
-    - description: The change request description
-      name: changeRequests_description
-    - description: The change request ID
-      name: changeRequests_id
-    - description: The change request required status
-      name: changeRequests_isRequiredStatus
-    - description: The change request last modification time
-      name: changeRequests_lastModificationTime
-    - description: The change request last modification author
-      name: changeRequests_lastModifiedBy
-    - description: |-
-        The ID number of the original change
-        request, when relevant.
-      name: changeRequests_originalChangeRequestId
-    - description: |-
-        Possible values:
-        l Verified
-        l Not Verified
-        l Error
-        l Computing
-        l Unknown
-      name: changeRequests_verificationStatus
-    description: |-
-      Adds original change requests to a ticket and then
-      calculates the derived change requests, checks
-      whether a change is required, and checks for
-      policy compliance violations and potential
-      vulnerabilities.
-    name: skybox-addOriginalChangeRequests
-    outputs:
-    - contextPath: Skybox.addOriginalChangeRequests.addOriginalChangeRequests
-      type: String
-  - arguments:
-    - description: The ticket ID
-      name: ticketId
-      required: true
-    - description: The phase ID
+      secret: false
+    - default: false
+      description: The phase ID
+      isArray: false
       name: phaseOperation_phaseId
-    - description: The phase owner
+      required: false
+      secret: false
+    - default: false
+      description: The phase owner
+      isArray: false
       name: phaseOperation_phaseOwner
-    - description: The phase operation reject
+      required: false
+      secret: false
+    - default: false
+      description: The phase operation reject
+      isArray: false
       name: phaseOperation_reject
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l ACCEPT
         l CHANGE_PHASE
@@ -599,43 +1103,84 @@ script:
         l REASSIGN
         l REOPEN
         l REQUEST_TO_CLOSE
+      isArray: false
       name: phaseOperation_type
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Enables you to change the phase of a Vulnerability
       Definition ticket without sending the full ticket
       data.
+    execution: false
     name: skybox-operateOnVulnerabilityDefinitionTicket
     outputs:
-    - contextPath: Skybox.operateOnVulnerabilityDefinitionTicket.operateOnVulnerabilityDefinitionTicket
+    - contextPath: Skybox.operateOnVulnerabilityDefinitionTicket
       type: String
   - arguments:
-    - description: The change ticket ID
+    - default: false
+      description: The change ticket ID
+      isArray: false
       name: accessChangeTicket_id
-    - defaultValue: The change ticket comment
+      required: false
+      secret: false
+    - default: false
+      defaultValue: The change ticket comment
       description: The change ticket comment
+      isArray: false
       name: accessChangeTicket_comment
-    - description: The change ticket description
+      required: false
+      secret: false
+    - default: false
+      description: The change ticket description
+      isArray: false
       name: accessChangeTicket_description
-    - description: The change ticket author
+      required: false
+      secret: false
+    - default: false
+      description: The change ticket author
+      isArray: false
       name: accessChangeTicket_createdBy
-    - description: The change ticket creation time
+      required: false
+      secret: false
+    - default: false
+      description: The change ticket creation time
+      isArray: false
       name: accessChangeTicket_creationTime
-    - description: The change ticket modification author
+      required: false
+      secret: false
+    - default: false
+      description: The change ticket modification author
+      isArray: false
       name: accessChangeTicket_lastModifiedBy
-    - description: The change ticket last modification time
+      required: false
+      secret: false
+    - default: false
+      description: The change ticket last modification time
+      isArray: false
       name: accessChangeTicket_lastModificationTime
-    - description: The external ticket ID
+      required: false
+      secret: false
+    - default: false
+      description: The external ticket ID
+      isArray: false
       name: accessChangeTicket_externalTicketId
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l Pending
         l Open
         l Closed
         l Error
         l Rejected
+      isArray: false
       name: accessChangeTicket_externalTicketStatus
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l New
         l InProgress
@@ -646,12 +1191,24 @@ script:
         l Verified
         l Reopened
         l Demoted
+      isArray: false
       name: accessChangeTicket_status
-    - description: The change ticket title
+      required: false
+      secret: false
+    - default: false
+      description: The change ticket title
+      isArray: false
       name: accessChangeTicket_title
-    - description: The change ticket details
+      required: false
+      secret: false
+    - default: false
+      description: The change ticket details
+      isArray: false
       name: accessChangeTicket_changeDetails
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The change ticket priority.
         Possible values:
         l P1
@@ -659,14 +1216,30 @@ script:
         l P3
         l P4
         l P5
+      isArray: false
       name: accessChangeTicket_priority
-    - description: The change ticket owner
+      required: false
+      secret: false
+    - default: false
+      description: The change ticket owner
+      isArray: false
       name: accessChangeTicket_owner
-    - description: The change ticket due date
+      required: false
+      secret: false
+    - default: false
+      description: The change ticket due date
+      isArray: false
       name: accessChangeTicket_dueDate
-    - description: The change ticket done date
+      required: false
+      secret: false
+    - default: false
+      description: The change ticket done date
+      isArray: false
       name: accessChangeTicket_doneDate
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l Unknown
         l Low
@@ -674,155 +1247,356 @@ script:
         l High
         l Priority
         l Critica
+      isArray: false
       name: accessChangeTicket_likelihood
-    - description: The CC list email address
+      required: false
+      secret: false
+    - default: false
+      description: The CC list email address
+      isArray: false
       name: accessChangeTicket_ccList_email
-    - description: The CC List user name
+      required: false
+      secret: false
+    - default: false
+      description: The CC List user name
+      isArray: false
       name: accessChangeTicket_ccList_userName
-    - description: The custom field comment
+      required: false
+      secret: false
+    - default: false
+      description: The custom field comment
+      isArray: false
       name: accessChangeTicket_customFields_comment
-    - description: The custom field creation author
+      required: false
+      secret: false
+    - default: false
+      description: The custom field creation author
+      isArray: false
       name: accessChangeTicket_customFields_createdBy
-    - description: The custom field creation time
+      required: false
+      secret: false
+    - default: false
+      description: The custom field creation time
+      isArray: false
       name: accessChangeTicket_customFields_creationTime
-    - description: The custom field description
+      required: false
+      secret: false
+    - default: false
+      description: The custom field description
+      isArray: false
       name: accessChangeTicket_customFields_description
-    - description: The custom field ID
+      required: false
+      secret: false
+    - default: false
+      description: The custom field ID
+      isArray: false
       name: accessChangeTicket_customFields_id
-    - description: The custom field last modification time
+      required: false
+      secret: false
+    - default: false
+      description: The custom field last modification time
+      isArray: false
       name: accessChangeTicket_customFields_lastModificationTime
-    - description: The custom field last modification author
+      required: false
+      secret: false
+    - default: false
+      description: The custom field last modification author
+      isArray: false
       name: accessChangeTicket_customFields_lastModifiedBy
-    - description: The custom field name
+      required: false
+      secret: false
+    - default: false
+      description: The custom field name
+      isArray: false
       name: accessChangeTicket_customFields_name
-    - description: The custom field type code
+      required: false
+      secret: false
+    - default: false
+      description: The custom field type code
+      isArray: false
       name: accessChangeTicket_customFields_typeCode
-    - description: The custom field value
+      required: false
+      secret: false
+    - default: false
+      description: The custom field value
+      isArray: false
       name: accessChangeTicket_customFields_value
-    - description: The current phase name
+      required: false
+      secret: false
+    - default: false
+      description: The current phase name
+      isArray: false
       name: accessChangeTicket_currentPhaseName
-    - description: The phase comment
+      required: false
+      secret: false
+    - default: false
+      description: The phase comment
+      isArray: false
       name: phases_comment
-    - description: The phase author
+      required: false
+      secret: false
+    - default: false
+      description: The phase author
+      isArray: false
       name: phases_createdBy
-    - description: The phase creation time
+      required: false
+      secret: false
+    - default: false
+      description: The phase creation time
+      isArray: false
       name: phases_creationTime
-    - description: The current phase
+      required: false
+      secret: false
+    - default: false
+      description: The current phase
+      isArray: false
       name: phases_current
-    - description: The phase demotions count
+      required: false
+      secret: false
+    - default: false
+      description: The phase demotions count
+      isArray: false
       name: phases_demotionsCount
-    - description: The phase description
+      required: false
+      secret: false
+    - default: false
+      description: The phase description
+      isArray: false
       name: phases_description
-    - description: The phase due date
+      required: false
+      secret: false
+    - default: false
+      description: The phase due date
+      isArray: false
       name: phases_dueDate
-    - description: The phase end date
+      required: false
+      secret: false
+    - default: false
+      description: The phase end date
+      isArray: false
       name: phases_endDate
-    - description: The phase ID
+      required: false
+      secret: false
+    - default: false
+      description: The phase ID
+      isArray: false
       name: phases_id
-    - description: The phase last modification time
+      required: false
+      secret: false
+    - default: false
+      description: The phase last modification time
+      isArray: false
       name: phases_lastModificationTime
-    - description: The phase last modification author
+      required: false
+      secret: false
+    - default: false
+      description: The phase last modification author
+      isArray: false
       name: phases_lastModifiedBy
-    - description: The phase owner
+      required: false
+      secret: false
+    - default: false
+      description: The phase owner
+      isArray: false
       name: phases_owner
-    - description: The phase revised due date
+      required: false
+      secret: false
+    - default: false
+      description: The phase revised due date
+      isArray: false
       name: phases_revisedDueDate
-    - description: The phase start date
+      required: false
+      secret: false
+    - default: false
+      description: The phase start date
+      isArray: false
       name: phases_startDate
-    - description: The ticket type phase default owner
+      required: false
+      secret: false
+    - default: false
+      description: The ticket type phase default owner
+      isArray: false
       name: phases_ticketTypePhase_defaultOwner
-    - description: The ticket type phase ID
+      required: false
+      secret: false
+    - default: false
+      description: The ticket type phase ID
+      isArray: false
       name: phases_ticketTypePhase_id
-    - description: The ticket type phase name
+      required: false
+      secret: false
+    - default: false
+      description: The ticket type phase name
+      isArray: false
       name: phases_ticketTypePhase_name
-    - description: The ticket type phase order
+      required: false
+      secret: false
+    - default: false
+      description: The ticket type phase order
+      isArray: false
       name: phases_ticketTypePhase_order
-    - description: The ticket type
+      required: false
+      secret: false
+    - default: false
+      description: The ticket type
+      isArray: false
       name: phases_ticketTypePhase_ticketType
-    - description: The ticket type phase waiting for closure status
+      required: false
+      secret: false
+    - default: false
+      description: The ticket type phase waiting for closure status
+      isArray: false
       name: phases_ticketTypePhase_waitingForClosure
-    - description: The workflow ID
+      required: false
+      secret: false
+    - default: false
+      description: The workflow ID
+      isArray: false
       name: workflowId
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Creates an Access Change ticket with a workflow
       and phases.
+    execution: false
     name: skybox-createChangeManagerTicket
     outputs:
-    - contextPath: Skybox.createChangeManagerTicket.createChangeManagerTicket
+    - contextPath: Skybox.createChangeManagerTicket
       type: String
   - arguments:
-    - description: The ticket ID
+    - default: false
+      description: The ticket ID
+      isArray: false
       name: ticketIds
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the list of unimplemented change
       requests in the specified tickets according to the
       permissions of the user sending the request. The
       information retrieved includes the reasons that the
       changes were not implemented.
+    execution: false
     name: skybox-getTicketsNotImplementedChangeRequestsV2
     outputs:
-    - contextPath: Skybox.getTicketsNotImplementedChangeRequestsV2.getTicketsNotImplementedChangeRequestsV2
+    - contextPath: Skybox.getTicketsNotImplementedChangeRequestsV2
       type: String
   - arguments:
-    - description: The host ID
+    - default: false
+      description: The host ID
+      isArray: false
       name: hostId
       required: true
-    - description: The date range end date
+      secret: false
+    - default: false
+      description: The date range end date
+      isArray: false
       name: dateRange_endDate
-    - description: The date range start date
+      required: false
+      secret: false
+    - default: false
+      description: The date range start date
+      isArray: false
       name: dateRange_startDate
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Retrieves all change requests for the specified
       firewall created during the specified time frame.
+    execution: false
     name: skybox-findAccessRequests
     outputs:
-    - contextPath: Skybox.findAccessRequests.findAccessRequests
+    - contextPath: Skybox.findAccessRequests
       type: String
   - arguments:
-    - description: The ticket ID
+    - default: false
+      description: The ticket ID
+      isArray: false
       name: ticketId
       required: true
-    - description: |-
+      secret: false
+    - default: false
+      description: |-
         A list of change request IDs. If the list is empty, all change requests
         are expanded
+      isArray: false
       name: accessRequestIds
-    - description: Specifies whether to expand the selected change requests.
+      required: false
+      secret: false
+    - default: false
+      description: Specifies whether to expand the selected change requests.
+      isArray: false
       name: recalculate
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Finds the firewalls for the change requests (sets of
       source, destination, and port) in a ticket and
       expands the list of change requests in the ticket so
       that each change request includes the firewall,
       source, destination, and port.
+    execution: false
     name: skybox-expandFirewallsForAccessChangeTicket
     outputs:
-    - contextPath: Skybox.expandFirewallsForAccessChangeTicket.expandFirewallsForAccessChangeTicket
+    - contextPath: Skybox.expandFirewallsForAccessChangeTicket
       type: String
   - arguments:
-    - description: Unknown
+    - default: false
+      description: Unknown
+      isArray: false
       name: arg0
-    - description: The attachment description
+      required: false
+      secret: false
+    - default: false
+      description: The attachment description
+      isArray: false
       name: attachmentDesc
-    - description: The original file name
+      required: false
+      secret: false
+    - default: false
+      description: The original file name
+      isArray: false
       name: sourceFileName
-    - description: javax.activation.DataHandler
+      required: false
+      secret: false
+    - default: false
+      description: javax.activation.DataHandler
+      isArray: false
       name: attachmentData
-    - description: The ticket ID
+      required: false
+      secret: false
+    - default: false
+      description: The ticket ID
+      isArray: false
       name: ticketId
       required: true
-    - description: The phase for which to add the attachment
+      secret: false
+    - default: false
+      description: The phase for which to add the attachment
+      isArray: false
       name: phaseName
+      required: false
+      secret: false
+    deprecated: false
     description: Creates an attachment to a ticket in Skybox.
+    execution: false
     name: skybox-addAttachmentFile
     outputs:
-    - contextPath: Skybox.addAttachmentFile.addAttachmentFile
+    - contextPath: Skybox.addAttachmentFile
       type: String
   - arguments:
-    - description: The filter author user name
+    - default: false
+      description: The filter author user name
+      isArray: false
       name: filter_createdBy
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Free text search in the following ticket fields:
         l Title
         l Comment
@@ -834,16 +1608,36 @@ script:
         l Solutions
         l CVE catalog ID
         l Custom fields of type String
+      isArray: false
       name: filter_freeTextFilter
-    - description: The filter modification author
+      required: false
+      secret: false
+    - default: false
+      description: The filter modification author
+      isArray: false
       name: filter_modifiedBy
-    - description: Unknown
+      required: false
+      secret: false
+    - default: false
+      description: Unknown
+      isArray: false
       name: filter_myGroups
-    - description: Search tickets by owner
+      required: false
+      secret: false
+    - default: false
+      description: Search tickets by owner
+      isArray: false
       name: filter_owner
-    - description: Search tickets by current phase
+      required: false
+      secret: false
+    - default: false
+      description: Search tickets by current phase
+      isArray: false
       name: filter_phaseName
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Search tickets by status.
         Possible values:
         l New
@@ -855,171 +1649,358 @@ script:
         l Verified
         l Reopened
         l Demoted
+      isArray: false
       name: filter_statusFilter
-    - description: Search tickets by IDs
+      required: false
+      secret: false
+    - default: false
+      description: Search tickets by IDs
+      isArray: false
       name: filter_ticketIdsFilter
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Counts tickets by owner, phase, status, ID, or free
       text. This method is used for page calculations.
+    execution: false
     name: skybox-countAccessChangeTickets
     outputs:
     - contextPath: Skybox.countAccessChangeTickets.countAccessChangeTickets
       type: String
   - arguments:
-    - description: The ID of the ticket
+    - default: false
+      description: The ID of the ticket
+      isArray: false
       name: ticketId
       required: true
-    - description: The ID of the original change request
+      secret: false
+    - default: false
+      description: The ID of the original change request
+      isArray: false
       name: changeRequestId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the list of derived change requests for
       an original change request.
+    execution: false
     name: skybox-getDerivedChangeRequestsV7
     outputs:
     - contextPath: Skybox.getDerivedChangeRequestsV7.getDerivedChangeRequestsV7
       type: String
   - arguments:
-    - description: The ID of the ticket
+    - default: false
+      description: The ID of the ticket
+      isArray: false
       name: ticketId
       required: true
-    - description: |-
+      secret: false
+    - default: false
+      description: |-
         An array of address elements to use as the destination of
         the query.
+      isArray: false
       name: accessRequests_accessQuery_destinationAddresses
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Mandatory for network-context analysis; null for firewallcontext analysis.
         Each network entity consists of a network IP address and
         a network ID in the model that you can find using
         findNetworks
+      isArray: false
       name: accessRequests_accessQuery_destinationElements
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Mandatory for firewall-context analysis; null for networkcontext analysis.
         Use findFirewalls to get this entity.
+      isArray: false
       name: accessRequests_accessQuery_firewall
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Specifies whether the answer is to include accessible or
         inaccessible paths.
         l 0: Accessible
         l 1: Inaccessible
         l 2: Both
+      isArray: false
       name: accessRequests_accessQuery_mode
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         A list of ports (also referred to as services) to use in the
         query.
+      isArray: false
       name: accessRequests_accessQuery_ports
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         An array of address elements to use as the source of the
         query
+      isArray: false
       name: accessRequests_accessQuery_sourceAddresses
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Mandatory for network-context analysis; null for firewallcontext analysis.
         Each network entity consists of a network IP address and
         a network ID in the model that you can find using
         findNetworks.
+      isArray: false
       name: accessRequests_accessQuery_sourceElements
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l FirewallMode
         l NetworkMode
+      isArray: false
       name: accessRequests_accessQueryMode
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l UNCOMPUTED
         l ACCESSIBLE
         l UNACCESSIBLE
         l ERROR
+      isArray: false
       name: accessRequests_accessStatus
-    - description: The access type
+      required: false
+      secret: false
+    - default: false
+      description: The access type
+      isArray: false
       name: accessRequests_accessType
-    - description: The access request comment
+      required: false
+      secret: false
+    - default: false
+      description: The access request comment
+      isArray: false
       name: accessRequests_comment
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l UNCOMPUTED
         l YES
         l NO
         l ERROR
+      isArray: false
       name: accessRequests_complianceStatus
-    - description: The name of the Access Check in Skybox
+      required: false
+      secret: false
+    - default: false
+      description: The name of the Access Check in Skybox
+      isArray: false
       name: accessRequests_complianceViolations_aprName
-    - description: The path of the Access Check in Skybox
+      required: false
+      secret: false
+    - default: false
+      description: The path of the Access Check in Skybox
+      isArray: false
       name: accessRequests_complianceViolations_aprPath
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l 0=Very Low
         l 1=Low
         l 2=Medium
         l 3=High
         l 4=Critica
+      isArray: false
       name: accessRequests_complianceViolations_importance
-    - description: List of String
+      required: false
+      secret: false
+    - default: false
+      description: List of String
+      isArray: false
       name: accessRequests_complianceViolations_portsViolating
-    - description: Acess request author user name
+      required: false
+      secret: false
+    - default: false
+      description: Acess request author user name
+      isArray: false
       name: accessRequests_createdBy
-    - description: Access request creation time
+      required: false
+      secret: false
+    - default: false
+      description: Access request creation time
+      isArray: false
       name: accessRequests_creationTime
-    - description: Access request description
+      required: false
+      secret: false
+    - default: false
+      description: Access request description
+      isArray: false
       name: accessRequests_description
-    - description: List of zone names
+      required: false
+      secret: false
+    - default: false
+      description: List of zone names
+      isArray: false
       name: accessRequests_destinationZones
-    - description: Access request status
+      required: false
+      secret: false
+    - default: false
+      description: Access request status
+      isArray: false
       name: accessRequests_disabled
-    - description: The access request ID
+      required: false
+      secret: false
+    - default: false
+      description: The access request ID
+      isArray: false
       name: accessRequests_id
-    - description: The access request last modification time
+      required: false
+      secret: false
+    - default: false
+      description: The access request last modification time
+      isArray: false
       name: accessRequests_lastModificationTime
-    - description: The access request last modification author
+      required: false
+      secret: false
+    - default: false
+      description: The access request last modification author
+      isArray: false
       name: accessRequests_lastModifiedBy
-    - description: The catalog ID
+      required: false
+      secret: false
+    - default: false
+      description: The catalog ID
+      isArray: false
       name: accessRequests_potentialVulnerabilities_catalogId
-    - description: The CVE ID
+      required: false
+      secret: false
+    - default: false
+      description: The CVE ID
+      isArray: false
       name: accessRequests_potentialVulnerabilities_cveId
-    - description: The host IP
+      required: false
+      secret: false
+    - default: false
+      description: The host IP
+      isArray: false
       name: accessRequests_potentialVulnerabilities_hostIp
-    - description: The hostname
+      required: false
+      secret: false
+    - default: false
+      description: The hostname
+      isArray: false
       name: accessRequests_potentialVulnerabilities_hostName
-    - description: The vulnerability ID
+      required: false
+      secret: false
+    - default: false
+      description: The vulnerability ID
+      isArray: false
       name: accessRequests_potentialVulnerabilities_id
-    - description: The vulnerability severity
+      required: false
+      secret: false
+    - default: false
+      description: The vulnerability severity
+      isArray: false
       name: accessRequests_potentialVulnerabilities_severity
-    - description: The vulnerability title
+      required: false
+      secret: false
+    - default: false
+      description: The vulnerability title
+      isArray: false
       name: accessRequests_potentialVulnerabilities_title
-    - description: List of zone names
+      required: false
+      secret: false
+    - default: false
+      description: List of zone names
+      isArray: false
       name: accessRequests_sourceZones
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Sets the list of change requests to the specified
       ticket
+    execution: false
     name: skybox-setTicketAccessRequests
     outputs:
     - contextPath: Skybox.setTicketAccessRequests.setTicketAccessRequests
       type: String
   - arguments:
-    - description: The access change ticket ID
+    - default: false
+      description: The access change ticket ID
+      isArray: false
       name: accessChangeTicket_id
-    - description: The access chagne ticket comment
+      required: false
+      secret: false
+    - default: false
+      description: The access chagne ticket comment
+      isArray: false
       name: accessChangeTicket_comment
-    - description: The access change ticket description
+      required: false
+      secret: false
+    - default: false
+      description: The access change ticket description
+      isArray: false
       name: accessChangeTicket_description
-    - description: The access change ticket author
+      required: false
+      secret: false
+    - default: false
+      description: The access change ticket author
+      isArray: false
       name: accessChangeTicket_createdBy
-    - description: The access change ticket creation time
+      required: false
+      secret: false
+    - default: false
+      description: The access change ticket creation time
+      isArray: false
       name: accessChangeTicket_creationTime
-    - description: The access change ticket last modification author
+      required: false
+      secret: false
+    - default: false
+      description: The access change ticket last modification author
+      isArray: false
       name: accessChangeTicket_lastModifiedBy
-    - description: The access change ticket last modification time
+      required: false
+      secret: false
+    - default: false
+      description: The access change ticket last modification time
+      isArray: false
       name: accessChangeTicket_lastModificationTime
-    - description: The access chagne ticket external ticket ID
+      required: false
+      secret: false
+    - default: false
+      description: The access chagne ticket external ticket ID
+      isArray: false
       name: accessChangeTicket_externalTicketId
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l Pending
         l Open
         l Closed
         l Error
         l Rejected
+      isArray: false
       name: accessChangeTicket_externalTicketStatus
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l New
         l InProgress
@@ -1030,12 +2011,24 @@ script:
         l Verified
         l Reopened
         l Demoted
+      isArray: false
       name: accessChangeTicket_status
-    - description: The access chagne ticket title
+      required: false
+      secret: false
+    - default: false
+      description: The access chagne ticket title
+      isArray: false
       name: accessChangeTicket_title
-    - description: The access change ticket details
+      required: false
+      secret: false
+    - default: false
+      description: The access change ticket details
+      isArray: false
       name: accessChangeTicket_changeDetails
-    - defaultValue: P5
+      required: false
+      secret: false
+    - default: false
+      defaultValue: P5
       description: |-
         Possible values:
         l P1
@@ -1043,14 +2036,30 @@ script:
         l P3
         l P4
         l P5
+      isArray: false
       name: accessChangeTicket_priority
-    - description: The access change ticket owner
+      required: false
+      secret: false
+    - default: false
+      description: The access change ticket owner
+      isArray: false
       name: accessChangeTicket_owner
-    - description: The access change ticket due date
+      required: false
+      secret: false
+    - default: false
+      description: The access change ticket due date
+      isArray: false
       name: accessChangeTicket_dueDate
-    - description: The access change ticket done date
+      required: false
+      secret: false
+    - default: false
+      description: The access change ticket done date
+      isArray: false
       name: accessChangeTicket_doneDate
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l Unknown
         l Low
@@ -1058,62 +2067,157 @@ script:
         l High
         l Priority
         l Critical
+      isArray: false
       name: accessChangeTicket_likelihood
-    - description: The CC list email
+      required: false
+      secret: false
+    - default: false
+      description: The CC list email
+      isArray: false
       name: accessChangeTicket_ccList_email
-    - description: The CC list user name
+      required: false
+      secret: false
+    - default: false
+      description: The CC list user name
+      isArray: false
       name: accessChangeTicket_ccList_userName
-    - description: The custom field comment
+      required: false
+      secret: false
+    - default: false
+      description: The custom field comment
+      isArray: false
       name: accessChangeTicket_customFields_comment
-    - description: The custom field author
+      required: false
+      secret: false
+    - default: false
+      description: The custom field author
+      isArray: false
       name: accessChangeTicket_customFields_createdBy
-    - description: The cusotm field creation time
+      required: false
+      secret: false
+    - default: false
+      description: The cusotm field creation time
+      isArray: false
       name: accessChangeTicket_customFields_creationTime
-    - description: The cusotm field description
+      required: false
+      secret: false
+    - default: false
+      description: The cusotm field description
+      isArray: false
       name: accessChangeTicket_customFields_description
-    - description: The custom field ID
+      required: false
+      secret: false
+    - default: false
+      description: The custom field ID
+      isArray: false
       name: accessChangeTicket_customFields_id
-    - description: The custom field last modification time
+      required: false
+      secret: false
+    - default: false
+      description: The custom field last modification time
+      isArray: false
       name: accessChangeTicket_customFields_lastModificationTime
-    - description: The custom field last modification author
+      required: false
+      secret: false
+    - default: false
+      description: The custom field last modification author
+      isArray: false
       name: accessChangeTicket_customFields_lastModifiedBy
-    - description: The custom field name
+      required: false
+      secret: false
+    - default: false
+      description: The custom field name
+      isArray: false
       name: accessChangeTicket_customFields_name
-    - description: The custom field type code
+      required: false
+      secret: false
+    - default: false
+      description: The custom field type code
+      isArray: false
       name: accessChangeTicket_customFields_typeCode
-    - description: The custom field value
+      required: false
+      secret: false
+    - default: false
+      description: The custom field value
+      isArray: false
       name: accessChangeTicket_customFields_value
-    - description: The custom field phase name
+      required: false
+      secret: false
+    - default: false
+      description: The custom field phase name
+      isArray: false
       name: accessChangeTicket_currentPhaseName
+      required: false
+      secret: false
+    deprecated: false
     description: Enables you to modify an Access Change ticket.
+    execution: false
     name: skybox-updateAccessChangeTicket
     outputs:
     - contextPath: Skybox.updateAccessChangeTicket.updateAccessChangeTicket
       type: String
   - arguments:
-    - description: The ID of the ticket
+    - default: false
+      description: The ID of the ticket
+      isArray: false
       name: ticketId
       required: true
-    - description: The ID of the original change request
+      secret: false
+    - default: false
+      description: The ID of the original change request
+      isArray: false
       name: changeRequestId
       required: true
-    - name: firewalls_accessRules
-    - description: The ID of the asset
+      secret: false
+    - default: false
+      isArray: false
+      name: firewalls_accessRules
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the asset
+      isArray: false
       name: firewalls_id
       required: true
-    - description: The firewall interfaces
+      secret: false
+    - default: false
+      description: The firewall interfaces
+      isArray: false
       name: firewalls_interfaces
-    - description: The asset name
+      required: false
+      secret: false
+    - default: false
+      description: The asset name
+      isArray: false
       name: firewalls_name
-    - description: The net interface description
+      required: false
+      secret: false
+    - default: false
+      description: The net interface description
+      isArray: false
       name: firewalls_netInterface_description
-    - description: The net interface ID
+      required: false
+      secret: false
+    - default: false
+      description: The net interface ID
+      isArray: false
       name: firewalls_netInterface_id
-    - description: The interface IP Address
+      required: false
+      secret: false
+    - default: false
+      description: The interface IP Address
+      isArray: false
       name: firewalls_netInterface_ipAddress
-    - description: The interface name
+      required: false
+      secret: false
+    - default: false
+      description: The interface name
+      isArray: false
       name: firewalls_netInterface_name
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l NAT
         l ETHERNET
@@ -1131,31 +2235,71 @@ script:
         l VPN
         l CONNECTING_CLOUD_
         INTERFACE
+      isArray: false
       name: firewalls_netInterface_type
-    - description: The interface zone name
+      required: false
+      secret: false
+    - default: false
+      description: The interface zone name
+      isArray: false
       name: firewalls_netInterface_zoneName
-    - description: The interface zone type
+      required: false
+      secret: false
+    - default: false
+      description: The interface zone type
+      isArray: false
       name: firewalls_netInterface_zoneType
-    - description: The asset operating system
+      required: false
+      secret: false
+    - default: false
+      description: The asset operating system
+      isArray: false
       name: firewalls_os
-    - description: The asset operating system vendor
+      required: false
+      secret: false
+    - default: false
+      description: The asset operating system vendor
+      isArray: false
       name: firewalls_osVendor
-    - description: The version of the asset operating system
+      required: false
+      secret: false
+    - default: false
+      description: The version of the asset operating system
+      isArray: false
       name: firewalls_osVersion
-    - description: The primary IP address of the asset
+      required: false
+      secret: false
+    - default: false
+      description: The primary IP address of the asset
+      isArray: false
       name: firewalls_primaryIp
-    - description: The number of routing rules in this asset
+      required: false
+      secret: false
+    - default: false
+      description: The number of routing rules in this asset
+      isArray: false
       name: firewalls_routingRules
-    - description: The number of services in this asset
+      required: false
+      secret: false
+    - default: false
+      description: The number of services in this asset
+      isArray: false
       name: firewalls_services
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The status of the asset:
         l Up
         l Down
         l Not Found
         l Unknown
+      isArray: false
       name: firewalls_status
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l Firewall
         l Router
@@ -1165,138 +2309,257 @@ script:
         l WirelessDevice
         l IPS
         l Switch
+      isArray: false
       name: firewalls_type
-    - description: The number of vulnerability occurrences on the asset
+      required: false
+      secret: false
+    - default: false
+      description: The number of vulnerability occurrences on the asset
+      isArray: false
       name: firewalls_vulnerabilities
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Adds a derived change request to a ticket if the
       original change request is of type Access Update
+    execution: false
     name: skybox-addDerivedChangeRequests
     outputs:
     - contextPath: Skybox.addDerivedChangeRequests.addDerivedChangeRequests
       type: String
   - arguments:
-    - description: The ID of the ticket
+    - default: false
+      description: The ID of the ticket
+      isArray: false
       name: ticketId
       required: true
-    - description: |-
+      secret: false
+    - default: false
+      description: |-
         The ID of the change request for which you want to see policy
         violations
+      isArray: false
       name: changeRequestId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the list of Access Policy violations
       associated with a change request.
+    execution: false
     name: skybox-getPolicyViolations
     outputs:
     - contextPath: Skybox.getPolicyViolations.getPolicyViolations
       type: String
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         The ID of the attachment.
         Find the ID using getAttachmentList.
+      isArray: false
       name: attachmentId
       required: true
+      secret: false
+    deprecated: false
     description: Deletes an attachment from a ticket in Skybox.
+    execution: false
     name: skybox-removeAttachmentFile
     outputs:
     - contextPath: Skybox.removeAttachmentFile.removeAttachmentFile
       type: String
-  - arguments: []
+  - deprecated: false
     description: |-
       Retrieves the list of ticket workflows in Skybox,
       including an ID and a name for each ticket.
+    execution: false
     name: skybox-getTicketWorkflows
     outputs:
     - contextPath: Skybox.getTicketWorkflows.getTicketWorkflows
       type: String
   - arguments:
-    - description: The ID of the ticket
+    - default: false
+      description: The ID of the ticket
+      isArray: false
       name: ticketId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Recalculates the change requests of the specified
       ticket.
+    execution: false
     name: skybox-recalculateTicketChangeRequests
     outputs:
     - contextPath: Skybox.recalculateTicketChangeRequests.recalculateTicketChangeRequests
       type: String
   - arguments:
-    - description: Array of Integer (ancestor IDs)
+    - default: false
+      description: Array of Integer (ancestor IDs)
+      isArray: false
       name: filter_ancestorOf
-    - description: Array of Integeger (children IDs)
+      required: false
+      secret: false
+    - default: false
+      description: Array of Integeger (children IDs)
+      isArray: false
       name: filter_childrenOf
-    - description: The configuration item types (Array of String)
+      required: false
+      secret: false
+    - default: false
+      description: The configuration item types (Array of String)
+      isArray: false
       name: filter_configurationItemTypes
-    - description: The free text filter
+      required: false
+      secret: false
+    - default: false
+      description: The free text filter
+      isArray: false
       name: filter_freeTextFilter
-    - description: The fitler IDs (Array of Integer)
+      required: false
+      secret: false
+    - default: false
+      description: The fitler IDs (Array of Integer)
+      isArray: false
       name: filter_ids
-    - description: Should the filter ignore empty groups? (boolean)
+      required: false
+      secret: false
+    - default: false
+      description: Should the filter ignore empty groups? (boolean)
+      isArray: false
       name: filter_ignoreEmptyGroups
-    - description: The filter status (boolean)
+      required: false
+      secret: false
+    - default: false
+      description: The filter status (boolean)
+      isArray: false
       name: filter_isEnabled
-    - description: The filter name
+      required: false
+      secret: false
+    - default: false
+      description: The filter name
+      isArray: false
       name: filter_nameFilter
-    - description: The size of the sub range
+      required: false
+      secret: false
+    - default: false
+      description: The size of the sub range
+      isArray: false
       name: subRange_size
-    - description: The sub range start
+      required: false
+      secret: false
+    - default: false
+      description: The sub range start
+      isArray: false
       name: subRange_start
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the configuration items that are defined
       in the system.
+    execution: false
     name: skybox-findConfigurationItems
     outputs:
     - contextPath: Skybox.findConfigurationItems.findConfigurationItems
       type: String
   - arguments:
-    - description: The ticket ID
+    - default: false
+      description: The ticket ID
+      isArray: false
       name: ticketId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the sponsoring application of the
       specified ticket. Sponsoring applications
       determine the phase owners for the ticket.
+    execution: false
     name: skybox-getSponsoringApplication
     outputs:
     - contextPath: Skybox.getSponsoringApplication.getSponsoringApplication
       type: String
   - arguments:
-    - description: The ID of the ticke
+    - default: false
+      description: The ID of the ticke
+      isArray: false
       name: ticketId
       required: true
-    - description: The change request comment
+      secret: false
+    - default: false
+      description: The change request comment
+      isArray: false
       name: changeRequests_comment
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l UNCOMPUTED
         l YES
         l NO
         l ERROR
+      isArray: false
       name: changeRequests_complianceStatus
-    - description: The change request author
+      required: false
+      secret: false
+    - default: false
+      description: The change request author
+      isArray: false
       name: changeRequests_createdBy
-    - description: The change request creation time
+      required: false
+      secret: false
+    - default: false
+      description: The change request creation time
+      isArray: false
       name: changeRequests_creationTime
-    - description: The change request description
+      required: false
+      secret: false
+    - default: false
+      description: The change request description
+      isArray: false
       name: changeRequests_description
-    - description: The change request ID
+      required: false
+      secret: false
+    - default: false
+      description: The change request ID
+      isArray: false
       name: changeRequests_id
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l UNCOMPUTED
         l YES (change required)
         l NO (already permitted)
         l Computing
         l ERROR
+      isArray: false
       name: changeRequests_isRequiredStatus
-    - description: The change request last modification time
+      required: false
+      secret: false
+    - default: false
+      description: The change request last modification time
+      isArray: false
       name: changeRequests_lastModificationTime
-    - description: The change request last modification author
+      required: false
+      secret: false
+    - default: false
+      description: The change request last modification author
+      isArray: false
       name: changeRequests_lastModifiedBy
-    - description: The messages arguments
+      required: false
+      secret: false
+    - default: false
+      description: The messages arguments
+      isArray: false
       name: changeRequests_messages_args
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Messages for the user about the change
         request that was calculated by the Skybox
         Server.
@@ -1306,109 +2569,184 @@ script:
         there is no firewall matching the request; or
         the request is a duplicate of another request
         in the ticket.
+      isArray: false
       name: changeRequests_messages_formatedMessage
-    - description: The messages key
+      required: false
+      secret: false
+    - default: false
+      description: The messages key
+      isArray: false
       name: changeRequests_messages_key
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l INFO
         l WARN
         l ERROR
+      isArray: false
       name: changeRequests_messages_level
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The ID number of the original change
         request, when relevant.
+      isArray: false
       name: changeRequests_originalChangeRequestId
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l Verified
         l Not Verified
         l Error
         l Computing
         l Unknown
+      isArray: false
       name: changeRequests_verificationStatus
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Adds original change requests to a ticket and then
       calculates the derived change requests, checks
       whether a change is required, and checks for
       policy compliance violations and potential
       vulnerabilities.
+    execution: false
     name: skybox-addOriginalChangeRequestsV7
     outputs:
     - contextPath: Skybox.addOriginalChangeRequestsV7.addOriginalChangeRequestsV7
       type: String
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         The ID of the ticket to which the change requests are
         attached
+      isArray: false
       name: ticketId
       required: true
-    - description: ' The ID of the device to change.'
+      secret: false
+    - default: false
+      description: ' The ID of the device to change.'
+      isArray: false
       name: hostId
       required: true
-    - description: |-
+      secret: false
+    - default: false
+      description: |-
         The name of the object to change. The object can be an
         IP address object or Service object.
+      isArray: false
       name: objectName
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The type of the change:
         l 0: Add to the object
+      isArray: false
       name: changeType
       required: true
-    - description: |-
+      secret: false
+    - default: false
+      description: |-
         The IP address to add to or delete from the object.
         Relevant only if the object is an IP address object.
+      isArray: false
       name: addressChange
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The service to add to or deleted from the object. Relevant
         only if the object is a Service object.
+      isArray: false
       name: portChange
-    - description: Limits the number of change requests that are created.
+      required: false
+      secret: false
+    - default: false
+      description: Limits the number of change requests that are created.
+      isArray: false
       name: maxAccessRequestsToCreate
       required: true
-    - description: |-
+      secret: false
+    - default: false
+      description: |-
         Limits the rule chains searched for affected access rules.
         Possible values:
         l 0: Search all chains
         l 1: Search only primary chain
         l 2: Search by chain name
+      isArray: false
       name: chainFilterMode
       required: true
-    - description: |-
+      secret: false
+    - default: false
+      description: |-
         A list of chain names in which to search for the object.
         Relevant only if chainFilterMode=2.
+      isArray: false
       name: chainNames
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Adds change requests to a ticket. The method
       finds the access rules in which the specified
       object occurs and creates a change request for
       each access rule.
+    execution: false
     name: skybox-createTicketAccessRequestsForObjectChange
     outputs:
     - contextPath: Skybox.createTicketAccessRequestsForObjectChange.createTicketAccessRequestsForObjectChange
       type: String
   - arguments:
-    - description: The ID of the ticket
+    - default: false
+      description: The ID of the ticket
+      isArray: false
       name: ticketId
       required: true
-    - description: The ID of the original change reques
+      secret: false
+    - default: false
+      description: The ID of the original change reques
+      isArray: false
       name: changeRequestId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the route information from a derived
       change request.
+    execution: false
     name: skybox-getDerivedChangeRequestRouteInfoV1
     outputs:
     - contextPath: Skybox.getDerivedChangeRequestRouteInfoV1.getDerivedChangeRequestRouteInfoV1
       type: String
   - arguments:
-    - description: The ID of the change request
+    - default: false
+      description: The ID of the change request
+      isArray: false
       name: changeRequests_id
-    - description: The ID of the change request ticket
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the change request ticket
+      isArray: false
       name: changeRequests_ticketId
-    - description: The due date of the change request
+      required: false
+      secret: false
+    - default: false
+      description: The due date of the change request
+      isArray: false
       name: changeRequests_dueDate
-    - defaultValue: P5
+      required: false
+      secret: false
+    - default: false
+      defaultValue: P5
       description: |-
         Possible values:
         l P1
@@ -1416,86 +2754,177 @@ script:
         l P3
         l P4
         l P5
+      isArray: false
       name: changeRequests_ticketPriority
-    - description: The type of the change request
+      required: false
+      secret: false
+    - default: false
+      description: The type of the change request
+      isArray: false
       name: changeRequests_changeType
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The name of the firewall on which to make the
         change
+      isArray: false
       name: changeRequests_firewallName
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The name of the firewall management on which
         to make the change
+      isArray: false
       name: changeRequests_firewallManagementName
-    - description: The ID of the object to change
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the object to change
+      isArray: false
       name: changeRequests_objectId
-    - description: The GUID of the entity to change
+      required: false
+      secret: false
+    - default: false
+      description: The GUID of the entity to change
+      isArray: false
       name: changeRequests_globalUniqueId
-    - description: The change details
+      required: false
+      secret: false
+    - default: false
+      description: The change details
+      isArray: false
       name: changeRequests_changeDetails
-    - description: The change request additional details
+      required: false
+      secret: false
+    - default: false
+      description: The change request additional details
+      isArray: false
       name: changeRequests_additionalDetails
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l UNCOMPUTED
         l YES (change required)
         l NO (already permitted)
         l Computing
         l ERROR
+      isArray: false
       name: changeRequests_isRequiredStatus
-    - description: The owner of the change request
+      required: false
+      secret: false
+    - default: false
+      description: The owner of the change request
+      isArray: false
       name: changeRequests_owner
-    - description: The complete status
+      required: false
+      secret: false
+    - default: false
+      description: The complete status
+      isArray: false
       name: changeRequests_completeStatus
-    - description: The date of completion
+      required: false
+      secret: false
+    - default: false
+      description: The date of completion
+      isArray: false
       name: changeRequests_completeDate
-    - description: The workflow name
+      required: false
+      secret: false
+    - default: false
+      description: The workflow name
+      isArray: false
       name: changeRequests_workflowName
-    - description: The comment
+      required: false
+      secret: false
+    - default: false
+      description: The comment
+      isArray: false
       name: changeRequests_comment
-    - description: The last modification time
+      required: false
+      secret: false
+    - default: false
+      description: The last modification time
+      isArray: false
       name: changeRequests_lastModificationTime
-    - description: The implementation status
+      required: false
+      secret: false
+    - default: false
+      description: The implementation status
+      isArray: false
       name: changeRequests_implementationStatus
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The formula for the comment to add to rules
         when the rules are implemented. For example,
         <DATE> - Created by <USERNAME>
         for ticket <TICKET_ID>.
         The comment must include at least 1 of the
         parameters (date, user name, or ticket ID).
+      isArray: false
       name: comment
+      required: false
+      secret: false
+    deprecated: false
     description: Implements the specified change requests.
+    execution: false
     name: skybox-implementChangeRequests
     outputs:
     - contextPath: Skybox.implementChangeRequests.implementChangeRequests
       type: String
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         Legal values:
         l Network Assurance Tickets
         Public
         l Network Assurance Tickets
         Private
+      isArray: false
       name: type
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Returns a list of analyses; each analysis includes
       its ID, path, name, and type.
+    execution: false
     name: skybox-getAnalysisTree
     outputs:
     - contextPath: Skybox.getAnalysisTree.getAnalysisTree
       type: String
   - arguments:
-    - description: The ticket ID
+    - default: false
+      description: The ticket ID
+      isArray: false
       name: ticketId
       required: true
-    - description: Optional, depending on phase type
+      secret: false
+    - default: false
+      description: Optional, depending on phase type
+      isArray: false
       name: phaseOperation_phaseId
-    - description: Optional, depending on phase type
+      required: false
+      secret: false
+    - default: false
+      description: Optional, depending on phase type
+      isArray: false
       name: phaseOperation_phaseOwner
-    - description: Optional, depending on phase type
+      required: false
+      secret: false
+    - default: false
+      description: Optional, depending on phase type
+      isArray: false
       name: phaseOperation_reject
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l ACCEPT
         l CHANGE_PHASE
@@ -1506,8 +2935,11 @@ script:
         l REASSIGN
         l REOPEN
         l REQUEST_TO_CLOSE
+      isArray: false
       name: phaseOperation_type
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Enables you to change the phase of a ticket
       without sending the full ticket data.
@@ -1521,199 +2953,408 @@ script:
       l Reassign a ticket
       l Reopen a ticket
       l Request to close a ticket
+    execution: false
     name: skybox-operateOnAccessChangeTicket
     outputs:
     - contextPath: Skybox.operateOnAccessChangeTicket.operateOnAccessChangeTicket
       type: String
   - arguments:
-    - description: The ID of the ticket to analyze
+    - default: false
+      description: The ID of the ticket to analyze
+      isArray: false
       name: ticketId
       required: true
-    - description: |-
+      secret: false
+    - default: false
+      description: |-
         A list of change request IDs in the ticket to analyze. An empty list means
         that all change requests are analyzed.
+      isArray: false
       name: accessRequests
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The type of analysis:
         l 0: Access analysis only
         l 1: Access Policy compliance analysis only
         l 2: Both
+      isArray: false
       name: mode
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Analyzes policy compliance and access for
       change requests of the specified ticket.
+    execution: false
     name: skybox-analyzeAccessChangeTicket
     outputs:
     - contextPath: Skybox.analyzeAccessChangeTicket.analyzeAccessChangeTicket
       type: String
   - arguments:
-    - description: The ID of the ticket.
+    - default: false
+      description: The ID of the ticket.
+      isArray: false
       name: ticketId
       required: true
-    - description: |-
+      secret: false
+    - default: false
+      description: |-
         The ID of the (derived) change request for which you want to see the
         firewall objects that are changed.
+      isArray: false
       name: changeRequestId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the verification details (that is, the
       matching FirewallChange objects) for Add Rule or
       Modify Rule change requests that are already
       verified. If the change request is not verified, the
       method returns null.
+    execution: false
     name: skybox-getVerificationDetails
     outputs:
     - contextPath: Skybox.getVerificationDetails.getVerificationDetails
       type: String
   - arguments:
-    - description: The ID of the ticket
+    - default: false
+      description: The ID of the ticket
+      isArray: false
       name: ticketId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves from Skybox the list of ticket phases for
       a ticket type.
+    execution: false
     name: skybox-getTicketPhases
     outputs:
     - contextPath: Skybox.getTicketPhases.getTicketPhases
       type: String
   - arguments:
-    - description: The analysis ID
+    - default: false
+      description: The analysis ID
+      isArray: false
       name: analysis_id
-    - description: The analysis from which to retrieve the tickets
+      required: false
+      secret: false
+    - default: false
+      description: The analysis from which to retrieve the tickets
+      isArray: false
       name: analysis_name
-    - description: The analysis path
+      required: false
+      secret: false
+    - default: false
+      description: The analysis path
+      isArray: false
       name: analysis_path
-    - description: The analysis type
+      required: false
+      secret: false
+    - default: false
+      description: The analysis type
+      isArray: false
       name: analysis_type
-    - description: The sub-range size
+      required: false
+      secret: false
+    - default: false
+      description: The sub-range size
+      isArray: false
       name: subRange_size
-    - description: The sub-range start
+      required: false
+      secret: false
+    - default: false
+      description: The sub-range start
+      isArray: false
       name: subRange_start
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the Access Change tickets in the
       specified analysis.
+    execution: false
     name: skybox-findTickets
     outputs:
     - contextPath: Skybox.findTickets.findTickets
       type: String
   - arguments:
-    - description: The ID of the ticket
+    - default: false
+      description: The ID of the ticket
+      isArray: false
       name: ticketId
       required: true
-    - description: |-
+      secret: false
+    - default: false
+      description: |-
         The IDs of the change requests for which to update the rule
         attributes
+      isArray: false
       name: changeRequestId
       required: true
-    - description: The rule attribute business function
+      secret: false
+    - default: false
+      description: The rule attribute business function
+      isArray: false
       name: ruleAttributes_businessFunction
-    - description: The rule attribute comment
+      required: false
+      secret: false
+    - default: false
+      description: The rule attribute comment
+      isArray: false
       name: ruleAttributes_comment
-    - description: The custom field data type
+      required: false
+      secret: false
+    - default: false
+      description: The custom field data type
+      isArray: false
       name: ruleAttributes_customFields_dataType
-    - description: The custom field def ID
+      required: false
+      secret: false
+    - default: false
+      description: The custom field def ID
+      isArray: false
       name: ruleAttributes_customFields_defId
-    - description: The custom field entity type
+      required: false
+      secret: false
+    - default: false
+      description: The custom field entity type
+      isArray: false
       name: ruleAttributes_customFields_entityType
-    - description: The cusotm field ID
+      required: false
+      secret: false
+    - default: false
+      description: The cusotm field ID
+      isArray: false
       name: ruleAttributes_customFields_id
-    - description: The custom field name
+      required: false
+      secret: false
+    - default: false
+      description: The custom field name
+      isArray: false
       name: ruleAttributes_customFields_name
-    - description: The custom field value
+      required: false
+      secret: false
+    - default: false
+      description: The custom field value
+      isArray: false
       name: ruleAttributes_customFields_value
-    - description: The rule attribute email
+      required: false
+      secret: false
+    - default: false
+      description: The rule attribute email
+      isArray: false
       name: ruleAttributes_email
-    - description: The rule attribute next review date
+      required: false
+      secret: false
+    - default: false
+      description: The rule attribute next review date
+      isArray: false
       name: ruleAttributes_nextReviewDate
-    - description: The rule attribute owner
+      required: false
+      secret: false
+    - default: false
+      description: The rule attribute owner
+      isArray: false
       name: ruleAttributes_owner
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The recertification status of the rule. Possible values:
         l NONE
         l IN_PROGRESS
         l REJECTED
         l CERTIFIED
+      isArray: false
       name: ruleAttributes_status
-    - description: The rule attribute ticket ID
+      required: false
+      secret: false
+    - default: false
+      description: The rule attribute ticket ID
+      isArray: false
       name: ruleAttributes_ticketId
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Sets the rule attributes for the rules in the
       specified change requests.
+    execution: false
     name: skybox-setChangeRequestRuleAttributes
     outputs:
     - contextPath: Skybox.setChangeRequestRuleAttributes.setChangeRequestRuleAttributes
       type: String
   - arguments:
-    - description: The ID of the ticket
+    - default: false
+      description: The ID of the ticket
+      isArray: false
       name: ticketId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the list of attachments to a ticket in
       Skybox.
+    execution: false
     name: skybox-getAttachmentList
     outputs:
     - contextPath: Skybox.getAttachmentList.getAttachmentList
       type: String
   - arguments:
-    - description: The ID of the ticket
+    - default: false
+      description: The ID of the ticket
+      isArray: false
       name: ticketId
       required: true
-    - description: The ID of the change request in which to make the changes
+      secret: false
+    - default: false
+      description: The ID of the change request in which to make the changes
+      isArray: false
       name: changeRequestId
       required: true
-    - description: Each element of the array is a key (name of field) + value set
+      secret: false
+    - default: false
+      description: Each element of the array is a key (name of field) + value set
+      isArray: false
       name: fields_entry_key
-    - description: Each element of the array is a key (name of field) + value set
+      required: false
+      secret: false
+    - default: false
+      description: Each element of the array is a key (name of field) + value set
+      isArray: false
       name: fields_entry_value
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Makes changes to specified fields of a change
       request.
+    execution: false
     name: skybox-setAddRuleChangeRequestFields
     outputs:
     - contextPath: Skybox.setAddRuleChangeRequestFields.setAddRuleChangeRequestFields
       type: String
   - arguments:
-    - description: The ID of the ticket
+    - default: false
+      description: The ID of the ticket
+      isArray: false
       name: ticketId
       required: true
-    - description: The phase comment
+      secret: false
+    - default: false
+      description: The phase comment
+      isArray: false
       name: phases_comment
-    - description: The phase author
+      required: false
+      secret: false
+    - default: false
+      description: The phase author
+      isArray: false
       name: phases_createdBy
-    - description: The phase creation time
+      required: false
+      secret: false
+    - default: false
+      description: The phase creation time
+      isArray: false
       name: phases_creationTime
-    - description: The phase current status
+      required: false
+      secret: false
+    - default: false
+      description: The phase current status
+      isArray: false
       name: phases_current
-    - description: The phase demotions count
+      required: false
+      secret: false
+    - default: false
+      description: The phase demotions count
+      isArray: false
       name: phases_demotionsCount
-    - description: The phase description
+      required: false
+      secret: false
+    - default: false
+      description: The phase description
+      isArray: false
       name: phases_description
-    - description: The phase due date
+      required: false
+      secret: false
+    - default: false
+      description: The phase due date
+      isArray: false
       name: phases_dueDate
-    - description: The phase end date
+      required: false
+      secret: false
+    - default: false
+      description: The phase end date
+      isArray: false
       name: phases_endDate
-    - description: The phase id
+      required: false
+      secret: false
+    - default: false
+      description: The phase id
+      isArray: false
       name: phases_id
-    - description: The phase last modification time
+      required: false
+      secret: false
+    - default: false
+      description: The phase last modification time
+      isArray: false
       name: phases_lastModificationTime
-    - description: The phase last modification author
+      required: false
+      secret: false
+    - default: false
+      description: The phase last modification author
+      isArray: false
       name: phases_lastModifiedBy
-    - description: The phase owner
+      required: false
+      secret: false
+    - default: false
+      description: The phase owner
+      isArray: false
       name: phases_owner
-    - description: The phase revised due date
+      required: false
+      secret: false
+    - default: false
+      description: The phase revised due date
+      isArray: false
       name: phases_revisedDueDate
-    - description: The phase start date
+      required: false
+      secret: false
+    - default: false
+      description: The phase start date
+      isArray: false
       name: phases_startDate
-    - description: The ticket type phase default owner
+      required: false
+      secret: false
+    - default: false
+      description: The ticket type phase default owner
+      isArray: false
       name: phases_ticketTypePhase_defaultOwner
-    - description: The ticket type phase ID
+      required: false
+      secret: false
+    - default: false
+      description: The ticket type phase ID
+      isArray: false
       name: phases_ticketTypePhase_id
-    - description: The ticket type phase name
+      required: false
+      secret: false
+    - default: false
+      description: The ticket type phase name
+      isArray: false
       name: phases_ticketTypePhase_name
-    - description: The ticket type phase order
+      required: false
+      secret: false
+    - default: false
+      description: The ticket type phase order
+      isArray: false
       name: phases_ticketTypePhase_order
-    - description: |2-
+      required: false
+      secret: false
+    - default: false
+      description: |2-
          Possible values:
         l VulnerabilityTicket
         l ApplicationTicket
@@ -1721,16 +3362,36 @@ script:
         l AccessChangeTicket
         l PolicyViolationTicket
         l EOLTicket
+      isArray: false
       name: phases_ticketTypePhase_ticketType
-    - description: The tciket type phase waiting for closure status
+      required: false
+      secret: false
+    - default: false
+      description: The tciket type phase waiting for closure status
+      isArray: false
       name: phases_ticketTypePhase_waitingForClosure
-    - description: The phase ID
+      required: false
+      secret: false
+    - default: false
+      description: The phase ID
+      isArray: false
       name: phaseOperation_phaseId
-    - description: The Phase Owner
+      required: false
+      secret: false
+    - default: false
+      description: The Phase Owner
+      isArray: false
       name: phaseOperation_phaseOwner
-    - description: The phase operation reject
+      required: false
+      secret: false
+    - default: false
+      description: The phase operation reject
+      isArray: false
       name: phaseOperation_reject
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Possible values:
         l ACCEPT
         l CHANGE_PHASE
@@ -1741,149 +3402,321 @@ script:
         l REASSIGN
         l REOPEN
         l REQUEST_TO_CLOSE
+      isArray: false
       name: phaseOperation_type
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Sets the list of ticket phases for a ticket type in
       Skybox.
+    execution: false
     name: skybox-setTicketPhases
     outputs:
     - contextPath: Skybox.setTicketPhases.setTicketPhases
       type: String
   - arguments:
-    - description: The ID of the ticket
+    - default: false
+      description: The ID of the ticket
+      isArray: false
       name: ticketId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves from Skybox the list of change requests
       for the specified ticket.
+    execution: false
     name: skybox-getTicketAccessRequests
     outputs:
     - contextPath: Skybox.getTicketAccessRequests.getTicketAccessRequests
       type: String
   - arguments:
-    - description: A number that will be returned back from the api endpoint
+    - default: false
+      description: A number that will be returned back from the api endpoint
+      isArray: false
       name: anyValue
       required: true
+      secret: false
+    deprecated: false
     description: Tests communication with the service
+    execution: false
     name: skybox-testService
     outputs:
     - contextPath: Skybox.testService.testService
       type: String
   - arguments:
-    - name: ticketId
+    - default: false
+      isArray: false
+      name: ticketId
       required: true
-    - name: changeRequestIds
-    - name: ruleAttributes_businessFunction
-    - name: ruleAttributes_comment
-    - name: ruleAttributes_customFields_dataType
-    - name: ruleAttributes_customFields_defId
-    - name: ruleAttributes_customFields_entityType
-    - name: ruleAttributes_customFields_id
-    - name: ruleAttributes_customFields_name
-    - name: ruleAttributes_customFields_value
-    - name: ruleAttributes_email
-    - name: ruleAttributes_nextReviewDate
-    - name: ruleAttributes_owner
-    - name: ruleAttributes_status
-    - name: ruleAttributes_ticketId
+      secret: false
+    - default: false
+      isArray: false
+      name: changeRequestIds
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ruleAttributes_businessFunction
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ruleAttributes_comment
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ruleAttributes_customFields_dataType
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ruleAttributes_customFields_defId
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ruleAttributes_customFields_entityType
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ruleAttributes_customFields_id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ruleAttributes_customFields_name
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ruleAttributes_customFields_value
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ruleAttributes_email
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ruleAttributes_nextReviewDate
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ruleAttributes_owner
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ruleAttributes_status
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ruleAttributes_ticketId
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Sets the recertification status for the specified
       change requests in the ticket and can be used to
       change any other rule attributes for the rules in the
       specified change requests.
+    execution: false
     name: skybox-setRecertificationStatus
     outputs:
     - contextPath: Skybox.setRecertificationStatus.setRecertificationStatus
       type: String
   - arguments:
-    - name: ticketId
+    - default: false
+      isArray: false
+      name: ticketId
       required: true
-    - name: deferChangeRequestsCalculation
+      secret: false
+    - default: false
+      isArray: false
+      name: deferChangeRequestsCalculation
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Enables you to defer the automatic calculation of a
       ticket until all change requests are created.
+    execution: false
     name: skybox-setTicketDeferChangeRequestsCalculationStatus
     outputs:
     - contextPath: Skybox.setTicketDeferChangeRequestsCalculationStatus.setTicketDeferChangeRequestsCalculationStatus
       type: String
   - arguments:
-    - name: ticketId
+    - default: false
+      isArray: false
+      name: ticketId
       required: true
-    - name: sponsoringApplicationId
+      secret: false
+    - default: false
+      isArray: false
+      name: sponsoringApplicationId
       required: true
+      secret: false
+    deprecated: false
     description: Sets the sponsoring application for a ticket.
+    execution: false
     name: skybox-setSponsoringApplication
     outputs:
     - contextPath: Skybox.setSponsoringApplication.setSponsoringApplication
       type: String
   - arguments:
-    - name: filter_createdBy
-    - name: filter_freeTextFilter
-    - name: filter_modifiedBy
-    - name: filter_myGroups
-    - name: filter_owner
-    - name: filter_phaseName
-    - name: filter_statusFilter
-    - name: filter_ticketIdsFilter
-    - name: subRange_size
-    - name: subRange_start
+    - default: false
+      isArray: false
+      name: filter_createdBy
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: filter_freeTextFilter
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: filter_modifiedBy
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: filter_myGroups
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: filter_owner
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: filter_phaseName
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: filter_statusFilter
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: filter_ticketIdsFilter
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: subRange_size
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: subRange_start
+      required: false
+      secret: false
+    deprecated: false
     description: |-
       Retrieves all Access Change tickets that match
       the search criteria.
+    execution: false
     name: skybox-findAccessChangeTickets
     outputs:
     - contextPath: Skybox.findAccessChangeTickets.findAccessChangeTickets
       type: String
   - arguments:
-    - name: ticketId
-    - name: ticketIdType
+    - default: false
+      isArray: false
+      name: ticketId
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ticketIdType
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves ticket data from Skybox.
       You can use this method with all ticket types.
+    execution: false
     name: skybox-getTicketFields
     outputs:
     - contextPath: Skybox.getTicketFields.getTicketFields
       type: String
   - arguments:
-    - name: ticketIds
+    - default: false
+      isArray: false
+      name: ticketIds
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the list of implemented change requests
       in the specified tickets according to the
       permissions of the user sending the request.
+    execution: false
     name: skybox-getTicketsImplementedChangeRequests
     outputs:
     - contextPath: Skybox.getTicketsImplementedChangeRequests.getTicketsImplementedChangeRequests
       type: String
   - arguments:
-    - name: ticketId
+    - default: false
+      isArray: false
+      name: ticketId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Returns the calculation status of the specified
       ticket (whether calculation of the change requests
       is deferred).
+    execution: false
     name: skybox-getTicketDeferChangeRequestsCalculationStatus
     outputs:
     - contextPath: Skybox.getTicketDeferChangeRequestsCalculationStatus.getTicketDeferChangeRequestsCalculationStatus
       type: String
   - arguments:
-    - name: ticketId
+    - default: false
+      isArray: false
+      name: ticketId
       required: true
-    - name: changeRequestId
+      secret: false
+    - default: false
+      isArray: false
+      name: changeRequestId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Retrieves the list of Vulnerability Definitions that, if
       the requested change is made, are directly
       exposed to assets.
+    execution: false
     name: skybox-getPotentialVulnerabilities
     outputs:
     - contextPath: Skybox.getPotentialVulnerabilities.getPotentialVulnerabilities
       type: String
   dockerimage: demisto/zeep:1.0.0.19873
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+    itemVersion: ''
+    packID: 1c6fd8b8-71b1-4040-8ebf-43d23f7bd4f9
+    propagationLabels:
+    - all
+    toServerVersion: ''

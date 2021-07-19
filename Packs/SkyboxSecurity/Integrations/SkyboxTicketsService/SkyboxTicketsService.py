@@ -1,5 +1,4 @@
-import json
-import os
+import shutil
 import tempfile
 
 import demistomock as demisto  # noqa: F401
@@ -9,15 +8,37 @@ from zeep import Client as zClient
 from zeep import Settings, helpers
 from zeep.cache import SqliteCache
 from zeep.transports import Transport
+from datetime import date, datetime
 
 ''' HELPER FUNCTIONS '''
 
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, o):
+        output = {}
+        for key in o:
+            if isinstance(o[key], datetime):
+                output[key] = o[key].isoformat()
+            else:
+                output[key] = helpers.serialize_object(o[key])
 
-def resolve_datetime(input: OrderedDict) -> Dict:
+        return json.dumps(output, default=lambda o: '<not serializable>')
+
+
+def serialize_object_list(input) -> Dict:
+    output = []
+    tmp_output = json.loads(json.dumps(input, cls=DateTimeEncoder))
+    for element in tmp_output:
+        output.append(json.loads(element))
+    return output
+
+def serialize_object_dict(input) -> Dict:
+    return json.loads(json.loads(json.dumps(input, cls=DateTimeEncoder)))
+
+def resolve_datetime(input) -> Dict:
     output = {}
     for key in input:
         if isinstance(input[key], datetime):
-            output[key] = input[key].__str__()
+            output[key] = input[key].isoformat()
         else:
             output[key] = input[key]
     return output
@@ -93,9 +114,9 @@ def getOriginalChangeRequestV7_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.getOriginalChangeRequestV7',
         outputs_key_field='',
-        readable_output=helpers.serialize_object(str(response)),
-        outputs=helpers.serialize_object(str(response)),
-        raw_response=helpers.serialize_object(str(response))
+        readable_output=tableToMarkdown("Original Change Request", serialize_object(response)),
+        outputs=serialize_object_list(response),
+        raw_response=serialize_object_list(response)
     )
 
     return command_results
@@ -176,10 +197,6 @@ def createAccessChangeTicket_command(client, args):
     phases_ticketTypePhase_order = args.get('phases_ticketTypePhase_order')
     phases_ticketTypePhase_ticketType = args.get('phases_ticketTypePhase_ticketType')
     phases_ticketTypePhase_waitingForClosure = args.get('phases_ticketTypePhase_waitingForClosure')
-    workflowId = args.get('workflowId', 1)
-
-    # response = client.createAccessChangeTicket_request(accessChangeTicket_id, accessChangeTicket_comment, accessChangeTicket_description, accessChangeTicket_createdBy, accessChangeTicket_creationTime, accessChangeTicket_lastModifiedBy, accessChangeTicket_lastModificationTime, accessChangeTicket_externalTicketId, accessChangeTicket_externalTicketStatus, accessChangeTicket_status, accessChangeTicket_title, accessChangeTicket_changeDetails, accessChangeTicket_priority, accessChangeTicket_owner, accessChangeTicket_dueDate, accessChangeTicket_doneDate, accessChangeTicket_likelihood, accessChangeTicket_ccList_email, accessChangeTicket_ccList_userName, accessChangeTicket_customFields_comment, accessChangeTicket_customFields_createdBy, accessChangeTicket_customFields_creationTime,
-    #                                                   accessChangeTicket_customFields_description, accessChangeTicket_customFields_id, accessChangeTicket_customFields_lastModificationTime, accessChangeTicket_customFields_lastModifiedBy, accessChangeTicket_customFields_name, accessChangeTicket_customFields_typeCode, accessChangeTicket_customFields_value, accessChangeTicket_currentPhaseName, phases_comment, phases_createdBy, phases_creationTime, phases_current, phases_demotionsCount, phases_description, phases_dueDate, phases_endDate, phases_id, phases_lastModificationTime, phases_lastModifiedBy, phases_owner, phases_revisedDueDate, phases_startDate, phases_ticketTypePhase_defaultOwner, phases_ticketTypePhase_id, phases_ticketTypePhase_name, phases_ticketTypePhase_order, phases_ticketTypePhase_ticketType, phases_ticketTypePhase_waitingForClosure)
 
     ticketTypePhase_type = client.get_type('ns0:ticketTypePhase')
     ticketTypePhase = ticketTypePhase_type(
@@ -261,9 +278,11 @@ def createAccessChangeTicket_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.createAccessChangeTicket',
         outputs_key_field='id',
-        outputs=helpers.serialize_object(resolve_datetime(response)),
-        raw_response=helpers.serialize_object(resolve_datetime(response)),
-        readable_output=f"Created Ticket {response['id']}"
+        outputs=serialize_object_dict(response),
+        raw_response=serialize_object_dict(response),
+        readable_output=tableToMarkdown("Access Change Ticket Created", serialize_object_dict(response), ['id',
+                                                                                                          'title',
+                                                                                                          'priority'])
     )
 
     return command_results
@@ -432,8 +451,8 @@ def getAccessChangeTicket_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.getAccessChangeTicket',
         outputs_key_field='',
-        outputs=helpers.serialize_object(resolve_datetime(response)),
-        raw_response=helpers.serialize_object(resolve_datetime(response))
+        outputs=serialize_object_dict(response),
+        raw_response=serialize_object_dict(response)
     )
 
     return command_results
@@ -503,8 +522,8 @@ def getNotImplementedChangeRequestsV2_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.getNotImplementedChangeRequestsV2',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=serialize_object_list(response),
+        raw_response=serialize_object_list(response)
     )
 
     return command_results
@@ -517,8 +536,8 @@ def getTicketEvents_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.getTicketEvents',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=serialize_object_list(response),
+        raw_response=serialize_object_list(response)
     )
 
     return command_results
@@ -575,8 +594,8 @@ def getImplementedChangeRequests_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.getImplementedChangeRequests',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=serialize_object_list(response),
+        raw_response=serialize_object_list(response)
     )
 
     return command_results
@@ -663,9 +682,6 @@ def createChangeManagerTicket_command(client, args):
     phases_ticketTypePhase_waitingForClosure = args.get('phases_ticketTypePhase_waitingForClosure')
     workflowId = args.get('workflowId', 1)
 
-    # response = client.createChangeManagerTicket_request(accessChangeTicket_id, accessChangeTicket_comment, accessChangeTicket_description, accessChangeTicket_createdBy, accessChangeTicket_creationTime, accessChangeTicket_lastModifiedBy, accessChangeTicket_lastModificationTime, accessChangeTicket_externalTicketId, accessChangeTicket_externalTicketStatus, accessChangeTicket_status, accessChangeTicket_title, accessChangeTicket_changeDetails, accessChangeTicket_priority, accessChangeTicket_owner, accessChangeTicket_dueDate, accessChangeTicket_doneDate, accessChangeTicket_likelihood, accessChangeTicket_ccList_email, accessChangeTicket_ccList_userName, accessChangeTicket_customFields_comment, accessChangeTicket_customFields_createdBy, accessChangeTicket_customFields_creationTime, accessChangeTicket_customFields_description,
-    #                                                    accessChangeTicket_customFields_id, accessChangeTicket_customFields_lastModificationTime, accessChangeTicket_customFields_lastModifiedBy, accessChangeTicket_customFields_name, accessChangeTicket_customFields_typeCode, accessChangeTicket_customFields_value, accessChangeTicket_currentPhaseName, phases_comment, phases_createdBy, phases_creationTime, phases_current, phases_demotionsCount, phases_description, phases_dueDate, phases_endDate, phases_id, phases_lastModificationTime, phases_lastModifiedBy, phases_owner, phases_revisedDueDate, phases_startDate, phases_ticketTypePhase_defaultOwner, phases_ticketTypePhase_id, phases_ticketTypePhase_name, phases_ticketTypePhase_order, phases_ticketTypePhase_ticketType, phases_ticketTypePhase_waitingForClosure, workflowId)
-
     demisto.debug("ticketTYPEPHASE")
 
     ticketTypePhase_type = client.get_type('ns0:ticketTypePhase')
@@ -727,12 +743,17 @@ def createChangeManagerTicket_command(client, args):
         workflowId=workflowId
     )
 
+    readable_output = {}
+    readable_output['id'] = response['id']
+    readable_output['title'] = response['title']
+    readable_output['priority'] = response['priority']
+
     command_results = CommandResults(
         outputs_prefix='Skybox.createChangeManagerTicket',
         outputs_key_field='id',
-        outputs=helpers.serialize_object(resolve_datetime(response)),
-        raw_response=helpers.serialize_object(resolve_datetime(response)),
-        readable_output=f"Created Ticket {response['id']}"
+        outputs=serialize_object_dict(response),
+        raw_response=serialize_object_dict(response),
+        readable_output=tableToMarkdown('Created Ticket', serialize_object_dict(response),['id', 'priority', 'title'])
     )
 
     return command_results
@@ -745,8 +766,8 @@ def getTicketsNotImplementedChangeRequestsV2_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.getTicketsNotImplementedChangeRequestsV2',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=serialize_object_list(response),
+        raw_response=serialize_object_list(response)
     )
 
     return command_results
@@ -783,8 +804,8 @@ def expandFirewallsForAccessChangeTicket_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.expandFirewallsForAccessChangeTicket',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=serialize_object_dict(response),
+        raw_response=serialize_object_dict(response)
     )
 
     return command_results
@@ -1301,7 +1322,6 @@ def updateAccessChangeTicket_command(client, args):
 
     response = client.service.createChangeManagerTicket(
         accessChangeTicket=accessChangeTicket,
-        workflowId=workflowId
     )
 
     command_results = CommandResults(
@@ -1563,7 +1583,9 @@ def createTicketAccessRequestsForObjectChange_command(client, args):
     chainNames = args.get('chainNames')
 
     response = client.service.createTicketAccessRequestsForObjectChange(
-        ticketId, hostId, objectName, changeType, addressChange, portChange, maxAccessRequestsToCreate, chainFilterMode, chainNames)
+        ticketId, hostId, objectName, changeType, addressChange, portChange,
+        maxAccessRequestsToCreate, chainFilterMode, chainNames)
+
     command_results = CommandResults(
         outputs_prefix='Skybox.createTicketAccessRequestsForObjectChange',
         outputs_key_field='',
@@ -1823,9 +1845,9 @@ def getAttachmentList_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.getAttachmentList',
         outputs_key_field='',
-        readable_output=helpers.serialize_object(str(response)),
-        outputs=helpers.serialize_object(str(response)),
-        raw_response=helpers.serialize_object(str(response))
+        readable_output=tableToMarkdown("Attachement List", serialize_object_list(response), headers=['id', 'filename', 'description']),
+        outputs=serialize_object_list(response),
+        raw_response=serialize_object_list(response)
     )
 
     return command_results
@@ -1982,9 +2004,6 @@ def setRecertificationStatus_command(client, args):
     ruleAttributes_owner = args.get('ruleAttributes_owner')
     ruleAttributes_status = args.get('ruleAttributes_status')
     ruleAttributes_ticketId = args.get('ruleAttributes_ticketId')
-
-    # response = client.setRecertificationStatus_request(ticketId, changeRequestIds, ruleAttributes_businessFunction, ruleAttributes_comment, ruleAttributes_customFields_dataType, ruleAttributes_customFields_defId, ruleAttributes_customFields_entityType,
-    #                                                   ruleAttributes_customFields_id, ruleAttributes_customFields_name, ruleAttributes_customFields_value, ruleAttributes_email, ruleAttributes_nextReviewDate, ruleAttributes_owner, ruleAttributes_status, ruleAttributes_ticketId)
 
     customFields_type = client.get_type('ns0:customFields')
     customFields = customFields_type(
