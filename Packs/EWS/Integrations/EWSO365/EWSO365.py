@@ -2229,8 +2229,8 @@ def fetch_last_emails(
             result.append(item)
             if len(result) >= client.max_fetch:
                 break
-    demisto.debug(f'{APP_NAME} - Got total of {counter} from ews query. '
-                  f'{len(result)} results not excluded. ')
+
+    demisto.debug(f'{APP_NAME} - Got total of {counter} from ews query. {len(result)} results not excluded.')
     return result
 
 

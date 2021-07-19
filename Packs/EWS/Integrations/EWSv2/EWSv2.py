@@ -2,7 +2,6 @@ import email
 import hashlib
 import subprocess
 import warnings
-from collections import deque
 from multiprocessing import Process
 
 import dateparser
@@ -918,6 +917,7 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
 
     result = []
     counter = 0
+    exclude_ids = exclude_ids if exclude_ids else set()
     for item in qs:
         counter += 1
         try:
@@ -929,8 +929,10 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
             future_utils.raise_from(ValueError(
                 'Got an error when pulling incidents. You might be using the wrong exchange version.'
             ), exc)
-    demisto.debug(f'EWS V2 - Got total of {counter} from ews query. {len(result)} results not excluded. ')
+
+    demisto.debug("EWS V2 - Got total of {} from EWS query. {} results not excluded.".format(counter, len(result)))
     return result
+
 
 def keys_to_camel_case(value):
     def str_to_camel_case(snake_str):
@@ -1259,7 +1261,7 @@ def fetch_emails_as_incidents(account_email, folder_name):
                 if len(incidents) >= MAX_FETCH:
                     break
 
-        demisto.debug(f'EWS V2 - ending fetch - got {len(incidents)} incidents.')
+        demisto.debug('EWS V2 - ending fetch - got {} incidents.'.format(len(incidents)))
         last_run_time = incident.get("occurred", last_run.get(LAST_RUN_TIME))
         if isinstance(last_run_time, EWSDateTime):
             last_run_time = last_run_time.ewsformat()
@@ -1270,11 +1272,11 @@ def fetch_emails_as_incidents(account_email, folder_name):
             ids = current_fetch_ids | excluded_ids
 
         new_last_run = {
-                LAST_RUN_TIME: last_run_time,
-                LAST_RUN_FOLDER: folder_name,
-                LAST_RUN_IDS: list(ids),
-                ERROR_COUNTER: 0
-            }
+            LAST_RUN_TIME: last_run_time,
+            LAST_RUN_FOLDER: folder_name,
+            LAST_RUN_IDS: list(ids),
+            ERROR_COUNTER: 0
+        }
 
         demisto.setLastRun(new_last_run)
         return incidents
