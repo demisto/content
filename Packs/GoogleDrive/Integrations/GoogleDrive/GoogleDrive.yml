@@ -2413,7 +2413,6 @@ script:
         "drive#permission".
       type: String
     - contextPath: GoogleDrive.File.permissions.role
-    - contextPath: GoogleDrive.FilePermission.role
       description: The role granted by this permission.
       type: String
     - contextPath: GoogleDrive.File.permissions.type
@@ -2745,7 +2744,6 @@ script:
         "drive#permission".
       type: String
     - contextPath: GoogleDrive.File.permissions.role
-    - contextPath: GoogleDrive.FilePermission.role
       description: The role granted by this permission.
       type: String
     - contextPath: GoogleDrive.File.permissions.type
@@ -3079,7 +3077,6 @@ script:
         "drive#permission".
       type: String
     - contextPath: GoogleDrive.File.permissions.role
-    - contextPath: GoogleDrive.FilePermission.role
       description: The role granted by this permission.
       type: String
     - contextPath: GoogleDrive.File.permissions.type
