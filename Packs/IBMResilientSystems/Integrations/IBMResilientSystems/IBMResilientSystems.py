@@ -434,10 +434,7 @@ def update_incident_command(args):
         changes.append({
             'field': 'resolution_summary',
             'old_value': {
-                'textarea': {
-                    'format': 'html',
-                    'content': old_summary
-                }
+                'textarea': old_summary
             },
             'new_value': {
                 'textarea': {
@@ -452,10 +449,7 @@ def update_incident_command(args):
         changes.append({
             'field': 'description',
             'old_value': {
-                'textarea': {
-                    'format': 'html',
-                    'content': old_description
-                }
+                'textarea': old_description
             },
             'new_value': {
                 'textarea': {
@@ -481,7 +475,7 @@ def update_incident_command(args):
             changes.append(
                 {
                     'field': {'name': field_name},
-                    'old_value': {list(field_value.keys())[0]: {'format': 'html', 'content': incident['description']['content']}},
+                    'old_value': {list(field_value.keys())[0]: incident[field_name]},
                     'new_value': field_value
                 }
             )
@@ -539,7 +533,7 @@ def get_incident_command(incident_id):
 
 
 def get_incident(incident_id):
-    response = client.get('/incidents/' + incident_id + '?text_content_output_format=objects_no_convert')
+    response = client.get('/incidents/' + incident_id + '?text_content_output_format=objects_convert_html')
     return response
 
 
