@@ -7,10 +7,10 @@ description: Playbook for fetching cases assosiated to high risk users.
 tasks:
   "0":
     id: "0"
-    taskid: 1e82f7ee-4723-476e-85e3-bd995d82b73b
+    taskid: a9cbb9ae-190e-45ad-831e-7d9bc9525459
     type: start
     task:
-      id: 1e82f7ee-4723-476e-85e3-bd995d82b73b
+      id: a9cbb9ae-190e-45ad-831e-7d9bc9525459
       version: -1
       name: ""
       iscommand: false
@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": 240
         }
       }
     note: false
@@ -34,44 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 4ee3a132-11a7-4b59-8e18-105572b6766d
+    taskid: ca33bc13-2f6c-4ce2-8b82-29f9d9291e35
     type: regular
     task:
-      id: 4ee3a132-11a7-4b59-8e18-105572b6766d
-      version: -1
-      name: gra-user-anomalies
-      description: Retrieve Detailed anomaly Information for a Given User
-      script: Gurucul-GRA|||gra-user-anomalies
-      type: regular
-      iscommand: true
-      brand: Gurucul-GRA
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      employee_id:
-        simple: ${incident.name}
-      max: {}
-      page: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: 4824235d-58a7-4f42-86ac-eb7f9cfd5116
-    type: regular
-    task:
-      id: 4824235d-58a7-4f42-86ac-eb7f9cfd5116
+      id: ca33bc13-2f6c-4ce2-8b82-29f9d9291e35
       version: -1
       name: Print
       description: Prints text to war room (Markdown supported)
@@ -81,10 +47,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "2"
     scriptarguments:
       value:
-        simple: ${Gra.User.Anomalies.anomaly_name}
+        simple: ${incident.graanomalyname}${incident.graanomalies}
     separatecontext: false
     view: |-
       {
@@ -98,12 +64,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: d69501bb-3685-4d30-8adb-4bef06f2270f
+  "2":
+    id: "2"
+    taskid: 4b26f050-ef80-49db-8735-7e8fb559c3d2
     type: title
     task:
-      id: d69501bb-3685-4d30-8adb-4bef06f2270f
+      id: 4b26f050-ef80-49db-8735-7e8fb559c3d2
       version: -1
       name: Done
       type: title
@@ -128,10 +94,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 575,
+        "height": 385,
         "width": 380,
         "x": 450,
-        "y": 50
+        "y": 240
       }
     }
   }
