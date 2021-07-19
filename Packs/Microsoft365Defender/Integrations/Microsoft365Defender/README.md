@@ -55,8 +55,8 @@ Follow these steps for a self-deployed configuration.
     | Application ID | The API key to use to connect. | True |
     | Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
     | client-credentials | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
-    | Tenant ID/Token (for self-deployed mode) | Tenant ID | False |
-    | Client Secret (for self-deployed mode) | Encryption key given by the admin | False |
+    | Tenant ID/Token (for client-credentials mode) | Tenant ID | False |
+    | Client Secret (for client-credentials mode) | Encryption key given by the admin | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
     | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
