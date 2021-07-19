@@ -439,5 +439,3 @@ def test_fetch_last_emails_paging(mocker, since_datetime, filter_arg, expected_r
     assert res[0].subject == 'test1'
     res = fetch_last_emails(client, since_datetime=since_datetime,exclude_ids=['test1'])
     assert res[0].subject == 'test2'
-
-
