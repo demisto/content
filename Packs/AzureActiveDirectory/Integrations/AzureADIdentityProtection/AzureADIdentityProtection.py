@@ -4,7 +4,7 @@ import urllib3
 
 urllib3.disable_warnings()
 
-OUTPUTS_PREFIX = "Azure_AD"
+OUTPUTS_PREFIX = "AAD_Identity_Protection"
 BASE_URL = 'https://graph.microsoft.com/beta'
 
 
