@@ -1,0 +1,22 @@
+{
+    "autorun": true,
+    "color": "#0096d6",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "ZTAP Alert",
+    "locked": false,
+    "name": "ZTAP Alert",
+    "playbookId": "ZTAP Alert",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0",
+    "layout": "ZTAP Alert"
+}

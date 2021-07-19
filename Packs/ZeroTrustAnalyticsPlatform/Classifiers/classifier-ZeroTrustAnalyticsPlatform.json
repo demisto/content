@@ -1,0 +1,14 @@
+{
+    "fromVersion": "6.0.0",
+    "name": "ZeroTrustAnalyticsPlatform - Classifier",
+    "type": "classification",
+    "id": "ZeroTrustAnalyticsPlatform",
+    "description": "Classifies ZTAP alerts.",
+    "defaultIncidentType": "ZTAP Alert",
+    "keyTypeMap": {},
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "version": -1
+}
