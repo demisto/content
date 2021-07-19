@@ -412,10 +412,12 @@ and got the sub analysis `456`, you need to specify both in the command
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Intezer.Analysis.ID | string | The composed analysis ID | 
+| Intezer.Analysis.ID | string | The composed analysis ID |
+| Intezer.Analysis.CodeReuse | Unknown | General Code Reuse of the analysis | 
+| Intezer.Analysis.CodeReuseFamilies | Unknown | List of the families appearing in the code reuse | 
 | Intezer.Analysis.SubAnalyses.CodeReuse | Unknown | General Code Reuse of the analysis | 
 | Intezer.Analysis.SubAnalyses.CodeReuseFamilies | Unknown | List of the families appearing in the code reuse | 
-| Intezer.Analysis.RootAnalysis | string | The Composed analysis id | 
+| Intezer.Analysis.SubAnalyses.RootAnalysis | string | The Composed analysis id | 
 
 
 #### Command Example
@@ -517,7 +519,7 @@ and got the sub analysis `456`, you need to specify both in the command
 | --- | --- | --- |
 | Intezer.Analysis.ID | string | The composed analysis ID | 
 | Intezer.Analysis.Metadata | Unknown | The Analysis metadata | 
-| Intezer.Analysis.SubAnalyses.Metdata | Unknown | The Sub Analysis metadata | 
+| Intezer.Analysis.SubAnalyses.Metadata | Unknown | The Sub Analysis metadata | 
 
 #### Command Example
 ``` 
