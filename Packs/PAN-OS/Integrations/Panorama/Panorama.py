@@ -4211,7 +4211,7 @@ def panorama_query_logs(log_type: str, number_of_logs: str, query: str):
 
     if number_of_logs:
         params['nlogs'] = number_of_logs
-
+    # raise DemistoException(str(params))
     result = http_request(
         URL,
         'GET',
@@ -7028,41 +7028,41 @@ def parse_logs_to_incidents(result: dict, last_run: dict) -> Tuple[Optional[List
         last_run (dict): last run data including the status, job_id and time.
 
     Returns:
-        (List[Dict], int): List of the incidents, and the new latest time generated logs for the next fetch.
-        (None, None): if reset was triggered
+        incidents: Incidents that will be created in Cortex XSOAR
+        next_run: This will be last_run in the next fetch-incidents
+
     """
     if result['response']['result']['job']['status'] != 'FIN':  # if fetch is not over, keep the context as is
         demisto.debug('Querying the logs job is in progress to fetch PAN-OS logs as incidents.')
-        return None, last_run
+        return [], last_run
 
     if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result']\
             or 'logs' not in result['response']['result']['log']:
         # if no logs, querying the logs failed for an unknown reason. reset the status and job id
         demisto.setLastRun(None)
-        raise DemistoException('Missing logs in response.')
+        raise DemistoException('PAN-OS is missing logs in response.')
 
     logs_dict = result['response']['result']['log']['logs']
     if logs_dict['@count'] == '0':  # fetch is over, no new logs found. reset the status and job id
         demisto.debug('Querying the logs job to fetch PAN-OS logs as incidents did not find any new logs.')
         last_run['status'] = 'new'
         last_run['job_id'] = '-1'
-        return None, last_run
+        return [], last_run
 
     # logs where retrieved successfully. reset the status and job id
     raw_logs = logs_dict['entry']
     demisto.debug(f'Creating {len(raw_logs)} PAN-OS logs as incidents')
-    last_run['status'] = 'new'
-    last_run['job_id'] = '-1'
+    next_run = {'status': 'new'}
     incidents = [{
         'name': f'{raw_log.get("TimeReceived")} PAN-OS log',
         'occurred': raw_log.get("TimeReceived"),
         'rawJSON': json.dumps(raw_log)
     } for raw_log in raw_logs]
-    # TODO set the last_run['last_time'] correctly
-    return incidents, last_run
+    # TODO set the next_run['last_time'] correctly
+    return incidents, next_run
 
 
-def fetch_incidents(params: dict, last_run: dict) -> Tuple[dict, list]:
+def fetch_incidents(params: dict, last_run: dict) -> Tuple[list, dict]:
     """
     Fetching incidents from PAN-OS.
     Will first execute a query. than, as long as the query is not 'completed' will pull on it in the next fetch.
@@ -7073,18 +7073,17 @@ def fetch_incidents(params: dict, last_run: dict) -> Tuple[dict, list]:
         last_run (dict): last run data including the status, job_id and time.
 
     Returns:
-        next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Cortex XSOAR
+        next_run: This will be last_run in the next fetch-incidents
     """
     query = str(params.get('query', ''))
     first_fetch_time = params.get('fetch_time', '3 days').strip()
     number_of_logs = int(params.get('max_fetch', '50'))
-    log_type = str(params.get('log_type', ''))
+    log_type = str(params.get('log_type', 'threat'))
 
     fetch_status = last_run.get('status')
     job_id = last_run.get('job_id')
-
-    if fetch_status != 'new':  # if we do not need to initiate a new query, try to get the logs
+    if fetch_status and fetch_status != 'new':  # if we do not need to initiate a new query, try to get the logs
         result = panorama_get_logs(job_id)
         return parse_logs_to_incidents(result, last_run)
 
@@ -7094,11 +7093,13 @@ def fetch_incidents(params: dict, last_run: dict) -> Tuple[dict, list]:
     else:
         last_time = last_run['last_time']
     now = to_pan_os_format_converter()
-
     # All Traffic Received Between The Date-Time Range Of:
     # (receive_time geq 'yyyy/mm/dd hh:mm:ss') and (receive_time leq 'YYYY/MM/DD HH:MM:SS')
     # example: (receive_time geq '2015/08/30 08:30:00') and (receive_time leq '2015/08/31 01:25:00')
-    query += f'and ((receive_time geq {last_time}) and (receive_time leq {now}))'
+    if len(query) > 0 and query[-1] == ')':
+        query += ' and '
+    query += f"(receive_time geq '{last_time}') and (receive_time leq '{now}')"
+    demisto.info(f'PAN-OS executing fetch with logs_type: {log_type} and query: {str(query)}')
     submitted_job = panorama_query_logs(log_type=log_type, number_of_logs=number_of_logs, query=query)
     job_id = submitted_job['response']['result']['job']  # get the job id
 
@@ -7495,7 +7496,7 @@ def main() -> None:
 
         # Fetch
         elif command == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(params=params, last_run=demisto.getLastRun())
+            incidents, next_run = fetch_incidents(params=params, last_run=demisto.getLastRun())
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 

@@ -48,6 +48,10 @@ configuration:
   name: additional_malicious
   required: false
   type: 12
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
 - display: Incident Type
   name: incident_type
   required: false
