@@ -916,10 +916,9 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
     qs = qs.filter().order_by('datetime_received')
 
     result = []
-    counter = 0
     exclude_ids = exclude_ids if exclude_ids else set()
+
     for item in qs:
-        counter += 1
         try:
             if isinstance(item, Message) and item.message_id not in exclude_ids:
                 result.append(item)
@@ -929,8 +928,7 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
             future_utils.raise_from(ValueError(
                 'Got an error when pulling incidents. You might be using the wrong exchange version.'
             ), exc)
-
-    demisto.debug("EWS V2 - Got total of {} from EWS query. {} results not excluded.".format(counter, len(result)))
+    demisto.debug('EWS V2 - Got total of {} from ews query. {} results not excluded. '.fomat(len(qs), len(result)))
     return result
 
 

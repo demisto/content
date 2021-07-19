@@ -19,7 +19,6 @@ import logging
 import warnings
 import email
 from requests.exceptions import ConnectionError
-from collections import deque
 
 from multiprocessing import Process
 import exchangelib
@@ -2143,7 +2142,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
     :return:
     """
     last_run = get_last_run(client, last_run)
-    excluded_ids = set(last_run.get(LAST_RUN_IDS))
+    excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
     try:
         last_emails = fetch_last_emails(
             client,
