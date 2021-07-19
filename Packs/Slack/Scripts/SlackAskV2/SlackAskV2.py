@@ -62,6 +62,8 @@ def main():
     reply = demisto.get(demisto.args(), 'reply')
     response_type = demisto.get(demisto.args(), 'responseType')
     lifetime = demisto.get(demisto.args(), 'lifetime')
+    slack_instance = demisto.get(demisto.args(), 'slackInstance')
+    slack_version = demisto.args().get('slackVersion', 'SlackV3')
     try:
         expiry = datetime.strftime(dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'}),
                                    DATE_FORMAT)
@@ -76,8 +78,12 @@ def main():
 
     args = {
         'ignoreAddURL': 'true',
-        'using-brand': 'SlackV2'
+        'using-brand': slack_version
     }
+    if slack_instance:
+        args.update({
+            'using': slack_instance
+        })
     user_options = [option1, option2]
     options = []
     if extra_options:
@@ -129,8 +135,8 @@ def main():
         demisto.results(demisto.executeCommand('send-notification', args))
     except ValueError as e:
         if 'Unsupported Command' in str(e):
-            return_error('The command is unsupported by any integration instance. If you have SlackV3 or above enabled, '
-                         'please use SlackAskV2 instead.')
+            return_error('The command is unsupported by this script. If you have SlackV3 enabled, '
+                         'please use SlackAsk instead.')
         else:
             return_error('An error has occurred while executing the send-notification command',
                          error=e)
