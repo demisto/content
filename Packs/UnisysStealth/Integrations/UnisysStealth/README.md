@@ -1,5 +1,5 @@
 This integration is intended to aid companies in integrating with the Stealth EcoAPI service.  Using the included commands, security teams can trigger dynamically isolation of users or endpoints from the rest of the Stealth network.  
-This integration was integrated and tested with version xx of Unisys Stealth
+
 ## Configure Unisys Stealth on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
