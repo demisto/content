@@ -1,7 +1,7 @@
 {
     "description": "Maps incoming Ironscales incident fields.",
     "feed": false,
-    "id": "6f5f27f6-14df-42fc-8c0d-8afa152ded33",
+    "id": "Ironscales - Incoming Mapper",
     "mapping": {
         "Ironscales": {
             "dontMapEventToLabels": false,
