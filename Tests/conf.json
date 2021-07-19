@@ -1916,7 +1916,7 @@
             "integrations": "VMware Carbon Black EDR v2",
             "playbookID": "Carbon Black Edr - Test",
             "is_mockable": false,
-            "fromversion": "5.5.00"
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Cisco Umbrella Investigate",
