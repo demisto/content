@@ -1052,8 +1052,7 @@ def handle_response_single_file(response: Dict[str, Any], args: Dict[str, str]):
 
     outputs = GSuiteClient.remove_empty_entities(outputs)
 
-    readable_hr = ''
-    readable_hr += file_hr if response.get('id', '') \
+    readable_hr = file_hr if response.get('id', '') \
         else HR_MESSAGES['NOT_FOUND'].format('File')
 
     return CommandResults(
