@@ -81,16 +81,16 @@ Returns PassiveDNS records for the provided indicator value.
                         "location_longitude": "-85.6636",
                         "postal_code": "49548"
                     },
-                    "ip": "99.198.121.82",
+                    "ip": "",
                     "isp": {
                         "autonomous_system_number": "AS32475",
                         "autonomous_system_organization": "SingleHop LLC",
-                        "ip_address": "99.198.121.82",
+                        "ip_address": "",
                         "isp": "SingleHop LLC",
                         "organization": "SingleHop LLC"
                     }
                 },
-                "ipv4": "99.198.121.82",
+                "ipv4": "",
                 "last_seen": "2021-07-16T15:29:13.033000Z",
                 "sources": [
                     "hyas",
@@ -110,16 +110,16 @@ Returns PassiveDNS records for the provided indicator value.
                         "location_longitude": "-87.6500",
                         "postal_code": "60666"
                     },
-                    "ip": "69.175.25.234",
+                    "ip": "",
                     "isp": {
                         "autonomous_system_number": "AS32475",
                         "autonomous_system_organization": "SingleHop LLC",
-                        "ip_address": "69.175.25.234",
+                        "ip_address": "",
                         "isp": "SingleHop LLC",
                         "organization": "SingleHop LLC"
                     }
                 },
-                "ipv4": "69.175.25.234",
+                "ipv4": "",
                 "last_seen": "2012-06-18T08:36:11Z",
                 "sources": [
                     "farsight"
@@ -138,16 +138,16 @@ Returns PassiveDNS records for the provided indicator value.
                         "location_longitude": "-104.9847",
                         "postal_code": "80208"
                     },
-                    "ip": "70.40.220.103",
+                    "ip": "",
                     "isp": {
                         "autonomous_system_number": "AS46606",
                         "autonomous_system_organization": "Unified Layer",
-                        "ip_address": "70.40.220.103",
+                        "ip_address": "",
                         "isp": "Unified Layer",
                         "organization": "Unified Layer"
                     }
                 },
-                "ipv4": "70.40.220.103",
+                "ipv4": "",
                 "last_seen": "2018-11-25T08:06:47Z",
                 "sources": [
                     "farsight"
@@ -163,9 +163,9 @@ Returns PassiveDNS records for the provided indicator value.
 >### HYAS PassiveDNS records for domain : edubolivia.org
 >|Count|Domain|First seen|City Name|Country Code|Country Name|Latitude|Longitude|Postal Code|IP|ISP ASN|ISP ASN Organization|ISP IP Address|ISP|ISP Organization|IPV4|Last Seen|Sources|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 10571 | edubolivia.org | 2019-03-14T23:36:40Z | Cutlerville | US | United States | 42.8409 | -85.6636 | 49548 | 99.198.121.82 | AS32475 | SingleHop LLC | 99.198.121.82 | SingleHop LLC | SingleHop LLC | 99.198.121.82 | 2021-07-16T15:29:13.033000Z | hyas,<br/>farsight |
->| 151 | edubolivia.org | 2011-08-02T12:15:17Z | Chicago | US | United States | 41.8500 | -87.6500 | 60666 | 69.175.25.234 | AS32475 | SingleHop LLC | 69.175.25.234 | SingleHop LLC | SingleHop LLC | 69.175.25.234 | 2012-06-18T08:36:11Z | farsight |
->| 7439 | edubolivia.org | 2014-04-08T03:30:41Z | Denver | US | United States | 39.7392 | -104.9847 | 80208 | 70.40.220.103 | AS46606 | Unified Layer | 70.40.220.103 | Unified Layer | Unified Layer | 70.40.220.103 | 2018-11-25T08:06:47Z | farsight |
+>| 10571 | edubolivia.org | 2019-03-14T23:36:40Z | Cutlerville | US | United States | 42.8409 | -85.6636 | 49548 |  | AS32475 | SingleHop LLC |  | SingleHop LLC | SingleHop LLC |  | 2021-07-16T15:29:13.033000Z | hyas,<br/>farsight |
+>| 151 | edubolivia.org | 2011-08-02T12:15:17Z | Chicago | US | United States | 41.8500 | -87.6500 | 60666 |  | AS32475 | SingleHop LLC |  | SingleHop LLC | SingleHop LLC |  | 2012-06-18T08:36:11Z | farsight |
+>| 7439 | edubolivia.org | 2014-04-08T03:30:41Z | Denver | US | United States | 39.7392 | -104.9847 | 80208 |  | AS46606 | Unified Layer |  | Unified Layer | Unified Layer |  | 2018-11-25T08:06:47Z | farsight |
 
 
 ### hyas-get-dynamic-dns-records-by-indicator
@@ -210,16 +210,16 @@ Returns DynamicDNS records for the provided indicator value.
                 "a_record": "4.4.4.4",
                 "account": "free",
                 "created": "2019-03-30T14:39:49Z",
-                "created_ip": "78.191.27.210",
+                "created_ip": "",
                 "domain": "seyir.duckdns.org",
-                "domain_creator_ip": "78.191.25.0",
-                "email": "halbayrak75@gmail.com"
+                "domain_creator_ip": "",
+                "email": ""
             },
             {
                 "a_record": "4.4.4.4",
                 "account": "free",
                 "created": "2020-05-09T03:39:28Z",
-                "created_ip": "42.3.24.108",
+                "created_ip": "",
                 "domain": "tempoary.duckdns.org",
                 "domain_creator_ip": "42.3.24.36",
                 "email": "benson877204@gmail.com"
@@ -228,9 +228,9 @@ Returns DynamicDNS records for the provided indicator value.
                 "a_record": "4.4.4.4",
                 "account": "free",
                 "created": "2020-05-09T03:39:24Z",
-                "created_ip": "42.3.24.108",
+                "created_ip": "",
                 "domain": "bensonwonghk.duckdns.org",
-                "domain_creator_ip": "42.3.24.108",
+                "domain_creator_ip": "",
                 "email": "benson877204@gmail.com"
             }
         ]
@@ -243,9 +243,9 @@ Returns DynamicDNS records for the provided indicator value.
 >### HYAS DynamicDNS records for ip : 4.4.4.4
 >|A Record|Account|Created Date|Account Holder IP Address|Domain|Domain Creator IP Address|Email Address|
 >|---|---|---|---|---|---|---|
->| 4.4.4.4 | free | 2019-03-30T14:39:49Z | 78.191.27.210 | seyir.duckdns.org | 78.191.25.0 | halbayrak75@gmail.com |
->| 4.4.4.4 | free | 2020-05-09T03:39:28Z | 42.3.24.108 | tempoary.duckdns.org | 42.3.24.36 | benson877204@gmail.com |
->| 4.4.4.4 | free | 2020-05-09T03:39:24Z | 42.3.24.108 | bensonwonghk.duckdns.org | 42.3.24.108 | benson877204@gmail.com |
+>| 4.4.4.4 | free | 2019-03-30T14:39:49Z |  | seyir.duckdns.org |  |  |
+>| 4.4.4.4 | free | 2020-05-09T03:39:28Z |  | tempoary.duckdns.org | 42.3.24.36 | benson877204@gmail.com |
+>| 4.4.4.4 | free | 2020-05-09T03:39:24Z |  | bensonwonghk.duckdns.org | | benson877204@gmail.com |
 
 
 ### hyas-get-whois-records-by-indicator
