@@ -359,24 +359,35 @@ def panorama_test():
     """
     test module
     """
-    params = {
+    # perform a basic api call test
+    api_params = {
         'type': 'op',
         'cmd': '<show><system><info></info></system></show>',
         'key': API_KEY
     }
-
     http_request(
         URL,
         'GET',
-        params=params
+        params=api_params
     )
 
+    # if this is a panorama instance and the device_group configured is not shared
+    # check that the device_group configured is within the Panorama configured Device Groups
     if DEVICE_GROUP and DEVICE_GROUP != 'shared':
         device_group_test()
-
     _, template = set_xpath_network()
+    # if this is a panorama instance and the template is configured
+    # check that the device_group configured is within the Panorama configured Device Groups
     if template:
         template_test(template)
+
+    # if fetch is turned on, execute a query logs call
+    params = demisto.params()
+    if params.get('isFetch'):
+        query = str(params.get('query', ''))
+        number_of_logs = int(params.get('max_fetch', '50'))
+        log_type = str(params.get('log_type', ''))
+        panorama_query_logs(log_type=log_type, number_of_logs=number_of_logs, query=query)
 
     return_results('ok')
 
@@ -7044,8 +7055,8 @@ def parse_logs_to_incidents(result: dict, last_run: dict) -> Tuple[Optional[List
     last_run['job_id'] = '-1'
     incidents = [{
         'name': f'{raw_log.get("TimeReceived")} PAN-OS log',
-        'rawJSON': json.dumps(raw_log),
-        'occurred': raw_log.get("TimeReceived")
+        'occurred': raw_log.get("TimeReceived"),
+        'rawJSON': json.dumps(raw_log)
     } for raw_log in raw_logs]
     # TODO set the last_run['last_time'] correctly
     return incidents, last_run
