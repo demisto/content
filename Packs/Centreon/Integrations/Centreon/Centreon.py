@@ -35,9 +35,9 @@ def httpRequest(method, urlSuffix, data, headers):
         res.raise_for_status()
         return res.json()
 
-    except Exception, e:
+    except Exception as e:
         LOG(e)
-        raise(e)
+        raise e
 
 
 def httpPost(urlSuffix, data=None, files=None):
@@ -49,13 +49,13 @@ def httpPost(urlSuffix, data=None, files=None):
         res.raise_for_status()
         return res.json()
 
-    except Exception, e:
+    except Exception as e:
         LOG(e)
-        raise (e)
+        raise e
 
 
 def login():
-  # retrieves an authentication token from Centreon
+    # retrieves an authentication token from Centreon
     cmd_url = 'action=authenticate'
     data = {
         'username': USERNAME,
@@ -172,7 +172,7 @@ try:
     elif demisto.command() == 'centreon-get-service-status':
         demisto.results(get_service_status_command())
 
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     raise
