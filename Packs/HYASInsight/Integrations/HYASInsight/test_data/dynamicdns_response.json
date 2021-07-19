@@ -2,8 +2,8 @@
         "a_record": "4.4.4.4",
         "account": "free",
         "created": "2019-03-30T14:39:49Z",
-        "created_ip": "78.191.27.210",
+        "created_ip": "",
         "domain": "seyir.duckdns.org",
-        "domain_creator_ip": "78.191.25.0",
-        "email": "halbayrak75@gmail.com"
+        "domain_creator_ip": "",
+        "email": ""
 }]

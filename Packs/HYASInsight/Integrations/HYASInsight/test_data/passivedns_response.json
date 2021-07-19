@@ -11,16 +11,16 @@
                 "location_longitude": "-85.6636",
                 "postal_code": "49548"
             },
-            "ip": "99.198.121.82",
+            "ip": "",
             "isp": {
                 "autonomous_system_number": "AS32475",
                 "autonomous_system_organization": "SingleHop LLC",
-                "ip_address": "99.198.121.82",
+                "ip_address": "",
                 "isp": "SingleHop LLC",
                 "organization": "SingleHop LLC"
             }
         },
-        "ipv4": "99.198.121.82",
+        "ipv4": "",
         "last_seen": "2021-07-06T03:37:14Z",
         "sources": [
             "hyas",
