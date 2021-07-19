@@ -1835,9 +1835,6 @@ script:
     - contextPath: GoogleDrive.Drive.colorRgb
       description: The color of this shared drive as an RGB hex string.
       type: String
-    - contextPath: GoogleDrive.Drive.backgroundImageLink
-      description: A short-lived link to this shared drive's background image.
-      type: String
     - contextPath: GoogleDrive.Drive.capabilities.canAddChildren
       description: Whether the current user can add children to folders in this shared
         drive.
@@ -1977,9 +1974,6 @@ script:
       type: String
     - contextPath: GoogleDrive.Drive.colorRgb
       description: The color of this shared drive as an RGB hex string.
-      type: String
-    - contextPath: GoogleDrive.Drive.backgroundImageLink
-      description: A short-lived link to this shared drive's background image.
       type: String
     - contextPath: GoogleDrive.Drive.capabilities.canAddChildren
       description: Whether the current user can add children to folders in this shared
