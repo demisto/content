@@ -3403,7 +3403,7 @@ def convert_to_unicode(s, is_msg_header=True):
     global ENCODINGS_TYPES
     try:
         res = ''  # utf encoded result
-        if is_msg_header:
+        if is_msg_header:  # Mime encoded words used on message headers only
             try:
                 word_mime_encoded = s and MIME_ENCODED_WORD.search(s)
                 if word_mime_encoded:
