@@ -24,11 +24,11 @@ configuration:
   name: client_credentials
   required: false
   type: 8
-- display: Tenant ID (for self-deployed mode)
+- display: Tenant ID (for client-credentials mode)
   name: tenant_id
   required: false
   type: 4
-- display: Client Secret (for self-deployed mode)
+- display: Client Secret (for client-credentials mode)
   name: enc_key
   required: false
   type: 4
