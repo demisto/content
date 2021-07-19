@@ -2,6 +2,9 @@ The Cofense Triage v3 integration uses the Cofense Triage v2 API (previous integ
 
 Security teams can ingest data from Triage such as email reporters, email reports and clusters, threat indicators, and rule matching to name a few. In addition, ingest and create threat indicators, categorize reports, and obtain second stage threat indicators from malicious emails. This integration was integrated and tested with version 1.22.0 of Cofense Triage.
 
+Some changes have been made that might affect your existing content. 
+If you are upgrading from a previous of this integration, see [Breaking Changes](#Breaking-changes-from-the-previous-version-of-this-integration---Cofense-Triage-v3).
+
 ## What's new in Cofense Triage v3?
 Use Cofense Triage v3 XSOAR integration application to take advantage of Cofense Triage v2 API for bidirectional communication between Triage and XSOAR. 
 Earlier, the Cofense Triage v2 was only capable of pulling the indicators from Cofense. The new integration provides:
@@ -11,9 +14,9 @@ Earlier, the Cofense Triage v2 was only capable of pulling the indicators from C
  - Mirroring feature that updates the XSOAR incidents when Cofense Triage reports are updated.
 
 ## What Mirroring functionality does?
-This feature is compliant with XSOAR version 6.0 and above. This feature automatically updates the Cortex XSOAR incidents if any report is changed or updated in Cofense Triage. 
- - Users can enable or disable this feature from the integration parameters.
- - Supports only incoming data that are updated in Cofense Triage.
+The data in Cofense Triage Report can be mirrored to Cortex XSOAR to view the modifications when the report is updated.
+
+For example: When the report is processed, the fields like Report Category ID and Report location get modified, and hence the user will be able to see the modified field's value in XSOAR.
 
 ## Configure Cofense Triage v3 on Cortex XSOAR
 
@@ -2391,3 +2394,43 @@ Downloads the image of the report that matches the specified report ID.
 
 >Uploaded an image: Report ID - 4.png
 ![cofense-report-image-download](./../../doc_files/report_image_download.png)
+
+## Breaking changes from the previous version of this integration - Cofense Triage v3
+
+The following sections list the changes in this version.
+
+### Commands
+#### The following commands were removed in this version:
+* *cofense-search-reports* - this command was replaced by cofense-report-list.
+* *cofense-search-inbox-reports* - this command was replaced by cofense-report-list with argument 'report_location' .
+* *cofense-get-attachment*
+* *cofense-get-reporter* - this command was replaced by cofense-reporter-list.
+* *cofense-get-report-by-id* - this command was replaced by cofense-report-list with argument 'id'.
+* *cofense-get-report-png-by-id* - this command was replaced by cofense-report-image-download.
+* *cofense-get-threat-indicators* - this command was replaced by cofense-threat-indicator-list.
+
+## Additional Considerations for this version
+
+The ability to mirror incident data has been added.
+
+#### The following commands were added in this version:
+* *cofense-attachment-payload-list*
+* *cofense-category-list*
+* *cofense-cluster-list*
+* *cofense-comment-list*
+* *cofense-integration-submission-get*
+* *cofense-report-categorize*
+* *cofense-report-download*
+* *cofense-rule-list*
+* *cofense-threat-indicator-create*
+* *cofense-threat-indicator-update*
+* *cofense-url-list*
+
+#### The following Enhancement Scripts were added in this version:
+* *CofenseTriageReportDownload*
+* *CofenseTriageThreatEnrichment*
+
+#### The following Playbooks were added in this version:
+* *Report Categorization - Cofense Triage v3*
+* *Send Indicators - Cofense Triage v3*
+* *Cluster Report Categorization - Cofense Triage v3*
