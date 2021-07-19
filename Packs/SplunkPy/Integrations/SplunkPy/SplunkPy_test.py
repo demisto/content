@@ -815,6 +815,40 @@ def test_get_modified_remote_data_command(mocker):
     assert results == [updated_incidet_review['rule_id']]
 
 
+def test_edit_notable_event__failed_to_update(mocker, requests_mock):
+    """
+    Given
+    - notable event with id ID100
+
+    When
+    - updating the event with invalid owner 'dbot'
+    - the service should return error string message 'ValueError: Invalid owner value.'
+
+    Then
+    - ensure the error message parsed correctly and returned to the user
+    """
+    test_base_url = 'https://test.url.com:8089/'
+    test_token = 'token12345'
+    test_args = {
+        'eventIDs': 'ID100',
+        'owner': 'dbot'
+    }
+    mocker.patch.object(demisto, 'results')
+
+    requests_mock.post('{}services/notable_update'.format(test_base_url), json='ValueError: Invalid owner value.')
+
+    splunk.splunk_edit_notable_event_command(
+        base_url=test_base_url,
+        token=test_token,
+        auth_token=None,
+        args=test_args
+    )
+
+    assert demisto.results.call_count == 1
+    error_message = demisto.results.call_args[0][0]['Contents']
+    assert error_message == 'Could not update notable events: ID100 : ValueError: Invalid owner value.'
+
+
 @pytest.mark.parametrize('args, params, call_count, success', [
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
      {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 3, True),
