@@ -27,7 +27,7 @@ class AzureADClient:
             verify=verify,
             proxy=proxy,
             resource=f'{BASE_URL}/{resource_group_name}',
-            scope=' '.join(('offline_access',
+            scope=' '.join(('offline_access',  # allows device-flow login
                             'IdentityRiskEvent.Read.All',
                             'IdentityRiskyUser.ReadWrite.All'
                             )
