@@ -85,7 +85,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Events will be fetched only for User Profiles with a Source Priority
-    value less than or equals to the value of this parameter.
+    value less than or equal to the value of this parameter.
   defaultvalue: '1'
   display: Source Priority Level
   hidden: false
