@@ -6,6 +6,11 @@ urllib3.disable_warnings()
 
 OUTPUTS_PREFIX = "AAD_Identity_Protection"
 BASE_URL = 'https://graph.microsoft.com/beta'
+REQUIRED_PERMISSIONS = (
+    'offline_access',  # allows device-flow login
+    'IdentityRiskEvent.Read.All',
+    'IdentityRiskyUser.ReadWrite.All'
+)
 
 
 class AzureADClient:
@@ -26,13 +31,7 @@ class AzureADClient:
             verify=verify,
             proxy=proxy,
             resource=f'{BASE_URL}/{resource_group_name}',
-            scope=' '.join(
-                (
-                    'offline_access',  # allows device-flow login
-                    'IdentityRiskEvent.Read.All',
-                    'IdentityRiskyUser.ReadWrite.All'
-                )
-            ),
+            scope=' '.join(REQUIRED_PERMISSIONS),
             azure_ad_endpoint=azure_ad_endpoint
         )
         self.subscription_id = subscription_id
