@@ -2143,32 +2143,37 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
     :return:
     """
     last_run = get_last_run(client, last_run)
-
+    excluded_ids = set(last_run.get(LAST_RUN_IDS))
     try:
         last_emails = fetch_last_emails(
             client,
             client.folder_name,
             last_run.get(LAST_RUN_TIME),
-            last_run.get(LAST_RUN_IDS),
+            excluded_ids,
         )
 
-        ids = deque(
-            last_run.get(LAST_RUN_IDS, []), maxlen=client.last_run_ids_queue_size
-        )
         incidents = []
         incident: Dict[str, str] = {}
+        demisto.debug(f'{APP_NAME} - Started fetch with {len(last_emails)}')
+        current_fetch_ids = set()
         for item in last_emails:
             if item.message_id:
-                ids.append(item.message_id)
+                current_fetch_ids.add(item.message_id)
                 incident = parse_incident_from_item(item)
                 incidents.append(incident)
 
                 if len(incidents) >= client.max_fetch:
                     break
 
+        demisto.debug(f'{APP_NAME} - ending fetch - got {len(incidents)} incidents.')
         last_run_time = incident.get("occurred", last_run.get(LAST_RUN_TIME))
         if isinstance(last_run_time, EWSDateTime):
             last_run_time = last_run_time.ewsformat()
+
+        if last_run_time > LAST_RUN_TIME:
+            ids = current_fetch_ids
+        else:
+            ids = current_fetch_ids | excluded_ids
 
         new_last_run = {
             LAST_RUN_TIME: last_run_time,
@@ -2215,15 +2220,17 @@ def fetch_last_emails(
     qs = qs.filter().order_by("datetime_received")
 
     result = []
-    for item in qs:
-        if isinstance(item, Message):
+    exclude_ids = exclude_ids if exclude_ids else set()
+    demisto.debug(f'{APP_NAME} - Exclude ID list: {exclude_ids}')
+    counter = 0
+    for item in qs.iterator():
+        counter += 1
+        if isinstance(item, Message) and item.message_id not in exclude_ids:
             result.append(item)
             if len(result) >= client.max_fetch:
                 break
-
-    if exclude_ids and len(exclude_ids) > 0:
-        exclude_ids = set(exclude_ids)
-        result = [x for x in result if x.message_id not in exclude_ids]
+    demisto.debug(f'{APP_NAME} - Got total of {counter} from ews query. '
+                  f'{len(result)} results not excluded. ')
     return result
 
 
