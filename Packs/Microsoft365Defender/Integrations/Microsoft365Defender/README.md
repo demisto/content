@@ -26,21 +26,20 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 
 #### Required Permissions
  * offline_access - Delegate
- * Incident.Read.All - Application
+ * Incident.ReadWrite.All - Application
  * AdvancedHunting.Read.All - Application
 
 ## Self-Deployed Application - Client Credentials Flow
 
-Follow these steps for a self-deployed configuration.
+Follow these steps for a self-deployed configuration:
 
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
-2. Select the ***self-deployed*** button.
-2. Enter your Client/Application ID in the ***Application ID*** parameter. 
-3. Enter your Client Secret in the ***Client Secret*** parameter.
-4. Enter your Tenant ID in the ***Tenant ID/Token*** parameter.
+2. In the instance configuration, select the ***client-credentials*** checkbox.
+3. Enter your Client/Application ID in the ***Application ID*** parameter. 
+4. Enter your Client Secret in the ***Client Secret*** parameter.
+5. Enter your Tenant ID in the ***Tenant ID*** parameter.
 
 #### Required Permissions
- * AdvancedHunting.Read.All - Application
  * AdvancedHunting.Read.All - Application
  * Incident.ReadWrite.All - Application
 
@@ -54,9 +53,9 @@ Follow these steps for a self-deployed configuration.
     | --- | --- | --- |
     | Application ID | The API key to use to connect. | True |
     | Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
-    | client-credentials | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
-    | Tenant ID/Token (for client-credentials mode) | Tenant ID | False |
-    | Client Secret (for client-credentials mode) | Encryption key given by the admin | False |
+    | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
+    | Tenant ID (for Client Credentials mode) | Tenant ID | False |
+    | Client Secret (for Client Credentials mode) | Encryption key given by the admin | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
     | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |

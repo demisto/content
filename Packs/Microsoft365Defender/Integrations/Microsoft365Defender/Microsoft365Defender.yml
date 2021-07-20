@@ -20,15 +20,15 @@ configuration:
   required: true
   type: 0
 - additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
-  display: client-credentials
+  display: Use Client Credentials Authorization Flow
   name: client_credentials
   required: false
   type: 8
-- display: Tenant ID (for client-credentials mode)
+- display: Tenant ID (for Client Credentials mode)
   name: tenant_id
   required: false
   type: 4
-- display: Client Secret (for client-credentials mode)
+- display: Client Secret (for Client Credentials mode)
   name: enc_key
   required: false
   type: 4
