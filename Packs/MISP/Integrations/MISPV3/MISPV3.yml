@@ -1757,7 +1757,7 @@ script:
       predefined:
       - CIRCL
       - Botvrij.eu
-      required: false
+      required: true
       secret: false
     - default: true
       defaultValue: '2'
