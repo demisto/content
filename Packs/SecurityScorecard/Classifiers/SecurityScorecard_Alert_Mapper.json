@@ -1,7 +1,7 @@
 {
     "description": "SecurityScorecard Alert Mapper",
     "feed": false,
-    "id": "cb82c890-23ee-449f-87ba-f18f999a9d83",
+    "id": "SecurityScorecard Alert Mapper",
     "mapping": {
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": true,
