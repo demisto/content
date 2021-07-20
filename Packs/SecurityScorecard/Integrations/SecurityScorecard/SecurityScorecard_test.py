@@ -43,7 +43,7 @@ def test_incidents_to_import(mocker):
 
     entries = response.get('entries')
 
-    assert len(entries) == 9
+    assert len(entries) == 2
 
     # 3 day in seconds
     seconds_ago = 3 * 86400
@@ -260,5 +260,5 @@ def test_fetch_alerts(mocker):
     )
 
     assert response == alerts_mock
-    assert response["size"] == 9
+    assert response["size"] == 2
     assert isinstance(response["entries"][0]["my_scorecard"], bool)
