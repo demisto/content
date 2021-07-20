@@ -33,11 +33,17 @@ Slack V3 utilizes "Socket Mode" to enable the integration to communicate directl
 ### Creating a Custom App
 1. Navigate to the following [link](https://api.slack.com/apps/).
  2. Click **Create an App**.
- 3. Click **From scratch**.
- 4. Enter an *App Name* and select the workspace in which your app will reside.
- 5. Click **Create App**. 
+ ![create-app-1](../../doc_files/SlackDocs_create_app.png)
+ 3. Click **From an app manifest**.
+ ![create-app-2](../../doc_files/SlackDocs_create_app2.png)
+ 4. Next pick the workspace you would like the app to reside in and click ***Next***.
+ ![create-app-3](../../doc_files/SlackDocs_create_app3.png)
+ 5. Next copy the text in the file found [here](link to content manifest)
+ 
+ 
+ 
  6. Click **Socket Mode** found on the left-hand side of the menu. 
- 7. Click **Enable Socket Mode**. This will create an app level token with the required scope for connecting. 
+ 7. Click **Enable Socket Mode**. This will create an app level token with the required scope (`connections:write`) for connecting. 
  8. Enter a name for the token.
  9. Click **Generate**.
 
@@ -49,10 +55,6 @@ For Slack V3 to be able to mirror incidents, you must enable the Events feature.
 2. Enable Events by clicking the toggle switch.
  
 Enabling the Events API will present various events that the app may subscribe to. Currently, Slack V3 only uses the following message events:
- 
- | Event Name | What it's used for |
- | --- | --- |
- | `message.channel` | Allows the app to receive 
 
 | **Event Name** | **What it's used for** |
 | --- | --- |
@@ -64,6 +66,7 @@ Enabling the Events API will present various events that the app may subscribe t
 These message events are available for both "Bot Events" and "Events on behalf of users". In order to use mirroring and handle bot questions, Cortex XSOAR recommends enabling these event scopes for both bot and user events.
 
 ### OAuth Scopes
+In order to define the OAuth scopes, please navigate to the OAuth https://api.slack.com/apps/{BOT_ID}/oauth?
 
 In order to utilize the full functionality of the Slack integration, Cortex XSOAR recommends the following OAuth scopes for the bot token:
 
