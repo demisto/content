@@ -60,7 +60,7 @@ class Client(BaseClient):
 
         return self._http_request(
             'GET',
-            url_suffix='portfolios/{0}/companies'.format(portfolio),
+            url_suffix=f'portfolios/{portfolio}/companies',
             params=request_params,
             error_handler=self.company_portfolio_error_handler
         )
@@ -69,7 +69,7 @@ class Client(BaseClient):
 
         return self._http_request(
             'GET',
-            url_suffix='companies/{0}'.format(domain)
+            url_suffix=f'companies/{domain}'
         )
 
     def get_company_factor_score(self, domain: str, severity_in: Optional[List[str]]) -> Dict[str, Any]:
@@ -81,7 +81,7 @@ class Client(BaseClient):
 
         return self._http_request(
             'GET',
-            url_suffix='companies/{0}/factors'.format(domain),
+            url_suffix=f'companies/{domain}/factors',
             params=request_params
         )
 
@@ -103,7 +103,7 @@ class Client(BaseClient):
 
         return self._http_request(
             'GET',
-            url_suffix='companies/{0}/history/score'.format(domain),
+            url_suffix=f'companies/{domain}/history/score',
             params=request_params)
 
     def get_company_historical_factor_scores(self, domain: str, _from: str, to: str, timing: str) -> Dict[str, Any]:
@@ -119,7 +119,7 @@ class Client(BaseClient):
 
         return self._http_request(
             'GET',
-            url_suffix='companies/{0}/history/factors/score'.format(domain),
+            url_suffix=f'companies/{domain}/history/factors/score',
             params=request_params
         )
 
@@ -143,7 +143,7 @@ class Client(BaseClient):
 
         return self._http_request(
             'POST',
-            url_suffix="users/by-username/{0}/alerts/grade".format(email),
+            url_suffix=f"users/by-username/{email}/alerts/grade",
             json_data=payload
         )
 
@@ -171,7 +171,7 @@ class Client(BaseClient):
 
         return self._http_request(
             'POST',
-            url_suffix="users/by-username/{0}/alerts/score".format(email),
+            url_suffix=f"users/by-username/{email}/alerts/score",
             json_data=payload
         )
 
@@ -179,7 +179,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "DELETE",
-            url_suffix="users/by-username/{0}/alerts/{1}/{2}".format(email, alert_type, alert_id),
+            url_suffix=f"users/by-username/{email}/alerts/{alert_type}/{alert_id}",
             return_empty_response=True
         )
 
@@ -192,7 +192,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "GET",
-            url_suffix="users/by-username/{0}/notifications/recent".format(email),
+            url_suffix=f"users/by-username/{email}/notifications/recent",
             params=query_params
         )
 
@@ -200,7 +200,7 @@ class Client(BaseClient):
 
         return self._http_request(
             'GET',
-            url_suffix="companies/{0}/services".format(domain)
+            url_suffix=f"companies/{domain}/services"
         )
 
     def fetch_alerts(self, username: str, page_size: int):
@@ -217,7 +217,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "GET",
-            url_suffix="users/by-username/{0}/notifications/recent".format(username),
+            url_suffix=f"users/by-username/{username}/notifications/recent",
             params=query_params
         )
 
@@ -227,9 +227,9 @@ class Client(BaseClient):
         try:
             json_resp = res.json()
             requested_portfolio = json_resp.get("error").get("data").get("portfoliosRequested")[0]
-            error_message = """Portfolio '{0}' doesn't exist.
+            error_message = f"""Portfolio '{requested_portfolio}' doesn't exist.
 Please run !securityscorecard-portfolios-list to see available Portfolios and try again.
-            """.format(requested_portfolio)
+            """
         except Exception:
             raise DemistoException("Response error is invalid JSON.")
 
@@ -261,7 +261,7 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     if demisto.getLastRun().get("last_run"):
         last_run = int(demisto.getLastRun().get("last_run"))
     else:
-        days_ago_arg = params.get("first_fetch")
+        days_ago_arg = params.get("first_fetch")  # type: ignore
 
         if not days_ago_arg:
             days_ago_str = "3 days"
@@ -274,17 +274,17 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         assert fetch_days_ago is not None
         valid_fetch_days_ago: datetime = fetch_days_ago
 
-        demisto.debug("getLastRun is None in integration context, using parameter 'first_fetch' value '{0}'".format(days_ago_arg))
-        demisto.debug("{0} => {1}".format(days_ago_str, valid_fetch_days_ago))
+        demisto.debug(f"getLastRun is None in integration context, using parameter 'first_fetch' value '{days_ago_arg}'")
+        demisto.debug(f"{days_ago_str} => {valid_fetch_days_ago}")
 
         last_run = int(valid_fetch_days_ago.timestamp())
 
-    demisto.debug("Last run timestamp: {0}".format(last_run))
+    demisto.debug(f"Last run timestamp: {last_run}")
 
     incidents_to_import: List[Dict[str, Any]] = []
 
     alerts_returned = len(alerts)
-    demisto.debug("Number of alerts found: {0}".format(alerts_returned))
+    demisto.debug(f"Number of alerts found: {alerts_returned}")
     # Check if there are more than 0 alerts
     if alerts_returned > 0:
 
@@ -297,7 +297,7 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
         most_recent_alert_timestamp = \
             int(datetime.strptime(most_recent_alert_created_date, SECURITYSCORECARD_DATE_FORMAT).timestamp())
-        demisto.debug("Setting last runtime as alert most recent timestamp: {0}".format(most_recent_alert_timestamp))
+        demisto.debug(f"Setting last runtime as alert most recent timestamp: {most_recent_alert_timestamp}")
         demisto.setLastRun({
             'last_run': most_recent_alert_timestamp
         })
@@ -309,14 +309,15 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
             alert_id = alert.get("id")
 
-            debug_msg = """
-            last_run: {0}, alert_timestamp: {1}, should import alert '{2}'? (last_run < alert_timestamp): {3}
-            """.format(last_run, alert_timestamp, alert_id, (last_run < alert_timestamp))
+            debug_msg = f"""
+            last_run: {last_run}, alert_timestamp: {alert_timestamp},
+            should import alert '{alert_id}'? (last_run < alert_timestamp): {(last_run < alert_timestamp)}
+            """
             demisto.debug(debug_msg)
 
             if alert_timestamp > last_run:
                 incident = {}
-                incident["name"] = "SecurityScorecard '{0}' Incident".format(alert.get("change_type"))
+                incident["name"] = f"SecurityScorecard '{alert.get('change_type')}' Incident"
                 incident["occurred"] = \
                     datetime.strptime(alert_created_at, SECURITYSCORECARD_DATE_FORMAT).strftime(DATE_FORMAT)
                 incident["rawJSON"] = json.dumps(alert)
@@ -325,7 +326,7 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     # So we'll use now as the last run timestamp
     else:
         now = int(datetime.utcnow().timestamp())
-        demisto.debug("No alerts retrieved, setting last_run to now ({0})".format(now))
+        demisto.debug(f"No alerts retrieved, setting last_run to now ({now})")
         demisto.setLastRun({
             'last_run': now
         })
@@ -348,7 +349,7 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    username_input = params.get('username').get("identifier")
+    username_input = params.get('username').get("identifier")  # type: ignore
 
     message: str = ''
     try:
@@ -429,7 +430,7 @@ def securityscorecard_portfolio_list_companies_command(client: Client, args: Dic
     :rtype: ``CommandResults``
     """
 
-    demisto.debug("securityscorecard_portfolio_list_companies_command called with args: {0}".format(args))
+    demisto.debug(f"securityscorecard_portfolio_list_companies_command called with args: {args}")
 
     portfolio_id = str(args.get('portfolio_id'))
 
@@ -473,11 +474,11 @@ def securityscorecard_portfolio_list_companies_command(client: Client, args: Dic
     total_portfolios = int(str(response.get('total')))
 
     if not total_portfolios > 0:
-        return_warning("No companies found in Portfolio {0}. Please add a company to it and retry.".format(portfolio_id))
+        return_warning(f"No companies found in Portfolio {portfolio_id}. Please add a company to it and retry.")
 
     companies = response.get('entries')
 
-    title = "**{0}** companies found in Portfolio {1}\n".format(total_portfolios, portfolio_id)
+    title = f"**{total_portfolios}** companies found in Portfolio {portfolio_id}\n"
     markdown = tableToMarkdown(
         title,
         companies,
@@ -511,13 +512,13 @@ def securityscorecard_company_score_get_command(client: Client, args: Dict[str, 
     domain = str(args.get('domain'))
 
     score = client.get_company_score(domain=domain)
-    score["domain"] = "[{0}](https://{0})".format(domain)
+    score["domain"] = f"[{domain}](https://{domain})"
 
     industry = str(score.get("industry")).title().replace("_", " ")
     score["industry"] = industry
 
     markdown = tableToMarkdown(
-        "Domain {0} Scorecard".format(domain),
+        f"Domain {domain} Scorecard",
         score,
         headers=['name', 'domain', 'grade', 'score', 'industry', 'last30day_score_change', 'size']
     )
@@ -554,7 +555,7 @@ def securityscorecard_company_factor_score_get_command(client: Client, args: Dic
 
     response = client.get_company_factor_score(domain, severity_in)
 
-    demisto.debug("factor score response: {0}".format(response))
+    demisto.debug(f"factor score response: {response}")
     entries = response['entries']
 
     factor_scores = []
@@ -568,7 +569,7 @@ def securityscorecard_company_factor_score_get_command(client: Client, args: Dic
         factor_scores.append(score)
 
     markdown = tableToMarkdown(
-        "Domain [{0}](https://{0}) Scorecard".format(domain),
+        f"Domain [{domain}](https://{domain}) Scorecard",
         factor_scores,
         headers=['Name', 'Grade', 'Score', 'Issues']
     )
@@ -612,7 +613,7 @@ def securityscorecard_company_history_score_get_command(client: Client, args: Di
     entries = response.get('entries')
 
     markdown = tableToMarkdown(
-        "Historical Scores for Domain [`{0}`](https://{0})".format(domain),
+        f"Historical Scores for Domain [`{domain}`](https://{domain})",
         entries,
         headers=['date', 'score']
     )
@@ -667,12 +668,12 @@ def securityscorecard_company_history_factor_score_get_command(client: Client, a
             factor_name = factor.get("name").title().replace("_", " ")
             factor_score = factor.get("score")
 
-            factor_row = factor_row + "{0}: {1}\n".format(factor_name, factor_score)
+            factor_row = factor_row + f"{factor_name}: {factor_score}\n"
 
         f["Factors"] = factor_row
         factor_scores.append(f)
 
-    markdown = tableToMarkdown("Historical Factor Scores for Domain [`{0}`](https://{0})".format(domain), factor_scores)
+    markdown = tableToMarkdown(f"Historical Factor Scores for Domain [`{domain}`](https://{domain})", factor_scores)
 
     results = CommandResults(
         readable_output=markdown,
@@ -715,22 +716,22 @@ def securityscorecard_alert_grade_change_create_command(client: Client, args: Di
     :rtype: ``CommandResults``
     """
 
-    email = params.get('username').get("identifier")
+    email = params.get('username').get("identifier")  # type: ignore
     change_direction = str(args.get('change_direction'))
     score_types = argToList(args.get('score_types'))
     target = argToList(args.get('target'))
 
-    demisto.debug("Attempting to create alert with body {0}".format(args))
+    demisto.debug(f"Attempting to create alert with body {args}")
     response = client.create_grade_change_alert(
         email=email,
         change_direction=change_direction,
         score_types=score_types,
         target=target
     )
-    demisto.debug("Response received: {0}".format(response))
+    demisto.debug(f"Response received: {response}")
     alert_id = response.get("id")
 
-    markdown = "Alert **{0}** created".format(alert_id)
+    markdown = f"Alert **{alert_id}** created"
 
     results = CommandResults(
         readable_output=markdown,
@@ -775,7 +776,7 @@ def securityscorecard_alert_score_threshold_create_command(client: Client, args:
     :rtype: ``CommandResults``
     """
 
-    email = params.get('username').get("identifier")
+    email = params.get('username').get("identifier")  # type: ignore
     change_direction = str(args.get('change_direction'))
     threshold = arg_to_number(args.get('threshold'))  # type: ignore
     score_types = argToList(args.get('score_types'))
@@ -795,7 +796,7 @@ def securityscorecard_alert_score_threshold_create_command(client: Client, args:
     else:
         raise DemistoException("Either 'portfolio' or 'target' argument must be given")
 
-    demisto.debug("Attempting to create alert with body {0}".format(args))
+    demisto.debug(f"Attempting to create alert with body {args}")
     response = client.create_score_threshold_alert(
         email=email,
         change_direction=change_direction,
@@ -803,10 +804,10 @@ def securityscorecard_alert_score_threshold_create_command(client: Client, args:
         score_types=score_types,
         target=target
     )
-    demisto.debug("Response received: {0}".format(response))
+    demisto.debug(f"Response received: {response}")
     alert_id = response.get("id")
 
-    markdown = "Alert **{0}** created".format(alert_id)
+    markdown = f"Alert **{alert_id}** created"
 
     results = CommandResults(
         readable_output=markdown,
@@ -832,12 +833,12 @@ def securityscorecard_alert_delete_command(client: Client, args: Dict[str, Any])
     :rtype: ``CommandResults``
     """
 
-    email = params.get('username').get("identifier")
+    email = params.get('username').get("identifier")  # type: ignore
     alert_id = str(args.get("alert_id"))
     alert_type = str(args.get("alert_type"))
     client.delete_alert(email=email, alert_id=alert_id, alert_type=alert_type)
 
-    markdown = "{0} alert **{1}** deleted".format(str.capitalize(alert_type), alert_id)
+    markdown = f"{str.capitalize(alert_type)} alert **{alert_id}** deleted"
 
     results = CommandResults(readable_output=markdown)
 
@@ -859,11 +860,11 @@ def securityscorecard_alerts_list_command(client: Client, args: Dict[str, Any]) 
     :rtype: ``CommandResults``
     """
 
-    email = params.get('username').get("identifier")
-    demisto.debug("email: {0}".format(email))
+    email = params.get('username').get("identifier")  # type: ignore
+    demisto.debug(f"email: {email}")
     portfolio_id = args.get('portfolio_id')
 
-    demisto.debug("Sending request to retrieve alerts with arguments {0}".format(args))
+    demisto.debug(f"Sending request to retrieve alerts with arguments {args}")
 
     response = client.get_alerts_last_week(email=email, portfolio_id=portfolio_id)
 
@@ -889,7 +890,7 @@ def securityscorecard_alerts_list_command(client: Client, args: Dict[str, Any]) 
             alert["score_impact"] = change.get("score_impact")
             alerts.append(alert)
 
-    markdown = tableToMarkdown("Latest Alerts for user {0}".format(email), alerts)
+    markdown = tableToMarkdown(f"Latest Alerts for user {email}", alerts)
 
     results = CommandResults(
         outputs_prefix="SecurityScorecard.Alert",
@@ -931,7 +932,7 @@ def securityscorecard_company_services_get_command(client: Client, args: Dict[st
             service["category"] = category
             services.append(service)
 
-    markdown = tableToMarkdown("Services for domain [{0}](https://{0})".format(domain), services)
+    markdown = tableToMarkdown(f"Services for domain [{domain}](https://{domain})", services)
 
     results = CommandResults(
         outputs_prefix="SecurityScorecard.Company.Service",
@@ -967,13 +968,13 @@ def fetch_alerts(client: Client, params: Dict):
         max_incidents = arg_to_number(params.get("max_fetch"))  # type: ignore
 
     # User/email to fetch alerts for
-    username = params.get('username').get("identifier")
+    username = params.get('username').get("identifier")  # type: ignore
 
     results = client.fetch_alerts(page_size=max_incidents, username=username)
 
     alerts = results.get("entries")
 
-    demisto.debug("API returned {0} alerts".format(str(len(alerts))))
+    demisto.debug(f"API returned {str(len(alerts))} alerts")
 
     # Check if the API returned any alerts
     if len(alerts) > 0:
@@ -981,8 +982,8 @@ def fetch_alerts(client: Client, params: Dict):
 
         # Check if any incidents should be imported according to last run time timestamp
         if len(incidents) > 0:
-            demisto.debug("{0} Incidents will be imported".format(str(len(incidents))))
-            demisto.debug("Incidents: {0}".format(incidents))
+            demisto.debug(f"{str(len(incidents))} Incidents will be imported")
+            demisto.debug(f"Incidents: {incidents}")
             demisto.incidents(incidents)
         else:
             demisto.debug("No incidents will be imported.")
@@ -1001,21 +1002,21 @@ def main() -> None:
     """
 
     global params
-    params = demisto.params()
+    params = demisto.params()  # type: ignore
 
-    api_key = params.get('username').get("password")
+    api_key = params.get('username').get("password")  # type: ignore
 
     # SecurityScorecard API URL
-    base_url = params.get('base_url', "https://api.securityscorecard.io/")
+    base_url = params.get('base_url', "https://api.securityscorecard.io/")  # type: ignore
 
     # Default configuration
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    verify_certificate = not params.get('insecure', False)  # type: ignore
+    proxy = params.get('proxy', False)  # type: ignore
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
-        headers: Dict = {"Authorization": "Token {0}".format(api_key)}
+        headers: Dict = {"Authorization": f"Token {api_key}"}
 
         client = Client(
             base_url=base_url,
@@ -1028,7 +1029,7 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
         elif demisto.command() == "fetch-incidents":
-            fetch_alerts(client, params)
+            fetch_alerts(client, params)  # type: ignore
         elif demisto.command() == 'securityscorecard-portfolios-list':
             return_results(securityscorecard_portfolios_list_command(client))
         elif demisto.command() == 'securityscorecard-portfolio-list-companies':
