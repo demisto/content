@@ -1050,42 +1050,49 @@ integration_logger = logging.getLogger('resilient')  # type: logging.Logger
 integration_logger.propagate = False
 
 LOG('command is %s' % (demisto.command(),))
-try:
-    if demisto.command() == 'test-module':
-        # Checks if there is an authenticated session
-        test()
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-    elif demisto.command() == 'rs-search-incidents':
-        demisto.results(search_incidents_command(demisto.args()))
-    elif demisto.command() == 'rs-update-incident':
-        demisto.results(update_incident_command(demisto.args()))
-    elif demisto.command() == 'rs-incidents-get-members':
-        demisto.results(get_members_command(demisto.args()['incident-id']))
-    elif demisto.command() == 'rs-get-incident':
-        demisto.results(get_incident_command(demisto.args()['incident-id']))
-    elif demisto.command() == 'rs-incidents-update-member':
-        demisto.results(set_member_command(demisto.args()['incident-id'], demisto.args()['members']))
-    elif demisto.command() == 'rs-incidents-get-tasks':
-        demisto.results(get_tasks_command(demisto.args()['incident-id']))
-    elif demisto.command() == 'rs-get-users':
-        demisto.results(get_users_command())
-    elif demisto.command() == 'rs-close-incident':
-        demisto.results(close_incident_command(demisto.args()['incident-id']))
-    elif demisto.command() == 'rs-create-incident':
-        demisto.results(create_incident_command(demisto.args()))
-    elif demisto.command() == 'rs-incident-artifacts':
-        demisto.results(incident_artifacts_command(demisto.args()['incident-id']))
-    elif demisto.command() == 'rs-incident-attachments':
-        demisto.results(incident_attachments_command(demisto.args()['incident-id']))
-    elif demisto.command() == 'rs-related-incidents':
-        demisto.results(related_incidents_command(demisto.args()['incident-id']))
-    elif demisto.command() == 'rs-add-notes':
-        demisto.results(add_notes(demisto.args()['incident-id'], demisto.args()['comment']))
-    elif demisto.command() == 'rs-add-artifact':
-        demisto.results(add_incident_artifact(demisto.args()['incident-id'], demisto.args()[
-                        'artifact-type'], demisto.args()['artifact-value'], demisto.args()['artifact-description']))
-except Exception as e:
-    LOG(e.message)
-    LOG.print_log()
-    raise
+
+
+def main():
+    try:
+        if demisto.command() == 'test-module':
+            # Checks if there is an authenticated session
+            test()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        elif demisto.command() == 'rs-search-incidents':
+            demisto.results(search_incidents_command(demisto.args()))
+        elif demisto.command() == 'rs-update-incident':
+            demisto.results(update_incident_command(demisto.args()))
+        elif demisto.command() == 'rs-incidents-get-members':
+            demisto.results(get_members_command(demisto.args()['incident-id']))
+        elif demisto.command() == 'rs-get-incident':
+            demisto.results(get_incident_command(demisto.args()['incident-id']))
+        elif demisto.command() == 'rs-incidents-update-member':
+            demisto.results(set_member_command(demisto.args()['incident-id'], demisto.args()['members']))
+        elif demisto.command() == 'rs-incidents-get-tasks':
+            demisto.results(get_tasks_command(demisto.args()['incident-id']))
+        elif demisto.command() == 'rs-get-users':
+            demisto.results(get_users_command())
+        elif demisto.command() == 'rs-close-incident':
+            demisto.results(close_incident_command(demisto.args()['incident-id']))
+        elif demisto.command() == 'rs-create-incident':
+            demisto.results(create_incident_command(demisto.args()))
+        elif demisto.command() == 'rs-incident-artifacts':
+            demisto.results(incident_artifacts_command(demisto.args()['incident-id']))
+        elif demisto.command() == 'rs-incident-attachments':
+            demisto.results(incident_attachments_command(demisto.args()['incident-id']))
+        elif demisto.command() == 'rs-related-incidents':
+            demisto.results(related_incidents_command(demisto.args()['incident-id']))
+        elif demisto.command() == 'rs-add-notes':
+            demisto.results(add_notes(demisto.args()['incident-id'], demisto.args()['comment']))
+        elif demisto.command() == 'rs-add-artifact':
+            demisto.results(add_incident_artifact(demisto.args()['incident-id'], demisto.args()[
+                            'artifact-type'], demisto.args()['artifact-value'], demisto.args()['artifact-description']))
+    except Exception as e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+
+
+if __name__ in ("__main__", "builtin", "builtins"):
+    main()
