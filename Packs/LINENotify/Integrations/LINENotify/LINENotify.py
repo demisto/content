@@ -21,7 +21,7 @@ def main() -> None:
                 "Authorization": "Bearer " + api_token,
                 "Content-Type": "application/x-www-form-urlencoded"
             }
-            linemsg = demisto.args().get('msg')
+            linemsg = demisto.args().get('message')
             payload = {'message': linemsg}
             r = requests.post("https://notify-api.line.me/api/notify", headers=headers, params=payload)
             return_results(r)
