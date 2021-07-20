@@ -2132,7 +2132,8 @@ def filter_channels_command():
 
     if command_results_list:
         human_readable = tableToMarkdown('Channels: ', command_results_list,
-                         headers=['ID', 'Name', 'Created', 'Creator', 'IsArchived', 'IsGeneral', 'IsPrivate'], removeNull=True)
+                                         headers=['ID', 'Name', 'Created', 'Creator', 'IsArchived', 'IsGeneral', 'IsPrivate'], 
+                                         removeNull=True)
 
     else:
         human_readable = 'No channels found.'
