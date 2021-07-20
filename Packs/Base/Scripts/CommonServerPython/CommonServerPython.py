@@ -7851,7 +7851,7 @@ class IndicatorsSearcher:
         else:
             self._search_is_done = True
         self._search_after_param = res.get(self._search_after_title)
-        self._total = res.get('total')
+        self._total = res.get('total', 0)
         if self._search_after_title in res and self._search_after_param is None:
             demisto.info('Elastic search using searchAfter returned all indicators')
             self._search_is_done = True
