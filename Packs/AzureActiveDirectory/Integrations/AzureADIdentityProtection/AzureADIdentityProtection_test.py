@@ -2,7 +2,8 @@ import json
 
 import pytest
 
-from AzureADIdentityProtection import (AADClient, azure_ad_identity_protection_risk_detection_list_command)
+from AzureADIdentityProtection import (AADClient, azure_ad_identity_protection_risk_detection_list_command,
+                                       azure_ad_identity_protection_risky_users_list_command)
 
 app_id = 'app_id'
 subscription_id = 'subscription_id'
@@ -15,16 +16,30 @@ def client(mocker):
     return AADClient(app_id, subscription_id, resource_group_name, verify=False, proxy=False)
 
 
-@pytest.mark.parametrize('test_data_file,url_suffix,next_link_description', (
-        ('test_data/risky_users_response.json', 'riskDetections', 'risk_detection_list'),
+@pytest.mark.parametrize('command,test_data_file,url_suffix,next_link_description,kwargs', (
+        (
+                azure_ad_identity_protection_risk_detection_list_command,
+                'test_data/risk_detections_response.json',
+                'riskDetections',
+                'risk_detection_list',
+                {}
+        ),
+        (
+                azure_ad_identity_protection_risky_users_list_command,
+                'test_data/risky_users_response.json',
+                'RiskyUsers',
+                'risky_user_list',
+                {}
+        ),
+
 ))
-def test_list_risks(client, requests_mock, test_data_file, url_suffix, next_link_description):
+def test_list_risks(client, requests_mock, command, test_data_file, url_suffix, next_link_description, kwargs):
     """
     Given:
         - AAD Client
 
     When:
-        - Listing risks
+        - Listing (risks, risky users, user history)
 
     Then:
         - Verify API request sent as expected
@@ -32,10 +47,9 @@ def test_list_risks(client, requests_mock, test_data_file, url_suffix, next_link
     """
     with open(test_data_file) as f:
         api_response = json.load(f)
-    # response = requests.post(self.token_retrieval_url, data, verify=self.verify)
 
     requests_mock.get(f'{client.ms_client._base_url}/{url_suffix}?$top=50', json=api_response)
-    result = azure_ad_identity_protection_risk_detection_list_command(client, limit=50)
+    result = command(client, limit=50)
 
     expected_values = api_response.get('value')
     actual_values = result.outputs.get('AAD_Identity_Protection.values(val.id === obj.id)')

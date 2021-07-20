@@ -3,7 +3,7 @@
   "@odata.nextLink": "https://graph.microsoft.com/beta/RiskyUsers?$top=2&$skiptoken=dummy_skip_token",
   "value": [
     {
-      "id": "dummmy_id",
+      "id": "dummy_id",
       "isDeleted": "False",
       "isProcessing": "False",
       "riskLevel": "none",
@@ -14,7 +14,7 @@
       "userPrincipalName": "foo1@demisto.com"
     },
     {
-      "id": "dummmy_id2",
+      "id": "dummy_id2",
       "isDeleted": "False",
       "isProcessing": "False",
       "riskLevel": "medium",
