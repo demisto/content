@@ -23,7 +23,7 @@ script:
   commands:
   - arguments:
     - description: Message to be sent.
-      name: msg
+      name: message
       required: true
     description: Send message/notification to LINE Group
     name: line-send-message
