@@ -3,7 +3,7 @@ commonfields:
   id: HPEArubaClearPass
   version: -1
 configuration:
-- display: Your server URL (e.g., https://example.net:57123)
+- display: Your server URL (e.g., https://example.net)
   name: url
   required: true
   type: 0
