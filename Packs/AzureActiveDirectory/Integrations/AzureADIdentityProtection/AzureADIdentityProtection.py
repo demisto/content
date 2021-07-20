@@ -12,10 +12,12 @@ REQUIRED_PERMISSIONS = (
 )
 
 
-def parse_list(raw_response: dict,
-               human_readable_title: str,
-               next_link_description: str) -> CommandResults:  # unique for every method calling this one
-    """ converts a response of Microsoft's graph search into a CommandResult object """
+def parse_list(
+        raw_response: dict, human_readable_title: str, next_link_description: str) -> CommandResults:
+    """
+    converts a response of Microsoft's graph search into a CommandResult object
+    Note: next_link_description should be unique for every method calling parse_list
+    """
     values = raw_response.get('value', [])
     readable_output = tableToMarkdown(f'{human_readable_title.title()} ({len(values)} results)',
                                       values,
