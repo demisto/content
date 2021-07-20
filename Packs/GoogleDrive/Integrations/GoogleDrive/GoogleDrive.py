@@ -1149,7 +1149,14 @@ def file_upload_command(client: GSuiteClient, args: Dict[str, str]) -> CommandRe
     version = 'v3'
     service_name = 'drive'
     drive_service = discovery.build(serviceName=service_name, version=version, http=client.authorized_http)
-    body = prepare_body_for_file_upload(args=args)
+
+    body: Dict[str, str] = assign_params(
+        parents=args.get('parent'),
+        name=args.get('file_name'),
+    )
+
+    return GSuiteClient.remove_empty_entities(ret_value)
+
     media = MediaFileUpload(file_path['path'])
     file = drive_service.files().create(body=body,
                                         media_body=media,
@@ -1240,23 +1247,6 @@ def file_delete_command(client: GSuiteClient, args: Dict[str, str]) -> CommandRe
         readable_output=table_hr_md,
     )
     return ret_value
-
-
-def prepare_body_for_file_upload(args: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Prepares the request body for file upload.
-
-    :param args: command arguments.
-
-    :return: Prepared request body.
-    """
-
-    ret_value: Dict[str, Any] = assign_params(
-        parents=args.get('parent'),
-        name=args.get('file_name'),
-    )
-
-    return GSuiteClient.remove_empty_entities(ret_value)
 
 
 def handle_response_file_single(response: Dict[str, Any], args: Dict[str, str]) -> CommandResults:
