@@ -89,7 +89,7 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 
->None
+None
 
 ### securityscorecard-portfolio-list-companies
 
@@ -152,7 +152,7 @@ Lists all companies in a Portfolio.
 
 #### Human Readable Output
 
->None
+None
 
 ### securityscorecard-company-score-get
 
@@ -206,7 +206,7 @@ Retrieve company overall score.
 
 #### Human Readable Output
 
->None
+None
 
 ### securityscorecard-company-factor-score-get
 
@@ -277,63 +277,7 @@ Retrieve company factor score.
                     "Name": "Dns Health",
                     "Score": 100
                 },
-                {
-                    "Grade": "A",
-                    "Issue Details": [],
-                    "Issues": 0,
-                    "Name": "Endpoint Security",
-                    "Score": 100
-                },
-                {
-                    "Grade": "A",
-                    "Issue Details": [],
-                    "Issues": 0,
-                    "Name": "Hacker Chatter",
-                    "Score": 100
-                },
-                {
-                    "Grade": "A",
-                    "Issue Details": [
-                        {
-                            "count": 1,
-                            "detail_url": "https://api.securityscorecard.io/companies/google.com/issues/phishing/",
-                            "severity": "high",
-                            "total_score_impact": 0.5771551113938642,
-                            "type": "phishing"
-                        }
-                    ],
-                    "Issues": 1,
-                    "Name": "Ip Reputation",
-                    "Score": 90
-                },
-                {
-                    "Grade": "A",
-                    "Issue Details": [],
-                    "Issues": 0,
-                    "Name": "Leaked Information",
-                    "Score": 100
-                },
-                {
-                    "Grade": "A",
-                    "Issue Details": [],
-                    "Issues": 0,
-                    "Name": "Network Security",
-                    "Score": 91
-                },
-                {
-                    "Grade": "A",
-                    "Issue Details": [],
-                    "Issues": 0,
-                    "Name": "Patching Cadence",
-                    "Score": 100
-                },
-                {
-                    "Grade": "A",
-                    "Issue Details": [],
-                    "Issues": 0,
-                    "Name": "Social Engineering",
-                    "Score": 100
-                }
+                ...
             ]
         }
     }
@@ -342,7 +286,7 @@ Retrieve company factor score.
 
 #### Human Readable Output
 
->None
+None
 
 ### securityscorecard-company-history-score-get
 
@@ -787,7 +731,7 @@ There is no context output for this command.
 ### securityscorecard-alerts-list
 
 ***
-List alerts (7)
+List alerts
 
 #### Base Command
 
@@ -844,66 +788,6 @@ List alerts (7)
                 "id": "51ba6fa8-0185-56ec-8b15-e8e4be48b292",
                 "score": 88,
                 "score_impact": -2
-            },
-            {
-                "change_type": "score_change",
-                "company": "Google",
-                "created": "2021-07-01T21:16:09.909Z",
-                "direction": "drops",
-                "domain": "google.com",
-                "factor": "patching_cadence",
-                "grade_letter": "B",
-                "id": "e89c53c1-42e7-51b2-adde-b1ab7a433d28",
-                "score": 88,
-                "score_impact": -2
-            },
-            {
-                "change_type": "score_change",
-                "company": "Google",
-                "created": "2021-07-01T21:15:00.996Z",
-                "direction": "drops",
-                "domain": "google.co.il",
-                "factor": "patching_cadence",
-                "grade_letter": "B",
-                "id": "e3022f86-72af-5554-b0d6-e44b3e0fd2f0",
-                "score": 89,
-                "score_impact": -2
-            },
-            {
-                "change_type": "score_change",
-                "company": "Amazon.",
-                "created": "2021-06-30T23:22:49.387Z",
-                "direction": "drops",
-                "domain": "amazon.com",
-                "factor": "endpoint_security",
-                "grade_letter": "C",
-                "id": "577f2392-2a9e-5a9c-b970-4cb2eff33ac9",
-                "score": 77,
-                "score_impact": -3
-            },
-            {
-                "change_type": "score_change",
-                "company": "Apple",
-                "created": "2021-06-30T23:21:14.509Z",
-                "direction": "drops",
-                "domain": "apple.com",
-                "factor": "endpoint_security",
-                "grade_letter": "B",
-                "id": "8df99253-0c29-55be-9e4a-6ae07da3e6fc",
-                "score": 87,
-                "score_impact": -4
-            },
-            {
-                "change_type": "score_change",
-                "company": "Samsung",
-                "created": "2021-06-30T03:30:16.240Z",
-                "direction": "drops",
-                "domain": "samsung.com",
-                "factor": "network_security",
-                "grade_letter": "B",
-                "id": "07b2c345-1d1e-5657-9c38-4632325e7a17",
-                "score": 80,
-                "score_impact": -10
             }
         ]
     }

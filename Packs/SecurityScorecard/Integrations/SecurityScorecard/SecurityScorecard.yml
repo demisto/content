@@ -12,7 +12,6 @@ configuration:
   required: true
   type: 9
   displaypassword: API Token
-# Fetch Incident Parameters
 - name: isFetch
   display: Fetch incidents
   required: false
@@ -30,11 +29,11 @@ configuration:
   type: 0
   additionalinfo: Maximum number of alerts per fetch. Default is 50, maximum is 100.
 - name: first_fetch
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  display: First fetch
   defaultvalue: 3 days
   required: false
   type: 0
-  additionalinfo: How many days ago to fetch for alerts on initial fetch. The maximum number of days is 7.
+  additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days. SecurityScorecard provides a maximum of 7 days back.
 - name: incidentType
   display: Incident type
   required: false
@@ -152,7 +151,7 @@ script:
     arguments:
     - name: domain
       description: Company domain, e.g. google.com. The company must first be added
-        to a Portfolio or else the API will return an error code 403.
+        to a Portfolio in order to be able to get its score.
       required: true
       default: false
     outputs:
@@ -186,8 +185,7 @@ script:
       default: false
     - name: severity_in
       isArray: true
-      description: Issue severity filter. Optional values can be positive, info, low,
-        medium, high. Can be comma-separated list, e.g. 'medium,high,positive'
+      description: "Issue severity filter. Comma-separated list of the following values: 'positive', 'info', 'low', 'medium', 'high'."
       required: false
     outputs:
     - contextPath: SecurityScorecard.Company.Factor.name
@@ -303,9 +301,7 @@ script:
         factors, leaked_information,social_engineering .
       required: true
     - name: target
-      description: What do you want to monitor with this alert. It could be one of
-        the following 'my_scorecard', 'any_followed_company'. This argument is require
-        if the `portfolios` argument is not specified.
+      description: What do you want to monitor with this alert. It could be either 'my_scorecard' or 'any_followed_company'. This argument is required if the `portfolios` argument is not specified.
       auto: PREDEFINED
       predefined:
       - "my_scorecard"
@@ -347,7 +343,7 @@ script:
       - "any_followed_company"
     - name: portfolios
       isArray: true
-      description: A comma-separated list of Portfolios (i.e. xxxxxxxxxxxxxxxxxx,xxxxxxxxxxxxxxxxxy)
+      description: A comma-separated list of Portfolios.
         to use as a target for the alert. This argument is require if the `target`
         argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
       required: false

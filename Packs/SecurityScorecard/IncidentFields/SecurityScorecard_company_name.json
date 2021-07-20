@@ -18,7 +18,7 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedToAll": true,
+    "associatedToAll": "SecurityScorecard Alert",
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,

@@ -337,11 +337,9 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
+    """Tests API connectivity and authentication
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
+    Runs the fetch-alerts mechanism to validate all integration parameters
 
     :type client: ``Client``
     :param Client: client to use
@@ -609,10 +607,7 @@ def securityscorecard_company_history_score_get_command(client: Client, args: Di
     to = args.get('to')
     timing = str(args.get('timing'))
 
-    demisto.debug("Arguments: {0}".format(args))
     response = client.get_company_historical_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
-
-    demisto.debug("API response: {0}".format(response))
 
     entries = response.get('entries')
 
@@ -656,10 +651,7 @@ def securityscorecard_company_history_factor_score_get_command(client: Client, a
     to = args.get('to')
     timing = str(args.get('timing'))
 
-    demisto.debug("Arguments: {0}".format(args))
     response = client.get_company_historical_factor_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
-
-    demisto.debug("API response: {0}".format(response))
 
     entries = response['entries']
 
@@ -679,8 +671,6 @@ def securityscorecard_company_history_factor_score_get_command(client: Client, a
 
         f["Factors"] = factor_row
         factor_scores.append(f)
-
-    demisto.debug("factor_scores: {0}".format(factor_scores))
 
     markdown = tableToMarkdown("Historical Factor Scores for Domain [`{0}`](https://{0})".format(domain), factor_scores)
 
@@ -796,14 +786,14 @@ def securityscorecard_alert_score_threshold_create_command(client: Client, args:
     # Return error if neither of them is defined or if both are defined
     # Else choose the one that is defined and use it as the target
     if portfolios and target_arg:
-        raise DemistoException("""Both 'portfolio' and 'target' argument have been set.
-        Please remove one of them and try again.""")
+        raise DemistoException("Both 'portfolio' and 'target' argument have been set. \
+        Please remove one of them and try again.")
     elif target_arg and not portfolios:
         target = target_arg
     elif portfolios and not target_arg:
         target = portfolios
     else:
-        raise DemistoException("Either 'portfolio' or 'target' argument has to be speficied")
+        raise DemistoException("Either 'portfolio' or 'target' argument must be given")
 
     demisto.debug("Attempting to create alert with body {0}".format(args))
     response = client.create_score_threshold_alert(
@@ -831,7 +821,6 @@ def securityscorecard_alert_delete_command(client: Client, args: Dict[str, Any])
 
     """`securityscorecard_alert_delete_command`: Delete an alert
     See https://securityscorecard.readme.io/reference#delete_users-by-username-username-alerts-grade-alert
-    See https://securityscorecard.readme.io/reference#delete_users-by-username-username-alerts-score-alert
 
     :type ``client``: ``Client``
     :type `` args``: ``Dict[str, Any]``
@@ -1009,13 +998,7 @@ def fetch_alerts(client: Client, params: Dict):
 
 def main() -> None:
     """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
     """
-
-    demisto.debug("Script started with parameters:")
-    demisto.debug(demisto.params())
 
     api_key = demisto.params().get('username').get("password")
 

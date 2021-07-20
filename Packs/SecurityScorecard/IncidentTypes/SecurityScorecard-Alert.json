@@ -19,7 +19,7 @@
     "disabled": false,
     "reputationCalc": 2,
     "onChangeRepAlg": 0,
-    "layout": "7d4d0681-480e-4fb5-80db-3d6d1a74c322",
+    "layout": "SecurityScorecard Alert Layout",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",

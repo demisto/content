@@ -1,0 +1,8 @@
+TODO Let’s put the test data in one json file to avoid having too many files.
+TODO Integration image looks bad, let’s ask the partner to give us something that corresponding to the following.
+TODO Remove .secrets-ignore file from you pr.
+TODO In some comments. I asked you to go over and fix throughout the entire code file, make sure not to forget.
+TODO In many of your functions you gave too elaborated docstring. Docstring in integration functions should only contain the info about the specific function parameters and not what every argument within the args dict is and its type (it’s anyway a string or an int). It makes the code very hard to maintain and might create confusion if the code and a command argument say different things.
+TODO Lets’s have a quick chat on printing to debug logs and on what Unit tests are.
+TODO You should add to each of your commandResult the raw_response and outputs_key_field they are very important. See this
+TODO Make sure after you finish fixing everything (can take a couple of fixes rounds) to re-generate the integration README as it is created from the yml and code which you probably changed (for example even now there are differences).

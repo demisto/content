@@ -1,5 +1,5 @@
 {
-    "id": "incident_score",
+    "id": "incident_securityscorecard_score",
     "version": -1,
     "modified": "2021-07-04T08:29:15.539439667Z",
     "name": "SecurityScorecard Score",
@@ -18,7 +18,7 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedToAll": true,
+    "associatedToAll": "SecurityScorecard Alert",
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
