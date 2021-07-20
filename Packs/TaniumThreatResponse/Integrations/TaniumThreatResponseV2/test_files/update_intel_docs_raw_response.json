@@ -4,7 +4,7 @@
     "type": "openioc",
     "typeVersion": "1.0",
     "isSchemaValid": true,
-    "intrinsicId": "test1",
+    "intrinsicId": "test2",
     "md5": "12345678test",
     "name": "VIRUS TEST 2",
     "description": "Generic indicator for the virus test updated.",
