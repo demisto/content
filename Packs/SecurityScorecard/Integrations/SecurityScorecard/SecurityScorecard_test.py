@@ -237,7 +237,7 @@ def test_get_alerts_last_week(mocker):
     response = client.get_alerts_last_week(email=USERNAME)
 
     assert response == alerts_mock
-    assert response["size"] == 9
+    assert response["size"] == 2
     assert isinstance(response["entries"][0]["my_scorecard"], bool)
 
 
