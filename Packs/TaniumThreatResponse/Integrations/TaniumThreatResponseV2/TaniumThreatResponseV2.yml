@@ -30,7 +30,11 @@ configuration:
   type: 8
 - defaultvalue: 24 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: '50'
+  name: max_fetch
   required: false
   type: 0
 - defaultvalue: unresolved
@@ -1974,7 +1978,7 @@ script:
     - contextPath: Tanium.IntelDeployStatus.CurrentSize
       description: The size of the intel document contents, in bytes.
       type: Number
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: true
   longRunning: false

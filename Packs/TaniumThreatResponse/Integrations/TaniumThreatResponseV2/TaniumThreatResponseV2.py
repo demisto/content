@@ -49,7 +49,7 @@ class Client(BaseClient):
         super(Client, self).__init__(base_url, **kwargs)
 
     def do_request(self, method: str, url_suffix: str, data: dict = None, params: dict = None, resp_type: str = 'json',
-                   headers: dict = None, body: dict = None) -> Union[dict, list]:
+                   headers: dict = None, body: dict = None):
         if headers is None:
             headers = {}
         if not self.session:
@@ -99,7 +99,7 @@ class Client(BaseClient):
         return self.update_session()
 
 
-''' GENERAL HELPER FUNCTIONS'''
+''' GENERAL HELPER FUNCTIONS '''
 
 
 def convert_to_int(int_to_parse: Any) -> Optional[int]:
@@ -212,7 +212,7 @@ def init_commands_dict():
     }
 
 
-''' PROCESS HELPER FUNCTIONS'''
+''' PROCESS HELPER FUNCTIONS '''
 
 
 def get_process_timeline_item(raw_item, category_name, limit, offset):
@@ -280,7 +280,7 @@ def get_process_item(raw_process):
     }
 
 
-''' EVIDENCE HELPER FUNCTIONS'''
+''' EVIDENCE HELPER FUNCTIONS '''
 
 
 def evidence_type_number_to_name(num: int) -> str:
@@ -329,37 +329,37 @@ def get_process_event_item(raw_event):
 
 
 def get_event_header(event_type):
-    if event_type == "combined":
+    if event_type == 'combined':
         headers = ['ID', 'Type', 'ProcessName', 'Detail', 'Timestamp', 'Operation']
 
-    elif event_type == "file":
+    elif event_type == 'file':
         headers = ['ID', 'Type', 'File', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName',
                    'Username']
 
-    elif event_type == "network":
+    elif event_type == 'network':
         headers = ['ID', 'Type', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username',
                    'Operation', 'DestinationAddress', 'DestinationPort', 'SourceAddress', 'SourcePort']
 
-    elif event_type == "registry":
+    elif event_type == 'registry':
         headers = ['ID', 'Type', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username',
                    'KeyPath', 'ValueName']
 
-    elif event_type == "process":
+    elif event_type == 'process':
         headers = ['Domain', 'Type', 'ProcessTableID', 'ProcessCommandLine', 'ProcessID', 'ProcessName', 'ExitCode',
                    'SID', 'Username', 'CreationTime', 'EndTime']
 
-    elif event_type == "driver":
+    elif event_type == 'driver':
         headers = ['ID', 'Type', 'Timestamp', 'ProcessTableID', 'SID', 'Hashes', 'ImageLoaded', 'Signature', 'Signed',
                    'EventID', 'EventOpcode', 'EventRecordID', 'EventTaskID']
 
-    elif event_type == "security":
+    elif event_type == 'security':
         headers = ['ID', 'Type', 'Timestamp', 'EventID', 'EventTaskName', 'ProcessTableID']
 
-    elif event_type == "dns":
+    elif event_type == 'dns':
         headers = ['ID', 'Type', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username',
                    'Operation', 'Query', 'Response']
 
-    else:  # if event_type == "image"
+    else:  # if event_type == 'image'
         headers = ['ID', 'Type', 'Timestamp', 'ImagePath', 'ProcessTableID', 'ProcessID', 'ProcessName', 'Username',
                    'Hash', 'Signature']
     return headers
@@ -414,7 +414,7 @@ def get_event_item(raw_event, event_type):
     return {k: v for k, v in event.items() if v is not None}
 
 
-''' FILE HELPER FUNCTIONS'''
+''' FILE HELPER FUNCTIONS '''
 
 
 def get_file_item(file, con_name, dir_path='', full_path=''):
@@ -457,7 +457,7 @@ def get_file_download_item(file):
     }
 
 
-''' LABELS HELPER FUNCTIONS'''
+''' LABELS HELPER FUNCTIONS '''
 
 
 def get_label_item(label):
@@ -471,7 +471,7 @@ def get_label_item(label):
         'UpdatedAt': label.get('updatedAt')}
 
 
-''' CONNECTIONS HELPER FUNCTIONS'''
+''' CONNECTIONS HELPER FUNCTIONS '''
 
 
 def get_connection_item(connection):
@@ -505,7 +505,7 @@ def validate_connection_name(client, arg_input):
     if is_ip_valid(arg_input):
         # if input is IP, try with the format a-b-c-d first because it will replace the IP with the real connection name
         # and prevents the user from using the IP - which we prefer because that way the connections list won't contain
-        # the IP with "timeout" state (it doesn't happen in Tanium UI).
+        # the IP with 'timeout' state (it doesn't happen in Tanium UI).
         ip_input = arg_input.replace('.', '-')
         results = client.do_request('GET', f'/plugin/products/trace/computers?name={ip_input}')
         if results and len(results) == 1:
@@ -516,7 +516,7 @@ def validate_connection_name(client, arg_input):
     raise ValueError('The specified connection name does not exist.')
 
 
-''' SANPSHOTS HELPER FUNCTIONS'''
+''' SANPSHOTS HELPER FUNCTIONS '''
 
 
 def get_local_snapshot_items(raw_snapshots, limit, offset, conn_name):
@@ -556,7 +556,7 @@ def get_snapshot_items(raw_snapshots, limit, offset, conn_name):
     return snapshots
 
 
-''' INTEL DOCS HELPER FUNCTIONS'''
+''' INTEL DOCS HELPER FUNCTIONS '''
 
 
 def get_intel_doc_item(intel_doc):
@@ -593,7 +593,7 @@ def get_intel_doc_status(status_data):
     }
 
 
-''' ALERTS DOCS HELPER FUNCTIONS'''
+''' ALERTS DOCS HELPER FUNCTIONS '''
 
 
 def get_alert_item(alert):
@@ -612,7 +612,7 @@ def get_alert_item(alert):
         'UpdatedAt': alert.get('updatedAt')}
 
 
-''' FETCH INCIDENTS HELPER FUNCTIONS'''
+''' FETCH INCIDENTS HELPER FUNCTIONS '''
 
 
 def alarm_to_incident(client, alarm):
@@ -647,7 +647,7 @@ def state_params_suffix(alerts_states_to_retrieve):
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
-''' GENERAL COMMANDS FUNCTIONS'''
+''' GENERAL COMMANDS FUNCTIONS '''
 
 
 def test_module(client, data_args):
@@ -667,7 +667,7 @@ def fetch_incidents(client, alerts_states_to_retrieve):
     last_run = demisto.getLastRun()
     # Get the last fetch time and data if it exists
     last_fetch = last_run.get('time')
-    fetch_time = demisto.params().get('fetch_time')
+    fetch_time = demisto.params().get('first_fetch')
 
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
@@ -698,7 +698,7 @@ def fetch_incidents(client, alerts_states_to_retrieve):
     return demisto.incidents(incidents)
 
 
-''' INTEL DOCS COMMANDS FUNCTIONS'''
+''' INTEL DOCS COMMANDS FUNCTIONS '''
 
 
 def get_intel_doc(client, data_args):
@@ -792,7 +792,7 @@ def remove_intel_docs_label(client, data_args):
     raw_response = client.do_request('DELETE',
                                      f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}/labels/{label_id_to_delete}')
 
-    human_readable = ""
+    human_readable = ''
     if raw_response:
         human_readable = f'Successfully removed the label ({label_id_to_delete})' \
                          f' association for the identified intel document ({intel_doc_id}).'
@@ -804,7 +804,7 @@ def create_intel_doc(client, data_args):
     file_extension = data_args.get('file-extension')
     file_name, file_content = get_file_name_and_content(entry_id)
     raw_response = client.do_request('POST', '/plugin/products/detect3/api/v1/intels',
-                                     headers={"Content-Disposition": f'filename=file.{file_extension}',
+                                     headers={'Content-Disposition': f'filename=file.{file_extension}',
                                               'Content-Type': 'application/xml'}, body=file_content)
     intel_doc = get_intel_doc_item(raw_response)
     context = createContext(intel_doc, removeNull=True)
@@ -824,7 +824,7 @@ def update_intel_doc(client, data_args):
     file_extension = data_args.get('file-extension')
     file_name, file_content = get_file_name_and_content(entry_id)
     raw_response = client.do_request('PUT', f'/plugin/products/detect3/api/v1/intels/{id_}',
-                                     headers={"Content-Disposition": f'filename=file.{file_extension}',
+                                     headers={'Content-Disposition': f'filename=file.{file_extension}',
                                               'Content-Type': 'application/xml'}, body=file_content)
     intel_doc = get_intel_doc_item(raw_response)
     context = createContext(intel_doc, removeNull=True)
@@ -842,7 +842,7 @@ def deploy_intel(client, data_args):
     raw_response = client.do_request('POST',
                                      '/plugin/products/threat-response/api/v1/intel/deploy')
 
-    human_readable = ""
+    human_readable = ''
     if raw_response:
         human_readable = 'Successfully deployed intel.'
     return human_readable, {}, raw_response
@@ -862,7 +862,7 @@ def get_deploy_status(client, data_args):
     return human_readable, outputs, raw_response
 
 
-''' ALERTS COMMANDS FUNCTIONS'''
+''' ALERTS COMMANDS FUNCTIONS '''
 
 
 def get_alerts(client, data_args):
@@ -923,7 +923,7 @@ def alert_update_state(client, data_args):
     alert_id = data_args.get('alert-id')
     state = data_args.get('state')
 
-    body = {"state": state.lower()}
+    body = {'state': state.lower()}
     raw_response = client.do_request('PUT', f'/plugin/products/detect3/api/v1/alerts/{alert_id}', data=body)
     alert = get_alert_item(raw_response)
 
@@ -936,7 +936,7 @@ def alert_update_state(client, data_args):
     return human_readable, outputs, raw_response
 
 
-''' SANPSHOTS COMMANDS FUNCTIONS'''
+''' SANPSHOTS COMMANDS FUNCTIONS '''
 
 
 def get_snapshots(client, data_args):
@@ -957,7 +957,7 @@ def get_snapshots(client, data_args):
 def create_snapshot(client, data_args):
     con_name = validate_connection_name(client, data_args.get('connection-name'))
     client.do_request('POST', f'/plugin/products/trace/conns/{con_name}/snapshots', resp_type='content')
-    return f"Initiated snapshot creation request for {con_name}.", {}, {}
+    return f'Initiated snapshot creation request for {con_name}.', {}, {}
 
 
 def delete_snapshot(client, data_args):
@@ -970,7 +970,7 @@ def delete_snapshot(client, data_args):
         'Deleted': True
     }
     outputs = {'Tanium.Snapshot(val.ID === obj.ID && val.ConnectionName === obj.ConnectionName)': context}
-    return f"Snapshot {snapshot_id} deleted successfully.", outputs, {}
+    return f'Snapshot {snapshot_id} deleted successfully.', outputs, {}
 
 
 def get_local_snapshots(client, data_args):
@@ -998,10 +998,10 @@ def delete_local_snapshot(client, data_args):
         'Deleted': True
     }
     outputs = {'Tanium.LocalSnapshot(val.FileName === obj.FileName)': context}
-    return f"Local snapshot {file_name} of connection {connection_name} was deleted successfully.", outputs, {}
+    return f'Local snapshot {file_name} of connection {connection_name} was deleted successfully.', outputs, {}
 
 
-''' CONNECTIONS COMMANDS FUNCTIONS'''
+''' CONNECTIONS COMMANDS FUNCTIONS '''
 
 
 def get_connections(client, data_args):
@@ -1055,16 +1055,16 @@ def create_connection(client, data_args):
     conn_timeout = data_args.get('connection-timeout')
 
     body = {
-        "remote": remote,
-        "dst": dst,
-        "dstType": dst_type,
-        "connTimeout": conn_timeout}
+        'remote': remote,
+        'dst': dst,
+        'dstType': dst_type,
+        'connTimeout': conn_timeout}
 
     if conn_timeout:
         body['connTimeout'] = int(data_args.get('connection-timeout'))
 
     client.do_request('POST', '/plugin/products/trace/conns/', data=body, resp_type='content')
-    return f"Initiated connection request to {dst}.", {}, {}
+    return f'Initiated connection request to {dst}.', {}, {}
 
 
 def delete_connection(client, data_args):
@@ -1075,7 +1075,7 @@ def delete_connection(client, data_args):
         'Deleted': True
     }
     outputs = {'Tanium.Connection(val.Name && val.Name === obj.Name)': context}
-    return f"Connection {conn_name} deleted successfully.", outputs, {}
+    return f'Connection {conn_name} deleted successfully.', outputs, {}
 
 
 def get_events_by_connection(client, data_args):
@@ -1118,7 +1118,7 @@ def get_events_by_connection(client, data_args):
     return human_readable, outputs, raw_response
 
 
-''' LABELS COMMANDS FUNCTIONS'''
+''' LABELS COMMANDS FUNCTIONS '''
 
 
 def get_labels(client, data_args):
@@ -1154,7 +1154,7 @@ def get_label(client, data_args):
     return human_readable, outputs, raw_response
 
 
-''' FILES COMMANDS FUNCTIONS'''
+''' FILES COMMANDS FUNCTIONS '''
 
 
 def get_file_downloads(client, data_args):
@@ -1180,7 +1180,7 @@ def get_downloaded_file(client, data_args):
     file_content, content_desc = client.do_request('GET', f'/plugin/products/trace/filedownloads/{file_id}',
                                                    resp_type='content')
 
-    filename = re.findall(r"filename\*=UTF-8\'\'(.+)", content_desc)[0]
+    filename = re.findall(r'filename\*=UTF-8\'\'(.+)', content_desc)[0]
 
     demisto.results(fileResult(filename, file_content))
 
@@ -1200,7 +1200,7 @@ def get_file_download_info(client, data_args):
     outputs = {'Tanium.FileDownload(val.ID && val.ID === obj.ID)': context}
     headers = ['ID', 'Host', 'Path', 'Hash', 'Downloaded', 'Size', 'Created', 'CreatedBy', 'CreatedByProc',
                'LastModified', 'LastModifiedBy', 'LastModifiedByProc', 'SPath', 'Comments', 'Tags']
-    human_readable = tableToMarkdown(f'File download metadata for file `{file["Path"]}`', file, headers=headers,
+    human_readable = tableToMarkdown(f"File download metadata for file `{file['Path']}`", file, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -1223,7 +1223,7 @@ def request_file_download(client, data_args):
     }
     client.do_request('POST', '/plugin/products/trace/filedownloads', data=data, resp_type='text')
     filename = os.path.basename(path)
-    return f"Download request of file {filename} has been sent successfully.", outputs, {}
+    return f'Download request of file {filename} has been sent successfully.', outputs, {}
 
 
 def get_file_download_request_status(client, data_args):
@@ -1272,7 +1272,7 @@ def delete_file_download(client, data_args):
         'Deleted': True
     }
     outputs = {'Tanium.FileDownload(val.ID && val.ID === obj.ID)': context}
-    return f"Delete request of file with ID {file_id} has been sent successfully.", outputs, {}
+    return f'Delete request of file with ID {file_id} has been sent successfully.', outputs, {}
 
 
 def list_files_in_dir(client, data_args):
@@ -1320,15 +1320,15 @@ def delete_file_from_endpoint(client, data_args):
     path = urllib.parse.quote(data_args.get('path'))
     client.do_request('DELETE', f'/plugin/products/trace/filedownloads/{con_name}/{path}', resp_type='text')
     context = {
-        'Path': data_args.get('path').replace("\\", "/"),
+        'Path': data_args.get('path').replace('\\', '/'),
         'ConnectionName': con_name,
         'Deleted': True
     }
     outputs = {'Tanium.File(val.Path === obj.Path && val.ConnectionName === obj.ConnectionName)': context}
-    return f"Delete request of file {path} from endpoint {con_name} has been sent successfully.", outputs, {}
+    return f'Delete request of file {path} from endpoint {con_name} has been sent successfully.', outputs, {}
 
 
-''' PROCESS COMMANDS FUNCTIONS'''
+''' PROCESS COMMANDS FUNCTIONS '''
 
 
 def get_process_info(client, data_args):
@@ -1482,7 +1482,7 @@ def get_process_timeline(client, data_args):
     return human_readable, outputs, raw_response
 
 
-''' EVIDENCE COMMANDS FUNCTIONS'''
+''' EVIDENCE COMMANDS FUNCTIONS '''
 
 
 def list_evidence(client, data_args):
@@ -1547,7 +1547,7 @@ def create_evidence(client, data_args):
     }
 
     client.do_request('POST', '/plugin/products/trace/evidence', data=data, resp_type='content')
-    return "Evidence have been created.", {}, {}
+    return 'Evidence have been created.', {}, {}
 
 
 def delete_evidence(client, data_args):
@@ -1558,7 +1558,7 @@ def delete_evidence(client, data_args):
         'Deleted': True
     }
     outputs = {'Tanium.Evidence(val.ID === obj.ID)': context}
-    return f"Evidence {evidence_id} has been deleted successfully.", outputs, {}
+    return f'Evidence {evidence_id} has been deleted successfully.', outputs, {}
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
