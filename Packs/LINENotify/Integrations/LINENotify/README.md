@@ -1,6 +1,6 @@
 This is the Hello World integration for getting started.
 https://notify-bot.line.me/doc/en/
-This integration was integrated and tested with version xx of LINENotify
+This integration was integrated and tested with LINE version 7.0.3 of LINENotify
 
 ## Configure LINENotify on Cortex XSOAR
 
