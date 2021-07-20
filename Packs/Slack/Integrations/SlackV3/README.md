@@ -34,46 +34,58 @@ Slack V3 utilizes "Socket Mode" to enable the integration to communicate directl
 1. Navigate to the following [link](https://api.slack.com/apps/).
 2. Click **Create an App**.
  
- ![create-app-1](../../doc_files/SlackDocs_create_app.png)
+![create-app-1](../../doc_files/SlackDocs_create_app.png)
+
 3. Click **From an app manifest**.
- 
- ![create-app-2](../../doc_files/SlackDocs_create_app2.png)
+
+![create-app-2](../../doc_files/SlackDocs_create_app2.png)
+
 4. Next pick the workspace you would like the app to reside in and click ***Next***.
- 
- ![create-app-3](../../doc_files/SlackDocs_create_app3.png)
+
+![create-app-3](../../doc_files/SlackDocs_create_app3.png)
+
 5. Next copy the text in the file found [here](https://raw.githubusercontent.com/demisto/content/master/Packs/Slack/doc_files/SlackV3_app_manifest.yml)
 6. Paste the copied text into the field "YAML" and click ***Next***.
- 
- ![create-app-4](../../doc_files/SlackDocs_create_app4.png)
+
+![create-app-4](../../doc_files/SlackDocs_create_app4.png)
+
 7. The next step is a summary of the app we created. Click ***Create*** to proceed.
 
- ![create-app-5](../../doc_files/SlackDocs_create_app5.png)
+![create-app-5](../../doc_files/SlackDocs_create_app5.png)
+
  
  ### Installing the App to Your Workspace
 1. After creating your app, you will be redirected to the *Basic Information* page of your app settings.
   First, click ***Install to Workspace***
 
  ![install-app-1](../../doc_files/SlackDocs_install_workspace1.png)
+ 
 2. This will bring up a page which confirms that you are installing the app to your workspace.
  **If you do not see this step, you must request access from your Slack admin in order to proceed.**
 
 ![install-app-2](../../doc_files/SlackDocs_install_workspace2.png)
+
 3. Once the app has been installed you will be redirected to the ***General*** page for your app. Scroll down to the section called ***App-Level Tokens*** and click ***Generate Token and Scopes***
 
 ![install-app-3](../../doc_files/SlackDocs_install_workspace3.png) 
+
 4. Enter a name for the Token and click ***Add Scope***. Select the `connections:write` scope from the list.
 
 ![install-app-4](../../doc_files/SlackDocs_install_workspace4.png) 
+
 5. Click ***Generate***.
 6. After click ***Generate*** you will be redirected to a page which will display your app token. This token begins with `xapp`. Copy this token.
  
 ![install-app-5](../../doc_files/SlackDocs_install_workspace5.png)
+
 7. In your XSOAR SlackV3 intance configuration page. Paste the token in the parameter *App Token*. You may also configure the *App Token* as a credential.
 
 ![install-app-6](../../doc_files/SlackDocs_install_workspace6.png)
+
 8. Navigate back to the Slack App configuration page and select ***OAuth & Permissions***. If this screen does not look like the following image, you may need assistance from your Slack admin.
 
 ![install-app-7](../../doc_files/SlackDocs_install_workspace7.png)
+
 9. Copy the ***Bot User OAuth Token***.
 10. In your XSOAR SlackV3 intance configuration page. Paste the token in the parameter *Bot Token*. You may also configure the *Bot Token* as a credential.
 
