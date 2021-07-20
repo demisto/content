@@ -104,11 +104,10 @@ comparison operators:
 - `all`: Returns results when a resource is tagged with all of the specified tags.
 - `none`: Returns results when a resource is not tagged with any of the specified tags.
 
-## Mirroring Integration Feature
-- All users with 6.0.0 and higher would be able to get the updated reports from Cofense Triage (called Mirroring Integration feature).
-- The integration imports reported emails as incidents. It allows to mirror incidents from Cofense Triage to Cortex SOAR. This can be made possible by selecting `Incoming` in the following option:
-    - Incident Mirroring Direction
-    ![Mirroring Configuration](./../../doc_files/mirroring_configuration.png)
+## Mirroring
+The data in Cofense Triage Report can be mirrored to Cortex XSOAR to view the modifications when the report is updated.
+
+For example: When the report is processed, the fields like Report Category ID and Report location get modified, and hence the user will be able to see the modified field's value in XSOAR.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
