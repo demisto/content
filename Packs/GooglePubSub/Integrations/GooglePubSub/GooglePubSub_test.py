@@ -418,9 +418,6 @@ class TestCommands:
         def ack_messages(self, a, b):
             return ""
 
-        def subscription_reset_ack_deadline(self, a, b):
-            return ""
-
     with open("test_data/commands_outputs.json", "r") as f:
         COMMAND_OUTPUTS = json.load(f)
     with open("test_data/raw_responses.json", "r") as f:
