@@ -15,7 +15,10 @@ DEFAULT_HEADERS = {
     'Content-Type': 'application/json'
 }
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
+RECORD_SUMMARY_FIELDS_DEFAULT = (
+    'action,description,device_hostname,device_ip,dstDevice_hostname,dstDevice_ip,'
+    'email_sender,file_basename,file_hash_md5,file_hash_sha1,file_hash_sha256,srcDevice_hostname,'
+    'srcDevice_ip,threat_name,threat_category,threat_identifier,user_username,threat_url,listMatches')
 
 ''' CLIENT CLASS '''
 
@@ -203,7 +206,8 @@ def test_module(client: Client) -> str:
             max_results=20,
             last_run={},  # getLastRun() gets the last run dict
             first_fetch_time=first_fetch_timestamp,
-            fetch_query=''  # defaults to status:in("new", "inprogress")
+            fetch_query='',  # defaults to status:in("new", "inprogress")
+            record_summary_fields=''  # defaults to $RECORD_SUMMARY_FIELDS_DEFAULT
         )
         message = 'ok'
     except DemistoException as e:
@@ -222,13 +226,11 @@ def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     if not insight_id:
         raise ValueError('insight_id not specified')
 
-    record_summary_fields = demisto.getParam('recordSummaryFields') 
-    if not record_summary_fields:
-        record_summary_fields = 'action,description,device_hostname,device_ip,dstDevice_hostname,dstDevice_ip,email_sender,file_basename,file_hash_md5,file_hash_sha1,file_hash_sha256,srcDevice_hostname,srcDevice_ip,threat_name,threat_category,threat_identifier,user_username,threat_url,listMatches'
-    
+    record_summary_fields = args.get('record_summary_fields')
+
     query = {}
     query['exclude'] = 'signals.allRecords'
-    query['recordSummaryFields'] = record_summary_fields
+    query['recordSummaryFields'] = record_summary_fields if record_summary_fields else RECORD_SUMMARY_FIELDS_DEFAULT
 
     resp_json = client.req('GET', 'sec/v1/insights/{}'.format(insight_id), query)
     insight = insight_signal_to_readable(resp_json)
@@ -353,9 +355,8 @@ def insight_search(client: Client, args: Dict[str, Any]) -> CommandResults:
     For example, the query `timestamp:>2021-03-18T12:00:00+00:00 severity:"HIGH` will return insights of high severity
     created after 12 PM UTC time on March 18th, 2021.
     '''
-    record_summary_fields = demisto.getParam('recordSummaryFields') 
-    if not record_summary_fields:
-        record_summary_fields = 'action,description,device_hostname,device_ip,dstDevice_hostname,dstDevice_ip,email_sender,file_basename,file_hash_md5,file_hash_sha1,file_hash_sha256,srcDevice_hostname,srcDevice_ip,threat_name,threat_category,threat_identifier,user_username,threat_url,listMatches'
+    record_summary_fields = args.get('record_summary_fields')
+
     query = {}
     q = args.get('query', '')
     q = arg_time_query_to_q(q, args.get('created'), 'created')
@@ -364,7 +365,7 @@ def insight_search(client: Client, args: Dict[str, Any]) -> CommandResults:
     query['offset'] = args.get('offset')
     query['limit'] = args.get('limit')
     query['exclude'] = 'signals.allRecords'
-    query['recordSummaryFields'] = record_summary_fields
+    record_summary_fields if record_summary_fields else RECORD_SUMMARY_FIELDS_DEFAULT
 
     resp_json = client.req('GET', 'sec/v1/insights', query)
     insights = []
@@ -633,7 +634,7 @@ def threat_intel_update_source(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], first_fetch_time: Optional[int],
-                    fetch_query: Optional[str]) -> Tuple[Dict[str, int], List[dict]]:
+                    fetch_query: Optional[str], record_summary_fields: Optional[str]) -> Tuple[Dict[str, int], List[dict]]:
     '''
     Retrieve new incidents periodically based on pre-defined instance parameters
     '''
@@ -666,16 +667,12 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
         q += ' ' + fetch_query
     else:
         q = q + ' status:in("new", "inprogress")'
-    
-    record_summary_fields = demisto.getParam('recordSummaryFields') 
-    if not record_summary_fields:
-        record_summary_fields = 'action,description,device_hostname,device_ip,dstDevice_hostname,dstDevice_ip,email_sender,file_basename,file_hash_md5,file_hash_sha1,file_hash_sha256,srcDevice_hostname,srcDevice_ip,threat_name,threat_category,threat_identifier,user_username,threat_url,listMatches'
 
-    query = {}    
+    query = {}
     query['q'] = q
     query['offset'] = '0'
     query['limit'] = str(max_results)
-    query['recordSummaryFields'] = record_summary_fields
+    query['recordSummaryFields'] = record_summary_fields if record_summary_fields else RECORD_SUMMARY_FIELDS_DEFAULT
     resp_json = client.req('GET', 'sec/v1/insights', query)
     incidents = []
     for a in resp_json.get('objects'):
@@ -749,6 +746,7 @@ def main() -> None:
     assert isinstance(first_fetch_timestamp, int)
 
     fetch_query = demisto.params().get('fetch_query')
+    record_summary_fields = demisto.params().get('record_summary_fields')
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -807,7 +805,8 @@ def main() -> None:
                 max_results=max_results,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
                 first_fetch_time=first_fetch_timestamp,
-                fetch_query=fetch_query
+                fetch_query=fetch_query,
+                record_summary_fields=record_summary_fields
             )
 
             # saves next_run for the time fetch-incidents is invoked
