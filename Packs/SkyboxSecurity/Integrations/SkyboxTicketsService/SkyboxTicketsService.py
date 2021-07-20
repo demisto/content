@@ -10,6 +10,7 @@ from zeep.cache import SqliteCache
 from zeep.transports import Transport
 from datetime import date, datetime
 
+
 ''' HELPER FUNCTIONS '''
 
 class DateTimeEncoder(json.JSONEncoder):
@@ -812,21 +813,30 @@ def expandFirewallsForAccessChangeTicket_command(client, args):
 
 
 def addAttachmentFile_command(client, args):
-    # need to get the entryID and read file into the attachemntData.
-    arg0 = args.get('arg0')
+    entry_id = demisto.args()['EntryID']
     attachmentDesc = args.get('attachmentDesc')
     sourceFileName = args.get('sourceFileName')
-    attachmentData = args.get('attachmentData')
     ticketId = args.get('ticketId')
     phaseName = args.get('phaseName')
 
+    file_path = demisto.getFilePath(entry_id).get('path')
+
+    f = open(file_path, "rb")
+    data = f.read()
+
     response = client.service.addAttachmentFile(
-        arg0, attachmentDesc, sourceFileName, attachmentData, ticketId, phaseName)
+        attachmentDesc=attachmentDesc, sourceFileName=sourceFileName, attachmentData=data, ticketId=ticketId,
+        phaseName=phaseName)
+    attachment = {}
+    attachment['id'] = response
+    attachment['ticketId'] = ticketId
+    attachment['EntryID'] = entry_id
+
     command_results = CommandResults(
         outputs_prefix='Skybox.addAttachmentFile',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=attachment,
+        raw_response=attachment
     )
 
     return command_results
@@ -842,7 +852,7 @@ def countAccessChangeTickets_command(client, args):
     filter_statusFilter = args.get('filter_statusFilter')
     filter_ticketIdsFilter = args.get('filter_ticketIdsFilter')
 
-    filter_type = client.get_type('ns0:filter')
+    filter_type = client.get_type('ns0:ticketsSearchFilter')
     filter = filter_type(
         createdBy=filter_createdBy,
         freeTextFilter=filter_freeTextFilter,
@@ -873,8 +883,8 @@ def getDerivedChangeRequestsV7_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.getDerivedChangeRequestsV7',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=serialize_object_list(response),
+        raw_response=serialize_object_list(response)
     )
 
     return command_results
@@ -1149,7 +1159,7 @@ def setTicketAccessRequests_command(client, args):
     accessRequests_potentialVulnerabilities_title = args.get('accessRequests_potentialVulnerabilities_title')
     accessRequests_sourceZones = args.get('accessRequests_sourceZones')
 
-    destinationElements_type = client.get_type('ns0:destinationElements')
+    destinationElements_type = client.get_type('ns0:networkElement')
     destinationElements = destinationElements_type(
         IPAddress=accessRequests_accessQuery_destinationElements_IPAddress,
         id=accessRequests_accessQuery_destinationElements_id,
@@ -1159,14 +1169,14 @@ def setTicketAccessRequests_command(client, args):
         type=accessRequests_accessQuery_destinationElements_type
     )
 
-    firewall_type = client.get_type('ns0:firewall')
+    firewall_type = client.get_type('ns0:firewallElement')
     firewall = firewall_type(
         id=accessRequests_accessQuery_firewall_id,
         name=accessRequests_accessQuery_firewall_name,
         path=accessRequests_accessQuery_firewall_path
     )
 
-    sourceElements_type = client.get_type('ns0:sourceElements')
+    sourceElements_type = client.get_type('ns0:networkElement')
     sourceElements = sourceElements_type(
         IPAddress=accessRequests_accessQuery_sourceElements_IPAddress,
         id=accessRequests_accessQuery_sourceElements_id,
@@ -1176,7 +1186,7 @@ def setTicketAccessRequests_command(client, args):
         type=accessRequests_accessQuery_sourceElements_type
     )
 
-    complianceViolations_type = client.get_type('ns0:complianceViolations')
+    complianceViolations_type = client.get_type('ns0:complianceViolationElement')
     complianceViolations = complianceViolations_type(
         aprName=accessRequests_complianceViolations_aprName,
         aprPath=accessRequests_complianceViolations_aprPath,
@@ -1184,7 +1194,7 @@ def setTicketAccessRequests_command(client, args):
         portsViolating=accessRequests_complianceViolations_portsViolating,
     )
 
-    accessQuery_type = client.get_type('ns0:accessQuery')
+    accessQuery_type = client.get_type('ns0:accessQueryElement')
     accessQuery = accessQuery_type(
         destinationAddresses=accessRequests_accessQuery_destinationAddresses,
         destinationElements=destinationElements,
@@ -1193,10 +1203,9 @@ def setTicketAccessRequests_command(client, args):
         ports=accessRequests_accessQuery_ports,
         sourceAddresses=accessRequests_accessQuery_sourceAddresses,
         sourceElements=sourceElements,
-        accessQueryMode=accessRequests_accessQueryMode
     )
 
-    potentialVulnerabilities_type = client.get_type('ns0:potentialVulnerabilities')
+    potentialVulnerabilities_type = client.get_type('ns0:potentialVulnerability')
     potentialVulnerabilities = potentialVulnerabilities_type(
         catalogId=accessRequests_potentialVulnerabilities_catalogId,
         cveId=accessRequests_potentialVulnerabilities_cveId,
@@ -1207,9 +1216,8 @@ def setTicketAccessRequests_command(client, args):
         title=accessRequests_potentialVulnerabilities_title
     )
 
-    accessRequests_type = client.get_type('ns0:accessRequests')
+    accessRequests_type = client.get_type('ns0:accessRequest')
     accessRequests = accessRequests_type(
-        ticketid=ticketId,
         accessStatus=accessRequests_accessStatus,
         accessType=accessRequests_accessType,
         comment=accessRequests_comment,
@@ -1230,7 +1238,7 @@ def setTicketAccessRequests_command(client, args):
 
     response = client.service.setTicketAccessRequests(
         ticketId=ticketId,
-        accessRequests=accessRequests
+        accessRequests=[accessRequests]
     )
 
     command_results = CommandResults(

@@ -1546,10 +1546,10 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Unknown
+      description: The EntryID of the file to add
       isArray: false
-      name: arg0
-      required: false
+      name: EntryID
+      required: true
       secret: false
     - default: false
       description: The attachment description
@@ -1561,13 +1561,7 @@ script:
       description: The original file name
       isArray: false
       name: sourceFileName
-      required: false
-      secret: false
-    - default: false
-      description: javax.activation.DataHandler
-      isArray: false
-      name: attachmentData
-      required: false
+      required: true
       secret: false
     - default: false
       description: The ticket ID
@@ -1666,7 +1660,7 @@ script:
     execution: false
     name: skybox-countAccessChangeTickets
     outputs:
-    - contextPath: Skybox.countAccessChangeTickets.countAccessChangeTickets
+    - contextPath: Skybox.countAccessChangeTickets
       type: String
   - arguments:
     - default: false
@@ -1688,7 +1682,7 @@ script:
     execution: false
     name: skybox-getDerivedChangeRequestsV7
     outputs:
-    - contextPath: Skybox.getDerivedChangeRequestsV7.getDerivedChangeRequestsV7
+    - contextPath: Skybox.getDerivedChangeRequestsV7
       type: String
   - arguments:
     - default: false
@@ -1712,15 +1706,15 @@ script:
         a network ID in the model that you can find using
         findNetworks
       isArray: false
-      name: accessRequests_accessQuery_destinationElements
-      required: false
+      name: accessRequests_accessQuery_destinationElements_id
+      required: true
       secret: false
     - default: false
       description: |-
         Mandatory for firewall-context analysis; null for networkcontext analysis.
         Use findFirewalls to get this entity.
       isArray: false
-      name: accessRequests_accessQuery_firewall
+      name: accessRequests_accessQuery_firewall_id
       required: false
       secret: false
     - default: false
@@ -1757,7 +1751,7 @@ script:
         a network ID in the model that you can find using
         findNetworks.
       isArray: false
-      name: accessRequests_accessQuery_sourceElements
+      name: accessRequests_accessQuery_sourceElements_id
       required: false
       secret: false
     - default: false
@@ -1929,6 +1923,101 @@ script:
       name: accessRequests_sourceZones
       required: false
       secret: false
+    - default: false
+      description: The destination elements name
+      isArray: false
+      name: accessRequests_accessQuery_destinationElements_name
+      required: false
+      secret: false
+    - default: false
+      description: The destination elements network mask
+      isArray: false
+      name: accessRequests_accessQuery_destinationElements_netMask
+      required: false
+      secret: false
+    - default: false
+      description: The destination elements path
+      isArray: false
+      name: accessRequests_accessQuery_destinationElements_path
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The destination elements type
+        The possible values for the type field when it represents a network are:
+        l 0: Regular
+        l 1: Cloud
+        l 2: Tunnel
+        l 3: Link
+        l 4: VPN Tunnel
+        l 5: SerialLink
+        l 6: Connecting Cloud
+        Skybox Developer Guide
+        Skybox version 11.4.100 318
+        l 7: Artificial Layer2
+        l 99: Unknown
+        The possible values for the type field when it represents a network interface are:
+        l 100: NAT
+        l 101: Ethernet
+        l 102: WLAN
+        l 103: TokenRing
+        l 104: PPP
+        l 105: Slip
+        l 106: Virtual
+        l 107: Other
+        l 108: Unknown
+        l 109: Loopback
+        l 110: Serial
+        l 111: Load Balancer
+        l 112: Tunnel
+        l 113: Vpn
+        l 114: Connecting Cloud Interface
+      isArray: false
+      name: accessRequests_accessQuery_destinationElements_type
+      required: false
+      secret: false
+    - default: false
+      description: The firewall name
+      isArray: false
+      name: accessRequests_accessQuery_firewall_name
+      required: false
+      secret: false
+    - default: false
+      description: The firewall path
+      isArray: false
+      name: accessRequests_accessQuery_firewall_path
+      required: false
+      secret: false
+    - default: false
+      description: The source element ip addresses
+      isArray: false
+      name: accessRequests_accessQuery_sourceElements_IPAddress
+      required: false
+      secret: false
+    - default: false
+      description: The source elements name
+      isArray: false
+      name: accessRequests_accessQuery_sourceElements_name
+      required: false
+      secret: false
+    - default: false
+      description: The source elements network mask
+      isArray: false
+      name: accessRequests_accessQuery_sourceElements_netMask
+      required: false
+      secret: false
+    - default: false
+      description: The source elements path
+      isArray: false
+      name: accessRequests_accessQuery_sourceElements_path
+      required: false
+      secret: false
+    - default: false
+      description: The source elements type
+      isArray: false
+      name: accessRequests_accessQuery_sourceElements_type
+      required: false
+      secret: false
     deprecated: false
     description: |-
       Sets the list of change requests to the specified
@@ -1936,7 +2025,7 @@ script:
     execution: false
     name: skybox-setTicketAccessRequests
     outputs:
-    - contextPath: Skybox.setTicketAccessRequests.setTicketAccessRequests
+    - contextPath: Skybox.setTicketAccessRequests
       type: String
   - arguments:
     - default: false
