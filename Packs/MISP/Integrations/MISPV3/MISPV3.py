@@ -1,8 +1,8 @@
 # type: ignore
 from typing import Union, List, Dict
 from urllib.parse import urlparse
+import urllib3
 
-import requests
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent
 from pymisp.tools import GenericObjectGenerator
 import copy
@@ -34,18 +34,18 @@ def warn(*args):
 
 
 # Disable requests warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # Disable python warnings
 warnings.warn = warn
 
 ''' GLOBALS/PARAMS '''
-verify = not demisto.params().get('insecure')
-proxies = handle_proxy()  # type: ignore
-misp_api_key = demisto.params().get('api_key')
-misp_url = demisto.params().get('url')
+VERIFY = not demisto.params().get('insecure')
+PROXIES = handle_proxy()  # type: ignore
+MISP_API_KEY = demisto.params()['api_key']
+MISP_URL = demisto.params()['url']
 try:
-    PYMISP = ExpandedPyMISP(url=misp_url, key=misp_api_key, ssl=verify, proxies=proxies)
+    PYMISP = ExpandedPyMISP(url=MISP_URL, key=MISP_API_KEY, ssl=VERIFY, proxies=PROXIES)
 except PyMISPError as e:
     handle_connection_errors(e.message)
 
@@ -234,35 +234,15 @@ ATTRIBUTE_FIELDS = [
 
 
 def extract_error(error: list) -> List[dict]:
-    """Extracting errors
+    """
+    Extracting errors raised by PYMISP into readable response, for more information and examples
+    please see UT: test_extract_error.
 
     Args:
         error: list of responses from error section
 
     Returns:
         List[Dict[str, any]]: filtered response
-
-    Examples:
-        extract_error([
-            (403,
-                {
-                    'name': 'Could not add object',
-                    'message': 'Could not add object',
-                    'url': '/objects/add/156/',
-                    'errors': 'Could not save object as at least one attribute has failed validation (ip). \
-                    {"value":["IP address has an invalid format."]}'
-                }
-            )
-        ])
-
-        Response:
-        [{
-            'code': 403,
-            'message': 'Could not add object',
-            'errors': 'Could not save object as at least one attribute has failed validation (ip). \
-            {"value":["IP address has an invalid format."]}'
-        }]
-
     """
     return [{
         'code': err[0],
@@ -271,9 +251,9 @@ def extract_error(error: list) -> List[dict]:
     } for err in error]
 
 
-def build_list_from_dict(args: dict) -> List[dict]:
+def dict_to_generic_object_format(args: dict) -> List[dict]:
     """
-
+    Converts args dict into a list, please see GenericObjectGenerator Class in Pymisp.
     Args:
         args: dictionary describes MISP object
 
@@ -310,14 +290,14 @@ def build_generic_object(template_name: str, args: List[dict]) -> GenericObjectG
     return misp_object
 
 
-def convert_timestamp(timestamp: Union[str, int]) -> str:
+def misp_convert_timestamp_to_date_string(timestamp: Union[str, int]) -> str:
     """
     Gets a timestamp from MISP response (1546713469) and converts it to human readable format
     """
     return datetime.utcfromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S') if timestamp else ""
 
 
-def replace_keys(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]:
+def replace_keys_from_misp_to_context_data(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]:
     """
     Replacing keys from MISP's format to Demisto's (as appear in ENTITIESDICT)
 
@@ -328,11 +308,11 @@ def replace_keys(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]
         Union[dict, list, str]: same object type that got in
     """
     if isinstance(obj_to_build, list):
-        return [replace_keys(item) for item in obj_to_build]
+        return [replace_keys_from_misp_to_context_data(item) for item in obj_to_build]
     if isinstance(obj_to_build, dict):
         return {
-            (MISP_ENTITIES_TO_CONTEXT_DATA[key] if key in MISP_ENTITIES_TO_CONTEXT_DATA else key): replace_keys(value)
-            for key, value in obj_to_build.items()
+            (MISP_ENTITIES_TO_CONTEXT_DATA[key] if key in MISP_ENTITIES_TO_CONTEXT_DATA else key):
+                replace_keys_from_misp_to_context_data(value) for key, value in obj_to_build.items()
         }
     return obj_to_build
 
@@ -348,17 +328,29 @@ def reputation_command_to_human_readable(outputs, score, events_to_human_readabl
         'Dbot Score': score,
         'Attribute Value': outputs.get('Value'),
         'Attribute Category': outputs.get('Category'),
-        'Timestamp': convert_timestamp(outputs.get('Timestamp')),
+        'Timestamp': misp_convert_timestamp_to_date_string(outputs.get('Timestamp')),
         'Events with the scored tag': events_to_human_readable,
         'Scored Tag ID': found_tag_id,
         'Scored Tag Name': found_tag_name,
     }
 
 
-def limit_tag_output(attribute_dict, is_event_level):
+def limit_tag_output_to_id_and_name(attribute_dict, is_event_level):
     """
-    limits the tag list to the ID and Name fields.
+    As tag list can be full of in unnecessary data, we want to limit this list to include only the ID and Name fields.
     In addition, returns set of the found tag ids.
+
+    Some tags have a field called inherited. When it is set to 1 it says that it is an event's tag.
+    Otherwise (if it is set to 0 or not exists) it says that it is an attribute's tag.
+    If the data is event's (is_event_level = true) we would like to add to tag_set_ids all the tags
+    (event ones and the event's attribute tags ones as it is part of the event scope).
+    If the data is attribute's (is_event_level = false), and the tag is only related to an attribute
+    we would like to add it to tag_set_ids. In any other case, we won't add the tag.
+
+    Args:
+        attribute_dict (dict): The dictionary that includes the tag list.
+        is_event_level (bool): Whether the attribute_dict was received from an event object,
+        meaning the tags are event's ones. Otherwise, the data is attribute's (attribute tags).
     """
     output = []
     tag_set_ids = set()
@@ -377,68 +369,71 @@ def limit_tag_output(attribute_dict, is_event_level):
 
 def parse_response_reputation_command(response, malicious_tag_ids, suspicious_tag_ids):
     """
-    After getting all the attributes that match the required indicator value, this function parses the response.
-    This function combines all of the attributes that found with their event's object into one json object (that will
-    be returned to the context data). In addition the function returns the indicator score and the tag (id) which
-    caused the indicator to get that score.
+    After getting all the attributes which match the required indicator value, this function parses the response.
+    This function combines all the attributes that found with their event's object into one json object (that will
+    be returned to the context data), this is the reason why we use the first attribute object.
+    We modify the first_attribute object to include the full information about the related events that were found.
+    In addition the function returns the indicator score and the tag (id) which made the indicator to get that score.
     Please see an example for a response in test_data/reputation_command_response.json
     Please see an example for a parsed output in test_data/reputation_command_outputs.json
     """
     attributes_list = response.get('Attribute')
-    attributes_tag_ids, event_tag_ids = set(), set()
     if not attributes_list:
         return None
-    first_attribute = attributes_list[0]
-    related_events, attribute_tags_from_related, event_tags_from_related = get_full_related_event_objects(
-        attributes_list)
-    attributes_tag_ids.update(attribute_tags_from_related)
-    event_tag_ids.update(event_tags_from_related)
 
-    attribute_related_events = first_attribute.get('RelatedAttribute')
-    if attribute_related_events:
-        for event in attribute_related_events:
-            if event.get('Event'):
-                event['Event'] = related_events[event.get('event_id')].get('Event', {})
-                event['Tag'] = related_events[event.get('event_id')].get('Tag', [])
-    else:
-        # sometimes the first attribute has no RelatedAttribute list (seems to be a bug in MISP response),
-        # so we would like to override the empty list with the related events we found
-        first_attribute['RelatedAttribute'] = [value for k, value in related_events.items()]
-    first_attribute['Event']['Tag'], first_attribute_event_tags = limit_tag_output(first_attribute.get('Event'), True)
+    all_related_events_with_full_info, attributes_tag_ids, event_tag_ids = get_full_related_event_objects(
+        attributes_list)
+
+    first_attribute = attributes_list[0]
+    combine_related_events_to_first_attribute_object(first_attribute.get('RelatedAttribute'), first_attribute,
+                                                     all_related_events_with_full_info)
+    first_attribute['Event']['Tag'], first_attribute_event_tags = \
+        limit_tag_output_to_id_and_name(first_attribute.get('Event'), True)
     event_tag_ids.update(first_attribute_event_tags)
 
-    first_attribute['Tag'], first_attribute_tags = limit_tag_output(first_attribute, False)
+    first_attribute['Tag'], first_attribute_tags = limit_tag_output_to_id_and_name(first_attribute, False)
     attributes_tag_ids.update(first_attribute_tags)
 
     score, found_tag = get_score_by_tags(attribute_tags_ids=attributes_tag_ids, event_tags_ids=event_tag_ids,
                                          malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids)
 
-    first_attribute = replace_keys(first_attribute)  # this is the outputs (Attribute)
+    first_attribute = replace_keys_from_misp_to_context_data(first_attribute)  # this is the outputs (Attribute)
     return first_attribute, score, found_tag
+
+
+def combine_related_events_to_first_attribute_object(first_attribute_related_events_list, first_attribute,
+                                                     all_related_events_with_full_info):
+    if first_attribute_related_events_list:
+        for event in first_attribute_related_events_list:
+            if event.get('Event'):
+                event['Event'] = all_related_events_with_full_info[event.get('event_id')].get('Event', {})
+                event['Tag'] = all_related_events_with_full_info[event.get('event_id')].get('Tag', [])
+    else:
+        # sometimes the first attribute has no RelatedAttribute list (seems to be a bug in MISP response),
+        # so we would like to override the empty list with the related events we found
+        first_attribute['RelatedAttribute'] = list(all_related_events_with_full_info.values())
 
 
 def get_full_related_event_objects(attributes_list):
     """
-    Going through the related attribute (actually events) to get their events' objects and attribute's tags.
+    Going through the related attribute (actually events which include those related attributes)
+    to get their events' objects and attribute's tags.
     """
     related_events = {}
-    attributes_tag_set_ids, event_tag_set_ids = set(), set()
-    if len(attributes_list) == 1:
-        return related_events, attributes_tag_set_ids, event_tag_set_ids
-    attributes_list = attributes_list[1:]  # only if len(attributes_list) > 1
+    attributes_tag_ids, event_tag_ids = set(), set()
+    attributes_list = attributes_list[1:]
     for attribute in attributes_list:
         event = attribute.get('Event')
-        attribute_tag_list = attribute.get('Tag')
-        attribute_tags = []
-        if attribute_tag_list:
-            attribute_tags, current_attribute_tags = limit_tag_output(attribute, False)
-            attributes_tag_set_ids.update(current_attribute_tags)
+        attribute_limited_tags = []
+        if attribute.get('Tag'):
+            attribute_limited_tags, current_attribute_tags = limit_tag_output_to_id_and_name(attribute, False)
+            attributes_tag_ids.update(current_attribute_tags)
         if event:
             if event.get('Tag'):
-                event['Tag'], current_event_tags = limit_tag_output(event, True)
-                event_tag_set_ids.update(current_event_tags)
-            related_events[event.get('id')] = {"Event": event, "Tag": attribute_tags}
-    return related_events, attributes_tag_set_ids, event_tag_set_ids
+                event['Tag'], current_event_tags = limit_tag_output_to_id_and_name(event, True)
+                event_tag_ids.update(current_event_tags)
+            related_events[event.get('id')] = {"Event": event, "Tag": attribute_limited_tags}
+    return related_events, attributes_tag_ids, event_tag_ids
 
 
 def get_score_by_tags(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids):
@@ -471,42 +466,32 @@ def get_score_by_tags(attribute_tags_ids, event_tags_ids, malicious_tag_ids, sus
     return Common.DBotScore.NONE, None
 
 
-def get_time_now():
-    """
-    Returns:
-    str: time in year--month--day format
-    """
-    time_now = time.gmtime(time.time())
-    return f'{time_now.tm_year}--{time_now.tm_mon}--{time_now.tm_mday}'
-
-
-def get_new_event(args):
+def get_new_misp_event_object(args):
     """
     Create a new MISP event object and set the event's details.
     """
     event = MISPEvent()
     event.distribution = MISP_DISTRIBUTION_TO_IDS[args.get('distribution')]
     threat_level_id_arg = args.get('threat_level_id')
-    event.threat_level_id = THREAT_LEVELS_TO_ID[
-        threat_level_id_arg] if threat_level_id_arg in THREAT_LEVELS_TO_ID else threat_level_id_arg
+    if threat_level_id_arg:
+        event.threat_level_id = THREAT_LEVELS_TO_ID[threat_level_id_arg]
     analysis_arg = args.get('analysis')
     event.analysis = MISP_ANALYSIS_TO_IDS.get(analysis_arg) if analysis_arg in MISP_ANALYSIS_TO_IDS else analysis_arg
     event.info = args.get('info') if args.get('info') else 'Event from XSOAR'
-    event.date = get_time_now()
+    event.date = datetime.today()
     event.published = argToBoolean(args.get('published', 'False'))
     return event
 
 
-def create_event(demisto_args: dict):
+def create_event_command(demisto_args: dict):
     """Creating event in MISP with the given attribute args"""
-    new_event = get_new_event(demisto_args)
+    new_event = get_new_misp_event_object(demisto_args)
     new_event = PYMISP.add_event(new_event, True)
 
     if isinstance(new_event, dict) and new_event.get('errors'):
-        return_error(new_event.get('errors'))
+        raise DemistoException(new_event.get('errors'))
 
-    event_id = get_valid_event_id(new_event.id)
-    demisto.debug(f"Create_event command before setting attribute {new_event}")
+    event_id = new_event.id
     add_attribute(event_id=event_id, internal=True, new_event=new_event, demisto_args=demisto_args)
     event = PYMISP.search(eventid=event_id)
     human_readable = f"## MISP create event\nNew event with ID: {event_id} has been successfully created.\n"
@@ -518,27 +503,6 @@ def create_event(demisto_args: dict):
         outputs=build_events_search_response(copy.deepcopy(event)),
         raw_response=event
     )
-
-
-def get_valid_event_id(event_id: int):
-    if isinstance(event_id, str) and event_id.isdigit():  # type: ignore
-        return int(event_id)
-    elif not isinstance(event_id, int):
-        return_error('Invalid MISP event ID, must be a number')
-    return event_id
-
-
-def get_valid_distribution(distribution: int):
-    if not isinstance(distribution, int):
-        if isinstance(distribution, str) and distribution.isdigit():  # type: ignore
-            return int(distribution)
-        elif isinstance(distribution, str) and distribution in MISP_DISTRIBUTION_TO_IDS:
-            return MISP_DISTRIBUTION_TO_IDS[distribution]
-        else:
-            return_error(
-                f"Invalid Distribution. Can be one of the following: "
-                f"{[key for key in MISP_DISTRIBUTION_TO_IDS.keys()]}")
-    return distribution
 
 
 def add_attribute(event_id: int = None, internal: bool = False, demisto_args: dict = {}, new_event: MISPEvent = None):
@@ -560,17 +524,15 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         'comment': demisto_args.get('comment'),
         'value': demisto_args.get('value')
     }
-    if not event_id:
-        event_id = demisto_args.get('event_id')
-    event_id = get_valid_event_id(event_id)
+    event_id = event_id if event_id else arg_to_number(demisto_args.get('event_id'), "event_id")
     attributes_args.update({'id': event_id}) if event_id else None
     distribution = demisto_args.get('distribution')
-    attributes_args.update({'distribution': get_valid_distribution(distribution)}) if distribution else None
+    attributes_args.update({'distribution': MISP_DISTRIBUTION_TO_IDS[distribution]}) if distribution else None
 
     if not new_event:
         response = PYMISP.search(eventid=event_id, pythonify=True)
         if not response:
-            return_error(
+            raise DemistoException(
                 f"Error: An event with the given id: {event_id} was not found in MISP. please check it once again")
         new_event = response[0]  # response[0] is MISP event
 
@@ -597,7 +559,7 @@ def generic_reputation_command(demisto_args, reputation_type, dbot_type, malicio
     command_results = []
     for value in reputation_value_list:
         command_results.append(
-            find_reputation_indicator(value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability))
+            get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability))
     return command_results
 
 
@@ -606,22 +568,35 @@ def reputation_value_validation(value, dbot_type):
         # hashFormat will be used only in output
         hash_format = get_hash_type(value)
         if hash_format == 'Unknown':
-            return_error('Invalid hash length, enter file hash of format MD5, SHA-1 or SHA-256')
+            raise DemistoException('Invalid hash length, enter file hash of format MD5, SHA-1 or SHA-256')
     if dbot_type == 'IP':
         if not is_ip_valid(value):
-            return_error(f"Error: The given IP address: {value} is not valid")
+            raise DemistoException(f"Error: The given IP address: {value} is not valid")
     if dbot_type == 'DOMAIN':
         if not re.compile(DOMAIN_REGEX, regexFlags).match(value):
-            return_error(f"Error: The given domain: {value} is not valid")
+            raise DemistoException(f"Error: The given domain: {value} is not valid")
     if dbot_type == 'URL':
         if not re.compile(urlRegex, regexFlags).match(value):
-            return_error(f"Error: The given url: {value} is not valid")
+            raise DemistoException(f"Error: The given url: {value} is not valid")
     if dbot_type == 'EMAIL':
         if not re.compile(emailRegex, regexFlags).match(value):
-            return_error(f"Error: The given email address: {value} is not valid")
+            raise DemistoException(f"Error: The given email address: {value} is not valid")
 
 
-def find_reputation_indicator(value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability):
+def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability):
+    """
+    This function searches for the given attribute value in MISP and then calculates it's dbot score.
+    The score is calculated by the tags ids (attribute tags and event tags).
+    Args:
+        value (str): The indicator value (an IP address, email address, domain, url or file hash).
+        dbot_type (str): Indicator type (file, url, domain, email or ip).
+        malicious_tag_ids (set): Tag ids should be recognised as malicious.
+        suspicious_tag_ids (set): Tag ids should be recognised as suspicious
+        reliability (DBotScoreReliability): integration reliability score.
+
+    Returns:
+        CommandResults includes all the indicator results.
+    """
     reputation_value_validation(value, dbot_type)
     misp_response = PYMISP.search(value=value, controller='attributes', include_context=True,
                                   include_correlations=True, include_event_tags=True, enforce_warninglist=True,
@@ -644,29 +619,40 @@ def find_reputation_indicator(value, dbot_type, malicious_tag_ids, suspicious_ta
                               outputs_prefix='MISP.Attribute',
                               outputs_key_field='ID',
                               readable_output=readable_output)
-
-    dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type, integration_name=INTEGRATION_NAME,
-                            score=Common.DBotScore.NONE, reliability=reliability,
-                            malicious_description="No results were found in MISP")
-    indicator = get_dbot_indicator(dbot_type, dbot, value)
-    return CommandResults(indicator=indicator,
-                          readable_output=f"No attributes found in MISP for value: {value}")
+    else:
+        dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type, integration_name=INTEGRATION_NAME,
+                                score=Common.DBotScore.NONE, reliability=reliability,
+                                malicious_description="No results were found in MISP")
+        indicator = get_dbot_indicator(dbot_type, dbot, value)
+        return CommandResults(indicator=indicator,
+                              readable_output=f"No attributes found in MISP for value: {value}")
 
 
 def get_events_related_to_scored_tag(reputation_outputs, found_tag):
+    """
+    This function searches for all the events that have the tag (i.e found_tag) which caused the indicator to be scored
+    as malicious or suspicious.
+    Args:
+        reputation_outputs (dict): The parsed response from the MISP search attribute request
+        found_tag (str): The tag that was scored as malicious or suspicious. If no tag was found, then the score is
+        Unknown so no events should be found.
+
+    Returns:
+        list includes all the events that were detected as related to the tag.
+    """
     related_events = []
     if found_tag:
         attribute_event = reputation_outputs.get('Event', {})
         event_name = attribute_event.get('Info')
-        related_events.extend(get_event_to_tag(attribute_event, found_tag, event_name))  # attribute_event_tags
-        related_events.extend(get_event_to_tag(reputation_outputs, found_tag, event_name))  # attribute_tags
+        related_events.extend(search_events_with_scored_tag(attribute_event, found_tag, event_name))
+        related_events.extend(search_events_with_scored_tag(reputation_outputs, found_tag, event_name))
         related_events_from_outputs = reputation_outputs.get('RelatedAttribute')
         if related_events_from_outputs:
             for event in related_events_from_outputs:
                 event_object = event.get('Event')
                 event_name = event_object.get('Info')
-                related_events.extend(get_event_to_tag(event_object, found_tag, event_name))  # attribute_event_tags
-                related_events.extend(get_event_to_tag(event, found_tag, event_name))  # event_tags
+                related_events.extend(search_events_with_scored_tag(event_object, found_tag, event_name))
+                related_events.extend(search_events_with_scored_tag(event, found_tag, event_name))
     return remove_duplicated_related_events(related_events)
 
 
@@ -678,11 +664,20 @@ def remove_duplicated_related_events(related_events):
     return related_events_no_duplicates
 
 
-def get_event_to_tag(data_dict, found_tag, event_name):
+def search_events_with_scored_tag(object_data_dict, found_tag, event_name):
+    """
+    By the given object we go over all the tags and search if found_tag is one of it's tags. If so, the event will be
+    added to related_events list
+    Args:
+        object_data_dict (dict): Event or attribute dict which includes tags list.
+        found_tag (str): The tag that was scored as malicious or suspicious.
+        event_name (str): Name of the event
+    """
     related_events = []
-    for tag in data_dict.get('Tag', []):
+    object_tags_list = object_data_dict.get('Tag', [])
+    for tag in object_tags_list:
         if tag.get('ID') == found_tag:
-            event_id = get_event_id(data_dict)
+            event_id = get_event_id(object_data_dict)
             tag_name = tag.get('Name')
             related_events.append({'Event_ID': event_id, 'Event_Name': event_name,
                                    'Tag_Name': tag_name, 'Tag_ID': tag.get('ID')})
@@ -710,8 +705,11 @@ def get_dbot_indicator(dbot_type, dbot_score, value):
         return Common.URL(url=value, dbot_score=dbot_score)
 
 
-def build_misp_complex_filter(demisto_query: str) -> str:
+def build_misp_complex_filter(demisto_query: str):
     """
+    Examples are available in UT: test_build_misp_complex_filter.
+    For more information please see build_complex_query in pymisp/api.py
+
     Args:
         demisto_query: complex query contains saved words: 'AND:', 'OR:' and 'NOT:'
             using ',' as delimiter for parameters and ';' as delimiter for operators.
@@ -722,126 +720,137 @@ def build_misp_complex_filter(demisto_query: str) -> str:
     Returns:
         str: dictionary created for misp to perform complex query
         or if no complex query found returns the original input
-
-    Example:
-        demisto_query should look like:
-            example 1: "AND:param1,param2;OR:param3;NOT:param4,param5"
-            example 2: "NOT:param3,param5"
-            example 3 (simple syntax): "param1,param2"
     """
 
     regex_and = r'(AND:)([^\;]+)(;)?'
     regex_or = r'(OR:)([^\;]+)(;)?'
     regex_not = r'(NOT:)([^\;]+)(;)?'
     misp_query_params = dict()
-    is_complex_search = False
+
     match_and = re.search(regex_and, demisto_query, re.MULTILINE)
     match_or = re.search(regex_or, demisto_query, re.MULTILINE)
     match_not = re.search(regex_not, demisto_query, re.MULTILINE)
 
-    if match_and is not None:
-        misp_query_params['and_parameters'] = match_and.group(2).split(',')
-        is_complex_search = True
-
-    if match_or is not None:
-        misp_query_params['or_parameters'] = match_or.group(2).split(',')
-        is_complex_search = True
-
-    if match_not is not None:
-        misp_query_params['not_parameters'] = match_not.group(2).split(',')
-        is_complex_search = True
-
+    is_complex_search_and_operator = is_misp_complex_search_helper(match_and, misp_query_params, 'and_parameters')
+    is_complex_search_or_operator = is_misp_complex_search_helper(match_or, misp_query_params, 'or_parameters')
+    is_complex_search_not_operator = is_misp_complex_search_helper(match_not, misp_query_params, 'not_parameters')
+    is_complex_search = is_complex_search_and_operator or is_complex_search_or_operator or \
+                        is_complex_search_not_operator
     if is_complex_search:
-        misp_complex_query = PYMISP.build_complex_query(**misp_query_params)
-        return misp_complex_query
-
+        return PYMISP.build_complex_query(**misp_query_params)
     return demisto_query
 
 
-def prepare_args_to_search():
-    d_args = demisto.args()
-    # List of all applicable search arguments
-    args = dict()
-    # Create dict to pass into the search
-    for arg in MISP_SEARCH_ARGUMENTS:
-        if arg in d_args:
-            args[arg] = d_args[arg]
+def is_misp_complex_search_helper(match_operator, misp_query_params, operator_key):
+    is_complex_search = False
+    if match_operator is not None:
+        misp_query_params[operator_key] = match_operator.group(2).split(',')
+        is_complex_search = True
+    return is_complex_search
+
+
+def prepare_args_to_search(controller):
+    demisto_args = demisto.args()
+    args_to_misp_format = {arg: demisto_args[arg] for arg in MISP_SEARCH_ARGUMENTS if arg in demisto_args}
     # Replacing keys and values from Demisto to Misp's keys
-    if 'type' in args:
-        args['type_attribute'] = args.pop('type')
-    # search function 'to_ids' parameter gets 0 or 1 instead of bool.
-    if 'to_ids' in args:
-        args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
-    if 'from' in args:
-        args['from_date'] = args.pop('from')
-    if 'to' in args:
-        args['to_date'] = args.pop('to')
-    if 'event_id' in args:
-        args['eventid'] = argToList(args.pop('event_id'))
-    if 'last' in args:
-        args['publish_timestamp'] = args.pop('last')
-    if 'include_decay_score' in args:
-        args['include_decay_score'] = 1 if d_args.get('include_decay_score') in ('true', '1', 1) else 0
-    if 'include_sightings' in args:
-        args['include_sightings'] = 1 if d_args.get('include_sightings') in ('true', '1', 1) else 0
-    if 'include_correlations' in args:
-        args['include_correlations'] = 1 if d_args.get('include_correlations') in ('true', '1', 1) else 0
-    # search function 'enforceWarninglist' parameter gets 0 or 1 instead of bool.
-    if 'enforceWarninglist' in args:
-        args['enforceWarninglist'] = 1 if d_args.get('enforceWarninglist') in ('true', '1', 1) else 0
-    if 'limit' not in args:
-        args['limit'] = '50'
-    # build MISP complex filter
-    if 'tags' in args:
-        args['tags'] = build_misp_complex_filter(args['tags'])
-    demisto.debug(f"args for request search command are {args}")
-    return args
+    if 'type' in args_to_misp_format:
+        args_to_misp_format['type_attribute'] = args_to_misp_format.pop('type')
+    if 'to_ids' in args_to_misp_format:
+        args_to_misp_format['to_ids'] = 1 if demisto_args.get('to_ids') == 'true' else 0
+    if 'from' in args_to_misp_format:
+        args_to_misp_format['date_from'] = args_to_misp_format.pop('from')
+    if 'to' in args_to_misp_format:
+        args_to_misp_format['date_to'] = args_to_misp_format.pop('to')
+    if 'event_id' in args_to_misp_format:
+        args_to_misp_format['eventid'] = argToList(args_to_misp_format.pop('event_id'))
+    if 'last' in args_to_misp_format:
+        args_to_misp_format['publish_timestamp'] = args_to_misp_format.pop('last')
+    if 'include_decay_score' in args_to_misp_format:
+        args_to_misp_format['include_decay_score'] = 1 if demisto_args.get('include_decay_score') == 'true' else 0
+    if 'include_sightings' in args_to_misp_format:
+        args_to_misp_format['include_sightings'] = 1 if demisto_args.get('include_sightings') == 'true' else 0
+    if 'include_correlations' in args_to_misp_format:
+        args_to_misp_format['include_correlations'] = 1 if demisto_args.get('include_correlations') == 'true' else 0
+    if 'enforceWarninglist' in args_to_misp_format:
+        args_to_misp_format['enforceWarninglist'] = 1 if demisto_args.get('enforceWarninglist') == 'true' else 0
+    if 'limit' not in args_to_misp_format:
+        args_to_misp_format['limit'] = '50'
+    if 'tags' in args_to_misp_format:
+        args_to_misp_format['tags'] = build_misp_complex_filter(args_to_misp_format['tags'])
+    args_to_misp_format['controller'] = controller
+    demisto.debug(f"[MISP V3]: args for {demisto.command()} command are {args_to_misp_format}")
+    return args_to_misp_format
 
 
 def build_attributes_search_response(response_object: Union[dict, requests.Response],
                                      include_correlations=False) -> dict:
     """
-    Convert the response of attribute search returned from MIPS to the context output format.
+    Convert the response of attribute search returned from MISP to the context output format.
     """
     if include_correlations:
-        # if user want to get back the related attributes only
+        # return full related attributes only if the user wants to get them back
         ATTRIBUTE_FIELDS.append('RelatedAttribute')
 
     if isinstance(response_object, str):
         response_object = json.loads(json.dumps(response_object))
     attributes = response_object.get('Attribute')
+    return get_limit_attribute_search_outputs(attributes)
+
+
+def get_limit_attribute_search_outputs(attributes):
     for i in range(len(attributes)):
         attributes[i] = {key: attributes[i].get(key) for key in ATTRIBUTE_FIELDS if key in attributes[i]}
-        # Build Galaxy
-        if attributes[i].get('Galaxy'):
-            attributes[i]['Galaxy'] = [
-                {
-                    'name': star.get('name'),
-                    'type': star.get('type'),
-                    'description': star.get('description')
-                } for star in attributes[i]['Galaxy']
-            ]
-
-        # Build Tag
-        if attributes[i].get('Tag'):
-            attributes[i]['Tag'] = [
-                {'Name': tag.get('name'),
-                 'is_galaxy': tag.get('is_galaxy')
-                 } for tag in attributes[i].get('Tag')
-            ]
-
-        if attributes[i].get('Sighting'):
-            attributes[i]['Sighting'] = [
-                {'type': sighting.get('type')
-                 } for sighting in attributes[i].get('Sighting')
-            ]
-
-    attributes = replace_keys(attributes)
+        build_galaxy_output(attributes[i])
+        build_tag_output(attributes[i])
+        build_sighting_output_from_attribute_search_response(attributes[i])
+    attributes = replace_keys_from_misp_to_context_data(attributes)
     return attributes
 
 
-def build_attributes_search_response_only_values(response_object: Union[dict, requests.Response]) -> list:
-    """returns list of attributes' values that match the search query"""
+def build_galaxy_output(given_object):
+    """given_object is attribute or event, depends on the called function"""
+    if given_object.get('Galaxy'):
+        given_object['Galaxy'] = [
+            {
+                'name': star.get('name'),
+                'type': star.get('type'),
+                'description': star.get('description')
+            } for star in given_object['Galaxy']
+        ]
+
+
+def build_object_output(event):
+    if event.get('Object'):
+        event['Object'] = [
+            {
+                'name': event_object.get('name'),
+                'uuid': event_object.get('uuid'),
+                'description': event_object.get('description'),
+                'id': event_object.get('id')
+            } for event_object in event['Object']
+        ]
+
+
+def build_tag_output(given_object):
+    """given_object is attribute or event, depends on the called function"""
+    if given_object.get('Tag'):
+        given_object['Tag'] = [
+            {'Name': tag.get('name'),
+             'is_galaxy': tag.get('is_galaxy')
+             } for tag in given_object.get('Tag')
+        ]
+
+
+def build_sighting_output_from_attribute_search_response(attribute):
+    if attribute.get('Sighting'):
+        attribute['Sighting'] = [
+            {'type': sighting.get('type')
+             } for sighting in attribute.get('Sighting')
+        ]
+
+
+def build_attributes_search_response_return_only_values(response_object: Union[dict, requests.Response]) -> list:
+    """returns list of attributes' values that match the search query when user set the arg 'compact' to True"""
     if isinstance(response_object, str):
         response_object = json.loads(json.dumps(response_object))
     attributes = response_object.get('Attribute')
@@ -849,12 +858,10 @@ def build_attributes_search_response_only_values(response_object: Union[dict, re
 
 
 def pagination_args_validation(page, limit):
-    try:
-        page = int(page)
-        limit = int(limit)
-    except ValueError:
-        raise DemistoException("page and limit should be numbers")
-    return page, limit
+    if page and page < 0:
+        raise DemistoException("page should be zero or a positive number")
+    if limit and limit < 0:
+        raise DemistoException("limit should be zero or a positive number")
 
 
 def attribute_response_to_markdown_table(response: dict):
@@ -875,7 +882,7 @@ def attribute_response_to_markdown_table(response: dict):
             'Attribute Tags': attribute_tags,
             'Attribute Sightings': attribute_sightings,
             'To IDs': attribute.get('ToIDs'),
-            'Timestamp': convert_timestamp(attribute.get('Timestamp')),
+            'Timestamp': misp_convert_timestamp_to_date_string(attribute.get('Timestamp')),
             'Event Info': event.get('Info'),
             'Event Organisation ID': event.get('OrganisationID'),
             'Event Distribution': event.get('Distribution'),
@@ -885,23 +892,20 @@ def attribute_response_to_markdown_table(response: dict):
 
 
 def search_attributes(demisto_args: dict) -> CommandResults:
-    """
-    Execute a MIPS search using the 'attributes' controller.
-    """
-    args = prepare_args_to_search()
-    # Set the controller to attributes to search for attributes and not events
-    args['controller'] = 'attributes'
-    response = PYMISP.search(**args)
-    return_only_values = argToBoolean(demisto_args.get('compact', False))
+    """Execute a MISP search over 'attributes'"""
+    args = prepare_args_to_search('attributes')
+    outputs_should_include_only_values = argToBoolean(demisto_args.get('compact', False))
     include_correlations = argToBoolean(demisto_args.get('include_correlations', False))
-    limit = demisto_args.get('limit', 50)
+    limit = arg_to_number(demisto_args.get('limit', 50), "limit", required=True)
     page = demisto_args.get('page')
     if page:
-        pagination_args_validation(page, limit)
+        page = arg_to_number(page, "page")
+    pagination_args_validation(page, limit)
 
+    response = PYMISP.search(**args)
     if response:
-        if return_only_values:
-            response_for_context = build_attributes_search_response_only_values(response)
+        if outputs_should_include_only_values:
+            response_for_context = build_attributes_search_response_return_only_values(response)
             number_of_results = len(response_for_context)
             md = tableToMarkdown(f"MISP search-attributes returned {number_of_results} attributes",
                                  response_for_context[:number_of_results], ["Value"])
@@ -926,7 +930,7 @@ def search_attributes(demisto_args: dict) -> CommandResults:
 
 def build_events_search_response(response_object: Union[dict, requests.Response]) -> dict:
     """
-    Convert the response of event search returned from MIPS to the context output format.
+    Convert the response of event search returned from MISP to the context output format.
     please note: attributes are excluded from search-events output as the information is too big. User can use the
     command search-attributes in order to get the information about the attributes.
     """
@@ -936,81 +940,71 @@ def build_events_search_response(response_object: Union[dict, requests.Response]
     for i in range(0, len(events)):
         # Filter object from keys in event_args
         events[i] = {key: events[i].get(key) for key in EVENT_FIELDS if key in events[i]}
-        # Remove 'Event' keyword from 'RelatedEvent'
-        if events[i].get('RelatedEvent'):
-            # there is no need in returning related event when searching for an event
-            events[i]['RelatedEvent'] = []
+        events[i]['RelatedEvent'] = []  # there is no need in returning related event when searching for an event
+        build_galaxy_output(events[i])
+        build_tag_output(events[i])
+        build_object_output(events[i])
 
-        # Build Galaxy
-        if events[i].get('Galaxy'):
-            events[i]['Galaxy'] = [
-                {
-                    'name': star.get('name'),
-                    'type': star.get('type'),
-                    'description': star.get('description')
-                } for star in events[i]['Galaxy']
-            ]
-        # Build tag
-        if events[i].get('Tag'):
-            events[i]['Tag'] = [
-                {'Name': tag.get('name'),
-                 'is_galaxy': tag.get('is_galaxy')
-                 } for tag in events[i].get('Tag')
-            ]
-
-        # Build Object
-        if events[i].get('Object'):
-            events[i]['Object'] = [
-                {
-                    'name': event_object.get('name'),
-                    'uuid': event_object.get('uuid'),
-                    'description': event_object.get('description'),
-                    'id': event_object.get('id')
-                } for event_object in events[i]['Object']
-            ]
-    events = replace_keys(events)  # type: ignore
+    events = replace_keys_from_misp_to_context_data(events)  # type: ignore
     return events  # type: ignore
 
 
-def event_response_to_markdown_table(response: dict):
+def event_to_human_readable_tag_list(event):
+    event_tags = event.get('Tag', [])
+    if event_tags:
+        return [tag.get('Name') for tag in event_tags]
+
+
+def event_to_human_readable_galaxy_list(event):
+    event_galaxies = event.get('Galaxy', [])
+    if event_galaxies:
+        return [galaxy.get('Name') for galaxy in event.get('Galaxy')]
+
+
+def event_to_human_readable_object_list(event):
+    event_objects = event.get('Object', [])
+    if event_objects:
+        return [event_object.get('ID') for event_object in event.get('Object')]
+
+
+def event_to_human_readable(response: dict):
     event_highlights = []
     for event in response:
-        event_tags = [tag.get('Name') for tag in event.get('Tag')] if event.get('Tag') else None
-        event_galaxies = [galaxy.get('Name') for galaxy in event.get('Galaxy')] if event.get('Galaxy') else None
-        event_objects = [event_object.get('ID') for event_object in event.get('Object')] if event.get(
-            'Object') else None
+        event_tags = event_to_human_readable_tag_list(event)
+        event_galaxies = event_to_human_readable_galaxy_list(event)
+        event_objects = event_to_human_readable_object_list(event)
         event_highlights.append({
             'Event ID': event.get('ID'),
             'Event Tags': event_tags,
             'Event Galaxies': event_galaxies,
             'Event Objects': event_objects,
-            'Publish Timestamp': convert_timestamp(event.get('PublishTimestamp')),
+            'Publish Timestamp': misp_convert_timestamp_to_date_string(event.get('PublishTimestamp')),
             'Event Info': event.get('Info'),
             'Event Org ID': event.get('OrganisationID'),
             'Event Orgc ID': event.get('OwnerOrganisation.ID'),
             'Event Distribution': event.get('Distribution'),
             'Event UUID': event.get('UUID'),
-
         })
     return event_highlights
 
 
 def search_events(demisto_args) -> CommandResults:
     """
-    Execute a MIPS search using the 'event' controller.
+    Execute a MISP search using the 'event' controller.
     """
-    args = prepare_args_to_search()
-    # Set the controller to events to search for events by the given args
-    args['controller'] = 'events'
-    response = PYMISP.search(**args)
+    args = prepare_args_to_search('events')
     page = demisto_args.get('page')
-    limit = demisto_args.get('limit', 50)
+    if page:
+        page = arg_to_number(page, "page")
+    limit = arg_to_number(demisto_args.get('limit', 50), "limit", required=True)
+    pagination_args_validation(page, limit)
 
+    response = PYMISP.search(**args)
     if response:
         response_for_context = build_events_search_response(copy.deepcopy(response))
-        event_highlights = event_response_to_markdown_table(response_for_context)
+        event_outputs_to_human_readable = event_to_human_readable(response_for_context)
         md = tableToMarkdown(f"MISP search-events returned {len(response_for_context)} events",
-                             event_highlights, removeNull=True)
+                             event_outputs_to_human_readable, removeNull=True)
         if page:
             md += f"Current page number: {page}\n Page size: {limit} "
 
@@ -1030,18 +1024,18 @@ def delete_event(demisto_args: dict):
     Gets an event id and deletes it.
     """
     event_id = demisto_args.get('event_id')
-    event = PYMISP.delete_event(event_id)
-    if 'errors' in event:
-        return_error(f'Event ID: {event_id} has not found in MISP: \nError message: {event}')
+    response = PYMISP.delete_event(event_id)
+    if 'errors' in response:
+        raise DemistoException(f'Event ID: {event_id} has not found in MISP: \nError message: {response}')
     else:
         human_readable = f'Event {event_id} has been deleted'
-        return CommandResults(readable_output=human_readable, raw_response=event)
+        return CommandResults(readable_output=human_readable, raw_response=response)
 
 
 def add_tag(demisto_args: dict, is_attribute=False):
     """
     Function will add tag to given UUID of event or attribute.
-    is_attribute (bool): if the given UUID is an attribute's one. Otherwise it's event's.
+    is_attribute (bool): if the given UUID belongs to an attribute (True) or event (False).
     """
     uuid = demisto_args.get('uuid')
     tag = demisto_args.get('tag')
@@ -1082,7 +1076,7 @@ def remove_tag(demisto_args: dict, is_attribute=False):
     try:
         response = PYMISP.untag(uuid, tag)
         if response and response.get('errors'):
-            return_error(f'Error in `{demisto.command()}` command: {response}')
+            raise DemistoException(f'Error in `{demisto.command()}` command: {response}')
     except PyMISPError:
         raise DemistoException("Removing the required tag was failed. Please make sure the UUID and tag exist.")
 
@@ -1116,7 +1110,7 @@ def add_sighting(demisto_args: dict):
     sighting_type = demisto_args['type']  # mandatory arg
     att_id = attribute_id or attribute_uuid
     if not att_id:
-        return_error('ID or UUID not specified')
+        raise DemistoException('ID or UUID not specified')
     sighting_args = {
         'id': attribute_id,
         'uuid': attribute_uuid,
@@ -1126,11 +1120,11 @@ def add_sighting(demisto_args: dict):
     sigh_obj.from_dict(**sighting_args)
     response = PYMISP.add_sighting(sigh_obj, att_id)
     if response.get('message'):
-        return_error(f"An error was occurred: {response.get('message')}")
+        raise DemistoException(f"An error was occurred: {response.get('message')}")
     elif response.get('Sighting'):
         human_readable = f'Sighting \'{sighting_type}\' has been successfully added to attribute {att_id}'
         return CommandResults(readable_output=human_readable)
-    return_error(f"An error was occurred: {json.dumps(response)}")
+    raise DemistoException(f"An error was occurred: {json.dumps(response)}")
 
 
 def test(malicious_tag_ids, suspicious_tag_ids):
@@ -1143,53 +1137,48 @@ def test(malicious_tag_ids, suspicious_tag_ids):
     if PYMISP._check_json_response(response):
         return 'ok'
     else:
-        return_error('MISP has not connected.')
+        raise DemistoException('MISP has not connected.')
+
+
+def build_feed_url(demisto_args):
+    url = demisto_args.get('feed')
+    url = url[:-1] if url.endswith('/') else url
+    if PREDEFINED_FEEDS.get(url):
+        url = PREDEFINED_FEEDS[url].get('url')  # type: ignore
+    return url
 
 
 def add_events_from_feed(demisto_args: dict, use_ssl: bool, proxies: dict):
     """Gets an OSINT feed from url and publishing them to MISP
-    urls with feeds for example: `https://www.misp-project.org/feeds/`
+    urls with feeds for example: https://www.misp-project.org/feeds/
     feed format must be MISP.
     """
     headers = {'Accept': 'application/json'}
-    url = demisto_args.get('feed')  # type: str
-    url = url[:-1] if url.endswith('/') else url
-    if PREDEFINED_FEEDS.get(url):
-        url = PREDEFINED_FEEDS[url].get('url')  # type: ignore
-    limit = demisto_args.get('limit')  # type: str
-    limit_int = int(limit) if limit.isdigit() else 0
+    url = build_feed_url(demisto_args)
     osint_url = f'{url}/manifest.json'
-    not_added_counter = 0
+    limit = arg_to_number(demisto_args.get('limit', 2), "limit", required=True)
     try:
         uri_list = requests.get(osint_url, verify=use_ssl, headers=headers, proxies=proxies).json()
-        events_numbers = list()  # type: List[Dict[str, int]]
-        for num, uri in enumerate(uri_list, 1):
-            req = requests.get(f'{url}/{uri}.json', verify=use_ssl, headers=headers, proxies=proxies).json()
-            e = MISPEvent()
-            e.load(req)
-            event = PYMISP.add_event(e)
-            event_data = event.get('Event')
-            if event_data and 'id' in event_data:
-                events_numbers.append({'ID': event_data['id']})
-            else:
-                not_added_counter += 1
-            # If limit exists
-            if limit_int == num:
+        events_ids = list()  # type: List[Dict[str, int]]
+        for index, uri in enumerate(uri_list, 1):
+            response = requests.get(f'{url}/{uri}.json', verify=use_ssl, headers=headers, proxies=proxies).json()
+            misp_new_event = MISPEvent()
+            misp_new_event.load(response)
+            add_event_response = PYMISP.add_event(misp_new_event)
+            event_object = add_event_response.get('Event')
+            if event_object and 'id' in event_object:
+                events_ids.append({'ID': event_object['id']})
+            if limit == len(events_ids):
                 break
-
-        human_readable = tableToMarkdown(f'Total of {len(events_numbers)} events was added to MISP.', events_numbers)
-        if not_added_counter:
-            human_readable = f'{human_readable}\n' \
-                             f'{not_added_counter} events were not added. Might already been added earlier.'
+        human_readable = tableToMarkdown(f'Total of {len(events_ids)} events was added to MISP.', events_ids)
         return CommandResults(
             readable_output=human_readable,
             outputs_prefix='MISP.Event',
             outputs_key_field='ID',
-            outputs=events_numbers,
+            outputs=events_ids,
         )
-
     except ValueError as e:
-        return_error(f'URL [{url}] is not a valid MISP feed. error: {e}')
+        raise DemistoException(f'URL [{url}] is not a valid MISP feed. error: {e}')
 
 
 def add_object(event_id: str, obj: MISPObject):
@@ -1201,10 +1190,10 @@ def add_object(event_id: str, obj: MISPObject):
     """
     response = PYMISP.add_object(event_id, misp_object=obj)
     if 'errors' in response:
-        return_error(f'Error in `{demisto.command()}` command: {response}')
+        raise DemistoException(f'Error in `{demisto.command()}` command: {response}')
     for ref in obj.ObjectReference:
         response = PYMISP.add_object_reference(ref)
-    formatted_response = replace_keys(response)
+    formatted_response = replace_keys_from_misp_to_context_data(response)
     formatted_response.update({"ID": event_id})
 
     human_readable = f'Object has been added to MISP event ID {event_id}'
@@ -1232,7 +1221,7 @@ def add_domain_object(demisto_args: dict = {}):
     event_id = demisto_args.get('event_id')
     domain = demisto_args.get('name')
     obj = MISPObject('domain-ip')
-    ips = argToList(demisto_args.get('dns'))
+    ips = argToList(demisto_args.get('ip'))
     for ip in ips:
         obj.add_attribute('ip', value=ip)
     obj.add_attribute('domain', value=domain)
@@ -1245,7 +1234,6 @@ def add_url_object(demisto_args: dict = {}):
     """Building url object in MISP scheme
     Scheme described https://www.misp-project.org/objects.html#_url
     """
-
     url_args = [
         'text',
         'last_seen',
@@ -1255,7 +1243,7 @@ def add_url_object(demisto_args: dict = {}):
     url = demisto_args.get('url')
     url_parse = urlparse(url)
     url_obj = [{'url': url}]
-    url_obj.append({'scheme': url_parse.scheme}) if url_parse.scheme else None
+    url_obj.extend({'scheme': url_parse.scheme}) if url_parse.scheme else None
     url_obj.append({'resource_path': url_parse.path}) if url_parse.path else None
     url_obj.append({'query_string': url_parse.query}) if url_parse.query else None
     url_obj.append({'domain': url_parse.netloc}) if url_parse.netloc else None
@@ -1266,7 +1254,6 @@ def add_url_object(demisto_args: dict = {}):
     url_obj.extend(convert_arg_to_misp_args(demisto_args, url_args))
 
     g_object = build_generic_object('url', url_obj)
-    demisto.debug(f"in add_url_object, g_object is: {g_object}")
     return add_object(event_id, g_object)
 
 
@@ -1277,12 +1264,12 @@ def add_generic_object_command(demisto_args: dict = {}):
     try:
         args = json.loads(attributes)
         if not isinstance(args, list):
-            args = build_list_from_dict(args)
+            args = dict_to_generic_object_format(args)
         obj = build_generic_object(template, args)
         return add_object(event_id, obj)
     except ValueError as e:
-        return_error(f'`attribute` parameter could not be decoded, may not a valid JSON\nattribute: {attributes}',
-                     str(e))
+        raise DemistoException(
+            f'`attribute` parameter could not be decoded, may not a valid JSON\nattribute: {attributes}', str(e))
 
 
 def convert_arg_to_misp_args(demisto_args, args_names):
@@ -1291,7 +1278,7 @@ def convert_arg_to_misp_args(demisto_args, args_names):
 
 def add_ip_object(demisto_args: dict = {}):
     event_id = demisto_args.get('event_id')
-    args = [
+    ip_object_args = [
         'dst_port',
         'src_port',
         'domain',
@@ -1300,7 +1287,7 @@ def add_ip_object(demisto_args: dict = {}):
         'ip_dst'
     ]
     # converting args to MISP's arguments types
-    misp_attributes_args = convert_arg_to_misp_args(demisto_args, args)
+    misp_attributes_args = convert_arg_to_misp_args(demisto_args, ip_object_args)
     ips = argToList(demisto_args.get('ip'))
     for ip in ips:
         misp_attributes_args.append({'ip': ip})
@@ -1314,18 +1301,23 @@ def add_ip_object(demisto_args: dict = {}):
         obj = build_generic_object('ip-port', misp_attributes_args)
         return add_object(event_id, obj)
     else:
-        return_error(f'None of required arguments presents. command {demisto.command()} requires one of {args}')
+        raise DemistoException(
+            f'None of required arguments presents. command {demisto.command()} requires one of {ip_object_args}')
 
 
 def handle_tag_duplication_ids(malicious_tag_ids, suspicious_tag_ids):
+    """
+    Gets 2 sets which include tag ids. If there is an id that exists in both sets, it will be removed from the
+    suspicious tag ids set and will be stayed only in the malicious one (as a tag that was configured to be malicious is
+    stronger than recognised as suspicious).
+    """
     common_ids = set(malicious_tag_ids) & set(suspicious_tag_ids)
-    for duplicate_id in common_ids:
-        suspicious_tag_ids.remove(duplicate_id)
+    suspicious_tag_ids = {tag_id for tag_id in suspicious_tag_ids if tag_id not in common_ids}
     return malicious_tag_ids, suspicious_tag_ids
 
 
 def is_tag_list_valid(tag_ids):
-    """checks if all the tag ids are valid"""
+    """Gets a list ot tag ids (each one is str), and verify all the tags are valid positive integers."""
     for tag in tag_ids:
         try:
             tag = int(tag)
@@ -1346,7 +1338,7 @@ def main():
         Exception("MISP V3 error: Please provide a valid value for the Source Reliability parameter")
 
     command = demisto.command()
-    demisto.debug(f'MISP V3: command is {command}')
+    demisto.debug(f'[MISP V3]: command is {command}')
     args = demisto.args()
 
     try:
@@ -1354,7 +1346,7 @@ def main():
         if command == 'test-module':
             return_results(test(malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids))
         elif command == 'misp-create-event':
-            return_results(create_event(args))
+            return_results(create_event_command(args))
         elif command == 'misp-add-attribute':
             return_results(add_attribute(demisto_args=args))
         elif command == 'misp-search-events':
@@ -1374,7 +1366,7 @@ def main():
         elif command == 'misp-remove-tag-from-attribute':
             return_results(remove_tag(demisto_args=args, is_attribute=True))
         elif command == 'misp-add-events-from-feed':
-            return_results(add_events_from_feed(demisto_args=args, use_ssl=verify, proxies=proxies))
+            return_results(add_events_from_feed(demisto_args=args, use_ssl=VERIFY, proxies=PROXIES))
         elif command == 'file':
             return_results(
                 generic_reputation_command(args, 'file', 'FILE', malicious_tag_ids, suspicious_tag_ids, reliability))

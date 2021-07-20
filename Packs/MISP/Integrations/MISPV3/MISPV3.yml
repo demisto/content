@@ -85,13 +85,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Event search start date (2015-02-15).
+      description: Event search start date (2015-02-15). This date refers to the event creation date.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: Event search end date (2015-02-15).
+      description: Event search end date (2015-02-15). This date refers to the event creation date.
       isArray: false
       name: to
       required: false
@@ -1760,7 +1760,7 @@ script:
       required: false
       secret: false
     - default: true
-      defaultValue: '0'
+      defaultValue: '2'
       description: Maximum number of files to add.
       isArray: false
       name: limit
@@ -1887,7 +1887,7 @@ script:
     - default: false
       description: A comma sperated list of IP addresses resolved by DNS.
       isArray: true
-      name: dns
+      name: ip
       required: true
       secret: false
     - default: false
@@ -2455,7 +2455,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to include the correlations of the matching attributes.
+      description: Whether to include the full correlations of the matching attributes.
         Defaule is false.
       isArray: false
       name: include_correlations

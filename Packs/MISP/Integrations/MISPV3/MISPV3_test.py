@@ -31,11 +31,12 @@ INVALID_DISTRIBUTION_LIST = ["invalid_distribution", 1.5, "53.5"]
 TEST_PREPARE_ARGS = [({'type': '1', 'to_ids': 0, 'from': '2', 'to': '3', 'event_id': '4', 'last': '5',
                        'include_decay_score': 0, 'include_sightings': 0, 'include_correlations': 0,
                        'enforceWarninglist': 0, 'tags': 'NOT:param3', 'value': 6, 'category': '7', 'limit': 10,
-                       'org': 7}, {'type_attribute': '1', 'to_ids': 0, 'from_date': '2', 'to_date': '3',
+                       'org': 7}, {'type_attribute': '1', 'to_ids': 0, 'date_from': '2', 'date_to': '3',
                                    'eventid': ['4'], 'publish_timestamp': '5', 'include_decay_score': 0,
                                    'include_sightings': 0, 'include_correlations': 0, 'enforceWarninglist': 0,
-                                   'limit': 10, 'tags': {'NOT': ['param3']}, 'org': 7, 'value': 6, 'category': '7'}),
-                     ({}, {'limit': '50'})  # default value
+                                   'limit': 10, 'tags': {'NOT': ['param3']}, 'org': 7, 'value': 6, 'category': '7',
+                                   'controller': 'attributes'}),
+                     ({}, {'limit': '50', 'controller': 'attributes'})  # default value
                      ]
 
 TEST_EVENTS_INCLUDE_DETECTED_TAG = [("2", ['149', '145', '144']),  # 3 events include the detected tag
@@ -54,7 +55,7 @@ def mock_misp(mocker):
     mocker.patch.object(ExpandedPyMISP, '__init__', return_value=None)
 
 
-def test_convert_timestamp(mocker):
+def test_misp_convert_timestamp_to_date_string(mocker):
     """
 
     Given:
@@ -67,8 +68,8 @@ def test_convert_timestamp(mocker):
     - Ensure timestamp converted successfully to human readable format.
     """
     mock_misp(mocker)
-    from MISPV3 import convert_timestamp
-    assert convert_timestamp(1546713469) == "2019-01-05 18:37:49"
+    from MISPV3 import misp_convert_timestamp_to_date_string
+    assert misp_convert_timestamp_to_date_string(1546713469) == "2019-01-05 18:37:49"
 
 
 def test_build_list_from_dict(mocker):
@@ -84,8 +85,8 @@ def test_build_list_from_dict(mocker):
     - The dict was parsed to a list.
     """
     mock_misp(mocker)
-    from MISPV3 import build_list_from_dict
-    lst = build_list_from_dict({'ip': '8.8.8.8', 'domain': 'google.com'})
+    from MISPV3 import dict_to_generic_object_format
+    lst = dict_to_generic_object_format({'ip': '8.8.8.8', 'domain': 'google.com'})
     assert lst == [{'ip': '8.8.8.8'}, {'domain': 'google.com'}]
 
 
@@ -100,6 +101,27 @@ def test_extract_error(mocker):
 
     Then:
     - Ensures that the error was extracted correctly.
+
+    Examples:
+        extract_error([
+            (403,
+                {
+                    'name': 'Could not add object',
+                    'message': 'Could not add object',
+                    'url': '/objects/add/156/',
+                    'errors': 'Could not save object as at least one attribute has failed validation (ip). \
+                    {"value":["IP address has an invalid format."]}'
+                }
+            )
+        ])
+
+        Response:
+        [{
+            'code': 403,
+            'message': 'Could not add object',
+            'errors': 'Could not save object as at least one attribute has failed validation (ip). \
+            {"value":["IP address has an invalid format."]}'
+        }]
     """
     mock_misp(mocker)
     from MISPV3 import extract_error
@@ -147,6 +169,12 @@ def test_build_misp_complex_filter(mocker):
 
     Then:
     - Ensure the input query converted to ש dictionary created for misp to perform complex query.
+
+    Example:
+    demisto_query should look like:
+        example 1: "AND:param1,param2;OR:param3;NOT:param4,param5"
+        example 2: "NOT:param3,param5"
+        example 3 (simple syntax): "param1,param2"
     """
     mock_misp(mocker)
     from MISPV3 import build_misp_complex_filter
@@ -307,43 +335,6 @@ def test_convert_arg_to_misp_args(mocker):
     assert convert_arg_to_misp_args(args, args_names) == [{'dst-port': 8001}, {'src-port': 8002}, {'name': 'test'}]
 
 
-def test_pagination_args_valid(mocker):
-    """
-    Given:
-    - page number.
-
-    When:
-    - Using the integrations' commands that have pagination.
-
-    Then:
-    - Ensure tha given page number is valid (only digits).
-    """
-    mock_misp(mocker)
-    from MISPV3 import pagination_args_validation
-    pagination_args_validation("5", 50)
-    assert True
-
-
-def test_pagination_args_invalid(mocker):
-    """
-
-    Given:
-    - a page number.
-
-    When:
-    - Using the integrations' commands that have pagination.
-
-    Then:
-    - Ensure that an error is returned when a page number is invalid.
-    """
-    mock_misp(mocker)
-    from MISPV3 import pagination_args_validation
-    with pytest.raises(DemistoException) as e:
-        pagination_args_validation("page", "3")
-        if not e:
-            assert False
-
-
 @pytest.mark.parametrize('dbot_type, value, error_expected', REPUTATION_COMMANDS_ERROR_LIST)
 def test_reputation_value_validation(mocker, dbot_type, value, error_expected):
     """
@@ -359,66 +350,9 @@ def test_reputation_value_validation(mocker, dbot_type, value, error_expected):
     """
     mock_misp(mocker)
     from MISPV3 import reputation_value_validation
-    with pytest.raises(SystemExit) as e:
+    with pytest.raises(DemistoException) as e:
         reputation_value_validation(value, dbot_type)
         assert error_expected in str(e.value)
-
-
-@pytest.mark.parametrize('distribution_id, expected_distribution_id', VALID_DISTRIBUTION_LIST)
-def test_get_valid_distribution(mocker, distribution_id, expected_distribution_id):
-    """
-    Given:
-    - distribution id.
-
-    When:
-    - Using the integrations' commands that includes distribution as an argument.
-
-    Then:
-    - Ensure tha given distribution id is valid according to MISP.
-    """
-    mock_misp(mocker)
-    from MISPV3 import get_valid_distribution
-    assert get_valid_distribution(distribution_id) == expected_distribution_id
-
-
-@pytest.mark.parametrize('distribution_id', INVALID_DISTRIBUTION_LIST)
-def test_get_invalid_distribution(mocker, distribution_id):
-    """
-    Given:
-    - distribution id.
-
-    When:
-    - Using the integrations' commands that includes distribution as an argument.
-
-    Then:
-    - Ensure that an error is returned when a distribution id is invalid according to MISP.
-    """
-    mock_misp(mocker)
-    from MISPV3 import get_valid_distribution
-    with pytest.raises(SystemExit) as e:
-        get_valid_distribution(distribution_id)
-        if not e:
-            assert False
-
-
-@pytest.mark.parametrize('event_id', ['event_id', 23.4])
-def test_get_invalid_event_id(mocker, event_id):
-    """
-    Given:
-    - event id.
-
-    When:
-    - Using the integrations' commands that includes event id as an argument.
-
-    Then:
-    - Ensure that an error is returned when an event id is invalid.
-    """
-    mock_misp(mocker)
-    from MISPV3 import get_valid_event_id
-    with pytest.raises(SystemExit) as e:
-        get_valid_event_id(event_id)
-        if not e:
-            assert False
 
 
 @pytest.mark.parametrize('is_event_level, expected_output, expected_tag_list_ids', [
@@ -437,9 +371,9 @@ def test_limit_tag_output(mocker, is_event_level, expected_output, expected_tag_
     - Ensure that the Tag section is limited to include only name and id.
     """
     mock_misp(mocker)
-    from MISPV3 import limit_tag_output
+    from MISPV3 import limit_tag_output_to_id_and_name
     mock_tag_json = util_load_json("test_data/Attribute_Tags.json")
-    outputs, tag_list_id = limit_tag_output(mock_tag_json, is_event_level)
+    outputs, tag_list_id = limit_tag_output_to_id_and_name(mock_tag_json, is_event_level)
     assert outputs == expected_output
     assert tag_list_id == expected_tag_list_ids
 
@@ -484,9 +418,9 @@ def test_event_response_to_markdown_table(mocker):
     - Ensure that the output to human readable is valid and was parsed correctly.
     """
     mock_misp(mocker)
-    from MISPV3 import event_response_to_markdown_table
+    from MISPV3 import event_to_human_readable
     event_response = util_load_json("test_data/event_response_to_md.json")
-    md = event_response_to_markdown_table(event_response)[0]
+    md = event_to_human_readable(event_response)[0]
     assert md['Event ID'] == '1'
     assert md['Event Tags'] == ["Tag1", "misp-galaxy:tag2", "misp-galaxy:tag3"]
     assert md['Event Galaxies'] == ["galaxy1", "galaxy2"]
@@ -589,7 +523,7 @@ def test_prepare_args_to_search(mocker, demisto_args, expected_args):
     from MISPV3 import prepare_args_to_search
     import demistomock
     mocker.patch.object(demistomock, 'args', return_value=demisto_args)
-    assert prepare_args_to_search() == expected_args
+    assert prepare_args_to_search('attributes') == expected_args
 
 
 def test_build_events_search_response(mocker):
