@@ -909,7 +909,7 @@ tasks:
     task:
       id: d181aa5d-1a23-4161-8201-85963b94379e
       version: -1
-      name: Panorama Query Logs
+      name: Panorama Query Logs for Kaseya breach Threat IDs
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
         and wildfire.'
       playbookName: Panorama Query Logs
@@ -2592,7 +2592,7 @@ tasks:
     task:
       id: b4c43bd8-500a-4764-8900-ce1483a4ab34
       version: -1
-      name: QRadarFullSearch
+      name: QRadar Domain Indicators Hunting
       description: This playbook runs a QRadar query and return its results to the
         context.
       playbookName: QRadarFullSearch
