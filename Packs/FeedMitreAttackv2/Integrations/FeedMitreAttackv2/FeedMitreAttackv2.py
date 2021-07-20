@@ -199,7 +199,7 @@ def add_technique_prefix_to_sub_technique(indicators, id_to_name, mitre_id_to_mi
                 demisto.debug(f'MITRE Attack Feed v2, There is no such Technique - {parent_mitre_id}')
 
 
-def add_malware_prefix_to_dup_with_intrusion_set(indicators):
+def add_malware_prefix_to_dup_with_intrusion_set(indicators, id_to_name):
     """
     Some Malware have names like their Intrusion Set, in which case we add (Malware) as a suffix.
     """
@@ -212,6 +212,7 @@ def add_malware_prefix_to_dup_with_intrusion_set(indicators):
         if ind['type'] in ['STIX Malware', 'Malware'] and ind['value'] in intrusion_sets:
             ind_value = ind['value']
             ind['value'] = f'{ind_value} [Malware]'
+            id_to_name[ind['fields']['stixid']] = ind['value']
 
 
 def get_item_type(mitre_type, is_up_to_6_2):
@@ -373,7 +374,7 @@ def fetch_indicators(client, create_relationships):
     is_up_to_6_2 = is_demisto_version_ge('6.2.0')
     indicators, mitre_relationships_list, id_to_name, mitre_id_to_mitre_name = client.build_iterator(
         create_relationships, is_up_to_6_2)
-    add_malware_prefix_to_dup_with_intrusion_set(indicators)
+    add_malware_prefix_to_dup_with_intrusion_set(indicators, id_to_name)
     add_technique_prefix_to_sub_technique(indicators, id_to_name, mitre_id_to_mitre_name)
     relationships = create_relationship_list(mitre_relationships_list, id_to_name)
 

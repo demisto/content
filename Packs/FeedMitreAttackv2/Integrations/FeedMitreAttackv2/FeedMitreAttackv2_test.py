@@ -162,7 +162,7 @@ def test_create_relationship_list():
 def test_add_malware_prefix_to_dup_with_intrusion_set():
     from FeedMitreAttackv2 import add_malware_prefix_to_dup_with_intrusion_set
     malware_list = MALWARE_LIST_WITHOUT_PREFIX
-    add_malware_prefix_to_dup_with_intrusion_set(MALWARE_LIST_WITHOUT_PREFIX)
+    add_malware_prefix_to_dup_with_intrusion_set(MALWARE_LIST_WITHOUT_PREFIX, ID_TO_NAME)
     assert malware_list == MALWARE_LIST_WITH_PREFIX
 
 

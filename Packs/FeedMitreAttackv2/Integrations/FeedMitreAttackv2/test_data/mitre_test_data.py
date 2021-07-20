@@ -548,33 +548,33 @@ RELATION = {
 }
 
 MALWARE_LIST_WITHOUT_PREFIX = [
-    {"type": "Intrusion Set", "value": "RTM"},
-    {"type": "Intrusion Set", "value": "Machete"},
-    {"type": "Intrusion Set", "value": "APT1"},
-    {"type": "Intrusion Set", "value": "ATP12"},
-    {"type": "Malware", "value": "RTM"},
-    {"type": "Malware", "value": "Machete"},
-    {"type": "Malware", "value": "ABK"},
-    {"type": "Malware", "value": "Adups"},
-    {"type": "Malware", "value": "4H RAT"},
-    {"type": "Attack Pattern", "value": "Access Token"},
-    {"type": "Tool", "value": "at"},
-    {"type": "Course of Action", "value": "Account Use Policies"}
+    {"type": "Intrusion Set", "value": "RTM", 'fields': {"stixid": "1111"}},
+    {"type": "Intrusion Set", "value": "Machete", 'fields': {"stixid": "2222"}},
+    {"type": "Intrusion Set", "value": "APT1", 'fields': {"stixid": "3333"}},
+    {"type": "Intrusion Set", "value": "ATP12", 'fields': {"stixid": "4444"}},
+    {"type": "Malware", "value": "RTM", 'fields': {"stixid": "5555"}},
+    {"type": "Malware", "value": "Machete", 'fields': {"stixid": "6666"}},
+    {"type": "Malware", "value": "ABK", 'fields': {"stixid": "7777"}},
+    {"type": "Malware", "value": "Adups", 'fields': {"stixid": "8888"}},
+    {"type": "Malware", "value": "4H RAT", 'fields': {"stixid": "9999"}},
+    {"type": "Attack Pattern", "value": "Access Token", 'fields': {"stixid": "0000"}},
+    {"type": "Tool", "value": "at", 'fields': {"stixid": "1212"}},
+    {"type": "Course of Action", "value": "Account Use Policies", 'fields': {"stixid": "2323"}}
 ]
 
 MALWARE_LIST_WITH_PREFIX = [
-    {"type": "Intrusion Set", "value": "RTM"},
-    {"type": "Intrusion Set", "value": "Machete"},
-    {"type": "Intrusion Set", "value": "APT1"},
-    {"type": "Intrusion Set", "value": "ATP12"},
-    {"type": "Malware", "value": "RTM [Malware]"},
-    {"type": "Malware", "value": "Machete [Malware]"},
-    {"type": "Malware", "value": "ABK"},
-    {"type": "Malware", "value": "Adups"},
-    {"type": "Malware", "value": "4H RAT"},
-    {"type": "Attack Pattern", "value": "Access Token"},
-    {"type": "Tool", "value": "at"},
-    {"type": "Course of Action", "value": "Account Use Policies"}
+    {"type": "Intrusion Set", "value": "RTM", 'fields': {"stixid": "1111"}},
+    {"type": "Intrusion Set", "value": "Machete", 'fields': {"stixid": "2222"}},
+    {"type": "Intrusion Set", "value": "APT1", 'fields': {"stixid": "3333"}},
+    {"type": "Intrusion Set", "value": "ATP12", 'fields': {"stixid": "4444"}},
+    {"type": "Malware", "value": "RTM [Malware]", 'fields': {"stixid": "5555"}},
+    {"type": "Malware", "value": "Machete [Malware]", 'fields': {"stixid": "6666"}},
+    {"type": "Malware", "value": "ABK", 'fields': {"stixid": "7777"}},
+    {"type": "Malware", "value": "Adups", 'fields': {"stixid": "8888"}},
+    {"type": "Malware", "value": "4H RAT", 'fields': {"stixid": "9999"}},
+    {"type": "Attack Pattern", "value": "Access Token", 'fields': {"stixid": "0000"}},
+    {"type": "Tool", "value": "at", 'fields': {"stixid": "1212"}},
+    {"type": "Course of Action", "value": "Account Use Policies", 'fields': {"stixid": "2323"}}
 ]
 
 INDICATORS_LIST = [
