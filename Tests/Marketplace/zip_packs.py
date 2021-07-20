@@ -8,9 +8,6 @@ from zipfile import ZipFile
 from Tests.Marketplace.marketplace_constants import IGNORED_FILES, PACKS_FULL_PATH
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import LooseVersion, str2bool, get_files_in_dir
-from Tests.Marketplace.marketplace_constants import GCPConfig
-
-import subprocess
 from pathlib import Path
 
 ARTIFACT_NAME = 'content_marketplace_packs.zip'
