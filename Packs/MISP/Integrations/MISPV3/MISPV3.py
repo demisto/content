@@ -42,8 +42,8 @@ warnings.warn = warn
 ''' GLOBALS/PARAMS '''
 VERIFY = not demisto.params().get('insecure')
 PROXIES = handle_proxy()  # type: ignore
-MISP_API_KEY = demisto.params()['api_key']
-MISP_URL = demisto.params()['url']
+MISP_API_KEY = demisto.params().get('api_key')
+MISP_URL = demisto.params().get('url')
 try:
     PYMISP = ExpandedPyMISP(url=MISP_URL, key=MISP_API_KEY, ssl=VERIFY, proxies=PROXIES)
 except PyMISPError as e:
