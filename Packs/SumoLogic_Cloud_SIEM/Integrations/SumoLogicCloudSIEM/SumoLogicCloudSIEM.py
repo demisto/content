@@ -715,10 +715,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
                 if incident_created_time > latest_created_time:
                     latest_created_time = incident_created_time
 
-            if resp_json.get('hasNextPage') != True:
-                hasNextPage = False
-            else:
-                offset += max_results
+        if resp_json.get('hasNextPage') != True:
+            hasNextPage = False
+        else:
+            offset += max_results
 
     # Save the next_run as a dict with the last_fetch and last_fetch_ids keys to be stored
     next_run = cast(
