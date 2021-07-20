@@ -1263,10 +1263,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 2d45beb4-0ce1-45e7-85d4-0a823d3e2aef
+    taskid: 9dec3304-56e9-4de7-858a-62e2ed559ac7
     type: regular
     task:
-      id: 2d45beb4-0ce1-45e7-85d4-0a823d3e2aef
+      id: 9dec3304-56e9-4de7-858a-62e2ed559ac7
       version: -1
       name: misp-add-events-from-feed
       script: '|||misp-add-events-from-feed'
@@ -1333,10 +1333,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 391a52db-1648-4755-88a6-72ed1db64a97
+    taskid: f96ee1d9-c9f3-4405-8a0a-89d3aacc2667
     type: regular
     task:
-      id: 391a52db-1648-4755-88a6-72ed1db64a97
+      id: f96ee1d9-c9f3-4405-8a0a-89d3aacc2667
       version: -1
       name: misp-add-domain-object
       script: '|||misp-add-domain-object'
@@ -1351,6 +1351,8 @@ tasks:
         simple: 2.2.2.2
       event_id:
         simple: ${MISP.Event.ID}
+      ip:
+        simple: 2.2.2.2
       name:
         simple: example.com
       text:
