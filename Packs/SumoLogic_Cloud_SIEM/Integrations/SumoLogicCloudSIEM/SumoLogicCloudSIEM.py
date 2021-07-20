@@ -662,51 +662,63 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
     # Each incident is a dict with a string as a key
     incidents: List[Dict[str, Any]] = []
 
-    q = 'timestamp:>={}'.format(latest_created_time)
+    # set query values that do not change with pagination
+    q = 'created:>={}'.format(latest_created_time)
     if fetch_query:
         q += ' ' + fetch_query
     else:
         q = q + ' status:in("new", "inprogress")'
 
+    offset = '0'
     query = {}
     query['q'] = q
-    query['offset'] = '0'
     query['limit'] = str(max_results)
     query['recordSummaryFields'] = record_summary_fields if record_summary_fields else RECORD_SUMMARY_FIELDS_DEFAULT
     resp_json = client.req('GET', 'sec/v1/insights', query)
     incidents = []
-    for a in resp_json.get('objects'):
+    hasNextPage = True
+    while hasNextPage:
 
-        # If no created_time set is as epoch (0). We use time in ms so we must
-        # convert it from the API response
-        insight_timestamp = a.get('timestamp')
-        insight_id = a.get('id')
-        if insight_id and insight_timestamp and insight_id not in last_fetch_ids:
-            try:
-                incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S')
-            except ValueError:
-                incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S.%f')
+        # only query parameter that changes loop to loop is the offset
+        query['offset'] = offset
+        resp_json = client.req('GET', 'sec/v1/insights', query)
+        for a in resp_json.get('objects'):
 
-            incident_created_time = int((incident_datetime - datetime.utcfromtimestamp(0)).total_seconds())
-            incident_created_time_ms = incident_created_time * 1000
+            # If no created_time set is as epoch (0). We use time in ms so we must
+            # convert it from the API response
+            insight_timestamp = a.get('created')
+            insight_id = a.get('id')
+            if insight_id and insight_timestamp and insight_id not in last_fetch_ids:
+                try:
+                    incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S.%f')
+                except ValueError:
+                    incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S')
 
-            # to prevent duplicates, we are only adding incidents with creation_time >= last fetched incident
-            if last_fetch:
-                if incident_created_time < last_fetch:
-                    continue
+                incident_created_time = int((incident_datetime - datetime.utcfromtimestamp(0)).total_seconds())
+                incident_created_time_ms = incident_created_time * 1000
 
-            incidents.append({
-                'name': a.get('name', 'No name') + ' - ' + insight_id,
-                'occurred': timestamp_to_datestring(incident_created_time_ms),
-                'details': a.get('description'),
-                'severity': translate_severity(a.get('severity')),
-                'rawJSON': json.dumps(a)
-            })
-            current_fetch_ids.append(insight_id)
+                # to prevent duplicates, we are only adding incidents with creation_time >= last fetched incident
+                if last_fetch:
+                    if incident_created_time < last_fetch:
+                        continue
 
-            # Update last run and add incident if the incident is newer than last fetch
-            if incident_created_time > latest_created_time:
-                latest_created_time = incident_created_time
+                incidents.append({
+                    'name': a.get('name', 'No name') + ' - ' + insight_id,
+                    'occurred': timestamp_to_datestring(incident_created_time_ms),
+                    'details': a.get('description'),
+                    'severity': translate_severity(a.get('severity')),
+                    'rawJSON': json.dumps(a)
+                })
+                current_fetch_ids.append(insight_id)
+
+                # Update last run and add incident if the incident is newer than last fetch
+                if incident_created_time > latest_created_time:
+                    latest_created_time = incident_created_time
+
+            if resp_json.get('hasNextPage') != True:
+                hasNextPage = False
+            else:
+                offset += max_results
 
     # Save the next_run as a dict with the last_fetch and last_fetch_ids keys to be stored
     next_run = cast(
