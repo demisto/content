@@ -5,12 +5,6 @@ Security teams can ingest data from Triage such as email reporters, email report
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#Breaking-changes-from-the-previous-version-of-this-integration---Cofense-Triage-v3).
 
-
-## What Mirroring functionality does?
-The data in Cofense Triage Report can be mirrored to Cortex XSOAR to view the modifications when the report is updated.
-
-For example: When the report is processed, the fields like Report Category ID and Report location get modified, and hence the user will be able to see the modified field's value in XSOAR.
-
 ## Configure Cofense Triage v3 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -2387,7 +2381,7 @@ Downloads the image of the report that matches the specified report ID.
 >Uploaded an image: Report ID - 4.png
 ![cofense-report-image-download](./../../doc_files/report_image_download.png)
 
-## Breaking changes from the previous version of this integration - Cofense Triage v3
+## Breaking changes from the previous version of this integration - Cofense Triage v2
 
 The following sections list the changes in this version.
 
@@ -2417,12 +2411,3 @@ The ability to mirror incident data has been added.
 * *cofense-threat-indicator-create*
 * *cofense-threat-indicator-update*
 * *cofense-url-list*
-
-#### The following Enhancement Scripts were added in this version:
-* *CofenseTriageReportDownload*
-* *CofenseTriageThreatEnrichment*
-
-#### The following Playbooks were added in this version:
-* *Report Categorization - Cofense Triage v3*
-* *Send Indicators - Cofense Triage v3*
-* *Cluster Report Categorization - Cofense Triage v3*
