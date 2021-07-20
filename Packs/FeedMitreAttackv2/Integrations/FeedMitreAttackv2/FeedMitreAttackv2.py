@@ -493,7 +493,7 @@ def main():
         if demisto.command() == 'mitre-get-indicators':
             get_indicators_command(client, args)
 
-        elif demisto.command() == 'mitre-get-attack-pattern-value':
+        elif demisto.command() == 'mitre-get-indicator-name':
             return_results(get_mitre_value_from_id(client, args))
 
         elif demisto.command() == 'attack-pattern':

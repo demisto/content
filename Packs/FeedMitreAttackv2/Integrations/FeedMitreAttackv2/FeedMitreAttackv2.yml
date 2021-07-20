@@ -186,7 +186,7 @@ script:
     deprecated: false
     description: Get Attack Pattern value from Attack Pattern ID.
     execution: false
-    name: mitre-get-attack-pattern-value
+    name: mitre-get-indicator-name
     outputs:
     - contextPath: MITREATTACK.id
       description: MITRE ATTACK Attack Patteren ID.
