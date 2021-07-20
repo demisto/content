@@ -1915,7 +1915,8 @@
         {
             "integrations": "VMware Carbon Black EDR v2",
             "playbookID": "Carbon Black Edr - Test",
-            "is_mockable": false
+            "is_mockable": false,
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Cisco Umbrella Investigate",
@@ -3430,6 +3431,11 @@
             "memory_threshold": 900,
             "pid_threshold": 12,
             "context_print_dt": "EDLHey"
+        },
+        {
+            "integrations": "jamf v2",
+            "playbookID": "Jamf_v2_test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3516,7 +3522,6 @@
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
-        "TAXII_Feed_Test": "Issue 37588",
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
