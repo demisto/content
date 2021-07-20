@@ -1915,7 +1915,8 @@
         {
             "integrations": "VMware Carbon Black EDR v2",
             "playbookID": "Carbon Black Edr - Test",
-            "is_mockable": false
+            "is_mockable": false,
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Cisco Umbrella Investigate",
@@ -3383,9 +3384,9 @@
             "nightly": true
         },
         {
-	        "integrations": "Trend Micro Deep Security",
-	        "playbookID": "Trend Micro Deep Security - Test"
-	      },
+            "integrations": "Trend Micro Deep Security",
+            "playbookID": "Trend Micro Deep Security - Test"
+        },
         {
             "integrations": "Carbon Black Endpoint Standard",
             "playbookID": "carbonBlackEndpointStandardTestPlaybook",
@@ -3430,6 +3431,11 @@
             "memory_threshold": 900,
             "pid_threshold": 12,
             "context_print_dt": "EDLHey"
+        },
+        {
+            "integrations": "jamf v2",
+            "playbookID": "Jamf_v2_test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3516,16 +3522,17 @@
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
-        "TAXII_Feed_Test": "Issue 37588",
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
         "test playbook - QRadarCorrelations": "Issue 38639",
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
-        "O365 - EWS - Extension - Test": "Issue 39008"
+        "O365 - EWS - Extension - Test": "Issue 39008",
+        "Majestic Million Test Playbook": "Issue 30931",
+        "CircleCI-Test": "Issue 39222"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "SolarWinds": "No instance - developed by Crest",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
@@ -3604,17 +3611,16 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        "Infoblox": "Unstable instance, issue 25651",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-
+        
         "_comment4": "~~~ OTHER ~~~",
         "Pentera": "authentication method will not work with testing",
         "AlienVault OTX TAXII Feed": "Issue 29197",
@@ -3788,7 +3794,7 @@
         "HelloWorldPremium_Scan-Test"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
