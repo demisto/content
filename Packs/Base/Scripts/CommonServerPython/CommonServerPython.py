@@ -7748,7 +7748,7 @@ class IndicatorsSearcher:
         self._search_after_param = None
         self._page = self._original_page
         self.limit = self._original_limit
-        self._search_is_done = self._is_search_done()
+        self._search_is_done = False
         return self
 
     # python2
@@ -7848,6 +7848,8 @@ class IndicatorsSearcher:
         res = demisto.searchIndicators(**search_iocs_params)
         if len(res.get('iocs', [])) > 0:
             self._page += 1  # advance pages for search_after, as fallback
+        else:
+            self._search_is_done = True
         self._search_after_param = res.get(self._search_after_title)
         self._total = res.get('total')
         if self._search_after_title in res and self._search_after_param is None:
