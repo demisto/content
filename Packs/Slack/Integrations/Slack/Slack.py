@@ -2103,7 +2103,7 @@ def filter_channels_command():
     is_archived = demisto.args().get('is_archived')
     is_general = demisto.args().get('is_general')
     is_private = demisto.args().get('is_private')
-    limit = int(demisto.args().get('limit', '10'))
+    limit = int(demisto.args().get('limit', '20'))
 
     is_archived = bool(strtobool(is_archived)) if is_archived else None
     is_general = bool(strtobool(is_general)) if is_general else None
@@ -2130,14 +2130,18 @@ def filter_channels_command():
         }
         command_results_list.append(result_conversation)
 
-    context = {
-        'Channel': command_results_list
-    }
+    if command_results_list:
+        human_readable = tableToMarkdown('Channels: ', command_results_list,
+                         headers=['ID', 'Name', 'Created', 'Creator', 'IsArchived', 'IsGeneral', 'IsPrivate'], removeNull=True)
+
+    else:
+        human_readable = 'No channels found.'
 
     return_results(CommandResults(
-        outputs_prefix='Slack',
+        outputs_prefix='Slack.Channel',
         outputs_key_field='ID',
-        outputs=context
+        outputs=command_results_list,
+        readable_output=human_readable
     ))
 
 
