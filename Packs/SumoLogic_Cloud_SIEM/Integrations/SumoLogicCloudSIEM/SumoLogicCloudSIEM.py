@@ -669,7 +669,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
     else:
         q = q + ' status:in("new", "inprogress")'
 
-    offset = '0'
+    offset = 0
     query = {}
     query['q'] = q
     query['limit'] = str(max_results)
@@ -715,10 +715,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
                 if incident_created_time > latest_created_time:
                     latest_created_time = incident_created_time
 
-        if resp_json.get('hasNextPage') != True:
+        if not resp_json.get('hasNextPage') or len(incidents) >= resp_json.get('total'):
             hasNextPage = False
         else:
-            offset += max_results
+            offset = len(incidents)
 
     # Save the next_run as a dict with the last_fetch and last_fetch_ids keys to be stored
     next_run = cast(
