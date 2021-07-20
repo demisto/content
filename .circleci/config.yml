@@ -104,7 +104,7 @@ parameters:
     default: "dmst-content-team"
   sdk_ref:
     type: string
-    default: "master"
+    default: "find-dependencies-gom"
 
 references:
   environment: &environment
