@@ -1003,7 +1003,7 @@ def main() -> None:
     api_key = demisto.params().get('username').get("password")
 
     # SecurityScorecard API URL
-    base_url = "https://api.securityscorecard.io/"
+    base_url = demisto.params().get('base_url', "https://api.securityscorecard.io/")
 
     # Default configuration
     verify_certificate = not demisto.params().get('insecure', False)

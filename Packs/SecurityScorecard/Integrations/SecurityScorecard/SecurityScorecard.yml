@@ -2,10 +2,16 @@ name: SecurityScorecard
 display: SecurityScorecard
 category: Vulnerability Management
 description: Provides scorecards for domains.
+defaultmapperin: SecurityScorecard Alert Mapper
 commonfields:
   id: SecurityScorecard
   version: -1
 configuration:
+- name: base_url
+  display: SecurityScorecard API Base URL
+  required: true
+  defaultvalue: https://api.securityscorecard.io/
+  type: 0
 - name: username
   display: Username/Email
   additionalinfo: The SecurityScorecard username/email.
