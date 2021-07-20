@@ -731,11 +731,10 @@ def build_misp_complex_filter(demisto_query: str):
     match_or = re.search(regex_or, demisto_query, re.MULTILINE)
     match_not = re.search(regex_not, demisto_query, re.MULTILINE)
 
-    is_complex_search_and_operator = is_misp_complex_search_helper(match_and, misp_query_params, 'and_parameters')
-    is_complex_search_or_operator = is_misp_complex_search_helper(match_or, misp_query_params, 'or_parameters')
-    is_complex_search_not_operator = is_misp_complex_search_helper(match_not, misp_query_params, 'not_parameters')
-    is_complex_search = is_complex_search_and_operator or is_complex_search_or_operator or \
-                        is_complex_search_not_operator
+    is_complex_and_operator = is_misp_complex_search_helper(match_and, misp_query_params, 'and_parameters')
+    is_complex_or_operator = is_misp_complex_search_helper(match_or, misp_query_params, 'or_parameters')
+    is_complex_not_operator = is_misp_complex_search_helper(match_not, misp_query_params, 'not_parameters')
+    is_complex_search = is_complex_and_operator or is_complex_or_operator or is_complex_not_operator
     if is_complex_search:
         return PYMISP.build_complex_query(**misp_query_params)
     return demisto_query
