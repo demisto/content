@@ -781,7 +781,7 @@ Channel renamed successfully.
     </tr>
     <tr>
       <td>limit</td>
-      <td>The maximum number of channels to return. Default is "10"</td>
+      <td>The maximum number of channels to return. Default is "20"</td>
       <td>Optional</td>
     </tr>
   </tbody>
