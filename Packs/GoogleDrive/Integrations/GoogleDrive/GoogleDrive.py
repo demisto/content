@@ -330,18 +330,6 @@ def set_true_for_empty_dict(d):
                                                                        for key, value in d.items())}
 
 
-def copy_dict_value(source_dict: Dict[str, Any], dest_dict: Dict[str, Any], source_dict_key: str, dest_dict_key: str = None):
-    if not source_dict_key:
-        return
-
-    param_value = source_dict.get(source_dict_key)
-    if param_value:
-        if dest_dict_key:
-            dest_dict[dest_dict_key] = param_value
-        else:
-            dest_dict[source_dict_key] = param_value
-
-
 def prepare_drive_activity_output(activity: Dict[str, Any]) -> Dict[str, Any]:
     """
     Prepares context output for google-drive-activity-list command.
@@ -799,10 +787,11 @@ def prepare_drives_request(client: GSuiteClient, args: Dict[str, str]) -> Dict[s
     :return: Objects ready for requests
     """
 
-    http_request_params: Dict[str, str] = {}
-    copy_dict_value(source_dict=args, dest_dict=http_request_params, source_dict_key='q', dest_dict_key='q')
-    copy_dict_value(source_dict=args, dest_dict=http_request_params, source_dict_key='page_size', dest_dict_key='pageSize')
-    copy_dict_value(source_dict=args, dest_dict=http_request_params, source_dict_key='page_token', dest_dict_key='pageToken')
+    http_request_params: Dict[str, str] = assign_params(
+        q=args.get('q'),
+        pageSize=args.get('page_size'),
+        pageToken=args.get('page_token'),
+    )
 
     # user_id can be overridden in the args
     user_id = args.get('user_id') or client.user_id
@@ -952,12 +941,12 @@ def prepare_single_drive_human_readable(outputs_context: Dict[str, Any], args: D
 
 
 def prepare_file_read_request(client: GSuiteClient, args: Dict[str, str]) -> Dict[str, Any]:
-    http_request_params: Dict[str, str] = {}
-    copy_dict_value(source_dict=args, dest_dict=http_request_params, source_dict_key='q', dest_dict_key='q')
-    copy_dict_value(source_dict=args, dest_dict=http_request_params, source_dict_key='page_size', dest_dict_key='pageSize')
-    copy_dict_value(source_dict=args, dest_dict=http_request_params, source_dict_key='page_token', dest_dict_key='pageToken')
-    copy_dict_value(source_dict=args, dest_dict=http_request_params,
-                    source_dict_key='supports_all_drives', dest_dict_key='supportsAllDrives')
+    http_request_params: Dict[str, str] = assign_params(
+        q=args.get('q'),
+        pageSize=args.get('page_size'),
+        pageToken=args.get('page_token'),
+        supportsAllDrives=args.get('supports_all_drives'),
+    )
 
     # user_id can be overridden in the args
     user_id = args.get('user_id') or client.user_id
@@ -1263,10 +1252,10 @@ def prepare_body_for_file_upload(args: Dict[str, Any]) -> Dict[str, Any]:
     :return: Prepared request body.
     """
 
-    ret_value: Dict[str, Any] = {}
-
-    copy_dict_value(source_dict=args, dest_dict=ret_value, source_dict_key='parent', dest_dict_key='parents')
-    copy_dict_value(source_dict=args, dest_dict=ret_value, source_dict_key='file_name', dest_dict_key='name')
+    ret_value: Dict[str, Any] = assign_params(
+        parents=args.get('parent'),
+        name=args.get('file_name'),
+    )
 
     return GSuiteClient.remove_empty_entities(ret_value)
 
@@ -1353,11 +1342,11 @@ def prepare_file_permission_request(client: GSuiteClient, args: Dict[str, str], 
     client.set_authorized_http(scopes=scopes, subject=user_id)
 
     # Prepare generic HTTP request params
-    http_request_params: Dict[str, str] = {}
-    copy_dict_value(source_dict=args, dest_dict=http_request_params, source_dict_key='file_id', dest_dict_key='fileId')
-    copy_dict_value(source_dict=args, dest_dict=http_request_params,
-                    source_dict_key='supports_all_drives', dest_dict_key='supportsAllDrives')
-    http_request_params['fields'] = '*'
+    http_request_params: Dict[str, str] = assign_params(
+        fileId=args.get('file_id'),
+        supportsAllDrives=args.get('supports_all_drives'),
+        fields='*',
+    )
 
     return {
         'client': client,
@@ -1380,13 +1369,15 @@ def file_permission_list_command(client: GSuiteClient, args: Dict[str, str]) -> 
     # All permissions
     prepare_file_permission_request_res = prepare_file_permission_request(
         client, args, scopes=COMMAND_SCOPES['FILE_PERMISSIONS_LIST'])
-    http_request_params = prepare_file_permission_request_res['http_request_params']
+    http_request_params: Dict[str, str] = prepare_file_permission_request_res['http_request_params']
 
-    copy_dict_value(source_dict=args, dest_dict=http_request_params,
-                    source_dict_key='page_size', dest_dict_key='pageSize')
-    copy_dict_value(source_dict=args, dest_dict=http_request_params,
-                    source_dict_key='page_token', dest_dict_key='pageToken')
-    http_request_params['fields'] = '*'
+    http_request_params.update(
+        assign_params(
+            pageSize=args.get('page_size'),
+            pageToken=args.get('page_token'),
+            fields='*'
+        )
+    )
 
     response = client.http_request(url_suffix=URL_SUFFIX['FILE_PERMISSIONS_LIST'], method='GET', params=http_request_params)
     return handle_response_permissions_list(response, args)
@@ -1405,17 +1396,20 @@ def file_permission_create_command(client: GSuiteClient, args: Dict[str, str]) -
 
     prepare_file_permission_request_res = prepare_file_permission_request(
         client, args, scopes=COMMAND_SCOPES['FILE_PERMISSIONS_CRUD'])
-    http_request_params = prepare_file_permission_request_res['http_request_params']
+    http_request_params: Dict[str, str] = prepare_file_permission_request_res['http_request_params']
 
-    copy_dict_value(source_dict=args, dest_dict=http_request_params,
-                    source_dict_key='send_notification_email', dest_dict_key='sendNotificationEmail')
+    http_request_params.update(
+        assign_params(
+            sendNotificationEmail=args.get('send_notification_email'),
+        )
+    )
 
-    body = {
-        'role': args.get('role'),
-        'type': args.get('type'),
-    }
-    copy_dict_value(source_dict=args, dest_dict=body, source_dict_key='domain')
-    copy_dict_value(source_dict=args, dest_dict=body, source_dict_key='email_address', dest_dict_key='emailAddress')
+    body: Dict[str, str] = assign_params(
+        role=args.get('role'),
+        type=args.get('type'),
+        domain=args.get('domain'),
+        emailAddress=args.get('email_address'),
+    )
 
     url_suffix = URL_SUFFIX['FILE_PERMISSION_CREATE'].format(args.get('file_id'))
     response = client.http_request(url_suffix=url_suffix, method='POST', params=http_request_params, body=body)
@@ -1437,10 +1431,10 @@ def file_permission_update_command(client: GSuiteClient, args: Dict[str, str]) -
         client, args, scopes=COMMAND_SCOPES['FILE_PERMISSIONS_CRUD'])
     http_request_params = prepare_file_permission_request_res['http_request_params']
 
-    body = {
-        'role': args.get('role'),
-    }
-    copy_dict_value(source_dict=args, dest_dict=body, source_dict_key='expiration_time', dest_dict_key='expirationTime')
+    body: Dict[str, str] = assign_params(
+        role=args.get('role'),
+        expirationTime=args.get('expiration_time'),
+    )
 
     url_suffix = URL_SUFFIX['FILE_PERMISSION_UPDATE'].format(args.get('file_id'), args.get('permission_id'))
     response = client.http_request(url_suffix=url_suffix, method='PATCH', params=http_request_params, body=body)

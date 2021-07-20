@@ -493,38 +493,6 @@ def test_flatten_comment_mentioned_user_keys_for_fetch_incident():
     assert mentioned_users == output
 
 
-def test_copy_dict_value():
-    """
-    Scenario: Copy a value from one Dict to another.
-
-    Given:
-    - 2 Dicts and 2 keys.
-
-    When:
-    - Generic method.
-
-    Then:
-    - Copy the value, if present.
-    """
-    from GoogleDrive import copy_dict_value
-
-    dict_1 = {
-        'key1': 'val1',
-        'key2': 'val2',
-    }
-    dict_2 = {
-        'key3': 'val3',
-    }
-
-    assert 'key1' not in dict_2
-    copy_dict_value(source_dict=dict_1, dest_dict=dict_2, source_dict_key='key1')
-    assert dict_2['key1'] == 'val1'
-
-    assert 'key21' not in dict_2
-    copy_dict_value(source_dict=dict_1, dest_dict=dict_2, source_dict_key='key2', dest_dict_key='key_21')
-    assert dict_2['key_21'] == 'val2'
-
-
 @patch(MOCKER_HTTP_METHOD)
 def test_drives_list_command_success(mocker_http_request, gsuite_client):
     """
