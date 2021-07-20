@@ -39,7 +39,7 @@ def options_handler():
     parser.add_argument(
         '-ch', '--slack_channel', help='The slack channel in which to send the notification', default=CONTENT_CHANNEL
     )
-    parser.add_argument('-gp', '--gitlab_project_id', help='The gitlab project_id.', default=GITLAB_PROJECT_ID)
+    parser.add_argument('-gp', '--gitlab_project_id', help='The gitlab project id', default=GITLAB_PROJECT_ID)
     parser.add_argument(
         '-tw', '--triggering-workflow', help='The type of ci pipeline workflow the notifier is reporting on',
         choices=WORKFLOW_TYPES)
@@ -113,8 +113,12 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
 
     triggering_workflow_lower = triggering_workflow.lower()
     check_unittests_substrings = {'lint', 'unit', 'demisto sdk nightly'}
-    if any({substr in triggering_workflow_lower for substr in check_unittests_substrings}):
-        content_fields += unit_tests_results()
+    failed_jobs_or_workflow_title = {job_name.lower() for job_name in failed_jobs_names}
+    failed_jobs_or_workflow_title.add(triggering_workflow_lower)
+    for means_include_unittests_results in failed_jobs_or_workflow_title:
+        if any({substr in means_include_unittests_results for substr in check_unittests_substrings}):
+            content_fields += unit_tests_results()
+            break
     if 'upload' in triggering_workflow_lower:
         content_fields += bucket_upload_results()
     if 'content nightly' in triggering_workflow_lower:
