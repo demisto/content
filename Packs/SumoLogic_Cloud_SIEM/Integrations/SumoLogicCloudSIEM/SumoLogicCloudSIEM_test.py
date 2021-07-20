@@ -27,7 +27,13 @@ def test_insight_get_details(requests_mock):
     insight_id = 'INSIGHT-220'
     insight = insight_signal_to_readable(mock_response.get('data'))
 
-    requests_mock.get('{}/sec/v1/insights/{}'.format(MOCK_URL, insight_id), json=mock_response)
+    requests_mock.get(
+        '{}/sec/v1/insights/{}?exclude=signals.allRecords&recordSummaryFields=action%2C'
+        'description%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname%2CdstDevice_ip%2Cemail_sender%2C'
+        'file_basename%2Cfile_hash_md5%2Cfile_hash_sha1%2Cfile_hash_sha256%2CsrcDevice_hostname%2C'
+        'srcDevice_ip%2Cthreat_name%2Cthreat_category%2Cthreat_identifier%2Cuser_username%2Cthreat_url%2ClistMatches'.format(
+            MOCK_URL, insight_id),
+        json=mock_response)
 
     client = Client(
         base_url=MOCK_URL,
