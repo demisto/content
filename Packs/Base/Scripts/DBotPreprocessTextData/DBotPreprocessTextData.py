@@ -67,7 +67,7 @@ def clean_html_from_text(text):
 class Tokenizer:
     def __init__(self, clean_html=True, remove_new_lines=True, hash_seed=None, remove_non_english=True,
                  remove_stop_words=True, remove_punct=True, remove_non_alpha=True, replace_emails=True,
-                 replace_numbers=True, lemma=True, replace_urls=True, language='English',
+                 replace_numbers=True, lemma=True, replace_urls=True, language=ANY_LANGUAGE,
                  tokenization_method='tokenizer'):
         self.number_pattern = "NUMBER_PATTERN"
         self.url_pattern = "URL_PATTERN"
@@ -415,7 +415,7 @@ def main():
     remove_html_tags = demisto.args()['cleanHTML'] == 'true'
     whitelist_fields = demisto.args().get('whitelistFields').split(",") if demisto.args().get(
         'whitelistFields') else None
-    language = demisto.args().get('language', 'English')
+    language = demisto.args().get('language', ANY_LANGUAGE)
     # if input is a snigle string (from DbotPredictPhishingWords):
     if input_type == 'string':
         input_str = demisto.args().get('input')
