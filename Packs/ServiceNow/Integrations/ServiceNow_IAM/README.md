@@ -17,9 +17,10 @@ For more information, please refer to the [Identity Lifecycle Management article
 | credentials | Username | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
-| create_user_enabled | Create User Command Enabled | False |
-| update_user_enabled | Update User Command Enabled | False |
-| enable_disable_user_enabled | Enable/Disable User Commands Enabled | False |
+| create_user_enabled | Allow creating users | False |
+| update_user_enabled | Allow updating users | False |
+| enable_user_enabled | Allow enabling users | False |
+| disable_user_enabled | Allow disabling users | False |
 | create_if_not_exists | Automatically create user if not found in update and enable commands | False |
 | mapper_in | Incoming Mapper | True |
 | mapper_out | Outgoing Mapper | True |
