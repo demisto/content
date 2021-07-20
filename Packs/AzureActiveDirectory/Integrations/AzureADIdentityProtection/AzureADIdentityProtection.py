@@ -12,8 +12,7 @@ REQUIRED_PERMISSIONS = (
 )
 
 
-def parse_list(
-        raw_response: dict, human_readable_title: str, next_link_description: str) -> CommandResults:
+def parse_list(raw_response: dict, human_readable_title: str, next_link_description: str) -> CommandResults:
     """
     converts a response of Microsoft's graph search into a CommandResult object
     Note: next_link_description should be unique for every method calling parse_list
