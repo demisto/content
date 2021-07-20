@@ -1,0 +1,17 @@
+{
+    "name": "LINENotify",
+    "description": "This integration will allow system admin to send message to specific LINE group. The first version has one command only.  \n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "nicholashsiao",
+    "url": "",
+    "email": "",
+    "created": "2021-07-20T08:08:16Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "nicholashsiao"
+    ]
+}

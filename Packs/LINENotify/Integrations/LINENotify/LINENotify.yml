@@ -1,0 +1,34 @@
+category: Utilities
+commonfields:
+  id: LINENotify
+  version: -1
+configuration:
+- display: Token of LINE Group
+  name: apitoken
+  required: true
+  type: 4
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: d9426f5b-e12e-45c9-80c4-cd94118716f2
+    propagationLabels: []
+    toServerVersion: ""
+description: |-
+  This is the Hello World integration for getting started.
+  https://notify-bot.line.me/doc/en/
+display: LINENotify
+name: LINENotify
+script:
+  commands:
+  - arguments:
+    - description: Message to be sent.
+      name: msg
+      required: true
+    description: Send message/notification to LINE Group
+    name: LINE-send-message
+  dockerimage: demisto/python3:3.9.5.21272
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
