@@ -1101,7 +1101,7 @@ jobs:
                     STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
                   fi
 
-                  PACKS_SRC="gs://marketplace-dist-dev/$STORAGE_BASE_PATH"
+                  PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
                   ZIP_FOLDER=$(mktemp -d)
                   echo "export ZIP_FOLDER=$ZIP_FOLDER" >> $BASH_ENV
                   gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
