@@ -15,7 +15,7 @@ def main() -> None:
 
     # demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        if demisto.command() == 'LINE-send-message':
+        if demisto.command() == 'line-send-message':
             # This is for sending LINE notification to specific group
             headers = {
                 "Authorization": "Bearer " + api_token,
