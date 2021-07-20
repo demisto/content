@@ -5,13 +5,6 @@ Security teams can ingest data from Triage such as email reporters, email report
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#Breaking-changes-from-the-previous-version-of-this-integration---Cofense-Triage-v3).
 
-## What's new in Cofense Triage v3?
-Use Cofense Triage v3 XSOAR integration application to take advantage of Cofense Triage v2 API for bidirectional communication between Triage and XSOAR. 
-Earlier, the Cofense Triage v2 was only capable of pulling the indicators from Cofense. The new integration provides:
- - Report Categorization playbook investigates reports that are unprocessed or uncategorized on Cofense Triage as incident alerts in XSOAR and categorizes them based on the severity of the incident.
- - Cluster Report Categorization playbook is used to retrieve the reports of specific clusters and perform the categorization of reports.
- - Automation scripts that download all reports associated with the email address and enrich the threat indicators.
- - Mirroring feature that updates the XSOAR incidents when Cofense Triage reports are updated.
 
 ## What Mirroring functionality does?
 The data in Cofense Triage Report can be mirrored to Cortex XSOAR to view the modifications when the report is updated.
