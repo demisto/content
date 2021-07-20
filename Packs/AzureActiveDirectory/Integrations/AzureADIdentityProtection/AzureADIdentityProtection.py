@@ -1,3 +1,4 @@
+from requests import Response
 from CommonServerPython import *
 
 import urllib3
@@ -13,7 +14,30 @@ REQUIRED_PERMISSIONS = (
 )
 
 
-class AzureADClient:
+def parse_list(raw_response: dict,
+               human_readable_title: str,
+               next_link_description: str) -> CommandResults:  # unique for every method calling this one
+    """ converts a response of Microsoft's graph search into a CommandResult object """
+    values = raw_response.get('value', [])
+    readable_output = tableToMarkdown(f'{human_readable_title.title()} ({len(values)} results)',
+                                      values,
+                                      removeNull=True,
+                                      headerTransform=pascalToSpace)
+    outputs = {f'{OUTPUTS_PREFIX}.values(val.id === obj.id)': values}
+
+    # removing whitespaces so they aren't mistakenly considered as argument separators in CLI
+    next_link = raw_response.get('@odata.nextLink', '').replace(' ', '%20')
+    if next_link:
+        next_link_key = f'{OUTPUTS_PREFIX}.NextLink(val.Description === "{next_link_description}")'
+        next_link_value = {'Description': next_link_description, 'URL': next_link}
+        outputs[next_link_key] = next_link_value
+
+    return CommandResults(outputs=outputs,
+                          readable_output=readable_output,
+                          raw_response=raw_response)
+
+
+class AADClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
         if '@' in app_id:
@@ -42,16 +66,14 @@ class AzureADClient:
 
     def query_list(self,
                    url_suffix: str,
-                   human_readable_title: str,
                    limit: int,
-                   next_link_description: str,  # unique for every method calling this one.
                    filter_arguments: Optional[Dict[str, Optional[Any]]] = None,
                    filter_expression: Optional[str] = None,
-                   next_link: Optional[str] = None):
+                   next_link: Optional[str] = None) -> Union[Dict, str, Response, bytes]:
         """ Used for querying when the result is a collection (list) of items, for example RiskyUsers. """
         if next_link:
             next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
-            raw_response = self.http_request(method='GET', full_url=next_link)
+            return self.http_request(method='GET', full_url=next_link)
 
         else:
             params: Dict[str, Optional[Any]] = {'$top': limit}
@@ -62,24 +84,7 @@ class AzureADClient:
                                                   if value is not None])
             params['$filter'] = filter_expression
             remove_nulls_from_dictionary(params)
-            raw_response = self.http_request(method='GET', url_suffix=url_suffix, params=params)
-        values = raw_response.get('value', [])
-        readable_output = tableToMarkdown(f'{human_readable_title.title()} ({len(values)} results)',
-                                          values,
-                                          removeNull=True,
-                                          headerTransform=pascalToSpace)
-        outputs = {f'{OUTPUTS_PREFIX}.values(val.id === obj.id)': values}
-
-        # removing whitespaces so they aren't mistakenly considered as argument separators in CLI
-        next_link = raw_response.get('@odata.nextLink', '').replace(' ', '%20')
-        if next_link:
-            next_link_key = f'{OUTPUTS_PREFIX}.NextLink(val.Description === "{next_link_description}")'
-            next_link_value = {'Description': next_link_description, 'URL': next_link}
-            outputs[next_link_key] = next_link_value
-
-        return CommandResults(outputs=outputs,
-                              readable_output=readable_output,
-                              raw_response=raw_response)
+            return self.http_request(method='GET', url_suffix=url_suffix, params=params)
 
     def azure_ad_identity_protection_risk_detection_list(self,
                                                          limit: int,
@@ -88,19 +93,17 @@ class AzureADClient:
                                                          user_id: Optional[str] = None,
                                                          user_principal_name: Optional[str] = None,
                                                          country: Optional[str] = None) -> CommandResults:
-        return self.query_list(
-            url_suffix='riskDetections',
-            filter_arguments={
-                'userId': user_id,
-                'userPrincipalName': user_principal_name,
-                'location/countryOrRegion': country
-            },
-            next_link_description="risk_detection_list",
-            human_readable_title="Risks",
-            limit=limit,
-            filter_expression=filter_expression,
-            next_link=next_link,
-        )
+        raw_response = self.query_list(url_suffix='riskDetections',
+                                       filter_arguments={
+                                           'userId': user_id,
+                                           'userPrincipalName': user_principal_name,
+                                           'location/countryOrRegion': country
+                                       },
+                                       limit=limit,
+                                       filter_expression=filter_expression,
+                                       next_link=next_link)
+
+        return parse_list(raw_response, human_readable_title="Risks", next_link_description="risk_detection_list")
 
     def azure_ad_identity_protection_risky_users_list(self,
                                                       limit: int,
@@ -112,7 +115,7 @@ class AzureADClient:
                                                       risk_detail: Optional[str] = None,
                                                       user_principal_name: Optional[str] = None) -> CommandResults:
 
-        return self.query_list(
+        raw_response = self.query_list(
             url_suffix='RiskyUsers',
             filter_arguments={
                 'riskLastUpdatedDateTime': updated_time,
@@ -121,23 +124,23 @@ class AzureADClient:
                 'riskDetail': risk_detail,
                 'userPrincipalName': user_principal_name
             },
-            human_readable_title='Risky Users',
-            next_link_description='risky_user_list',
             limit=limit,
             filter_expression=filter_expression,
             next_link=next_link,
         )
+        return parse_list(raw_response, human_readable_title='Risky Users', next_link_description='risky_user_list')
 
     def azure_ad_identity_protection_risky_users_history_list(self,
                                                               limit: int,
                                                               user_id: Optional[str] = None,
                                                               filter_expression: Optional[str] = None,
                                                               next_link: Optional[str] = None) -> CommandResults:
+        raw_response = self.query_list(limit=limit, filter_expression=filter_expression,
+                                       next_link=next_link, url_suffix=f'RiskyUsers/{user_id}/history')
 
-        return self.query_list(limit=limit, filter_expression=filter_expression,
-                               next_link_description="risky_users_history_list",
-                               next_link=next_link, human_readable_title=f'Risky user history for {user_id}',
-                               url_suffix=f'RiskyUsers/{user_id}/history')
+        return parse_list(raw_response,
+                          next_link_description="risky_users_history_list",
+                          human_readable_title=f'Risky user history for {user_id}')
 
     def azure_ad_identity_protection_risky_users_confirm_compromised(self, user_ids: Union[str, List[str]]):
         self.http_request(method='POST',
@@ -156,38 +159,38 @@ class AzureADClient:
         return '✅ Dismissed successfully.'  # raises exception if not successful
 
 
-def azure_ad_identity_protection_risk_detection_list_command(client: AzureADClient, **kwargs):
+def azure_ad_identity_protection_risk_detection_list_command(client: AADClient, **kwargs):
     return client.azure_ad_identity_protection_risk_detection_list(**kwargs)
 
 
-def azure_ad_identity_protection_risky_users_list_command(client: AzureADClient, **kwargs):
+def azure_ad_identity_protection_risky_users_list_command(client: AADClient, **kwargs):
     return client.azure_ad_identity_protection_risky_users_list(**kwargs)
 
 
-def azure_ad_identity_protection_risky_users_history_list_command(client: AzureADClient, **kwargs):
+def azure_ad_identity_protection_risky_users_history_list_command(client: AADClient, **kwargs):
     return client.azure_ad_identity_protection_risky_users_history_list(**kwargs)
 
 
-def azure_ad_identity_protection_risky_users_confirm_compromised_command(client: AzureADClient, **kwargs):
+def azure_ad_identity_protection_risky_users_confirm_compromised_command(client: AADClient, **kwargs):
     return client.azure_ad_identity_protection_risky_users_confirm_compromised(**kwargs)
 
 
-def azure_ad_identity_protection_risky_users_dismiss_command(client: AzureADClient, **kwargs):
+def azure_ad_identity_protection_risky_users_dismiss_command(client: AADClient, **kwargs):
     return client.azure_ad_identity_protection_risky_users_dismiss(**kwargs)
 
 
-def start_auth(client: AzureADClient) -> CommandResults:
+def start_auth(client: AADClient) -> CommandResults:
     result = client.ms_client.start_auth('!azure-ad-auth-complete')
     return CommandResults(readable_output=result)
 
 
-def complete_auth(client: AzureADClient) -> str:
-    client.ms_client.get_access_token()
+def complete_auth(client: AADClient) -> str:
+    client.ms_client.get_access_token()  # exception on failure
     return '✅ Authorization completed successfully.'
 
 
-def test_connection(client: AzureADClient) -> str:
-    client.ms_client.get_access_token()
+def test_connection(client: AADClient) -> str:
+    client.ms_client.get_access_token()  # exception on failure
     return '✅ Success!'
 
 
@@ -203,7 +206,7 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {command}')
     try:
-        client = AzureADClient(
+        client = AADClient(
             app_id=params.get('app_id', ''),
             subscription_id=params.get('subscription_id', ''),
             resource_group_name=params.get('resource_group_name', ''),
