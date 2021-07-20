@@ -1,6 +1,4 @@
-from requests import Response
 from CommonServerPython import *
-
 import urllib3
 
 urllib3.disable_warnings()
@@ -69,7 +67,7 @@ class AADClient:
                    limit: int,
                    filter_arguments: Optional[Dict[str, Optional[Any]]] = None,
                    filter_expression: Optional[str] = None,
-                   next_link: Optional[str] = None) -> Union[Dict, str, Response, bytes]:
+                   next_link: Optional[str] = None) -> Dict:
         """ Used for querying when the result is a collection (list) of items, for example RiskyUsers. """
         if next_link:
             next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
