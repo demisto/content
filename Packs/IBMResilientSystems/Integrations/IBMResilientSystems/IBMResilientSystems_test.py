@@ -7,29 +7,17 @@ ARGS = {
 }
 
 
-def mock_update_incident(incident_id, data):
-    expected_results = [{'field': {'name': 'description'},
-                         'old_value': {'textarea': {'format': 'html', 'content': 'this is a old new'}},
-                         'new_value': {'textarea': {'format': 'html', 'content': 'this is a old new'}}},
-                        {'field': {'name': 'name'},
-                         'old_value': {'text': 'Another old new name.'},
-                         'new_value': {'text': 'Another old new name.'}}]
-
-    class Response:
-        status_code = 200
-
-    if data == expected_results:
-        response = Response
-    else:
-        response = None
-
-    return response
-
-
 def test_update_incident_command(mocker):
-    mocker.patch('IBMResilientSystems.update_incident', side_effect=mock_update_incident)
+    mocker.patch.object(demisto, 'args', return_value=ARGS)
+    # mocker.patch('IBMResilientSystems.update_incident', side_effect=mock_update_incident)
+    # mocker_output = mocker.patch('IBMResilientSystems.update_incident')
     from IBMResilientSystems import update_incident_command
 
-    response = update_incident_command(ARGS)
+    update_incident_command(demisto.args())
 
-    assert response
+    assert mocker_output == [{'field': {'name': 'description'},
+                              'old_value': {'textarea': {'format': 'html', 'content': 'this is a old new'}},
+                              'new_value': {'textarea': {'format': 'html', 'content': 'this is a old new'}}},
+                             {'field': {'name': 'name'},
+                              'old_value': {'text': 'Another old new name.'},
+                              'new_value': {'text': 'Another old new name.'}}]
