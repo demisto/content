@@ -38,54 +38,35 @@ Slack V3 utilizes "Socket Mode" to enable the integration to communicate directl
  ![create-app-2](../../doc_files/SlackDocs_create_app2.png)
  4. Next pick the workspace you would like the app to reside in and click ***Next***.
  ![create-app-3](../../doc_files/SlackDocs_create_app3.png)
- 5. Next copy the text in the file found [here](link to content manifest)
+ 5. Next copy the text in the file found [here](https://raw.githubusercontent.com/demisto/content/master/Packs/Slack/doc_files/SlackV3_app_manifest.yml)
+ 6. Paste the copied text into the field "YAML" and click ***Next***.
+ ![create-app-4](../../doc_files/SlackDocs_create_app4.png)
+ 7. The next step is a summary of the app we created. Click ***Create*** to proceed.
+  ![create-app-5](../../doc_files/SlackDocs_create_app5.png)
  
- 
- 
- 6. Click **Socket Mode** found on the left-hand side of the menu. 
- 7. Click **Enable Socket Mode**. This will create an app level token with the required scope (`connections:write`) for connecting. 
- 8. Enter a name for the token.
- 9. Click **Generate**.
-
-You will receive a token starting with `xapp`. Copy this token and use it for the `app_token` parameter when creating an instance of the integration.
-
-### Defining Events
-For Slack V3 to be able to mirror incidents, you must enable the Events feature. 
-1. Navigate to *Event Subscriptions* found under the Features menu. 
-2. Enable Events by clicking the toggle switch.
- 
-Enabling the Events API will present various events that the app may subscribe to. Currently, Slack V3 only uses the following message events:
-
-| **Event Name** | **What it's used for** |
-| --- | --- |
-| `message.channel` | Allows the app to receive messages which were posted in a channel. Used for Mirror In. |
-| `message.mpim` | Allows the app to receive messages which were posted to a group. Used for Mirror In. |
-| `message.groups` | Allows the app to receive messages which were posted to a private channel. Used for Mirror In. |
-| `message.im` | Allows the app to receive direct messages. |
-
-These message events are available for both "Bot Events" and "Events on behalf of users". In order to use mirroring and handle bot questions, Cortex XSOAR recommends enabling these event scopes for both bot and user events.
-
-### OAuth Scopes
-In order to define the OAuth scopes, please navigate to the OAuth https://api.slack.com/apps/{BOT_ID}/oauth?
-
-In order to utilize the full functionality of the Slack integration, Cortex XSOAR recommends the following OAuth scopes for the bot token:
-
-| **OAuth Scope** | **Description** |
-| --- | --- |
-| `channels:history` | View messages and other content in public channels that the app has been added to. |
-| `channels:read` | View basic information about public channels in a workspace. |
-| `chat:write` | Send messages as the bot. |
-| `files:write` | Upload, edit, and delete files as the bot. |
-| `groups:history` | View messages and other content in private channels that the bot has been added to. |
-| `groups:read` | View basic information about private channels that the bot has been added to. |
-| `im:history` | View messages and other content in direct messages that the bot has been added to. |
-| `im:read` | View basic information about direct messages that the bot has been added to. |
-| `mpim:history` | View messages and other content in group direct messages that the bot has been added to. |
-| `mpim:read` | View basic information about group direct messages that the bot has been added to |
-| `users:read` | View people in a workspace. |
-
-The app token requires the `connections:write` scope in order to open the socket connection and is required for the Events and Questions functionality. It's important to note that when configuring Socket Mode, this scope will automatically be created for you.
-
+ ### Installing the App to Your Workspace
+ 1. After creating your app, you will be redirected to the *Basic Information* page of your app settings.
+  First, click ***Install to Workspace***
+ ![install-app-1](../../doc_files/SlackDocs_install_workspace1.png)
+ 2. This will bring up a page which confirms that you are installing the app to your workspace.
+ **If you do not see this step, you must request access from your Slack admin in order to proceed.**
+ ![install-app-2](../../doc_files/SlackDocs_install_workspace2.png)
+ 3. Once the app has been installed you will be redirected to the ***General*** page for your app. Scroll down to the section called ***App-Level Tokens*** and click ***Generate Token and Scopes***
+ ![install-app-3](../../doc_files/SlackDocs_install_workspace3.png) 
+ 4. Enter a name for the Token and click ***Add Scope***. Select the `connections:write` scope from the list.
+ ![install-app-4](../../doc_files/SlackDocs_install_workspace4.png) 
+ 5. Click ***Generate***.
+ 6. After click ***Generate*** you will be redirected to a page which will display your app token. This token begins with `xapp`. Copy this token.
+ ![install-app-5](../../doc_files/SlackDocs_install_workspace5.png)
+ 7. In your XSOAR SlackV3 intance configuration page. Paste the token in the parameter *App Token*. You may also configure the *App Token* as a credential.
+ ![install-app-6](../../doc_files/SlackDocs_install_workspace6.png)
+ 8. Navigate back to the Slack App configuration page and select ***OAuth & Permissions***. If this screen does not look like the following image, you may need assistance from your Slack admin.
+ ![install-app-7](../../doc_files/SlackDocs_install_workspace7.png)
+ 9. Copy the ***Bot User OAuth Token***.
+ 10. In your XSOAR SlackV3 intance configuration page. Paste the token in the parameter *Bot Token*. You may also configure the *Bot Token* as a credential.
+ ![install-app-8](../../doc_files/SlackDocs_install_workspace8.png)
+  
+  
 ## Backwards Compatibility with Slack V2
 Slack V3 currently contains improvements to enhance the stability of the integration as well as the circumvention of OProxy. This version is intended to provide customers with more granular control over the Slack integration by enabling the Bring-Your-Own-App model and customizable scope-based authentication.
 
