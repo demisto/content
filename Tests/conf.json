@@ -1544,13 +1544,13 @@
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPy-Test-V2",
+            "playbookID": "SplunkPy-Test-V2_default_handler",
             "memory_threshold": 500,
             "instance_names": "use_default_handler"
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "Splunk-Test",
+            "playbookID": "Splunk-Test_default_handler",
             "memory_threshold": 200,
             "instance_names": "use_default_handler"
         },
@@ -1561,37 +1561,40 @@
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPySearch_Test",
+            "playbookID": "SplunkPySearch_Test_default_handler",
             "memory_threshold": 200,
             "instance_names": "use_default_handler"
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPy KV commands",
+            "playbookID": "SplunkPy_KV_commands_default_handler",
             "memory_threshold": 200,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPy-Test-V2",
+            "playbookID": "SplunkPy-Test-V2_requests_handler",
             "memory_threshold": 500,
             "instance_names": "use_python_requests_handler"
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "Splunk-Test",
+            "playbookID": "Splunk-Test_requests_handler",
             "memory_threshold": 500,
-            "instance_names": "use_python_requests_handler"
+            "instance_names": "use_python_requests_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPySearch_Test",
+            "playbookID": "SplunkPySearch_Test_requests_handler",
             "memory_threshold": 200,
-            "instance_names": "use_python_requests_handler"
+            "instance_names": "use_python_requests_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPy KV commands",
+            "playbookID": "SplunkPy_KV_commands_requests_handler",
             "memory_threshold": 200,
             "instance_names": "use_python_requests_handler"
         },
@@ -2030,10 +2033,6 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": "Qualys",
-            "playbookID": "Qualys-Test"
-        },
-        {
             "integrations": "Whois",
             "playbookID": "whois_test",
             "fromversion": "4.1.0"
@@ -2261,6 +2260,7 @@
             "integrations": "GooglePubSub",
             "playbookID": "GooglePubSub_Test",
             "nightly": true,
+            "timeout": 500,
             "fromversion": "5.0.0"
         },
         {
@@ -3383,9 +3383,9 @@
             "nightly": true
         },
         {
-	        "integrations": "Trend Micro Deep Security",
-	        "playbookID": "Trend Micro Deep Security - Test"
-	      },
+            "integrations": "Trend Micro Deep Security",
+            "playbookID": "Trend Micro Deep Security - Test"
+        },
         {
             "integrations": "Carbon Black Endpoint Standard",
             "playbookID": "carbonBlackEndpointStandardTestPlaybook",
@@ -3516,16 +3516,17 @@
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
-        "TAXII_Feed_Test": "Issue 37588",
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
         "test playbook - QRadarCorrelations": "Issue 38639",
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
-        "O365 - EWS - Extension - Test": "Issue 39008"
+        "O365 - EWS - Extension - Test": "Issue 39008",
+        "Majestic Million Test Playbook": "Issue 30931",
+        "CircleCI-Test": "Issue 39222"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "SolarWinds": "No instance - developed by Crest",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
@@ -3604,17 +3605,16 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        "Infoblox": "Unstable instance, issue 25651",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-
+        
         "_comment4": "~~~ OTHER ~~~",
         "Pentera": "authentication method will not work with testing",
         "AlienVault OTX TAXII Feed": "Issue 29197",
@@ -3661,7 +3661,6 @@
         "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
-        "SplunkPy": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
         "SlackV3": "Integration requires SSL",
@@ -3789,7 +3788,7 @@
         "HelloWorldPremium_Scan-Test"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
