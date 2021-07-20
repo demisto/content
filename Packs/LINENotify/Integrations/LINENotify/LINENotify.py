@@ -1,10 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-"""LINE Notify Integration for Cortex XSOAR (aka Demisto)
-https://notify-bot.line.me/doc/en/
-"""
-
 import requests
 
 ''' MAIN FUNCTION '''
@@ -12,8 +8,6 @@ import requests
 
 def main() -> None:
     api_token = demisto.params().get('apitoken')
-
-    # demisto.debug(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'line-send-message':
             # This is for sending LINE notification to specific group
@@ -27,9 +21,6 @@ def main() -> None:
             return_results(r)
 
         elif demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            # result = test_module(client, first_fetch_timestamp)
-            # return_results(result)
             headers = {
                 "Authorization": "Bearer " + api_token,
                 "Content-Type": "application/x-www-form-urlencoded"

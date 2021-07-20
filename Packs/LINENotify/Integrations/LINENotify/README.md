@@ -1,5 +1,5 @@
-This is the Hello World integration for getting started.
-https://notify-bot.line.me/doc/en/
+The LINE API Integration is used for sending a message to LINE Group.
+
 This integration was integrated and tested with LINE version 7.0.3 of LINENotify
 
 ## Configure LINENotify on Cortex XSOAR
@@ -28,7 +28,7 @@ Send message/notification to LINE Group
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| msg | Message to be sent. | Required | 
+| message | Message to be sent. | Required | 
 
 
 #### Context Output
@@ -36,8 +36,7 @@ Send message/notification to LINE Group
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!line-send-message messgae="Hello World" ```
 
-#### Human Readable Output
 
 

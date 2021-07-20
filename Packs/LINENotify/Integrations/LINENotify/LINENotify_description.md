@@ -1,10 +1,12 @@
-### Community Contributed Integration
- #### Integration Author: Cortex XSOAR
- No support or maintenance is provided by the author. Customers are encouraged to engage with the user community for questions and guidance at the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).
-***
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-- You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+LINE API Integration is used for sending a message to LINE Group. 
 
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/hello-world)
+Before you use this integration, you need to get a LINE Group token from your account.
+1. Login to https://notify-bot.line.me/my/ with your username/password of line.
+2. Click 'your name' in top-right, and select "My page"
+3. Click 'Generate Token' , and then input a token name and select a chat group.
+4. Then click 'Generate token', then you will see a token with you. Make sure you copy the token string and keep it.
+
+After that, you could go back to LINE, and invite 'LINE Notify' bot into your chat group.
+The bot (LINE Notify) will send/forward your message to the LINE group while you trigger it from XSOAR integration.
+
+For more information visit: https://notify-bot.line.me/doc/en/
