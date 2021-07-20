@@ -2,13 +2,12 @@ import json
 
 import pytest
 
-from AzureADIdentityProtection import (AADClient, azure_ad_identity_protection_risk_detection_list_command,
+from AzureADIdentityProtection import (AADClient,
+                                       azure_ad_identity_protection_risk_detection_list_command,
                                        azure_ad_identity_protection_risky_users_list_command,
-                                       azure_ad_identity_protection_risky_users_history_list_command)
-
-app_id = 'app_id'
-subscription_id = 'subscription_id'
-resource_group_name = 'resource_group_name'
+                                       azure_ad_identity_protection_risky_users_history_list_command,
+                                       azure_ad_identity_protection_risky_users_confirm_compromised_command,
+                                       azure_ad_identity_protection_risky_users_dismiss_command)
 
 dummy_user_id = 'dummy_id'
 
@@ -16,7 +15,7 @@ dummy_user_id = 'dummy_id'
 @pytest.fixture()
 def client(mocker):
     mocker.patch('AzureADIdentityProtection.MicrosoftClient.get_access_token', return_value='token')
-    return AADClient(app_id, subscription_id, resource_group_name, verify=False, proxy=False)
+    return AADClient('dummy_app_id', 'dummy_subscription_id', 'dummy_resource_group_name', verify=False, proxy=False)
 
 
 @pytest.mark.parametrize('command,test_data_file,url_suffix,next_link_description,kwargs', (
@@ -43,14 +42,12 @@ def client(mocker):
         )
 
 ))
-def test_list_risks(client, requests_mock, command, test_data_file, url_suffix, next_link_description, kwargs):
+def test_list_commands(client, requests_mock, command, test_data_file, url_suffix, next_link_description, kwargs):
     """
     Given:
         - AAD Client
-
     When:
         - Listing (risks, risky users, user history)
-
     Then:
         - Verify API request sent as expected
         - Verify command outputs
@@ -66,59 +63,43 @@ def test_list_risks(client, requests_mock, command, test_data_file, url_suffix, 
     assert actual_values == expected_values
 
     expected_next_link = api_response.get('@odata.nextLink')
-    actual_next_url = result.outputs.get(
-        f'AAD_Identity_Protection.NextLink(val.Description === "{next_link_description}")', {}
-    ).get('URL')
-
     if expected_next_link:  # risky_users_history_list does not have next link
+        actual_next_url = result.outputs.get(f'AAD_Identity_Protection.NextLink(val.Description === '
+                                             f'"{next_link_description}")', {}).get('URL')
         assert actual_next_url == expected_next_link
 
-# def test_clusters_addon_update(client, requests_mock):
-#     """
-#     Given:
-#         - AKS Client
-#         - Name and location of resource to update
-#         - monitoring_agent_enabled boolean argument set as 'true'
-#
-#     When:
-#         - Updating cluster addon
-#
-#     Then:
-#         - Verify API request sent as expected
-#         - Verify command outputs
-#     """
-#
-#
-#     resource_name = 'resource_name'
-#     location = 'location'
-#
-#     requests_mock.get(
-#         f'{client.ms_client._base_url}/resourceGroups/{resource_group_name}/providers/Microsoft.ContainerService/'
-#         f'managedClusters/{resource_name}?api-version={API_VERSION}',
-#         json=api_response,
-#     )
-#     requests_mock.put(
-#         f'{client.ms_client._base_url}/resourceGroups/{resource_group_name}/providers/Microsoft.ContainerService/'
-#         f'managedClusters/{resource_name}?api-version={API_VERSION}',
-#         json=api_response,
-#     )
-#     result = clusters_addon_update(
-#         client=client,
-#         args={
-#             'resource_name': resource_name,
-#             'location': location,
-#             'monitoring_agent_enabled': 'true',
-#         }
-#     )
-#     assert requests_mock.request_history[1].json() == {
-#         'location': location,
-#         'properties': {
-#             'addonProfiles': {
-#                 'omsagent': {
-#                     'enabled': True,
-#                     'config': {'logAnalyticsWorkspaceResourceID': 'workspace'}
-#                 }
-#             }
-#         }
-#     }
-#     assert result == 'The request to update the managed cluster was sent successfully.'
+
+@pytest.mark.parametrize('method,expected_output,url_suffix,kwargs', (
+        (
+                azure_ad_identity_protection_risky_users_confirm_compromised_command,
+                '✅ Confirmed successfully.',
+                'riskyUsers/confirmCompromised',
+                {'user_ids': [dummy_user_id]}
+        ),
+        (
+                azure_ad_identity_protection_risky_users_dismiss_command,
+                '✅ Dismissed successfully.',
+                'riskyUsers/dismiss',
+                {'user_ids': [dummy_user_id]}
+        )
+)
+                         )
+def test_status_update_commands(client, requests_mock, method, expected_output, url_suffix, kwargs):
+    """
+    Given:
+        - AAD Client
+        - User name whose status we want to update
+
+    When:
+        - Calling a user-status-changing method (dismiss, confirm compromised)
+
+    Then:
+        - Verify API request sent as expected
+        - Verify command outputs
+    """
+
+    requests_mock.post(f'{client.ms_client._base_url}/{url_suffix}', status_code=204)
+    result = method(client, **kwargs)
+    assert requests_mock.request_history[0].json() == {'userIds': [dummy_user_id]}
+    assert result == expected_output
+
