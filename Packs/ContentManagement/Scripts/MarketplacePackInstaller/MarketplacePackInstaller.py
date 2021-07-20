@@ -243,7 +243,7 @@ def format_packs_data_for_installation(args) -> List[Dict[str, str]]:
     Returns:
         List[Dict[str, str]]: Installable objects list.
     """
-    packs_data = args.get('packs_data', [])
+    packs_data = argToList(args.get('packs_data', []))
 
     id_key = args.get('pack_id_key')
     version_key = args.get('pack_version_key')
@@ -254,7 +254,7 @@ def format_packs_data_for_installation(args) -> List[Dict[str, str]]:
                 'id': pack[id_key],
                 'version': pack[version_key],
             }
-            for pack in packs_data  # type: ignore
+            for pack in packs_data
         ]
     except KeyError as e:
         raise DemistoException(f'The following key was does not exist in the packs data: {e}.') from e
