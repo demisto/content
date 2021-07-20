@@ -156,4 +156,4 @@ script:
   dockerimage: demisto/python:2.7.18.22912
 tests:
 - Centreon-Test-Playbook
-fromversion: 5.5.0
+fromversion: 5.0.0
