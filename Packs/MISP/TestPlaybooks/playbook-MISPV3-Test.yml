@@ -1280,7 +1280,7 @@ tasks:
       feed:
         simple: Botvrij.eu
       limit:
-        simple: "1"
+        simple: "0"
     separatecontext: false
     view: |-
       {
