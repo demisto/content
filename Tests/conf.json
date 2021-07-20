@@ -3516,7 +3516,6 @@
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
-        "TAXII_Feed_Test": "Issue 37588",
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
@@ -3610,8 +3609,7 @@
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        "Infoblox": "Unstable instance, issue 25651",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
