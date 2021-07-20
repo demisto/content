@@ -90,7 +90,11 @@ Slack V3 utilizes "Socket Mode" to enable the integration to communicate directl
 10. In your XSOAR SlackV3 intance configuration page. Paste the token in the parameter *Bot Token*. You may also configure the *Bot Token* as a credential.
 
 ![install-app-8](../../doc_files/SlackDocs_install_workspace8.png)
-  
+
+### Testing the Bot
+1. Once you have configured the ***Dedicated Slack channel to receive notifications*** parameter, open Slack and invite your new app to the channel you have configured.
+2. Navigate to your Instance Settings page in XSOAR and click ***Test***. A message should appear in the channel from your app.
+ 
   
 ## Backwards Compatibility with Slack V2
 Slack V3 currently contains improvements to enhance the stability of the integration as well as the circumvention of OProxy. This version is intended to provide customers with more granular control over the Slack integration by enabling the Bring-Your-Own-App model and customizable scope-based authentication.
