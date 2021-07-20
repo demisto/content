@@ -261,7 +261,7 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     if demisto.getLastRun().get("last_run"):
         last_run = int(demisto.getLastRun().get("last_run"))
     else:
-        days_ago_arg = demisto.params().get("first_fetch")
+        days_ago_arg = params.get("first_fetch")
 
         if not days_ago_arg:
             days_ago_str = "3 days"
@@ -348,7 +348,7 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    username_input = demisto.params().get('username').get("identifier")
+    username_input = params.get('username').get("identifier")
 
     message: str = ''
     try:
@@ -715,7 +715,7 @@ def securityscorecard_alert_grade_change_create_command(client: Client, args: Di
     :rtype: ``CommandResults``
     """
 
-    email = demisto.params().get('username').get("identifier")
+    email = params.get('username').get("identifier")
     change_direction = str(args.get('change_direction'))
     score_types = argToList(args.get('score_types'))
     target = argToList(args.get('target'))
@@ -775,7 +775,7 @@ def securityscorecard_alert_score_threshold_create_command(client: Client, args:
     :rtype: ``CommandResults``
     """
 
-    email = demisto.params().get('username').get("identifier")
+    email = params.get('username').get("identifier")
     change_direction = str(args.get('change_direction'))
     threshold = arg_to_number(args.get('threshold'))  # type: ignore
     score_types = argToList(args.get('score_types'))
@@ -832,7 +832,7 @@ def securityscorecard_alert_delete_command(client: Client, args: Dict[str, Any])
     :rtype: ``CommandResults``
     """
 
-    email = demisto.params().get('username').get("identifier")
+    email = params.get('username').get("identifier")
     alert_id = str(args.get("alert_id"))
     alert_type = str(args.get("alert_type"))
     client.delete_alert(email=email, alert_id=alert_id, alert_type=alert_type)
@@ -859,7 +859,7 @@ def securityscorecard_alerts_list_command(client: Client, args: Dict[str, Any]) 
     :rtype: ``CommandResults``
     """
 
-    email = demisto.params().get('username').get("identifier")
+    email = params.get('username').get("identifier")
     demisto.debug("email: {0}".format(email))
     portfolio_id = args.get('portfolio_id')
 
@@ -967,7 +967,7 @@ def fetch_alerts(client: Client, params: Dict):
         max_incidents = arg_to_number(params.get("max_fetch"))  # type: ignore
 
     # User/email to fetch alerts for
-    username = demisto.params().get('username').get("identifier")
+    username = params.get('username').get("identifier")
 
     results = client.fetch_alerts(page_size=max_incidents, username=username)
 
@@ -1000,14 +1000,17 @@ def main() -> None:
     """main function, parses params and runs command functions
     """
 
-    api_key = demisto.params().get('username').get("password")
+    global params
+    params = demisto.params()
+
+    api_key = params.get('username').get("password")
 
     # SecurityScorecard API URL
-    base_url = demisto.params().get('base_url', "https://api.securityscorecard.io/")
+    base_url = params.get('base_url', "https://api.securityscorecard.io/")
 
     # Default configuration
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -1025,7 +1028,7 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
         elif demisto.command() == "fetch-incidents":
-            fetch_alerts(client, demisto.params())
+            fetch_alerts(client, params)
         elif demisto.command() == 'securityscorecard-portfolios-list':
             return_results(securityscorecard_portfolios_list_command(client))
         elif demisto.command() == 'securityscorecard-portfolio-list-companies':
