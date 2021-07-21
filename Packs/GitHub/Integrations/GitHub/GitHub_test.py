@@ -208,7 +208,15 @@ RESPONSE_DETAILS = [
 @pytest.mark.parametrize('response_code,response_content,mocked_return,expected_result', RESPONSE_DETAILS)
 def test_add_issue_to_project_board_command(mocker, requests_mock, response_code, response_content, mocked_return,
                                             expected_result):
-
+    """
+    Given:
+        'issue_unique_id': The issue ID to add.
+        'column_id': The column ID to add to.
+    When:
+        Running the add_issue_to_project_board_command function.
+    Then:
+        Assert the message returned is as expected.
+    """
     mocker.patch.object(demisto, 'args', return_value={'column_id': 'column_id', 'issue_unique_id': '11111'})
     requests_mock.post(f'{BASE_URL}/projects/columns/column_id/cards', status_code=response_code,
                        content=response_content)
