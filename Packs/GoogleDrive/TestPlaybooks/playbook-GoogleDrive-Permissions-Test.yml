@@ -423,7 +423,7 @@ tasks:
     task:
       id: 9044844d-408c-4b87-8977-72703ac5c3ba
       version: -1
-      name: Set
+      name: Set testData.emailAddress
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -529,7 +529,7 @@ tasks:
     task:
       id: a6823731-cc94-49e1-8c7b-50ddeb853b4d
       version: -1
-      name: Set
+      name: Set testData.googleDrivePermissionId
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -578,7 +578,7 @@ tasks:
     task:
       id: 0d183ef1-b05c-40ca-8a3c-7ae8cae506af
       version: -1
-      name: Set
+      name: Set testData.googleDriveFileId
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
