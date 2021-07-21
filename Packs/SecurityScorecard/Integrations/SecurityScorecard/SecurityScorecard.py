@@ -737,13 +737,10 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
     # Return error if neither of them is defined or if both are defined
     # Else choose the one that is defined and use it as the target
     if portfolios and target_arg:
-        raise DemistoException("Both 'portfolio' and 'target' argument have been set. \
-        Please remove one of them and try again.")
-    elif target_arg and not portfolios:
-        target = target_arg
-    elif portfolios and not target_arg:
-        target = portfolios
+        raise DemistoException("Both 'portfolio' and 'target' argument have been set. Please remove one of them and try again.")
     else:
+        target = target_arg or portfolios
+    if not target:
         raise DemistoException("Either 'portfolio' or 'target' argument must be given")
 
     demisto.debug(f"Attempting to create alert with body {args}")

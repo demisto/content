@@ -105,7 +105,11 @@ MOCK_URL = "mock://securityscorecard-mock-url"
 client = SecurityScorecardClient(
     base_url=MOCK_URL,
     verify=False,
-    proxy=False
+    proxy=False,
+    headers={},
+    username=USERNAME,
+    api_key="API_KEY",
+    max_fetch=100
 )
 
 
