@@ -1,0 +1,6 @@
+{
+	"error": {
+		"statusCode": 401,
+		"message": "http error 401: Unauthorized"
+	}
+}

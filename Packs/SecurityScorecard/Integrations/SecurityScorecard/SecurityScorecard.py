@@ -27,7 +27,7 @@ class SecurityScorecardClient(BaseClient):
 
     def get_portfolios(self) -> Dict[str, Any]:
 
-        return self._http_request(
+        return self.http_request_wrapper(
             'GET',
             url_suffix='portfolios'
         )
@@ -55,16 +55,15 @@ class SecurityScorecardClient(BaseClient):
         if had_breach_within_last_days:
             request_params['had_breach_within_last_days'] = had_breach_within_last_days
 
-        return self._http_request(
+        return self.http_request_wrapper(
             'GET',
             url_suffix=f'portfolios/{portfolio}/companies',
-            params=request_params,
-            error_handler=self.company_portfolio_error_handler
+            params=request_params
         )
 
     def get_company_score(self, domain: str) -> Dict[str, Any]:
 
-        return self._http_request(
+        return self.http_request_wrapper(
             'GET',
             url_suffix=f'companies/{domain}'
         )
@@ -76,7 +75,7 @@ class SecurityScorecardClient(BaseClient):
         if severity_in:
             request_params['severity_in'] = severity_in
 
-        return self._http_request(
+        return self.http_request_wrapper(
             'GET',
             url_suffix=f'companies/{domain}/factors',
             params=request_params
@@ -98,7 +97,7 @@ class SecurityScorecardClient(BaseClient):
         else:
             request_params['timing'] = 'daily'
 
-        return self._http_request(
+        return self.http_request_wrapper(
             'GET',
             url_suffix=f'companies/{domain}/history/score',
             params=request_params)
@@ -114,7 +113,7 @@ class SecurityScorecardClient(BaseClient):
         if timing:
             request_params['timing'] = timing
 
-        return self._http_request(
+        return self.http_request_wrapper(
             'GET',
             url_suffix=f'companies/{domain}/history/factors/score',
             params=request_params
@@ -138,7 +137,7 @@ class SecurityScorecardClient(BaseClient):
         if len(target) > 0:
             payload["target"] = target
 
-        return self._http_request(
+        return self.http_request_wrapper(
             'POST',
             url_suffix=f"users/by-username/{email}/alerts/grade",
             json_data=payload
@@ -166,7 +165,7 @@ class SecurityScorecardClient(BaseClient):
         if len(target) > 0:
             payload["target"] = target
 
-        return self._http_request(
+        return self.http_request_wrapper(
             'POST',
             url_suffix=f"users/by-username/{email}/alerts/score",
             json_data=payload
@@ -174,7 +173,7 @@ class SecurityScorecardClient(BaseClient):
 
     def delete_alert(self, email: str, alert_id: str, alert_type: str) -> None:
 
-        return self._http_request(
+        return self.http_request_wrapper(
             "DELETE",
             url_suffix=f"users/by-username/{email}/alerts/{alert_type}/{alert_id}",
             return_empty_response=True
@@ -187,7 +186,7 @@ class SecurityScorecardClient(BaseClient):
         if portfolio_id:
             query_params["portfolio"] = portfolio_id
 
-        return self._http_request(
+        return self.http_request_wrapper(
             "GET",
             url_suffix=f"users/by-username/{email}/notifications/recent",
             params=query_params
@@ -195,7 +194,7 @@ class SecurityScorecardClient(BaseClient):
 
     def get_domain_services(self, domain: str) -> Dict[str, Any]:
 
-        return self._http_request(
+        return self.http_request_wrapper(
             'GET',
             url_suffix=f"companies/{domain}/services"
         )
@@ -212,24 +211,46 @@ class SecurityScorecardClient(BaseClient):
         query_params["sort"] = "date"
         query_params["order"] = "desc"
 
-        return self._http_request(
+        return self.http_request_wrapper(
             "GET",
             url_suffix=f"users/by-username/{username}/notifications/recent",
             params=query_params
         )
 
+    def http_request_wrapper(self, method: str, url_suffix: Optional[str] = None, params: Optional[dict] = None, 
+                            json_data: Optional[dict] = None):
+        """Wrapper for the http_request function
+
+        Args:
+            self (SecurityScorecardClient).
+            method (str): The HTTP method.
+            url_suffix (Optional[str]): The URL suffix, appended to the base URL. Defaults to None.
+            params (Optional[dict]): The query parameters sent in the HTTP request. Defaults to None.
+            json_data (Optional[dict]): The payload to be sent in the HTTP request in JSON format. Defaults to None.
+
+        Return:
+            None
+        """
+        
+        return super()._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
+                                    error_handler=self.error_handler)
+
     @staticmethod
-    def company_portfolio_error_handler(res) -> None:
+    def error_handler(response: requests.Response):
+        """
+        Error handler for the API requests
+
+        Args:
+            response (requests.Response): The server's response to the HTTP request.
+        """
 
         try:
-            json_resp = res.json()
-            requested_portfolio = json_resp.get("error").get("data").get("portfoliosRequested")[0]
-            error_message = f"Portfolio '{requested_portfolio}' doesn't exist. \
-                Please run !securityscorecard-portfolios-list to see available Portfolios and try again."
-        except Exception:
-            raise DemistoException("Response error is invalid JSON.")
-
-        raise DemistoException(error_message, exception=None, res=None)
+            error_response_json = response.json().get("error")
+            error_message: str = f'{error_response_json.get("message")} ({error_response_json.get("statusCode")})'
+            demisto.error(error_message)
+            raise DemistoException(error_message)
+        except ValueError:
+            raise DemistoException(f'Error parsing response as JSON. Response: {response.status_code} {str(response.content)}')
 
 
 """ HELPER FUNCTIONS """
