@@ -686,7 +686,6 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
     query['q'] = q
     query['limit'] = str(max_results)
     query['recordSummaryFields'] = record_summary_fields if record_summary_fields else RECORD_SUMMARY_FIELDS_DEFAULT
-    resp_json = client.req('GET', 'sec/v1/insights', query)
     incidents = []
     hasNextPage = True
     while hasNextPage:
