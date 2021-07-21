@@ -217,8 +217,13 @@ class SecurityScorecardClient(BaseClient):
             params=query_params
         )
 
-    def http_request_wrapper(self, method: str, url_suffix: Optional[str] = None, params: Optional[dict] = None, 
-                            json_data: Optional[dict] = None):
+    def http_request_wrapper(
+        self, method: str,
+        url_suffix: Optional[str] = None,
+        params: Optional[dict] = None,
+        json_data: Optional[dict] = None,
+        return_empty_response: Optional[bool] = False
+    ):
         """Wrapper for the http_request function
 
         Args:
@@ -231,9 +236,15 @@ class SecurityScorecardClient(BaseClient):
         Return:
             None
         """
-        
-        return super()._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
-                                    error_handler=self.error_handler)
+
+        return super()._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            params=params,
+            json_data=json_data,
+            error_handler=self.error_handler,
+            return_empty_response=return_empty_response
+        )
 
     @staticmethod
     def error_handler(response: requests.Response):
@@ -365,7 +376,6 @@ def test_module(client: SecurityScorecardClient) -> str:
     """
 
     username_input = demisto.params().get('username').get("identifier")
-    
     try:
         client.fetch_alerts(
             username=username_input,
@@ -381,7 +391,7 @@ def test_module(client: SecurityScorecardClient) -> str:
 # ---------------
 
 
-def securityscorecard_portfolios_list_command(client: SecurityScorecardClient) -> CommandResults:
+def portfolios_list_command(client: SecurityScorecardClient) -> CommandResults:
     """List all Portfolios you have access to.
 
     See https://securityscorecard.readme.io/reference#get_portfolios
@@ -421,7 +431,7 @@ def securityscorecard_portfolios_list_command(client: SecurityScorecardClient) -
     return results
 
 
-def securityscorecard_portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve all companies in portfolio.
 
     https://securityscorecard.readme.io/reference#get_portfolios-portfolio-id-companies
@@ -496,7 +506,7 @@ def securityscorecard_portfolio_list_companies_command(client: SecurityScorecard
     return results
 
 
-def securityscorecard_company_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def company_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve company overall score.
 
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-factors
@@ -533,7 +543,7 @@ def securityscorecard_company_score_get_command(client: SecurityScorecardClient,
     return results
 
 
-def securityscorecard_company_factor_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def company_factor_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve company factor score and scores
 
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-factors
@@ -580,7 +590,7 @@ def securityscorecard_company_factor_score_get_command(client: SecurityScorecard
     return results
 
 
-def securityscorecard_company_history_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def company_history_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
 
     """Retrieve company historical scores
 
@@ -619,7 +629,7 @@ def securityscorecard_company_history_score_get_command(client: SecurityScorecar
     return results
 
 
-def securityscorecard_company_history_factor_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def company_history_factor_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve company historical factor scores
 
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-history-factors-score
@@ -669,7 +679,7 @@ def securityscorecard_company_history_factor_score_get_command(client: SecurityS
     return results
 
 
-def securityscorecard_alert_grade_change_create_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Create alert based on grade
 
     See https://securityscorecard.readme.io/reference#post_users-by-username-username-alerts-grade
@@ -708,7 +718,7 @@ def securityscorecard_alert_grade_change_create_command(client: SecurityScorecar
     return results
 
 
-def securityscorecard_alert_score_threshold_create_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def alert_score_threshold_create_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Create alert based threshold met
 
     See https://securityscorecard.readme.io/reference#post_users-by-username-username-alerts-score
@@ -763,7 +773,7 @@ def securityscorecard_alert_score_threshold_create_command(client: SecurityScore
     return results
 
 
-def securityscorecard_alert_delete_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def alert_delete_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Delete an alert
 
     See https://securityscorecard.readme.io/reference#delete_users-by-username-username-alerts-grade-alert
@@ -788,7 +798,7 @@ def securityscorecard_alert_delete_command(client: SecurityScorecardClient, args
     return results
 
 
-def securityscorecard_alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve alerts triggered in the last week
 
     See https://securityscorecard.readme.io/reference#get_users-by-username-username-notifications-recent
@@ -843,7 +853,7 @@ def securityscorecard_alerts_list_command(client: SecurityScorecardClient, args:
     return results
 
 
-def securityscorecard_company_services_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def company_services_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve the service providers of a domain
 
     See https://securityscorecard.readme.io/reference#get_companies-domain-services
@@ -975,27 +985,27 @@ def main() -> None:
         elif demisto.command() == "fetch-incidents":
             fetch_alerts(client)
         elif demisto.command() == 'securityscorecard-portfolios-list':
-            return_results(securityscorecard_portfolios_list_command(client))
+            return_results(portfolios_list_command(client))
         elif demisto.command() == 'securityscorecard-portfolio-list-companies':
-            return_results(securityscorecard_portfolio_list_companies_command(client, demisto.args()))
+            return_results(portfolio_list_companies_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-company-score-get':
-            return_results(securityscorecard_company_score_get_command(client, demisto.args()))
+            return_results(company_score_get_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-company-factor-score-get':
-            return_results(securityscorecard_company_factor_score_get_command(client, demisto.args()))
+            return_results(company_factor_score_get_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-company-history-score-get':
-            return_results(securityscorecard_company_history_score_get_command(client, demisto.args()))
+            return_results(company_history_score_get_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-company-history-factor-score-get':
-            return_results(securityscorecard_company_history_factor_score_get_command(client, demisto.args()))
+            return_results(company_history_factor_score_get_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-alert-grade-change-create':
-            return_results(securityscorecard_alert_grade_change_create_command(client, demisto.args()))
+            return_results(alert_grade_change_create_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-alert-score-threshold-create':
-            return_results(securityscorecard_alert_score_threshold_create_command(client, demisto.args()))
+            return_results(alert_score_threshold_create_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-alert-delete':
-            return_results(securityscorecard_alert_delete_command(client, demisto.args()))
+            return_results(alert_delete_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-alerts-list':
-            return_results(securityscorecard_alerts_list_command(client, demisto.args()))
+            return_results(alerts_list_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-company-services-get':
-            return_results(securityscorecard_company_services_get_command(client, demisto.args()))
+            return_results(company_services_get_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
