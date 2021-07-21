@@ -8,10 +8,11 @@ from zeep import Client as zClient
 from zeep import Settings, helpers
 from zeep.cache import SqliteCache
 from zeep.transports import Transport
-from datetime import date, datetime
+from datetime import datetime
 
 
 ''' HELPER FUNCTIONS '''
+
 
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, o):
@@ -25,15 +26,17 @@ class DateTimeEncoder(json.JSONEncoder):
         return json.dumps(output, default=lambda o: '<not serializable>')
 
 
-def serialize_object_list(input) -> Dict:
+def serialize_object_list(input) -> List:
     output = []
     tmp_output = json.loads(json.dumps(input, cls=DateTimeEncoder))
     for element in tmp_output:
         output.append(json.loads(element))
     return output
 
+
 def serialize_object_dict(input) -> Dict:
     return json.loads(json.loads(json.dumps(input, cls=DateTimeEncoder)))
+
 
 def resolve_datetime(input) -> Dict:
     output = {}
@@ -115,7 +118,7 @@ def getOriginalChangeRequestV7_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.getOriginalChangeRequestV7',
         outputs_key_field='',
-        readable_output=tableToMarkdown("Original Change Request", serialize_object(response)),
+        readable_output=tableToMarkdown("Original Change Request", serialize_object_list(response)),
         outputs=serialize_object_list(response),
         raw_response=serialize_object_list(response)
     )
@@ -274,6 +277,7 @@ def createAccessChangeTicket_command(client, args):
 
     response = client.service.createAccessChangeTicket(
         accessChangeTicket=accessChangeTicket,
+        phases=phases
     )
 
     command_results = CommandResults(
@@ -337,9 +341,9 @@ def createRecertifyTicketV2_command(client, args):
     accessRuleElements_destinationAddresses = args.get('accessRuleElements_destinationAddresses')
     accessRuleElements_direction = args.get('accessRuleElements_direction')
     accessRuleElements_disabled = args.get('accessRuleElements_disabled')
-    accessRuleElements_firewall_id = args.get('accessRuleElements_firewall_id')
-    accessRuleElements_firewall_name = args.get('accessRuleElements_firewall_name')
-    accessRuleElements_firewall_path = args.get('accessRuleElements_firewall_path')
+    # accessRuleElements_firewall_id = args.get('accessRuleElements_firewall_id')
+    # accessRuleElements_firewall_name = args.get('accessRuleElements_firewall_name')
+    # accessRuleElements_firewall_path = args.get('accessRuleElements_firewall_path')
     accessRuleElements_globalUniqueId = args.get('accessRuleElements_globalUniqueId')
     accessRuleElements_id = args.get('accessRuleElements_id')
     accessRuleElements_implied = args.get('accessRuleElements_implied')
@@ -392,7 +396,7 @@ def createRecertifyTicketV2_command(client, args):
         owner=accessChangeTicket_owner,
         description=accessChangeTicket_description,
         ccList=[emailRecipient],
-        # customFields=[customField],
+        customFields=[customField],
         createdBy=accessChangeTicket_createdBy,
         creationTime=accessChangeTicket_creationTime,
         lastModifiedBy=accessChangeTicket_lastModifiedBy,
@@ -683,8 +687,6 @@ def createChangeManagerTicket_command(client, args):
     phases_ticketTypePhase_waitingForClosure = args.get('phases_ticketTypePhase_waitingForClosure')
     workflowId = args.get('workflowId', 1)
 
-    demisto.debug("ticketTYPEPHASE")
-
     ticketTypePhase_type = client.get_type('ns0:ticketTypePhase')
     ticketTypePhase = ticketTypePhase_type(
         defaultOwner=phases_ticketTypePhase_defaultOwner,
@@ -693,6 +695,25 @@ def createChangeManagerTicket_command(client, args):
         order=phases_ticketTypePhase_order,
         ticketType=phases_ticketTypePhase_ticketType,
         waitingForClosure=phases_ticketTypePhase_waitingForClosure
+    )
+
+    phases_type = client.get_type('ns0:phase')
+    phases = phases_type(
+        comment=phases_comment,
+        createdBy=phases_createdBy,
+        creationTime=phases_creationTime,
+        current=phases_current,
+        demotionsCount=phases_demotionsCount,
+        description=phases_description,
+        dueDate=phases_dueDate,
+        endDate=phases_endDate,
+        id=phases_id,
+        lastModificationTime=phases_lastModificationTime,
+        lastModifiedBy=phases_lastModifiedBy,
+        owner=phases_owner,
+        revisedDueDate=phases_revisedDueDate,
+        startDate=phases_startDate,
+        ticketTypePhase=ticketTypePhase
     )
 
     customField_type = client.get_type('ns0:customField')
@@ -729,7 +750,7 @@ def createChangeManagerTicket_command(client, args):
         owner=accessChangeTicket_owner,
         description=accessChangeTicket_description,
         ccList=[emailRecipient],
-        # customFields=[customField],
+        customFields=[customField],
         createdBy=accessChangeTicket_createdBy,
         creationTime=accessChangeTicket_creationTime,
         lastModifiedBy=accessChangeTicket_lastModifiedBy,
@@ -741,6 +762,7 @@ def createChangeManagerTicket_command(client, args):
 
     response = client.service.createChangeManagerTicket(
         accessChangeTicket=accessChangeTicket,
+        phases=phases,
         workflowId=workflowId
     )
 
@@ -754,7 +776,7 @@ def createChangeManagerTicket_command(client, args):
         outputs_key_field='id',
         outputs=serialize_object_dict(response),
         raw_response=serialize_object_dict(response),
-        readable_output=tableToMarkdown('Created Ticket', serialize_object_dict(response),['id', 'priority', 'title'])
+        readable_output=tableToMarkdown('Created Ticket', serialize_object_dict(response), ['id', 'priority', 'title'])
     )
 
     return command_results
@@ -1317,7 +1339,7 @@ def updateAccessChangeTicket_command(client, args):
         owner=accessChangeTicket_owner,
         description=accessChangeTicket_description,
         ccList=[emailRecipient],
-        # customFields=[customField],
+        customFields=[customField],
         createdBy=accessChangeTicket_createdBy,
         creationTime=accessChangeTicket_creationTime,
         lastModifiedBy=accessChangeTicket_lastModifiedBy,
@@ -1846,7 +1868,8 @@ def getAttachmentList_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.getAttachmentList',
         outputs_key_field='',
-        readable_output=tableToMarkdown("Attachement List", serialize_object_list(response), headers=['id', 'filename', 'description']),
+        readable_output=tableToMarkdown("Attachement List", serialize_object_list(response), headers=['id', 'filename',
+                                                                                                      'description']),
         outputs=serialize_object_list(response),
         raw_response=serialize_object_list(response)
     )
@@ -2008,7 +2031,7 @@ def setRecertificationStatus_command(client, args):
     ruleAttributes = ruleAttributes_type(
         businessFunction=ruleAttributes_businessFunction,
         comment=ruleAttributes_comment,
-        #customFields=customFields,
+        customFields=customFields,
         email=ruleAttributes_email,
         nextReviewDate=ruleAttributes_nextReviewDate,
         owner=ruleAttributes_owner,
@@ -2154,11 +2177,12 @@ def test_module(client):
 
 
 def main():
+    handle_proxy()
     params = demisto.params()
     args = demisto.args()
     url = params.get('url')
     verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+
     wsdl = url + "/skybox/webservice/jaxws/tickets?wsdl"
 
     username = params['credentials']['identifier']
@@ -2238,7 +2262,6 @@ def main():
             'skybox-getTicketFields': getTicketFields_command,
             'skybox-getTicketsImplementedChangeRequests': getTicketsImplementedChangeRequests_command,
             'skybox-getTicketDeferChangeRequestsCalculationStatus': getTicketDeferChangeRequestsCalculationStatus_command,
-            'skybox-getPotentialVulnerabilities': getPotentialVulnerabilities_command,
         }
 
         if command == 'test-module':
