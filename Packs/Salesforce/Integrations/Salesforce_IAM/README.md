@@ -1,5 +1,3 @@
-> <i>Note:</i> This integration should be used along with our IAM premium pack. For further details, visit our IAM pack documentation.
-
 Integrate with Salesforce's services to perform Identity Lifecycle Management operations.
 For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 
@@ -221,4 +219,394 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+
+### salesforce-assign-permission-set
+***
+Assigns a permission set for a user.
+
+
+#### Base Command
+
+`salesforce-assign-permission-set`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID. | Required | 
+| permission_set_id | Permission set ID of the user. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SalesforceAssignPermissionSet.success | boolean | Status of the result. Can be true or false. | 
+| SalesforceAssignPermissionSet.PermissionSetAssign.id | string | ID of the created permission set assignment. | 
+| SalesforceAssignPermissionSet.errorCode | string | Error code from API, displayed in case of failure. | 
+| SalesforceAssignPermissionSet.errorMessage | string | Error message from API, displayed in case of failure. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### salesforce-get-assigned-permission-set
+***
+Gets the assigned permission set.
+
+
+#### Base Command
+
+`salesforce-get-assigned-permission-set`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SalesforceGetAssignedPermissionSet.success | boolean | Status of the result. Can be true or false. | 
+| SalesforceGetAssignedPermissionSet.PermissionSetAssignments.attributes | string | Information about the type and the url of the field fetched. | 
+| SalesforceGetAssignedPermissionSet.PermissionSetAssignments.AssigneeId | string | User ID passed as an input. | 
+| SalesforceGetAssignedPermissionSet.PermissionSetAssignments.Id | string | ID of the created permission set assignment. | 
+| SalesforceGetAssignedPermissionSet.errorCode | string | Error code from API, displayed in case of failure. | 
+| SalesforceGetAssignedPermissionSet.errorMessage | string | Error message from API, displayed in case of failure. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### salesforce-delete-assigned-permission-set
+***
+Deletes an assigned permission set.
+
+
+#### Base Command
+
+`salesforce-delete-assigned-permission-set`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| permission_set_assignment_id | ID of the PermissionSetAssignment object. A PermissionSetAssignment represents the association between a user and a permission set. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SalesforceDeleteAssignedPermissionSet.success | boolean | Status of the result. Can be true or false. | 
+| SalesforceDeleteAssignedPermissionSet.errorCode | number | Error code from API, displayed in case of failure. | 
+| SalesforceDeleteAssignedPermissionSet.errorMessage | string | Error message from API, displayed in case of failure. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### salesforce-freeze-user-account
+***
+Freezes a user account.
+
+
+#### Base Command
+
+`salesforce-freeze-user-account`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_login_id | ID of UserLogin object. UserLogin - Represents the settings that affect a user's ability to log into an organization. To access this object, you need the UserPermissions.ManageUsers permission. For more details Please refer to https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_userlogin.htm. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SalesforceFreezeUserAccount.success | boolean | Status of the result. Can be true or false. | 
+| SalesforceFreezeUserAccount.errorCode | number | Error code from API, displayed in case of failure. | 
+| SalesforceFreezeUserAccount.errorMessage | string | Error message from API, displayed in case of failure. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### salesforce-unfreeze-user-account
+***
+Unfreezes a user account.
+
+
+#### Base Command
+
+`salesforce-unfreeze-user-account`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_login_id | ID of the UserLogin object. UserLogin - Represents the settings that affect a user’s ability to log into an organization. To access this object, you need the UserPermissions.ManageUsers permission. For more details Please refer to https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_userlogin.htm. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SalesforceUnfreezeUserAccount.success | boolean | Status of the result. Can be true or false. | 
+| SalesforceUnfreezeUserAccount.errorCode | number | Error code from API, displayed in case of failure. | 
+| SalesforceUnfreezeUserAccount.errorMessage | string | Error message from API, displayed in case of failure. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### salesforce-get-user-isfrozen-status
+***
+Gets a user frozen status.
+
+
+#### Base Command
+
+`salesforce-get-user-isfrozen-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SalesforceGetUserIsfrozenStatus.success | boolean | Status of the result. Can be true or false. | 
+| SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.attributes | string | Information about the type, url of the field fetched. | 
+| SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.Id | string | ID of UserLogin object. UserLogin represents the settings that affect a user's ability to log into an organization. To access this object, you need the UserPermissions.ManageUsers permission. For more details Please refer to https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_userlogin.htm | 
+| SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.IsFrozen | boolean | Whether the User account is in frozen state. Can be true or false. | 
+| SalesforceGetUserIsfrozenStatus.errorCode | string | Error code from API, displayed in case of failure. | 
+| SalesforceGetUserIsfrozenStatus.errorMessage | string | Error message from API, displayed in case of failure. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### salesforce-assign-permission-set-license
+***
+Assigns a permission set license.
+
+
+#### Base Command
+
+`salesforce-assign-permission-set-license`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID. | Required | 
+| permission_set_license_id | Permission set license ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SalesforceAssignPermissionSetLicense.success | boolean | Status of the result. Can be true or false. | 
+| SalesforceAssignPermissionSetLicense.PermissionSetLicenseAssign.id | string | ID of the created ermission set assignment license. | 
+| SalesforceAssignPermissionSetLicense.errorCode | string | Error code from API, displayed in case of failure. | 
+| SalesforceAssignPermissionSetLicense.errorMessage | string | Error message from API, displayed in case of failure. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### salesforce-get-assigned-permission-set-license
+***
+Gets an assigned permission set license.
+
+
+#### Base Command
+
+`salesforce-get-assigned-permission-set-license`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SalesforceGetAssignedPermissionSetLicense.success | boolean | Status of the result. Can be true or false. | 
+| SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.attributes | string | Information about the type and url of the field fetched. | 
+| SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.AssigneeId | string | User ID passed as input. | 
+| SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.Id | string | ID of the PermissionSetLicenseAssignments assigned for given user. | 
+| SalesforceGetAssignedPermissionSetLicense.errorCode | string | Error code from API, displayed in case of failure. | 
+| SalesforceGetAssignedPermissionSetLicense.errorMessage | string | Error message from API, displayed in case of failure. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### salesforce-delete-assigned-permission-set-license
+***
+Deletes an assigned permission set license.
+
+
+#### Base Command
+
+`salesforce-delete-assigned-permission-set-license`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| permission_set_assignment_license_id | ID of the PermissionSetLicenseAssign object. A PermissionSetLicenseAssign represents the association between a user and the PermissionSetLicense. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SalesforceDeleteAssignedPermissionSetLicense.success | boolean | Status of the result. Can be true or false. | 
+| SalesforceDeleteAssignedPermissionSetLicense.errorCode | string | Error code from API, displayed in case of failure. | 
+| SalesforceDeleteAssignedPermissionSetLicense.errorMessage | string | Error message from API, displayed in case of failure. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### salesforce-assign-package-license
+***
+Assigns a package license.
+
+
+#### Base Command
+
+`salesforce-assign-package-license`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID. | Required | 
+| package_license_id | The package License ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SalesforceAssignPackageLicense.success | boolean | Status of the result. Can be true or false. | 
+| SalesforceAssignPackageLicense.PackageLicenseAssign.id | boolean | ID of the created Package License Assign. | 
+| SalesforceAssignPackageLicense.errorCode | number | Error code from API, displayed in case of failure. | 
+| SalesforceAssignPackageLicense.errorMessage | string | Error message from API, displayed in case of failure. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### salesforce-get-assigned-package-license
+***
+Gets an assigned package license.
+
+
+#### Base Command
+
+`salesforce-get-assigned-package-license`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SalesforceGetAssignedPackageLicense.success | boolean | Status of the result. Can be true or false. | 
+| SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.attributes | boolean | Information about the type and url of the field fetched. | 
+| SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.AssigneeId | string | User ID passed as input. | 
+| SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.Id | string | ID of the Package License Assignment of the given user. | 
+| SalesforceGetAssignedPackageLicense.errorCode | number | Error code from API, displayed in case of failure. | 
+| SalesforceGetAssignedPackageLicense.errorMessage | string | Error message from API, displayed in case of failure. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### salesforce-delete-assigned-package-license
+***
+Deletes an assigned package license.
+
+
+#### Base Command
+
+`salesforce-delete-assigned-package-license`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_package_license_id | ID of the UserPackageLicense object. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SalesforceDeleteAssignedPackageLicense.success | boolean | Status of the result. Can be true or false. | 
+| SalesforceDeleteAssignedPackageLicense.errorCode | number | Error code from API, displayed in case of failure. | 
+| SalesforceDeleteAssignedPackageLicense.errorMessage | string | Error message from API, displayed in case of failure. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
 
