@@ -87,7 +87,7 @@ script:
     arguments:
     - name: portfolio_id
       description: Portfolio ID. A list of Portfolio IDs can be retrieved using the
-        `!securityscorecard-portfolios-list` command.
+        'securityscorecard-portfolios-list' command.
       required: true
       default: false
     - name: grade
@@ -104,9 +104,20 @@ script:
       - "E"
       - "F"
     - name: industry
-      description: Industry filter, e.g. information_services, technology.
+      description: Industry filter.
       required: false
       default: false
+      auto: PREDEFINED
+      predefined:
+      - "education"
+      - "financial_services"
+      - "food"
+      - "government"
+      - "healthcare"
+      - "information_services"
+      - "manufacturing"
+      - "retail"
+      - "technology"
     - name: vulnerability
       description: Vulnerability filter. TODO NEED TO CHECK POSSIBLE VALUES.
       required: false

@@ -461,22 +461,13 @@ def portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict
     """
 
     portfolio_id = args.get('portfolio_id')
+    grade = args.get('grade')
 
-    # Validate grade argument
-    if 'grade' in args:
-        grade = args.get('grade')
-    else:
-        grade = None
-
-    # Validate and transform industry
     # We need to capitalize the industry to conform to API
-    industry = None
-    if 'industry' in args:
-        industry_arg = args.get('industry')
-        industry = str.upper(industry_arg)  # type: ignore
+    industry_arg = args.get('industry')
+    industry = str.upper(industry_arg) if args.get("industry") else None  # type: ignore
 
     vulnerability = args.get('vulnerability')
-
     issue_type = args.get('issue_type')
 
     had_breach_within_last_days = arg_to_number(
