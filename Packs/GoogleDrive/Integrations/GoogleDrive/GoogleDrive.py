@@ -907,13 +907,9 @@ def prepare_drives_human_readable(outputs_context: List[Dict[str, Any]]) -> str:
 
     :return: Human readable.
     """
-    drive_hr: List[Dict[str, Any]] = [{}]
-    for current_context in outputs_context:
-        drive_hr.append(current_context)
 
-    drive_hr = GSuiteClient.remove_empty_entities(drive_hr)
-    drive_activity_hr = tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Drive(s)', len(drive_hr)),
-                                        drive_hr,
+    drive_activity_hr = tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Drive(s)', len(outputs_context)),
+                                        GSuiteClient.remove_empty_entities(outputs_context),
                                         ['id', 'name', 'createdTime'],
                                         headerTransform=pascalToSpace,
                                         removeNull=True)
