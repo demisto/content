@@ -10,6 +10,9 @@ from CommonServerUserPython import *
 import json
 import io
 
+from datetime import datetime
+from datetime import timezone
+
 MOCK_URL = 'https://test.com/api'
 
 
@@ -442,21 +445,25 @@ def test_threat_intel_update_source(requests_mock):
 def test_fetch_incidents(requests_mock):
     """Tests fetch incidents.
     """
-    from SumoLogicCloudSIEM import Client, fetch_incidents, insight_signal_to_readable, DEFAULT_HEADERS
+    from SumoLogicCloudSIEM import Client, fetch_incidents, DEFAULT_HEADERS
 
     mock_response1 = util_load_json('test_data/insight_list_page1.json')
-    requests_mock.get('{}/sec/v1/insights?q=created%3A%3E%3D123456789+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
-                      '&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname'
-                      '%2CdstDevice_ip%2Cemail_sender%2Cfile_basename%2Cfile_hash_md5%2Cfile_hash_sha1%2Cfile_hash_sha256'
-                      '%2CsrcDevice_hostname%2CsrcDevice_ip%2Cthreat_name%2Cthreat_category%2Cthreat_identifier%2Cuser_username'
-                      '%2Cthreat_url%2ClistMatches'.format(MOCK_URL), json=mock_response1)
+    requests_mock.get(
+        '{}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
+        '&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname'
+        '%2CdstDevice_ip%2Cemail_sender%2Cfile_basename%2Cfile_hash_md5%2Cfile_hash_sha1%2Cfile_hash_sha256'
+        '%2CsrcDevice_hostname%2CsrcDevice_ip%2Cthreat_name%2Cthreat_category%2Cthreat_identifier%2Cuser_username'
+        '%2Cthreat_url%2ClistMatches'.format(MOCK_URL),
+        json=mock_response1)
 
     mock_response2 = util_load_json('test_data/insight_list_page2.json')
-    requests_mock.get('{}/sec/v1/insights?q=created%3A%3E%3D123456789+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
-                      '&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname'
-                      '%2CdstDevice_ip%2Cemail_sender%2Cfile_basename%2Cfile_hash_md5%2Cfile_hash_sha1%2Cfile_hash_sha256'
-                      '%2CsrcDevice_hostname%2CsrcDevice_ip%2Cthreat_name%2Cthreat_category%2Cthreat_identifier%2Cuser_username'
-                      '%2Cthreat_url%2ClistMatches&offset=1'.format(MOCK_URL), json=mock_response2)
+    requests_mock.get(
+        '{}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
+        '&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname'
+        '%2CdstDevice_ip%2Cemail_sender%2Cfile_basename%2Cfile_hash_md5%2Cfile_hash_sha1%2Cfile_hash_sha256'
+        '%2CsrcDevice_hostname%2CsrcDevice_ip%2Cthreat_name%2Cthreat_category%2Cthreat_identifier%2Cuser_username'
+        '%2Cthreat_url%2ClistMatches&offset=1'.format(MOCK_URL),
+        json=mock_response2)
 
     client = Client(
         base_url=MOCK_URL,
@@ -466,12 +473,14 @@ def test_fetch_incidents(requests_mock):
         auth=('access_id', 'access_key'),
         ok_codes=[200])
 
-    next_run, incidents = fetch_incidents(client, 20, {}, 123456789, None, None)
+    next_run, incidents = fetch_incidents(client, 20, {}, 1621296000, None, None)
 
     assert incidents[0].get('name') == 'Defense Evasion with Persistence - 3fa0cee5-6658-31d4-bd66-32fe1739cf61'
     assert incidents[0].get('occurred') == '2021-05-18T14:46:46.000Z'
     assert incidents[1].get('name') == 'Defense Evasion with Persistence - 67134063-94a3-3374-9c5f-dcb40d7f172e'
     assert incidents[1].get('occurred') == '2021-05-18T14:46:47.000Z'
+    latest_created_time = datetime.strptime(incidents[1].get('occurred'), '%Y-%m-%dT%H:%M:%S.%fZ')
+    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=timezone.utc).timestamp())
 
 
 # python2 uses __builtin__ python3 uses builtins

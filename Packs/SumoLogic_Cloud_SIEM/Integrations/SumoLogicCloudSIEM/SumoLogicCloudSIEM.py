@@ -171,6 +171,18 @@ def get_update_result(resp_json):
     return {'Result': 'Success' if resp_json is True else 'Failed', 'Server Response': resp_json}
 
 
+def insight_timestamp_to_created_format(timestamp_int):
+    '''
+    Querying Insights using 'created' as opposed to 'timestamp' requires this conversion
+    '''
+    try:
+        created_time = datetime.utcfromtimestamp(timestamp_int)
+    except ValueError:
+        demisto.error('Error when converting timestamp to created format. Value: {}'.format(timestamp_int))
+        created_time = datetime.utcnow()
+    return datetime.strftime(created_time, '%Y-%m-%dT%H:%M:%S.%f')
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -663,7 +675,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
     incidents: List[Dict[str, Any]] = []
 
     # set query values that do not change with pagination
-    q = 'created:>={}'.format(latest_created_time)
+    q = 'created:>={}'.format(insight_timestamp_to_created_format(latest_created_time))
     if fetch_query:
         q += ' ' + fetch_query
     else:
@@ -680,7 +692,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
     while hasNextPage:
 
         # only query parameter that changes loop to loop is the offset
-        query['offset'] = offset
+        query['offset'] = str(offset)
         resp_json = client.req('GET', 'sec/v1/insights', query)
         for a in resp_json.get('objects'):
 
