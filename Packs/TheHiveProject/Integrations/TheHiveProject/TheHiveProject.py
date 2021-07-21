@@ -301,13 +301,13 @@ class Client(BaseClient):
             return_error(res.text)
         return res.json()
 
-    def search_users(self, search_filter: dict = None):
-        users = self._http_request('POST', 'user/_search', ok_codes=[200], data=search_filter)
-        return users
+    def get_users(self):
+        users = self._http_request('POST', 'user/_search', ok_codes=[200, 404], data=None, resp_type='response')
+        return users.json() if users.status_code != 404 else None
 
     def get_user(self, user_id: str):
-        res = self._http_request('GET', f'user/{user_id}', ok_codes=[200])
-        return res
+        res = self._http_request('GET', f'user/{user_id}', ok_codes=[200, 404], resp_type='response')
+        return res.json() if res.status_code != 404 else None
 
     def create_user(self, user_data: dict):
         if self.version[0] == "4":
@@ -317,11 +317,8 @@ class Client(BaseClient):
         return res
 
     def block_user(self, user_id: str = None):
-        res = self._http_request('DELETE', f'user/{user_id}', ok_codes=[204], resp_type='response')
-        if res.status_code == 204:
-            return True
-        else:
-            return False
+        res = self._http_request('DELETE', f'user/{user_id}', ok_codes=[204, 404], resp_type='response')
+        return True if res.status_code == 204 else False
 
     def list_observables(self, case_id: str = None):
         if self.version[0] == "4":
@@ -329,7 +326,7 @@ class Client(BaseClient):
                 "query": [
                     {
                         "_name": "getCase",
-                        "idOrName": case_id
+                        "idOrName": case_id if case_id else ''
                     },
                     {
                         "_name": "observables"
@@ -374,11 +371,10 @@ class Client(BaseClient):
         res = self._http_request(
             'PATCH',
             f'case/artifact/{artifact_id}',
-            ok_codes=[200, 204],
+            ok_codes=[200, 204, 404],
             data=data,
             resp_type="response")
-        if res.status_code in [200, 204]:
-            return {"data": "", "dataType": "", "message": "Successful"}
+        return True if res.status_code != 404 else False
 
 
 ''' HELPER FUNCTIONS '''
@@ -580,7 +576,12 @@ def get_case_tasks_command(client: Client, args: dict):
     if client.get_case(case_id):
         tasks = client.get_tasks(case_id)
         if tasks:
-            read = tableToMarkdown(f'TheHive Tasks For Case {case_id}:', tasks, ['id', 'title', 'createdAt', 'status'])
+            for task in tasks:
+                task_date_dt = dateparser.parse(str(task['_createdAt']))
+                if task_date_dt:
+                    task['_createdAt'] = task_date_dt.strftime(DATE_FORMAT)
+            read = tableToMarkdown(f'TheHive Tasks For Case {case_id}:', tasks,
+                                   ['_id', 'title', '_createdAt', '_createdBy', 'status', 'group'])
         else:
             read = "No tasks found for this case"
     else:
@@ -599,12 +600,12 @@ def get_task_command(client: Client, args: dict):
     task_id = args.get('id')
     task = client.get_task(task_id)
     if task:
-        task_date_dt = dateparser.parse(str(task['createdAt']))
+        task_date_dt = dateparser.parse(str(task['_createdAt']))
         if task_date_dt:
-            task['createdAt'] = task_date_dt.strftime(DATE_FORMAT)
+            task['_createdAt'] = task_date_dt.strftime(DATE_FORMAT)
 
         read = tableToMarkdown(f'TheHive Task {task_id}:', task,
-                               ['id', 'title', 'createdAt', 'createdBy', 'status', '_parent'])
+                               ['_id', 'title', '_createdAt', '_createdBy', 'status', 'group'])
     else:
         read = f"No task found with id: {task_id}"
 
@@ -639,39 +640,61 @@ def update_task_command(client: Client, args: dict):
     task_id = args.get('id')
     data = args
     del data['id']
-    task = client.update_task(task_id=task_id, updates=data)
-    if type(task) == dict:
-        task['id'] = task_id
-    return output_results(
-        title=f'TheHive Update Task {task_id}:',
-        outputs=task,
-        headers=[x for x in args.keys() if x != 'id'],
-        outputs_prefix='TheHive.Tasks',
-        outputs_key_field='id',
-    )
+    task = client.get_task(task_id)
+    if task:
+        updated_task = client.update_task(task_id=task_id, updates=data)
+        if type(task) == dict:
+            task_date_dt = dateparser.parse(str(updated_task['createdAt']))
+            if task_date_dt:
+                updated_task['createdAt'] = task_date_dt.strftime(DATE_FORMAT)
+            read = tableToMarkdown(f"Updated task with id: {task_id}", updated_task,
+                                   ['_id', 'title', 'createdAt', 'createdBy', 'status', 'group'])
+        else:
+            read = f"failed to update the task"
+    else:
+        read = f"No task found with id: {task_id}"
+
+    return CommandResults(
+            outputs_prefix='TheHive.Tasks',
+            outputs_key_field="id",
+            outputs=updated_task,
+            readable_output=read
+        )
 
 
-def search_users_command(client: Client, args: dict = None):
-    users = client.search_users()
-    return output_results(
-        title='TheHive Users:',
-        outputs=users,
-        headers=['id', 'name', 'roles', 'status'],
-        outputs_prefix='TheHive.Users',
-        outputs_key_field='id',
-    )
+def get_users_list_command(client: Client, args: dict = None):
+    users = client.get_users()
+    if users:
+        read = tableToMarkdown('TheHive Users:', users, ['id', 'name', 'roles', 'status'])
+    else:
+        read = "No users found"
+
+    return CommandResults(
+            outputs_prefix='TheHive.Users',
+            outputs_key_field="id",
+            outputs=users,
+            readable_output=read
+        )
 
 
 def get_user_command(client: Client, args: dict):
     user_id: str = args.get('id')
     user = client.get_user(user_id)
-    return output_results(
-        title=f'TheHive User ID {user_id}:',
-        outputs=user,
-        headers=['id', 'name', 'roles', 'status'],
-        outputs_prefix='TheHive.Users',
-        outputs_key_field='id',
-    )
+    if user:
+        user_date_dt = dateparser.parse(str(user['createdAt']))
+        if user_date_dt:
+            user['createdAt'] = user_date_dt.strftime(DATE_FORMAT)
+        read = tableToMarkdown(f'TheHive User ID {user_id}:', user,
+                               ['_id', 'name', 'roles', 'status', 'organisation', 'createdAt'])
+    else:
+        read = f"No user found with id: {user_id}"
+
+    return CommandResults(
+            outputs_prefix='TheHive.Users',
+            outputs_key_field="id",
+            outputs=user,
+            readable_output=read
+        )
 
 
 def create_local_user_command(client: Client, args: dict):
@@ -685,16 +708,19 @@ def create_local_user_command(client: Client, args: dict):
         user_data['profile'] = args.get('profile', "read-only")
         del user_data['roles']
     result = client.create_user(user_data=user_data)
-    if client.version[0] == "4":
-        result['id'] = result['_id']
-    return output_results(
-        title=f"New User {result.get('id', result.get('_id', None))}:",
-        outputs=result,
-        headers=['id', 'name', 'roles', 'status'] if client.version[0] != "4"
-        else ['id', 'name', 'profile', 'status'],
-        outputs_prefix='TheHive.Users',
-        outputs_key_field='id',
-    )
+    if result:
+        read = tableToMarkdown(f"New User {result.get('id', result.get('_id', None))}:", result,
+                               headers=['id', 'login', 'name', 'roles'] if client.version[0] != "4"
+                               else ['_id', 'login', 'name', 'profile'])
+    else:
+        read = "failed to create a user"
+
+    return CommandResults(
+            outputs_prefix='TheHive.Users',
+            outputs_key_field="id",
+            outputs=result,
+            readable_output=read
+        )
 
 
 def block_user_command(client: Client, args: dict):
@@ -702,61 +728,84 @@ def block_user_command(client: Client, args: dict):
     if client.block_user(user_id):
         demisto.results(f'User "{user_id}" blocked successfully')
     else:
-        demisto.results(f'User "{user_id}" was not blocked successfully')
+        demisto.results(f'No user found with id: {user_id}')
 
 
 def list_observables_command(client: Client, args: dict):
     case_id = args.get('id')
-    observables = client.list_observables(case_id)
-    title = f"Observables for Case {case_id}" if case_id else "Observables:"
-    return output_results(
-        title=title,
-        outputs=observables,
-        headers=['data', 'dataType', 'message'],
-        outputs_prefix='TheHive.Observables',
-        outputs_key_field='id',
-    )
+    case = client.get_case(case_id) if case_id else "all"
+    if not case:
+        read = f"No case found with id: {case_id}"
+        observables = None
+    else:
+        observables = client.list_observables(case_id)
+        if observables:
+            read = tableToMarkdown(f"Observables for Case {case_id}" if case_id else "Observables:", observables,
+                                ['data', 'dataType', 'message'])
+        else:
+            read = f"No observables found for case with id: {case_id}" if case_id else "No observables found"
+
+    return CommandResults(
+            outputs_prefix='TheHive.Observables',
+            outputs_key_field="id",
+            outputs=observables,
+            readable_output=read
+        )
 
 
 def create_observable_command(client: Client, args: dict):
     case_id = args.get('id')
-    data = {
-        "data": args.get('data'),
-        "dataType": args.get('dataType'),
-        "message": args.get('message'),
-        "startDate": args.get('startDate', None),
-        "tlp": args.get('tlp', None),
-        "ioc": True if args.get('ioc', 'false') == 'true' else False,
-        "status": args.get('status', None)
-    }
-    data = {k: v for k, v in data.items() if v}
-    res = client.create_observable(case_id=case_id, data=data)
-    return output_results(
-        title='New Observable:',
-        outputs=res,
-        headers=['data', 'dataType', 'message'],
-        outputs_prefix='TheHive.Observables',
-        outputs_key_field='id',
+    case = client.get_case(case_id)
+    if not case:
+        read = f"No case found with id: {case_id}"
+        res = None
+    else:
+        data = {
+            "data": args.get('data'),
+            "dataType": args.get('dataType'),
+            "message": args.get('message'),
+            "startDate": args.get('startDate', None),
+            "tlp": args.get('tlp', None),
+            "ioc": True if args.get('ioc', 'false') == 'true' else False,
+            "status": args.get('status', None)
+        }
+        data = {k: v for k, v in data.items() if v}
+        res = client.create_observable(case_id=case_id, data=data)
+        if res:
+            read = tableToMarkdown('New Observable:', res, ['id', 'data', 'dataType', 'message'])
+        else:
+            read = "Could not create a new observable"
+
+    return CommandResults(
+            outputs_prefix='TheHive.Observables',
+            outputs_key_field="id",
+            outputs=res,
+            readable_output=read
     )
 
 
 def update_observable_command(client: Client, args: dict):
     artifact_id = args.get('id')
-    data = {
-        "message": args.get('message'),
-        "tlp": args.get('tlp', None),
-        "ioc": True if args.get('ioc', 'false') == 'true' else False,
-        "status": args.get('status', None)
-    }
-    data = {k: v for k, v in data.items() if v}
-    res = client.update_observable(artifact_id=artifact_id, data=data)
-    res['data'] = data
-    return output_results(
-        title=f'Updated Observable {artifact_id}:',
-        outputs=res,
-        headers=['data', 'dataType', 'message'],
+    artifact = "client.get_case(artifact_id)"
+    if not artifact:
+        read = f"No case found with id: {artifact_id}"
+        res = None
+    else:
+        data = {
+            "message": args.get('message'),
+            "tlp": args.get('tlp', None),
+            "ioc": True if args.get('ioc', 'false') == 'true' else False,
+            "status": args.get('status', None)
+        }
+        data = {k: v for k, v in data.items() if v}
+        res = client.update_observable(artifact_id=artifact_id, data=data)
+        read = "The observable was updated successfully" if res else f"No observable found with id: {artifact_id}"
+
+    return CommandResults(
         outputs_prefix='TheHive.Observables',
-        outputs_key_field='id',
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=read
     )
 
 
@@ -907,7 +956,7 @@ def main() -> None:
         'thehive-get-task': get_task_command,
         'thehive-get-attachment': get_attachment_command,
         'thehive-update-task': update_task_command,
-        'thehive-list-users': search_users_command,
+        'thehive-list-users': get_users_list_command,
         'thehive-get-user': get_user_command,
         'thehive-create-local-user': create_local_user_command,
         'thehive-list-observables': list_observables_command,
@@ -950,3 +999,10 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
+
+ # TODO: no option to add task via demisto not even when creating case
+ # no attachments in demisto or product itself, no option to add one even
+ #when updating task no description to update, update something else?
+ # the search user command, does not have the option to filter, just get the list
+ #create obserables lacks the tag arg

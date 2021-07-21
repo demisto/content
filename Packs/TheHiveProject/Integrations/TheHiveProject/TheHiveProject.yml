@@ -1290,8 +1290,6 @@ script:
       description: Flag
     - name: owner
       description: Owner
-    - name: description
-      description: Description
     - name: startDate
       description: Start date
     - name: endDate
