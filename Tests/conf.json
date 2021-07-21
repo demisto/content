@@ -676,14 +676,6 @@
             "playbookID": "HighlightWords_Test"
         },
         {
-            "integrations": "Pentera",
-            "playbookID": "Pcysys-Test"
-        },
-        {
-            "integrations": "Pentera",
-            "playbookID": "Pentera Run Scan and Create Incidents - Test"
-        },
-        {
             "playbookID": "StringContainsArray_test"
         },
         {
@@ -1786,6 +1778,16 @@
             "is_mockable": false
         },
         {
+            "integrations": "Microsoft 365 Defender",
+            "playbookID": "Microsoft_365_Defender-Test",
+            "instance_names": "ms_365_defender_device_code"
+        },
+        {
+            "integrations": "Microsoft 365 Defender",
+            "playbookID": "Microsoft_365_Defender-Test",
+            "instance_names": "ms_365_defender_client_cred"
+        },
+        {
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
             "nightly": true,
@@ -1915,7 +1917,8 @@
         {
             "integrations": "VMware Carbon Black EDR v2",
             "playbookID": "Carbon Black Edr - Test",
-            "is_mockable": false
+            "is_mockable": false,
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Cisco Umbrella Investigate",
@@ -3430,6 +3433,11 @@
             "memory_threshold": 900,
             "pid_threshold": 12,
             "context_print_dt": "EDLHey"
+        },
+        {
+            "integrations": "jamf v2",
+            "playbookID": "Jamf_v2_test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3516,7 +3524,6 @@
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
         "get_original_email_-_ews-_test": "Issue 27571",
         "PANW Threat Vault - Signature Search - Test": "Issue 30930",
-        "TAXII_Feed_Test": "Issue 37588",
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
@@ -3617,7 +3624,6 @@
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         
         "_comment4": "~~~ OTHER ~~~",
-        "Pentera": "authentication method will not work with testing",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
         "Zoom": "Issue 19832",
