@@ -1362,6 +1362,12 @@ class IntegrationLogger(object):
                 a = self.encode(a)
                 to_add.append(stringEscape(a))
                 to_add.append(stringUnEscape(a))
+                js = json.dumps(a)
+                if js.startswith('"'):
+                    js = js[1:]
+                if js.endswith('"'):
+                    js = js[:-1]
+                to_add.append(js)
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
