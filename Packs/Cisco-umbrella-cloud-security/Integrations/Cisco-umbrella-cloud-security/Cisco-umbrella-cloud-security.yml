@@ -88,11 +88,11 @@ script:
     description: Gets the domain from a destination list
     name: umbrella-get-destination-domain
     outputs:
-    - contextPath: Umbrella.Destination.id
-    - contextPath: Umbrella.Destination.destination
-    - contextPath: Umbrella.Destination.type
-    - contextPath: Umbrella.Destination.createdAt
-    - contextPath: Umbrella.Destination.comment
+    - contextPath: Umbrella.Destinations.id
+    - contextPath: Umbrella.Destinations.destination
+    - contextPath: Umbrella.Destinations.type
+    - contextPath: Umbrella.Destinations.createdAt
+    - contextPath: Umbrella.Destinations.comment
   dockerimage: demisto/python3:3.9.5.21272
   runonce: false
   script: ''
