@@ -4,16 +4,17 @@ You should run this playbook as a scheduled job.  The playbook checks the health
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Integrations and Incidents Health Check - Running Scripts
 * JOB - Integrations and Incidents Health Check - Lists handling
+* Integrations and Incidents Health Check - Running Scripts
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* DeleteContext
-* CopyLinkedAnalystNotes
 * FindSimilarIncidents
+* CopyLinkedAnalystNotes
+* RestartFailedTasks
+* DeleteContext
 
 ### Commands
 * generateGeneralReport
@@ -28,7 +29,9 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | SendHealthCheckReport | This input determines if the health check report should be sent automatically after running the playbook.<br/>True - Yes. |  | Optional |
 | EmailReportTo | In case the 'SendHealthCheckReport' input equals to 'True', the email address the report will be sent to. |  | Optional |
-| AutoCloseInvestigation | This input determines if the investigation should close automatically after the re-run of the scripts. |  | Optional |
+| AutoCloseInvestigation | This input determines if the investigation should close automatically after the re-run of the scripts. | False | Optional |
+| playbookExclusion | Comma Separated list of failed tasks to exclude from restart based on playbook string match. |  | Optional |
+| AutoRestartFailedTasks | Whether to automatically run the RestartFailedTasks automation. | False | Optional |
 
 ## Playbook Outputs
 ---
@@ -36,4 +39,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![JOB - Integrations and Playbooks Health Check](https://raw.githubusercontent.com/demisto/content/70deb610bd081957d58323b197d4648dc504722c/Packs/IntegrationsAndIncidentsHealthCheck/doc_files/JOB_-_Integrations_and_Playbooks_Checkup.png)
+![JOB - Integrations and Incidents Health Check](https://raw.githubusercontent.com/demisto/content/63a3dc4dadf030473dc093d855c25fc3b3f57ded/Packs/IntegrationsAndIncidentsHealthCheck/doc_files/JOB_-_Integrations_and_Playbooks_Checkup.png)
