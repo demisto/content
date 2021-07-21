@@ -12,7 +12,7 @@ def test_extract_existing_mitre_ids(mocker):
     - run the ExtractAttackPattern script
     Validate that name extracted successfully from the ID.
     """
-    mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': [
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{}, {}, {'Contents': [
         {'id': 'T1530', 'value': 'Data from Cloud Storage Object'},
         {'id': 'T1602', 'value': 'Data from Configuration Repository'}
     ]}])
@@ -26,7 +26,7 @@ def test_extract_existing_mitre_ids(mocker):
 
     result = is_valid_attack_pattern(['T1530', 'T1602'])
     assert not result
-    assert demisto.info.call_args[0][0] == 'Unsupported Command : mitre-get-attack-pattern-value, ' \
+    assert demisto.info.call_args[0][0] == 'Unsupported Command : mitre-get-indicator-name, ' \
         'verify you have proper integration (MITRE ATTACK v2) enabled to support it. ' \
         'This Is needed in order to auto extract MITRE IDs and translate them to Attack Pattern IOCs'
 
@@ -39,7 +39,7 @@ def test_extract_non_existing_mitre_ids(mocker):
 
 
 def test_extract_existing_mitre_id(mocker):
-    mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents':
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{}, {}, {'Contents':
                         [{'id': 'T1530', 'value': 'Data from Cloud Storage Object'}]}])
 
     indicators = is_valid_attack_pattern(['T1530'])
