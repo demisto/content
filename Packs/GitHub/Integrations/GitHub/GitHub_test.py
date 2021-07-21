@@ -186,12 +186,30 @@ def test_list_all_projects_command(mocker, requests_mock):
     mocker.patch('GitHub.get_project_details', side_effect=get_project_d)
     mocker_output = mocker.patch('GitHub.return_results')
 
-    import GitHub
-    GitHub.PROJECT_SUFFIX = '/projects'
-
-    GitHub.list_all_projects_command()
+    list_all_projects_command()
     result: CommandResults = mocker_output.call_args[0][0]
 
     assert len(result.outputs) == 2
     assert result.outputs[0]['Number'] == 22
     assert result.outputs[1]['Number'] == 24
+
+
+RESPONSE_DETAILS = [
+    (200, b'{}', 'GitHub.return_results', "The issue was successfully added to column ID column_id."),
+    (404, b'{"message": "Column not found."}', 'GitHub.return_error',
+     'Post result <Response [404]>\nMessage: Column not found.')
+]
+
+
+@pytest.mark.parametrize('response_code,response_content,mocked_return,expected_result', RESPONSE_DETAILS)
+def test_add_issue_to_project_board_command(mocker, requests_mock, response_code, response_content, mocked_return,
+                                            expected_result):
+
+    mocker.patch.object(demisto, 'args', return_value={'column_id': 'column_id', 'issue_unique_id': '11111'})
+    requests_mock.post(f'{BASE_URL}/projects/columns/column_id/cards', status_code=response_code,
+                       content=response_content)
+    mocker_results = mocker.patch(mocked_return)
+
+    add_issue_to_project_board_command()
+
+    assert mocker_results.call_args[0][0] == expected_result
