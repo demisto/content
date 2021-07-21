@@ -29,9 +29,9 @@ except Exception:
 CLIENT = None
 URL = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
 # Remove the http/s from the url (It's added automatically later)
-DOMAIN = URL.replace('http://', '').replace('https://', '')
+URL = URL.replace('http://', '').replace('https://', '')
 # Split the URL into two parts hostname & port
-SERVER, PORT = DOMAIN.rsplit(":", 1)
+SERVER, PORT = URL.rsplit(":", 1)
 ORG_NAME = demisto.params()['org']
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD = demisto.params().get('credentials', {}).get('password')
@@ -1001,6 +1001,8 @@ def test():
             return_error('There is something wrong with the fetch date. Error: {}'.format(error))
 
     demisto.results('ok')
+
+
 
 
 def add_notes(incident_id, comment):

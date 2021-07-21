@@ -1,21 +1,5 @@
 import demistomock as demisto
-
-PARAMS = {
-    "server": "www.example.com:8080",
-    "org": "example",
-    "credentials": {
-        "identifier": "admin",
-        "password": "123456"
-    }
-}
-
-ARGS = {
-    "command": "rs-update-incident",
-    "incident-id": "1234",
-    "other-fields": '{"description": {"textarea": {"format": "html", "content": "The new description"}},'
-                    '"name": {"text": "The new name"}, "owner_id": {"id": 2},'
-                    '"discovered_date": {"date": 1624782898010}, "confirmed": {"boolean": "false"}}'
-}
+from IBMResilientSystems import main, add_notes, add_incident_artifact
 
 
 class MockClient:
@@ -38,8 +22,17 @@ class MockClient:
         return url, body
 
 
-def mock_update_incident(incident_id, data):
-    expected_data = {
+def test_update_incident_command(mocker):
+    mocker.patch.object(demisto, 'args', return_value={
+        "command": "rs-update-incident",
+        "incident-id": "1234",
+        "other-fields": '{"description": {"textarea": {"format": "html", "content": "The new description"}},'
+                        '"name": {"text": "The new name"}, "owner_id": {"id": 2},'
+                        '"discovered_date": {"date": 1624782898010}, "confirmed": {"boolean": "false"}}'
+    })
+    mocker.patch('IBMResilientSystems.get_client', return_value=MockClient)
+    mock_result = mocker.patch('IBMResilientSystems.update_incident')
+    expected_result = {
         'changes': [
             {
                 'field': {'name': 'description'},
@@ -65,54 +58,29 @@ def mock_update_incident(incident_id, data):
             }
         ]
     }
-    if data == expected_data:
-        code = 200
-    else:
-        code = None
 
-    class Response:
-        status_code = code
-
-    response = Response
-
-    return response
-
-
-def mock_client_post(url, body):
-    return url, body
-
-
-def test_update_incident_command(mocker):
-    from IBMResilientSystems import main
-    mocker.patch.object(demisto, 'args', return_value=ARGS)
-    mocker.patch('IBMResilientSystems.get_client', return_value=MockClient)
-    mocker.patch('IBMResilientSystems.get_client', return_value=MockClient)
-    mocker.patch.object(demisto, 'results')
     main()
-    # mocker.patch.object(CLIENT, MockClient)
-    demisto.results.call_args[0][0]
-    results = update_incident_command(ARGS)
 
-    assert results == 'Incident 1234 was updated successfully.'
+    assert mock_result.call_args.args[1] == expected_result
 
 
 def test_add_notes(mocker):
-    mocker.patch('IBMResilientSystems.client.post', side_effect=mock_client_post)
-    from IBMResilientSystems import add_notes
-    expected_results = ('/incidents/1/comments', {'text': {'format': 'text', 'content': 'Hello-World'}})
+    mocker.patch('IBMResilientSystems.CLIENT', return_value=MockClient)
+    mock_result = mocker.patch('IBMResilientSystems.CLIENT.post')
+    expected_result = ('/incidents/1234/comments', {'text': {'format': 'text', 'content': 'This is a new note'}})
 
-    add_notes(1, {"comment": "Hello-World"})
+    add_notes("1234", "This is a new note")
 
-    assert mock_result == expected_results
+    assert mock_result.call_args.args == expected_result
 
 
 def test_add_incident_artifact(mocker):
-    mocker.patch('IBMResilientSystems.client.post', side_effect=mock_client_post)
-    from IBMResilientSystems import add_incident_artifact
-    expected_results = ('/incidents/1/comments', {'type': 'IP Address', 'value': '6.6.6.6',
-                                                  'description': {'format': 'text',
-                                                                  'content': 'This is the artifact description'}})
+    mocker.patch('IBMResilientSystems.CLIENT', return_value=MockClient)
+    mock_result = mocker.patch('IBMResilientSystems.CLIENT.post')
+    expected_result = ('/incidents/1234/artifacts', {'type': 'IP Address', 'value': '1.1.1.1',
+                                                     'description': {'format': 'text',
+                                                                     'content': 'This is the artifact description'}})
 
-    add_incident_artifact(1, "IP Address", "6.6.6.6", "This is the artifact description")
+    add_incident_artifact("1234", "IP Address", "1.1.1.1", "This is the artifact description")
 
-    assert mock_result == expected_results
+    assert mock_result.call_args.args == expected_result
