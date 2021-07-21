@@ -118,29 +118,11 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def create_dbot_score_obj(indicator: str, indicator_type: str) -> Common.DBotScore:
-    """
-    Creates a DBotScore object with the given parameters (and score as None)
-
-    :type indicator: ``str``
-    :param indicator: The indicator
-
-    :type indicator_type: ``str``
-    :param indicator_type: IOC Types to return
-
-    :return: DBotScore object
-    :rtype: ``Common.DBotScore``
-    """
-
-    return Common.DBotScore(
-        indicator=indicator,
-        indicator_type=MAP_IOCS.get(indicator_type),
-        integration_name='IOCParser',
-        score=Common.DBotScore.NONE
-    )
+def list_to_upper_case(lst: List[str]) -> List[str]:
+    return list(map(lambda x: x.upper(), lst))
 
 
-def create_indicator_obj_list(response_data: Dict[str, List], keys: List[str]) -> (List, Dict):
+def process_response(response_data: Dict[str, List], keys: List[str]) -> None:
     """
     Creates indicators from the IOCs extracted from the response of the API and returns them as a list
 
@@ -149,45 +131,24 @@ def create_indicator_obj_list(response_data: Dict[str, List], keys: List[str]) -
 
     :type keys: ``List[str]``
     :param keys: IOC Types to return
-
-    :return: List with all indicator object that was created according to
-    :rtype: ``(List, Dict)``
     """
 
-    indicators = []
-    only_to_warroom = {}
-    for indicator_type, indicators_list in response_data.items():
-        if indicator_type not in keys:
-            continue
-        if indicator_type not in MAP_IOCS.keys():
-            only_to_warroom[indicator_type] = indicators_list
-            continue
-        for indicator in indicators_list:
-            dbot_score = create_dbot_score_obj(indicator, indicator_type)
-            context_outputs = {indicator_type: indicator}
+    keys_list = list(response_data.keys())
+    for ioc_type in keys_list:
+        if ioc_type not in keys or not response_data[ioc_type]:
+            del response_data[ioc_type]
 
-            indicator_obj = None
-            if indicator_type == 'BITCOIN_ADDRESS':
-                indicator_obj = Common.Cryptocurrency(address=indicator, address_type='bitcoin', dbot_score=dbot_score)
-            elif indicator_type == 'CVE':
-                indicator_obj = Common.CVE(id=indicator, cvss=None, published=None, modified=None, description=None)
-            elif indicator_type == 'DOMAIN':
-                indicator_obj = Common.Domain(domain=indicator, dbot_score=dbot_score)
-            elif indicator_type == 'EMAIL':
-                indicator_obj = Common.EMAIL(address=indicator, dbot_score=dbot_score)
-            elif indicator_type == 'FILE_HASH_MD5':
-                indicator_obj = Common.File(md5=indicator, dbot_score=dbot_score)
-            elif indicator_type == 'FILE_HASH_SHA1':
-                indicator_obj = Common.File(sha1=indicator, dbot_score=dbot_score)
-            elif indicator_type == 'FILE_HASH_SHA256':
-                indicator_obj = Common.File(sha256=indicator, dbot_score=dbot_score)
-            elif indicator_type == 'IPv4' or indicator_type == 'IPv6':
-                indicator_obj = Common.IP(ip=indicator, dbot_score=dbot_score)
-            elif indicator_type == 'URL':
-                indicator_obj = Common.URL(url=indicator, dbot_score=dbot_score)
-            indicators.append((indicator_obj, context_outputs))
 
-    return indicators, only_to_warroom
+def limit_response(response_data: Dict[str, List], limit: int) -> Dict[str, List]:
+    limited_response = {}
+    for ioc_type, iocs in response_data.items():
+        for ioc in iocs:
+            if limit > 0:
+                if not limited_response.get(ioc_type):
+                    limited_response[ioc_type] = []
+                limited_response.get(ioc_type).append(ioc)
+                limit -= 1
+    return limited_response
 
 
 ''' COMMAND FUNCTIONS '''
@@ -203,7 +164,7 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    response = client.ioc_from_url('https://pastebin.com/iMzrRXbJ', ['URL'])
+    response = client.ioc_from_url('https://pastebin.com/iMzrRXbJ')
     if (response.get('status') == 'fail') or (response.get('status') == 'error') or (response.get('status') is None):
         return 'Failed to connect with the API'
     return 'ok'
@@ -222,45 +183,42 @@ def ioc_from_url_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
 
     """
     url = args.get('url')
-    keys = args.get('keys')
+    keys = argToList(args.get('keys'))
+    limit = args.get('limit')
     if not keys:
         keys = ['ASN', 'BITCOIN_ADDRESS', 'CVE', 'DOMAIN', 'EMAIL', 'FILE_HASH_MD5', 'FILE_HASH_SHA1',
-                'FILE_HASH_SHA256', 'IPv4', 'IPv6', 'MAC_ADDRESS', 'MITRE_ATT&CK', 'URL', 'YARA_RULE']
+                'FILE_HASH_SHA256', 'IPV4', 'IPV6', 'MAC_ADDRESS', 'MITRE_ATT&CK', 'URL', 'YARA_RULE']
+    keys = list_to_upper_case(keys)
+
     if not url:
         raise ValueError('url not specified')
-
-    command_results = []
 
     response = client.ioc_from_url(url)
     try:
         response_data = response.get('data')
     except Exception:
-        raise Exception('The response from API is empty')
+        raise Exception('The response from the API is empty')
 
-    indicators, only_to_warroom = create_indicator_obj_list(response_data, keys)
-    if not indicators and not only_to_warroom:
-        raise Exception('The response from API is empty')
-    for indicator, d in indicators:
+    process_response(response_data, keys)
+    if limit:
+        response_data = limit_response(response_data, int(limit))
+    if not response_data:
+        raise Exception('The response from the API is empty')
+
+    command_results = []
+    outputs = {'url': url, 'Results': []}
+    for key, values in response_data.items():
+        for value in values:
+            outputs['Results'].append({'type': key, 'value': value})
+    for ioc_type, iocs in response_data.items():
         command_results.append(CommandResults(
-            outputs_prefix='IOCParser.parseFromUrl',
-            indicator=indicator,
-            outputs=d,
+            readable_output=tableToMarkdown(f'results for {ioc_type} for {url}', iocs, headers=ioc_type),
+            outputs_prefix=f'IOCParser.parseFromUrl',
+            outputs=outputs
         ))
 
-    readable_output = tableToMarkdown(
-        'Parse from URL Results',
-        remove_empty_elements(response_data),
-        headerTransform=string_to_table_header,
-    )
-
     command_results.append(CommandResults(
-        outputs_prefix='IOCParser.parseFromUrl',
-        outputs=remove_empty_elements(only_to_warroom)
-    ))
-
-    command_results.append(CommandResults(
-        readable_output=readable_output,
-        raw_response=response
+        raw_response=response_data
     ))
 
     return command_results
