@@ -86,7 +86,7 @@ script:
     description: Lists all companies in Portfolio.
     arguments:
     - name: portfolio_id
-      description: Portfolio ID. A list of Portfolio IDs can be retrieved using the
+      description: Portfolio ID. A comma-separated list of Portfolio IDs can be retrieved using the
         'securityscorecard-portfolios-list' command.
       required: true
       default: false
@@ -200,7 +200,7 @@ script:
       description: Company domain.
       required: true
       default: false
-    - name: severity_in
+    - name: severity
       isArray: true
       description: "Issue severity filter. Comma-separated list of the following values: 'positive', 'info', 'low', 'medium', 'high'."
       required: false
@@ -311,11 +311,10 @@ script:
       - "drops"
     - name: score_types
       isArray: true
-      description: Types of risk factors to monitor. Possible values are 'overall',
+      description: Comma-separated list of risk factors to monitor. Possible values are 'overall',
         'any_factor_score', 'network_security', 'dns_health', 'patching_cadence',
         'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score',
-        'hacker_chatter', 'leaked_information', 'social_engineering'. For multiple
-        factors, leaked_information,social_engineering .
+        'hacker_chatter', 'leaked_information', 'social_engineering'.
       required: true
     - name: target
       description: What do you want to monitor with this alert. It could be either 'my_scorecard' or 'any_followed_company'. This argument is required if the `portfolios` argument is not specified.
@@ -323,7 +322,13 @@ script:
       predefined:
       - "my_scorecard"
       - "any_followed_company"
-      required: true
+      required: false
+    - name: portfolios
+      isArray: true
+      description: A comma-separated list of Portfolios.
+        to use as a target for the alert. This argument is require if the `target`
+        argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
+      required: false
     outputs:
     - contextPath: SecurityScorecard.Alert.id
       description: Alert ID
@@ -343,7 +348,7 @@ script:
       required: true
     - name: score_types
       isArray: true
-      description: Types of risk factors to monitor. Possible values are 'overall',
+      description: Comma separated list of risk factors to monitor. Possible values are 'overall',
         'any_factor_score', 'network_security', 'dns_health', 'patching_cadence',
         'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score',
         'hacker_chatter', 'leaked_information', 'social_engineering'. For multiple

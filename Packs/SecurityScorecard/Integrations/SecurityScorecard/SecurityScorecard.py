@@ -61,18 +61,13 @@ class SecurityScorecardClient(BaseClient):
         had_breach_within_last_days: Optional[int]
     ) -> Dict[str, Any]:
 
-        request_params: Dict[str, Any] = {}
-
-        if grade:
-            request_params['grade'] = grade
-        if industry:
-            request_params['industry'] = str.upper(industry)
-        if vulnerability:
-            request_params['vulnerability'] = vulnerability
-        if issue_type:
-            request_params['issue_type'] = issue_type
-        if had_breach_within_last_days:
-            request_params['had_breach_within_last_days'] = had_breach_within_last_days
+        request_params: Dict[str, Any] = assign_params(
+            grade=grade,
+            industry=industry,
+            vulnerability=vulnerability,
+            issue_type=issue_type,
+            had_breach_within_last_days=had_breach_within_last_days
+        )
 
         return self.http_request_wrapper(
             method='GET',
@@ -89,10 +84,9 @@ class SecurityScorecardClient(BaseClient):
 
     def get_company_factor_score(self, domain: str, severity_in: Optional[List[str]]) -> Dict[str, Any]:
 
-        request_params: Dict[str, Any] = {}
-
-        if severity_in:
-            request_params['severity_in'] = severity_in
+        request_params: Optional[Dict[str, Any]] = {
+            "severity_in": severity_in
+        } if severity_in else None
 
         return self.http_request_wrapper(
             method='GET',
@@ -102,19 +96,15 @@ class SecurityScorecardClient(BaseClient):
 
     def get_company_historical_scores(self, domain: str, _from: str, to: str, timing: str) -> Dict[str, Any]:
 
-        request_params: Dict[str, Any] = {}
+        request_params: Dict[str, Any] = assign_params(
+            to=to,
+            timing=timing,
+            domain=domain
+        )
 
+        # assign_params cannot accept 'from' as a parameter since it's a Python keyword
         if _from:
             request_params['from'] = _from
-
-        if to:
-            request_params['to'] = to
-
-        if timing:
-            request_params['timing'] = timing
-        # API by default is set to daily
-        else:
-            request_params['timing'] = 'daily'
 
         return self.http_request_wrapper(
             method='GET',
@@ -502,7 +492,7 @@ def portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict
     )
 
     results = CommandResults(
-        "SecurityScorecard.Company",
+        outputs_prefix="SecurityScorecard.Company",
         readable_output=markdown,
         outputs=companies
     )
@@ -526,7 +516,7 @@ def company_score_get_command(client: SecurityScorecardClient, args: Dict[str, A
     domain = args.get('domain')
 
     score = client.get_company_score(domain=domain)  # type: ignore
-    score["domain"] = f"[{domain}](https://{domain})"
+    score["domain"] = domain
 
     industry = score.get("industry").title().replace("_", " ")  # type: ignore
     score["industry"] = industry
@@ -561,25 +551,26 @@ def company_factor_score_get_command(client: SecurityScorecardClient, args: Dict
 
     domain = args.get('domain')
 
-    severity_in = args.get('severity_in')
+    severity_in = args.get('severity')
 
     response = client.get_company_factor_score(domain, severity_in)  # type: ignore
 
-    demisto.debug(f"factor score response: {response}")
     entries = response['entries']
 
     factor_scores = []
     for entry in entries:
-        score = {}
-        score["Name"] = entry.get("name").title().replace("_", " ")
-        score["Grade"] = entry.get("grade")
-        score["Score"] = entry.get("score")
-        score["Issues"] = len(entry.get("issue_summary"))
-        score["Issue Details"] = entry.get("issue_summary")
+        score = {
+            "Name": entry.get("name").title().replace("_", " "),
+            "Grade": entry.get("grade"),
+            "Score": entry.get("score"),
+            "Issues": len(entry.get("issue_summary")),
+            "Issue Details": entry.get("issue_summary")
+        }
+
         factor_scores.append(score)
 
     markdown = tableToMarkdown(
-        f"Domain [{domain}](https://{domain}) Scorecard",
+        f"Domain {domain} Scorecard",
         factor_scores,
         headers=['Name', 'Grade', 'Score', 'Issues']
     )
@@ -657,9 +648,6 @@ def company_history_factor_score_get_command(client: SecurityScorecardClient, ar
     factor_scores = []
 
     for entry in entries:
-        f = {}
-        f["Date"] = entry.get("date").split("T")[0]
-
         factors = entry.get("factors")
         factor_row = ''
         for factor in factors:
@@ -668,10 +656,14 @@ def company_history_factor_score_get_command(client: SecurityScorecardClient, ar
 
             factor_row = factor_row + f"{factor_name}: {factor_score}\n"
 
-        f["Factors"] = factor_row
-        factor_scores.append(f)
+        score = {
+            "Date": entry.get("date").split("T")[0],
+            "Factors": factor_row
+        }
 
-    markdown = tableToMarkdown(f"Historical Factor Scores for Domain [`{domain}`](https://{domain})", factor_scores)
+        factor_scores.append(score)
+
+    markdown = tableToMarkdown(f"Historical Factor Scores for Domain {domain})", factor_scores)
 
     results = CommandResults(
         readable_output=markdown,
@@ -822,12 +814,12 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
 
     response = client.get_alerts_last_week(email=email, portfolio_id=portfolio_id)
 
-    entries = response["entries"]
+    entries = response.get("entries")
 
     # Retrieve the alert metadata (direction, score, factor, grade_letter, score_impact)
     alerts = []
 
-    for entry in entries:
+    for entry in entries:  # type: ignore
         # change_data is a list that includes all alert metadata that triggered the event
         changes = entry.get("change_data")
         for change in changes:
@@ -872,11 +864,11 @@ def company_services_get_command(client: SecurityScorecardClient, args: Dict[str
     domain = args.get("domain")
     response = client.get_domain_services(domain=domain)  # type: ignore
 
-    entries = response["entries"]
+    entries = response.get("entries")
 
     services = []
 
-    for entry in entries:
+    for entry in entries:  # type: ignore
         categories = entry.get("categories")
         for category in categories:
             service = {}
