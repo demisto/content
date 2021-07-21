@@ -676,14 +676,6 @@
             "playbookID": "HighlightWords_Test"
         },
         {
-            "integrations": "Pentera",
-            "playbookID": "Pcysys-Test"
-        },
-        {
-            "integrations": "Pentera",
-            "playbookID": "Pentera Run Scan and Create Incidents - Test"
-        },
-        {
             "playbookID": "StringContainsArray_test"
         },
         {
@@ -3441,6 +3433,11 @@
             "memory_threshold": 900,
             "pid_threshold": 12,
             "context_print_dt": "EDLHey"
+        },
+        {
+            "integrations": "jamf v2",
+            "playbookID": "Jamf_v2_test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3627,7 +3624,6 @@
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         
         "_comment4": "~~~ OTHER ~~~",
-        "Pentera": "authentication method will not work with testing",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
         "Zoom": "Issue 19832",
