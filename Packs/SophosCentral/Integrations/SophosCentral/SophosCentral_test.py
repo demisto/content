@@ -1038,9 +1038,24 @@ def test_flip_chars(input_id, expected) -> None:
 
 class TestCreateAlertOutput:
     @staticmethod
-    def test_sanity(requests_mock):
+    def test_failure_person_request(requests_mock):
+        """
+        Scenario: Creating an alert output.
+
+        Given:
+        - an alert with a person and managed agent object set.
+        - an error while trying to get the person data.
+
+        When:
+        - creating a context object for an alert.
+
+        Then:
+        - an empty string will be returned.
+
+        """
         from SophosCentral import create_alert_output
         client = init_mock_client(requests_mock)
+        requests_mock.get(f'{BASE_URL}/common/v1/directory/users/5d407889-8659-46ab-86c5-4f227302df78', exc=ValueError)
 
         alert = load_mock_response('alert_single.json')
         output = create_alert_output(client, alert, ['id', 'name'])
@@ -1049,8 +1064,23 @@ class TestCreateAlertOutput:
 
     @staticmethod
     def test_with_person_cache(requests_mock):
+        """
+        Scenario: Creating an alert output.
+
+        Given:
+        - an alert with a person and managed agent object set.
+        - the person info appear in the cache.
+
+        When:
+        - creating a context object for an alert.
+
+        Then:
+        - get the name from the cache.
+
+        """
         from SophosCentral import create_alert_output
         client = init_mock_client(requests_mock, {'person_mapping': {'5d407889-8659-46ab-86c5-4f227302df78': 'Cactus'}})
+        requests_mock.get(f'{BASE_URL}/common/v1/directory/users/5d407889-8659-46ab-86c5-4f227302df78', exc=ValueError)
 
         alert = load_mock_response('alert_single.json')
         output = create_alert_output(client, alert, ['id', 'name'])
@@ -1059,6 +1089,20 @@ class TestCreateAlertOutput:
 
     @staticmethod
     def test_without_relevant_person_cache(requests_mock):
+        """
+        Scenario: Creating an alert output.
+
+        Given:
+        - an alert with a person and managed agent object set.
+        - the person info doesn't appear in the cache.
+
+        When:
+        - creating a context object for an alert.
+
+        Then:
+        - get the name using the API.
+
+        """
         from SophosCentral import create_alert_output
         client = init_mock_client(requests_mock, {'person_mapping': {'12345678-1337-1337-1337-1234567890ab': 'Not Cactus'}})
         mock_response = load_mock_response('person.json')
@@ -1072,6 +1116,20 @@ class TestCreateAlertOutput:
 
     @staticmethod
     def test_with_managed_agent_cache(requests_mock):
+        """
+        Scenario: Creating an alert output.
+
+        Given:
+        - an alert with a person and managed agent object set.
+        - the managed agent info appear in the cache.
+
+        When:
+        - creating a context object for an alert.
+
+        Then:
+        - get the name from the cache.
+
+        """
         from SophosCentral import create_alert_output
         client = init_mock_client(requests_mock, {
             'managed_agent_mapping': {'6e9567ea-bb50-40c5-9f12-42eb308e4c9b': 'MyComputer'}})
