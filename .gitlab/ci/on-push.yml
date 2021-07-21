@@ -21,6 +21,20 @@ trigger-private-build:
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
 
+run-unittests-and-lint:
+  extends:
+    - .run-unittests-and-lint
+  rules:
+    - if: '$NIGHTLY'
+
+
+run-validations:
+  extends:
+    - .run-validations
+  rules:
+    - if: '$NIGHTLY'
+
+
 create-instances:
   extends:
     - .default-job-settings
