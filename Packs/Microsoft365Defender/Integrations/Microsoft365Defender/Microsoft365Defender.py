@@ -537,7 +537,7 @@ def main() -> None:
     enc_key = params.get('enc_key')
 
     first_fetch_time = params.get('first_fetch', '3 days').strip()
-    fetch_limit = params.get('max_fetch', 10)
+    fetch_limit = arg_to_number(params.get('max_fetch', 10))
     fetch_timeout = arg_to_number(params.get('fetch_timeout', TIMEOUT))
     demisto.debug(f'Command being called is {demisto.command()}')
 
