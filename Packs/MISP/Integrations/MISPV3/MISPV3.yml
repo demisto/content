@@ -1035,10 +1035,10 @@ script:
       isArray: false
       name: threat_level_id
       predefined:
-      - high
-      - medium
-      - low
-      - undefined
+      - High
+      - Medium
+      - Low
+      - Unknown
       required: false
       secret: false
     - auto: PREDEFINED

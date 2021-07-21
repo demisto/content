@@ -63,10 +63,10 @@ PREDEFINED_FEEDS = {
 }
 
 THREAT_LEVELS_TO_ID = {
-    'high': 1,
-    'medium': 2,
-    'low': 3,
-    'undefined': 4
+    'High': 1,
+    'Medium': 2,
+    'Low': 3,
+    'Unknown': 4
 }
 
 MISP_ENTITIES_TO_CONTEXT_DATA = {
@@ -324,11 +324,11 @@ def reputation_command_to_human_readable(outputs, score, events_to_human_readabl
         found_tag_id = event.pop('Tag_ID')
         found_tag_name = event.pop('Tag_Name')
     return {
-        'Attribute Type': outputs.get('Type'),
+        'Attribute Type': outputs[0].get('Type'),
         'Dbot Score': score,
-        'Attribute Value': outputs.get('Value'),
-        'Attribute Category': outputs.get('Category'),
-        'Timestamp': misp_convert_timestamp_to_date_string(outputs.get('Timestamp')),
+        'Attribute Value': outputs[0].get('Value'),
+        'Attribute Category': outputs[0].get('Category'),
+        'Timestamp': misp_convert_timestamp_to_date_string(outputs[0].get('Timestamp')),
         'Events with the scored tag': events_to_human_readable,
         'Scored Tag ID': found_tag_id,
         'Scored Tag Name': found_tag_name,
@@ -369,6 +369,7 @@ def limit_tag_output_to_id_and_name(attribute_dict, is_event_level):
 
 def parse_response_reputation_command(response, malicious_tag_ids, suspicious_tag_ids):
     """
+    Todo : change this , not correct anymore!
     After getting all the attributes which match the required indicator value, this function parses the response.
     This function combines all the attributes that found with their event's object into one json object (that will
     be returned to the context data), this is the reason why we use the first attribute object.
@@ -376,29 +377,50 @@ def parse_response_reputation_command(response, malicious_tag_ids, suspicious_ta
     In addition the function returns the indicator score and the tag (id) which made the indicator to get that score.
     Please see an example for a response in test_data/reputation_command_response.json
     Please see an example for a parsed output in test_data/reputation_command_outputs.json
-    """
+        """
     attributes_list = response.get('Attribute')
     if not attributes_list:
         return None
+    found_related_events, attributes_tag_ids, event_tag_ids = prepare_attributes_array_to_context_data(response)
+    is_attribute_in_event_with_bad_threat_level_id = found_event_with_bad_threat_level_id(found_related_events)
+    score, found_tag = get_score(attribute_tags_ids=attributes_tag_ids, event_tags_ids=event_tag_ids,
+                                 malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids,
+                                 is_attribute_in_event_with_bad_threat_level_id=
+                                 is_attribute_in_event_with_bad_threat_level_id)
 
-    all_related_events_with_full_info, attributes_tag_ids, event_tag_ids = get_full_related_event_objects(
-        attributes_list)
+    response = replace_keys_from_misp_to_context_data(response)  # this is the outputs (Attribute)
+    return response, score, found_tag, found_related_events
 
-    first_attribute = attributes_list[0]
-    combine_related_events_to_first_attribute_object(first_attribute.get('RelatedAttribute'), first_attribute,
-                                                     all_related_events_with_full_info)
-    first_attribute['Event']['Tag'], first_attribute_event_tags = \
-        limit_tag_output_to_id_and_name(first_attribute.get('Event'), True)
-    event_tag_ids.update(first_attribute_event_tags)
 
-    first_attribute['Tag'], first_attribute_tags = limit_tag_output_to_id_and_name(first_attribute, False)
-    attributes_tag_ids.update(first_attribute_tags)
+def prepare_attributes_array_to_context_data(response):
+    attributes_list = response.get('Attribute')
+    attributes_tag_ids, event_tag_ids = set(), set()
+    found_related_events = {}
+    if not attributes_list:
+        return None
+    for attribute in attributes_list:
+        attribute["RelatedAttribute"] = []
+        event = attribute.get('Event')
+        found_related_events[event.get("id")] = {"Event Name": event.get("info"),
+                                                 "Threat Level ID": event.get('threat_level_id'),
+                                                 "Event ID": event.get("id")}
+        if event.get('Tag'):
+            limit_tag_output, tag_ids = limit_tag_output_to_id_and_name(event, True)
+            event['Tag'] = limit_tag_output
+            event_tag_ids.update(tag_ids)
+        if attribute.get('Tag'):
+            limit_tag_output, tag_ids = limit_tag_output_to_id_and_name(attribute, False)
+            attribute['Tag'] = limit_tag_output
+            attributes_tag_ids.update(tag_ids)
+    return found_related_events, attributes_tag_ids, event_tag_ids
 
-    score, found_tag = get_score_by_tags(attribute_tags_ids=attributes_tag_ids, event_tags_ids=event_tag_ids,
-                                         malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids)
 
-    first_attribute = replace_keys_from_misp_to_context_data(first_attribute)  # this is the outputs (Attribute)
-    return first_attribute, score, found_tag
+def found_event_with_bad_threat_level_id(found_related_events):
+    bad_threat_level_ids = ["1", "2", "3"]
+    for event in found_related_events.values():
+        if event['Threat Level ID'] in bad_threat_level_ids:
+            return True
+    return False
 
 
 def combine_related_events_to_first_attribute_object(first_attribute_related_events_list, first_attribute,
@@ -436,15 +458,18 @@ def get_full_related_event_objects(attributes_list):
     return related_events, attributes_tag_ids, event_tag_ids
 
 
-def get_score_by_tags(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids):
+def get_score(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids,
+              is_attribute_in_event_with_bad_threat_level_id):
     """
     Calculates the indicator score by following logic. Indicators of attributes and Events that:
     * have tags which configured as malicious will be scored 3 (i.e malicious).
     * have tags which configured as suspicious will be scored 2 (i.e suspicious).
-    * don't have any tags configured as suspicious nor malicious will be scored 0 (i.e unknown).
-    In case the same tag appears in both Malicious tag ids and Suspicious tag ids lists the indicator will be scored as
-    malicious.
-    Attributes tags (both malicious and suspicious) are stronger than events' tags.
+    * don't have any tags configured as suspicious nor malicious will be scored by their event's threat level id. In
+    such case, the score will be BAD if the threat level id is in [1,2,3]. Otherwise, the threat level is 4 = Unknown.
+    note:
+    - In case the same tag appears in both Malicious tag ids and Suspicious tag ids lists the indicator will
+      be scored as malicious.
+    - Attributes tags (both malicious and suspicious) are stronger than events' tags.
     """
     found_tag = None
     is_attribute_tag_malicious = any((found_tag := tag) in attribute_tags_ids for tag in malicious_tag_ids)
@@ -462,6 +487,10 @@ def get_score_by_tags(attribute_tags_ids, event_tags_ids, malicious_tag_ids, sus
     is_event_tag_suspicious = any((found_tag := tag) in event_tags_ids for tag in suspicious_tag_ids)
     if is_event_tag_suspicious:
         return Common.DBotScore.SUSPICIOUS, found_tag
+
+    # no tag was found
+    if is_attribute_in_event_with_bad_threat_level_id:
+        return Common.DBotScore.BAD, None
 
     return Common.DBotScore.NONE, None
 
@@ -604,19 +633,24 @@ def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_id
     indicator_type = INDICATOR_TYPE_TO_DBOT_SCORE[dbot_type]
     is_indicator_found = misp_response and misp_response.get('Attribute')
     if is_indicator_found:
-        outputs, score, found_tag = parse_response_reputation_command(copy.deepcopy(misp_response), malicious_tag_ids,
-                                                                      suspicious_tag_ids)
+        outputs, score, found_tag, found_related_events = parse_response_reputation_command(
+            copy.deepcopy(misp_response),
+            malicious_tag_ids,
+            suspicious_tag_ids)
         dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
                                 integration_name=INTEGRATION_NAME,
                                 score=score, reliability=reliability, malicious_description="Match found in MISP")
         indicator = get_dbot_indicator(dbot_type, dbot, value)
-        events_to_human_readable = get_events_related_to_scored_tag(outputs, found_tag)
-        attribute_highlights = reputation_command_to_human_readable(outputs, score, events_to_human_readable)
-        readable_output = tableToMarkdown(f'Results found in MISP for value: {value}', attribute_highlights)
+        all_attributes = outputs.get('Attribute')
+        events_to_human_readable = get_events_related_to_scored_tag(all_attributes, found_tag)
+        attribute_highlights = reputation_command_to_human_readable(all_attributes, score, events_to_human_readable)
+        readable_output = tableToMarkdown(f'Results found in MISP for value: {value}', attribute_highlights,
+                                          removeNull=True)
+        readable_output += tableToMarkdown('Related events', list(found_related_events.values()))
         return CommandResults(indicator=indicator,
                               raw_response=misp_response,
                               outputs=outputs,
-                              outputs_prefix='MISP.Attribute',
+                              outputs_prefix='MISP',
                               outputs_key_field='ID',
                               readable_output=readable_output)
     else:
@@ -628,12 +662,12 @@ def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_id
                               readable_output=f"No attributes found in MISP for value: {value}")
 
 
-def get_events_related_to_scored_tag(reputation_outputs, found_tag):
+def get_events_related_to_scored_tag(all_attributes, found_tag):
     """
     This function searches for all the events that have the tag (i.e found_tag) which caused the indicator to be scored
     as malicious or suspicious.
     Args:
-        reputation_outputs (dict): The parsed response from the MISP search attribute request
+        all_attributes (dict): The parsed response from the MISP search attribute request
         found_tag (str): The tag that was scored as malicious or suspicious. If no tag was found, then the score is
         Unknown so no events should be found.
 
@@ -642,17 +676,11 @@ def get_events_related_to_scored_tag(reputation_outputs, found_tag):
     """
     related_events = []
     if found_tag:
-        attribute_event = reputation_outputs.get('Event', {})
-        event_name = attribute_event.get('Info')
-        related_events.extend(search_events_with_scored_tag(attribute_event, found_tag, event_name))
-        related_events.extend(search_events_with_scored_tag(reputation_outputs, found_tag, event_name))
-        related_events_from_outputs = reputation_outputs.get('RelatedAttribute')
-        if related_events_from_outputs:
-            for event in related_events_from_outputs:
-                event_object = event.get('Event')
-                event_name = event_object.get('Info')
-                related_events.extend(search_events_with_scored_tag(event_object, found_tag, event_name))
-                related_events.extend(search_events_with_scored_tag(event, found_tag, event_name))
+        for attribute in all_attributes:
+            event = attribute.get('Event', {})
+            event_name = event.get('Info')
+            related_events.extend(search_events_with_scored_tag(event, found_tag, event_name))
+            related_events.extend(search_events_with_scored_tag(attribute, found_tag, event_name))
     return remove_duplicated_related_events(related_events)
 
 
@@ -694,7 +722,13 @@ def get_event_id(data_dict):
 
 def get_dbot_indicator(dbot_type, dbot_score, value):
     if dbot_type == "FILE":
-        return Common.File(dbot_score=dbot_score, name=value)
+        hash_type = get_hash_type(value)
+        if hash_type == 'md5':
+            return Common.File(dbot_score=dbot_score, md5=value)
+        if hash_type == 'sha1':
+            return Common.File(dbot_score=dbot_score, sha1=value)
+        if hash_type == 'sha256':
+            return Common.File(dbot_score=dbot_score, sha256=value)
     if dbot_type == "IP":
         return Common.IP(ip=value, dbot_score=dbot_score)
     if dbot_type == "DOMAIN":
