@@ -10,6 +10,7 @@ PARAMS = {
 }
 
 ARGS = {
+    "command": "rs-update-incident",
     "incident-id": "1234",
     "other-fields": '{"description": {"textarea": {"format": "html", "content": "The new description"}},'
                     '"name": {"text": "The new name"}, "owner_id": {"id": 2},'
@@ -17,16 +18,24 @@ ARGS = {
 }
 
 
-class Client
+class MockClient:
+    @staticmethod
+    def get(incident_id):
+        return {
+            'name': 'The old name',
+            'description': {'format': 'html', 'content': 'The old description'},
+            'owner_id': 1,
+            'discovered_date': 1624782898000,
+            'confirmed': 'true'
+        }
 
-def mock_get_incident(incident_id):
-    return {
-        'name': 'The old name',
-        'description': {'format': 'html', 'content': 'The old description'},
-        'owner_id': 1,
-        'discovered_date': 1624782898000,
-        'confirmed': 'true'
-    }
+    @staticmethod
+    def post(url, body):
+        return url, body
+
+    @staticmethod
+    def patch(url, body):
+        return url, body
 
 
 def mock_update_incident(incident_id, data):
@@ -74,12 +83,14 @@ def mock_client_post(url, body):
 
 
 def test_update_incident_command(mocker):
-    from IBMResilientSystems import get_client, get_incident, update_incident, update_incident_command
-    mocker.patch.object(demisto, 'params', return_value=PARAMS)
-    mocker.patch('IBMResilientSystems.get_client', return_value=None)
-    mocker.patch('IBMResilientSystems.get_incident', side_effect=mock_get_incident)
-    mocker.patch('IBMResilientSystems.update_incident', side_effect=mock_update_incident)
-
+    from IBMResilientSystems import main
+    mocker.patch.object(demisto, 'args', return_value=ARGS)
+    mocker.patch('IBMResilientSystems.get_client', return_value=MockClient)
+    mocker.patch('IBMResilientSystems.get_client', return_value=MockClient)
+    mocker.patch.object(demisto, 'results')
+    main()
+    # mocker.patch.object(CLIENT, MockClient)
+    demisto.results.call_args[0][0]
     results = update_incident_command(ARGS)
 
     assert results == 'Incident 1234 was updated successfully.'
