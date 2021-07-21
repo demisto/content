@@ -601,7 +601,7 @@ references:
         context: bucket_upload_env
         requires:
           - Run Unit Testing And Lint
-#          - Run Validations
+          - Run Validations
     - Install Packs in Server 6_2:
         context: bucket_upload_env
         requires:
