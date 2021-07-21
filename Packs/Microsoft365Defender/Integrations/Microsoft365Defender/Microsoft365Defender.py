@@ -31,19 +31,23 @@ class Client:
 
         self.client_credentials = client_credentials
         client_args = assign_params(
-            self_deployed=True,  # We always set the self_deployed key as True because when not using a self
-            # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
-            # flow and most of the same arguments should be set, as we're !not! using OProxy.
-            tenant_id=tenant_id,
-            auth_id=app_id,
-            token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token' if not client_credentials else None,
-            grant_type=CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            scope='offline_access https://security.microsoft.com/mtp/.default',
             ok_codes=(200, 201, 202, 204),
+            scope='offline_access https://security.microsoft.com/mtp/.default',
+            self_deployed=True,  # We always set the self_deployed key as True because when not using a self
+            # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
+            # flow and most of the same arguments should be set, as we're !not! using OProxy.
+
+            auth_id=app_id,
+            grant_type=CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
+
+            # used for device code flow
             resource='https://api.security.microsoft.com' if not client_credentials else None,
+            token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token' if not client_credentials else None,
+            # used for client credentials flow
+            tenant_id=tenant_id,
             enc_key=enc_key,
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
