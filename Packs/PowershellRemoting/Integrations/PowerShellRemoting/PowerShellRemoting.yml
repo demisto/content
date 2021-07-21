@@ -3,16 +3,17 @@ commonfields:
   id: PowerShell Remoting
   version: -1
 configuration:
-- additionalinfo: Fully Qualified Domain Name suffix to be added to the hostname.
+- additionalinfo: Fully Qualified Domain Name suffix to be added to the hostname. For example mydomain.local
   display: Domain
   name: domain
   required: false
   type: 0
 - display: DNS
+  additionalinfo: The IP address of the DNS server the integration will use to resolve your hosts.
   name: dns
   required: false
   type: 0
-- additionalinfo: Username in the target machine.
+- additionalinfo: Username in the target machine. This can be a local or domain user with administrative privileges
   display: Username
   name: credentials
   required: true
