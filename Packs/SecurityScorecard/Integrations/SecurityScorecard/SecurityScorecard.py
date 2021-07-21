@@ -18,14 +18,11 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 """ CLIENT CLASS """
 
 
-class Client(BaseClient):
-    """Client class to interact with the service API
+class SecurityScorecardClient(BaseClient):
+    """Client class that interacts with the SecurityScorecard API
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
     It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
+
     """
 
     def get_portfolios(self) -> Dict[str, Any]:
@@ -334,13 +331,13 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 """ COMMAND FUNCTIONS """
 
 
-def test_module(client: Client) -> str:
+def test_module(client: SecurityScorecardClient) -> str:
     """Tests API connectivity and authentication
 
     Runs the fetch-alerts mechanism to validate all integration parameters
 
     Args:
-        client (Client): SecurityScorecard client
+        client (SecurityScorecardClient): SecurityScorecard client
 
     Returns:
         str: 'ok' if test passed, anything else will fail the test.
@@ -365,13 +362,13 @@ def test_module(client: Client) -> str:
 # ---------------
 
 
-def securityscorecard_portfolios_list_command(client: Client) -> CommandResults:
+def securityscorecard_portfolios_list_command(client: SecurityScorecardClient) -> CommandResults:
     """List all Portfolios you have access to.
 
     See https://securityscorecard.readme.io/reference#get_portfolios
 
     Args:
-        client (Client): SecurityScorecard client
+        client (SecurityScorecardClient): SecurityScorecard client
 
     Returns:
         CommandResults: The results of the command.
@@ -405,13 +402,13 @@ def securityscorecard_portfolios_list_command(client: Client) -> CommandResults:
     return results
 
 
-def securityscorecard_portfolio_list_companies_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def securityscorecard_portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve all companies in portfolio.
 
     https://securityscorecard.readme.io/reference#get_portfolios-portfolio-id-companies
 
     Args:
-        client (Client): SecurityScorecard client
+        client (SecurityScorecardClient): SecurityScorecard client
         args (Dict[str, Any]): List of arguments specified in the command
 
     Returns:
@@ -480,13 +477,13 @@ def securityscorecard_portfolio_list_companies_command(client: Client, args: Dic
     return results
 
 
-def securityscorecard_company_score_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def securityscorecard_company_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve company overall score.
 
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-factors
 
     Args:
-        client (Client): SecurityScorecard client
+        client (SecurityScorecardClient): SecurityScorecard client
         args (Dict[str, Any]): List of arguments specified in the command
 
     Returns:
@@ -517,13 +514,13 @@ def securityscorecard_company_score_get_command(client: Client, args: Dict[str, 
     return results
 
 
-def securityscorecard_company_factor_score_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def securityscorecard_company_factor_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve company factor score and scores
 
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-factors
 
     Args:
-        client (Client): SecurityScorecard client
+        client (SecurityScorecardClient): SecurityScorecard client
         args (Dict[str, Any]): List of arguments specified in the command
 
     Returns:
@@ -564,14 +561,14 @@ def securityscorecard_company_factor_score_get_command(client: Client, args: Dic
     return results
 
 
-def securityscorecard_company_history_score_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def securityscorecard_company_history_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
 
     """Retrieve company historical scores
 
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-history-score
 
     Args:
-        client (Client): SecurityScorecard client
+        client (SecurityScorecardClient): SecurityScorecard client
         args (Dict[str, Any]): List of arguments specified in the command
 
     Returns:
@@ -603,13 +600,13 @@ def securityscorecard_company_history_score_get_command(client: Client, args: Di
     return results
 
 
-def securityscorecard_company_history_factor_score_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def securityscorecard_company_history_factor_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve company historical factor scores
 
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-history-factors-score
 
     Args:
-        client (Client): SecurityScorecard client
+        client (SecurityScorecardClient): SecurityScorecard client
         args (Dict[str, Any]): List of arguments specified in the command
 
     Returns:
@@ -653,13 +650,13 @@ def securityscorecard_company_history_factor_score_get_command(client: Client, a
     return results
 
 
-def securityscorecard_alert_grade_change_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def securityscorecard_alert_grade_change_create_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Create alert based on grade
 
     See https://securityscorecard.readme.io/reference#post_users-by-username-username-alerts-grade
 
     Args:
-        client (Client): SecurityScorecard client
+        client (SecurityScorecardClient): SecurityScorecard client
         args (Dict[str, Any]): List of arguments specified in the command
 
     Returns:
@@ -692,13 +689,13 @@ def securityscorecard_alert_grade_change_create_command(client: Client, args: Di
     return results
 
 
-def securityscorecard_alert_score_threshold_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def securityscorecard_alert_score_threshold_create_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Create alert based threshold met
 
     See https://securityscorecard.readme.io/reference#post_users-by-username-username-alerts-score
 
     Args:
-        client (Client): SecurityScorecard client
+        client (SecurityScorecardClient): SecurityScorecard client
         args (Dict[str, Any]): List of arguments specified in the command
 
     Returns:
@@ -747,13 +744,13 @@ def securityscorecard_alert_score_threshold_create_command(client: Client, args:
     return results
 
 
-def securityscorecard_alert_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def securityscorecard_alert_delete_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Delete an alert
 
     See https://securityscorecard.readme.io/reference#delete_users-by-username-username-alerts-grade-alert
 
     Args:
-        client (Client): SecurityScorecard client
+        client (SecurityScorecardClient): SecurityScorecard client
         args (Dict[str, Any]): List of arguments specified in the command
 
     Returns:
@@ -772,13 +769,13 @@ def securityscorecard_alert_delete_command(client: Client, args: Dict[str, Any])
     return results
 
 
-def securityscorecard_alerts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def securityscorecard_alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve alerts triggered in the last week
 
     See https://securityscorecard.readme.io/reference#get_users-by-username-username-notifications-recent
 
     Args:
-        client (Client): SecurityScorecard client
+        client (SecurityScorecardClient): SecurityScorecard client
         args (Dict[str, Any]): List of arguments specified in the command
 
     Returns:
@@ -827,13 +824,13 @@ def securityscorecard_alerts_list_command(client: Client, args: Dict[str, Any]) 
     return results
 
 
-def securityscorecard_company_services_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def securityscorecard_company_services_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve the service providers of a domain
 
     See https://securityscorecard.readme.io/reference#get_companies-domain-services
 
     Args:
-        client (Client): SecurityScorecard client
+        client (SecurityScorecardClient): SecurityScorecard client
         args (Dict[str, Any]): List of arguments specified in the command
 
     Returns:
@@ -866,7 +863,7 @@ def securityscorecard_company_services_get_command(client: Client, args: Dict[st
     return results
 
 
-def fetch_alerts(client: Client):
+def fetch_alerts(client: SecurityScorecardClient):
 
     """
     Fetch incidents/alerts from SecurityScorecard API
@@ -880,7 +877,7 @@ def fetch_alerts(client: Client):
     This method will create incidents only for alerts that occurred on the day the alert was created.
 
     Args:
-        client (Client): SecurityScorecard client
+        client (SecurityScorecardClient): SecurityScorecard client
 
     Returns:
         None: It calls demisto.incidents() to import incidents.
@@ -948,7 +945,7 @@ def main() -> None:
 
         headers: Dict = {"Authorization": f"Token {api_key}"}
 
-        client = Client(
+        client = SecurityScorecardClient(
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,

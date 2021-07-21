@@ -1,5 +1,5 @@
 from SecurityScorecard import \
-    Client, \
+    SecurityScorecardClient, \
     DATE_FORMAT, \
     incidents_to_import
 
@@ -102,7 +102,7 @@ NOTIFICATIONS_ROOT_EP = f"/users/by-username/{USERNAME}/notifications/recent"
 
 MOCK_URL = "mock://securityscorecard-mock-url"
 
-client = Client(
+client = SecurityScorecardClient(
     base_url=MOCK_URL,
     verify=False,
     proxy=False
