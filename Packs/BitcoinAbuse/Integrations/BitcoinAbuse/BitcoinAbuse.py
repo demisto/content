@@ -30,7 +30,7 @@ READER_CONFIG = {
         'abusetype': ('abuse_type_id', lambda abuse_type_id: ABUSE_TYPE_ID_TO_NAME.get(abuse_type_id))
     }
 }
-
+a = 2
 ABUSE_TYPE_NAME_TO_ID = {
     'ransomware': 1,
     'darknet market': 2,

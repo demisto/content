@@ -209,6 +209,7 @@ def get_coverage_attachment(build_url: str) -> Optional[Dict]:
         (Dict): Attachment of the coverage if coverage report exists.
     """
     xml_coverage_data: str = get_artifact_data('coverage_report/coverage.xml')
+    coverage_report_html_link: str = os.path.join(ARTIFACTS_FOLDER, 'coverage_report/html/index.html')
     if not xml_coverage_data:
         return None
     coverage_dict_data: OrderedDict = xmltodict.parse(xml_coverage_data)
@@ -225,7 +226,7 @@ def get_coverage_attachment(build_url: str) -> Optional[Dict]:
         'fallback': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
         'color': get_coverage_color(coverage_percent),
         'title': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
-        'title_link': build_url,
+        'title_link': coverage_report_html_link,
         'fields': []
     }
 
@@ -412,6 +413,7 @@ def get_fields():
 
 def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, packs_results_file=None,
                    job_name="", slack_channel=CONTENT_CHANNEL, gitlab_server=None):
+    slack_channel = 'tom-test'
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
