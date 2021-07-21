@@ -5914,7 +5914,7 @@ def execute_command(command, args, extract_contents=True, fail_on_error=True):
         - When `fail_on_error` is False -``bool`` and ``str``.
 
     Note:
-    For backward compatibility, success will not return a boolean indicating it was successful.
+    For backward compatibility, only when `fail_on_error` is set to False, two values will be returned.
     """
     if not hasattr(demisto, 'executeCommand'):
         raise DemistoException('Cannot run demisto.executeCommand() from integrations.')
