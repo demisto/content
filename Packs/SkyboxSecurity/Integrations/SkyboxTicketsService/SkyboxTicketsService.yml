@@ -38,6 +38,7 @@ script:
     name: skybox-getTicketWorkflow
     outputs:
     - contextPath: Skybox.getTicketWorkflow
+      description: The ticket workflow
       type: String
   - arguments:
     - default: false
@@ -60,6 +61,7 @@ script:
     name: skybox-getOriginalChangeRequestRouteInfoV1
     outputs:
     - contextPath: Skybox.getOriginalChangeRequestRouteInfoV1
+      description: The original change request route info
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -83,6 +85,7 @@ script:
     name: skybox-getTicketTypePhasesByTicketType
     outputs:
     - contextPath: Skybox.getTicketTypePhasesByTicketType
+      description: The ticket type phases by ticket type
       type: String
   - arguments:
     - default: false
@@ -99,6 +102,7 @@ script:
     name: skybox-getOriginalChangeRequestV7
     outputs:
     - contextPath: Skybox.getOriginalChangeRequestV7
+      description: The original change request
       type: String
   - arguments:
     - default: false
@@ -142,6 +146,7 @@ script:
     name: skybox-setTicketFields
     outputs:
     - contextPath: Skybox.setTicketFields
+      description: The ticket fields that have been set
       type: String
   - arguments:
     - default: false
@@ -517,9 +522,11 @@ script:
     name: skybox-createAccessChangeTicket
     outputs:
     - contextPath: Skybox.createAccessChangeTicket
+      description: The created access change ticket
       type: String
   - arguments:
     - default: false
+      description: The attachement ID. You get the IDs with getAttachmentList.
       isArray: false
       name: attachmentId
       required: true
@@ -537,6 +544,7 @@ script:
     name: skybox-getAttachmentFile
     outputs:
     - contextPath: InfoFile
+      description: The info file key with the file entryID
       type: Unknown
   - arguments:
     - default: false
@@ -608,6 +616,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      description: The access change ticket status
       isArray: false
       name: accessChangeTicket_status
       predefined:
@@ -869,6 +878,7 @@ script:
       required: false
       secret: false
     - default: false
+      description: The original rule number
       isArray: false
       name: accessRuleElements_orgRuleNumber
       required: false
@@ -926,6 +936,7 @@ script:
       required: false
       secret: false
     - default: false
+      description: The workflos ID number
       isArray: false
       name: workflowId
       required: true
@@ -938,6 +949,7 @@ script:
     name: skybox-createRecertifyTicketV2
     outputs:
     - contextPath: Skybox.createRecertifyTicketV2
+      description: The recertify ticket that has been created
       type: String
   - arguments:
     - default: false
@@ -952,6 +964,7 @@ script:
     name: skybox-getAccessChangeTicket
     outputs:
     - contextPath: Skybox.getAccessChangeTicket
+      description: The access change ticket
       type: String
   - arguments:
     - default: false
@@ -968,6 +981,7 @@ script:
     name: skybox-getAccessRequests
     outputs:
     - contextPath: Skybox.getAccessRequests
+      description: The access request
       type: String
   - arguments:
     - default: false
@@ -991,6 +1005,7 @@ script:
     name: skybox-getPotentialVulnerabilitiesV2
     outputs:
     - contextPath: Skybox.getPotentialVulnerabilitiesV2
+      description: The potential vulnerabilities
       type: String
   - arguments:
     - default: false
@@ -1011,6 +1026,7 @@ script:
     name: skybox-deleteChangeRequests
     outputs:
     - contextPath: Skybox.deleteChangeRequests
+      description: The delete change request status
       type: String
   - arguments:
     - default: false
@@ -1027,6 +1043,7 @@ script:
     name: skybox-deleteAccessChangeTicket
     outputs:
     - contextPath: Skybox.deleteAccessChangeTicket
+      description: The delete access chagne ticket status
       type: String
   - deprecated: false
     description: |-
@@ -1039,6 +1056,7 @@ script:
     name: skybox-getNotImplementedChangeRequestsV2
     outputs:
     - contextPath: Skybox.getNotImplementedChangeRequestsV2
+      description: The not implemented change requests
       type: String
   - arguments:
     - default: false
@@ -1053,6 +1071,7 @@ script:
     name: skybox-getTicketEvents
     outputs:
     - contextPath: Skybox.getTicketEvents
+      description: The ticket events
       type: String
   - arguments:
     - default: false
@@ -1073,6 +1092,7 @@ script:
     name: skybox-getChangeRequestReviewers
     outputs:
     - contextPath: Skybox.getChangeRequestReviewers
+      description: The change request reviewers
       type: String
   - arguments:
     - default: false
@@ -1095,6 +1115,7 @@ script:
     name: skybox-getChangeRequestRuleAttributes
     outputs:
     - contextPath: Skybox.getChangeRequestRuleAttributes
+      description: The change request rule attributes
       type: String
   - arguments:
     - default: false
@@ -1119,6 +1140,7 @@ script:
     name: skybox-getGeneratedCommands
     outputs:
     - contextPath: Skybox.getGeneratedCommands
+      description: The generated commands
       type: String
   - deprecated: false
     description: |-
@@ -1129,6 +1151,7 @@ script:
     name: skybox-getImplementedChangeRequests
     outputs:
     - contextPath: Skybox.getImplementedChangeRequests
+      description: The implemented change requests
       type: String
   - arguments:
     - default: false
@@ -1180,6 +1203,7 @@ script:
     name: skybox-operateOnVulnerabilityDefinitionTicket
     outputs:
     - contextPath: Skybox.operateOnVulnerabilityDefinitionTicket
+      description: The change status of the vulnerability definition ticket
       type: String
   - arguments:
     - default: false
@@ -1527,6 +1551,7 @@ script:
     name: skybox-createChangeManagerTicket
     outputs:
     - contextPath: Skybox.createChangeManagerTicket
+      description: The change manager ticket creation status
       type: String
   - arguments:
     - default: false
@@ -1546,6 +1571,8 @@ script:
     name: skybox-getTicketsNotImplementedChangeRequestsV2
     outputs:
     - contextPath: Skybox.getTicketsNotImplementedChangeRequestsV2
+      description: The list of not implemented change requests for specified ticket
+        ID
       type: String
   - arguments:
     - default: false
@@ -1574,6 +1601,7 @@ script:
     name: skybox-findAccessRequests
     outputs:
     - contextPath: Skybox.findAccessRequests
+      description: The access requests list
       type: String
   - arguments:
     - default: false
@@ -1607,6 +1635,7 @@ script:
     name: skybox-expandFirewallsForAccessChangeTicket
     outputs:
     - contextPath: Skybox.expandFirewallsForAccessChangeTicket
+      description: The firewall list for the change request
       type: String
   - arguments:
     - default: false
@@ -1645,6 +1674,7 @@ script:
     name: skybox-addAttachmentFile
     outputs:
     - contextPath: Skybox.addAttachmentFile
+      description: The status of attachment ticket creation
       type: String
   - arguments:
     - default: false
@@ -1725,6 +1755,7 @@ script:
     name: skybox-countAccessChangeTickets
     outputs:
     - contextPath: Skybox.countAccessChangeTickets
+      description: The number of tickets defined by the filter
       type: String
   - arguments:
     - default: false
@@ -1747,6 +1778,7 @@ script:
     name: skybox-getDerivedChangeRequestsV7
     outputs:
     - contextPath: Skybox.getDerivedChangeRequestsV7
+      description: The list of derived change requests for an original change request.
       type: String
   - arguments:
     - default: false
@@ -2090,6 +2122,7 @@ script:
     name: skybox-setTicketAccessRequests
     outputs:
     - contextPath: Skybox.setTicketAccessRequests
+      description: The status of the access request change
       type: String
   - arguments:
     - default: false
@@ -2308,6 +2341,7 @@ script:
     name: skybox-updateAccessChangeTicket
     outputs:
     - contextPath: Skybox.updateAccessChangeTicket
+      description: The status of access change ticket update
       type: String
   - arguments:
     - default: false
@@ -2481,6 +2515,7 @@ script:
     name: skybox-addDerivedChangeRequests
     outputs:
     - contextPath: Skybox.addDerivedChangeRequests
+      description: The status of adding the derived change requests
       type: String
   - arguments:
     - default: false
@@ -2505,6 +2540,9 @@ script:
     name: skybox-getPolicyViolations
     outputs:
     - contextPath: Skybox.getPolicyViolations
+      description: |-
+        The list of Access Policy violations
+        associated with a change request.
       type: String
   - arguments:
     - default: false
@@ -2521,6 +2559,7 @@ script:
     name: skybox-removeAttachmentFile
     outputs:
     - contextPath: Skybox.removeAttachmentFile
+      description: The status of file attachment deletion
       type: String
   - deprecated: false
     description: |-
@@ -2530,6 +2569,9 @@ script:
     name: skybox-getTicketWorkflows
     outputs:
     - contextPath: Skybox.getTicketWorkflows
+      description: |-
+        The list of ticket workflows in Skybox,
+        including an ID and a name for each ticket.
       type: String
   - arguments:
     - default: false
@@ -2546,6 +2588,8 @@ script:
     name: skybox-recalculateTicketChangeRequests
     outputs:
     - contextPath: Skybox.recalculateTicketChangeRequests
+      description: The recalculation status of the change requests of the specified
+        ticket
       type: String
   - arguments:
     - default: false
@@ -2616,6 +2660,9 @@ script:
     name: skybox-findConfigurationItems
     outputs:
     - contextPath: Skybox.findConfigurationItems
+      description: |-
+        The configuration items that are defined
+        in the system.
       type: String
   - arguments:
     - default: false
@@ -2633,6 +2680,9 @@ script:
     name: skybox-getSponsoringApplication
     outputs:
     - contextPath: Skybox.getSponsoringApplication
+      description: |-
+        The sponsoring application of the
+        specified ticket.
       type: String
   - arguments:
     - default: false
@@ -2774,6 +2824,7 @@ script:
     name: skybox-addOriginalChangeRequestsV7
     outputs:
     - contextPath: Skybox.addOriginalChangeRequestsV7
+      description: The status of adding an original change request
       type: String
   - arguments:
     - default: false
@@ -2857,6 +2908,7 @@ script:
     name: skybox-createTicketAccessRequestsForObjectChange
     outputs:
     - contextPath: Skybox.createTicketAccessRequestsForObjectChange
+      description: The status of the ticket access request object change.
       type: String
   - arguments:
     - default: false
@@ -2879,6 +2931,9 @@ script:
     name: skybox-getDerivedChangeRequestRouteInfoV1
     outputs:
     - contextPath: Skybox.getDerivedChangeRequestRouteInfoV1
+      description: |-
+        The route information from a derived
+        change request.
       type: String
   - arguments:
     - default: false
@@ -3024,6 +3079,7 @@ script:
     name: skybox-implementChangeRequests
     outputs:
     - contextPath: Skybox.implementChangeRequests
+      description: The change request implementation status
       type: String
   - arguments:
     - default: false
@@ -3045,6 +3101,9 @@ script:
     name: skybox-getAnalysisTree
     outputs:
     - contextPath: Skybox.getAnalysisTree
+      description: |-
+        A list of analyses; each analysis includes
+        its ID, path, name, and type.
       type: String
   - arguments:
     - default: false
@@ -3071,7 +3130,8 @@ script:
       name: phaseOperation_reject
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: |-
         Possible values:
         l ACCEPT
@@ -3085,6 +3145,16 @@ script:
         l REQUEST_TO_CLOSE
       isArray: false
       name: phaseOperation_type
+      predefined:
+      - ACCEPT
+      - CHANGE_PHASE
+      - CLOSE
+      - DEMOTE
+      - IGNORED
+      - PROMOTE
+      - REASSIGN
+      - REOPEN
+      - REQUEST_TO_CLOSE
       required: true
       secret: false
     deprecated: false
@@ -3105,6 +3175,7 @@ script:
     name: skybox-operateOnAccessChangeTicket
     outputs:
     - contextPath: Skybox.operateOnAccessChangeTicket
+      description: The status of the access change ticket phase alteration
       type: String
   - arguments:
     - default: false
@@ -3139,6 +3210,7 @@ script:
     name: skybox-analyzeAccessChangeTicket
     outputs:
     - contextPath: Skybox.analyzeAccessChangeTicket
+      description: The analisys of the access change ticket
       type: String
   - arguments:
     - default: false
@@ -3166,6 +3238,7 @@ script:
     name: skybox-getVerificationDetails
     outputs:
     - contextPath: Skybox.getVerificationDetails
+      description: The verification details
       type: String
   - arguments:
     - default: false
@@ -3182,6 +3255,7 @@ script:
     name: skybox-getTicketPhases
     outputs:
     - contextPath: Skybox.getTicketPhases
+      description: The available ticket phases
       type: String
   - arguments:
     - default: false
@@ -3228,6 +3302,9 @@ script:
     name: skybox-findTickets
     outputs:
     - contextPath: Skybox.findTickets
+      description: |-
+        The Access Change tickets in the
+        specified analysis.
       type: String
   - arguments:
     - default: false
@@ -3323,6 +3400,7 @@ script:
     name: skybox-setChangeRequestRuleAttributes
     outputs:
     - contextPath: Skybox.setChangeRequestRuleAttributes
+      description: The result of change request rule attribute change
       type: String
   - arguments:
     - default: false
@@ -3339,6 +3417,9 @@ script:
     name: skybox-getAttachmentList
     outputs:
     - contextPath: Skybox.getAttachmentList
+      description: |-
+        The list of attachments to a ticket in
+        Skybox.
       type: String
   - arguments:
     - default: false
@@ -3368,6 +3449,7 @@ script:
     name: skybox-setAddRuleChangeRequestFields
     outputs:
     - contextPath: Skybox.setAddRuleChangeRequestFields
+      description: The result of the changes to specified fields of a change request
       type: String
   - arguments:
     - default: false
@@ -3545,6 +3627,9 @@ script:
     name: skybox-setTicketPhases
     outputs:
     - contextPath: Skybox.setTicketPhases
+      description: |-
+        The result of setting the list of ticket phases for a ticket type in
+        Skybox.
       type: String
   - arguments:
     - default: false
@@ -3561,10 +3646,11 @@ script:
     name: skybox-getTicketAccessRequests
     outputs:
     - contextPath: Skybox.getTicketAccessRequests
+      description: The list of change requests for the specified ticket.
       type: String
   - arguments:
     - default: false
-      description: A number that will be returned back from the api endpoint
+      description: A binary number that will be returned back from the api endpoint
       isArray: false
       name: anyValue
       required: true
@@ -3575,6 +3661,7 @@ script:
     name: skybox-testService
     outputs:
     - contextPath: Skybox.testService
+      description: The number that has been returned back from the endpoint.
       type: String
   - arguments:
     - default: false
@@ -3592,41 +3679,49 @@ script:
       required: false
       secret: false
     - default: false
+      description: The business function
       isArray: false
       name: ruleAttributes_businessFunction
       required: false
       secret: false
     - default: false
+      description: The rule attributes comment
       isArray: false
       name: ruleAttributes_comment
       required: false
       secret: false
     - default: false
+      description: The custom field data type
       isArray: false
       name: ruleAttributes_customFields_dataType
       required: false
       secret: false
     - default: false
+      description: The custom field definition ID
       isArray: false
       name: ruleAttributes_customFields_defId
       required: false
       secret: false
     - default: false
+      description: The custom field entity type
       isArray: false
       name: ruleAttributes_customFields_entityType
       required: false
       secret: false
     - default: false
+      description: The custom fields ID
       isArray: false
       name: ruleAttributes_customFields_id
       required: false
       secret: false
     - default: false
+      description: The custom fields name
       isArray: false
       name: ruleAttributes_customFields_name
       required: false
       secret: false
     - default: false
+      description: The custom field value
       isArray: false
       name: ruleAttributes_customFields_value
       required: false
@@ -3667,6 +3762,7 @@ script:
       required: false
       secret: false
     - default: false
+      description: The rule attributes ticket ID
       isArray: false
       name: ruleAttributes_ticketId
       required: false
@@ -3681,9 +3777,13 @@ script:
     name: skybox-setRecertificationStatus
     outputs:
     - contextPath: Skybox.setRecertificationStatus
+      description: |-
+        The result of the the recertification status for the specified
+        change requests
       type: String
   - arguments:
     - default: false
+      description: The ticket ID
       isArray: false
       name: ticketId
       required: true
@@ -3705,6 +3805,7 @@ script:
     name: skybox-setTicketDeferChangeRequestsCalculationStatus
     outputs:
     - contextPath: Skybox.setTicketDeferChangeRequestsCalculationStatus
+      description: Status of changing the defer status change operation
       type: String
   - arguments:
     - default: false
@@ -3725,6 +3826,7 @@ script:
     name: skybox-setSponsoringApplication
     outputs:
     - contextPath: Skybox.setSponsoringApplication
+      description: The sponsoring application change status
       type: String
   - arguments:
     - default: false
@@ -3821,11 +3923,13 @@ script:
       required: false
       secret: false
     - default: false
+      description: The size of the range
       isArray: false
       name: subRange_size
       required: false
       secret: false
     - default: false
+      description: The offset of the range
       isArray: false
       name: subRange_start
       required: false
@@ -3838,6 +3942,9 @@ script:
     name: skybox-findAccessChangeTickets
     outputs:
     - contextPath: Skybox.findAccessChangeTickets
+      description: |-
+        The list of all Access Change tickets that match
+        the search criteria.
       type: String
   - arguments:
     - default: false
@@ -3869,6 +3976,7 @@ script:
     name: skybox-getTicketFields
     outputs:
     - contextPath: Skybox.getTicketFields.getTicketFields
+      description: The ticket data from Skybox
       type: String
   - arguments:
     - default: false
@@ -3886,9 +3994,14 @@ script:
     name: skybox-getTicketsImplementedChangeRequests
     outputs:
     - contextPath: Skybox.getTicketsImplementedChangeRequests
+      description: |-
+        The list of implemented change requests
+        in the specified tickets according to the
+        permissions of the user sending the request.
       type: String
   - arguments:
     - default: false
+      description: The ticket ID
       isArray: false
       name: ticketId
       required: true
@@ -3901,7 +4014,10 @@ script:
     execution: false
     name: skybox-getTicketDeferChangeRequestsCalculationStatus
     outputs:
-    - contextPath: Skybox.getTicketDeferChangeRequestsCalculationStatus.getTicketDeferChangeRequestsCalculationStatus
+    - contextPath: Skybox.getTicketDeferChangeRequestsCalculationStatus
+      description: |-
+        The calculation status of the specified
+        ticket
       type: String
   dockerimage: demisto/zeep:1.0.0.19873
   feed: false
@@ -3912,11 +4028,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ''
-    itemVersion: ''
-    packID: 1c6fd8b8-71b1-4040-8ebf-43d23f7bd4f9
-    propagationLabels:
-    - all
-    toServerVersion: ''
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
