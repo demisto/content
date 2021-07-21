@@ -47,7 +47,7 @@ class SecurityScorecardClient(BaseClient):
 
     def get_portfolios(self) -> Dict[str, Any]:
         return self.http_request_wrapper(
-            'GET',
+            method='GET',
             url_suffix='portfolios'
         )
 
@@ -75,7 +75,7 @@ class SecurityScorecardClient(BaseClient):
             request_params['had_breach_within_last_days'] = had_breach_within_last_days
 
         return self.http_request_wrapper(
-            'GET',
+            method='GET',
             url_suffix=f'portfolios/{portfolio}/companies',
             params=request_params
         )
@@ -83,7 +83,7 @@ class SecurityScorecardClient(BaseClient):
     def get_company_score(self, domain: str) -> Dict[str, Any]:
 
         return self.http_request_wrapper(
-            'GET',
+            method='GET',
             url_suffix=f'companies/{domain}'
         )
 
@@ -95,7 +95,7 @@ class SecurityScorecardClient(BaseClient):
             request_params['severity_in'] = severity_in
 
         return self.http_request_wrapper(
-            'GET',
+            method='GET',
             url_suffix=f'companies/{domain}/factors',
             params=request_params
         )
@@ -117,7 +117,7 @@ class SecurityScorecardClient(BaseClient):
             request_params['timing'] = 'daily'
 
         return self.http_request_wrapper(
-            'GET',
+            method='GET',
             url_suffix=f'companies/{domain}/history/score',
             params=request_params)
 
@@ -133,7 +133,7 @@ class SecurityScorecardClient(BaseClient):
             request_params['timing'] = timing
 
         return self.http_request_wrapper(
-            'GET',
+            method='GET',
             url_suffix=f'companies/{domain}/history/factors/score',
             params=request_params
         )
@@ -239,7 +239,8 @@ class SecurityScorecardClient(BaseClient):
         )
 
     def http_request_wrapper(
-        self, method: str,
+        self,
+        method: str,
         url_suffix: Optional[str] = None,
         params: Optional[dict] = None,
         json_data: Optional[dict] = None,
@@ -425,9 +426,6 @@ def portfolios_list_command(client: SecurityScorecardClient) -> CommandResults:
 
     portfolios = client.get_portfolios()
 
-    # For mypy
-    # error: Argument 1 to "int" has incompatible type "Optional[Any]";
-    # expected "Union[str, bytes, SupportsInt, _SupportsIndex]"
     portfolios_total = portfolios.get("total")
     assert portfolios_total is not None
     portfolios_count = int(portfolios_total)
