@@ -2243,7 +2243,7 @@ script:
     execution: false
     name: skybox-updateAccessChangeTicket
     outputs:
-    - contextPath: Skybox.updateAccessChangeTicket.updateAccessChangeTicket
+    - contextPath: Skybox.updateAccessChangeTicket
       type: String
   - arguments:
     - default: false
@@ -2259,6 +2259,7 @@ script:
       required: true
       secret: false
     - default: false
+      description: The number of access rules in the asset
       isArray: false
       name: firewalls_accessRules
       required: false
@@ -2415,7 +2416,7 @@ script:
     execution: false
     name: skybox-addDerivedChangeRequests
     outputs:
-    - contextPath: Skybox.addDerivedChangeRequests.addDerivedChangeRequests
+    - contextPath: Skybox.addDerivedChangeRequests
       type: String
   - arguments:
     - default: false
@@ -2439,7 +2440,7 @@ script:
     execution: false
     name: skybox-getPolicyViolations
     outputs:
-    - contextPath: Skybox.getPolicyViolations.getPolicyViolations
+    - contextPath: Skybox.getPolicyViolations
       type: String
   - arguments:
     - default: false
@@ -2455,7 +2456,7 @@ script:
     execution: false
     name: skybox-removeAttachmentFile
     outputs:
-    - contextPath: Skybox.removeAttachmentFile.removeAttachmentFile
+    - contextPath: Skybox.removeAttachmentFile
       type: String
   - deprecated: false
     description: |-
@@ -2464,7 +2465,7 @@ script:
     execution: false
     name: skybox-getTicketWorkflows
     outputs:
-    - contextPath: Skybox.getTicketWorkflows.getTicketWorkflows
+    - contextPath: Skybox.getTicketWorkflows
       type: String
   - arguments:
     - default: false
@@ -2480,7 +2481,7 @@ script:
     execution: false
     name: skybox-recalculateTicketChangeRequests
     outputs:
-    - contextPath: Skybox.recalculateTicketChangeRequests.recalculateTicketChangeRequests
+    - contextPath: Skybox.recalculateTicketChangeRequests
       type: String
   - arguments:
     - default: false
@@ -2550,7 +2551,7 @@ script:
     execution: false
     name: skybox-findConfigurationItems
     outputs:
-    - contextPath: Skybox.findConfigurationItems.findConfigurationItems
+    - contextPath: Skybox.findConfigurationItems
       type: String
   - arguments:
     - default: false
@@ -2567,7 +2568,7 @@ script:
     execution: false
     name: skybox-getSponsoringApplication
     outputs:
-    - contextPath: Skybox.getSponsoringApplication.getSponsoringApplication
+    - contextPath: Skybox.getSponsoringApplication
       type: String
   - arguments:
     - default: false
@@ -2708,7 +2709,7 @@ script:
     execution: false
     name: skybox-addOriginalChangeRequestsV7
     outputs:
-    - contextPath: Skybox.addOriginalChangeRequestsV7.addOriginalChangeRequestsV7
+    - contextPath: Skybox.addOriginalChangeRequestsV7
       type: String
   - arguments:
     - default: false
@@ -2791,7 +2792,7 @@ script:
     execution: false
     name: skybox-createTicketAccessRequestsForObjectChange
     outputs:
-    - contextPath: Skybox.createTicketAccessRequestsForObjectChange.createTicketAccessRequestsForObjectChange
+    - contextPath: Skybox.createTicketAccessRequestsForObjectChange
       type: String
   - arguments:
     - default: false
@@ -2813,7 +2814,7 @@ script:
     execution: false
     name: skybox-getDerivedChangeRequestRouteInfoV1
     outputs:
-    - contextPath: Skybox.getDerivedChangeRequestRouteInfoV1.getDerivedChangeRequestRouteInfoV1
+    - contextPath: Skybox.getDerivedChangeRequestRouteInfoV1
       type: String
   - arguments:
     - default: false
@@ -2867,12 +2868,6 @@ script:
         to make the change
       isArray: false
       name: changeRequests_firewallManagementName
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the object to change
-      isArray: false
-      name: changeRequests_objectId
       required: false
       secret: false
     - default: false
@@ -2964,7 +2959,7 @@ script:
     execution: false
     name: skybox-implementChangeRequests
     outputs:
-    - contextPath: Skybox.implementChangeRequests.implementChangeRequests
+    - contextPath: Skybox.implementChangeRequests
       type: String
   - arguments:
     - default: false
@@ -2985,7 +2980,7 @@ script:
     execution: false
     name: skybox-getAnalysisTree
     outputs:
-    - contextPath: Skybox.getAnalysisTree.getAnalysisTree
+    - contextPath: Skybox.getAnalysisTree
       type: String
   - arguments:
     - default: false
@@ -3045,7 +3040,7 @@ script:
     execution: false
     name: skybox-operateOnAccessChangeTicket
     outputs:
-    - contextPath: Skybox.operateOnAccessChangeTicket.operateOnAccessChangeTicket
+    - contextPath: Skybox.operateOnAccessChangeTicket
       type: String
   - arguments:
     - default: false
@@ -3079,7 +3074,7 @@ script:
     execution: false
     name: skybox-analyzeAccessChangeTicket
     outputs:
-    - contextPath: Skybox.analyzeAccessChangeTicket.analyzeAccessChangeTicket
+    - contextPath: Skybox.analyzeAccessChangeTicket
       type: String
   - arguments:
     - default: false
@@ -3106,7 +3101,7 @@ script:
     execution: false
     name: skybox-getVerificationDetails
     outputs:
-    - contextPath: Skybox.getVerificationDetails.getVerificationDetails
+    - contextPath: Skybox.getVerificationDetails
       type: String
   - arguments:
     - default: false
@@ -3122,7 +3117,7 @@ script:
     execution: false
     name: skybox-getTicketPhases
     outputs:
-    - contextPath: Skybox.getTicketPhases.getTicketPhases
+    - contextPath: Skybox.getTicketPhases
       type: String
   - arguments:
     - default: false
@@ -3168,7 +3163,7 @@ script:
     execution: false
     name: skybox-findTickets
     outputs:
-    - contextPath: Skybox.findTickets.findTickets
+    - contextPath: Skybox.findTickets
       type: String
   - arguments:
     - default: false
@@ -3198,24 +3193,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: The custom field data type
-      isArray: false
-      name: ruleAttributes_customFields_dataType
-      required: false
-      secret: false
-    - default: false
-      description: The custom field def ID
-      isArray: false
-      name: ruleAttributes_customFields_defId
-      required: false
-      secret: false
-    - default: false
-      description: The custom field entity type
-      isArray: false
-      name: ruleAttributes_customFields_entityType
-      required: false
-      secret: false
-    - default: false
       description: The cusotm field ID
       isArray: false
       name: ruleAttributes_customFields_id
@@ -3231,12 +3208,6 @@ script:
       description: The custom field value
       isArray: false
       name: ruleAttributes_customFields_value
-      required: false
-      secret: false
-    - default: false
-      description: The rule attribute email
-      isArray: false
-      name: ruleAttributes_email
       required: false
       secret: false
     - default: false
@@ -3268,6 +3239,18 @@ script:
       name: ruleAttributes_ticketId
       required: false
       secret: false
+    - default: false
+      description: The custom fields type code
+      isArray: false
+      name: ruleAttributes_customFields_typeCode
+      required: false
+      secret: false
+    - default: false
+      description: The custom field definition ID
+      isArray: false
+      name: ruleAttributes_customFields_defId
+      required: false
+      secret: false
     deprecated: false
     description: |-
       Sets the rule attributes for the rules in the
@@ -3275,7 +3258,7 @@ script:
     execution: false
     name: skybox-setChangeRequestRuleAttributes
     outputs:
-    - contextPath: Skybox.setChangeRequestRuleAttributes.setChangeRequestRuleAttributes
+    - contextPath: Skybox.setChangeRequestRuleAttributes
       type: String
   - arguments:
     - default: false
@@ -3291,7 +3274,7 @@ script:
     execution: false
     name: skybox-getAttachmentList
     outputs:
-    - contextPath: Skybox.getAttachmentList.getAttachmentList
+    - contextPath: Skybox.getAttachmentList
       type: String
   - arguments:
     - default: false
@@ -3307,15 +3290,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: Each element of the array is a key (name of field) + value set
+      description: The JSON list of dictionaries. Each element of the array is a key
+        (name of field) + value set
       isArray: false
-      name: fields_entry_key
-      required: false
-      secret: false
-    - default: false
-      description: Each element of the array is a key (name of field) + value set
-      isArray: false
-      name: fields_entry_value
+      name: fields
       required: false
       secret: false
     deprecated: false
@@ -3325,7 +3303,7 @@ script:
     execution: false
     name: skybox-setAddRuleChangeRequestFields
     outputs:
-    - contextPath: Skybox.setAddRuleChangeRequestFields.setAddRuleChangeRequestFields
+    - contextPath: Skybox.setAddRuleChangeRequestFields
       type: String
   - arguments:
     - default: false
@@ -3502,7 +3480,7 @@ script:
     execution: false
     name: skybox-setTicketPhases
     outputs:
-    - contextPath: Skybox.setTicketPhases.setTicketPhases
+    - contextPath: Skybox.setTicketPhases
       type: String
   - arguments:
     - default: false
@@ -3518,7 +3496,7 @@ script:
     execution: false
     name: skybox-getTicketAccessRequests
     outputs:
-    - contextPath: Skybox.getTicketAccessRequests.getTicketAccessRequests
+    - contextPath: Skybox.getTicketAccessRequests
       type: String
   - arguments:
     - default: false
@@ -3532,15 +3510,19 @@ script:
     execution: false
     name: skybox-testService
     outputs:
-    - contextPath: Skybox.testService.testService
+    - contextPath: Skybox.testService
       type: String
   - arguments:
     - default: false
+      description: The ticket ID
       isArray: false
       name: ticketId
       required: true
       secret: false
     - default: false
+      description: |-
+        he IDs of the change requests for which to set the
+        recertification status
       isArray: false
       name: changeRequestIds
       required: false
@@ -3586,23 +3568,38 @@ script:
       required: false
       secret: false
     - default: false
+      description: The rule attributes email
       isArray: false
       name: ruleAttributes_email
       required: false
       secret: false
     - default: false
+      description: The rule attributes next review date
       isArray: false
       name: ruleAttributes_nextReviewDate
       required: false
       secret: false
     - default: false
+      description: The rule attributes owner
       isArray: false
       name: ruleAttributes_owner
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        The recertification status of the rule. Possible values:
+        l NONE
+        l IN_PROGRESS
+        l REJECTED
+        l CERTIFIED
       isArray: false
       name: ruleAttributes_status
+      predefined:
+      - NONE
+      - IN_PROGRESS
+      - REJECTED
+      - CERTIFIED
       required: false
       secret: false
     - default: false
@@ -3619,7 +3616,7 @@ script:
     execution: false
     name: skybox-setRecertificationStatus
     outputs:
-    - contextPath: Skybox.setRecertificationStatus.setRecertificationStatus
+    - contextPath: Skybox.setRecertificationStatus
       type: String
   - arguments:
     - default: false
@@ -3639,7 +3636,7 @@ script:
     execution: false
     name: skybox-setTicketDeferChangeRequestsCalculationStatus
     outputs:
-    - contextPath: Skybox.setTicketDeferChangeRequestsCalculationStatus.setTicketDeferChangeRequestsCalculationStatus
+    - contextPath: Skybox.setTicketDeferChangeRequestsCalculationStatus
       type: String
   - arguments:
     - default: false
@@ -3657,7 +3654,7 @@ script:
     execution: false
     name: skybox-setSponsoringApplication
     outputs:
-    - contextPath: Skybox.setSponsoringApplication.setSponsoringApplication
+    - contextPath: Skybox.setSponsoringApplication
       type: String
   - arguments:
     - default: false
@@ -3717,7 +3714,7 @@ script:
     execution: false
     name: skybox-findAccessChangeTickets
     outputs:
-    - contextPath: Skybox.findAccessChangeTickets.findAccessChangeTickets
+    - contextPath: Skybox.findAccessChangeTickets
       type: String
   - arguments:
     - default: false

@@ -1133,7 +1133,6 @@ def setTicketAccessRequests_command(client, args):
     accessRequests_accessQuery_sourceElements_netMask = args.get('accessRequests_accessQuery_sourceElements_netMask')
     accessRequests_accessQuery_sourceElements_path = args.get('accessRequests_accessQuery_sourceElements_path')
     accessRequests_accessQuery_sourceElements_type = args.get('accessRequests_accessQuery_sourceElements_type')
-    accessRequests_accessQueryMode = args.get('accessRequests_accessQueryMode')
     accessRequests_accessStatus = args.get('accessRequests_accessStatus')
     accessRequests_accessType = args.get('accessRequests_accessType')
     accessRequests_comment = args.get('accessRequests_comment')
@@ -1335,8 +1334,8 @@ def updateAccessChangeTicket_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.updateAccessChangeTicket',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=serialize_object_dict(response),
+        raw_response=serialize_object_dict(response)
     )
 
     return command_results
@@ -1366,7 +1365,7 @@ def addDerivedChangeRequests_command(client, args):
     firewalls_type_var = args.get('firewalls_type')
     firewalls_vulnerabilities = args.get('firewalls_vulnerabilities')
 
-    netInterface_type = client.get_type('ns0:netInterface')
+    netInterface_type = client.get_type('ns0:netInterfaceElement')
     netInterface = netInterface_type(
         description=firewalls_netInterface_description,
         id=firewalls_netInterface_id,
@@ -1377,7 +1376,7 @@ def addDerivedChangeRequests_command(client, args):
         zoneType=firewalls_netInterface_zoneType
     )
 
-    firewalls_type = client.get_type('ns0:firewalls')
+    firewalls_type = client.get_type('ns0:asset')
     firewalls = firewalls_type(
         accessRules=firewalls_accessRules,
         id=firewalls_id,
@@ -1404,8 +1403,8 @@ def addDerivedChangeRequests_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.addDerivedChangeRequests',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=serialize_object_dict(response),
+        raw_response=serialize_object_dict(response)
     )
 
     return command_results
@@ -1479,7 +1478,7 @@ def findConfigurationItems_command(client, args):
     subRange_size = args.get('subRange_size')
     subRange_start = args.get('subRange_start')
 
-    filter_type = client.get_type('ns0:filter')
+    filter_type = client.get_type('ns0:configurationItemFilter')
     filter = filter_type(
         ancestorOf=filter_ancestorOf,
         childrenOf=filter_childrenOf,
@@ -1541,17 +1540,15 @@ def addOriginalChangeRequestsV7_command(client, args):
     changeRequests_originalChangeRequestId = args.get('changeRequests_originalChangeRequestId')
     changeRequests_verificationStatus = args.get('changeRequests_verificationStatus')
 
-    messages_type = client.get_type('ns0:messages')
+    messages_type = client.get_type('ns0:changeRequestMessage')
     messages = messages_type(
         args=changeRequests_messages_args,
         formatedMessage=changeRequests_messages_formatedMessage,
         key=changeRequests_messages_key,
         level=changeRequests_messages_level,
-        originalChangeRequestId=changeRequests_originalChangeRequestId,
-        verificationStatus=changeRequests_verificationStatus
     )
 
-    changeRequests_type = client.get_type('ns0:changeRequests')
+    changeRequests_type = client.get_type('ns0:changeRequestV3')
     changeRequests = changeRequests_type(
         comment=changeRequests_comment,
         complianceStatus=changeRequests_complianceStatus,
@@ -1567,7 +1564,7 @@ def addOriginalChangeRequestsV7_command(client, args):
         messages=messages
     )
 
-    response = client.service.addOriginalChangeRequestsV7(ticketId, changeRequests)
+    response = client.service.addOriginalChangeRequestsV7(ticketId, [changeRequests])
 
     command_results = CommandResults(
         outputs_prefix='Skybox.addOriginalChangeRequestsV7',
@@ -1627,7 +1624,6 @@ def implementChangeRequests_command(client, args):
     changeRequests_changeType = args.get('changeRequests_changeType')
     changeRequests_firewallName = args.get('changeRequests_firewallName')
     changeRequests_firewallManagementName = args.get('changeRequests_firewallManagementName')
-    changeRequests_objectId = args.get('changeRequests_objectId')
     changeRequests_globalUniqueId = args.get('changeRequests_globalUniqueId')
     changeRequests_changeDetails = args.get('changeRequests_changeDetails')
     changeRequests_additionalDetails = args.get('changeRequests_additionalDetails')
@@ -1641,7 +1637,7 @@ def implementChangeRequests_command(client, args):
     changeRequests_implementationStatus = args.get('changeRequests_implementationStatus')
     comment = args.get('comment')
 
-    changeRequests_type = client.get_type('ns0:changeRequests')
+    changeRequests_type = client.get_type('ns0:changeRequestImplementation')
     changeRequests = changeRequests_type(
         id=changeRequests_id,
         ticketId=changeRequests_ticketId,
@@ -1650,7 +1646,6 @@ def implementChangeRequests_command(client, args):
         changeType=changeRequests_changeType,
         firewallName=changeRequests_firewallName,
         firewallManagementName=changeRequests_firewallManagementName,
-        objectid=changeRequests_objectId,
         globalUniqueId=changeRequests_globalUniqueId,
         changeDetails=changeRequests_changeDetails,
         additionalDetails=changeRequests_additionalDetails,
@@ -1726,8 +1721,8 @@ def analyzeAccessChangeTicket_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.analyzeAccessChangeTicket',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=serialize_object_dict(response),
+        raw_response=serialize_object_dict(response)
     )
 
     return command_results
@@ -1755,8 +1750,8 @@ def getTicketPhases_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.getTicketPhases',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=serialize_object_list(response),
+        raw_response=serialize_object_list(response)
     )
 
     return command_results
@@ -1789,8 +1784,8 @@ def findTickets_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.findTickets',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=serialize_object_list(response),
+        raw_response=serialize_object_list(response)
     )
 
     return command_results
@@ -1801,7 +1796,6 @@ def setChangeRequestRuleAttributes_command(client, args):
     changeRequestId = args.get('changeRequestId')
     ruleAttributes_businessFunction = args.get('ruleAttributes_businessFunction')
     ruleAttributes_comment = args.get('ruleAttributes_comment')
-    ruleAttributes_customFields_dataType = args.get('ruleAttributes_customFields_dataType')
     ruleAttributes_customFields_defId = args.get('ruleAttributes_customFields_defId')
     ruleAttributes_customFields_entityType = args.get('ruleAttributes_customFields_entityType')
     ruleAttributes_customFields_id = args.get('ruleAttributes_customFields_id')
@@ -1813,7 +1807,7 @@ def setChangeRequestRuleAttributes_command(client, args):
     ruleAttributes_status = args.get('ruleAttributes_status')
     ruleAttributes_ticketId = args.get('ruleAttributes_ticketId')
 
-    customFields_type = client.get_type('ns0:customFields')
+    customFields_type = client.get_type('ns0:entityField')
     customFields = customFields_type(
         defId=ruleAttributes_customFields_defId,
         entityType=ruleAttributes_customFields_entityType,
@@ -1822,11 +1816,10 @@ def setChangeRequestRuleAttributes_command(client, args):
         value=ruleAttributes_customFields_value,
     )
 
-    ruleAttributes_type = client.get_type('ns0:subRange')
+    ruleAttributes_type = client.get_type('ns0:ruleAttributes')
     ruleAttributes = ruleAttributes_type(
         businessFunction=ruleAttributes_businessFunction,
         comment=ruleAttributes_comment,
-        dataType=ruleAttributes_customFields_dataType,
         customFields=customFields,
         email=ruleAttributes_email,
         nextReviewDate=ruleAttributes_nextReviewDate,
@@ -1864,21 +1857,9 @@ def getAttachmentList_command(client, args):
 def setAddRuleChangeRequestFields_command(client, args):
     ticketId = args.get('ticketId')
     changeRequestId = args.get('changeRequestId')
-    fields_entry_key = args.get('fields_entry_key')
-    fields_entry_value = args.get('fields_entry_value')
+    fields = json.loads(args.get('fields'))
 
-    entry_type = client.get_type('ns0:entry')
-    entry = entry_type(
-        key=fields_entry_key,
-        value=fields_entry_value
-    )
-
-    fields_type = client.get_type('ns0:fields')
-    fields = fields_type(
-        entry=entry
-    )
-
-    response = client.service.getAttachmentList(ticketId, changeRequestId, fields)
+    response = client.service.setAddRuleChangeRequestFields(ticketId, changeRequestId, fields)
 
     command_results = CommandResults(
         outputs_prefix='Skybox.setAddRuleChangeRequestFields',
@@ -1927,7 +1908,7 @@ def setTicketPhases_command(client, args):
         waitingForClosure=phases_ticketTypePhase_waitingForClosure
     )
 
-    phases_type = client.get_type('ns0:phases')
+    phases_type = client.get_type('ns0:phase')
     phases = phases_type(
         comment=phases_comment,
         createdBy=phases_createdBy,
@@ -1973,8 +1954,8 @@ def getTicketAccessRequests_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.getTicketAccessRequests',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=serialize_object_list(response),
+        raw_response=serialize_object_list(response)
     )
 
     return command_results
@@ -2013,7 +1994,7 @@ def setRecertificationStatus_command(client, args):
     ruleAttributes_status = args.get('ruleAttributes_status')
     ruleAttributes_ticketId = args.get('ruleAttributes_ticketId')
 
-    customFields_type = client.get_type('ns0:customFields')
+    customFields_type = client.get_type('ns0:entityField')
     customFields = customFields_type(
         dataType=ruleAttributes_customFields_dataType,
         defId=ruleAttributes_customFields_defId,
@@ -2027,7 +2008,7 @@ def setRecertificationStatus_command(client, args):
     ruleAttributes = ruleAttributes_type(
         businessFunction=ruleAttributes_businessFunction,
         comment=ruleAttributes_comment,
-        customFields=customFields,
+        #customFields=customFields,
         email=ruleAttributes_email,
         nextReviewDate=ruleAttributes_nextReviewDate,
         owner=ruleAttributes_owner,
