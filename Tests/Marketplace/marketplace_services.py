@@ -800,7 +800,8 @@ class Pack(object):
 
             secondary_encryption_key_output_file = zip_pack_path.replace("_not_encrypted.zip", ".enc2.zip")
             full_command_with_secondary_encryption = f'./encryptor ./{pack_name}_not_encrypted.zip ' \
-                                                     f'{secondary_encryption_key_output_file} "{secondary_encryption_key}"'
+                                                     f'{secondary_encryption_key_output_file}' \
+                                                     f' "{secondary_encryption_key}"'
             subprocess.call(full_command_with_secondary_encryption, shell=True)
 
             new_artefacts = os.path.join(current_working_dir, private_artifacts_dir)
@@ -1234,7 +1235,7 @@ class Pack(object):
         if len(pack_versions_dict) > 1:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
-            aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]" \
+            aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]"\
                               f" => {latest_release_notes_version_str}"
             logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
@@ -1680,7 +1681,8 @@ class Pack(object):
 
         Args:
             dependencies_data (dict): mapping of pack dependencies data, of all levels.
-            format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the dependencies or not.
+            format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
+            dependencies or not.
 
         Returns:
             dict: parsed pack metadata.
@@ -1697,7 +1699,8 @@ class Pack(object):
                 support_type=self._support_type, support_url=self.user_metadata.get('url'),
                 support_email=self.user_metadata.get('email')
             )
-            self._author = self._get_author(support_type=self._support_type, author=self.user_metadata.get('author', ''))
+            self._author = self._get_author(
+                support_type=self._support_type, author=self.user_metadata.get('author', ''))
             self._certification = self._get_certification(
                 support_type=self._support_type, certification=self.user_metadata.get('certification')
             )
@@ -1707,7 +1710,8 @@ class Pack(object):
             self._use_cases = input_to_list(input_data=self.user_metadata.get('useCases'), capitalize_input=True)
             self._categories = input_to_list(input_data=self.user_metadata.get('categories'), capitalize_input=True)
             self._keywords = input_to_list(self.user_metadata.get('keywords'))
-        self._dependencies = self._parse_pack_dependencies(self.user_metadata.get('dependencies', {}), dependencies_data)
+        self._dependencies = self._parse_pack_dependencies(
+            self.user_metadata.get('dependencies', {}), dependencies_data)
 
         # ===== Pack Private Attributes =====
         if not format_dependencies_only:
@@ -1755,7 +1759,8 @@ class Pack(object):
             pack_was_modified (bool): Indicates whether the pack was modified or not.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
             pack_names (set): List of all packs.
-            format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the dependencies or not.
+            format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
+             dependencies or not.
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
             bool: True is returned in pack is missing dependencies.
