@@ -37,7 +37,7 @@ script:
     execution: false
     name: skybox-getTicketWorkflow
     outputs:
-    - contextPath: Skybox.getTicketWorkflow.getTicketWorkflow
+    - contextPath: Skybox.getTicketWorkflow
       type: String
   - arguments:
     - default: false
@@ -59,7 +59,7 @@ script:
     execution: false
     name: skybox-getOriginalChangeRequestRouteInfoV1
     outputs:
-    - contextPath: Skybox.getOriginalChangeRequestRouteInfoV1.getOriginalChangeRequestRouteInfoV1
+    - contextPath: Skybox.getOriginalChangeRequestRouteInfoV1
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -98,7 +98,7 @@ script:
     execution: false
     name: skybox-getOriginalChangeRequestV7
     outputs:
-    - contextPath: Skybox.getOriginalChangeRequestV7.getOriginalChangeRequestV7
+    - contextPath: Skybox.getOriginalChangeRequestV7
       type: String
   - arguments:
     - default: false
@@ -141,7 +141,7 @@ script:
     execution: false
     name: skybox-setTicketFields
     outputs:
-    - contextPath: Skybox.setTicketFields.setTicketFields
+    - contextPath: Skybox.setTicketFields
       type: String
   - arguments:
     - default: false
@@ -212,7 +212,8 @@ script:
       name: accessChangeTicket_externalTicketStatus
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: |-
         Possible values:
         l New
@@ -226,6 +227,16 @@ script:
         l Demoted
       isArray: false
       name: accessChangeTicket_status
+      predefined:
+      - New
+      - InProgress
+      - Resolved
+      - Closed
+      - Rejected
+      - Ignored
+      - Verified
+      - Reopened
+      - Demoted
       required: false
       secret: false
     - default: false
@@ -240,7 +251,8 @@ script:
       name: accessChangeTicket_changeDetails
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: |-
         The Priority
         Possible values:
@@ -251,6 +263,12 @@ script:
         l P5
       isArray: false
       name: accessChangeTicket_priority
+      predefined:
+      - P1
+      - P2
+      - P3
+      - P4
+      - P5
       required: false
       secret: false
     - default: false
@@ -271,7 +289,8 @@ script:
       name: accessChangeTicket_doneDate
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: |-
         The likelihood
         Possible values:
@@ -280,9 +299,16 @@ script:
         l Medium
         l High
         l Priority
-        l Critica
+        l Critical
       isArray: false
       name: accessChangeTicket_likelihood
+      predefined:
+      - Unknown
+      - Low
+      - Medium
+      - High
+      - Priority
+      - Critical
       required: false
       secret: false
     - default: false
@@ -490,7 +516,7 @@ script:
     execution: false
     name: skybox-createAccessChangeTicket
     outputs:
-    - contextPath: Skybox.createAccessChangeTicket.createAccessChangeTicket
+    - contextPath: Skybox.createAccessChangeTicket
       type: String
   - arguments:
     - default: false
@@ -510,8 +536,8 @@ script:
     execution: false
     name: skybox-getAttachmentFile
     outputs:
-    - contextPath: Skybox.getAttachmentFile.getAttachmentFile
-      type: String
+    - contextPath: InfoFile
+      type: Unknown
   - arguments:
     - default: false
       description: The access Change Ticket ID
@@ -561,16 +587,39 @@ script:
       name: accessChangeTicket_externalTicketId
       required: false
       secret: false
-    - default: false
-      description: The access Change Ticket external Ticket Status
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Possible values:
+        l Pending
+        l Open
+        l Closed
+        l Error
+        l Rejected
       isArray: false
       name: accessChangeTicket_externalTicketStatus
+      predefined:
+      - Pending
+      - Open
+      - Closed
+      - Error
+      - Rejected
       required: false
       secret: false
-    - default: false
-      description: The access Change Ticket status
+    - auto: PREDEFINED
+      default: false
       isArray: false
       name: accessChangeTicket_status
+      predefined:
+      - New
+      - InProgress
+      - Resolved
+      - Closed
+      - Rejected
+      - Ignored
+      - Verified
+      - Reopened
+      - Demoted
       required: false
       secret: false
     - default: false
@@ -585,7 +634,8 @@ script:
       name: accessChangeTicket_changeDetails
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: |-
         The access Change Ticket priority
         Possible values:
@@ -596,6 +646,12 @@ script:
         l P5
       isArray: false
       name: accessChangeTicket_priority
+      predefined:
+      - P1
+      - P2
+      - P3
+      - P4
+      - P5
       required: false
       secret: false
     - default: false
@@ -616,7 +672,8 @@ script:
       name: accessChangeTicket_doneDate
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: |-
         The access Change Ticket likelihood
         Possible values:
@@ -628,6 +685,13 @@ script:
         l Critical
       isArray: false
       name: accessChangeTicket_likelihood
+      predefined:
+      - Unknown
+      - Low
+      - Medium
+      - High
+      - Priority
+      - Critical
       required: false
       secret: false
     - default: false
@@ -873,7 +937,7 @@ script:
     execution: false
     name: skybox-createRecertifyTicketV2
     outputs:
-    - contextPath: Skybox.createRecertifyTicketV2.createRecertifyTicketV2
+    - contextPath: Skybox.createRecertifyTicketV2
       type: String
   - arguments:
     - default: false
@@ -887,7 +951,7 @@ script:
     execution: false
     name: skybox-getAccessChangeTicket
     outputs:
-    - contextPath: Skybox.getAccessChangeTicket.getAccessChangeTicket
+    - contextPath: Skybox.getAccessChangeTicket
       type: String
   - arguments:
     - default: false
@@ -903,7 +967,7 @@ script:
     execution: false
     name: skybox-getAccessRequests
     outputs:
-    - contextPath: Skybox.getAccessRequests.getAccessRequests
+    - contextPath: Skybox.getAccessRequests
       type: String
   - arguments:
     - default: false
@@ -926,7 +990,7 @@ script:
     execution: false
     name: skybox-getPotentialVulnerabilitiesV2
     outputs:
-    - contextPath: Skybox.getPotentialVulnerabilitiesV2.getPotentialVulnerabilitiesV2
+    - contextPath: Skybox.getPotentialVulnerabilitiesV2
       type: String
   - arguments:
     - default: false
@@ -946,7 +1010,7 @@ script:
     execution: false
     name: skybox-deleteChangeRequests
     outputs:
-    - contextPath: Skybox.deleteChangeRequests.deleteChangeRequests
+    - contextPath: Skybox.deleteChangeRequests
       type: String
   - arguments:
     - default: false
@@ -1008,7 +1072,7 @@ script:
     execution: false
     name: skybox-getChangeRequestReviewers
     outputs:
-    - contextPath: Skybox.getChangeRequestReviewers.getChangeRequestReviewers
+    - contextPath: Skybox.getChangeRequestReviewers
       type: String
   - arguments:
     - default: false
@@ -3625,6 +3689,10 @@ script:
       required: true
       secret: false
     - default: false
+      description: |-
+        l True: Defer calculation of the change
+        requests
+        l False: Do not defer calculation
       isArray: false
       name: deferChangeRequestsCalculation
       required: true
@@ -3640,11 +3708,13 @@ script:
       type: String
   - arguments:
     - default: false
+      description: The ticket ID
       isArray: false
       name: ticketId
       required: true
       secret: false
     - default: false
+      description: The sponsoring application ID
       isArray: false
       name: sponsoringApplicationId
       required: true
@@ -3658,41 +3728,94 @@ script:
       type: String
   - arguments:
     - default: false
+      description: The username author
       isArray: false
       name: filter_createdBy
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Free text search in the following ticket fields:
+        l Title
+        l Comment
+        l Owner
+        l ID
+        l Status
+        l Priority
+        l Vendor reference
+        l Solutions
+        l CVE catalog ID
+        l Custom fields of type String
       isArray: false
       name: filter_freeTextFilter
+      predefined:
+      - Title
+      - Comment
+      - Owner
+      - ID
+      - Status
+      - Priority
+      - Vendor reference
+      - Solutions
+      - CVE catalog ID
+      - Custom fields of type String
       required: false
       secret: false
     - default: false
+      description: The modification autor username
       isArray: false
       name: filter_modifiedBy
       required: false
       secret: false
     - default: false
+      description: The filter my groups
       isArray: false
       name: filter_myGroups
       required: false
       secret: false
     - default: false
+      description: Search tickets by owner
       isArray: false
       name: filter_owner
       required: false
       secret: false
     - default: false
+      description: Search tickets by current phase
       isArray: false
       name: filter_phaseName
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Search tickets by status.
+        Possible values:
+        l New
+        l InProgress
+        l Resolved
+        l Closed
+        l Rejected
+        l Ignored
+        l Verified
+        l Reopened
+        l Demoted
       isArray: false
       name: filter_statusFilter
+      predefined:
+      - New
+      - InProgress
+      - Resolved
+      - Closed
+      - Rejected
+      - Ignored
+      - Verified
+      - Reopened
+      - Demoted
       required: false
       secret: false
     - default: false
+      description: Search tickets by IDs
       isArray: false
       name: filter_ticketIdsFilter
       required: false
@@ -3718,13 +3841,24 @@ script:
       type: String
   - arguments:
     - default: false
+      description: The ID of the ticket
       isArray: false
       name: ticketId
-      required: false
+      required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Signifies whether the ticket ID is the Skybox ticket ID or the ID from the
+        external ticketing system
+        Possible values:
+        l 1 (SBV ID)
+        l 2 (ID from external ticketing system)
       isArray: false
       name: ticketIdType
+      predefined:
+      - '1'
+      - '2'
       required: true
       secret: false
     deprecated: false
@@ -3738,6 +3872,7 @@ script:
       type: String
   - arguments:
     - default: false
+      description: The ticket IDs to get the change requests for
       isArray: false
       name: ticketIds
       required: true
@@ -3750,7 +3885,7 @@ script:
     execution: false
     name: skybox-getTicketsImplementedChangeRequests
     outputs:
-    - contextPath: Skybox.getTicketsImplementedChangeRequests.getTicketsImplementedChangeRequests
+    - contextPath: Skybox.getTicketsImplementedChangeRequests
       type: String
   - arguments:
     - default: false
@@ -3762,32 +3897,11 @@ script:
     description: |-
       Returns the calculation status of the specified
       ticket (whether calculation of the change requests
-      is deferred).
+      is deferred). Status is boolean
     execution: false
     name: skybox-getTicketDeferChangeRequestsCalculationStatus
     outputs:
     - contextPath: Skybox.getTicketDeferChangeRequestsCalculationStatus.getTicketDeferChangeRequestsCalculationStatus
-      type: String
-  - arguments:
-    - default: false
-      isArray: false
-      name: ticketId
-      required: true
-      secret: false
-    - default: false
-      isArray: false
-      name: changeRequestId
-      required: true
-      secret: false
-    deprecated: false
-    description: |-
-      Retrieves the list of Vulnerability Definitions that, if
-      the requested change is made, are directly
-      exposed to assets.
-    execution: false
-    name: skybox-getPotentialVulnerabilities
-    outputs:
-    - contextPath: Skybox.getPotentialVulnerabilities.getPotentialVulnerabilities
       type: String
   dockerimage: demisto/zeep:1.0.0.19873
   feed: false

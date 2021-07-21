@@ -2070,7 +2070,7 @@ def findAccessChangeTickets_command(client, args):
     subRange_size = args.get('subRange_size')
     subRange_start = args.get('subRange_start')
 
-    filter_type = client.get_type('ns0:filter')
+    filter_type = client.get_type('ns0:ticketsSearchFilter')
     filter = filter_type(
         createdBy=filter_createdBy,
         freeTextFilter=filter_freeTextFilter,
@@ -2122,8 +2122,8 @@ def getTicketsImplementedChangeRequests_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.getTicketsImplementedChangeRequests',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=serialize_object_list(response),
+        raw_response=serialize_object_list(response)
     )
 
     return command_results
@@ -2131,28 +2131,15 @@ def getTicketsImplementedChangeRequests_command(client, args):
 
 def getTicketDeferChangeRequestsCalculationStatus_command(client, args):
     ticketId = args.get('ticketId')
+    status = {}
 
     response = client.service.getTicketDeferChangeRequestsCalculationStatus(ticketId)
+    status['status'] = response
     command_results = CommandResults(
         outputs_prefix='Skybox.getTicketDeferChangeRequestsCalculationStatus',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
-    )
-
-    return command_results
-
-
-def getPotentialVulnerabilities_command(client, args):
-    ticketId = args.get('ticketId')
-    changeRequestId = args.get('changeRequestId')
-
-    response = client.service.getPotentialVulnerabilities(ticketId, changeRequestId)
-    command_results = CommandResults(
-        outputs_prefix='Skybox.getPotentialVulnerabilities',
-        outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=status,
+        raw_response=status
     )
 
     return command_results
