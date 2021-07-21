@@ -182,8 +182,14 @@ def make_request(method, url, payload=None, headers=None, is_fetch=False):
     return response
 
 
-def get_business_object_summary_by_name(name, is_fetch):
+def get_business_object_summary_by_name(name, is_fetch=False):
     url = BASE_URL + f'api/V1/getbusinessobjectsummary/busobname/{name}'
+    response = make_request('GET', url, is_fetch=is_fetch)
+    return parse_response(response, "Could not get business object summary", is_fetch=is_fetch)
+
+
+def get_business_object_summary_by_id(_id, is_fetch=False):
+    url = BASE_URL + f'api/V1/getbusinessobjectsummary/busobid/{_id}'
     response = make_request('GET', url, is_fetch=is_fetch)
     return parse_response(response, "Could not get business object summary", is_fetch=is_fetch)
 
@@ -660,6 +666,29 @@ def raise_or_return_error(msg, raise_flag):
         return_error(msg)
 
 
+def get_one_step_actions(bus_id, is_fetch=False):
+    url = BASE_URL + f'api/V1/getonestepactions/association/{bus_id}'
+    response = make_request('GET', url, is_fetch=is_fetch)
+    return parse_response(response, "Could not get one step actions", is_fetch=is_fetch)
+
+
+def get_one_step_actions_recursive(root, actions):
+    if root.get('childItems'):
+        actions_list = []
+        for item in root.get('childItems'):
+            actions_list.append(item)
+        actions[root.get('name')] = actions_list
+
+    for folder in root.get('childFolders', []):
+        get_one_step_actions_recursive(folder, actions)
+    return actions
+
+
+def run_one_step_action(payload):
+    url = BASE_URL + "api/V1/runonestepaction"
+    response = make_request("POST", url, json.dumps(payload))
+    return parse_response(response, "Could not run one step action")
+
 ########################################################################################################################
 '''
 Commands
@@ -951,6 +980,66 @@ def cherwell_get_business_object_id_command():
     })
 
 
+def cherwell_get_business_object_summary_command():
+    args = demisto.args()
+    business_object_name = args.get('name')
+    business_object_id = args.get('id')
+
+    if not business_object_id and not business_object_name:
+        raise DemistoException('No name or ID were specified. Please specify at least one of them.')
+    elif business_object_id:
+        result = get_business_object_summary_by_id(business_object_id)
+    else:
+        result = get_business_object_summary_by_name(business_object_name)
+
+    md = tableToMarkdown('Business Object Summary:', result, headerTransform=pascalToSpace)
+
+    return_results(CommandResults(outputs=result, readable_output=md, outputs_key_field='busObId',
+                                  outputs_prefix='Cherwell.BusinessObjectSummary', raw_response=result))
+
+
+def cherwell_get_one_step_actions_command():
+    args = demisto.args()
+    business_object_id = args.get('busobjectid')
+    result = get_one_step_actions(business_object_id)
+
+    actions = {}
+    ec = {}
+    md = ''
+
+    get_one_step_actions_recursive(result.get('root'), actions)
+
+    if actions:
+        for key in actions.keys():
+            md += tableToMarkdown(f'{key} one-step actions:', actions[key],
+                                 headerTransform=pascalToSpace)
+        ec = {'BusinessObjectId': business_object_id, 'Actions': actions}
+    else:
+        md = f'No one-step actions found for business object ID {business_object_id}'
+
+    return_results(CommandResults(outputs=ec, readable_output=md, outputs_key_field='BusinessObjectId',
+                                  outputs_prefix='Cherwell.OneStepActions', raw_response=result))
+
+
+def cherwell_run_one_step_action_command():
+    prompt_values = {}
+    args = demisto.args()
+    business_object_id = args.get('busobjectid')
+    rec_id = args.get('busobrecid')
+    stand_in_key = args.get('oneStepAction_StandInKey')
+    prompt_values_arg = args.get('prompt_values')
+
+    if prompt_values_arg:
+        prompt_values = json.loads(prompt_values_arg)
+
+    payload = {'acquireLicense': True,'busObId': business_object_id, 'busObRecId': rec_id,
+               'oneStepActionStandInKey': stand_in_key, 'promptValues': prompt_values}
+
+    result = run_one_step_action(payload)
+
+    return_results(CommandResults(readable_output='One-Step action has been executed successfully.',
+                                  raw_response=result))
+
 #######################################################################################################################
 
 
@@ -1008,6 +1097,15 @@ try:
 
     elif demisto.command() == 'cherwell-get-business-object-id':
         cherwell_get_business_object_id_command()
+
+    elif demisto.command() == 'cherwell-get-business-object-summary':
+        cherwell_get_business_object_summary_command()
+
+    elif demisto.command() == 'cherwell-get-one-step-actions-for-business-object':
+        cherwell_get_one_step_actions_command()
+
+    elif demisto.command() == 'cherwell-run-one-step-action-on-business-object':
+        cherwell_run_one_step_action_command()
 
 
 # Log exceptions

@@ -516,6 +516,75 @@ script:
     - contextPath: Cherwell.BusinessObjectInfo.BusinessObjectName
       description: Business object name.
       type: String
+  - arguments:
+    - default: false
+      description: Business object name.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: Business object ID.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get business object summary by name or ID.
+    execution: false
+    name: cherwell-get-business-object-summary
+    outputs:
+    - contextPath: Cherwell.test.test
+      description: Business object ID.
+      type: String
+  - arguments:
+    - default: false
+      description: Business object ID.
+      isArray: false
+      name: busobjectid
+      required: true
+      secret: false
+    deprecated: false
+    description: Get One-Step Actions by business object ID
+    execution: false
+    name: cherwell-get-one-step-actions-for-business-object
+    outputs:
+    - contextPath: Cherwell.test.test
+      description: Business object ID.
+      type: String
+  - arguments:
+    - default: false
+      description: Business object ID.
+      isArray: false
+      name: busobjectid
+      required: true
+      secret: false
+    - default: false
+      description: Business object record ID.
+      isArray: false
+      name: busobrecid
+      required: true
+      secret: false
+    - default: false
+      description: The key to find the One-Step Action to run, you can get it with the command cherwell-get-one-step-actions-for-business-object.
+      isArray: false
+      name: oneStepAction_StandInKey
+      required: true
+      secret: false
+    - default: false
+      description: Additional information to run the action in json format.
+      isArray: false
+      name: prompt_values
+      required: true
+      secret: false
+    deprecated: false
+    description: Operation to run a One-Step Action using a OneStepActionRequest. This request is used to start a One-Step Action run with additional information such as prompt values.
+    execution: false
+    name: cherwell-run-one-step-action-on-business-object
+    outputs:
+    - contextPath: Cherwell.test.test
+      description: Business object ID.
+      type: String
   dockerimage: demisto/python3:3.8.3.9324
   isfetch: true
   runonce: false
