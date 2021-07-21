@@ -339,12 +339,10 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         # The alerts are sorted by descending date so first alert is the most recent
         most_recent_alert = alerts[0]
 
-        # casting to str to prevent mypy error:
-        # Argument 1 to "strptime" of "datetime" has incompatible type "Optional[Any]"; expected "str"
-        most_recent_alert_created_date = str(most_recent_alert.get("created_at"))
+        most_recent_alert_created_date = most_recent_alert.get("created_at")
 
         most_recent_alert_timestamp = \
-            int(datetime.strptime(most_recent_alert_created_date, SECURITYSCORECARD_DATE_FORMAT).timestamp())
+            int(datetime.strptime(most_recent_alert_created_date, SECURITYSCORECARD_DATE_FORMAT).timestamp())  # type: ignore
         demisto.debug(f"Setting last runtime as alert most recent timestamp: {most_recent_alert_timestamp}")
         demisto.setLastRun({
             'last_run': most_recent_alert_timestamp
@@ -352,8 +350,8 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
         for alert in alerts:
 
-            alert_created_at = str(alert.get("created_at"))
-            alert_timestamp = int(datetime.strptime(alert_created_at, SECURITYSCORECARD_DATE_FORMAT).timestamp())
+            alert_created_at = alert.get("created_at")
+            alert_timestamp = int(datetime.strptime(alert_created_at, SECURITYSCORECARD_DATE_FORMAT).timestamp())  # type: ignore
 
             alert_id = alert.get("id")
 
@@ -367,7 +365,7 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 incident = {}
                 incident["name"] = f"SecurityScorecard '{alert.get('change_type')}' Incident"
                 incident["occurred"] = \
-                    datetime.strptime(alert_created_at, SECURITYSCORECARD_DATE_FORMAT).strftime(DATE_FORMAT)
+                    datetime.strptime(alert_created_at, SECURITYSCORECARD_DATE_FORMAT).strftime(DATE_FORMAT)  # type: ignore
                 incident["rawJSON"] = json.dumps(alert)
                 incidents_to_import.append(incident)
     # If there are no alerts then we can't use the most recent alert timestamp
@@ -426,13 +424,13 @@ def portfolios_list_command(client: SecurityScorecardClient) -> CommandResults:
 
     portfolios = client.get_portfolios()
 
-    portfolios_total = portfolios.get("total")
-    assert portfolios_total is not None
-    portfolios_count = int(portfolios_total)
+    portfolios_total = int(portfolios.get("total"))  # type: ignore
 
     # Check that API returned more than 0 portfolios
-    if portfolios_count == 0:
-        return_warning("No Portfolios were found in your account. Please create a new one and try again.", exit=True)
+    if portfolios_total == 0:
+        return CommandResults(
+            readable_output="No Portfolios were found in your account. Please create a new one and try again."
+        )
 
     # API response is a dict with 'entries'
     entries = portfolios.get('entries')
@@ -449,7 +447,7 @@ def portfolios_list_command(client: SecurityScorecardClient) -> CommandResults:
     return results
 
 
-def portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
     """Retrieve all companies in portfolio.
 
     https://securityscorecard.readme.io/reference#get_portfolios-portfolio-id-companies
@@ -462,7 +460,7 @@ def portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict
         CommandResults: The results of the command.
     """
 
-    portfolio_id = str(args.get('portfolio_id'))
+    portfolio_id = args.get('portfolio_id')
 
     # Validate grade argument
     if 'grade' in args:
@@ -474,10 +472,8 @@ def portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict
     # We need to capitalize the industry to conform to API
     industry = None
     if 'industry' in args:
-        industry_arg = str(args.get('industry'))
-        industry = str.upper(industry_arg)
-    # else:
-    #     industry = None
+        industry_arg = args.get('industry')
+        industry = str.upper(industry_arg)  # type: ignore
 
     vulnerability = args.get('vulnerability')
 
@@ -490,7 +486,7 @@ def portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict
     )
 
     response = client.get_companies_in_portfolio(
-        portfolio=portfolio_id,
+        portfolio=portfolio_id,  # type: ignore
         grade=grade,
         industry=industry,
         vulnerability=vulnerability,
@@ -499,12 +495,11 @@ def portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict
     )
 
     # Check if the portfolio has more than 1 company
-    # Throw warning to UI if there are no companies
-    # str cast for mypy type incompatiblity
-    total_portfolios = int(str(response.get('total')))
-
+    total_portfolios = int(response.get('total'))  # type: ignore
     if not total_portfolios > 0:
-        return_warning(f"No companies found in Portfolio {portfolio_id}. Please add a company to it and retry.")
+        return CommandResults(
+            readable_output=f"No companies found in Portfolio {portfolio_id}. Please add a company to it and retry."
+        )
 
     companies = response.get('entries')
 
@@ -537,13 +532,12 @@ def company_score_get_command(client: SecurityScorecardClient, args: Dict[str, A
         CommandResults: The results of the command.
     """
 
-    # str cast for mypy compatibility
-    domain = str(args.get('domain'))
+    domain = args.get('domain')
 
-    score = client.get_company_score(domain=domain)
+    score = client.get_company_score(domain=domain)  # type: ignore
     score["domain"] = f"[{domain}](https://{domain})"
 
-    industry = str(score.get("industry")).title().replace("_", " ")
+    industry = score.get("industry").title().replace("_", " ")  # type: ignore
     score["industry"] = industry
 
     markdown = tableToMarkdown(
@@ -574,11 +568,11 @@ def company_factor_score_get_command(client: SecurityScorecardClient, args: Dict
         CommandResults: The results of the command.
     """
 
-    domain = str(args.get('domain'))
+    domain = args.get('domain')
 
     severity_in = args.get('severity_in')
 
-    response = client.get_company_factor_score(domain, severity_in)
+    response = client.get_company_factor_score(domain, severity_in)  # type: ignore
 
     demisto.debug(f"factor score response: {response}")
     entries = response['entries']
@@ -622,11 +616,11 @@ def company_history_score_get_command(client: SecurityScorecardClient, args: Dic
         CommandResults: The results of the command.
     """
 
-    domain = str(args.get('domain'))
+    domain = args.get('domain')
 
     _from = args.get('from')
     to = args.get('to')
-    timing = str(args.get('timing'))
+    timing = args.get('timing')
 
     response = client.get_company_historical_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
 
@@ -660,10 +654,10 @@ def company_history_factor_score_get_command(client: SecurityScorecardClient, ar
         CommandResults: The results of the command.
     """
 
-    domain = str(args.get('domain'))
+    domain = args.get('domain')
     _from = args.get('from')
     to = args.get('to')
-    timing = str(args.get('timing'))
+    timing = args.get('timing')
 
     response = client.get_company_historical_factor_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
 
@@ -711,14 +705,14 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
     """
 
     email = client.username
-    change_direction = str(args.get('change_direction'))
+    change_direction = args.get('change_direction')
     score_types = argToList(args.get('score_types'))
     target = argToList(args.get('target'))
 
     demisto.debug(f"Attempting to create alert with body {args}")
     response = client.create_grade_change_alert(
         email=email,
-        change_direction=change_direction,
+        change_direction=change_direction,  # type: ignore
         score_types=score_types,
         target=target
     )
@@ -750,7 +744,7 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
     """
 
     email = client.username
-    change_direction = str(args.get('change_direction'))
+    change_direction = args.get('change_direction')
     threshold = arg_to_number(args.get('threshold'))
     score_types = argToList(args.get('score_types'))
     target_arg = argToList(args.get('target'))
@@ -772,7 +766,7 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
     demisto.debug(f"Attempting to create alert with body {args}")
     response = client.create_score_threshold_alert(
         email=email,
-        change_direction=change_direction,
+        change_direction=change_direction,  # type: ignore
         threshold=threshold,  # type: ignore
         score_types=score_types,
         target=target
@@ -805,11 +799,11 @@ def alert_delete_command(client: SecurityScorecardClient, args: Dict[str, Any]) 
     """
 
     email = client.username
-    alert_id = str(args.get("alert_id"))
-    alert_type = str(args.get("alert_type"))
-    client.delete_alert(email=email, alert_id=alert_id, alert_type=alert_type)
+    alert_id = args.get("alert_id")
+    alert_type = args.get("alert_type")
+    client.delete_alert(email=email, alert_id=alert_id, alert_type=alert_type)  # type: ignore
 
-    markdown = f"{str.capitalize(alert_type)} alert **{alert_id}** deleted"
+    markdown = f"{str.capitalize(alert_type)} alert **{alert_id}** deleted"  # type: ignore
 
     results = CommandResults(readable_output=markdown)
 
@@ -884,8 +878,8 @@ def company_services_get_command(client: SecurityScorecardClient, args: Dict[str
         CommandResults: The results of the command.
     """
 
-    domain = str(args.get("domain"))
-    response = client.get_domain_services(domain=domain)
+    domain = args.get("domain")
+    response = client.get_domain_services(domain=domain)  # type: ignore
 
     entries = response["entries"]
 
@@ -940,7 +934,7 @@ def fetch_alerts(client: SecurityScorecardClient):
 
     alerts = results.get("entries")
 
-    demisto.debug(f"API returned {str(len(alerts))} alerts")
+    demisto.debug(f"API returned {len(alerts)} alerts")
 
     # Check if the API returned any alerts
     if len(alerts) > 0:
@@ -948,7 +942,7 @@ def fetch_alerts(client: SecurityScorecardClient):
 
         # Check if any incidents should be imported according to last run time timestamp
         if len(incidents) > 0:
-            demisto.debug(f"{str(len(incidents))} Incidents will be imported")
+            demisto.debug(f"{len(incidents)} Incidents will be imported")
             demisto.debug(f"Incidents: {incidents}")
             demisto.incidents(incidents)
         else:
@@ -989,6 +983,8 @@ def main() -> None:
     # Fetch configuration
     max_fetch = params.get("max_fetch")
 
+    args: Dict[str, str] = demisto.args()
+
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
@@ -1011,7 +1007,7 @@ def main() -> None:
         elif demisto.command() == 'securityscorecard-portfolios-list':
             return_results(portfolios_list_command(client))
         elif demisto.command() == 'securityscorecard-portfolio-list-companies':
-            return_results(portfolio_list_companies_command(client, demisto.args()))
+            return_results(portfolio_list_companies_command(client, args))
         elif demisto.command() == 'securityscorecard-company-score-get':
             return_results(company_score_get_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-company-factor-score-get':
