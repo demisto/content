@@ -8,7 +8,7 @@ This integration was integrated and tested with version 6.9 of HPE Aruba ClearPa
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Your server URL (e.g., https://example.net:57123) |  | True |
+    | Your server URL (e.g., https://example.net) |  | True |
     | Client ID | HPE Aruba ClearPass client identifier. | True |
     | Client Secret | HPE Aruba ClearPass client secret. | True |
     | Trust any certificate (not secure) |  | False |
