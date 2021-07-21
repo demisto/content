@@ -141,7 +141,6 @@ class SecurityScorecardClient(BaseClient):
             score_types=score_types,
             target=target
         )
-        
         return self.http_request_wrapper(
             method='POST',
             url_suffix=f"users/by-username/{email}/alerts/grade",
@@ -180,7 +179,7 @@ class SecurityScorecardClient(BaseClient):
 
     def get_alerts_last_week(self, email: str, portfolio_id: Optional[str]) -> Dict[str, Any]:
 
-        query_params : Dict[str, Any] = assign_params(
+        query_params: Dict[str, Any] = assign_params(
             portfolio=portfolio_id
         )
 

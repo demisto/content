@@ -91,8 +91,7 @@ script:
       required: true
       default: false
     - name: grade
-      description: Grade filter. The acceptable values are capitalized letters between
-        A-F, e.g. B.
+      description: Grade filter.
       required: false
       default: false
       auto: PREDEFINED
@@ -247,7 +246,7 @@ script:
       description: Initial date for historical data. Value should be in format `YYYY-MM-DD`
       default: false
     - name: timing
-      description: Timing granularity. Acceptable values are `weekly` or `daily`
+      description: Timing granularity.
       required: false
       auto: PREDEFINED
       predefined:
@@ -278,7 +277,7 @@ script:
       description: Initial date for historical data. Value should be in format 'YYYY-MM-DD'
       default: false
     - name: timing
-      description: Timing granularity. Acceptable values are "daily" (default), "weekly"
+      description: Timing granularity.
         or "monthly"
       required: false
       auto: PREDEFINED
@@ -303,7 +302,7 @@ script:
     description: Create alert based on grade
     arguments:
     - name: change_direction
-      description: Direction of change. Possible values are 'rises' or 'drops'.
+      description: Direction of change.
       required: true
       auto: PREDEFINED
       predefined:
@@ -317,7 +316,7 @@ script:
         'hacker_chatter', 'leaked_information', 'social_engineering'.
       required: true
     - name: target
-      description: What do you want to monitor with this alert. It could be either 'my_scorecard' or 'any_followed_company'. This argument is required if the `portfolios` argument is not specified.
+      description: What do you want to monitor with this alert. This argument is required if the `portfolios` argument is not specified.
       auto: PREDEFINED
       predefined:
       - "my_scorecard"
@@ -355,8 +354,7 @@ script:
         factors, provide comma-separated list, i.e. leaked_information,social_engineering.
       required: true
     - name: target
-      description: What do you want to monitor with this alert. It could be one of
-        the following 'my_scorecard', 'any_followed_company'. This argument is require
+      description: What do you want to monitor with this alert. This argument is require
         if the `portfolios` argument is not specified.
       required: false
       auto: PREDEFINED
