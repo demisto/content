@@ -3521,7 +3521,8 @@
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
         "O365 - EWS - Extension - Test": "Issue 39008",
         "Majestic Million Test Playbook": "Issue 30931",
-        "CircleCI-Test": "Issue 39222"
+        "CircleCI-Test": "Issue 39222",
+        "EDL Performance Test": "Issue 38979"
     },
     "skipped_integrations": {
         
@@ -3607,7 +3608,7 @@
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
