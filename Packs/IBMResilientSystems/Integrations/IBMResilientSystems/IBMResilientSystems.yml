@@ -296,8 +296,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: The custom fields (fields that are not in the regular arguments)
-        for example {"reporter", "Jon Due"}. (in case of conflicts, refer to 'other-fields')
+      description: 'A json object of field_names and new_field_values for example
+        {"description": {"textarea": {"format": "html", "content": "The new description"}},
+        "name": {"text": "The new name"}}. Because of API limitations we currently
+        support only regular fields (We do not support fields like ''artifact'').
+        in case of conflicts refer to ''other-fields''.'
       isArray: false
       name: other-fields
       required: false
