@@ -2165,7 +2165,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
                     break
 
         demisto.debug(f'{APP_NAME} - ending fetch - got {len(incidents)} incidents.')
-        last_run_time = incident.get("occurred", last_run.get(LAST_RUN_TIME))
+        last_run_time = incident.get("occurred") or last_run.get(LAST_RUN_TIME) or EWSDateTime.utcnow()
         if isinstance(last_run_time, EWSDateTime):
             last_run_time = last_run_time.ewsformat()
 

@@ -377,12 +377,11 @@ def test_parse_incident_from_item():
 
 
 @freeze_time('2021-07-15 13:18:14.901293+00:00')
-@pytest.mark.parametrize('since_datetime, filter_arg, expected_result',
-                         [('', 'last_modified_time__gte', EWSDateTime.from_string('2021-05-23 13:08:14.901293+00:00')),
-                          ('2021-05-23 21:28:14.901293+00:00', 'datetime_received__gte',
-                           '2021-05-23 21:28:14.901293+00:00')
+@pytest.mark.parametrize('since_datetime',
+                         [(''),
+                          ('2021-05-23 21:28:14.901293+00:00')
                           ])
-def test_fetch_last_emails_paging(mocker, since_datetime, filter_arg, expected_result):
+def test_fetch_last_emails_paging(mocker, since_datetime):
     """
     Given:
         - Incidents with the same creation time
