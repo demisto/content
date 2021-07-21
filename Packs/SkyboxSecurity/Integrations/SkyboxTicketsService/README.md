@@ -1,5 +1,5 @@
 Skybox® Change Manager workflows for firewall rule creation, recertification and deprovisioning help maintain continuous compliance, close security gaps and limit vulnerability exposures.
-This integration was integrated and tested with version xx of SkyboxTicketsService
+This integration was integrated and tested with version V11_4_100 of SkyboxTicketsService
 
 For more information please refer to the Skybox Developer Guide located at https://downloads.skyboxsecurity.com/files/Installers/Skybox_View/latestDocs/Skybox_DevelopersGuide_V11_4_100.pdf
 
