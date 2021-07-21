@@ -61,6 +61,7 @@ def mock_update_incident(incident_id, data):
 
     class Response:
         status_code = code
+
     response = Response
 
     return response
@@ -83,10 +84,22 @@ def test_update_incident_command(mocker):
 
 
 def test_add_notes(mocker):
-    mock_result = mocker.patch('IBMResilientSystems.client.post', side_effect=mock_client_post)
+    mocker.patch('IBMResilientSystems.client.post', side_effect=mock_client_post)
     from IBMResilientSystems import add_notes
     expected_results = ('/incidents/1/comments', {'text': {'format': 'text', 'content': 'Hello-World'}})
 
     add_notes(1, {"comment": "Hello-World"})
+
+    assert mock_result == expected_results
+
+
+def test_add_incident_artifact(mocker):
+    mocker.patch('IBMResilientSystems.client.post', side_effect=mock_client_post)
+    from IBMResilientSystems import add_incident_artifact
+    expected_results = ('/incidents/1/comments', {'type': 'IP Address', 'value': '6.6.6.6',
+                                                  'description': {'format': 'text',
+                                                                  'content': 'This is the artifact description'}})
+
+    add_incident_artifact(1, "IP Address", "6.6.6.6", "This is the artifact description")
 
     assert mock_result == expected_results

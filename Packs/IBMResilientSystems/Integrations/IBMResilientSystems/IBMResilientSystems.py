@@ -126,7 +126,7 @@ def prettify_incidents(incidents):
     phases = get_phases()['entities']
     for incident in incidents:
         incident['id'] = str(incident['id'])
-        if isinstance(incident['description'], unicode):
+        if isinstance(incident['description'], str):
             incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
         incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
         incident['created_date'] = normalize_timestamp(incident['create_date'])
@@ -629,7 +629,10 @@ def get_tasks_command(incident_id):
                 task_object['Form'] = task['form']
             if task['user_notes']:
                 task_object['UserNotes'] = task['user_notes']
-            task_object['Creator'] = task['creator']['fname'] + ' ' + task['creator']['lname']
+            if task.get('creator'):
+                task_object['Creator'] = task['creator']['fname'] + ' ' + task['creator']['lname']
+            else:
+                task_object['Creator'] = None
             task_object['Category'] = task['cat_name']
             if task['instr_text']:
                 task_object['Instructions'] = task['instr_text']
