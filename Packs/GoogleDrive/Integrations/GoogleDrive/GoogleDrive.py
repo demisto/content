@@ -908,13 +908,11 @@ def prepare_drives_human_readable(outputs_context: List[Dict[str, Any]]) -> str:
     :return: Human readable.
     """
 
-    drive_activity_hr = tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Drive(s)', len(outputs_context)),
+    return tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Drive(s)', len(outputs_context)),
                                         GSuiteClient.remove_empty_entities(outputs_context),
                                         ['id', 'name', 'createdTime'],
                                         headerTransform=pascalToSpace,
                                         removeNull=True)
-
-    return drive_activity_hr
 
 
 def prepare_single_drive_human_readable(outputs_context: Dict[str, Any], args: Dict[str, str]) -> str:
@@ -927,7 +925,7 @@ def prepare_single_drive_human_readable(outputs_context: Dict[str, Any], args: D
     """
 
     fields = args.get('fields', 'id, name')
-    drive_hr_md = tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Drive(s)', 1),
+    return tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Drive(s)', 1),
                                   GSuiteClient.remove_empty_entities(outputs_context),
                                   [x.strip() for x in fields.split(',')],
                                   headerTransform=pascalToSpace,
@@ -1055,19 +1053,13 @@ def prepare_files_human_readable(outputs_context: List[Dict[str, Any]]) -> str:
 
     :return: Human readable.
     """
-    file_hr: List[Dict[str, Any]] = [{}]
-    for current_context in outputs_context:
-        file_hr.append(current_context)
 
-    file_hr = GSuiteClient.remove_empty_entities(file_hr)
-    file_activity_hr = tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('File(s)', len(file_hr)),
-                                       file_hr,
+    return tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('File(s)', len(outputs_context)),
+                                       GSuiteClient.remove_empty_entities(outputs_context),
                                        ['id', 'name', 'mimeType', 'description', 'size', 'driveId',
                                         'createdTime', 'modifiedTime', ],
                                        headerTransform=pascalToSpace,
                                        removeNull=True)
-
-    return file_activity_hr
 
 
 def prepare_single_file_output(response: Dict[str, Any]) -> Dict[str, Any]:
@@ -1103,16 +1095,14 @@ def prepare_single_file_human_readable(outputs_context: Dict[str, Any], args: Di
 
     :return: Human readable.
     """
-    file_hr = GSuiteClient.remove_empty_entities(outputs_context)
-    table_hr_md = tableToMarkdown(
+
+    return tableToMarkdown(
         HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('File(s)', 1),
-        file_hr,
+        GSuiteClient.remove_empty_entities(outputs_context),
         [x.strip() for x in args.get('fields', 'kind, id').split(',')],
         headerTransform=pascalToSpace,
         removeNull=False,
     )
-
-    return table_hr_md
 
 
 def prepare_file_command_request(client: GSuiteClient, args: Dict[str, str], scopes: List[str]) -> Dict[str, Any]:
@@ -1301,11 +1291,8 @@ def prepare_file_single_human_readable(outputs_context: Dict[str, Any], args: Di
     :return: Human readable.
     """
 
-    file_hr = outputs_context
-    file_hr = GSuiteClient.remove_empty_entities(file_hr)
-
-    table_hr_md = tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('file(s)', 1),
-                                  file_hr,
+    return tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('file(s)', 1),
+                                  GSuiteClient.remove_empty_entities(outputs_context),
                                   ['id', 'name', 'mimeType', 'description', 'starred', 'trashed',
                                    'parents', 'properties', 'spaces', 'version', 'webContentLink',
                                    'webViewLink', 'iconLink', 'hasThumbnail', 'thumbnailLink',
@@ -1321,7 +1308,6 @@ def prepare_file_single_human_readable(outputs_context: Dict[str, Any], args: Di
                                    'resourceKey', ],
                                   headerTransform=pascalToSpace,
                                   removeNull=False)
-    return table_hr_md
 
 
 def prepare_file_permission_request(client: GSuiteClient, args: Dict[str, str], scopes: List[str]) -> Dict[str, Any]:
@@ -1498,19 +1484,11 @@ def prepare_permissions_human_readable(outputs_context: List[Dict[str, Any]], ar
     :return: Human readable.
     """
 
-    file_hr: List[Dict[str, Any]] = [{}]
-    for context in outputs_context:
-        single_file_hr = {}
-        single_file_hr.update(context)
-        file_hr.append(single_file_hr)
-
-    file_hr = GSuiteClient.remove_empty_entities(file_hr)
-    table_hr_md = tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', len(file_hr)),
-                                  file_hr,
+    return tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', len(outputs_context)),
+                                  GSuiteClient.remove_empty_entities(outputs_context),
                                   ['id', 'type', 'role', 'emailAddress', 'displayName', 'deleted'],
                                   headerTransform=pascalToSpace,
                                   removeNull=False)
-    return table_hr_md
 
 
 def handle_response_permission_single(response: Dict[str, Any], args: Dict[str, str]) -> CommandResults:
@@ -1567,15 +1545,11 @@ def prepare_permission_human_readable(outputs_context: Dict[str, Any], args: Dic
     :return: Human readable.
     """
 
-    file_hr = outputs_context
-    file_hr = GSuiteClient.remove_empty_entities(file_hr)
-
-    table_hr_md = tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1),
-                                  file_hr,
+    return tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1),
+                                  GSuiteClient.remove_empty_entities(outputs_context),
                                   ['id', 'type', 'role', 'domain', 'emailAddress', 'displayName', 'deleted'],
                                   removeNull=False,
                                   headerTransform=pascalToSpace)
-    return table_hr_md
 
 
 @logger
