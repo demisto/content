@@ -122,11 +122,17 @@ script:
     - contextPath: SophosCentral.Alert.managedAgentId
       description: The alert source ID.
       type: String
+    - contextPath: SophosCentral.Alert.managedAgentName
+      description: The alert source name.
+      type: String
     - contextPath: SophosCentral.Alert.managedAgentType
       description: The source that triggered the alert.
       type: String
     - contextPath: SophosCentral.Alert.person
       description: The ID of the referenced person object.
+      type: String
+    - contextPath: SophosCentral.Alert.personName
+      description: The Name of the referenced person object.
       type: String
     - contextPath: SophosCentral.Alert.product
       description: Product type.
@@ -176,11 +182,17 @@ script:
     - contextPath: SophosCentral.Alert.managedAgentId
       description: The alert source ID.
       type: String
+    - contextPath: SophosCentral.Alert.managedAgentName
+      description: The alert source name.
+      type: String
     - contextPath: SophosCentral.Alert.managedAgentType
       description: The source that triggered the alert.
       type: String
     - contextPath: SophosCentral.Alert.person
       description: The ID of the referenced person object.
+      type: String
+    - contextPath: SophosCentral.Alert.personName
+      description: The Name of the referenced person object.
       type: String
     - contextPath: SophosCentral.Alert.product
       description: Product type.
@@ -398,11 +410,17 @@ script:
     - contextPath: SophosCentral.Alert.managedAgentId
       description: The alert source ID.
       type: String
+    - contextPath: SophosCentral.Alert.managedAgentName
+      description: The alert source name.
+      type: String
     - contextPath: SophosCentral.Alert.managedAgentType
       description: The source that triggered the alert.
       type: String
     - contextPath: SophosCentral.Alert.person
       description: The ID of the referenced person object.
+      type: String
+    - contextPath: SophosCentral.Alert.personName
+      description: The Name of the referenced person object.
       type: String
     - contextPath: SophosCentral.Alert.product
       description: Product type.
