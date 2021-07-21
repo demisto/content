@@ -21,12 +21,31 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 class SecurityScorecardClient(BaseClient):
     """Client class that interacts with the SecurityScorecard API
 
-    It inherits from BaseClient defined in CommonServer Python.
-
+    Attributes:
+        username (str): SecurityScorecard username/email.
+        api_key (str): SecurityScorecard API token.
+        max_fetch (int): Maximum alerts to fetch.
     """
 
-    def get_portfolios(self) -> Dict[str, Any]:
+    def __init__(self, base_url, verify, proxy, headers, username, api_key, max_fetch):
+        """
+        Args:
+            base_url (str): SecurityScorecard base URL.
+            verify (bool): Whether to verify certificates.
+            proxy (bool): Whether to use Cortex XSOAR proxy.
+            headers (dict): Dictionary holding the HTTP headers.
+        """
+        super().__init__(
+            base_url,
+            verify=verify,
+            proxy=proxy,
+            headers=headers
+        )
+        self.username = username
+        self.api_key = api_key
+        self.max_fetch = max_fetch
 
+    def get_portfolios(self) -> Dict[str, Any]:
         return self.http_request_wrapper(
             'GET',
             url_suffix='portfolios'
@@ -199,7 +218,9 @@ class SecurityScorecardClient(BaseClient):
             url_suffix=f"companies/{domain}/services"
         )
 
-    def fetch_alerts(self, username: str, page_size: int):
+    def fetch_alerts(self, page_size: int):
+
+        username = self.username
 
         query_params: Dict[str, Any] = {}
 
@@ -374,12 +395,11 @@ def test_module(client: SecurityScorecardClient) -> str:
     Returns:
         str: 'ok' if test passed, anything else will fail the test.
     """
+    demisto.debug("Initialized test module...")
 
-    username_input = demisto.params().get('username').get("identifier")
     try:
-        client.fetch_alerts(
-            username=username_input,
-            page_size=1)
+        client.fetch_alerts(page_size=1)
+        demisto.debug("Test module successful")
         return('ok')
     except DemistoException as e:
         if 'Unauthorized' in str(e):
@@ -692,7 +712,7 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
         CommandResults: The results of the command.
     """
 
-    email = demisto.params().get('username').get("identifier")
+    email = client.username
     change_direction = str(args.get('change_direction'))
     score_types = argToList(args.get('score_types'))
     target = argToList(args.get('target'))
@@ -731,7 +751,7 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
         CommandResults: The results of the command.
     """
 
-    email = demisto.params().get('username').get("identifier")
+    email = client.username
     change_direction = str(args.get('change_direction'))
     threshold = arg_to_number(args.get('threshold'))
     score_types = argToList(args.get('score_types'))
@@ -786,7 +806,7 @@ def alert_delete_command(client: SecurityScorecardClient, args: Dict[str, Any]) 
         CommandResults: The results of the command.
     """
 
-    email = demisto.params().get('username').get("identifier")
+    email = client.username
     alert_id = str(args.get("alert_id"))
     alert_type = str(args.get("alert_type"))
     client.delete_alert(email=email, alert_id=alert_id, alert_type=alert_type)
@@ -811,7 +831,7 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
         CommandResults: The results of the command.
     """
 
-    email = demisto.params().get('username').get("identifier")
+    email = client.username
     demisto.debug(f"email: {email}")
     portfolio_id = args.get('portfolio_id')
 
@@ -913,15 +933,12 @@ def fetch_alerts(client: SecurityScorecardClient):
     """
     # Set the query size
 
-    if not demisto.params().get("max_fetch"):
+    if not client.max_fetch:
         max_incidents = 50
     else:
-        max_incidents = arg_to_number(demisto.params().get("max_fetch"))  # type: ignore
+        max_incidents = arg_to_number(client.max_fetch)  # type: ignore
 
-    # User/email to fetch alerts for
-    username = demisto.params().get('username').get("identifier")
-
-    results = client.fetch_alerts(page_size=max_incidents, username=username)
+    results = client.fetch_alerts(page_size=max_incidents)
 
     alerts = results.get("entries")
 
@@ -960,7 +977,9 @@ def main() -> None:
 
     params = demisto.params()
 
+    # Credentials
     api_key = params.get('username').get("password")
+    username = params.get('username').get("identifier")
 
     # SecurityScorecard API URL
     base_url = params.get('base_url', "https://api.securityscorecard.io/")
@@ -968,6 +987,9 @@ def main() -> None:
     # Default configuration
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+
+    # Fetch configuration
+    max_fetch = params.get("max_fetch")
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -978,7 +1000,11 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy)
+            proxy=proxy,
+            api_key=api_key,
+            username=username,
+            max_fetch=max_fetch
+        )
 
         if demisto.command() == 'test-module':
             return_results(test_module(client))
