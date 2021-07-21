@@ -64,17 +64,16 @@ def get_files_from_github(username: str, branch: str, pr_number: str) -> List[st
     chunk_size = 1024 * 500     # 500 Kb
     base_url = f'https://raw.githubusercontent.com/{username}/content/{branch}'
     for file_path in get_pr_files(pr_number):
-        file_path_parts = file_path.split('/')
-        file_dir = os.path.sep.join(file_path_parts[:-1])
-        abs_dir = os.path.join(content_path, file_dir)
+        abs_file_path = os.path.join(content_path, file_path)
+        abs_dir = os.path.dirname(abs_file_path)
         if not os.path.isdir(abs_dir):
             os.makedirs(abs_dir)
-        with open(os.path.join(content_path, file_path), 'wb') as changed_file:
+        with open(abs_file_path, 'wb') as changed_file:
             with requests.get(urljoin(base_url, file_path), stream=True) as file_content:
                 for data in file_content.iter_content(chunk_size=chunk_size):
                     changed_file.write(data)
 
-        files_list.add(file_path_parts[1])
+        files_list.add(file_path.split(os.path.sep)[1])
     return list(files_list)
 
 
