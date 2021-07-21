@@ -187,6 +187,9 @@ def test_list_all_projects_command(mocker, requests_mock):
     mocker.patch('GitHub.get_project_details', side_effect=get_project_d)
     mocker_output = mocker.patch('GitHub.return_results')
 
+    import GitHub
+    GitHub.PROJECT_SUFFIX = '/projects'
+
     list_all_projects_command()
     result: CommandResults = mocker_output.call_args[0][0]
 
