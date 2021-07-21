@@ -136,16 +136,12 @@ class SecurityScorecardClient(BaseClient):
         target: List[str]
     ) -> Dict[str, Any]:
 
-        payload: Dict[str, Any] = {}
-        if change_direction:
-            payload["change_direction"] = change_direction
-
-        if len(score_types) > 0:
-            payload["score_types"] = score_types
-
-        if len(target) > 0:
-            payload["target"] = target
-
+        payload: Dict[str, Any] = assign_params(
+            change_direction=change_direction,
+            score_types=score_types,
+            target=target
+        )
+        
         return self.http_request_wrapper(
             'POST',
             url_suffix=f"users/by-username/{email}/alerts/grade",
@@ -690,7 +686,18 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
     email = client.username
     change_direction = args.get('change_direction')
     score_types = argToList(args.get('score_types'))
-    target = argToList(args.get('target'))
+    target_arg = args.get('target')
+    portfolios = argToList(args.get('portfolios'))
+
+    # Only one argument between portfolios and target should be defined
+    # Return error if neither of them is defined or if both are defined
+    # Else choose the one that is defined and use it as the target
+    if portfolios and target_arg:
+        raise DemistoException("Both 'portfolio' and 'target' argument have been set. Please remove one of them and try again.")
+    else:
+        target = argToList(target_arg) or portfolios
+    if not target:
+        raise DemistoException("Either 'portfolio' or 'target' argument must be given")
 
     demisto.debug(f"Attempting to create alert with body {args}")
     response = client.create_grade_change_alert(
