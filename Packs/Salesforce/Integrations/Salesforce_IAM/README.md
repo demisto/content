@@ -1,3 +1,5 @@
+> <i>Note:</i> This integration should be used along with our IAM premium pack. For further details, visit our IAM pack documentation.
+
 Integrate with Salesforce's services to perform Identity Lifecycle Management operations.
 For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 
