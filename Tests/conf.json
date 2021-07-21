@@ -67,10 +67,6 @@
             "timeout": 500
         },
         {
-            "integrations": "FireEyeNX",
-            "playbookID": "FireEyeNX-Test"
-        },
-        {
             "integrations": "EmailRepIO",
             "playbookID": "TestEmailRepIOPlaybook",
             "fromversion": "5.0.0"
@@ -3409,6 +3405,11 @@
             "integrations": "ThreatExchange v2",
             "playbookID": "ThreatExchangeV2-test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "FireEyeNX",
+            "playbookID": "FireEyeNX-Test",
+            "timeout": 500
         },
         {
             "integrations": "NetscoutAED",
