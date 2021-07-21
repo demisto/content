@@ -83,13 +83,40 @@ def perform_unlink_and_reopen(ids, action):
     return COMMAND_SUCCESS.format(action='unlinked & reopen', ids=','.join(ids))
 
 
+def perform_add_to_campaign(ids, action):
+    demisto.log('starting add to campaign')
+    campaign_id = demisto.incident()['id']
+    demisto.log(f'got campaign id : {campaign_id}')
+
+    incident_context = demisto.executeCommand('getContext', {'id': campaign_id})
+    demisto.log(f'got incident context: {incident_context}')
+
+    if isError(incident_context):
+        return_error(f'Error occurred while trying to get the incident context: {get_error(incident_context)}')
+
+    for incident_id in ids:
+        similar_incident_data = demisto.dt(incident_context,
+                                   f'EmailCampaign.LowerSimilarityIncidents(val.id=={incident_id})')
+        demisto.log(f'got similar: {similar_incident_data}')
+        if similar_incident_data:
+            # Set the incident itself to be part of the campaign:
+            demisto.executeCommand("SetByIncidentId", {'id': incident_id, 'key':'PartOfCampaign',
+                                                             'value': campaign_id})
+            # change the context for dynamic section:
+            demisto.executeCommand('SetAndHandleEmpty',
+                                   {'key': f'EmailCampaign.LowerSimilarityIncidents(val.id=={incident_id}).PartOfCampaign',
+                                    'value': campaign_id})
+
+    return COMMAND_SUCCESS.format(action=action, ids=','.join(ids))
+
 ACTIONS_MAPPER = {
     'link': perform_link_unlink,
     'unlink': perform_link_unlink,
     'close': perform_close,
     'reopen': perform_reopen,
     'link & close': perform_link_and_close,
-    'unlink & reopen': perform_unlink_and_reopen
+    'unlink & reopen': perform_unlink_and_reopen,
+    'add to campaign': perform_add_to_campaign
 }
 
 

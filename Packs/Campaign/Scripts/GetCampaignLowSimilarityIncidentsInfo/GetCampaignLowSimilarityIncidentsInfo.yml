@@ -1,0 +1,19 @@
+commonfields:
+  id: GetCampaignLowSimilarityIncidentsInfo
+  version: -1
+dockerimage: demisto/python3:3.9.5.21272
+enabled: true
+name: GetCampaignLowSimilarityIncidentsInfo
+runas: DBotRole
+runonce: false
+script: ''
+comment: Get the campaign incidents with low similarity information as a MD table.
+scripttarget: 0
+subtype: python3
+tags:
+- field-display
+- dynamic-section
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
