@@ -1,5 +1,6 @@
 from CommonServerPython import *
 import demistomock as demisto
+from GSuiteApiModule import *  # noqa: E402
 
 ''' IMPORTS '''
 
@@ -1148,6 +1149,8 @@ def file_upload_command(client: GSuiteClient, args: Dict[str, str]) -> CommandRe
 
     version = 'v3'
     service_name = 'drive'
+    user_id = args.get('user_id') or client.user_id
+    client.set_authorized_http(scopes=COMMAND_SCOPES['FILES'], subject=user_id)
     drive_service = discovery.build(serviceName=service_name, version=version, http=client.authorized_http)
 
     body: Dict[str, str] = assign_params(
@@ -1155,7 +1158,7 @@ def file_upload_command(client: GSuiteClient, args: Dict[str, str]) -> CommandRe
         name=args.get('file_name'),
     )
 
-    return GSuiteClient.remove_empty_entities(ret_value)
+    body = GSuiteClient.remove_empty_entities(body)
 
     media = MediaFileUpload(file_path['path'])
     file = drive_service.files().create(body=body,
@@ -1755,8 +1758,6 @@ def main() -> None:
         demisto.error(traceback.format_exc())
         return_error(f'Error: {str(e)}')
 
-
-from GSuiteApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
