@@ -80,10 +80,6 @@ configuration:
   name: paginated_count
   required: false
   type: 0
-- display: Proxy URL to use in Slack API calls
-  name: proxy_url
-  required: false
-  type: 0
 - additionalinfo: Only supported in Demisto V6.1 and above.
   display: Comma separated list of tags To filter the messages sent from demisto.
   hidden: false
@@ -100,60 +96,6 @@ display: Slack v3 (beta)
 name: SlackV3
 script:
   commands:
-  - arguments:
-    - auto: PREDEFINED
-      default: true
-      defaultValue: all
-      description: The mirroring type. Can be "all", which mirrors everything, "chat",
-        which mirrors only chats (not commands), or "none", which stops all mirroring.
-      isArray: false
-      name: type
-      predefined:
-      - all
-      - chat
-      - none
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Whether the channel is auto-closed when an investigation is closed.
-        Can be "true" or "false". Default is "true".
-      isArray: false
-      name: autoclose
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: both
-      description: The mirroring direction. Can be "FromDemisto", "ToDemisto", or
-        "Both". Default is "Both".
-      isArray: false
-      name: direction
-      predefined:
-      - Both
-      - FromDemisto
-      - ToDemisto
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: group
-      description: The channel type. Can be "channel" (public) or "group" (private).
-      isArray: false
-      name: mirrorTo
-      predefined:
-      - channel
-      - group
-      required: false
-      secret: false
-    deprecated: true
-    description: Deprecated. Use the "mirror-investigation" command instead.
-    execution: false
-    name: slack-mirror-investigation
   - arguments:
     - auto: PREDEFINED
       default: true
@@ -293,63 +235,6 @@ script:
     - contextPath: Slack.Thread.ID
       description: The Slack thread ID.
       type: String
-  - arguments:
-    - default: true
-      description: The text content of the message.
-      isArray: false
-      name: message
-      required: false
-      secret: false
-    - default: false
-      description: Either a user name or email of a Slack user to send to.
-      isArray: false
-      name: to
-      required: false
-      secret: false
-    - default: false
-      description: A Slack channel name to send to.
-      isArray: false
-      name: channel
-      required: false
-      secret: false
-    - default: false
-      description: A Slack group (private channel) name to send to.
-      isArray: false
-      name: group
-      required: false
-      secret: false
-    - default: false
-      description: An entry ID to send as a link.
-      isArray: false
-      name: entry
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: Whether to add a URL in Slack to the relevant component in Demisto.
-        Default is "false".
-      isArray: false
-      name: IgnoreAddURL
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the thread to which to reply.
-      isArray: false
-      name: threadID
-      required: false
-      secret: false
-    deprecated: true
-    description: Deprecated. Use the "send-notification" command instead.
-    execution: false
-    name: slack-send
-  - deprecated: true
-    description: Deprecated. Use the "close-channel" command instead.
-    execution: false
-    name: slack-close-channel
   - arguments:
     - default: false
       description: The name of the channel to archive. If not provided, the mirrored
