@@ -4,6 +4,8 @@ from CommonServerPython import *
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
 
 class Client(BaseClient):
 
@@ -83,7 +85,7 @@ class Client(BaseClient):
         else:
             return res.status_code
 
-    def get_linked_cases(self, case_id: str = None):
+    def get_linked_cases(self, case_id: str = None): # TODO: the method does not work, after merging the case is deleted
         res = self._http_request('GET', 'case/{case_id}/links', ok_codes=[200, 201, 204, 404], resp_type='response')
         if res.status_code not in [200, 201, 204]:
             return (res.status_code, res.text)
@@ -199,8 +201,11 @@ class Client(BaseClient):
             )
         if res.status_code != 200:
             return None
-        task = res.json()[0]
-        task['logs'] = self.get_task_logs(task_id)
+        if res.json():
+            task = res.json()[0]
+            task['logs'] = self.get_task_logs(task_id)
+        else:
+            task = None
         return task
 
     def create_task(self, case_id: str = None, data: dict = None):
@@ -385,13 +390,12 @@ def output_results(title: str, outputs: Any, headers: list, outputs_prefix: str,
         md = tableToMarkdown(title, outputs, headers)
     else:
         md = None
-    command_results = CommandResults(
+    return CommandResults(
         outputs_prefix=outputs_prefix,
         outputs_key_field=outputs_key_field,
         outputs=outputs,
         readable_output=md
     )
-    return_results(command_results)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -399,26 +403,42 @@ def output_results(title: str, outputs: Any, headers: list, outputs_prefix: str,
 
 def list_cases_command(client: Client, args: dict):
     limit: int = args.get('limit', None)
-    res = client.get_cases(limit=limit)
+    res = client.get_cases(limit=int(limit) if limit else None)
     res = sorted(res, key=lambda x: x['caseId'])
-    output_results(
-        title='TheHive Cases:',
-        outputs=res,
-        headers=['id', 'title', 'description', 'createdAt'],
+    if res:
+        for case in res:
+            case_date_dt = dateparser.parse(str(case['createdAt']))
+            if case_date_dt:
+                case['createdAt'] = case_date_dt.strftime(DATE_FORMAT)
+        read = tableToMarkdown('TheHive Cases:', res, ['id', 'title', 'description', 'createdAt'])
+    else:
+        read = "No cases to be displayed"
+
+    return CommandResults(
         outputs_prefix='TheHive.Cases',
-        outputs_key_field='id'
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=read
     )
 
 
 def get_case_command(client: Client, args: dict):
     case_id: str = args.get('id')
     case = client.get_case(case_id)
-    output_results(
-        title=f'TheHive Case ID {case_id}:',
-        headers=['id', 'title', 'description', 'createdAt'],
+    if case:
+        case_date_dt = dateparser.parse(str(case['createdAt']))
+        if case_date_dt:
+            case['createdAt'] = case_date_dt.strftime(DATE_FORMAT)
+
+        headers = ['id', 'title', 'description', 'createdAt']
+        read = tableToMarkdown(f'TheHive Case ID {case_id}:', case, headers)
+    else:
+        read = "No case with the given ID"
+    return CommandResults(
         outputs_prefix='TheHive.Cases',
         outputs_key_field='id',
-        outputs=case
+        outputs=case,
+        readable_output=read
     )
 
 
@@ -433,12 +453,20 @@ def search_cases_command(client: Client, args: dict):
     except Exception:
         pass
     cases = client.search_cases(arguments)
-    output_results(
-        title='TheHive Cases search:',
-        headers=['id', 'title', 'description', 'createdAt'],
+    if cases:
+        for case in cases:
+            case_date_dt = dateparser.parse(str(case['createdAt']))
+            if case_date_dt:
+                case['createdAt'] = case_date_dt.strftime(DATE_FORMAT)
+        read = tableToMarkdown('TheHive Cases search:', cases, ['id', 'title', 'description', 'createdAt'])
+    else:
+        read = "No cases were found"
+
+    return CommandResults(
         outputs_prefix='TheHive.Cases',
-        outputs_key_field='id',
-        outputs=cases
+        outputs_key_field="id",
+        outputs=cases,
+        readable_output=read
     )
 
 
@@ -453,28 +481,37 @@ def update_case_command(client: Client, args: dict):
     for k, v in args.items():
         v = v.split(",") if k in ['tags'] and "," in v else v
         original_case[k] = v
-    res = client.update_case(case_id, args)
-    if type(res) == tuple:
-        return_error(f'Error updating case ({res[0]}) - {res[1]}')
-    output_results(
-        title=f'TheHive Update Case ID {case_id}:',
-        headers=['id', 'title', 'description', 'createdAt'],
+    case = client.update_case(case_id, args)
+    if type(case) == tuple:
+        return_error(f'Error updating case ({case[0]}) - {case[1]}')
+    case_date_dt = dateparser.parse(str(case['createdAt']))
+    if case_date_dt:
+        case['createdAt'] = case_date_dt.strftime(DATE_FORMAT)
+    read = tableToMarkdown(f'TheHive Update Case ID {case_id}:', case, ['id', 'title', 'description', 'createdAt'])
+
+    return CommandResults(
         outputs_prefix='TheHive.Cases',
-        outputs_key_field='id',
-        outputs=res
+        outputs_key_field="id",
+        outputs=case,
+        readable_output=read
     )
 
 
 def create_case_command(client: Client, args: dict):
-    res = client.create_case(args)
-    if type(res) == tuple:
-        return_error(f'Error creating case ({res[0]}) - {res[1]}')
-    output_results(
-        title='TheHive Create Case:',
-        headers=['id', 'title', 'description', 'createdAt'],
+    case = client.create_case(args)
+    if type(case) == tuple:
+        return_error(f'Error creating case ({case[0]}) - {case[1]}')
+
+    case_date_dt = dateparser.parse(str(case['createdAt']))
+    if case_date_dt:
+        case['createdAt'] = case_date_dt.strftime(DATE_FORMAT)
+    read = tableToMarkdown('TheHive newly Created Case:', case, ['id', 'title', 'description', 'createdAt'])
+
+    return CommandResults(
         outputs_prefix='TheHive.Cases',
-        outputs_key_field='id',
-        outputs=res
+        outputs_key_field="id",
+        outputs=case,
+        readable_output=read
     )
 
 
@@ -482,15 +519,17 @@ def remove_case_command(client: Client, args: dict):
     case_id = args.get('id')
     permanent = args.get('permanent')
 
-    # See if the case exists
     case = client.get_case(case_id)
     if not case:
         return_error(f'No case found with ID {case_id}')
+
     res = client.remove_case(case_id, permanent)
     if type(res) == tuple:
         return_error(f'Error removing case ID {case_id} ({res[0]}) - {res[1]}')
+
     message = f'Case ID {case_id} permanently removed successfully' if permanent == 'true' \
         else f'Case ID {case_id} removed successfully'
+
     demisto.results(message)
 
 
@@ -499,51 +538,81 @@ def get_linked_cases_command(client: Client, args: dict):
     res = client.get_linked_cases(case_id)
     if type(res) == tuple:
         return_error(f'Error getting linked cases ({res[0]}) - {res[1]}')
-    output_results(
-        title=f'TheHive Linked Cases of {case_id}:',
-        headers=['id', 'title', 'description', 'createdAt'],
+    if res:
+        for case in res:
+            case_date_dt = dateparser.parse(str(case['createdAt']))
+            if case_date_dt:
+                case['createdAt'] = case_date_dt.strftime(DATE_FORMAT)
+        read = tableToMarkdown('TheHive newly Created Case:', res, ['id', 'title', 'description', 'createdAt'])
+    else:
+        read = "No linked cases found"
+
+    return CommandResults(
         outputs_prefix='TheHive.Cases',
-        outputs_key_field='id',
-        outputs=res
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=read
     )
 
 
 def merge_cases_command(client: Client, args: dict):
     first_case = args.get('firstCaseID')
     second_case = args.get('secondCaseID')
-    res = client.merge_cases(first_case, second_case)
-    if type(res) == tuple:
-        return_error(f'Error getting linked cases ({res[0]}) - {res[1]}')
-    output_results(
-        title=f'TheHive Linked Cases of {first_case}:',
-        outputs=res,
-        headers=['id', 'title', 'description', 'createdAt'],
+    case = client.merge_cases(first_case, second_case)
+    if type(case) == tuple:
+        return_error(f'Error getting linked cases ({case[0]}) - {case[1]}')
+
+    case_date_dt = dateparser.parse(str(case['createdAt']))
+    if case_date_dt:
+        case['createdAt'] = case_date_dt.strftime(DATE_FORMAT)
+    read = tableToMarkdown(f'TheHive Linked Cases of {first_case}:', case, ['id', 'title', 'description', 'createdAt'])
+
+    return CommandResults(
         outputs_prefix='TheHive.Cases',
-        outputs_key_field='id',
+        outputs_key_field="id",
+        outputs=case,
+        readable_output=read
     )
 
 
 def get_case_tasks_command(client: Client, args: dict):
     case_id: str = args.get('id')
-    tasks = client.get_tasks(case_id)
-    output_results(
-        title=f'TheHive Tasks For Case {case_id}:',
-        outputs=tasks,
-        headers=['id', 'title', 'createdAt', 'status'],
+    if client.get_case(case_id):
+        tasks = client.get_tasks(case_id)
+        if tasks:
+            read = tableToMarkdown(f'TheHive Tasks For Case {case_id}:', tasks, ['id', 'title', 'createdAt', 'status'])
+        else:
+            read = "No tasks found for this case"
+    else:
+        read = f"No case found with id: {case_id}"
+        tasks = None
+
+    return CommandResults(
         outputs_prefix='TheHive.Tasks',
-        outputs_key_field='id',
+        outputs_key_field="id",
+        outputs=tasks,
+        readable_output=read
     )
 
 
 def get_task_command(client: Client, args: dict):
     task_id = args.get('id')
-    tasks = client.get_task(task_id)
-    output_results(
-        title=f'TheHive Task {task_id}:',
-        outputs=tasks,
-        headers=['id', 'title', 'createdAt', 'createdBy', 'status', '_parent'],
+    task = client.get_task(task_id)
+    if task:
+        task_date_dt = dateparser.parse(str(task['createdAt']))
+        if task_date_dt:
+            task['createdAt'] = task_date_dt.strftime(DATE_FORMAT)
+
+        read = tableToMarkdown(f'TheHive Task {task_id}:', task,
+                               ['id', 'title', 'createdAt', 'createdBy', 'status', '_parent'])
+    else:
+        read = f"No task found with id: {task_id}"
+
+    return CommandResults(
         outputs_prefix='TheHive.Tasks',
-        outputs_key_field='id',
+        outputs_key_field="id",
+        outputs=task,
+        readable_output=read
     )
 
 
@@ -553,15 +622,17 @@ def get_attachment_command(client: Client, args: dict):
     data = client.get_attachment_data(filename=attachment_name, fileId=attachment_id)
     if data:
         demisto.results(fileResult(attachment_name, data))
-        output_results(
-            title='TheHive Log Attachments:',
-            outputs={"name": attachment_name, "id": attachment_id},
-            headers=['id', 'name'],
-            outputs_prefix='TheHive.Attachments',
-            outputs_key_field='id',
-        )
+        read = tableToMarkdown('TheHive Log Attachments:', {"name": attachment_name, "id": attachment_id},
+                               ['id', 'name'])
     else:
-        demisto.results(f'No attachments with ID "{attachment_id}" and name "{attachment_name}" found')
+        read = f'No attachments with ID "{attachment_id}" and name "{attachment_name}" found'
+
+    return CommandResults(
+            outputs_prefix='TheHive.Attachments',
+            outputs_key_field="id",
+            outputs={"name": attachment_name, "id": attachment_id},
+            readable_output=read
+        )
 
 
 def update_task_command(client: Client, args: dict):
@@ -571,7 +642,7 @@ def update_task_command(client: Client, args: dict):
     task = client.update_task(task_id=task_id, updates=data)
     if type(task) == dict:
         task['id'] = task_id
-    output_results(
+    return output_results(
         title=f'TheHive Update Task {task_id}:',
         outputs=task,
         headers=[x for x in args.keys() if x != 'id'],
@@ -582,7 +653,7 @@ def update_task_command(client: Client, args: dict):
 
 def search_users_command(client: Client, args: dict = None):
     users = client.search_users()
-    output_results(
+    return output_results(
         title='TheHive Users:',
         outputs=users,
         headers=['id', 'name', 'roles', 'status'],
@@ -594,7 +665,7 @@ def search_users_command(client: Client, args: dict = None):
 def get_user_command(client: Client, args: dict):
     user_id: str = args.get('id')
     user = client.get_user(user_id)
-    output_results(
+    return output_results(
         title=f'TheHive User ID {user_id}:',
         outputs=user,
         headers=['id', 'name', 'roles', 'status'],
@@ -616,7 +687,7 @@ def create_local_user_command(client: Client, args: dict):
     result = client.create_user(user_data=user_data)
     if client.version[0] == "4":
         result['id'] = result['_id']
-    output_results(
+    return output_results(
         title=f"New User {result.get('id', result.get('_id', None))}:",
         outputs=result,
         headers=['id', 'name', 'roles', 'status'] if client.version[0] != "4"
@@ -638,7 +709,7 @@ def list_observables_command(client: Client, args: dict):
     case_id = args.get('id')
     observables = client.list_observables(case_id)
     title = f"Observables for Case {case_id}" if case_id else "Observables:"
-    output_results(
+    return output_results(
         title=title,
         outputs=observables,
         headers=['data', 'dataType', 'message'],
@@ -660,7 +731,7 @@ def create_observable_command(client: Client, args: dict):
     }
     data = {k: v for k, v in data.items() if v}
     res = client.create_observable(case_id=case_id, data=data)
-    output_results(
+    return output_results(
         title='New Observable:',
         outputs=res,
         headers=['data', 'dataType', 'message'],
@@ -680,7 +751,7 @@ def update_observable_command(client: Client, args: dict):
     data = {k: v for k, v in data.items() if v}
     res = client.update_observable(artifact_id=artifact_id, data=data)
     res['data'] = data
-    output_results(
+    return output_results(
         title=f'Updated Observable {artifact_id}:',
         outputs=res,
         headers=['data', 'dataType', 'message'],
@@ -830,7 +901,6 @@ def main() -> None:
         'thehive-search-cases': search_cases_command,
         'thehive-update-case': update_case_command,
         'thehive-create-case': create_case_command,
-        'thehive-remove-case': remove_case_command,
         'thehive-get-linked-cases': get_linked_cases_command,
         'thehive-merge-cases': merge_cases_command,
         'thehive-get-case-tasks': get_case_tasks_command,
@@ -840,11 +910,13 @@ def main() -> None:
         'thehive-list-users': search_users_command,
         'thehive-get-user': get_user_command,
         'thehive-create-local-user': create_local_user_command,
-        'thehive-block-user': block_user_command,
         'thehive-list-observables': list_observables_command,
         'thehive-create-observable': create_observable_command,
         'thehive-update-observable': update_observable_command,
-        'thehive-get-version': get_version_command
+        'get-remote-data': get_remote_data_command,
+        'get-modified-remote-data': get_modified_remote_data_command,
+        'update-remote-system': update_remote_system_command,
+        'get-mapping-fields': get_mapping_fields_command
     }
     demisto.debug(f'Command being called is {command}')
     try:
@@ -859,20 +931,17 @@ def main() -> None:
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
 
-        elif command == 'get-remote-data':
-            return_results(get_remote_data_command(client, args))
+        elif command == 'thehive-remove-case':
+            remove_case_command(client, args)
 
-        elif command == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(client, args))
+        elif command == 'thehive-block-user':
+            block_user_command(client, args)
 
-        elif command == 'update-remote-system':
-            return_results(update_remote_system_command(client, args))
-
-        elif command == 'get-mapping-fields':
-            return_results(get_mapping_fields_command(client, args))
+        elif command == 'thehive-get-version':
+            get_version_command(client, args)
 
         elif command in command_map:
-            command_map[command](client, args)  # type: ignore
+            return_results(command_map[command](client, args))  # type: ignore
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
