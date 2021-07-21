@@ -10,7 +10,7 @@ requests.packages.urllib3.disable_warnings()
 def is_valid_attack_pattern(items):
 
     try:
-        results = demisto.executeCommand('mitre-get-attack-pattern-value', {'attack_ids': items})
+        results = demisto.executeCommand('mitre-get-indicator-name', {'attack_ids': items})
         list_contents = results[0]['Contents']
         values = [content.get('value') for content in list_contents]
         return values if values else False
