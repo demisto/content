@@ -26,7 +26,8 @@ class Client(BaseClient):
 
     def __init__(self, demisto_params, base_url, conn_client_id, conn_client_secret, conn_username, conn_password,
                  ok_codes, verify=True, proxy=False):
-        super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes)
+        super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes,
+                         headers={'content-type': 'application/json'})
         self._conn_client_id = conn_client_id
         self._conn_client_secret = conn_client_secret
         self._conn_username = conn_username
@@ -124,11 +125,120 @@ class Client(BaseClient):
             params=params
         )
 
+    def assign_permission_set(self, data):
+        uri = URI_PREFIX + 'sobjects/PermissionSetAssignment'
+        return self._http_request(
+            method='POST',
+            url_suffix=uri,
+            data=data,
+            ok_codes=(201,)
+        )
 
-def handle_exception(e):
+    def get_assigned_permission_set(self, assignee_id):
+        uri = URI_PREFIX + f"query?q=SELECT+AssigneeId,Id,PermissionSetId+FROM+PermissionSetAssignment+WHERE+" \
+                           f"AssigneeId='{assignee_id}'"
+        return self._http_request(
+            method='GET',
+            url_suffix=uri,
+            ok_codes=(200,)
+        )
+
+    def delete_assigned_permission_set(self, permission_set_assignment_id):
+        uri = URI_PREFIX + f'sobjects/PermissionSetAssignment/{permission_set_assignment_id}'
+        return self._http_request(
+            method='DELETE',
+            url_suffix=uri,
+            ok_codes=(204,)
+        )
+
+    def assign_permission_set_license(self, data):
+        uri = URI_PREFIX + 'sobjects/PermissionSetLicenseAssign'
+        return self._http_request(
+            method='POST',
+            url_suffix=uri,
+            data=data,
+            ok_codes=(201,)
+        )
+
+    def get_assigned_permission_set_license(self, assignee_id):
+        uri = URI_PREFIX + f"query?q=SELECT+AssigneeId,Id+FROM+PermissionSetLicenseAssign+WHERE+" \
+                           f"AssigneeId='{assignee_id}'"
+        return self._http_request(
+            method='GET',
+            url_suffix=uri,
+            ok_codes=(200,)
+        )
+
+    def delete_assigned_permission_set_license(self, permission_set_assignment_license_id):
+        uri = URI_PREFIX + f'sobjects/PermissionSetLicenseAssign/{permission_set_assignment_license_id}'
+        return self._http_request(
+            method='DELETE',
+            url_suffix=uri,
+            ok_codes=(204,)
+        )
+
+    def assign_package_license(self, data):
+        uri = URI_PREFIX + 'sobjects/UserPackageLicense'
+        return self._http_request(
+            method='POST',
+            url_suffix=uri,
+            data=data,
+            ok_codes=(201,)
+        )
+
+    def get_assigned_package_license(self, user_id):
+        uri = URI_PREFIX + f"query?q=SELECT+Id,UserId+FROM+UserPackageLicense+WHERE+UserId='{user_id}'"
+        return self._http_request(
+            method='GET',
+            url_suffix=uri,
+            ok_codes=(200,)
+        )
+
+    def delete_assigned_package_license(self, user_package_license_id):
+        uri = URI_PREFIX + f'sobjects/UserPackageLicense/{user_package_license_id}'
+        return self._http_request(
+            method='DELETE',
+            url_suffix=uri,
+            ok_codes=(204,)
+        )
+
+    def freeze_unfreeze_user_account(self, user_login_id, data):
+        uri = URI_PREFIX + f'sobjects/UserLogin/{user_login_id}'
+        params = {"_HttpMethod": "PATCH"}
+        return self._http_request(
+            method='POST',
+            url_suffix=uri,
+            params=params,
+            data=data,
+            ok_codes=(204,)
+        )
+
+    def get_user_isfrozen_status(self, user_id):
+        uri = URI_PREFIX + f"query/?q=SELECT+Id,+IsFrozen+FROM+UserLogin+WHERE+UserId+='{user_id}'"
+        return self._http_request(
+            method='GET',
+            url_suffix=uri,
+            ok_codes=(200,)
+        )
+
+
+def handle_exception(e, is_crud_command=True):
     if e.__class__ is DemistoException and hasattr(e, 'res') and e.res is not None:
-        error_code = e.res.status_code
-        error_message = e.res.text
+        if is_crud_command:
+            error_code = e.res.status_code
+            error_message = e.res.text
+
+        else:
+            try:
+                res_json = e.res.json()
+                if res_json and isinstance(res_json, list):
+                    res_json = res_json[0]
+                error_code = res_json.get('errorCode')
+                error_message = res_json.get('message')
+
+            except ValueError:
+                error_code = ''
+                error_message = e.res.text
     else:
         error_code = ''
         error_message = str(e)
@@ -375,6 +485,267 @@ def get_mapping_fields_command(client):
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
+def assign_permission_set_command(client, args):
+    data = {
+        'AssigneeId': args.get('user_id'),
+        'PermissionSetId': args.get('permission_set_id')
+    }
+    try:
+        res = client.assign_permission_set(data)
+        outputs = {
+            'success': True,
+            'PermissionSetAssign': {'id': res['id']}
+        }
+
+    except Exception as e:
+        error_code, error_message = handle_exception(e, is_crud_command=False)
+        outputs = {
+            'success': False,
+            'errorCode': error_code,
+            'errorMessage': error_message
+        }
+
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix='SalesforceAssignPermissionSet'
+    )
+
+
+def get_assigned_permission_set_command(client, args):
+    try:
+        res = client.get_assigned_permission_set(args.get('user_id'))
+        outputs = {
+            'success': True,
+            'PermissionSetAssignments': res['records']
+        }
+
+    except Exception as e:
+        error_code, error_message = handle_exception(e, is_crud_command=False)
+        outputs = {
+            'success': False,
+            'errorCode': error_code,
+            'errorMessage': error_message
+        }
+
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix='SalesforceGetAssignedPermissionSet'
+    )
+
+
+def delete_assigned_permission_set_command(client, args):
+    try:
+        client.delete_assigned_permission_set(args.get('permission_set_assignment_id'))
+        outputs = {
+            'success': True
+        }
+
+    except Exception as e:
+        error_code, error_message = handle_exception(e, is_crud_command=False)
+        outputs = {
+            'success': False,
+            'errorCode': error_code,
+            'errorMessage': error_message
+        }
+
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix='SalesforceDeleteAssignedPermissionSet'
+    )
+
+
+def assign_permission_set_license_command(client, args):
+    data = {
+        'AssigneeId': args.get('user_id'),
+        'PermissionSetLicenseId': args.get('permission_set_license_id')
+    }
+    try:
+        res = client.assign_permission_set_license(data)
+        outputs = {
+            'success': True,
+            'PermissionSetLicenseAssign': {'id': res['id']}
+        }
+
+    except Exception as e:
+        error_code, error_message = handle_exception(e, is_crud_command=False)
+        outputs = {
+            'success': False,
+            'errorCode': error_code,
+            'errorMessage': error_message
+        }
+
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix='SalesforceAssignPermissionSetLicense'
+    )
+
+
+def get_assigned_permission_set_license_command(client, args):
+    try:
+        res = client.get_assigned_permission_set_license(args.get('user_id'))
+        outputs = {
+            'success': True,
+            'PermissionSetLicenseAssignments': res['records']
+        }
+
+    except Exception as e:
+        error_code, error_message = handle_exception(e, is_crud_command=False)
+        outputs = {
+            'success': False,
+            'errorCode': error_code,
+            'errorMessage': error_message
+        }
+
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix='SalesforceGetAssignedPermissionSetLicense'
+    )
+
+
+def delete_assigned_permission_set_license_command(client, args):
+    permission_set_assignment_license_id = args.get('permission_set_assignment_license_id')
+    try:
+        client.delete_assigned_permission_set_license(permission_set_assignment_license_id)
+        outputs = {
+            'success': True
+        }
+
+    except Exception as e:
+        error_code, error_message = handle_exception(e, is_crud_command=False)
+        outputs = {
+            'success': False,
+            'errorCode': error_code,
+            'errorMessage': error_message
+        }
+
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix='SalesforceDeleteAssignedPermissionSetLicense'
+    )
+
+
+def assign_package_license_command(client, args):
+    data = {
+        "UserId": args.get('user_id'),
+        "PackageLicenseId": args.get('package_license_id')
+    }
+    try:
+        res = client.assign_package_license(data)
+        outputs = {
+            'success': True,
+            'PackageLicenseAssign': {'id': res['id']}
+        }
+
+    except Exception as e:
+        error_code, error_message = handle_exception(e, is_crud_command=False)
+        outputs = {
+            'success': False,
+            'errorCode': error_code,
+            'errorMessage': error_message
+        }
+
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix='SalesforceAssignPackageLicense'
+    )
+
+
+def get_assigned_package_license_command(client, args):
+    user_id = args.get('user_id')
+
+    try:
+        res = client.get_assigned_package_license(user_id)
+        outputs = {
+            'success': True,
+            'PackageLicenseAssignments': res['records']
+        }
+
+    except Exception as e:
+        error_code, error_message = handle_exception(e, is_crud_command=False)
+        outputs = {
+            'success': False,
+            'errorCode': error_code,
+            'errorMessage': error_message
+        }
+
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix='SalesforceGetAssignedPackageLicense'
+    )
+
+
+def delete_assigned_package_license_command(client, args):
+    user_package_license_id = args.get('user_package_license_id')
+    try:
+        client.delete_assigned_package_license(user_package_license_id)
+        outputs = {
+            'success': True
+        }
+
+    except Exception as e:
+        error_code, error_message = handle_exception(e, is_crud_command=False)
+        outputs = {
+            'success': False,
+            'errorCode': error_code,
+            'errorMessage': error_message
+        }
+
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix='SalesforceDeleteAssignedPackageLicense'
+    )
+
+
+def freeze_unfreeze_user_account_command(client, args, freeze=True):
+    user_login_id = args.get('user_login_id')
+    data = {'IsFrozen': 'false' if not freeze else 'true'}
+
+    try:
+        client.freeze_unfreeze_user_account(user_login_id, data)
+        outputs = {
+            'success': True
+        }
+
+    except Exception as e:
+        error_code, error_message = handle_exception(e, is_crud_command=False)
+        outputs = {
+            'success': False,
+            'errorCode': error_code,
+            'errorMessage': error_message
+        }
+
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix=f'Salesforce{"Freeze" if freeze else "Unfreeze"}UserAccount'
+    )
+
+
+def get_user_isfrozen_status_command(client, args):
+    user_id = args.get('user_id')
+
+    res = client.get_user_isfrozen_status(user_id)
+
+    try:
+        res = client.get_user_isfrozen_status(user_id)
+        outputs = {
+            'success': True,
+            'UserIsfrozenStatus': res['records']
+        }
+
+    except Exception as e:
+        error_code, error_message = handle_exception(e, is_crud_command=False)
+        outputs = {
+            'success': False,
+            'errorCode': error_code,
+            'errorMessage': error_message
+        }
+
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix='SalesforceGetUserIsfrozenStatus'
+    )
+
+
 def main():
 
     params = demisto.params()
@@ -442,6 +813,42 @@ def main():
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client))
+
+        elif command == 'salesforce-assign-permission-set':
+            return_results(assign_permission_set_command(client, args))
+
+        elif command == 'salesforce-get-assigned-permission-set':
+            return_results(get_assigned_permission_set_command(client, args))
+
+        elif command == 'salesforce-delete-assigned-permission-set':
+            return_results(delete_assigned_permission_set_command(client, args))
+
+        elif command == 'salesforce-assign-permission-set-license':
+            return_results(assign_permission_set_license_command(client, args))
+
+        elif command == 'salesforce-get-assigned-permission-set-license':
+            return_results(get_assigned_permission_set_license_command(client, args))
+
+        elif command == 'salesforce-delete-assigned-permission-set-license':
+            return_results(delete_assigned_permission_set_license_command(client, args))
+
+        elif command == 'salesforce-assign-package-license':
+            return_results(assign_package_license_command(client, args))
+
+        elif command == 'salesforce-get-assigned-package-license':
+            return_results(get_assigned_package_license_command(client, args))
+
+        elif command == 'salesforce-delete-assigned-package-license':
+            return_results(delete_assigned_package_license_command(client, args))
+
+        elif command == 'salesforce-unfreeze-user-account':
+            return_results(freeze_unfreeze_user_account_command(client, args, freeze=True))
+
+        elif command == 'salesforce-freeze-user-account':
+            return_results(freeze_unfreeze_user_account_command(client, args, freeze=False))
+
+        elif command == 'salesforce-get-user-isfrozen-status':
+            return_results(get_user_isfrozen_status_command(client, args))
 
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {e}. Traceback: {traceback.format_exc()}')

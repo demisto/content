@@ -1,6 +1,8 @@
-import demistomock as demisto
+import pytest
+
 from IAMApiModule import *
-from Salesforce_IAM import Client, IAMUserProfile, get_user_command, create_user_command, update_user_command
+from Salesforce_IAM import Client, IAMUserProfile, get_user_command, create_user_command, \
+    update_user_command, handle_exception
 
 
 def mock_client():
@@ -161,3 +163,41 @@ def test_update_user_command__command_is_disabled(mocker):
     assert outputs.get('success') is True
     assert outputs.get('skipped') is True
     assert outputs.get('reason') == 'Command is disabled.'
+
+
+class MockResponse:
+    def __init__(self, res):
+        self.status_code = 400
+        self.text = res
+
+    def json(self):
+        return json.loads(self.text)
+
+
+@pytest.mark.parametrize(
+    'e, is_crud_command, expected_error_code, expected_error_message',
+    [
+        (
+            DemistoException('', res=MockResponse('[{"errorCode": 400, "message": "message"}]')),
+            True, 400, '[{"errorCode": 400, "message": "message"}]'
+        ),
+        (
+            DemistoException('', res=MockResponse('[{"errorCode": 400, "message": "message"}]')),
+            False, 400, 'message'
+        ),
+        (
+            DemistoException('', res=MockResponse('text_message')),
+            False, '', 'text_message'
+        ),
+        (
+            ValueError('ValueError message'),
+            False, '', 'ValueError message'
+        ),
+    ]
+)
+def test_handle_exception(mocker, e, is_crud_command, expected_error_code, expected_error_message):
+    mocker.patch.object(demisto, 'error', return_value=None)  # avoid printing to stdout
+    error_message, error_code = handle_exception(e, is_crud_command=is_crud_command)
+
+    assert error_code == expected_error_code
+    assert error_message == expected_error_message

@@ -291,7 +291,264 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.9.5.21272
+  - arguments:
+    - name: user_id
+      required: true
+      description: The user ID.
+    - name: permission_set_id
+      required: true
+      description: Permission set ID of the user.
+    outputs:
+    - contextPath: SalesforceAssignPermissionSet.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceAssignPermissionSet.PermissionSetAssign.id
+      description: ID of the created permission set assignment.
+      type: string
+    - contextPath: SalesforceAssignPermissionSet.errorCode
+      description: Error code from API, displayed in case of failure.
+      type: string
+    - contextPath: SalesforceAssignPermissionSet.errorMessage
+      description: Error message from API, displayed in case of failure.
+      type: string
+    description: Assigns a permission set for a user.
+    name: salesforce-assign-permission-set
+  - arguments:
+    - name: user_id
+      required: true
+      description: The user ID.
+    outputs:
+    - contextPath: SalesforceGetAssignedPermissionSet.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceGetAssignedPermissionSet.PermissionSetAssignments.attributes
+      description: Information about the type and the url of the field fetched.
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSet.PermissionSetAssignments.AssigneeId
+      description: User ID passed as an input.
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSet.PermissionSetAssignments.Id
+      description: ID of the created permission set assignment.
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSet.errorCode
+      description: Error code from API, displayed in case of failure.
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSet.errorMessage
+      description: Error message from API, displayed in case of failure.
+      type: string
+    description: Gets the assigned permission set.
+    name: salesforce-get-assigned-permission-set
+  - arguments:
+    - name: permission_set_assignment_id
+      required: true
+      description: ID of the PermissionSetAssignment object. A PermissionSetAssignment
+        represents the association between a user and a permission set.
+    outputs:
+    - contextPath: SalesforceDeleteAssignedPermissionSet.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceDeleteAssignedPermissionSet.errorCode
+      description: Error code from API, displayed in case of failure.
+      type: number
+    - contextPath: SalesforceDeleteAssignedPermissionSet.errorMessage
+      description: Error message from API, displayed in case of failure.
+      type: string
+    description: Deletes an assigned permission set.
+    name: salesforce-delete-assigned-permission-set
+  - arguments:
+    - name: user_login_id
+      required: true
+      description: ID of UserLogin object. UserLogin - Represents the settings that
+        affect a user's ability to log into an organization. To access this object,
+        you need the UserPermissions.ManageUsers permission. For more details Please
+        refer to https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_userlogin.htm
+    outputs:
+    - contextPath: SalesforceFreezeUserAccount.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceFreezeUserAccount.errorCode
+      description: Error code from API, displayed in case of failure.
+      type: number
+    - contextPath: SalesforceFreezeUserAccount.errorMessage
+      description: Error message from API, displayed in case of failure.
+      type: string
+    description: Freezes a user account.
+    name: salesforce-freeze-user-account
+  - arguments:
+    - name: user_login_id
+      required: true
+      description: ID of the UserLogin object. UserLogin - Represents the settings that
+        affect a user’s ability to log into an organization. To access this object,
+        you need the UserPermissions.ManageUsers permission. For more details Please
+        refer to https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_userlogin.htm
+    outputs:
+    - contextPath: SalesforceUnfreezeUserAccount.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceUnfreezeUserAccount.errorCode
+      description: Error code from API, displayed in case of failure.
+      type: number
+    - contextPath: SalesforceUnfreezeUserAccount.errorMessage
+      description: Error message from API, displayed in case of failure.
+      type: string
+    description: Unfreezes a user account.
+    name: salesforce-unfreeze-user-account
+  - arguments:
+    - name: user_id
+      required: true
+      description: The user ID.
+    outputs:
+    - contextPath: SalesforceGetUserIsfrozenStatus.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.attributes
+      description: Information about the type, url of the field fetched.
+      type: string
+    - contextPath: SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.Id
+      description: ID of UserLogin object. UserLogin represents the settings that
+        affect a user's ability to log into an organization. To access this object,
+        you need the UserPermissions.ManageUsers permission. For more details Please
+        refer to https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_userlogin.htm
+      type: string
+    - contextPath: SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.IsFrozen
+      description: Whether the User account is in frozen state. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceGetUserIsfrozenStatus.errorCode
+      description: Error code from API, displayed in case of failure.
+      type: string
+    - contextPath: SalesforceGetUserIsfrozenStatus.errorMessage
+      description: Error message from API, displayed in case of failure.
+      type: string
+    description: Gets a user frozen status.
+    name: salesforce-get-user-isfrozen-status
+  - arguments:
+    - name: user_id
+      required: true
+      description: The user ID.
+    - name: permission_set_license_id
+      required: true
+      description: Permission set license ID.
+    outputs:
+    - contextPath: SalesforceAssignPermissionSetLicense.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceAssignPermissionSetLicense.PermissionSetLicenseAssign.id
+      description: ID of the created ermission set assignment license.
+      type: string
+    - contextPath: SalesforceAssignPermissionSetLicense.errorCode
+      description: Error code from API, displayed in case of failure.
+      type: string
+    - contextPath: SalesforceAssignPermissionSetLicense.errorMessage
+      description: Error message from API, displayed in case of failure.
+      type: string
+    description: Assigns a permission set license.
+    name: salesforce-assign-permission-set-license
+  - arguments:
+    - name: user_id
+      required: true
+      description: The user ID.
+    outputs:
+    - contextPath: SalesforceGetAssignedPermissionSetLicense.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.attributes
+      description: Information about the type and url of the field fetched.
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.AssigneeId
+      description: User ID passed as input.
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.Id
+      description: ID of the PermissionSetLicenseAssignments assigned for given user.
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSetLicense.errorCode
+      description: Error code from API, displayed in case of failure.
+      type: string
+    - contextPath: SalesforceGetAssignedPermissionSetLicense.errorMessage
+      description: Error message from API, displayed in case of failure.
+      type: string
+    description: Gets an assigned permission set license.
+    name: salesforce-get-assigned-permission-set-license
+  - arguments:
+    - name: permission_set_assignment_license_id
+      required: true
+      description: ID of the PermissionSetLicenseAssign object. A PermissionSetLicenseAssign
+        represents the association between a user and the PermissionSetLicense.
+    outputs:
+    - contextPath: SalesforceDeleteAssignedPermissionSetLicense.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceDeleteAssignedPermissionSetLicense.errorCode
+      description: Error code from API, displayed in case of failure.
+      type: string
+    - contextPath: SalesforceDeleteAssignedPermissionSetLicense.errorMessage
+      description: Error message from API, displayed in case of failure.
+      type: string
+    description: Deletes an assigned permission set license.
+    name: salesforce-delete-assigned-permission-set-license
+  - arguments:
+    - name: user_id
+      required: true
+      description: The user ID.
+    - name: package_license_id
+      required: true
+      description: The package License ID.
+    outputs:
+    - contextPath: SalesforceAssignPackageLicense.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceAssignPackageLicense.PackageLicenseAssign.id
+      description: ID of the created Package License Assign.
+      type: boolean
+    - contextPath: SalesforceAssignPackageLicense.errorCode
+      description: Error code from API, displayed in case of failure.
+      type: number
+    - contextPath: SalesforceAssignPackageLicense.errorMessage
+      description: Error message from API, displayed in case of failure.
+      type: string
+    description: Assigns a package license.
+    name: salesforce-assign-package-license
+  - arguments:
+    - name: user_id
+      required: true
+      description: The user ID.
+    outputs:
+    - contextPath: SalesforceGetAssignedPackageLicense.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.attributes
+      description: Information about the type and url of the field fetched.
+      type: boolean
+    - contextPath: SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.AssigneeId
+      description: User ID passed as input.
+      type: string
+    - contextPath: SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.Id
+      description: ID of the Package License Assignment of the given user.
+      type: string
+    - contextPath: SalesforceGetAssignedPackageLicense.errorCode
+      description: Error code from API, displayed in case of failure.
+      type: number
+    - contextPath: SalesforceGetAssignedPackageLicense.errorMessage
+      description: Error message from API, displayed in case of failure.
+      type: string
+    description: Gets an assigned package license.
+    name: salesforce-get-assigned-package-license
+  - arguments:
+    - name: user_package_license_id
+      required: true
+      description: ID of the UserPackageLicense object.
+    outputs:
+    - contextPath: SalesforceDeleteAssignedPackageLicense.success
+      description: Status of the result. Can be true or false.
+      type: boolean
+    - contextPath: SalesforceDeleteAssignedPackageLicense.errorCode
+      description: Error code from API, displayed in case of failure.
+      type: number
+    - contextPath: SalesforceDeleteAssignedPackageLicense.errorMessage
+      description: Error message from API, displayed in case of failure.
+      type: string
+    description: Deletes an assigned package license.
+    name: salesforce-delete-assigned-package-license
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
   longRunning: false
