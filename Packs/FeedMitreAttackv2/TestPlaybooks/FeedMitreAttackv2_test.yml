@@ -190,8 +190,8 @@ tasks:
     task:
       id: 0867f20e-9ad4-4afd-856c-aa3c05f36f8d
       version: -1
-      name: mitre-get-attack-pattern-value
-      script: '|||mitre-get-attack-pattern-value'
+      name: mitre-get-indicator-name
+      script: '|||mitre-get-indicator-name'
       type: regular
       iscommand: true
       brand: ""
