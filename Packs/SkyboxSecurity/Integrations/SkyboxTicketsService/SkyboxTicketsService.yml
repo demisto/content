@@ -3,7 +3,7 @@ commonfields:
   id: SkyboxTicketsService
   version: -1
 configuration:
-- defaultvalue: https://skybox.drobniuch.pl
+- defaultvalue: https://skybox.local
   display: Server URL
   name: url
   required: true
