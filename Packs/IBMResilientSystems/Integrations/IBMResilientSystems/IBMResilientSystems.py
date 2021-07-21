@@ -19,11 +19,11 @@ except Exception:
     # client with no co3 instance should pass this exception
     pass
 
-# if not demisto.params()['proxy']:
-#     del os.environ['HTTP_PROXY']
-#     del os.environ['HTTPS_PROXY']
-#     del os.environ['http_proxy']
-#     del os.environ['https_proxy']
+if not demisto.params()['proxy']:
+    del os.environ['HTTP_PROXY']
+    del os.environ['HTTPS_PROXY']
+    del os.environ['http_proxy']
+    del os.environ['https_proxy']
 
 ''' GLOBAL VARS '''
 CLIENT = None
