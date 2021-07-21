@@ -17,6 +17,8 @@ ARGS = {
 }
 
 
+class Client
+
 def mock_get_incident(incident_id):
     return {
         'name': 'The old name',
@@ -72,11 +74,11 @@ def mock_client_post(url, body):
 
 
 def test_update_incident_command(mocker):
+    from IBMResilientSystems import get_client, get_incident, update_incident, update_incident_command
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
-    mocker.patch('IBMResilientSystems.rsilient.get_client', return_value=None)
+    mocker.patch('IBMResilientSystems.get_client', return_value=None)
     mocker.patch('IBMResilientSystems.get_incident', side_effect=mock_get_incident)
     mocker.patch('IBMResilientSystems.update_incident', side_effect=mock_update_incident)
-    from IBMResilientSystems import update_incident_command
 
     results = update_incident_command(ARGS)
 
