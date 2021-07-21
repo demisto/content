@@ -24,7 +24,6 @@ class MockClient:
 
 def test_update_incident_command(mocker):
     mocker.patch.object(demisto, 'args', return_value={
-        "command": "rs-update-incident",
         "incident-id": "1234",
         "other-fields": '{"description": {"textarea": {"format": "html", "content": "The new description"}},'
                         '"name": {"text": "The new name"}, "owner_id": {"id": 2},'
