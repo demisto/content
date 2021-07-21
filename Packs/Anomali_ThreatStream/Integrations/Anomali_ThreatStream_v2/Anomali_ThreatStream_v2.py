@@ -1,12 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
 import json
+import re
+
 import requests
-from requests.exceptions import MissingSchema, ConnectionError
+from requests.exceptions import ConnectionError, MissingSchema
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -112,7 +113,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, files
             return {}
         else:
             return_error("The resource not found. Check the endpoint.")
-    elif res.status_code not in {200, 201, 202}:
+    elif res.status_code not in {200, 201, 202, 204}:
         return_error(F"Error in API call to ThreatStream {res.status_code} - {res.text}")
 
     if text_response:
@@ -1007,6 +1008,230 @@ def get_indicators(**kwargs):
     return_outputs(tableToMarkdown("The indicators results", iocs_context), ec, iocs_list)
 
 
+# Added by Prerak.Mittal
+def prepare_whitelist_human_and_context(entry_context, human_readable_data, objects):
+    """
+        Appends the information retrieved from the API endpoints to context data and human readable data
+    """
+
+    if objects:
+        for obj in objects:
+            entry_context.append(assign_params(**{
+                "CreatedTS": obj.get("created_ts"),
+                "ID": obj.get("id"),
+                "ModifiedTS": obj.get("modified_ts"),
+                "Notes": obj.get("notes"),
+                "ResourceURI": obj.get("resource_uri"),
+                "Value": obj.get("value"),
+                "ValueType": obj.get("value_type")
+            }))
+
+            human_readable_data.append(assign_params(**{
+                "Created Time Stamp": obj.get("created_ts"),
+                "ID": obj.get("id"),
+                "Modified Time Stamp": obj.get("modified_ts"),
+                "Notes": obj.get("notes"),
+                "Resource URI": obj.get("resource_uri"),
+                "Value": obj.get("value"),
+                "Value Type": obj.get("value_type")
+            }))
+
+
+# Added by Prerak.Mittal
+def get_whitelist_helper(raw_response: dict) -> tuple[list, list]:
+    """
+        Prepares the data for human readable format and context data
+
+    Args:
+        raw_response: dict -> The raw response returned by the API call
+
+    Returns:
+        Tuple[entry_context, human_readable_data]
+
+    """
+
+    entry_context: list = []
+    human_readable_data: list = []
+
+    if raw_response:
+        # Extract the meta information
+        base_meta: dict = raw_response.get("meta")
+
+        limit: int = base_meta.get("limit")
+
+        # "next" returns the endpoint as /api/v1/orgwhitelist/?username=devops
+        # For calling http_request, we need to remove /api/
+        next_endpoint: str = base_meta.get("next")
+        next_endpoint = re.sub("^/api/", "", next_endpoint)
+
+        previous_endpoint: str = base_meta.get("previous")
+        offset: int = base_meta.get("offset")
+        total_count: int = base_meta.get("total_count")
+
+        total_count_more_than_limit: bool = total_count > limit
+
+        if total_count > 0:
+            while(next_endpoint is not None):
+                # passing the required arguments to prepare human redable and context data lists
+                # Offset -> Starting index to add
+                # end_index -> End index to add
+
+                prepare_whitelist_human_and_context(entry_context, human_readable_data, raw_response.get("objects"))
+
+                # Make the new next requests to get required information
+                # Since, the API returns the next endpoint to hit, no need to call build_params() function.
+                raw_response = http_request("GET", next_endpoint, headers=HEADERS)
+
+                next_endpoint = raw_response.get("meta").get("next")
+
+                if next_endpoint:
+                    next_endpoint = re.sub("^/api/", "", next_endpoint)
+
+            if total_count_more_than_limit:
+                prepare_whitelist_human_and_context(entry_context, human_readable_data, raw_response.get("objects"))
+
+    return (entry_context, human_readable_data)
+
+
+# Added by Prerak.Mittal
+def get_whitelist_command():
+    """
+        Retrieves whitelist entries from the ThreatStream platform.
+
+    Args:
+        None
+
+    API REQUEST Parameters:
+        format(GET parameter): str -> csv or json. We require json
+        limit: int -> Limits the number of resutls returned in one API call. DEFAULT = 10. If limit=0 max returned is 1000.
+        showNote: str -> Whether contextual notes are included in the response. true/false. DEFAULT true.
+
+    API RESPONSE (JSON):
+        created_ts -> Timestamp of when the entry was created.
+        id -> Unique ID associated with the whitelist entry.
+        modified_ts -> Timestamp of when the entry was most recently modfied.
+        notes -> Contextual note associated with the entry
+        value -> Value of the entry.
+        value_type -> Type of entry—cidr, domain, email, ip, md5 url, user-agent
+
+    Function Returns:
+        return_outputs data for playground
+
+    """
+
+    # Appends the required parameters with the credentials used for API call
+    params: dict = build_params(format="json", limit=20, showNote="true")
+
+    raw_response: dict = http_request("GET", "v1/orgwhitelist/", params=params, headers=HEADERS)
+
+    if not raw_response:
+        demisto.results(F"No Whitelist data found.")
+        sys.exit()
+
+    title = F"Whitelists found!"
+
+    context_data, human_readable_data = get_whitelist_helper(raw_response)
+
+    ec: dict = {
+        "ThreatStream.WhiteList((val.ID && val.ID == obj.ID) && (val.CreatedTS && val.CreatedTS == obj.CreatedTS) &&"
+        "(val.ModifiedTS && val.ModifiedTS == obj.ModifiedTS))": context_data
+    }
+
+    human_readable = tableToMarkdown(name=title,
+                                     t=human_readable_data,
+                                     removeNull=True)
+
+    return_outputs(human_readable, ec, raw_response)
+
+
+# Added by Prerak.Mittal
+def add_new_whitelist_entry_command(value_type: str, value: str, notes: str):
+    """
+        Creates a new whitelist entry
+    Args:
+        value_type: str --> Type of entry—cidr, domain, email, ip, md5, url, user-agent (Required)
+        value: str --> Value of the entry. (Required)
+        notes: str --> Contextual note associated with the entry. (Required)
+
+    Function Return:
+        return_outputs data for playground
+    """
+
+    data: dict = {
+        "whitelist": [{
+            "value_type": value_type,
+            "value": value,
+            "notes": notes
+        }]
+    }
+
+    data = json.dumps(data)
+
+    raw_response: dict = http_request("POST", "v1/orgwhitelist/bulk/", params=CREDENTIALS, data=data, headers=HEADERS)
+
+    if not raw_response:
+        demisto.results(F"Could not create a whitelist")
+        sys.exit()
+
+    human_readable = F"Whitelist entry with Value: {value} and Type: {value_type} added."
+
+    return_outputs(human_readable, {}, {})
+
+
+# Added by Prerak.Mittal
+def modify_whitelist_entry_note_command(entry_id: str, notes: str):
+    """
+        Modify contextual notes associated with existing whitelist entries
+    Args:
+        entry_id: str -> Unique ID associated with the whitelist entry. (Required)
+        notes: str --> Contextual note associated with the entry. (Required)
+
+    Function Return:
+        return_outputs data for playground
+    """
+
+    data: dict = {
+        "notes": notes
+    }
+
+    data = json.dumps(data)
+
+    raw_response: dict = http_request(
+        "PATCH", f"v1/orgwhitelist/{entry_id}/", params=CREDENTIALS, data=data, headers=HEADERS, text_response=True)
+    # print(raw_response)
+    human_readable = F"Notes for ID: {entry_id} modified."
+
+    if raw_response:
+        demisto.results(F"Could not find any whitelist to modify for ID: {entry_id}")
+        #return_outputs(human_readable, {}, raw_response)
+        sys.exit()
+
+    return_outputs(human_readable, {}, raw_response)
+
+
+# Added by Prerak.Mittal
+def delete_whitelist_entry_command(entry_id: str):
+    """
+        Deletes a whitelist entry
+    Args:
+        entry_id: str -> Unique ID associated with the whitelist entry. (Required)
+
+    Function Return:
+        return_outputs data for playground
+    """
+
+    raw_response: dict = http_request(
+        "DELETE", f"v1/orgwhitelist/{entry_id}/", params=CREDENTIALS, headers=HEADERS, text_response=True)
+
+    if raw_response:
+        demisto.results(F"Could not find any results for ID: {entry_id} to delete.")
+        sys.exit()
+
+    human_readable = F"Deleted the whitelist for ID: {entry_id}"
+
+    return_outputs(human_readable, {}, raw_response)
+
+
 def main():
     """
     Initiate integration command
@@ -1056,6 +1281,14 @@ def main():
             get_indicators(**args)
         elif command == 'threatstream-add-tag-to-model':
             add_tag_to_model(**args)
+        elif command == 'threatstream-get-whitelist':
+            get_whitelist_command(**args)
+        elif command == 'threatstream-add-new-whitelist-entry':
+            add_new_whitelist_entry_command(**args)
+        elif command == 'threatstream-modify-whitelist-entry-note':
+            modify_whitelist_entry_note_command(**args)
+        elif command == 'threatstream-delete-whitelist-entry':
+            delete_whitelist_entry_command(**args)
 
     except Exception as err:
         if isinstance(err, MissingSchema):
