@@ -4,7 +4,8 @@ import pytest
 
 import demistomock as demisto
 from CommonServerPython import CommandResults
-from GitHub import main, BASE_URL, list_branch_pull_requests
+from GitHub import main, BASE_URL, list_branch_pull_requests, list_all_projects_command, \
+    add_issue_to_project_board_command
 
 MOCK_PARAMS = {
     'user': 'test',
