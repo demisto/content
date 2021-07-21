@@ -113,14 +113,14 @@ class SecurityScorecardClient(BaseClient):
 
     def get_company_historical_factor_scores(self, domain: str, _from: str, to: str, timing: str) -> Dict[str, Any]:
 
-        request_params: Dict[str, Any] = {}
+        request_params: Dict[str, Any] = assign_params(
+            to=to,
+            timing=timing
+        )
 
+        # Cannot use assign_params with reserved Python keyword 'from'
         if _from:
             request_params['from'] = _from
-        if to:
-            request_params['to'] = to
-        if timing:
-            request_params['timing'] = timing
 
         return self.http_request_wrapper(
             method='GET',
@@ -143,7 +143,7 @@ class SecurityScorecardClient(BaseClient):
         )
         
         return self.http_request_wrapper(
-            'POST',
+            method='POST',
             url_suffix=f"users/by-username/{email}/alerts/grade",
             json_data=payload
         )
@@ -157,21 +157,15 @@ class SecurityScorecardClient(BaseClient):
         target: List[str]
     ) -> Dict[str, Any]:
 
-        payload: Dict[str, Any] = {}
-        if change_direction:
-            payload["change_direction"] = change_direction
-
-        threshold_arg = arg_to_number(arg=threshold, arg_name='threshold', required=True)
-        payload["threshold"] = threshold_arg
-
-        if len(score_types) > 0:
-            payload["score_types"] = score_types
-
-        if len(target) > 0:
-            payload["target"] = target
+        payload: Dict[str, Any] = assign_params(
+            change_direction=change_direction,
+            threshold=arg_to_number(arg=threshold, arg_name='threshold', required=True),
+            score_types=score_types,
+            target=target
+        )
 
         return self.http_request_wrapper(
-            'POST',
+            method='POST',
             url_suffix=f"users/by-username/{email}/alerts/score",
             json_data=payload
         )
@@ -179,20 +173,19 @@ class SecurityScorecardClient(BaseClient):
     def delete_alert(self, email: str, alert_id: str, alert_type: str) -> None:
 
         return self.http_request_wrapper(
-            "DELETE",
+            method="DELETE",
             url_suffix=f"users/by-username/{email}/alerts/{alert_type}/{alert_id}",
             return_empty_response=True
         )
 
     def get_alerts_last_week(self, email: str, portfolio_id: Optional[str]) -> Dict[str, Any]:
 
-        query_params = {}
-
-        if portfolio_id:
-            query_params["portfolio"] = portfolio_id
+        query_params : Dict[str, Any] = assign_params(
+            portfolio=portfolio_id
+        )
 
         return self.http_request_wrapper(
-            "GET",
+            method="GET",
             url_suffix=f"users/by-username/{email}/notifications/recent",
             params=query_params
         )
@@ -200,27 +193,22 @@ class SecurityScorecardClient(BaseClient):
     def get_domain_services(self, domain: str) -> Dict[str, Any]:
 
         return self.http_request_wrapper(
-            'GET',
+            method='GET',
             url_suffix=f"companies/{domain}/services"
         )
 
     def fetch_alerts(self, page_size: int):
 
-        username = self.username
-
-        query_params: Dict[str, Any] = {}
-
-        query_params["username"] = username
-        query_params["page_size"] = page_size
-
-        # Default parameters to sort by descending date
-        # ?sort=date&order=desc&
-        query_params["sort"] = "date"
-        query_params["order"] = "desc"
+        query_params: Dict[str, Any] = assign_params(
+            username=self.username,
+            page_size=page_size,
+            sort="sort",
+            order="order"
+        )
 
         return self.http_request_wrapper(
-            "GET",
-            url_suffix=f"users/by-username/{username}/notifications/recent",
+            method="GET",
+            url_suffix=f"users/by-username/{self.username}/notifications/recent",
             params=query_params
         )
 
