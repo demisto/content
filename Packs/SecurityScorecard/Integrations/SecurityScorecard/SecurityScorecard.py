@@ -365,19 +365,17 @@ def test_module(client: SecurityScorecardClient) -> str:
     """
 
     username_input = demisto.params().get('username').get("identifier")
-
-    message: str = ''
+    
     try:
         client.fetch_alerts(
             username=username_input,
             page_size=1)
-        message = 'ok'
+        return('ok')
     except DemistoException as e:
         if 'Unauthorized' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+            return('Authorization Error: make sure API Key is correctly set')
         else:
             raise e
-    return message
 
 # region Methods
 # ---------------
