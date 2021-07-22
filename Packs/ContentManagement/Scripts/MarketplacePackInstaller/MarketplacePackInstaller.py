@@ -264,7 +264,7 @@ def format_packs_data_for_installation(args: Dict) -> List[Dict[str, str]]:
             for pack in packs_data
         ]
     except KeyError as e:
-        raise DemistoException(f'The following key was does not exist in the packs data: {e}.') from e
+        raise DemistoException(f'The following key does not exist in the pack data: {e}.') from e
     except Exception as e:
         raise DemistoException(f'Unknown error occurred while processing the packs data.\n{e}') from e
 
