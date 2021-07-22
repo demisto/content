@@ -21,7 +21,9 @@ def parse_list(raw_response: dict, human_readable_title: str, next_link_descript
     readable_output = tableToMarkdown(f'{human_readable_title.title()} ({len(values)} results)',
                                       values,
                                       removeNull=True,
-                                      headerTransform=pascalToSpace)
+                                      headerTransform=pascalToSpace,
+                                      first_headers=['Id', 'userId', 'userPrincipalName', 'userDisplayName',
+                                                     'ipAddress', 'lastUpdatedDateTime'])
     outputs = {f'{OUTPUTS_PREFIX}.values(val.id === obj.id)': values}
 
     # removing whitespaces so they aren't mistakenly considered as argument separators in CLI
