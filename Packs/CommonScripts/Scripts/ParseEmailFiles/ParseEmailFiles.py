@@ -3616,7 +3616,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attached_emails.extend(inner_attached_emails)
                             # if we are outter email is a singed attachment it is a wrapper and we don't return the output of
                             # this inner email as it will be returned as part of the main result
-                            if 'multipart/signed' not in eml.get_content_type():
+                            if 'multipart/signed' not in eml.get_content_type() and inner_eml:
                                 return_outputs(readable_output=data_to_md(inner_eml, attachment_file_name, file_name),
                                                outputs=None)
                         finally:
@@ -3823,13 +3823,14 @@ def main():
         email = output  # output may be a single email
         if isinstance(output, list) and len(output) > 0:
             email = output[0]
-        return_outputs(
-            readable_output=data_to_md(email, file_name, print_only_headers=parse_only_headers),
-            outputs={
-                'Email': output
-            },
-            raw_response=output
-        )
+        if email:
+            return_outputs(
+                readable_output=data_to_md(email, file_name, print_only_headers=parse_only_headers),
+                outputs={
+                    'Email': output
+                },
+                raw_response=output
+            )
 
     except Exception as ex:
         demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc())

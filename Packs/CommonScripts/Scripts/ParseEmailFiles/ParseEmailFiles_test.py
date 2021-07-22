@@ -666,6 +666,20 @@ def test_eml_contains_htm_attachment(mocker):
     assert results[0]['EntryContext']['Email'][u'Attachments'] == '1.htm'
 
 
+def test_signed_attachment(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('email_with_signed_attachment.eml',
+                                                          info="multipart/mixed"))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    results = demisto.results.call_args[0]
+
+    assert len(results[0]['EntryContext']['Email']) == 1
+
+
 def test_eml_contains_html_and_text(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand',
