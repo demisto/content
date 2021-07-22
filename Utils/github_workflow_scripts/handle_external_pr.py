@@ -112,6 +112,7 @@ def main():
     print(f'{t.cyan}Requested review from user "{reviewer_to_assign}"{t.normal}')
 
     # create welcome comment
+    print(json.dumps(pr))
     body = WELCOME_MSG.format(selected_reviewer=reviewer_to_assign)
     pr.create_issue_comment(body)
     print(f'{t.cyan}Created welcome comment{t.normal}')
