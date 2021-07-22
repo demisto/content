@@ -18,24 +18,23 @@ def client(mocker):
     return AADClient('dummy_app_id', 'dummy_subscription_id', 'dummy_resource_group_name', verify=False, proxy=False)
 
 
-@pytest.mark.parametrize('command,test_data_file,url_suffix,next_link_description,kwargs', (
-        (azure_ad_identity_protection_risk_detection_list_command,
-         'test_data/risk_detections_response.json',
-         'riskDetections',
-         'risk_detection_list',
-         {}),
-        (azure_ad_identity_protection_risky_users_list_command,
-         'test_data/risky_users_response.json',
-         'RiskyUsers',
-         'risky_user_list',
-         {}),
-        (azure_ad_identity_protection_risky_users_history_list_command,
-         'test_data/risky_user_history_response.json',
-         f'RiskyUsers/{dummy_user_id}/history',
-         'risky_users_history_list',
-         {'user_id': dummy_user_id})
-
-))
+@pytest.mark.parametrize('command,test_data_file,url_suffix,next_link_description,kwargs',
+                         ((azure_ad_identity_protection_risk_detection_list_command,
+                           'test_data/risk_detections_response.json',
+                           'riskDetections',
+                           'risk_detection_list',
+                           {}),
+                          (azure_ad_identity_protection_risky_users_list_command,
+                           'test_data/risky_users_response.json',
+                           'RiskyUsers',
+                           'risky_user_list',
+                           {}),
+                          (azure_ad_identity_protection_risky_users_history_list_command,
+                           'test_data/risky_user_history_response.json',
+                           f'RiskyUsers/{dummy_user_id}/history',
+                           'risky_users_history_list',
+                           {'user_id': dummy_user_id})
+                          ))
 def test_list_commands(client, requests_mock, command, test_data_file, url_suffix, next_link_description, kwargs):
     """
     Given:
