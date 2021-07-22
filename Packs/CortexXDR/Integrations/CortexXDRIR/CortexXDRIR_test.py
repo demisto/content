@@ -342,6 +342,8 @@ def test_endpoint_command(requests_mock):
                                         'IsIsolated': 'No'}]}
 
     results = outputs[0].to_context()
+    for key, val in results.get("EntryContext").items():
+        assert results.get("EntryContext")[key] == get_endpoints_response[key]
     assert results.get("EntryContext") == get_endpoints_response
 
 
@@ -2711,4 +2713,4 @@ def test_get_endpoint_properties(endpoint, expected):
     from CortexXDRIR import get_endpoint_properties
 
     status, is_isolated, hostname, ip = get_endpoint_properties(endpoint)
-    assert status == 'Online'
+    assert status == expected
