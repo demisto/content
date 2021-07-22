@@ -155,6 +155,7 @@ class TestNormalCommands:
         actual_ec = res[1]
         assert expected == actual_ec
 
+        
 MESSAGES = [
     Message(subject='message1',
             message_id='message1',
@@ -217,6 +218,16 @@ CASES = [
 
 @pytest.mark.parametrize('current_last_run, messages, expected_last_run', CASES)
 def test_last_run(mocker, current_last_run, messages, expected_last_run):
+    """Check the fetch command.
+
+    Given:
+        - Last Run data including time and ids to be excluded.
+    When:
+        - Running fetch command.
+    Then:
+        - Validates the new Last Run new excluded IDs and last run time. 
+
+    """
     class MockObject:
         def filter(self, last_modified_time__gte='', datetime_received__gte=''):
             return MockObject2()
@@ -243,7 +254,6 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     fetch_emails_as_incidents(client, current_last_run)
     assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
     assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
-
 
 
 HEADERS_PACKAGE = [
@@ -465,4 +475,3 @@ def test_parse_incident_from_item():
     )
     incident = parse_incident_from_item(message)
     assert incident['attachment']
-
