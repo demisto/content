@@ -1,17 +1,20 @@
+from typing import Tuple
+
 import demistomock as demisto
 from CommonServerPython import *
 
 SCRIPT_NAME = 'CustomPackInstaller'
 
 
-def install_custom_pack(pack_id: str) -> bool:
+def install_custom_pack(pack_id: str) -> Tuple[bool, str]:
     """Installs a custom pack in the machine.
 
     Args:
         pack_id (str): The ID of the pack to install.
 
     Returns:
-        bool. Whether the installation of the pack was successful or not.
+        - bool. Whether the installation of the pack was successful or not.
+        - str. In case of failure, the error message.
 
     Notes:
         Assumptions: The zipped file is in the war-room, and the context includes the data related to it.
@@ -39,13 +42,14 @@ def install_custom_pack(pack_id: str) -> bool:
         if not status:
             error_message = f'{SCRIPT_NAME} - {res}'
             demisto.debug(error_message)
-            return False
+            return False, f'Issue occurred while installing the pack on the machine.\n{res}'
 
     else:
-        demisto.debug(f'{SCRIPT_NAME} - An error occurred while installing {pack_id}.')
-        return False
+        error_message = 'Could not find file entry ID.'
+        demisto.debug(f'{SCRIPT_NAME}, "{pack_id}" - {error_message}.')
+        return False, error_message
 
-    return True
+    return True, ''
 
 
 def main():
@@ -53,7 +57,7 @@ def main():
     pack_id = args.get('pack_id')
 
     try:
-        installation_status = install_custom_pack(pack_id)
+        installation_status, error_message = install_custom_pack(pack_id)
 
         return_results(
             CommandResults(
@@ -61,13 +65,13 @@ def main():
                 outputs_key_field='packid',
                 outputs={
                     'packid': pack_id,
-                    'installationstatus': 'Success.' if installation_status else 'Failure.',
+                    'installationstatus': 'Success.' if installation_status else error_message,
                 },
             )
         )
 
-        if installation_status != 'Success':
-            raise DemistoException(f'{SCRIPT_NAME} - Installation had failed for custom pack "{pack_id}".')
+        if not installation_status:
+            return_error(error_message)
 
     except Exception as e:
         return_error(f'{SCRIPT_NAME} - Error occurred while installing custom pack "{pack_id}".\n{e}')
