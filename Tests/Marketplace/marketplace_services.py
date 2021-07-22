@@ -575,7 +575,7 @@ class Pack(object):
             'legacy': self._legacy,
             'support': self._support_type,
             'supportDetails': self._support_details,
-            'eulaLink': Metadata.EULA_URL,
+            'eulaLink': self.eula_link,
             'author': self._author,
             'authorImage': self._author_image,
             'certification': self._certification,
@@ -1645,6 +1645,8 @@ class Pack(object):
             self.description = user_metadata.get('description', False)
             self.display_name = user_metadata.get('name', '')
             self._user_metadata = user_metadata
+            self.eula_link = user_metadata.get('eulaLink', Metadata.EULA_URL)
+
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
         except Exception:
