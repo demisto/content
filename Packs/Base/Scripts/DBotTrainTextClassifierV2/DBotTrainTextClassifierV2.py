@@ -26,6 +26,7 @@ FINETUNE_TRAINING_ALGO = 'fine_tune'
 ALGO_TO_MODEL_TYPE = {FASTTEXT_TRAINING_ALGO: 'Phishing', FINETUNE_TRAINING_ALGO: 'torch'}
 FINETUNE_LABELS = ['Malicious', 'Non-Malicious']
 
+
 def get_phishing_map_labels(comma_values):
     if comma_values == ALL_LABELS:
         return comma_values
@@ -115,7 +116,7 @@ def get_data_with_mapped_label(data, labels_mapping, tag_field):
     return new_data, dict(exist_labels_counter), dict(missing_labels_counter)
 
 
-def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, threshold, tokenizer, y_test_true,
+def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, threshold, y_test_true,
                            y_test_pred, y_test_pred_prob, target_accuracy, algorithm):
     global ALGO_TO_MODEL_TYPE
     phishing_model = demisto_ml.train_model_handler(X, y, algorithm=algorithm, compress=True)
@@ -343,7 +344,7 @@ def get_X_and_y_from_data(data, text_field):
 def validate_labels_and_algorithm(y, algorithm):
     if algorithm == FINETUNE_TRAINING_ALGO:
         labels = set(y)
-        illegal_labels = [l for l in labels if l not in FINETUNE_LABELS]
+        illegal_labels = [label for label in labels if label not in FINETUNE_LABELS]
         if len(illegal_labels) > 0:
             error = ['When trainingAlgorithm is set to {}, all labels mus be mapped to {}.\n'.format(algorithm,
                      ', '.join(FINETUNE_LABELS))]
@@ -353,7 +354,6 @@ def validate_labels_and_algorithm(y, algorithm):
 
 
 def main():
-    tokenizer_script = demisto.args().get('tokenizerScript', None)
     input = demisto.args()['input']
     input_type = demisto.args()['inputType']
     model_name = demisto.args()['modelName']
@@ -421,7 +421,7 @@ def main():
         y_test_pred_prob = [y_tuple[1] for y_tuple in ft_test_predictions]
         threshold = float(threshold_metrics_entry['Contents']['threshold'])
         store_model_in_demisto(model_name=model_name, model_override=model_override, X=X, y=y,
-                               confusion_matrix=confusion_matrix, threshold=threshold, tokenizer=tokenizer_script,
+                               confusion_matrix=confusion_matrix, threshold=threshold,
                                y_test_true=y_test, y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob,
                                target_accuracy=actual_min_accuracy, algorithm=algorithm)
         demisto.results("Done training on {} samples model stored successfully".format(len(y)))
