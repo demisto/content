@@ -2675,20 +2675,20 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
 
 CONNECTED_STATUS = {
     'endpoint_status': 'Connected',
-    'is_isolated': True,
+    'is_isolated': 'Isolated',
     'host_name': 'TEST',
     'ip': '1.1.1.1'
 }
 
 NO_STATUS = {
-    'is_isolated': True,
+    'is_isolated': 'Isolated',
     'host_name': 'TEST',
     'ip': '1.1.1.1'
 }
 
 OFFLINE_STATUS = {
     'endpoint_status': 'Offline',
-    'is_isolated': True,
+    'is_isolated': 'Isolated',
     'host_name': 'TEST',
     'ip': '1.1.1.1'
 }
