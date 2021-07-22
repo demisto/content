@@ -35,7 +35,7 @@ script:
     name: umbrella-get-destination-lists
     outputs:
     - contextPath: Umbrella.DestinationLists
-      description: ''
+      description: 'List of destination lists in organization'
       type: Unknown
   - arguments:
     - description: Optional organization ID. If not provided, will use the one provided
@@ -62,6 +62,17 @@ script:
       required: true
     description: Gets the domains listed in a destination list
     name: umbrella-get-destination-domains
+    outputs:
+    - contextPath: Umbrella.Destinations.id
+      description: 'ID of domain within destination list'
+    - contextPath: Umbrella.Destinations.destination
+      description: 'Domain within destination list'
+    - contextPath: Umbrella.Destinations.type
+      description: 'Type of destination within destination list'
+    - contextPath: Umbrella.Destinations.createdAt
+      description: 'When the domain within destination list was created'
+    - contextPath: Umbrella.Destinations.comment
+      description: 'Comment associated with domain within destination list'
   - arguments:
     - description: Optional organization ID. If not provided, will use the one provided
         in the integration configuration.
@@ -89,10 +100,15 @@ script:
     name: umbrella-get-destination-domain
     outputs:
     - contextPath: Umbrella.Destinations.id
+      description: 'ID of domain within destination list'
     - contextPath: Umbrella.Destinations.destination
+      description: 'Domain within destination list'
     - contextPath: Umbrella.Destinations.type
+      description: 'Type of destination within destination list'
     - contextPath: Umbrella.Destinations.createdAt
+      description: 'When the domain within destination list was created'
     - contextPath: Umbrella.Destinations.comment
+      description: 'Comment associated with domain within destination list'
   dockerimage: demisto/python3:3.9.5.21272
   runonce: false
   script: ''
