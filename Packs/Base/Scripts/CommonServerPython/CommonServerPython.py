@@ -7745,12 +7745,14 @@ class IndicatorsSearcher:
         self._value = value
         self._original_limit = limit
         self._next_limit = limit
+        self._search_is_done = False
 
     def __iter__(self):
         self._total = None
         self._search_after_param = None
         self._page = self._original_page
         self.limit = self._original_limit
+        self._search_is_done = False
         return self
 
     # python2
@@ -7758,7 +7760,7 @@ class IndicatorsSearcher:
         return self.__next__()
 
     def __next__(self):
-        if self._is_search_done():
+        if self._search_is_done:
             raise StopIteration
         size = min(self._size, self.limit or self._size)
         res = self.search_indicators_by_version(from_date=self._from_date,
@@ -7766,11 +7768,12 @@ class IndicatorsSearcher:
                                                 size=size,
                                                 to_date=self._to_date,
                                                 value=self._value)
-        fetched_len = len(res.get('iocs', []))
+        fetched_len = len(res.get('iocs', []) or [])
         if fetched_len == 0:
             raise StopIteration
         if self.limit:
             self.limit -= fetched_len
+        self._search_is_done = self._is_search_done()
         return res
 
     @property
@@ -7796,6 +7799,9 @@ class IndicatorsSearcher:
         2. for search_after if self.total was populated by a previous search, but no self._search_after_param
         3. for page if self.total was populated by a previous search, but page is too large
         """
+        if self._search_is_done:
+            return True
+
         reached_limit = isinstance(self.limit, int) and self.limit <= 0
         if reached_limit:
             return True
@@ -7846,10 +7852,13 @@ class IndicatorsSearcher:
         res = demisto.searchIndicators(**search_iocs_params)
         if len(res.get('iocs', [])) > 0:
             self._page += 1  # advance pages for search_after, as fallback
+        else:
+            self._search_is_done = True
         self._search_after_param = res.get(self._search_after_title)
         self._total = res.get('total')
         if self._search_after_title in res and self._search_after_param is None:
             demisto.info('Elastic search using searchAfter returned all indicators')
+            self._search_is_done = True
         return res
 
 
