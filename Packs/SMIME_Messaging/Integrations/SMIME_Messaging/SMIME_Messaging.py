@@ -135,18 +135,22 @@ def verify(client: Client, args: Dict):
 
 
 def decode_str_using_chardet(decrypted_text):
+    error = ''
     chardet_detection = chardet.detect(decrypted_text)
     encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
     try:
         # Trying to decode using the detected encoding
-        demisto.debug(f"Going to decode decrypted text using {encoding} encoding")
+        confidence = chardet_detection.get('confidence')
+        demisto.debug(f"Going to decode decrypted text using {encoding} encoding, detected with confidence: {confidence}")
+        if confidence < 0.9:
+            error = 'Note: detected encoding confidence is low, characters may be missing. You can try running this command again and pass the encoding code as argument.'
         out = decrypted_text.decode(encoding)
     except UnicodeDecodeError:
         # In case the detected encoding fails apply the default encoding
         demisto.info(f'Could not decode file using detected encoding:{encoding}, retrying '
                      f'using utf-8.\n')
         out = decrypted_text.decode('utf-8')
-    return out
+    return out, error
 
 
 def decrypt_email_body(client: Client, args: Dict, file_path=None):
@@ -162,11 +166,16 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
     else:
         encrypt_message = demisto.getFilePath(args.get('encrypt_message'))
 
+    encoding = args.get('encoding')
+    error = ''
     client.smime.load_key(client.private_key_file, client.public_key_file)
     try:
         p7, data = SMIME.smime_load_pkcs7(encrypt_message['path'])
         decrypted_text = client.smime.decrypt(p7)
-        out = decode_str_using_chardet(decrypted_text)
+        if encoding:
+            out = decrypted_text.decode(encoding)
+        else:
+            out, error = decode_str_using_chardet(decrypted_text)
 
     except SMIME.SMIME_Error as e:
 
@@ -176,7 +185,10 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
             p7bio = BIO.MemoryBuffer(p7data)
             p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))
             decrypted_text = client.smime.decrypt(p7, flags=SMIME.PKCS7_NOVERIFY)
-            out = decode_str_using_chardet(decrypted_text)
+            if encoding:
+                out = decrypted_text.decode(encoding)
+            else:
+                out, error = decode_str_using_chardet(decrypted_text)
 
         else:
             raise Exception(e)
@@ -186,7 +198,10 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
             'Message': out
         }
     }
-    human_readable = f'The decrypted message is: \n{out}'
+    if error:
+        human_readable = f'{error}\nThe decrypted message is: \n{out}'
+    else:
+        human_readable = f'The decrypted message is: \n{out}'
 
     return human_readable, entry_context
 

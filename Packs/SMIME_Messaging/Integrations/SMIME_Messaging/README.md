@@ -349,7 +349,9 @@ b'a sign of our times'
 
 <h3>4. smime-decrypt-email-body</h3>
 <hr>
-<p>Decrypts the message body.</p>
+<p>Decrypts the message body. Please note we are using chardet module to find the correct encoding fot the text. Detected types are shown <a href="https://pypi.org/project/chardet/">here</a>.
+    If you need to use different encoding to decode the message body, you can use the <code>encoding</code> argument when executing command. 
+</p>
 <h5>Base Command</h5>
 <p>
   <code>smime-decrypt-email-body</code>
@@ -381,6 +383,11 @@ b'a sign of our times'
       <td>encrypt_message</td>
       <td>The encrypted message with .p7 extension.</td>
       <td>Required</td>
+    </tr>
+    <tr>
+      <td>encoding</td>
+      <td>The encoding code to use when decode the message body, e.g 'ISO-8859-2'.</td>
+      <td> </td>
     </tr>
   </tbody>
 </table>

@@ -1,4 +1,5 @@
-from SMIME_Messaging import Client, sign_email, encrypt_email_body, verify, decrypt_email_body, sign_and_encrypt
+from SMIME_Messaging import Client, sign_email, encrypt_email_body, verify, decrypt_email_body, sign_and_encrypt,\
+    decode_str_using_chardet
 import demistomock as demisto
 
 
@@ -49,6 +50,21 @@ def test_sign_and_encrypt(mocker):
     assert 'MIME-Version: 1.0\nContent-Disposition: attachment; filename="smime.p7m"\n' \
            'Content-Type: application/x-pkcs7-mime; smime-type=enveloped-data; name="smime.p7m"\n' \
            'Content-Transfer-Encoding: base64' in sign_encrypt
+
+
+def test_decode_using_chardet():
+
+    decrypted_text_bytes = b'Za\xbf\xf3\xb3\xe6 g\xea\xb6l\xb1 ja\xbc\xf1'
+    out, error = decode_str_using_chardet(decrypted_text_bytes)
+    assert 'Note: detected encoding confidence is low' in error
+    assert out == 'Za¿ó³æ gê¶l± ja¼ñ'
+
+
+def test_decrypt(mocker):
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './test_data/smime.p7m'})
+
+    decrypted, _ = decrypt_email_body(client, {})
+    assert 'Zażółć\ gęślą\ jaźń' in decrypted
 
 
 def test_test_module(mocker):

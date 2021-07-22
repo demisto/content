@@ -70,6 +70,12 @@ script:
       name: encrypt_message
       required: true
       secret: false
+    - default: false
+      description: The encoding code to use when decode the message body, e.g 'ISO-8859-2''
+      isArray: false
+      name: encoding
+      required: false
+      secret: false
     deprecated: false
     description: Decrypts the message body.
     execution: false
