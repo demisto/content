@@ -16,37 +16,9 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-MAX_INCIDENTS_TO_FETCH = 50
+KEYS = ['ASN', 'BITCOIN_ADDRESS', 'CVE', 'DOMAIN', 'EMAIL', 'FILE_HASH_MD5', 'FILE_HASH_SHA1',
+        'FILE_HASH_SHA256', 'IPV4', 'IPV6', 'MAC_ADDRESS', 'MITRE_ATT&CK', 'URL', 'YARA_RULE']
 
-# map_types = {'ASN': [None, None],
-#             'BITCOIN_ADDRESS': [DBotScoreType.CRYPTOCURRENCY, Common.Cryptocurrency],
-#             'CVE': [DBotScoreType.CVE, Common.CVE],
-#             'DOMAIN': [DBotScoreType.DOMAIN, Common.Domain],
-#             'EMAIL': [DBotScoreType.EMAIL, Common.EMAIL],
-#             'FILE_HASH_MD5': [DBotScoreType.FILE, Common.File],
-#             'FILE_HASH_SHA1': [DBotScoreType.FILE, Common.File],
-#             'FILE_HASH_SHA256': [DBotScoreType.FILE, Common.File],
-#             'IPv4': [DBotScoreType.IP, Common.IP],
-#             'IPv6': [DBotScoreType.IP, Common.IP],
-#             'MAC_ADDRESS': [None, None],
-#             'MITRE_ATT&CK': [None, None],
-#             'URL': [DBotScoreType.URL, Common.URL],
-#             'YARA_RULE': [None, None]}
-
-MAP_IOCS = {
-    'BITCOIN_ADDRESS': DBotScoreType.CRYPTOCURRENCY,
-    'CVE': DBotScoreType.CVE,
-    'DOMAIN': DBotScoreType.DOMAIN,
-    'EMAIL': DBotScoreType.EMAIL,
-    'FILE_HASH_MD5': DBotScoreType.FILE,
-    'FILE_HASH_SHA1': DBotScoreType.FILE,
-    'FILE_HASH_SHA256': DBotScoreType.FILE,
-    'IPv4': DBotScoreType.IP,
-    'IPv6': DBotScoreType.IP,
-    'URL': DBotScoreType.URL}
-
-# IOCs we don't create indicator obj for them are ["YARA, MITER, MAC_ADD, ASN]
 
 ''' CLIENT CLASS '''
 
@@ -80,15 +52,23 @@ class Client(BaseClient):
             return_empty_response=True
         )
 
-    def ioc_from_text(self, text: str, keys: list = None) -> Dict[str, Any]:
+    def ioc_from_text(self, text: str) -> Dict[str, Any]:
+        """
+        Extracts all IOCs from a JSON text
+
+        :type text: ``str``
+        :param text: The JSON from which the IOCs will be extracted
+
+        :return: The HTTP response returned by the API
+        :rtype: ``Dict[str, Any]``
+        """
         data = {'data': text}
-        if keys:
-            data['keys'] = keys
         return self._http_request(
             method='POST',
             url_suffix='/text',
             headers={'Content-Type': 'application/json'},
-            data=json.dumps(data)
+            data=json.dumps(data),
+            return_empty_response=True
         )
 
     # TODO the api gets raw text not as dict
@@ -100,18 +80,27 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/raw',
             headers={'Content-Type': 'text/plain'},
-            data=json.dumps(data)
+            data=json.dumps(data),
+            return_empty_response=True
         )
 
-    def ioc_from_twitter(self, user_name: str, keys: list = None) -> Dict[str, Any]:
+    def ioc_from_twitter(self, user_name: str) -> Dict[str, Any]:
+        """
+        Extracts all IOCs from a twitter account
+
+        :type user_name: ``str``
+        :param user_name: The twitter account from which the IOCs will be extracted
+
+        :return: The HTTP response returned by the API
+        :rtype: ``Dict[str, Any]``
+        """
         data = {'data': user_name}
-        if keys:
-            data['keys'] = keys
         return self._http_request(
             method='POST',
             url_suffix='/twitter',
             headers={'Content-Type': 'application/json'},
-            data=json.dumps(data)
+            data=json.dumps(data),
+            return_empty_response=True
         )
 
 
@@ -119,12 +108,21 @@ class Client(BaseClient):
 
 
 def list_to_upper_case(lst: List[str]) -> List[str]:
+    """
+    Upper case every string in the list
+
+    :type lst: ``List``
+    :param lst: The list we want to upper case
+
+    :return: The upper cased list
+    :rtype: ``List``
+    """
     return list(map(lambda x: x.upper(), lst))
 
 
-def process_response(response_data: Dict[str, List], keys: List[str]) -> None:
+def remove_unwanted_keys(response_data: Dict[str, List], keys: List[str]) -> None:
     """
-    Creates indicators from the IOCs extracted from the response of the API and returns them as a list
+    Removes all keys that were not specified by the user as the desired keys to return
 
     :type response_data: ``Dict[str, List]``
     :param response_data: The data key from the API's response
@@ -140,6 +138,20 @@ def process_response(response_data: Dict[str, List], keys: List[str]) -> None:
 
 
 def limit_response(response_data: Dict[str, List], limit: int) -> Dict[str, List]:
+    """
+    Trims the result from the API according to limit parameter
+
+    :type response_data: ``Dict[str, List]``
+    :param response_data: The data key from the API's response
+
+    :type limit: ``int``
+    :param limit: maximum number of results to return
+
+
+    :return: New dictionary with at most "limit" results
+    :rtype: Dict[str, List]
+    """
+
     limited_response = {}
     for ioc_type, iocs in response_data.items():
         for ioc in iocs:
@@ -149,6 +161,61 @@ def limit_response(response_data: Dict[str, List], limit: int) -> Dict[str, List
                 limited_response.get(ioc_type).append(ioc)
                 limit -= 1
     return limited_response
+
+
+def process_response(response: Dict[str, Any], keys: List[str], limit: int) -> Dict[str, List]:
+    """
+
+
+    :type response: ``Dict[str, Any]``
+    :param response: The data key from the API's response
+
+    :type keys: ``List[str]``
+    :param keys: IOC Types to return
+
+    :type limit: ``int``
+    :param limit: maximum number of results to return
+
+    :return:
+    :rtype: Dict[str, List]
+    """
+
+    try:
+        response_data = response.get('data')
+    except Exception:
+        raise Exception('The response from the API is empty')
+
+    remove_unwanted_keys(response_data, keys)
+    if limit is not None:
+        response_data = limit_response(response_data, int(limit))
+    if not response_data:
+        raise Exception('The response from the API is empty from limit')
+    return response_data
+
+
+def unite_all_tweets_into_dict(twitter_response: Dict[str, Any]) -> None:
+    # The data for this response is a list of "responses", for each tweet of the user
+    """
+    Unites all data from every tweet to a single dictionary
+
+    :type twitter_response: ``Dict[str, List]``
+    :param twitter_response: The data key from the API's response
+    """
+
+    try:
+        response_data = twitter_response.get('data')
+    except Exception:
+        raise Exception('The response from the API is empty')
+
+    united_data = {}
+    for tweet in response_data:
+        for ioc_type, iocs in tweet.get('data').items():
+            for ioc in iocs:
+                if not united_data.get(ioc_type):
+                    united_data[ioc_type] = []
+                united_data.get(ioc_type).append(ioc)
+
+    twitter_response['data'] = united_data
 
 
 ''' COMMAND FUNCTIONS '''
@@ -165,7 +232,9 @@ def test_module(client: Client) -> str:
     """
 
     response = client.ioc_from_url('https://pastebin.com/iMzrRXbJ')
-    if (response.get('status') == 'fail') or (response.get('status') == 'error') or (response.get('status') is None):
+    if (response.get('status') == 'fail') \
+            or (response.get('status') == 'error') \
+            or (response.get('status') is None):
         return 'Failed to connect with the API'
     return 'ok'
 
@@ -175,7 +244,7 @@ def ioc_from_url_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
     Returns the results of the Parse IOCs from URL API call
     Args:
         client: IOCParser client to use
-        args: All command arguments, url and keys (if specified)
+        args: All command arguments, ulr, limit and keys (if specified)
 
     Returns:
         CommandResults object containing the results of the parse from url as
@@ -186,24 +255,15 @@ def ioc_from_url_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
     keys = argToList(args.get('keys'))
     limit = args.get('limit')
     if not keys:
-        keys = ['ASN', 'BITCOIN_ADDRESS', 'CVE', 'DOMAIN', 'EMAIL', 'FILE_HASH_MD5', 'FILE_HASH_SHA1',
-                'FILE_HASH_SHA256', 'IPV4', 'IPV6', 'MAC_ADDRESS', 'MITRE_ATT&CK', 'URL', 'YARA_RULE']
+        keys = KEYS
     keys = list_to_upper_case(keys)
 
     if not url:
         raise ValueError('url not specified')
 
     response = client.ioc_from_url(url)
-    try:
-        response_data = response.get('data')
-    except Exception:
-        raise Exception('The response from the API is empty')
 
-    process_response(response_data, keys)
-    if limit:
-        response_data = limit_response(response_data, int(limit))
-    if not response_data:
-        raise Exception('The response from the API is empty')
+    response_data = process_response(response, keys, limit)
 
     command_results = []
     outputs = {'url': url, 'Results': []}
@@ -212,7 +272,7 @@ def ioc_from_url_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
             outputs['Results'].append({'type': key, 'value': value})
     for ioc_type, iocs in response_data.items():
         command_results.append(CommandResults(
-            readable_output=tableToMarkdown(f'results for {ioc_type} for {url}', iocs, headers=ioc_type),
+            readable_output=tableToMarkdown(f'results for {ioc_type} from {url}', iocs, headers=ioc_type),
             outputs_prefix=f'IOCParser.parseFromUrl',
             outputs=outputs
         ))
@@ -225,7 +285,48 @@ def ioc_from_url_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
 
 
 def ioc_from_text_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    pass
+    """
+        Returns the results of the Parse IOCs from text API call
+        Args:
+            client: IOCParser client to use
+            args: All command arguments, text, limit and keys (if specified)
+
+        Returns:
+            CommandResults object containing the results of the parse from
+            text (in JSON format) as returned from the API and its readable output
+
+        """
+    data = args.get('data')
+    keys = argToList(args.get('keys'))
+    limit = args.get('limit')
+    if not keys:
+        keys = KEYS
+    keys = list_to_upper_case(keys)
+
+    if not data:
+        raise ValueError('text not specified')
+
+    response = client.ioc_from_text(data)
+
+    response_data = process_response(response, keys, limit)
+
+    command_results = []
+    outputs = {'data': data, 'Results': []}
+    for key, values in response_data.items():
+        for value in values:
+            outputs['Results'].append({'type': key, 'value': value})
+    for ioc_type, iocs in response_data.items():
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(f'results for {ioc_type}', iocs, headers=ioc_type),
+            outputs_prefix=f'IOCParser.parseFromText',
+            outputs=outputs
+        ))
+
+    command_results.append(CommandResults(
+        raw_response=response_data
+    ))
+
+    return command_results
 
 
 def ioc_from_raw_text_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
@@ -233,7 +334,48 @@ def ioc_from_raw_text_command(client: Client, args: Dict[str, Any]) -> List[Comm
 
 
 def ioc_from_twitter_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    pass
+    """
+        Returns the results of the Parse IOCs from twitter account API call
+        Args:
+            client: IOCParser client to use
+            args: All command arguments, data, limit and keys (if specified)
+
+        Returns:
+            CommandResults object containing the results of the parse from
+            twitter account as returned from the API and its readable output
+    """
+
+    twitter_account = args.get('data')
+    keys = argToList(args.get('keys'))
+    limit = args.get('limit')
+    if not keys:
+        keys = KEYS
+    keys = list_to_upper_case(keys)
+
+    if not twitter_account:
+        raise ValueError('twitter user name not specified')
+
+    twitter_response = client.ioc_from_twitter(twitter_account)
+    unite_all_tweets_into_dict(twitter_response)
+    response_data = process_response(twitter_response, keys, limit)
+
+    command_results = []
+    outputs = {'data': twitter_account, 'Results': []}
+    for key, values in response_data.items():
+        for value in values:
+            outputs['Results'].append({'type': key, 'value': value})
+    for ioc_type, iocs in response_data.items():
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(f'results for {ioc_type} from {twitter_account}', iocs, headers=ioc_type),
+            outputs_prefix=f'IOCParser.parseFromTwitter',
+            outputs=outputs
+        ))
+
+    command_results.append(CommandResults(
+        raw_response=response_data
+    ))
+
+    return command_results
 
 
 ''' MAIN FUNCTION '''
@@ -241,10 +383,7 @@ def ioc_from_twitter_command(client: Client, args: Dict[str, Any]) -> List[Comma
 
 def main() -> None:
     """
-    main function, parses params and runs command functions
-
-    :return:
-    :rtype:
+    main function, parses params and runs command function
     """
 
     try:

@@ -32,6 +32,7 @@ script:
       required: false
       secret: false
     - default: false
+      description: limits the results to the specified number
       isArray: false
       name: limit
       required: false
@@ -57,6 +58,12 @@ script:
       name: keys
       required: false
       secret: false
+    - default: false
+      description: limits the results to the specified number
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Parses and extracts IOCs from a given JSON.
     execution: false
@@ -74,6 +81,12 @@ script:
       name: keys
       required: false
       secret: false
+    - default: false
+      description: limits the results to the specified number
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Parses and extracts IOCs from a given text.
     execution: false
@@ -89,6 +102,12 @@ script:
       description: IOC Types to return
       isArray: false
       name: keys
+      required: false
+      secret: false
+    - default: false
+      description: limits the results to the specified number
+      isArray: false
+      name: limit
       required: false
       secret: false
     deprecated: false
