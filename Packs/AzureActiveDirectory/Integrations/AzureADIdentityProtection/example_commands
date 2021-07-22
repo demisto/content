@@ -1,0 +1,9 @@
+!azure-ad-auth-test
+!azure-ad-auth-start
+!azure-ad-auth-complete
+!azure-ad-auth-reset
+!azure-ad-identity-protection-risks-list
+!azure-ad-identity-protection-risky-user-list
+!azure-ad-identity-protection-risky-user-history-list user_id="foo"
+!azure-ad-identity-protection-risky-user-confirm-compromised user_ids="foo,bar"
+!azure-ad-identity-protection-risky-user-dismiss user_ids="foo,bar"

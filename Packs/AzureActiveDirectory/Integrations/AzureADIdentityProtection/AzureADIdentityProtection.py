@@ -37,8 +37,7 @@ def parse_list(raw_response: dict, human_readable_title: str, next_link_descript
 
 
 class AADClient:
-    def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
-                 azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
+    def __init__(self, app_id: str, subscription_id: str, verify: bool, proxy: bool, azure_ad_endpoint: str):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -53,12 +52,10 @@ class AADClient:
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
             verify=verify,
             proxy=proxy,
-            resource=f'{BASE_URL}/{resource_group_name}',
             scope=' '.join(REQUIRED_PERMISSIONS),
             azure_ad_endpoint=azure_ad_endpoint
         )
         self.subscription_id = subscription_id
-        self.resource_group_name = resource_group_name
 
     def http_request(self, **kwargs):
         return self.ms_client.http_request(**kwargs)
@@ -208,7 +205,6 @@ def main() -> None:
         client = AADClient(
             app_id=params.get('app_id', ''),
             subscription_id=params.get('subscription_id', ''),
-            resource_group_name=params.get('resource_group_name', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             azure_ad_endpoint=params.get('azure_ad_endpoint',
@@ -224,7 +220,7 @@ def main() -> None:
             return_results(complete_auth(client))
         elif command == 'azure-ad-auth-test':
             return_results(test_connection(client))
-        elif command == 'azure-ad-reset':
+        elif command == 'azure-ad-auth-reset':
             return_results(reset_auth())
 
         # actual commands
