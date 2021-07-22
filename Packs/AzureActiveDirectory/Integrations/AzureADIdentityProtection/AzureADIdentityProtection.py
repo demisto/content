@@ -65,10 +65,13 @@ class AADClient:
     def query_list(self,
                    url_suffix: str,
                    limit: int,
-                   filter_arguments: Optional[Dict[str, Optional[Any]]] = None,
+                   filter_arguments: Optional[List[str]] = None,
                    filter_expression: Optional[str] = None,
                    next_link: Optional[str] = None) -> Dict:
-        """ Used for querying when the result is a collection (list) of items, for example RiskyUsers. """
+        """
+        Used for querying when the result is a collection (list) of items, for example RiskyUsers.
+        filter_arguments is a list of the form ['foo eq \'bar\'] to be joined with a `' and '` separator.
+        """
         if next_link:
             next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
             return self.http_request(method='GET', full_url=next_link)
@@ -77,9 +80,8 @@ class AADClient:
             params: Dict[str, Optional[Any]] = {'$top': limit}
 
             if filter_expression is None and filter_arguments is not None:
-                filter_expression = ' and '.join([f'{key} eq \'{value}\''
-                                                  for key, value in filter_arguments.items()
-                                                  if value is not None])
+                filter_expression = ' and '.join(filter_arguments)
+
             params['$filter'] = filter_expression
             remove_nulls_from_dictionary(params)
             return self.http_request(method='GET', url_suffix=url_suffix, params=params)
@@ -91,12 +93,17 @@ class AADClient:
                                                          user_id: Optional[str] = None,
                                                          user_principal_name: Optional[str] = None,
                                                          country: Optional[str] = None) -> CommandResults:
+        filter_arguments = []
+
+        if user_id:
+            filter_arguments.append(f"userId eq '{user_id}'")
+        if user_principal_name:
+            filter_arguments.append(f"userPrincipalName eq '{user_principal_name}'")
+        if country:
+            filter_arguments.append(f"location/countryOrRegion eq '{country}'")
+
         raw_response = self.query_list(url_suffix='riskDetections',
-                                       filter_arguments={
-                                           'userId': user_id,
-                                           'userPrincipalName': user_principal_name,
-                                           'location/countryOrRegion': country
-                                       },
+                                       filter_arguments=filter_arguments,
                                        limit=limit,
                                        filter_expression=filter_expression,
                                        next_link=next_link)
@@ -113,15 +120,22 @@ class AADClient:
                                                       risk_detail: Optional[str] = None,
                                                       user_principal_name: Optional[str] = None) -> CommandResults:
 
+        filter_arguments = []
+
+        if risk_level:
+            filter_arguments.append(f"riskLevel eq '{risk_level}'")
+        if risk_state:
+            filter_arguments.append(f"riskState eq '{risk_state}'")
+        if risk_detail:
+            filter_arguments.append(f"riskDetail eq '{risk_level}'")
+        if user_principal_name:
+            filter_arguments.append(f"userPrincipalName eq '{user_principal_name}'")
+        if updated_time:
+            filter_arguments.append(f"riskLastUpdatedDateTime gt {updated_time}")  # '' wrap only required for strings
+
         raw_response = self.query_list(
             url_suffix='RiskyUsers',
-            filter_arguments={
-                'riskLastUpdatedDateTime': updated_time,
-                'riskLevel': risk_level,
-                'riskState': risk_state,
-                'riskDetail': risk_detail,
-                'userPrincipalName': user_principal_name
-            },
+            filter_arguments=filter_arguments,
             limit=limit,
             filter_expression=filter_expression,
             next_link=next_link,
