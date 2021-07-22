@@ -1,6 +1,7 @@
 commonfields:
   id: ArcusTeam
-  version: -1
+  version: 6.11.0
+vcShouldKeepItemLegacyProdMachine: false
 name: ArcusTeam
 display: ArcusTeam
 category: Data Enrichment & Threat Intelligence
@@ -18,23 +19,15 @@ configuration:
   required: true
   additionalinfo: The FQDN/IP the integration should connect to.
 - display: API Key
-  name: api_key
+  name: ApiKey
   type: 4
   required: true
   additionalinfo: ' The API Key required to authenticate to the service.'
-- display: 'The client ID'
-  name: client_id
+- display: ' The client ID'
+  name: ClientID
   type: 0
   required: true
   additionalinfo: The client ID from ArcusTeam dashboard
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
 script:
   script: ''
   type: python
@@ -53,7 +46,7 @@ script:
     outputs:
     - contextPath: ArcusTeamDevices.devices.categories
       description: ' Device categories'
-      type: Unknown
+      type: string
     - contextPath: ArcusTeamDevices.devices.device_key
       description: ' Arcus Team Device ID'
       type: string
@@ -83,14 +76,12 @@ script:
     arguments:
     - name: firmware_id
       required: true
-      description: ' ArcusTeam Firmware ID (as returned by the arcusteam-get-devices
-        command)'
+      description: ' ArcusTeam Firmware ID'
     - name: device_id
       required: true
-      description: ' ArcusTeam Device ID (as returned by the arcusteam-get-devices
-        command)'
+      description: ' ArcusTeam Device ID'
     - name: page_size
-      description: Page size. Minimum page size is 1, maximum is 100.
+      description: Page size [1,100]
       defaultValue: "10"
     - name: page_number
       description: ' Page number'
@@ -173,9 +164,6 @@ script:
       description: CVE url
       type: string
     description: ' Retrieve CVEs for an ArcusTeam device'
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.1.14969
   runonce: false
   subtype: python3
-fromversion: 6.0.0
-tests:
-- No tests (auto formatted)
