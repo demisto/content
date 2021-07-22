@@ -2,7 +2,7 @@ Send messages and notifications to your Slack team.
 This integration was integrated and tested with Slack.
 ## Configure SlackV3 on Cortex XSOAR
 
-Slack V3 utilizes "Socket Mode" to enable the integration to communicate directly with Slack for mirroring. This requires a dedicated Slack app to be created for the XSOAR integration.
+Slack V3 utilizes "Socket Mode" to enable the integration to communicate directly with Slack for mirroring. This requires a dedicated Slack app to be created for the XSOAR integration. See [Creating a Custom App](#creating-a-custom-app) on how to create your App in Slack.
 
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -31,7 +31,7 @@ Slack V3 utilizes "Socket Mode" to enable the integration to communicate directl
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### Creating a Custom App
-1. Navigate to the following [link](https://api.slack.com/apps/).
+1. Navigate to: https://api.slack.com/apps/ .
 2. Click **Create an App**.
  
 ![create-app-1](../../doc_files/SlackDocs_create_app.png)
@@ -44,7 +44,7 @@ Slack V3 utilizes "Socket Mode" to enable the integration to communicate directl
 
 ![create-app-3](../../doc_files/SlackDocs_create_app3.png)
 
-5. Next copy the text in the file found [here](https://raw.githubusercontent.com/demisto/content/master/Packs/Slack/doc_files/SlackV3_app_manifest.yml)
+5. Next copy the text in the file found [here](https://raw.githubusercontent.com/demisto/content/master/Packs/Slack/doc_files/SlackV3_app_manifest.yml). The text is a manifset template with the recommended configuration for your app. 
 6. Paste the copied text into the field "YAML" and click ***Next***.
 
 ![create-app-4](../../doc_files/SlackDocs_create_app4.png)
