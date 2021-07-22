@@ -3522,7 +3522,11 @@
         "O365 - EWS - Extension - Test": "Issue 39008",
         "Majestic Million Test Playbook": "Issue 30931",
         "CircleCI-Test": "Issue 39222",
-        "EDL Performance Test": "Issue 38979"
+        "EDL Performance Test": "Issue 38979",
+        "Test-IsMaliciousIndicatorFound": "Issue 24398",
+        "Rasterize Test": "Issue 31463",
+        "AWS - IAM Test Playbook": "Issue 39320",
+        "FireEyeNX-Test": "Issue 33216"
     },
     "skipped_integrations": {
         
