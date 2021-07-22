@@ -20,6 +20,11 @@ DBOT_TAG_FIELD = "dbot_internal_tag_field"
 MIN_INCIDENTS_THRESHOLD = 100
 PREDICTIONS_OUT_FILE_NAME = 'predictions_on_test_set.csv'
 
+FASTTEXT_TRAINING_ALGO = 'fasttext'
+FINETUNE_TRAINING_ALGO = 'fine_tune'
+# the following mapping need to correspond to predict_phishing_words func at DBotPredictPhishingWords
+ALGO_TO_MODEL_TYPE = {FASTTEXT_TRAINING_ALGO: 'Phishing', FINETUNE_TRAINING_ALGO: 'torch'}
+FINETUNE_LABELS = ['Malicious', 'Non-Malicious']
 
 def get_phishing_map_labels(comma_values):
     if comma_values == ALL_LABELS:
@@ -111,18 +116,17 @@ def get_data_with_mapped_label(data, labels_mapping, tag_field):
 
 
 def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, threshold, tokenizer, y_test_true,
-                           y_test_pred,
-                           y_test_pred_prob, target_accuracy):
-    PhishingModel = demisto_ml.PhishingModel(tokenizer)
-    PhishingModel.train(X, y, True)
-    model_labels = PhishingModel.get_model_labels()
-    model_data = demisto_ml.phishing_model_dumps(PhishingModel)
-
+                           y_test_pred, y_test_pred_prob, target_accuracy, algorithm):
+    global ALGO_TO_MODEL_TYPE
+    phishing_model = demisto_ml.train_model_handler(X, y, algorithm=algorithm, compress=True)
+    model_labels = phishing_model.get_model_labels()
+    model_data = phishing_model.dumps()
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
                                                    'modelName': model_name,
                                                    'modelLabels': model_labels,
                                                    'modelOverride': model_override,
-                                                   'modelExtraInfo': {'threshold': threshold}
+                                                   'modelExtraInfo': {'threshold': threshold},
+                                                   'modelType': ALGO_TO_MODEL_TYPE[algorithm],
                                                    })
     if is_error(res):
         return_error(get_error(res))
@@ -336,9 +340,20 @@ def get_X_and_y_from_data(data, text_field):
     return X, y
 
 
+def validate_labels_and_algorithm(y, algorithm):
+    if algorithm == FINETUNE_TRAINING_ALGO:
+        labels = set(y)
+        illegal_labels = [l for l in labels if l not in FINETUNE_LABELS]
+        if len(illegal_labels) > 0:
+            error = ['When trainingAlgorithm is set to {}, all labels mus be mapped to {}.\n'.format(algorithm,
+                     ', '.join(FINETUNE_LABELS))]
+            error += ['The following labels/verdicts need to be mapped to one of those values: ']
+            error += [', '.join(illegal_labels) + '.']
+            return_error('\n'.join(error))
+
+
 def main():
     tokenizer_script = demisto.args().get('tokenizerScript', None)
-    phishing_model = demisto_ml.PhishingModel(tokenizer_script=tokenizer_script)
     input = demisto.args()['input']
     input_type = demisto.args()['inputType']
     model_name = demisto.args()['modelName']
@@ -351,6 +366,8 @@ def main():
     keyword_min_score = float(demisto.args()['keywordMinScore'])
     return_predictions_on_test_set = demisto.args().get('returnPredictionsOnTestSet', 'false') == 'true'
     original_text_fields = demisto.args().get('originalTextFields', '')
+    algorithm = demisto.args().get('trainingAlgorithm', FASTTEXT_TRAINING_ALGO)
+
     if input_type.endswith("filename"):
         data = read_files_by_name(input, input_type.split("_")[0].strip())
     else:
@@ -378,11 +395,11 @@ def main():
         except Exception:
             pass
     X, y = get_X_and_y_from_data(data, text_field)
+    validate_labels_and_algorithm(y, algorithm)
     test_index, train_index = get_train_and_test_sets_indices(X, y)
     X_train, X_test = [X[i] for i in train_index], [X[i] for i in test_index]
     y_train, y_test = [y[i] for i in train_index], [y[i] for i in test_index]
-
-    phishing_model.train(X_train, y_train, compress=False)
+    phishing_model = demisto_ml.train_model_handler(X_train, y_train, algorithm=algorithm, compress=False)
     ft_test_predictions = phishing_model.predict(X_test)
     y_pred = [{y_tuple[0]: float(y_tuple[1])} for y_tuple in ft_test_predictions]
     if return_predictions_on_test_set:
@@ -399,14 +416,14 @@ def main():
                                                              context_field='DBotPhishingClassifier')
     actual_min_accuracy = min(v for k, v in metrics_json['Precision'].items() if k != 'All')
     if store_model:
+        phishing_model = None
         y_test_pred = [y_tuple[0] for y_tuple in ft_test_predictions]
         y_test_pred_prob = [y_tuple[1] for y_tuple in ft_test_predictions]
         threshold = float(threshold_metrics_entry['Contents']['threshold'])
         store_model_in_demisto(model_name=model_name, model_override=model_override, X=X, y=y,
                                confusion_matrix=confusion_matrix, threshold=threshold, tokenizer=tokenizer_script,
-                               y_test_true=y_test,
-                               y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob,
-                               target_accuracy=actual_min_accuracy)
+                               y_test_true=y_test, y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob,
+                               target_accuracy=actual_min_accuracy, algorithm=algorithm)
         demisto.results("Done training on {} samples model stored successfully".format(len(y)))
     else:
         demisto.results('Skip storing model')

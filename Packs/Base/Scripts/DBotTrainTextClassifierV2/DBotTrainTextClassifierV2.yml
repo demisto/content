@@ -166,6 +166,22 @@ args:
   - none
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: fasttext
+  description: 'The training algorithm to use for training the model. Use "fasttext"
+    to train a new model from scratch. "fastext" should perform better where number
+    of incidents (500 incidents or more per each verdict). "fine-tune" is training
+    a model based on our out-of-the-box model. "fine-tune" should perform better when
+    number of incidents is relatively low. It''s possible to train multiple models
+    using different algorithms options, and compare their results. '
+  isArray: false
+  name: trainingAlgorithm
+  predefined:
+  - fasttext
+  - fine_tune
+  required: false
+  secret: false
 comment: Train a machine learning text classifier.
 commonfields:
   id: DBotTrainTextClassifierV2
@@ -197,7 +213,7 @@ tags:
 - ml
 timeout: 12µs
 type: python
-dockerimage: demisto/ml:1.0.0.15569
+dockerimage: demisto/ml:1.0.0.23334
 runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test
