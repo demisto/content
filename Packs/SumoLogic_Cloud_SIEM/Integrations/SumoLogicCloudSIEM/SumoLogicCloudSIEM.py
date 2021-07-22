@@ -15,10 +15,6 @@ DEFAULT_HEADERS = {
     'Content-Type': 'application/json'
 }
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-RECORD_SUMMARY_FIELDS_DEFAULT = (
-    'action,description,device_hostname,device_ip,dstDevice_hostname,dstDevice_ip,'
-    'email_sender,file_basename,file_hash_md5,file_hash_sha1,file_hash_sha256,srcDevice_hostname,'
-    'srcDevice_ip,threat_name,threat_category,threat_identifier,user_username,threat_url,listMatches')
 
 ''' CLIENT CLASS '''
 
@@ -207,7 +203,7 @@ def test_module(client: Client) -> str:
 
         # test fetch_incidents command
         first_fetch_time = arg_to_datetime(
-            arg=demisto.params().get('first_fetch', '1 day'),
+            arg='1 day',  #  using '1 day' here since we're just testing connectivity and auth
             arg_name='First fetch time'
         )
         first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
@@ -219,7 +215,7 @@ def test_module(client: Client) -> str:
             last_run={},  # getLastRun() gets the last run dict
             first_fetch_time=first_fetch_timestamp,
             fetch_query='',  # defaults to status:in("new", "inprogress")
-            record_summary_fields=''  # defaults to $RECORD_SUMMARY_FIELDS_DEFAULT
+            record_summary_fields=''
         )
         message = 'ok'
     except DemistoException as e:
@@ -242,7 +238,8 @@ def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     query = {}
     query['exclude'] = 'signals.allRecords'
-    query['recordSummaryFields'] = record_summary_fields if record_summary_fields else RECORD_SUMMARY_FIELDS_DEFAULT
+    if record_summary_fields:
+        query['recordSummaryFields'] = record_summary_fields
 
     resp_json = client.req('GET', 'sec/v1/insights/{}'.format(insight_id), query)
     insight = insight_signal_to_readable(resp_json)
@@ -377,7 +374,8 @@ def insight_search(client: Client, args: Dict[str, Any]) -> CommandResults:
     query['offset'] = args.get('offset')
     query['limit'] = args.get('limit')
     query['exclude'] = 'signals.allRecords'
-    record_summary_fields if record_summary_fields else RECORD_SUMMARY_FIELDS_DEFAULT
+    if record_summary_fields:
+        query['recordSummaryFields'] = record_summary_fields
 
     resp_json = client.req('GET', 'sec/v1/insights', query)
     insights = []
@@ -685,7 +683,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
     query = {}
     query['q'] = q
     query['limit'] = str(max_results)
-    query['recordSummaryFields'] = record_summary_fields if record_summary_fields else RECORD_SUMMARY_FIELDS_DEFAULT
+    if record_summary_fields:
+        query['recordSummaryFields'] = record_summary_fields
     incidents = []
     hasNextPage = True
     while hasNextPage:
