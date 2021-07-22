@@ -12,7 +12,7 @@ REQUIRED_PERMISSIONS = (
 )
 
 
-def parse_list(raw_response: dict, human_readable_title: str, next_link_description: str) -> CommandResults:
+def parse_list(raw_response: dict, human_readable_title: str, context_path: str) -> CommandResults:
     """
     converts a response of Microsoft's graph search into a CommandResult object
     Note: next_link_description should be unique for every method calling parse_list
@@ -24,13 +24,13 @@ def parse_list(raw_response: dict, human_readable_title: str, next_link_descript
                                       headerTransform=pascalToSpace,
                                       first_headers=['Id', 'userId', 'userPrincipalName', 'userDisplayName',
                                                      'ipAddress', 'detectedDateTime'])
-    outputs = {f'{OUTPUTS_PREFIX}.values(val.id === obj.id)': values}
+    outputs = {f'{OUTPUTS_PREFIX}.{context_path}(val.id === obj.id)': values}
 
     # removing whitespaces so they aren't mistakenly considered as argument separators in CLI
     next_link = raw_response.get('@odata.nextLink', '').replace(' ', '%20')
     if next_link:
-        next_link_key = f'{OUTPUTS_PREFIX}.NextLink(val.Description === "{next_link_description}")'
-        next_link_value = {'Description': next_link_description, 'URL': next_link}
+        next_link_key = f'{OUTPUTS_PREFIX}.NextLink(val.Description === "{context_path}")'
+        next_link_value = {'Description': context_path, 'URL': next_link}
         outputs[next_link_key] = next_link_value
 
     return CommandResults(outputs=outputs,
@@ -108,7 +108,7 @@ class AADClient:
                                        filter_expression=filter_expression,
                                        next_link=next_link)
 
-        return parse_list(raw_response, human_readable_title="Risks", next_link_description="risk_detection_list")
+        return parse_list(raw_response, human_readable_title="Risks", context_path="Risks")
 
     def azure_ad_identity_protection_risky_users_list(self,
                                                       limit: int,
@@ -140,7 +140,7 @@ class AADClient:
             filter_expression=filter_expression,
             next_link=next_link,
         )
-        return parse_list(raw_response, human_readable_title='Risky Users', next_link_description='risky_user_list')
+        return parse_list(raw_response, human_readable_title='Risky Users', context_path='RiskyUsers')
 
     def azure_ad_identity_protection_risky_users_history_list(self,
                                                               limit: int,
@@ -151,7 +151,7 @@ class AADClient:
                                        next_link=next_link, url_suffix=f'RiskyUsers/{user_id}/history')
 
         return parse_list(raw_response,
-                          next_link_description="risky_users_history_list",
+                          context_path="RiskyUserHistory",
                           human_readable_title=f'Risky user history for {user_id}')
 
     def azure_ad_identity_protection_risky_users_confirm_compromised(self, user_ids: Union[str, List[str]]):
