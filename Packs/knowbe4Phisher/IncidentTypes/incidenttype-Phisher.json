@@ -1,0 +1,29 @@
+{
+    "autorun": false,
+    "closureScript": "",
+    "color": "#F50057",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Phisher",
+    "layout": "a879cfd6-3019-41ea-8796-c594f206a7ca",
+    "locked": false,
+    "name": "Phisher",
+    "onChangeRepAlg": 0,
+    "preProcessingScript": "",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "5.5.0"
+}

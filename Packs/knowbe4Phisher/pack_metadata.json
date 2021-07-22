@@ -1,0 +1,22 @@
+{
+    "name": "Phisher",
+    "description": "A pack for KnowBE4 Phisher integration",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Edi K",
+    "url": "",
+    "email": "ekatsenelson@paloaltonetworks.com",
+    "categories": [
+        "Messaging"
+    ],
+    "tags": [
+        "Alerts",
+        "Breach",
+        "Email",
+        "Scam",
+        "Spam"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}
