@@ -1,5 +1,6 @@
 import base64
 import json
+import demistomock as demisto
 
 import pytest
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
@@ -7,7 +8,7 @@ from exchangelib.attachments import AttachmentId, ItemAttachment
 from exchangelib.items import Item, Message
 from freezegun import freeze_time
 
-from EWSO365 import (ExpandGroup, GetSearchableMailboxes,
+from EWSO365 import (ExpandGroup, GetSearchableMailboxes, fetch_emails_as_incidents,
                      add_additional_headers, fetch_last_emails, find_folders,
                      get_expanded_group, get_searchable_mailboxes, handle_html,
                      handle_transient_files, parse_incident_from_item)
@@ -376,24 +377,68 @@ def test_parse_incident_from_item():
     assert incident['attachment']
 
 
-@freeze_time('2021-07-15 13:18:14.901293+00:00')
-@pytest.mark.parametrize('since_datetime',
-                         [(''),
-                          ('2021-05-23 21:28:14.901293+00:00')
-                          ])
-def test_fetch_last_emails_paging(mocker, since_datetime):
-    """
-    Given:
-        - Incidents with the same creation time
-        - max_fetch value = 1
+MESSAGES = [
+    Message(subject='message1',
+            message_id='message1',
+            text_body='Hello World',
+            body='message1',
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key='UTC'))
+            ),
+    Message(subject='message2',
+            message_id='message2',
+            text_body='Hello World',
+            body='message2',
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC'))
+            ),
+    Message(subject='message3',
+            message_id='message3',
+            text_body='Hello World',
+            body='message3',
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC'))
+            ),
 
-    When:
-        - Fetching last emails
+]
+CASE_FIRST_RUN_NO_INCIDENT = (
+    {},
+    [],
+    {'lastRunTime': None, 'folderName': 'Inbox', 'ids': [], 'errorCounter': 0}
+)
+CASE_FIRST_RUN_FOUND_INCIDENT = (
+    {},
+    MESSAGES[:1],
+    {'lastRunTime': '2021-07-14T13:00:00Z', 'folderName': 'Inbox', 'ids': ['message1'], 'errorCounter': 0}
+)
+CASE_SECOND_RUN_FOUND_ONE_INCIDENT = (
+    {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': []}, MESSAGES[:1],
+    {'lastRunTime': '2021-07-14T13:00:00Z', 'folderName': 'Inbox', 'ids': ['message1'], 'errorCounter': 0})
+CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_FIRST_RUN = (
+    {'lastRunTime': '2021-07-14T13:05:17Z', 'folderName': 'Inbox', 'ids': ['message1']}, MESSAGES,
+    {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2'], 'errorCounter': 0})
+CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_NEXT_RUN = (
+    {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2']}, MESSAGES[1:],
+    {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2', 'message3'], 'errorCounter': 0})
+CASE_SECOND_RUN_NO_INCIDENTS = (
+    {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': ['message1']}, [],
+    {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': ['message1'], 'errorCounter': 0})
 
-    Then:
-        - Verify each run bring the next incidents
-    """
+CASES = [
+    CASE_FIRST_RUN_NO_INCIDENT,
+    CASE_FIRST_RUN_FOUND_INCIDENT,
+    CASE_SECOND_RUN_FOUND_ONE_INCIDENT,
+    CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_FIRST_RUN,
+    CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_NEXT_RUN,
+    CASE_SECOND_RUN_NO_INCIDENTS
+]
 
+
+@pytest.mark.parametrize('current_last_run, messages, expected_last_run', CASES)
+def test_last_run(mocker, current_last_run, messages, expected_last_run):
     class MockObject:
         def filter(self, last_modified_time__gte='', datetime_received__gte=''):
             return MockObject2()
@@ -412,29 +457,12 @@ def test_fetch_last_emails_paging(mocker, since_datetime):
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
 
-    messages = [
-        Message(subject='test1',
-                message_id='test1',
-                text_body='Hello World',
-                body='Test1',
-                datetime_received=EWSDateTime(2021, 7, 14, 1, 47, 17, tzinfo=EWSTimeZone(key='UTC')),
-                datetime_sent=EWSDateTime(2021, 7, 14, 1, 47, 15, tzinfo=EWSTimeZone(key='UTC')),
-                datetime_created=EWSDateTime(2021, 7, 14, 1, 47, 17, tzinfo=EWSTimeZone(key='UTC'))
-                ),
-        Message(subject='test2',
-                message_id='test2',
-                text_body='Hello World',
-                body='Test2',
-                datetime_received=EWSDateTime(2021, 7, 14, 1, 47, 17, tzinfo=EWSTimeZone(key='UTC')),
-                datetime_sent=EWSDateTime(2021, 7, 14, 1, 47, 15, tzinfo=EWSTimeZone(key='UTC')),
-                datetime_created=EWSDateTime(2021, 7, 14, 1, 47, 17, tzinfo=EWSTimeZone(key='UTC'))
-                )]
-
     client = TestNormalCommands.MockClient()
     client.max_fetch = 1
     client.get_folder_by_path = mock_get_folder_by_path
+    client.folder_name = 'Inbox'
+    last_run = mocker.patch.object(demisto, 'setLastRun')
+    fetch_emails_as_incidents(client, current_last_run)
+    assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
+    assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
 
-    res = fetch_last_emails(client, since_datetime=since_datetime)
-    assert res[0].subject == 'test1'
-    res = fetch_last_emails(client, since_datetime=since_datetime, exclude_ids=['test1'])
-    assert res[0].subject == 'test2'

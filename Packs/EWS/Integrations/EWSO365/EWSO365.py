@@ -2153,7 +2153,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
 
         incidents = []
         incident: Dict[str, str] = {}
-        demisto.debug(f'{APP_NAME} - Started fetch with {len(last_emails)}')
+        demisto.debug(f'{APP_NAME} - Started fetch with {len(last_emails)} at {last_run.get(LAST_RUN_TIME)}')
         current_fetch_ids = set()
         for item in last_emails:
             if item.message_id:
@@ -2165,21 +2165,19 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
                     break
 
         demisto.debug(f'{APP_NAME} - ending fetch - got {len(incidents)} incidents.')
-        last_run_time = incident.get("occurred") or last_run.get(LAST_RUN_TIME) or EWSDateTime.utcnow()
+        last_run_time = incident.get("occurred", last_run.get(LAST_RUN_TIME))
         if isinstance(last_run_time, EWSDateTime):
             last_run_time = last_run_time.ewsformat()
 
-        # If we didn't get all result with same creation time (due to max_fetch limitation),
-        # we save the ones we already got to avoid duplicates.
-        if last_run_time > last_run.get(LAST_RUN_TIME):
-            ids = current_fetch_ids
-        else:
-            ids = current_fetch_ids | excluded_ids
+        # If we didn't get all result for the current fetch query (or got 0 results)
+        # we save both the ones from last run and the ones we just got to avoid duplicates.
+        if last_run.get(LAST_RUN_TIME) and last_run_time == last_run.get(LAST_RUN_TIME).ewsformat():
+            current_fetch_ids = current_fetch_ids | excluded_ids
 
         new_last_run = {
             LAST_RUN_TIME: last_run_time,
             LAST_RUN_FOLDER: client.folder_name,
-            LAST_RUN_IDS: list(ids),
+            LAST_RUN_IDS: list(current_fetch_ids),
             ERROR_COUNTER: 0,
         }
 
