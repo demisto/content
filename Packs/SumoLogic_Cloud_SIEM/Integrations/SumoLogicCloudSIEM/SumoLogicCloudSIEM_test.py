@@ -14,7 +14,10 @@ from datetime import datetime
 from datetime import timezone
 
 MOCK_URL = 'https://test.com/api'
-
+RECORD_SUMMARY_FIELDS_DEFAULT = (
+    'action,description,device_hostname,device_ip,dstDevice_hostname,dstDevice_ip,'
+    'email_sender,file_basename,file_hash_md5,file_hash_sha1,file_hash_sha256,srcDevice_hostname,'
+    'srcDevice_ip,threat_name,threat_category,threat_identifier,user_username,threat_url,listMatches')
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -47,7 +50,8 @@ def test_insight_get_details(requests_mock):
         ok_codes=[200])
 
     args = {
-        'insight_id': insight_id
+        'insight_id': insight_id,
+        'record_summary_fields': RECORD_SUMMARY_FIELDS_DEFAULT
     }
 
     response = insight_get_details(client, args)
@@ -473,7 +477,7 @@ def test_fetch_incidents(requests_mock):
         auth=('access_id', 'access_key'),
         ok_codes=[200])
 
-    next_run, incidents = fetch_incidents(client, 20, {}, 1621296000, None, None)
+    next_run, incidents = fetch_incidents(client, 20, {}, 1621296000, None, RECORD_SUMMARY_FIELDS_DEFAULT)
 
     assert incidents[0].get('name') == 'Defense Evasion with Persistence - 3fa0cee5-6658-31d4-bd66-32fe1739cf61'
     assert incidents[0].get('occurred') == '2021-05-18T14:46:46.000Z'
