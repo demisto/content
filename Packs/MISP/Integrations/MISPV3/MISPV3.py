@@ -40,10 +40,9 @@ urllib3.disable_warnings()
 warnings.warn = warn
 
 ''' GLOBALS/PARAMS '''
-# if not demisto.params().get('User') or not (api_token := demisto.params().get('User', {}).get('password')):
-#     raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
-MISP_API_KEY = demisto.params().get('credentials').get('password')
-print(MISP_API_KEY)
+params = demisto.params()
+if not params.get('credentials') or not (MISP_API_KEY := params.get('credentials', {}).get('password')):
+    raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
 MISP_URL = demisto.params().get('url')
 VERIFY = not demisto.params().get('insecure')
 PROXIES = handle_proxy()  # type: ignore
