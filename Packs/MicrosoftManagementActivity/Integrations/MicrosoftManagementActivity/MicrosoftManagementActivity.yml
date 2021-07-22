@@ -27,6 +27,10 @@ configuration:
   name: self_deployed
   required: false
   type: 8
+- display: Application redirect URI (for self-deployed mode)
+  name: redirect_uri
+  required: false
+  type: 0
 - display: The authentication code you got for the service. For instructions on how
     to receive it, see the detailed description ('?') section.
   name: auth_code
@@ -80,6 +84,11 @@ configuration:
   name: operations_filter
   required: false
   type: 0
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: The Microsoft Management Activity API integration enables you to subscribe
   or unsubscribe to different audits, receive their content and fetch new content
   as incidents.
@@ -89,9 +98,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The content type to subscribe to.
-      isArray: false
       name: content_type
       predefined:
       - Audit.AzureActiveDirectory
@@ -99,16 +106,11 @@ script:
       - Audit.SharePoint
       - Audit.General
       required: true
-      secret: false
-    deprecated: false
     description: Starts a subscription to a given content type
-    execution: false
     name: ms-management-activity-start-subscription
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The content type to unsubscribe from.
-      isArray: false
       name: content_type
       predefined:
       - Audit.AzureActiveDirectory
@@ -116,14 +118,10 @@ script:
       - Audit.SharePoint
       - Audit.General
       required: true
-      secret: false
-    deprecated: false
     description: Stops a subscription to a given content type
-    execution: false
     name: ms-management-activity-stop-subscription
-  - deprecated: false
+  - arguments: []
     description: List the content types you are currently subscribed to
-    execution: false
     name: ms-management-activity-list-subscriptions
     outputs:
     - contextPath: MicrosoftManagement.Subscription
@@ -131,9 +129,7 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The content type for which to receive content.
-      isArray: false
       name: content_type
       predefined:
       - Audit.AzureActiveDirectory
@@ -141,59 +137,33 @@ script:
       - Audit.SharePoint
       - Audit.General
       required: true
-      secret: false
-    - default: false
-      description: 'The earliest time to get content from. If start_time is specified,
+    - description: 'The earliest time to get content from. If start_time is specified,
         end_time must also be specified. The start_time must be before the end_time,
         can be at most 7 days ago, and has to be within 24 hours from end_time. Required
         format: YYYY-MM-DDTHH:MM:SS. If not specified, start time will be 24 hours
         ago.'
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'The latest time to get content from. If end_time is specified,
+    - description: 'The latest time to get content from. If end_time is specified,
         start_time must be also specified. The start_time must be before the end_time
         and has to be within 24 hours from start_time. Required format: YYYY-MM-DDTHH:MM:SS.
         If not specified, end_time will be now.'
-      isArray: false
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the record types to fetch. Content records
+    - description: A comma-separated list of the record types to fetch. Content records
         with a record  type that isn't specified will not be fetched. If this field
         is left empty, all record types will be fetched.
-      isArray: false
       name: record_types_filter
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the workloads to fetch. Content records
+    - description: A comma-separated list of the workloads to fetch. Content records
         with a workload that isn't specified will not be fetched. If this field is
         left empty, all workloads will be fetched.
-      isArray: false
       name: workloads_filter
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the operations to fetch. Content records
+    - description: A comma-separated list of the operations to fetch. Content records
         with an operation that isn't specified will not be fetched. If this field
         is left empty, all operations will be fetched.
-      isArray: false
       name: operations_filter
-      required: false
-      secret: false
-    - default: false
-      description: The timeout (in seconds) for the content requesting HTTP call. Default is 10 seconds.
-      isArray: false
+    - description: The timeout (in seconds) for the content requesting HTTP call.
+        Default is 10 seconds.
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all content of a specific content type.
-    execution: false
     name: ms-management-activity-list-content
     outputs:
     - contextPath: MicrosoftManagement.ContentRecord.ID
@@ -235,15 +205,12 @@ script:
     - contextPath: MicrosoftManagement.ContentRecord.UserID
       description: The ID of the record's user.
       type: string
-  dockerimage: demisto/pyjwt3:1.0.0.16907
-  feed: false
+  dockerimage: demisto/pyjwt3:1.0.0.19327
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
+fromversion: 5.0.0
 tests:
 - No test
-fromversion: 5.0.0
