@@ -44,6 +44,8 @@ HEADERS = {
 
 QUERY_OPERATORS = ['eq', 'gt', 'lt', 'contains', 'startwith']
 
+ONE_STEP_ACTION_HEADERS = ['name', 'displayName', 'description', 'id', 'association', 'standInKey']
+
 #######################################################################################################################
 
 
@@ -1012,7 +1014,7 @@ def cherwell_get_one_step_actions_command():
     if actions:
         for key in actions.keys():
             md += tableToMarkdown(f'{key} one-step actions:', actions[key],
-                                 headerTransform=pascalToSpace)
+                                 headerTransform=pascalToSpace, headers=ONE_STEP_ACTION_HEADERS)
         ec = {'BusinessObjectId': business_object_id, 'Actions': actions}
     else:
         md = f'No one-step actions found for business object ID {business_object_id}'

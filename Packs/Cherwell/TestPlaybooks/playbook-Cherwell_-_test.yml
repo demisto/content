@@ -47,7 +47,7 @@ tasks:
       - "2"
     scriptarguments:
       json:
-        simple: '{"Priority": "3", "CustomerDisplayName": "Playbook customer", "Description": "This incident was created by Cherwell test playbook"}'
+        simple: '{"Priority": "3", "CustomerDisplayName": "Lucas Sato", "Description": "This incident was created by Cherwell test playbook","Service":"Enterprise Apps","Category":"PeopleSoft","Subcategory":"Submit Incident"}'
       type:
         simple: Incident
     separatecontext: false
