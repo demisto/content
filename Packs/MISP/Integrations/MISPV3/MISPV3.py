@@ -40,10 +40,13 @@ urllib3.disable_warnings()
 warnings.warn = warn
 
 ''' GLOBALS/PARAMS '''
+# if not demisto.params().get('User') or not (api_token := demisto.params().get('User', {}).get('password')):
+#     raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
+MISP_API_KEY = demisto.params().get('credentials').get('password')
+print(MISP_API_KEY)
+MISP_URL = demisto.params().get('url')
 VERIFY = not demisto.params().get('insecure')
 PROXIES = handle_proxy()  # type: ignore
-MISP_API_KEY = demisto.params().get('api_key')
-MISP_URL = demisto.params().get('url')
 try:
     PYMISP = ExpandedPyMISP(url=MISP_URL, key=MISP_API_KEY, ssl=VERIFY, proxies=PROXIES)
 except PyMISPError as e:
@@ -367,7 +370,7 @@ def limit_tag_output_to_id_and_name(attribute_dict, is_event_level):
     return output, tag_set_ids
 
 
-def parse_response_reputation_command(response, malicious_tag_ids, suspicious_tag_ids):
+def parse_response_reputation_command(misp_response, malicious_tag_ids, suspicious_tag_ids):
     """
     After getting all the attributes which match the required indicator value, this function parses the response.
     This function goes over all the attributes that found and by sub-functions calculated the score of the indicator.
@@ -384,6 +387,7 @@ def parse_response_reputation_command(response, malicious_tag_ids, suspicious_ta
     Please see an example for a response in test_data/reputation_command_response.json
     Please see an example for a parsed output in test_data/reputation_command_outputs.json
         """
+    response = copy.deepcopy(misp_response)
     attributes_list = response.get('Attribute')
     if not attributes_list:
         return None
@@ -394,8 +398,8 @@ def parse_response_reputation_command(response, malicious_tag_ids, suspicious_ta
                                  is_attribute_in_event_with_bad_threat_level_id=
                                  is_attribute_in_event_with_bad_threat_level_id)
 
-    response = replace_keys_from_misp_to_context_data(response)  # this is the outputs (Attribute)
-    return response, score, found_tag, found_related_events
+    formatted_response = replace_keys_from_misp_to_context_data(response)  # this is the outputs (Attribute)
+    return formatted_response, score, found_tag, found_related_events
 
 
 def prepare_attributes_array_to_context_data(response):
@@ -427,41 +431,6 @@ def found_event_with_bad_threat_level_id(found_related_events):
         if event['Threat Level ID'] in bad_threat_level_ids:
             return True
     return False
-
-
-def combine_related_events_to_first_attribute_object(first_attribute_related_events_list, first_attribute,
-                                                     all_related_events_with_full_info):
-    if first_attribute_related_events_list:
-        for event in first_attribute_related_events_list:
-            if event.get('Event'):
-                event['Event'] = all_related_events_with_full_info[event.get('event_id')].get('Event', {})
-                event['Tag'] = all_related_events_with_full_info[event.get('event_id')].get('Tag', [])
-    else:
-        # sometimes the first attribute has no RelatedAttribute list (seems to be a bug in MISP response),
-        # so we would like to override the empty list with the related events we found
-        first_attribute['RelatedAttribute'] = list(all_related_events_with_full_info.values())
-
-
-def get_full_related_event_objects(attributes_list):
-    """
-    Going through the related attribute (actually events which include those related attributes)
-    to get their events' objects and attribute's tags.
-    """
-    related_events = {}
-    attributes_tag_ids, event_tag_ids = set(), set()
-    attributes_list = attributes_list[1:]
-    for attribute in attributes_list:
-        event = attribute.get('Event')
-        attribute_limited_tags = []
-        if attribute.get('Tag'):
-            attribute_limited_tags, current_attribute_tags = limit_tag_output_to_id_and_name(attribute, False)
-            attributes_tag_ids.update(current_attribute_tags)
-        if event:
-            if event.get('Tag'):
-                event['Tag'], current_event_tags = limit_tag_output_to_id_and_name(event, True)
-                event_tag_ids.update(current_event_tags)
-            related_events[event.get('id')] = {"Event": event, "Tag": attribute_limited_tags}
-    return related_events, attributes_tag_ids, event_tag_ids
 
 
 def get_score(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids,
@@ -535,7 +504,7 @@ def create_event_command(demisto_args: dict):
         readable_output=human_readable,
         outputs_prefix='MISP.Event',
         outputs_key_field='ID',
-        outputs=build_events_search_response(copy.deepcopy(event)),
+        outputs=build_events_search_response(event),
         raw_response=event
     )
 
@@ -583,7 +552,7 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         readable_output=human_readable,
         outputs_prefix='MISP.Attribute',
         outputs_key_field='ID',
-        outputs=build_attributes_search_response(copy.deepcopy(updated_event)),
+        outputs=build_attributes_search_response(updated_event),
         raw_response=updated_event
     )
 
@@ -639,10 +608,9 @@ def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_id
     indicator_type = INDICATOR_TYPE_TO_DBOT_SCORE[dbot_type]
     is_indicator_found = misp_response and misp_response.get('Attribute')
     if is_indicator_found:
-        outputs, score, found_tag, found_related_events = parse_response_reputation_command(
-            copy.deepcopy(misp_response),
-            malicious_tag_ids,
-            suspicious_tag_ids)
+        outputs, score, found_tag, found_related_events = parse_response_reputation_command(misp_response,
+                                                                                            malicious_tag_ids,
+                                                                                            suspicious_tag_ids)
         dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
                                 integration_name=INTEGRATION_NAME,
                                 score=score, reliability=reliability, malicious_description="Match found in MISP")
@@ -680,14 +648,14 @@ def get_events_related_to_scored_tag(all_attributes, found_tag):
     Returns:
         list includes all the events that were detected as related to the tag.
     """
-    related_events = []
+    scored_events = []
     if found_tag:
         for attribute in all_attributes:
             event = attribute.get('Event', {})
             event_name = event.get('Info')
-            related_events.extend(search_events_with_scored_tag(event, found_tag, event_name))
-            related_events.extend(search_events_with_scored_tag(attribute, found_tag, event_name))
-    return remove_duplicated_related_events(related_events)
+            scored_events.extend(search_events_with_scored_tag(event, found_tag, event_name))
+            scored_events.extend(search_events_with_scored_tag(attribute, found_tag, event_name))
+    return remove_duplicated_related_events(scored_events)
 
 
 def remove_duplicated_related_events(related_events):
@@ -821,11 +789,12 @@ def prepare_args_to_search(controller):
     return args_to_misp_format
 
 
-def build_attributes_search_response(response_object: Union[dict, requests.Response],
+def build_attributes_search_response(response: Union[dict, requests.Response],
                                      include_correlations=False) -> dict:
     """
     Convert the response of attribute search returned from MISP to the context output format.
     """
+    response_object = copy.deepcopy(response)
     if include_correlations:
         # return full related attributes only if the user wants to get them back
         ATTRIBUTE_FIELDS.append('RelatedAttribute')
@@ -842,8 +811,8 @@ def get_limit_attribute_search_outputs(attributes):
         build_galaxy_output(attributes[i])
         build_tag_output(attributes[i])
         build_sighting_output_from_attribute_search_response(attributes[i])
-    attributes = replace_keys_from_misp_to_context_data(attributes)
-    return attributes
+    formatted_attributes = replace_keys_from_misp_to_context_data(attributes)
+    return formatted_attributes
 
 
 def build_galaxy_output(given_object):
@@ -949,7 +918,7 @@ def search_attributes(demisto_args: dict) -> CommandResults:
             md = tableToMarkdown(f"MISP search-attributes returned {number_of_results} attributes",
                                  response_for_context[:number_of_results], ["Value"])
         else:
-            response_for_context = build_attributes_search_response(copy.deepcopy(response), include_correlations)
+            response_for_context = build_attributes_search_response(response, include_correlations)
             attribute_highlights = attribute_response_to_markdown_table(response_for_context)
             md = tableToMarkdown(f"MISP search-attributes returned {len(response_for_context)} attributes",
                                  attribute_highlights, removeNull=True)
@@ -967,12 +936,13 @@ def search_attributes(demisto_args: dict) -> CommandResults:
         return CommandResults(readable_output=f"No attributes found in MISP for the given filters: {args}")
 
 
-def build_events_search_response(response_object: Union[dict, requests.Response]) -> dict:
+def build_events_search_response(response: Union[dict, requests.Response]) -> dict:
     """
     Convert the response of event search returned from MISP to the context output format.
     please note: attributes are excluded from search-events output as the information is too big. User can use the
     command search-attributes in order to get the information about the attributes.
     """
+    response_object = copy.deepcopy(response)
     if isinstance(response_object, str):
         response_object = json.loads(json.dumps(response_object))
     events = [event.get('Event') for event in response_object]
@@ -984,8 +954,8 @@ def build_events_search_response(response_object: Union[dict, requests.Response]
         build_tag_output(events[i])
         build_object_output(events[i])
 
-    events = replace_keys_from_misp_to_context_data(events)  # type: ignore
-    return events  # type: ignore
+    formatted_events = replace_keys_from_misp_to_context_data(events)  # type: ignore
+    return formatted_events  # type: ignore
 
 
 def event_to_human_readable_tag_list(event):
@@ -1040,7 +1010,7 @@ def search_events(demisto_args) -> CommandResults:
 
     response = PYMISP.search(**args)
     if response:
-        response_for_context = build_events_search_response(copy.deepcopy(response))
+        response_for_context = build_events_search_response(response)
         event_outputs_to_human_readable = event_to_human_readable(response_for_context)
         md = tableToMarkdown(f"MISP search-events returned {len(response_for_context)} events",
                              event_outputs_to_human_readable, removeNull=True)

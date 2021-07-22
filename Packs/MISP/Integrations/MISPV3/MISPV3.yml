@@ -8,10 +8,11 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Key
-  name: api_key
-  required: true
-  type: 4
+- displaypassword: API Token
+  name: credentials
+  type: 9
+  required: false
+  hiddenusername: true
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -20,13 +21,15 @@ configuration:
   name: insecure
   required: false
   type: 8
-- additionalinfo: Comma seperated list of event's or attribute's malicious tag IDs. Malicious tags are stronger than suspicios tags.
+- additionalinfo: Comma seperated list of event's or attribute's malicious tag IDs.
+    Malicious tags are stronger than suspicios tags.
   display: Malicious tag IDs
   hidden: false
   name: malicious_tag_ids
   required: false
   type: 12
-- additionalinfo: Comma seperated list of event's or attribute's suspicios tag IDs. Malicious tags are stronger than suspicios tags.
+- additionalinfo: Comma seperated list of event's or attribute's suspicios tag IDs.
+    Malicious tags are stronger than suspicios tags.
   display: Suspicious tag IDs
   hidden: false
   name: suspicious_tag_ids
@@ -53,7 +56,8 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Search for events that include the specified attribute type. Use any valid MISP attribute type.
+      description: Search for events that include the specified attribute type. Use
+        any valid MISP attribute type.
       isArray: false
       name: type
       required: false
@@ -65,7 +69,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Search for events that include the specified attribute category. Use any valid MISP attribute category.
+      description: Search for events that include the specified attribute category.
+        Use any valid MISP attribute category.
       isArray: false
       name: category
       required: false
@@ -85,13 +90,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Event search start date (2015-02-15). This date refers to the event creation date.
+      description: Event search start date (2015-02-15). This date refers to the event
+        creation date.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: Event search end date (2015-02-15). This date refers to the event creation date.
+      description: Event search end date (2015-02-15). This date refers to the event
+        creation date.
       isArray: false
       name: to
       required: false
@@ -2490,8 +2497,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: Whether return only the attribute's values that match the search
-        query. In case you want to get the full attributes data,
-        please set this argument to false.
+        query. In case you want to get the full attributes data, please set this argument
+        to false.
       isArray: false
       defaultValue: 'false'
       name: compact
