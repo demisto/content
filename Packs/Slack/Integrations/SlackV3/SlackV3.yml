@@ -425,11 +425,30 @@ script:
     - contextPath: Slack.User.Email
       description: The email address of the user.
       type: String
-  - arguments: [ ]
-    name: slack-get-integration-context
-    description: Returns the integration context as a file. Use this command for debug purposes only.
+  - deprecated: false
+    description: Returns the integration context as a file. Use this command for debug
+      purposes only.
     execution: false
     hidden: true
+    name: slack-get-integration-context
+  - arguments:
+    - default: false
+      description: The channel containing the message.
+      isArray: false
+      name: channel
+      required: true
+      secret: false
+    - default: false
+      description: The timestamp of the message to pin.
+      isArray: false
+      name: message_ts
+      required: true
+      secret: false
+    deprecated: false
+    description: Pins a selected message to the given channel.
+    execution: false
+    hidden: false
+    name: slack-pin-message
   dockerimage: demisto/slackv3:1.0.0.21206
   feed: false
   isfetch: false
@@ -439,6 +458,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.5.0
 tests:
 - SlackV3 TestPB
+fromversion: 5.5.0
