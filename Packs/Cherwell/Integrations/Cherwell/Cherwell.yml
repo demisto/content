@@ -534,8 +534,38 @@ script:
     execution: false
     name: cherwell-get-business-object-summary
     outputs:
-    - contextPath: Cherwell.test.test
-      description: Business object ID.
+    - contextPath: Cherwell.BusinessObjectSummary.supporting
+      description: ''
+      type: Boolean
+    - contextPath: Cherwell.BusinessObjectSummary.major
+      description: ''
+      type: Boolean
+    - contextPath: Cherwell.BusinessObjectSummary.group
+      description: ''
+      type: Boolean
+    - contextPath: Cherwell.BusinessObjectSummary.name
+      description: ''
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.stateFieldId
+      description: ''
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.busObId
+      description: ''
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.states
+      description: ''
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.lookup
+      description: ''
+      type: Boolean
+    - contextPath: Cherwell.BusinessObjectSummary.displayName
+      description: ''
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.firstRecIdField
+      description: ''
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.recIdFields
+      description: ''
       type: String
   - arguments:
     - default: false
@@ -549,9 +579,12 @@ script:
     execution: false
     name: cherwell-get-one-step-actions-for-business-object
     outputs:
-    - contextPath: Cherwell.test.test
+    - contextPath: Cherwell.OneStepActions.BusinessObjectId
       description: Business object ID.
       type: String
+    - contextPath: Cherwell.OneStepActions.Actions
+      description: ''
+      type: Unknown
   - arguments:
     - default: false
       description: Business object ID.
@@ -581,10 +614,7 @@ script:
     description: Operation to run a One-Step Action using a OneStepActionRequest. This request is used to start a One-Step Action run with additional information such as prompt values.
     execution: false
     name: cherwell-run-one-step-action-on-business-object
-    outputs:
-    - contextPath: Cherwell.test.test
-      description: Business object ID.
-      type: String
+    outputs: []
   dockerimage: demisto/python3:3.8.3.9324
   isfetch: true
   runonce: false
