@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: The packs to install data.
+  description: Information about the packs to install including pack ID and version.
   isArray: true
   name: packs_data
   required: true
@@ -12,7 +12,7 @@ args:
   required: true
   secret: false
 - default: false
-  description: The key in which the pack version is stored. Enter "latest" to update all packs to latest version.
+  description: The key in which the pack version is stored. Enter "latest" to update all packs to the latest version.
   isArray: false
   name: pack_version_key
   required: true
@@ -22,7 +22,7 @@ commonfields:
   version: -1
 enabled: false
 name: MarketplacePackInstaller
-comment: Marketplace Packs Installer for the Content Management pack.
+comment: Marketplace packs installer for the content management pack.
 outputs:
 - contextPath: ConfigurationSetup.MarketplacePackInstaller.packname
   description: The name of the pack.
@@ -31,7 +31,7 @@ outputs:
   description: The version of the pack.
   type: Unknown
 - contextPath: ConfigurationSetup.MarketplacePackInstaller.installationstatus
-  description: The installtion status of the pack.
+  description: The installation status of the pack.
   type: Unknown
 script: '-'
 subtype: python3
@@ -43,5 +43,5 @@ timeout: '0'
 type: python
 dockerimage: demisto/xsoar-tools:1.0.0.19258
 tests:
-- No tests (auto formatted)
+No tests (auto formatted)
 fromversion: 6.0.0
