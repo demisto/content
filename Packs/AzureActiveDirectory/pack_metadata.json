@@ -1,5 +1,5 @@
 {
-    "name": "Azure Active Directory Identity Protection",
+    "name": "Azure Active Directory Identity and Access",
     "description": "Use Microsoft Graph to query information from Azure Active Directory",
     "support": "xsoar",
     "currentVersion": "1.0.0",
