@@ -4514,7 +4514,7 @@ class TestIndicatorsSearcher:
             results.append(res)
         assert len(results) == 7
         assert search_indicators.page == 17
-        assert search_indicators._is_search_done() is False
+        assert search_indicators._is_search_done() is True
 
     def test_iterator__empty_page(self, mocker):
         """
