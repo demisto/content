@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_valid_bool, convert_price, \
     get_updated_server_version, load_json, \
-    store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file,\
+    store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
     is_the_only_rn_in_block
 from Tests.Marketplace.marketplace_constants import PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
     PACKS_FOLDER, PackTags
@@ -694,7 +694,7 @@ class TestChangelogCreation:
         modified_rn_file = 'modified dummy release notes'
         mocker.patch("builtins.open", mock_open(read_data=modified_rn_file))
         same_block_versions_dict = {'1.0.2': modified_rn_file, '1.0.3': modified_rn_file}
-        assert dummy_pack.get_same_block_versions(release_notes_dir, version, AGGREGATED_CHANGELOG) ==\
+        assert dummy_pack.get_same_block_versions(release_notes_dir, version, AGGREGATED_CHANGELOG) == \
                (same_block_versions_dict, higher_nearest_version)
 
     def test_get_modified_release_notes_lines(self, mocker, dummy_pack):
@@ -1253,6 +1253,24 @@ class TestLoadUserMetadata:
         """
         return Pack(pack_name="TestPack", pack_path="dummy_path")
 
+    def test_load_user_metadata(self, dummy_pack, dummy_pack_metadata, tmp_path):
+        """
+        Given:
+            - A pack with metadata containing pack data like eula link
+        When:
+            - Loading the file data into the pack object
+        Then:
+            - Ensure eula link appears in the pack object metadata
+        """
+        metadata_path = os.path.join(tmp_path, 'pack_metadata.json')
+        dummy_pack._pack_path = tmp_path
+        with open(metadata_path, 'w') as metadata_file:
+            metadata_file.write(json.dumps(dummy_pack_metadata))
+        dummy_pack.load_user_metadata()
+        loaded_metadata = dummy_pack.user_metadata
+
+        assert loaded_metadata['eulaLink'] == 'https://my.eula.com'
+
     def test_load_user_metadata_with_missing_file(self, mocker, dummy_pack):
         """
            Given:
@@ -1644,7 +1662,7 @@ class TestReleaseNotes:
         open_mocker['rn_dir_fake_path/1_1_0.md'].read_data = rn_one
         open_mocker['rn_dir_fake_path/2_0_0.md'].read_data = rn_two
         mocker.patch('builtins.open', open_mocker)
-        rn_lines, latest_rn, new_versions =\
+        rn_lines, latest_rn, new_versions = \
             dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'), '')
         assert latest_rn == '2.0.0'
         assert rn_lines == aggregated_rn
@@ -1666,7 +1684,7 @@ class TestReleaseNotes:
         '''
         mocker.patch('builtins.open', mock_open(read_data=rn))
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
-        rn_lines, latest_rn, new_versions =\
+        rn_lines, latest_rn, new_versions = \
             dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'), rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == rn
@@ -1689,7 +1707,7 @@ class TestReleaseNotes:
         '''
 
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
-        rn_lines, latest_rn, new_versions =\
+        rn_lines, latest_rn, new_versions = \
             dummy_pack.get_release_notes_lines('wow', LooseVersion('1.0.1'), changelog_latest_rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == changelog_latest_rn
