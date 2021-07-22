@@ -2709,12 +2709,6 @@ def test_get_endpoint_properties(endpoint, expected):
         - The status of the endpointn is determined to be 'Online'
     """
     from CortexXDRIR import get_endpoint_properties
-    endpoint = {
-        'endpoint_status': 'Connected',
-        'is_isolated': True,
-        'host_name': 'TEST',
-        'ip': '1.1.1.1'
-    }
 
     status, is_isolated, hostname, ip = get_endpoint_properties(endpoint)
     assert status == 'Online'
