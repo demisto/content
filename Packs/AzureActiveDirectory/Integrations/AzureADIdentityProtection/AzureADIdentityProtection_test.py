@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from AzureADIdentityProtection import (AADClient,
+from AzureADIdentityProtection import (AADClient, OUTPUTS_PREFIX,
                                        azure_ad_identity_protection_risk_detection_list_command,
                                        azure_ad_identity_protection_risky_users_list_command,
                                        azure_ad_identity_protection_risky_users_history_list_command,
@@ -15,7 +15,11 @@ dummy_user_id = 'dummy_id'
 @pytest.fixture()
 def client(mocker):
     mocker.patch('AzureADIdentityProtection.MicrosoftClient.get_access_token', return_value='token')
-    return AADClient('dummy_app_id', 'dummy_subscription_id', 'dummy_resource_group_name', verify=False, proxy=False)
+    return AADClient(app_id='dummy_app_id',
+                     subscription_id='dummy_subscription_id',
+                     verify=False,
+                     proxy=False,
+                     azure_ad_endpoint='https://login.microsoftonline.com')
 
 
 @pytest.mark.parametrize('command,test_data_file,url_suffix,next_link_description,kwargs',
@@ -52,12 +56,12 @@ def test_list_commands(client, requests_mock, command, test_data_file, url_suffi
     result = command(client, limit=50, **kwargs)
 
     expected_values = api_response.get('value')
-    actual_values = result.outputs.get('AAD_Identity_Protection.values(val.id === obj.id)')
+    actual_values = result.outputs.get(f'{OUTPUTS_PREFIX}.values(val.id === obj.id)')
     assert actual_values == expected_values
 
     expected_next_link = api_response.get('@odata.nextLink')
     if expected_next_link:  # risky_users_history_list does not have next link
-        actual_next_url = result.outputs.get(f'AAD_Identity_Protection.NextLink(val.Description === '
+        actual_next_url = result.outputs.get(f'{OUTPUTS_PREFIX}.NextLink(val.Description === '
                                              f'"{next_link_description}")', {}).get('URL')
         assert actual_next_url == expected_next_link
 
