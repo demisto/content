@@ -23,7 +23,7 @@ def parse_list(raw_response: dict, human_readable_title: str, next_link_descript
                                       removeNull=True,
                                       headerTransform=pascalToSpace,
                                       first_headers=['Id', 'userId', 'userPrincipalName', 'userDisplayName',
-                                                     'ipAddress', 'lastUpdatedDateTime'])
+                                                     'ipAddress', 'detectedDateTime'])
     outputs = {f'{OUTPUTS_PREFIX}.values(val.id === obj.id)': values}
 
     # removing whitespaces so they aren't mistakenly considered as argument separators in CLI
