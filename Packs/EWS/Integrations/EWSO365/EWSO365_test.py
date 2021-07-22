@@ -155,6 +155,96 @@ class TestNormalCommands:
         actual_ec = res[1]
         assert expected == actual_ec
 
+MESSAGES = [
+    Message(subject='message1',
+            message_id='message1',
+            text_body='Hello World',
+            body='message1',
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key='UTC'))
+            ),
+    Message(subject='message2',
+            message_id='message2',
+            text_body='Hello World',
+            body='message2',
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC'))
+            ),
+    Message(subject='message3',
+            message_id='message3',
+            text_body='Hello World',
+            body='message3',
+            datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC')),
+            datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key='UTC'))
+            ),
+
+]
+CASE_FIRST_RUN_NO_INCIDENT = (
+    {},
+    [],
+    {'lastRunTime': None, 'folderName': 'Inbox', 'ids': [], 'errorCounter': 0}
+)
+CASE_FIRST_RUN_FOUND_INCIDENT = (
+    {},
+    MESSAGES[:1],
+    {'lastRunTime': '2021-07-14T13:00:00Z', 'folderName': 'Inbox', 'ids': ['message1'], 'errorCounter': 0}
+)
+CASE_SECOND_RUN_FOUND_ONE_INCIDENT = (
+    {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': []}, MESSAGES[:1],
+    {'lastRunTime': '2021-07-14T13:00:00Z', 'folderName': 'Inbox', 'ids': ['message1'], 'errorCounter': 0})
+CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_FIRST_RUN = (
+    {'lastRunTime': '2021-07-14T13:05:17Z', 'folderName': 'Inbox', 'ids': ['message1']}, MESSAGES,
+    {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2'], 'errorCounter': 0})
+CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_NEXT_RUN = (
+    {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2']}, MESSAGES[1:],
+    {'lastRunTime': '2021-07-14T13:09:00Z', 'folderName': 'Inbox', 'ids': ['message2', 'message3'], 'errorCounter': 0})
+CASE_SECOND_RUN_NO_INCIDENTS = (
+    {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': ['message1']}, [],
+    {'lastRunTime': '2021-07-14T12:59:17Z', 'folderName': 'Inbox', 'ids': ['message1'], 'errorCounter': 0})
+
+CASES = [
+    CASE_FIRST_RUN_NO_INCIDENT,
+    CASE_FIRST_RUN_FOUND_INCIDENT,
+    CASE_SECOND_RUN_FOUND_ONE_INCIDENT,
+    CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_FIRST_RUN,
+    CASE_SECOND_RUN_FOUND_MORE_THAN_ONE_NEXT_RUN,
+    CASE_SECOND_RUN_NO_INCIDENTS
+]
+
+
+@pytest.mark.parametrize('current_last_run, messages, expected_last_run', CASES)
+def test_last_run(mocker, current_last_run, messages, expected_last_run):
+    class MockObject:
+        def filter(self, last_modified_time__gte='', datetime_received__gte=''):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            # Return a list of emails
+            return messages
+
+    def mock_get_folder_by_path(path, account=None, is_public=False):
+        return MockObject()
+
+    client = TestNormalCommands.MockClient()
+    client.max_fetch = 1
+    client.get_folder_by_path = mock_get_folder_by_path
+    client.folder_name = 'Inbox'
+    last_run = mocker.patch.object(demisto, 'setLastRun')
+    fetch_emails_as_incidents(client, current_last_run)
+    assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
+    assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
+
+
 
 HEADERS_PACKAGE = [
     ('', {}),
