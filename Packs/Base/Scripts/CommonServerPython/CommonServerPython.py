@@ -1800,7 +1800,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if first_headers:
         for h in reversed(first_headers):
             if h in headers:
-                headers.insert(0,headers.pop(headers.index(h)))
+                headers.insert(0, headers.pop(headers.index(h)))
 
     if removeNull:
         headers_aux = headers[:]
