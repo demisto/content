@@ -69,6 +69,7 @@ class Pack(object):
         self._description = None  # initialized in load_user_metadata function
         self._display_name = None  # initialized in load_user_metadata function
         self._user_metadata = None  # initialized in load_user_metadata function
+        self.eula_link = None   # initialized in load_user_metadata function
         self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
         self._bucket_url = None  # URL of where the pack was uploaded.
