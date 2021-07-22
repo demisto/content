@@ -141,9 +141,11 @@ def decode_str_using_chardet(decrypted_text):
     try:
         # Trying to decode using the detected encoding
         confidence = chardet_detection.get('confidence')
-        demisto.debug(f"Going to decode decrypted text using {encoding} encoding, detected with confidence: {confidence}")
+        demisto.debug(f"Going to decode decrypted text using {encoding} encoding, detected with confidence: "
+                      f"{confidence}")
         if confidence < 0.9:
-            error = 'Note: detected encoding confidence is low, characters may be missing. You can try running this command again and pass the encoding code as argument.'
+            error = 'Note: detected encoding confidence is low, characters may be missing. You can try running this' \
+                    ' command again and pass the encoding code as argument.'
         out = decrypted_text.decode(encoding)
     except UnicodeDecodeError:
         # In case the detected encoding fails apply the default encoding

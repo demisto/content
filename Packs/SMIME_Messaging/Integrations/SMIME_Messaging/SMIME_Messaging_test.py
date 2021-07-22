@@ -60,13 +60,6 @@ def test_decode_using_chardet():
     assert out == 'Za¿ó³æ gê¶l± ja¼ñ'
 
 
-def test_decrypt(mocker):
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './test_data/smime.p7m'})
-
-    decrypted, _ = decrypt_email_body(client, {})
-    assert 'Zażółć\ gęślą\ jaźń' in decrypted
-
-
 def test_test_module(mocker):
     from SMIME_Messaging import test_module
     mocker.patch.object(demisto, 'results')
