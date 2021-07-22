@@ -760,15 +760,15 @@ def drive_changes_list_command(client: GSuiteClient, args: Dict[str, Any]) -> Co
         readable_output += '### New Start Page Token: {}\n'.format(response.get('newStartPageToken'))
 
     readable_output += tableToMarkdown('Files(s)',
-                                   drive_changes_hr_files_list,
-                                   ['Id', 'Name', 'Size(bytes)', 'Modified Time', 'lastModifyingUser'],
-                                   headerTransform=pascalToSpace,
-                                   removeNull=True)
+                                       drive_changes_hr_files_list,
+                                       ['Id', 'Name', 'Size(bytes)', 'Modified Time', 'lastModifyingUser'],
+                                       headerTransform=pascalToSpace,
+                                       removeNull=True)
 
     readable_output += tableToMarkdown('Drive(s)', drive_changes_hr_drives_list,
-                                   ['Id', 'Name', 'ThemeId', COLOR_RGB],
-                                   headerTransform=pascalToSpace,
-                                   removeNull=True)
+                                       ['Id', 'Name', 'ThemeId', COLOR_RGB],
+                                       headerTransform=pascalToSpace,
+                                       removeNull=True)
     return CommandResults(
         outputs=outputs,
         readable_output=readable_output,
@@ -788,7 +788,7 @@ def prepare_drives_request(client: GSuiteClient, args: Dict[str, str]) -> Dict[s
     """
 
     http_request_params: Dict[str, str] = assign_params(
-        q=args.get('q'),
+        q=args.get('query'),
         pageSize=args.get('page_size'),
         pageToken=args.get('page_token'),
     )
@@ -909,10 +909,10 @@ def prepare_drives_human_readable(outputs_context: List[Dict[str, Any]]) -> str:
     """
 
     return tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Drive(s)', len(outputs_context)),
-                                        GSuiteClient.remove_empty_entities(outputs_context),
-                                        ['id', 'name', 'createdTime'],
-                                        headerTransform=pascalToSpace,
-                                        removeNull=True)
+                           GSuiteClient.remove_empty_entities(outputs_context),
+                           ['id', 'name', 'createdTime'],
+                           headerTransform=pascalToSpace,
+                           removeNull=True)
 
 
 def prepare_single_drive_human_readable(outputs_context: Dict[str, Any], args: Dict[str, str]) -> str:
@@ -926,17 +926,17 @@ def prepare_single_drive_human_readable(outputs_context: Dict[str, Any], args: D
 
     fields = args.get('fields', 'id, name')
     return tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Drive(s)', 1),
-                                  GSuiteClient.remove_empty_entities(outputs_context),
-                                  [x.strip() for x in fields.split(',')],
-                                  headerTransform=pascalToSpace,
-                                  removeNull=True)
+                           GSuiteClient.remove_empty_entities(outputs_context),
+                           [x.strip() for x in fields.split(',')],
+                           headerTransform=pascalToSpace,
+                           removeNull=True)
 
     return drive_hr_md
 
 
 def prepare_file_read_request(client: GSuiteClient, args: Dict[str, str]) -> Dict[str, Any]:
     http_request_params: Dict[str, str] = assign_params(
-        q=args.get('q'),
+        q=args.get('query'),
         pageSize=args.get('page_size'),
         pageToken=args.get('page_token'),
         supportsAllDrives=args.get('supports_all_drives'),
@@ -1055,11 +1055,11 @@ def prepare_files_human_readable(outputs_context: List[Dict[str, Any]]) -> str:
     """
 
     return tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('File(s)', len(outputs_context)),
-                                       GSuiteClient.remove_empty_entities(outputs_context),
-                                       ['id', 'name', 'mimeType', 'description', 'size', 'driveId',
-                                        'createdTime', 'modifiedTime', ],
-                                       headerTransform=pascalToSpace,
-                                       removeNull=True)
+                           GSuiteClient.remove_empty_entities(outputs_context),
+                           ['id', 'name', 'mimeType', 'description', 'size', 'driveId',
+                            'createdTime', 'modifiedTime', ],
+                           headerTransform=pascalToSpace,
+                           removeNull=True)
 
 
 def prepare_single_file_output(response: Dict[str, Any]) -> Dict[str, Any]:
@@ -1292,22 +1292,22 @@ def prepare_file_single_human_readable(outputs_context: Dict[str, Any], args: Di
     """
 
     return tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('file(s)', 1),
-                                  GSuiteClient.remove_empty_entities(outputs_context),
-                                  ['id', 'name', 'mimeType', 'description', 'starred', 'trashed',
-                                   'parents', 'properties', 'spaces', 'version', 'webContentLink',
-                                   'webViewLink', 'iconLink', 'hasThumbnail', 'thumbnailLink',
-                                   'thumbnailVersion', 'viewedByMe', 'viewedByMeTime', 'createdTime',
-                                   'modifiedTime', 'modifiedByMeTime', 'modifiedByMe', 'sharedWithMeTime',
-                                   'sharingUser', 'owners', 'teamDriveId', 'driveId', 'lastModifyingUser',
-                                   'shared', 'ownedByMe', 'capabilities', 'viewersCanCopyContent',
-                                   'copyRequiresWriterPermission', 'writersCanShare', 'permissions',
-                                   'permissionIds', 'hasAugmentedPermissions', 'folderColorRgb',
-                                   'originalFilename', 'fullFileExtension', 'fileExtension', 'md5Checksum',
-                                   'size', 'quotaBytesUsed', 'headRevisionId', 'contentHints',
-                                   'isAppAuthorized', 'exportLinks', 'shortcutDetails', 'contentRestrictions',
-                                   'resourceKey', ],
-                                  headerTransform=pascalToSpace,
-                                  removeNull=False)
+                           GSuiteClient.remove_empty_entities(outputs_context),
+                           ['id', 'name', 'mimeType', 'description', 'starred', 'trashed',
+                            'parents', 'properties', 'spaces', 'version', 'webContentLink',
+                            'webViewLink', 'iconLink', 'hasThumbnail', 'thumbnailLink',
+                            'thumbnailVersion', 'viewedByMe', 'viewedByMeTime', 'createdTime',
+                            'modifiedTime', 'modifiedByMeTime', 'modifiedByMe', 'sharedWithMeTime',
+                            'sharingUser', 'owners', 'teamDriveId', 'driveId', 'lastModifyingUser',
+                            'shared', 'ownedByMe', 'capabilities', 'viewersCanCopyContent',
+                            'copyRequiresWriterPermission', 'writersCanShare', 'permissions',
+                            'permissionIds', 'hasAugmentedPermissions', 'folderColorRgb',
+                            'originalFilename', 'fullFileExtension', 'fileExtension', 'md5Checksum',
+                            'size', 'quotaBytesUsed', 'headRevisionId', 'contentHints',
+                            'isAppAuthorized', 'exportLinks', 'shortcutDetails', 'contentRestrictions',
+                            'resourceKey', ],
+                           headerTransform=pascalToSpace,
+                           removeNull=False)
 
 
 def prepare_file_permission_request(client: GSuiteClient, args: Dict[str, str], scopes: List[str]) -> Dict[str, Any]:
@@ -1485,10 +1485,10 @@ def prepare_permissions_human_readable(outputs_context: List[Dict[str, Any]], ar
     """
 
     return tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', len(outputs_context)),
-                                  GSuiteClient.remove_empty_entities(outputs_context),
-                                  ['id', 'type', 'role', 'emailAddress', 'displayName', 'deleted'],
-                                  headerTransform=pascalToSpace,
-                                  removeNull=False)
+                           GSuiteClient.remove_empty_entities(outputs_context),
+                           ['id', 'type', 'role', 'emailAddress', 'displayName', 'deleted'],
+                           headerTransform=pascalToSpace,
+                           removeNull=False)
 
 
 def handle_response_permission_single(response: Dict[str, Any], args: Dict[str, str]) -> CommandResults:
@@ -1546,10 +1546,10 @@ def prepare_permission_human_readable(outputs_context: Dict[str, Any], args: Dic
     """
 
     return tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1),
-                                  GSuiteClient.remove_empty_entities(outputs_context),
-                                  ['id', 'type', 'role', 'domain', 'emailAddress', 'displayName', 'deleted'],
-                                  removeNull=False,
-                                  headerTransform=pascalToSpace)
+                           GSuiteClient.remove_empty_entities(outputs_context),
+                           ['id', 'type', 'role', 'domain', 'emailAddress', 'displayName', 'deleted'],
+                           removeNull=False,
+                           headerTransform=pascalToSpace)
 
 
 @logger

@@ -1798,7 +1798,7 @@ script:
       defaultValue: ""
       predefined:
       - ""
-    - name: q
+    - name: query
       description: Query string for searching shared drives.
       required: false
       isArray: false
@@ -2086,7 +2086,7 @@ script:
       defaultValue: ""
       predefined:
       - ""
-    - name: q
+    - name: query
       description: Query string for searching shared drives.
       required: false
       isArray: false
