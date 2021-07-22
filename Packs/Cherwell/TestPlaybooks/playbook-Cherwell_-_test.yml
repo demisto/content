@@ -1060,7 +1060,7 @@ tasks:
       scope_owner:
         simple: (None)
       search_name:
-        simple: Test playbook search
+        simple: Test FCR
     separatecontext: false
     view: |-
       {
@@ -1090,16 +1090,13 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: Cherwell
                 accessor: SearchOperation.RecordId
             iscontext: true
-          right:
-            value:
-              simple: ${Cherwell.BusinessObjects(val.IncidentType).RecordId}
     view: |-
       {
         "position": {
