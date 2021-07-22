@@ -199,7 +199,7 @@ def test_module(client: Client) -> str:
 
         # test fetch_incidents command
         first_fetch_time = arg_to_datetime(
-            arg='1 day',  #  using '1 day' here since we're just testing connectivity and auth
+            arg='1 day',  # using '1 day' here since we're just testing connectivity and auth
             arg_name='First fetch time'
         )
         first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
