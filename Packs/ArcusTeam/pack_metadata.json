@@ -11,9 +11,10 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "CVE",
-        "Vulnerabilities",
-        "Firmware"
+        "Threat Intelligence",
+        "Security Analytics",
+        "Security",
+        "IoT"
     ],
     "useCases": [],
     "keywords": [
