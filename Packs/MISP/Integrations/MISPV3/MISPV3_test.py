@@ -502,7 +502,7 @@ def test_parse_response_reputation_command(mocker):
     reputation_expected = util_load_json("test_data/reputation_command_outputs.json")
     malicious_tag_ids = ['279', '131']
     suspicious_tag_ids = ['104']
-    outputs, _, _ = parse_response_reputation_command(reputation_response, malicious_tag_ids, suspicious_tag_ids)
+    outputs, _, _ , _ = parse_response_reputation_command(reputation_response, malicious_tag_ids, suspicious_tag_ids)
     assert outputs == reputation_expected
 
 

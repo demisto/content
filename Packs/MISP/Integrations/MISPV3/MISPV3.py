@@ -369,12 +369,18 @@ def limit_tag_output_to_id_and_name(attribute_dict, is_event_level):
 
 def parse_response_reputation_command(response, malicious_tag_ids, suspicious_tag_ids):
     """
-    Todo : change this , not correct anymore!
     After getting all the attributes which match the required indicator value, this function parses the response.
-    This function combines all the attributes that found with their event's object into one json object (that will
-    be returned to the context data), this is the reason why we use the first attribute object.
-    We modify the first_attribute object to include the full information about the related events that were found.
-    In addition the function returns the indicator score and the tag (id) which made the indicator to get that score.
+    This function goes over all the attributes that found and by sub-functions calculated the score of the indicator.
+    For the context data outputs, for every attribute we remove the "Related Attribute" list and limits the tags and
+    galaxies lists. Eventually, the outputs will be a list of attributes along with thier evetns objects.
+
+    Returns:
+        response (dict): The parsed outputs to context data (array of attributes).
+        score: the indicator score
+        found_tag: the tag (id) which made the indicator to get that score
+        found_related_events (dict): contains info (name, id, threat level id) about all the events that include
+        the indicator
+
     Please see an example for a response in test_data/reputation_command_response.json
     Please see an example for a parsed output in test_data/reputation_command_outputs.json
         """

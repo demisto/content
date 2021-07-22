@@ -56,7 +56,7 @@
             "uuid": "56d76936-0d34-44ff-a8c5-5280c0a8ab16",
             "threat_level_id": "2",
             "analysis": "2",
-            "info": "DDOS.TF = (new) ELF & Win32 DDoS service with ASP + PHP/MySQL MOF webshells - MMD-0048-2016",
+            "info": "DDOS.TF = (new) ELF & Win32 DDoS service ",
             "extends_uuid": "",
             "distribution": "1",
             "sharing_group_id": "0",
@@ -122,7 +122,7 @@
           {
             "local": false,
             "id": "122",
-            "name": "misp-galaxy:mitre-malware=S0266",
+            "name": "misp-galaxy:mitre-malware",
             "colour": "#0088cc",
             "numerical_value": null
           },
@@ -240,7 +240,7 @@
         },
         {
           "id": "122",
-          "name": "misp-galaxy:mitre-malware=S0266",
+          "name": "misp-galaxy:mitre-malware",
           "colour": "#0088cc",
           "exportable": true,
           "org_id": "0",
@@ -331,7 +331,7 @@
         },
         {
           "id": "127",
-          "name": "misp-galaxy:mitre-malware=Agent Tesla - S0331",
+          "name": "misp-galaxy:mitre-malware",
           "colour": "#0088cc",
           "exportable": true,
           "org_id": "0",
@@ -464,7 +464,7 @@
             "uuid": "56d76936-0d34-44ff-a8c5-5280c0a8ab16",
             "threat_level_id": "2",
             "analysis": "2",
-            "info": "DDOS.TF = (new) ELF & Win32 DDoS service with ASP + PHP/MySQL MOF webshells - MMD-0048-2016",
+            "info": "DDOS.TF = (new) ELF & Win32 DDoS service ",
             "extends_uuid": "",
             "distribution": "1",
             "sharing_group_id": "0",
@@ -627,7 +627,7 @@
         "org_id": "1",
         "date": "2016-01-04",
         "threat_level_id": "2",
-        "info": "DDOS.TF = (new) ELF & Win32 DDoS service with ASP + PHP/MySQL MOF webshells - MMD-0048-2016",
+        "info": "DDOS.TF = (new) ELF & Win32 DDoS service ",
         "published": false,
         "uuid": "56d76936-0d34-44ff-a8c5-5280c0a8ab16",
         "analysis": "2",
