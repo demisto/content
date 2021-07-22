@@ -20,7 +20,7 @@
           "local": false
         },
         "OwnerOrganisation.ID": "8",
-        "PublishTimestamp": "1623832501",
+        "PublishTimestamp": "2021-06-16 08:35:01",
         "Published": false,
         "SharingGroupID": "0",
         "Tag": [
@@ -78,7 +78,7 @@
           }
         ],
         "ThreatLevelID": "1",
-        "Timestamp": "1624893849",
+        "Timestamp": "2021-06-28 15:24:09",
         "UUID": "5e6b322a-9f80-4e2f-9f2a-3cab0a3b4631",
         "extends_uuid": ""
       },
@@ -168,7 +168,7 @@
           "Name": "misp-galaxy:target-information=Ukraine"
         }
       ],
-      "Timestamp": "1624865598",
+      "Timestamp": "2021-06-28 07:33:18",
       "ToIDs": true,
       "Type": "md5",
       "UUID": "5e6b336e-5224-445f-b1b3-457dd7dd9f6d",
@@ -196,7 +196,7 @@
           "local": false
         },
         "OwnerOrganisation.ID": "7",
-        "PublishTimestamp": "1623745864",
+        "PublishTimestamp": "2021-06-15 08:31:04",
         "Published": false,
         "SharingGroupID": "0",
         "Tag": [
@@ -210,7 +210,7 @@
           }
         ],
         "ThreatLevelID": "3",
-        "Timestamp": "1624865619",
+        "Timestamp": "2021-06-28 07:33:39",
         "UUID": "590c76a9-0bac-4d1e-b8af-416ac0a8ab16",
         "extends_uuid": ""
       },
@@ -231,7 +231,7 @@
           "Name": "misp-galaxy:mitre-attack-pattern=T1103"
         }
       ],
-      "Timestamp": "1624279888",
+      "Timestamp": "2021-06-21 12:51:28",
       "ToIDs": true,
       "Type": "md5",
       "UUID": "f6b054cf-3dbb-4c7b-aab1-a37193e5e841",
@@ -259,7 +259,7 @@
           "local": false
         },
         "OwnerOrganisation.ID": "7",
-        "PublishTimestamp": "1624537870",
+        "PublishTimestamp": "2021-06-24 12:31:10",
         "Published": false,
         "SharingGroupID": "0",
         "Tag": [
@@ -269,7 +269,7 @@
           }
         ],
         "ThreatLevelID": "2",
-        "Timestamp": "1624865583",
+        "Timestamp": "2021-06-28 07:33:03",
         "UUID": "56d76936-0d34-44ff-a8c5-5280c0a8ab16",
         "extends_uuid": ""
       },
@@ -294,7 +294,7 @@
           "Name": "tlp:white"
         }
       ],
-      "Timestamp": "1624865583",
+      "Timestamp": "2021-06-28 07:33:03",
       "ToIDs": false,
       "Type": "md5",
       "UUID": "ec686712-d0a5-4dd8-8736-330da8abefa6",

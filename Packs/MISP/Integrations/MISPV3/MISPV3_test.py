@@ -1,6 +1,7 @@
 import pytest
 import json
 import io
+from CommonServerPython import *
 from CommonServerPython import DemistoException, Common
 
 TAG_IDS_LISTS = [([1, 2, 3], [2, 3, 4, 5], [1, 2, 3], [4, 5]),
@@ -17,13 +18,14 @@ REPUTATION_COMMANDS_ERROR_LIST = [
     ("EMAIL", "invalid_email", "Error: The given invalid_email address: example is not valid"),  # invalid EMAIL,
 ]
 
-CASE_OF_MALICIOUS_ATTRIBUTE = (['1'], ['2'], ['1'], ['4'], Common.DBotScore.BAD, '1')
-CASE_OF_SUSPICIOUS_ATTRIBUTE = (['1'], ['2'], ['2'], ['1'], Common.DBotScore.SUSPICIOUS, '1')
-CASE_OF_MALICIOUS_EVENT = (['8'], ['2'], ['2'], ['1'], Common.DBotScore.BAD, '2')
-CASE_OF_SUSPICIOUS_EVENT = (['8'], ['2'], ['3'], ['2'], Common.DBotScore.SUSPICIOUS, '2')
-CASE_OF_UNKNOWN = (['1'], ['2'], ['3'], ['4'], Common.DBotScore.NONE, None)
+CASE_OF_MALICIOUS_ATTRIBUTE = (['1'], ['2'], ['1'], ['4'], Common.DBotScore.BAD, '1', False)
+CASE_OF_SUSPICIOUS_ATTRIBUTE = (['1'], ['2'], ['2'], ['1'], Common.DBotScore.SUSPICIOUS, '1', False)
+CASE_OF_MALICIOUS_EVENT = (['8'], ['2'], ['2'], ['1'], Common.DBotScore.BAD, '2', False)
+CASE_OF_SUSPICIOUS_EVENT = (['8'], ['2'], ['3'], ['2'], Common.DBotScore.SUSPICIOUS, '2', False)
+CASE_OF_UNKNOWN = (['1'], ['2'], ['3'], ['4'], Common.DBotScore.NONE, None, False)
+CASE_OF_BAD_THREAT_LEVEL_ID = (['1'], ['2'], ['3'], ['4'], Common.DBotScore.BAD, None, True)
 TEST_TAG_SCORES = [CASE_OF_MALICIOUS_ATTRIBUTE, CASE_OF_SUSPICIOUS_ATTRIBUTE, CASE_OF_MALICIOUS_EVENT,
-                   CASE_OF_SUSPICIOUS_EVENT, CASE_OF_UNKNOWN]
+                   CASE_OF_SUSPICIOUS_EVENT, CASE_OF_UNKNOWN, CASE_OF_BAD_THREAT_LEVEL_ID]
 
 VALID_DISTRIBUTION_LIST = [(0, 0), ("1", 1), ("Your_organisation_only", 0)]
 INVALID_DISTRIBUTION_LIST = ["invalid_distribution", 1.5, "53.5"]
@@ -39,7 +41,7 @@ TEST_PREPARE_ARGS = [({'type': '1', 'to_ids': 0, 'from': '2', 'to': '3', 'event_
                      ({}, {'limit': '50', 'controller': 'attributes'})  # default value
                      ]
 
-TEST_EVENTS_INCLUDE_DETECTED_TAG = [("2", ['149', '145', '144']),  # 3 events include the detected tag
+TEST_EVENTS_INCLUDE_DETECTED_TAG = [("2", ['149', '144', '145']),  # 3 events include the detected tag
                                     ("278", ['145']),  # 1 event includes the detected attribute's tag
                                     (None, []),  # no tag was detected, no event returns
                                     ("104", ['149'])]  # 1 event includes the detected event's tag
@@ -53,6 +55,7 @@ def util_load_json(path):
 def mock_misp(mocker):
     from pymisp import ExpandedPyMISP
     mocker.patch.object(ExpandedPyMISP, '__init__', return_value=None)
+    mocker.patch.object(demisto, 'params', return_value={'credentials': {'password': "123"}})
 
 
 def test_misp_convert_timestamp_to_date_string(mocker):
@@ -379,9 +382,9 @@ def test_limit_tag_output(mocker, is_event_level, expected_output, expected_tag_
 
 
 @pytest.mark.parametrize('attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids, '
-                         'expected_score, found_tag', TEST_TAG_SCORES)
-def test_get_score_by_tags(mocker, attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids,
-                           expected_score, found_tag):
+                         'expected_score, found_tag, is_attribute_in_event_with_bad_threat_level', TEST_TAG_SCORES)
+def test_get_score(mocker, attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids,
+                   expected_score, found_tag, is_attribute_in_event_with_bad_threat_level):
     """
 
     Given:
@@ -399,8 +402,9 @@ def test_get_score_by_tags(mocker, attribute_tags_ids, event_tags_ids, malicious
     - Check that the tag id matched the expected one to be identified, depends on the given lists.
     """
     mock_misp(mocker)
-    from MISPV3 import get_score_by_tags
-    score, tag = get_score_by_tags(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids)
+    from MISPV3 import get_score
+    score, tag = get_score(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids,
+                           is_attribute_in_event_with_bad_threat_level)
     assert score == expected_score
     assert tag == found_tag
 
@@ -479,7 +483,8 @@ def test_get_events_related_to_scored_tag(mocker, detected_tag, expected_related
     mock_misp(mocker)
     from MISPV3 import get_events_related_to_scored_tag
     reputation_command_outputs = util_load_json("test_data/reputation_command_outputs.json")
-    events_to_human_readable = get_events_related_to_scored_tag(reputation_command_outputs, detected_tag)
+    events_to_human_readable = get_events_related_to_scored_tag(reputation_command_outputs.get('Attribute'),
+                                                                detected_tag)
     all_event_ids_found = [event.get('Event_ID') for event in events_to_human_readable]
     assert all_event_ids_found == expected_related_events
 
@@ -502,7 +507,7 @@ def test_parse_response_reputation_command(mocker):
     reputation_expected = util_load_json("test_data/reputation_command_outputs.json")
     malicious_tag_ids = ['279', '131']
     suspicious_tag_ids = ['104']
-    outputs, _, _ , _ = parse_response_reputation_command(reputation_response, malicious_tag_ids, suspicious_tag_ids)
+    outputs, _, _, _ = parse_response_reputation_command(reputation_response, malicious_tag_ids, suspicious_tag_ids)
     assert outputs == reputation_expected
 
 

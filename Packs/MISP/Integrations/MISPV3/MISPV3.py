@@ -391,11 +391,10 @@ def parse_response_reputation_command(misp_response, malicious_tag_ids, suspicio
     if not attributes_list:
         return None
     found_related_events, attributes_tag_ids, event_tag_ids = prepare_attributes_array_to_context_data(response)
-    is_attribute_in_event_with_bad_threat_level_id = found_event_with_bad_threat_level_id(found_related_events)
+    attribute_in_event_with_bad_threat_level = found_event_with_bad_threat_level_id(found_related_events)
     score, found_tag = get_score(attribute_tags_ids=attributes_tag_ids, event_tags_ids=event_tag_ids,
                                  malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids,
-                                 is_attribute_in_event_with_bad_threat_level_id=
-                                 is_attribute_in_event_with_bad_threat_level_id)
+                                 is_attribute_in_event_with_bad_threat_level=attribute_in_event_with_bad_threat_level)
     formatted_response = replace_keys_from_misp_to_context_data(response)  # this is the outputs (Attribute)
     return formatted_response, score, found_tag, found_related_events
 
@@ -444,7 +443,7 @@ def found_event_with_bad_threat_level_id(found_related_events):
 
 
 def get_score(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids,
-              is_attribute_in_event_with_bad_threat_level_id):
+              is_attribute_in_event_with_bad_threat_level):
     """
     Calculates the indicator score by following logic. Indicators of attributes and Events that:
     * have tags which configured as malicious will be scored 3 (i.e malicious).
@@ -474,7 +473,7 @@ def get_score(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_
         return Common.DBotScore.SUSPICIOUS, found_tag
 
     # no tag was found
-    if is_attribute_in_event_with_bad_threat_level_id:
+    if is_attribute_in_event_with_bad_threat_level:
         return Common.DBotScore.BAD, None
 
     return Common.DBotScore.NONE, None
