@@ -2,7 +2,7 @@ id: MISP V3 Test
 version: -1
 description: Test playbook for MISP V3 integration
 name: MISP V3 Test
-fromversion: 5.0.0
+fromversion: 5.5.0
 starttaskid: "0"
 tasks:
   "0":

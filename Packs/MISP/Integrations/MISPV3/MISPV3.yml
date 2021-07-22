@@ -2614,4 +2614,4 @@ script:
 tests:
 - No tests
 defaultclassifier: 'null'
-fromversion: 5.0.0
+fromversion: 5.5.0
