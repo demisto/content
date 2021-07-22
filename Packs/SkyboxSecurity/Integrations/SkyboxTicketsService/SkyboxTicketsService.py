@@ -181,6 +181,7 @@ def createAccessChangeTicket_command(client, args):
     accessChangeTicket_customFields_typeCode = args.get('accessChangeTicket_customFields_typeCode')
     accessChangeTicket_customFields_value = args.get('accessChangeTicket_customFields_value')
     accessChangeTicket_currentPhaseName = args.get('accessChangeTicket_currentPhaseName')
+    """
     phases_comment = args.get('phases_comment')
     phases_createdBy = args.get('phases_createdBy')
     phases_creationTime = args.get('phases_creationTime')
@@ -230,6 +231,7 @@ def createAccessChangeTicket_command(client, args):
         startDate=phases_startDate,
         ticketTypePhase=ticketTypePhase
     )
+    """
 
     customField_type = client.get_type('ns0:customField')
     customField = customField_type(
@@ -277,7 +279,7 @@ def createAccessChangeTicket_command(client, args):
 
     response = client.service.createAccessChangeTicket(
         accessChangeTicket=accessChangeTicket,
-        phases=phases
+        # phases=phases
     )
 
     command_results = CommandResults(
