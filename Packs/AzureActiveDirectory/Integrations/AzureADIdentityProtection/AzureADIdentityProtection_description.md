@@ -4,7 +4,7 @@ The API this integration uses is defined as beta by Microsoft.
 
 ---
 
-In order to connect to the Azure Kubernetes Services using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
+In order to connect to the Azure Active Directory - Identity Protection using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
 1. Fill in the required parameters.
 2. Run the ***!azure-ad-auth-start*** command. 
 3. Follow the instructions that appear.
