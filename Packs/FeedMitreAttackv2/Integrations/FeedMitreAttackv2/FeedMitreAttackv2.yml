@@ -128,6 +128,72 @@ script:
     description: Shows the feed names and IDs from TAXII.
     execution: false
     name: mitre-show-feeds
+  - arguments:
+    - default: true
+      description: Indicator to look up.
+      isArray: false
+      name: attack_pattern
+      required: true
+      secret: false
+    deprecated: false
+    description: Lookup reputation in the indicators.
+    execution: false
+    name: attack-pattern
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: AttackPattern.STIXID
+      description: The STIX ID of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.KillChainPhases
+      description: The kill chain phases of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.FirstSeenBySource
+      description: The first seen by source of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.Description
+      description: The description of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.OperatingSystemRefs
+      description: The operating system refs of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.Publications
+      description: The publications of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.MITREID
+      description: The MITRE ID of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.Tags
+      description: The tags of the Attack Pattern.
+      type: string
+  - arguments:
+    - default: false
+      description: The Attack Pattrens IDs list
+      isArray: true
+      name: attack_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Get Attack Pattern value from Attack Pattern ID.
+    execution: false
+    name: mitre-get-indicator-name
+    outputs:
+    - contextPath: MITREATTACK.id
+      description: MITRE ATTACK Attack Patteren ID.
+      type: String
+    - contextPath: MITREATTACK.value
+      description: MITRE ATTACK Attack Patteren value.
+      type: String
   dockerimage: demisto/taxii2:1.0.0.22630
   feed: true
   isfetch: false
@@ -138,5 +204,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- FeedMitreAttackv2_test
 fromversion: 5.5.0
