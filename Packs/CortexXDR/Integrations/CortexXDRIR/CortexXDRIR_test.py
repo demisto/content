@@ -338,7 +338,7 @@ def test_endpoint_command(requests_mock):
                                         'IPAddress': '3.3.3.3',
                                         'OS': 'Linux',
                                         'Vendor': 'Cortex XDR - IR',
-                                        'Status': 'Offline',
+                                        'Status': 'Online',
                                         'IsIsolated': 'No'}]}
 
     results = outputs[0].to_context()
