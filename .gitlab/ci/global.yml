@@ -133,6 +133,7 @@
   services:
     - name: docker.artifactory.pan.local/build-tools--image-dind:19.03.12-dind
       alias: docker
+      command: ["--user", "405"]
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
