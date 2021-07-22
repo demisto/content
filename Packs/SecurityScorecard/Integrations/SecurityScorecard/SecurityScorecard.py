@@ -383,17 +383,24 @@ def test_module(client: SecurityScorecardClient) -> str:
 # ---------------
 
 
-def portfolios_list_command(client: SecurityScorecardClient) -> CommandResults:
+def portfolios_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """List all Portfolios you have access to.
 
     See https://securityscorecard.readme.io/reference#get_portfolios
 
     Args:
         client (SecurityScorecardClient): SecurityScorecard client
+        args (Dict[str, Any]): Dictionary of arguments specified in the command
 
     Returns:
         CommandResults: The results of the command.
     """
+
+    limit = arg_to_number(
+        arg=args.get("limit"),
+        arg_name="limit",
+        required=True
+    )
 
     portfolios = client.get_portfolios()
 
@@ -402,19 +409,34 @@ def portfolios_list_command(client: SecurityScorecardClient) -> CommandResults:
     # Check that API returned more than 0 portfolios
     if portfolios_total == 0:
         return CommandResults(
-            readable_output="No Portfolios were found in your account. Please create a new one and try again."
+            readable_output="No Portfolios were found in your account. Please create a new one and try again.",
+            outputs_prefix=None,
+            outputs=None,
+            raw_response=portfolios,
+            outputs_key_field=None
         )
 
     # API response is a dict with 'entries'
     entries = portfolios.get('entries')
 
-    markdown = tableToMarkdown('Your SecurityScorecard Portfolios', entries, headers=['id', 'name', 'privacy'])
+    # If the number of portfolios returned is larger than the configured limit
+    # filter the first elements
+    if portfolios_total > limit:
+        demisto.debug(f"portfolios_total > limit, slicing number of entries")
+        entries = entries[:limit]
+
+    markdown = tableToMarkdown(
+        f'Your SecurityScorecard Portfolios (first {limit})',
+        entries,
+        headers=['id', 'name', 'privacy']
+    )
 
     results = CommandResults(
         readable_output=markdown,
         outputs_prefix='SecurityScorecard.Portfolio',
         outputs_key_field='id',
-        outputs=portfolios
+        outputs=entries,
+        raw_response=portfolios
     )
 
     return results
@@ -427,7 +449,7 @@ def portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict
 
     Args:
         client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): List of arguments specified in the command
+        args (Dict[str, Any]): Dictionary of arguments specified in the command
 
     Returns:
         CommandResults: The results of the command.
@@ -462,7 +484,9 @@ def portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict
     total_portfolios = int(response.get('total'))  # type: ignore
     if not total_portfolios > 0:
         return CommandResults(
-            readable_output=f"No companies found in Portfolio {portfolio_id}. Please add a company to it and retry."
+            readable_output=f"No companies found in Portfolio {portfolio_id}. Please add a company to it and retry.",
+            raw_response=response,
+            outputs_key_field=None
         )
 
     companies = response.get('entries')
@@ -475,9 +499,11 @@ def portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict
     )
 
     results = CommandResults(
-        outputs_prefix="SecurityScorecard.Company",
+        outputs_prefix="SecurityScorecard.Portfolio.Company",
         readable_output=markdown,
-        outputs=companies
+        outputs=companies,
+        raw_response=response,
+        outputs_key_field='name'
     )
 
     return results
@@ -490,7 +516,7 @@ def company_score_get_command(client: SecurityScorecardClient, args: Dict[str, A
 
     Args:
         client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): List of arguments specified in the command
+        args (Dict[str, Any]): Dictionary of arguments specified in the command
 
     Returns:
         CommandResults: The results of the command.
@@ -513,7 +539,9 @@ def company_score_get_command(client: SecurityScorecardClient, args: Dict[str, A
     results = CommandResults(
         readable_output=markdown,
         outputs_prefix="SecurityScorecard.Company.Score",
-        outputs=score
+        outputs=score,
+        raw_response=score,
+        outputs_key_field='name'
     )
 
     return results
@@ -526,7 +554,7 @@ def company_factor_score_get_command(client: SecurityScorecardClient, args: Dict
 
     Args:
         client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): List of arguments specified in the command
+        args (Dict[str, Any]): Dictionary of arguments specified in the command
 
     Returns:
         CommandResults: The results of the command.
@@ -543,11 +571,11 @@ def company_factor_score_get_command(client: SecurityScorecardClient, args: Dict
     factor_scores = []
     for entry in entries:
         score = {
-            "Name": entry.get("name").title().replace("_", " "),
-            "Grade": entry.get("grade"),
-            "Score": entry.get("score"),
-            "Issues": len(entry.get("issue_summary")),
-            "Issue Details": entry.get("issue_summary")
+            "name": entry.get("name").title().replace("_", " "),
+            "grade": entry.get("grade"),
+            "score": entry.get("score"),
+            "issues": len(entry.get("issue_summary")),
+            "issue details": entry.get("issue_summary")
         }
 
         factor_scores.append(score)
@@ -561,7 +589,9 @@ def company_factor_score_get_command(client: SecurityScorecardClient, args: Dict
     results = CommandResults(
         readable_output=markdown,
         outputs_prefix="SecurityScorecard.Company.Factor",
-        outputs=factor_scores
+        outputs=factor_scores,
+        raw_response=response,
+        outputs_key_field='name'
     )
 
     return results
@@ -575,7 +605,7 @@ def company_history_score_get_command(client: SecurityScorecardClient, args: Dic
 
     Args:
         client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): List of arguments specified in the command
+        args (Dict[str, Any]): Dictionary of arguments specified in the command
 
     Returns:
         CommandResults: The results of the command.
@@ -599,8 +629,10 @@ def company_history_score_get_command(client: SecurityScorecardClient, args: Dic
 
     results = CommandResults(
         readable_output=markdown,
-        outputs_prefix="SecurityScorecard.Company.History",
-        outputs=entries
+        outputs_prefix="SecurityScorecard.Company.ScoreHistory",
+        outputs=entries,
+        raw_response=response,
+        outputs_key_field="date"
     )
 
     return results
@@ -613,7 +645,7 @@ def company_history_factor_score_get_command(client: SecurityScorecardClient, ar
 
     Args:
         client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): List of arguments specified in the command
+        args (Dict[str, Any]): Dictionary of arguments specified in the command
 
     Returns:
         CommandResults: The results of the command.
@@ -640,8 +672,8 @@ def company_history_factor_score_get_command(client: SecurityScorecardClient, ar
             factor_row = factor_row + f"{factor_name}: {factor_score}\n"
 
         score = {
-            "Date": entry.get("date").split("T")[0],
-            "Factors": factor_row
+            "date": entry.get("date").split("T")[0],
+            "factors": factor_row
         }
 
         factor_scores.append(score)
@@ -651,7 +683,9 @@ def company_history_factor_score_get_command(client: SecurityScorecardClient, ar
     results = CommandResults(
         readable_output=markdown,
         outputs_prefix="SecurityScorecard.Company.FactorHistory",
-        outputs=entries
+        outputs=factor_scores,
+        raw_response=response,
+        outputs_key_field='date'
     )
 
     return results
@@ -664,7 +698,7 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
 
     Args:
         client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): List of arguments specified in the command
+        args (Dict[str, Any]): Dictionary of arguments specified in the command
 
     Returns:
         CommandResults: The results of the command.
@@ -700,8 +734,10 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
 
     results = CommandResults(
         readable_output=markdown,
-        outputs_prefix="SecurityScorecard.GradeChangeAlert.id",
-        outputs=alert_id
+        outputs_prefix="SecurityScorecard.Alerts.GradeChangeAlert",
+        outputs=alert_id,
+        raw_response=response,
+        outputs_key_field="id"
     )
 
     return results
@@ -714,7 +750,7 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
 
     Args:
         client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): List of arguments specified in the command
+        args (Dict[str, Any]): Dictionary of arguments specified in the command
 
     Returns:
         CommandResults: The results of the command.
@@ -752,8 +788,10 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
 
     results = CommandResults(
         readable_output=markdown,
-        outputs_prefix="SecurityScorecard.ScoreThresholdAlert.id",
-        outputs=alert_id
+        outputs_prefix="SecurityScorecard.Alerts.ScoreThresholdAlert",
+        outputs=alert_id,
+        raw_response=response,
+        outputs_key_field="id"
     )
 
     return results
@@ -766,7 +804,7 @@ def alert_delete_command(client: SecurityScorecardClient, args: Dict[str, Any]) 
 
     Args:
         client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): List of arguments specified in the command
+        args (Dict[str, Any]): Dictionary of arguments specified in the command
 
     Returns:
         CommandResults: The results of the command.
@@ -779,7 +817,11 @@ def alert_delete_command(client: SecurityScorecardClient, args: Dict[str, Any]) 
 
     markdown = f"{str.capitalize(alert_type)} alert **{alert_id}** deleted"  # type: ignore
 
-    results = CommandResults(readable_output=markdown)
+    results = CommandResults(
+        readable_output=markdown,
+        raw_response=None,
+        outputs_key_field=None
+    )
 
     return results
 
@@ -791,7 +833,7 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
 
     Args:
         client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): List of arguments specified in the command
+        args (Dict[str, Any]): Dictionary of arguments specified in the command
 
     Returns:
         CommandResults: The results of the command.
@@ -830,10 +872,11 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
     markdown = tableToMarkdown(f"Latest Alerts for user {email}", alerts)
 
     results = CommandResults(
-        outputs_prefix="SecurityScorecard.Alert",
+        outputs_prefix="SecurityScorecard.Alerts.Alert",
         outputs_key_field="id",
         readable_output=markdown,
-        outputs=alerts
+        outputs=alerts,
+        raw_response=response
     )
 
     return results
@@ -846,7 +889,7 @@ def company_services_get_command(client: SecurityScorecardClient, args: Dict[str
 
     Args:
         client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): List of arguments specified in the command
+        args (Dict[str, Any]): Dictionary of arguments specified in the command
 
     Returns:
         CommandResults: The results of the command.
@@ -870,9 +913,11 @@ def company_services_get_command(client: SecurityScorecardClient, args: Dict[str
     markdown = tableToMarkdown(f"Services for domain [{domain}](https://{domain})", services)
 
     results = CommandResults(
-        outputs_prefix="SecurityScorecard.Company.Service",
-        outputs=entries,
-        readable_output=markdown
+        outputs_prefix="SecurityScorecard.Company.Services",
+        outputs=services,
+        readable_output=markdown,
+        raw_response=response,
+        outputs_key_field='category'
     )
 
     return results
@@ -979,7 +1024,7 @@ def main() -> None:
         elif demisto.command() == "fetch-incidents":
             fetch_alerts(client)
         elif demisto.command() == 'securityscorecard-portfolios-list':
-            return_results(portfolios_list_command(client))
+            return_results(portfolios_list_command(client, args))
         elif demisto.command() == 'securityscorecard-portfolio-list-companies':
             return_results(portfolio_list_companies_command(client, args))
         elif demisto.command() == 'securityscorecard-company-score-get':

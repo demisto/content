@@ -66,6 +66,11 @@ script:
   commands:
   - name: securityscorecard-portfolios-list
     description: List all Portfolios
+    arguments:
+    - name: limit
+      description: Limit the amount of Portfolios to return.
+      required: true
+      defaultvalue: 50
     outputs:
     - contextPath: SecurityScorecard.Portfolio.id
       description: Portfolio ID
@@ -118,12 +123,11 @@ script:
       - "retail"
       - "technology"
     - name: vulnerability
-      description: Vulnerability filter. TODO NEED TO CHECK POSSIBLE VALUES.
+      description: Vulnerability filter. #TODO NEED TO CHECK POSSIBLE VALUES.
       required: false
       default: false
     - name: issue_type
-      description: Issue type filter. TODO, need to list all possible values, can
-        be found in active findings API.
+      description: Issue type filter. #TODO, need to list all possible values, can be found in active findings API.
       required: false
       default: false
     - name: had_breach_within_last_days
@@ -132,34 +136,34 @@ script:
       required: false
       default: false
     outputs:
-    - contextPath: SecurityScorecard.Company.domain
+    - contextPath: SecurityScorecard.Portfolio.Company.domain
       description: Company domain.
       type: String
-    - contextPath: SecurityScorecard.Company.name
+    - contextPath: SecurityScorecard.Portfolio.Company.name
       description: Company name.
       type: String
-    - contextPath: SecurityScorecard.Company.score
+    - contextPath: SecurityScorecard.Portfolio.Company.score
       description: Company overall score in numeric form (55-100).
       type: Number
-    - contextPath: SecurityScorecard.Company.grade
+    - contextPath: SecurityScorecard.Portfolio.Company.grade
       description: Company overall score in letter grade.
       type: String
-    - contextPath: SecurityScorecard.Company.grade_url
+    - contextPath: SecurityScorecard.Portfolio.Company.grade_url
       description: Company overall score URL to SVG asset.
       type: String
-    - contextPath: SecurityScorecard.Company.last30days_score_change
+    - contextPath: SecurityScorecard.Portfolio.Company.last30days_score_change
       description: Company overall score numeric change (±) in the last month.
       type: Number
-    - contextPath: SecurityScorecard.Company.industry
+    - contextPath: SecurityScorecard.Portfolio.Company.industry
       description: Industry category of the domain.
       type: String
-    - contextPath: SecurityScorecard.Company.size
+    - contextPath: SecurityScorecard.Portfolio.Company.size
       description: Company size, e.g. 'size_more_than_10000'
       type: String
-    - contextPath: SecurityScorecard.Company.is_custom_vendor
+    - contextPath: SecurityScorecard.Portfolio.Company.is_custom_vendor
       description: Whether the company is a custom vendor.
       type: Boolean
-    - contextPath: SecurityScorecard.Company.total
+    - contextPath: SecurityScorecard.Portfolio.Company.total
       description: Total number of companies in Portfolio.
       type: Number
   - name: securityscorecard-company-score-get
@@ -253,13 +257,13 @@ script:
       - "daily"
       - "weekly"
     outputs:
-    - contextPath: SecurityScorecard.Company.History.domain
+    - contextPath: SecurityScorecard.Company.ScoreHistory.domain
       description: Company domain.
       type: String
-    - contextPath: SecurityScorecard.Company.History.date
+    - contextPath: SecurityScorecard.Company.ScoreHistory.date
       description: Score date.
       type: Date
-    - contextPath: SecurityScorecard.Company.History.score
+    - contextPath: SecurityScorecard.Company.ScoreHistory.score
       description: Company historical security score in numeric form (55-100)
       type: Number
   - name: securityscorecard-company-history-factor-score-get
@@ -329,7 +333,7 @@ script:
         argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
       required: false
     outputs:
-    - contextPath: SecurityScorecard.Alert.id
+    - contextPath: SecurityScorecard.Alerts.GradeChangeAlert.id
       description: Alert ID
       type: String
   - name: securityscorecard-alert-score-threshold-create
@@ -368,7 +372,7 @@ script:
         argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
       required: false
     outputs:
-    - contextPath: SecurityScorecard.Alert.id
+    - contextPath: SecurityScorecard.Alerts.ScoreThresholdAlert.id
       description: Alert ID
       type: String
   - name: securityscorecard-alert-delete
@@ -391,31 +395,31 @@ script:
       description: Portfolio ID. Can be retrieved using `!securityscorecard-portfolios-list`
       required: false
     outputs:
-    - contextPath: SecurityScorecard.Alert.id
+    - contextPath: SecurityScorecard.Alerts.Alert.id
       description: Alert ID
       type: String
-    - contextPath: SecurityScorecard.Alert.email
+    - contextPath: SecurityScorecard.Alerts.Alert.email
       description: Alert email recipient.
       type: String
-    - contextPath: SecurityScorecard.Alert.change_type
+    - contextPath: SecurityScorecard.Alerts.Alert.change_type
       description: Alert change type configured (score or threshold)
       type: String
-    - contextPath: SecurityScorecard.Alert.domain
+    - contextPath: SecurityScorecard.Alerts.Alert.domain
       description: Alert domain
       type: String
-    - contextPath: SecurityScorecard.Alert.company_name
+    - contextPath: SecurityScorecard.Alerts.Alert.company_name
       description: Alert company name
       type: String
-    - contextPath: SecurityScorecard.Alert.Portfolio.id
+    - contextPath: SecurityScorecard.Alerts.Alert.Portfolio.id
       description: Alert Portfolio ID
       type: array
-    - contextPath: SecurityScorecard.Alert.my_scorecard
+    - contextPath: SecurityScorecard.Alerts.Alert.my_scorecard
       description: Whether the alert was triggered on private scorecard. This depends
         on whether 'my_scorecard' was added to the optional argument 'target' when
-        creating alerts using the ``!securityscorecard-alert-score-threshold-create``
-        and ``!securityscorecard-alert-grade-change-create``` commands.
+        creating alerts using the 'securityscorecard-alert-score-threshold-create'
+        and 'securityscorecard-alert-grade-change-create' commands.
       type: Boolean
-    - contextPath: SecurityScorecard.Alert.created_at
+    - contextPath: SecurityScorecard.Alerts.Alert.created_at
       description: Timestamp of when the alert was triggered
       type: Date
   - name: securityscorecard-company-services-get
@@ -425,13 +429,13 @@ script:
       description: Company domain
       required: true
     outputs:
-    - contextPath: vendor_domain
+    - contextPath: SecurityScorecard.Service.vendor_domain
       description: Vendor domain, e.g. Google, Amazon
       type: String
-    - contextPath: client_domain
+    - contextPath: SecurityScorecard.Service.client_domain
       description: Client domain. This value is identical to the input of the domain
         argument
       type: String
-    - contextPath: categories
+    - contextPath: SecurityScorecard.Service.categories
       description: Vendor service provider, e.g. mail_provider, nameserver_provider
       type: array
