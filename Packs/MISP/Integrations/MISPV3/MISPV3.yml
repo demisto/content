@@ -284,9 +284,6 @@ script:
     - contextPath: MISP.Attribute.EventID
       description: Attribute event ID.
       type: string
-    - contextPath: MISP.Attribute.RelatedAttribute
-      description: Related Attibute.
-      type: Unknown
     - contextPath: MISP.Attribute.last_seen
       description: Attribute last_seen timestamp.
       type: string
@@ -428,9 +425,6 @@ script:
     - contextPath: MISP.Attribute.EventID
       description: Attribute event ID.
       type: string
-    - contextPath: MISP.Attribute.RelatedAttribute
-      description: Related Attibute.
-      type: Unknown
     - contextPath: MISP.Attribute.last_seen
       description: Attribute last_seen timestamp.
       type: string
@@ -545,8 +539,14 @@ script:
     execution: false
     name: file
     outputs:
-    - contextPath: File.Name
-      description: The file hash.
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -572,9 +572,6 @@ script:
     - contextPath: MISP.Attribute.EventID
       description: Attribute event ID.
       type: string
-    - contextPath: MISP.Attribute.RelatedAttribute
-      description: Related Attibute.
-      type: Unknown
     - contextPath: MISP.Attribute.last_seen
       description: Attribute last_seen timestamp.
       type: string
@@ -716,9 +713,6 @@ script:
     - contextPath: MISP.Attribute.EventID
       description: Attribute event ID.
       type: string
-    - contextPath: MISP.Attribute.RelatedAttribute
-      description: Related Attibute.
-      type: Unknown
     - contextPath: MISP.Attribute.last_seen
       description: Attribute last_seen timestamp.
       type: string
@@ -860,9 +854,6 @@ script:
     - contextPath: MISP.Attribute.EventID
       description: Attribute event ID.
       type: string
-    - contextPath: MISP.Attribute.RelatedAttribute
-      description: Related Attibute.
-      type: Unknown
     - contextPath: MISP.Attribute.last_seen
       description: Attribute last_seen timestamp.
       type: string
