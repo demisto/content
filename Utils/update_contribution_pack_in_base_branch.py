@@ -62,7 +62,7 @@ def get_files_from_github(username: str, branch: str, pr_number: str) -> List[st
     content_path = os.getcwd()
     files_list = set()
     chunk_size = 1024 * 500     # 500 Kb
-    base_url = f'https://raw.githubusercontent.com/{username}/content/{branch}'
+    base_url = f'https://raw.githubusercontent.com/{username}/content/{branch}/'
     for file_path in get_pr_files(pr_number):
         abs_file_path = os.path.join(content_path, file_path)
         abs_dir = os.path.dirname(abs_file_path)
@@ -70,6 +70,7 @@ def get_files_from_github(username: str, branch: str, pr_number: str) -> List[st
             os.makedirs(abs_dir)
         with open(abs_file_path, 'wb') as changed_file:
             with requests.get(urljoin(base_url, file_path), stream=True) as file_content:
+                file_content.raise_for_status()
                 for data in file_content.iter_content(chunk_size=chunk_size):
                     changed_file.write(data)
 
