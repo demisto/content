@@ -2359,7 +2359,8 @@ class Common(object):
         :param indicator_type: use DBotScoreType class
 
         :type integration_name: ``str``
-        :param integration_name: integration name
+        :param integration_name: For integrations - The class will automatically determine the integration name.
+                                For scripts - The class will use the given integration name.
 
         :type score: ``DBotScore``
         :param score: DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD
