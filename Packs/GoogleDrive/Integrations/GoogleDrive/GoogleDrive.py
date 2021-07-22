@@ -931,8 +931,6 @@ def prepare_single_drive_human_readable(outputs_context: Dict[str, Any], args: D
                            headerTransform=pascalToSpace,
                            removeNull=True)
 
-    return drive_hr_md
-
 
 def prepare_file_read_request(client: GSuiteClient, args: Dict[str, str]) -> Dict[str, Any]:
     http_request_params: Dict[str, str] = assign_params(
