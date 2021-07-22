@@ -2673,7 +2673,33 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
     }
 
 
-def test_get_endpoint_properties():
+CONNECTED_STATUS = {
+    'endpoint_status': 'Connected',
+    'is_isolated': True,
+    'host_name': 'TEST',
+    'ip': '1.1.1.1'
+}
+
+NO_STATUS = {
+    'is_isolated': True,
+    'host_name': 'TEST',
+    'ip': '1.1.1.1'
+}
+
+OFFLINE_STATUS = {
+    'endpoint_status': 'Offline',
+    'is_isolated': True,
+    'host_name': 'TEST',
+    'ip': '1.1.1.1'
+}
+
+
+@pytest.mark.parametrize("endpoint, expected", [
+    (CONNECTED_STATUS, 'Online'),
+    (NO_STATUS, 'Offline'),
+    (OFFLINE_STATUS, 'Offline')
+])
+def test_get_endpoint_properties(endpoint, expected):
     """
     Given:
         - Endpoint data
