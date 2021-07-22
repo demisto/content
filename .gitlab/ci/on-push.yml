@@ -24,8 +24,6 @@ trigger-private-build:
 run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
-  rules:
-    - if: '$NIGHTLY'
 
 
 run-validations:
