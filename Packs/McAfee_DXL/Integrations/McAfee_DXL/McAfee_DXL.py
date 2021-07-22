@@ -43,6 +43,7 @@ class EventSender:
             self.broker_urls = params['broker_urls'].split(',')
         self.push_ip_topic = params.get('push_ip_topic')
         self.push_url_topic = params.get('push_url_topic')
+        
         self.push_domain_topic = params.get('push_domain_topic')
         self.push_hash_topic = params.get('push_hash_topic')
         self.client = DxlClient(self.get_client_config())
@@ -141,6 +142,8 @@ def main():
         if command == 'test-module':
             event_sender.send_event('TEST', 'test')
             result = 'ok'
+            
+            
         elif command == 'dxl-send-event':
             result = event_sender.send_event_wrapper(args.get('topic'), args.get('payload'))
         elif command == 'dxl-push-ip':
