@@ -42,10 +42,12 @@ DEPENDENT_COMMANDS_ERROR_MSG = '\nPlease verify that the connection you have spe
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, **kwargs):
+    def __init__(self, base_url, username, password, api_token=None, **kwargs):
         self.username = username
         self.password = password
         self.session = ''
+        self.api_token = api_token
+        self.check_authentication()
         super(Client, self).__init__(base_url, **kwargs)
 
     def do_request(self, method: str, url_suffix: str, data: dict = None, params: dict = None, resp_type: str = 'json',
@@ -56,7 +58,19 @@ class Client(BaseClient):
             self.update_session()
         headers['session'] = self.session
         res = self._http_request(method, url_suffix, headers=headers, json_data=data, data=body,
-                                 params=params, resp_type='response', ok_codes=(200, 201, 202, 204, 400, 403, 404))
+                                 params=params, resp_type='response', ok_codes=(200, 201, 202, 204, 400, 401, 403, 404))
+
+        if res.status_code == 401:
+            if self.api_token:
+                err_msg = 'Unauthorized Error: please verify that the given API token is valid and that the IP of the ' \
+                          'client is listed in the api_token_trusted_ip_address_list global setting.\n'
+            else:
+                err_msg = ''
+            try:
+                err_msg += str(res.json())
+            except ValueError:
+                err_msg += str(res)
+            return_error(err_msg)
 
         # if session expired
         if res.status_code == 403:
@@ -85,18 +99,36 @@ class Client(BaseClient):
         return res
 
     def update_session(self):
-        body = {
-            'username': self.username,
-            'password': self.password
-        }
+        if self.api_token:
+            self.session = self.api_token
+        elif self.username and self.password:
+            body = {
+                'username': self.username,
+                'password': self.password
+            }
 
-        res = self._http_request('GET', '/api/v2/session/login', json_data=body, ok_codes=(200,))
+            res = self._http_request('GET', '/api/v2/session/login', json_data=body, ok_codes=(200,))
 
-        self.session = res.get('data').get('session')
+            self.session = res.get('data').get('session')
+        else:  # no API token and no credentials were provided, raise an error:
+            return_error('Please provide either an API Token or Username & Password.')
         return self.session
 
     def login(self):
         return self.update_session()
+
+    def check_authentication(self):
+        """
+        Check that the authentication process is valid, i.e. user provided either API token to use OAuth 2.0
+        authentication or user provided Username & Password for basic authentication, but not both credentials and
+        API token.
+        """
+        if self.username and self.password and self.api_token:
+            return_error('Please clear either the Credentials or the API Token fields.\n'
+                         'If you wish to use basic authentication please provide username and password, '
+                         'and leave the API Token field empty.\n'
+                         'If you wish to use OAuth 2 authentication, please provide an API Token and leave the '
+                         'Credentials and Password fields empty.')
 
 
 ''' GENERAL HELPER FUNCTIONS '''
@@ -651,7 +683,7 @@ def state_params_suffix(alerts_states_to_retrieve):
 
 
 def test_module(client, data_args):
-    if client.login():
+    if client.do_request('GET', 'system_status'):
         return demisto.results('ok')
     raise ValueError('Test Tanium integration failed - please check your username and password')
 
@@ -706,13 +738,11 @@ def get_intel_doc(client, data_args):
     raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/intels/{id_}')
     intel_doc = get_intel_doc_item(raw_response)
 
-    context = createContext(intel_doc, removeNull=True)
+    context = createContext(raw_response, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
     intel_doc['LabelIds'] = str(intel_doc['LabelIds']).strip('[]')
-    headers = ['ID', 'Name', 'Description', 'Type', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt',
-               'LabelIds']
-    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=headers,
+    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=list(intel_doc.keys()),
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -731,33 +761,36 @@ def get_intel_docs(client, data_args):
         intel_doc = get_intel_doc_item(item)
         intel_docs.append(intel_doc)
 
-    context = createContext(intel_docs, removeNull=True)
+    context = createContext(raw_response, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
     for item in intel_docs:
         item['LabelIds'] = str(item['LabelIds']).strip('[]')
 
-    headers = ['ID', 'Name', 'Description', 'Type', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt',
-               'LabelIds']
-    human_readable = tableToMarkdown('Intel docs', intel_docs, headers=headers,
+    human_readable = tableToMarkdown('Intel docs', intel_docs, headers=list(intel_doc.keys()),
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
 
 def get_intel_docs_labels_list(client, data_args):
     id_ = data_args.get('intel-doc-id')
-    raw_response = client.do_request('GET',
-                                     f'/plugin/products/detect3/api/v1/intels/{id_}/labels')
+    try:
+        raw_response = client.do_request('GET',
+                                         f'/plugin/products/detect3/api/v1/intels/{id_}/labels')
+    except requests.HTTPError as e:
+        raise DemistoException(f'API call error, please check the intel doc ID and try again.\n({str(e)})')
 
     intel_docs_labels = []
+    intel_doc_label = {}
     for item in raw_response:
         intel_doc_label = get_intel_doc_label_item(item)
         intel_docs_labels.append(intel_doc_label)
 
-    context = createContext(intel_docs_labels, removeNull=True)
-    outputs = {f'Tanium.IntelDocLabels(val.ID && val.ID === obj.ID).{id_}': context}
-
+    context = createContext({'intelDocId': id_, 'labelsList': raw_response}, removeNull=True)
+    outputs = {
+        f'Tanium.IntelDocLabel(val.intelDocId && val.intelDocId === obj.intelDocId)': context if raw_response else {}}
     human_readable = tableToMarkdown('Intel docs labels', intel_docs_labels, headerTransform=pascalToSpace,
+                                     headers=list(intel_doc_label.keys()),
                                      removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -766,37 +799,51 @@ def add_intel_docs_label(client, data_args):
     intel_doc_id = data_args.get('intel-doc-id')
     label_id = data_args.get('label-id')
     params = assign_params(id=label_id)
-    raw_response = client.do_request('PUT',
-                                     f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}/labels', data=params)
+    try:
+        raw_response = client.do_request('PUT',
+                                         f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}/labels', data=params)
+    except requests.HTTPError as e:
+        raise DemistoException(f'API call error, please check the intel doc ID and try again.\n({str(e)})')
+    except Exception as e:
+        raise DemistoException(f'An error occurred, please check the given label ID.\n({str(e)})')
 
     intel_docs_labels = []
-
+    intel_doc_label = {}
     for item in raw_response:
         intel_doc_label = get_intel_doc_label_item(item)
         intel_docs_labels.append(intel_doc_label)
 
-    context = createContext(intel_docs_labels, removeNull=True)
-    outputs = {
-        f'Tanium.IntelDocLabels(val.ID && val.ID === obj.ID).{intel_doc_id}': context}
-    # TODO should I add it to docs context as well?
-
+    context = createContext({'intelDocId': intel_doc_id, 'labelsList': raw_response}, removeNull=True)
+    outputs = {f'Tanium.IntelDocLabel(val.intelDocId && val.intelDocId === obj.intelDocId)': context}
     human_readable = tableToMarkdown(
-        f'Successfully created a new label association for the identified intel document ({intel_doc_id}).',
-        intel_docs_labels, headerTransform=pascalToSpace, removeNull=True)
+        f'Successfully created a new label ({label_id}) association for the identified intel document ({intel_doc_id}).',
+        intel_docs_labels, headers=list(intel_doc_label.keys()), headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
 
 def remove_intel_docs_label(client, data_args):
     intel_doc_id = data_args.get('intel-doc-id')
     label_id_to_delete = data_args.get('label-id')
-    raw_response = client.do_request('DELETE',
-                                     f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}/labels/{label_id_to_delete}')
+    try:
+        raw_response = client.do_request('DELETE',
+                                         f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}/labels/{label_id_to_delete}')
+    except requests.HTTPError as e:
+        raise DemistoException(f'API call error, please check the intel doc ID and try again.\n({str(e)})')
+    except Exception as e:
+        raise DemistoException(f'An error occurred, please check the given label ID.\n({str(e)})')
+    intel_docs_labels = []
+    intel_doc_label = {}
+    for item in raw_response:
+        intel_doc_label = get_intel_doc_label_item(item)
+        intel_docs_labels.append(intel_doc_label)
 
-    human_readable = ''
-    if raw_response:
-        human_readable = f'Successfully removed the label ({label_id_to_delete})' \
-                         f' association for the identified intel document ({intel_doc_id}).'
-    return human_readable, {}, raw_response
+    context = createContext({'intelDocId': intel_doc_id, 'labelsList': raw_response}, removeNull=True)
+    outputs = {f'Tanium.IntelDocLabel(val.intelDocId && val.intelDocId === obj.intelDocId)': context}
+    human_readable = tableToMarkdown(
+        f'Successfully removed the label ({label_id_to_delete}) association for the identified intel document ({intel_doc_id}).',
+        intel_docs_labels, headers=list(intel_doc_label.keys()), headerTransform=pascalToSpace, removeNull=True)
+    return human_readable, outputs, raw_response
+
 
 
 def create_intel_doc(client, data_args):
@@ -811,9 +858,7 @@ def create_intel_doc(client, data_args):
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
     intel_doc['LabelIds'] = str(intel_doc['LabelIds']).strip('[]')
-    headers = ['ID', 'Name', 'Description', 'Type', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt',
-               'LabelIds']
-    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=headers,
+    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=list(intel_doc.keys()),
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -831,9 +876,7 @@ def update_intel_doc(client, data_args):
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
     intel_doc['LabelIds'] = str(intel_doc['LabelIds']).strip('[]')
-    headers = ['ID', 'Name', 'Description', 'Type', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt',
-               'LabelIds']
-    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=headers,
+    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=list(intel_doc.keys()),
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
@@ -843,8 +886,10 @@ def deploy_intel(client, data_args):
                                      '/plugin/products/threat-response/api/v1/intel/deploy')
 
     human_readable = ''
-    if raw_response:
+    if raw_response and raw_response.get('data'):
         human_readable = 'Successfully deployed intel.'
+    else:
+        raise DemistoException('Something went wrong while deploying intel docs.')
     return human_readable, {}, raw_response
 
 
@@ -854,7 +899,7 @@ def get_deploy_status(client, data_args):
 
     status_data = raw_response.get('data', {})
     status = get_intel_doc_status(status_data)
-    context = createContext(status, removeNull=True)
+    context = createContext(raw_response, removeNull=True)
     outputs = {'Tanium.IntelDeployStatus': context}
 
     human_readable = tableToMarkdown('Intel deploy status', status, headers=list(status.keys()),
@@ -1566,18 +1611,19 @@ def delete_evidence(client, data_args):
 
 def main():
     params = demisto.params()
-    username = params.get('credentials').get('identifier')
-    password = params.get('credentials').get('password')
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
 
     # Remove trailing slash to prevent wrong URL path to service
     server = params['url'].strip('/')
     # Should we use SSL
     use_ssl = not params.get('insecure', False)
+    api_token = params.get('api_token')
 
     # Remove proxy if not set to true in params
     handle_proxy()
     command = demisto.command()
-    client = Client(server, username, password, verify=use_ssl)
+    client = Client(server, username, password, api_token=api_token, verify=use_ssl)
     demisto.info(f'Command being called is {command}')
 
     commands = init_commands_dict()

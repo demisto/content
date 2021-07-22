@@ -18,8 +18,15 @@ configuration:
   type: 0
 - display: Username
   name: credentials
-  required: true
+  required: false
   type: 9
+- additionalinfo: The API token was created in the Tanium platform and should
+    be used for OAuth 2 authentication. See Help (?) for more information.
+  display: API Token
+  hidden: false
+  name: api_token
+  required: false
+  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -708,7 +715,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The label ID.
+      description: The label ID. (Use tanium-tr-intel-docs-labels-list command in order to get the available label IDs).
       isArray: false
       name: label-id
       required: true
@@ -1795,7 +1802,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the new label to associate with the target intel document.
+      description: The ID of the new label to associate with the target intel document. (Use tanium-tr-intel-docs-labels-list command in order to get the available label IDs).
       isArray: false
       name: label-id
       required: true
@@ -1837,7 +1844,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the label to disassociate from the target intel document.
+      description: The ID of the label to disassociate from the target intel document. (Use tanium-tr-intel-docs-labels-list command in order to get the available label IDs).
       isArray: false
       name: label-id
       required: true
@@ -1856,7 +1863,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The suffix at the end of a filename.
+      description: The suffix at the end of a filename. (Available file types - yara, stix, ioc)
       isArray: false
       name: file-extension
       predefined:
@@ -1913,7 +1920,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The suffix at the end of a filename.
+      description: The suffix at the end of a filename. (Available file types - yara, stix, ioc)
       isArray: false
       name: file-extension
       predefined:
@@ -1924,7 +1931,7 @@ script:
       secret: false
     deprecated: false
     description: Update the contents of an existing intel document by providing the
-      document contents.
+      document contents. (Supports update of minor changes in the existing file)
     execution: false
     hidden: false
     name: tanium-tr-intel-doc-update
