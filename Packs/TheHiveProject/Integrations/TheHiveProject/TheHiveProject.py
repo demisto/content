@@ -160,7 +160,9 @@ class Client(BaseClient):
             )
             if res.status_code != 200:
                 return None
-            tasks = [x for x in res.json() if x['_parent'] == case_id]
+            merit = res.json()
+            tasks = [x for x in res.json()]
+            # if x['_parent'] and x['_parent'] == case_id
         if tasks:
             for task in tasks:
                 if "id" in task:
@@ -443,7 +445,7 @@ def search_cases_command(client: Client, args: dict):
         arguments = args.get('query', None)
     else:
         arguments = {k: True if v == 'true' else v for k, v in args.items() if v is not None}
-        arguments = {k: False if v == 'false' else v for k, v in arguments.items()}
+        arguments = {k: False if v == 'false' else v for k, v in arguments.items() if v is not None}
     try:
         arguments = json.loads(arguments)
     except Exception:
@@ -1006,3 +1008,4 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
  #when updating task no description to update, update something else?
  # the search user command, does not have the option to filter, just get the list
  #create obserables lacks the tag arg
+ #how is search cases supposed to work?
