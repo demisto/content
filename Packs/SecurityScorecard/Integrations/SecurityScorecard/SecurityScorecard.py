@@ -712,7 +712,7 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
     change_direction = args.get('change_direction')
     score_types = argToList(args.get('score_types'))
     target_arg = args.get('target')
-    portfolios = argToList(args.get('portfolios'))
+    portfolios = args.get('portfolios')
 
     # Only one argument between portfolios and target should be defined
     # Return error if neither of them is defined or if both are defined
@@ -720,7 +720,7 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
     if portfolios and target_arg:
         raise DemistoException("Both 'portfolio' and 'target' argument have been set. Please remove one of them and try again.")
     else:
-        target = argToList(target_arg) or portfolios
+        target = argToList(target_arg) or argToList(portfolios)
     if not target:
         raise DemistoException("Either 'portfolio' or 'target' argument must be given")
 
@@ -764,8 +764,8 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
     change_direction = args.get('change_direction')
     threshold = arg_to_number(args.get('threshold'))
     score_types = argToList(args.get('score_types'))
-    target_arg = argToList(args.get('target'))
-    portfolios = argToList(args.get('portfolios'))
+    target_arg = args.get('target')
+    portfolios = args.get('portfolios')
 
     # Only one argument between portfolios and target should be defined
     # Return error if neither of them is defined or if both are defined
@@ -773,7 +773,7 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
     if portfolios and target_arg:
         raise DemistoException("Both 'portfolio' and 'target' argument have been set. Please remove one of them and try again.")
     else:
-        target = target_arg or portfolios
+        target = argToList(target_arg) or argToList(portfolios)
     if not target:
         raise DemistoException("Either 'portfolio' or 'target' argument must be given")
 
