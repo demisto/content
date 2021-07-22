@@ -2226,8 +2226,10 @@ def fetch_last_emails(
             result.append(item)
             if len(result) >= client.max_fetch:
                 break
+        else:
+            demisto.log(f'message_id {item.message_id} was excluded. IsMessage: {isinstance(item, Message)}')
 
-    demisto.debug(f'{APP_NAME} - Got total of {len(qs)} from ews query. {len(result)} results not excluded.')
+    demisto.debug(f'{APP_NAME} - Got total of {len(result)} from ews query.')
     return result
 
 
