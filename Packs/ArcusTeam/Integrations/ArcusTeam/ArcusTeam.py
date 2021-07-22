@@ -49,8 +49,9 @@ def getEditIssue(returnFields):
             data[key] = issue
             return data
         else:
-            if issue.get('risk') != None:
-                issue['risk'] = str(round(issue.get('risk')*100, 2))+'%'
+            field = issue.get('risk')
+            if field != None:
+                issue['risk'] = str(round(field*100, 2))+'%'
             return issue
     return editIssue
 
