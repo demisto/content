@@ -52,7 +52,7 @@ Creates a business object.
 
 
 #### Command Example
-```!cherwell-create-business-object type=incident json={"Priority": "3", "CustomerDisplayName": "Lucas Sato", "Description": "This incident was created by Cherwell test playbook","Service":"Enterprise Apps","Category":"PeopleSoft","Subcategory":"Submit Incident"}```
+```!cherwell-create-business-object type=incident json={"Priority": "3", "CustomerDisplayName": "demisto admin", "Description": "This incident was created by Cherwell test playbook","Service":"Enterprise Apps","Category":"PeopleSoft","Subcategory":"Submit Incident"}```
 
 #### Context Example
 ```json
@@ -210,13 +210,13 @@ There is no context output for this command.
             "ConfigItemType": "",
             "ConfigItemTypeID": "",
             "Cost": "0",
-            "CreatedBy": "Gina Mehra",
-            "CreatedByEmail": "gina.mehra@RiverTCorp.com",
+            "CreatedBy": "demisto admin",
+            "CreatedByEmail": "user1@mail.com",
             "CreatedByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
             "CreatedDateTime": "7/22/2021 12:22 PM",
             "CreatedDuring": "8 to 5 Monday thru Friday",
             "CustomerDepartment": "Accounting",
-            "CustomerDisplayName": "Lucas Sato",
+            "CustomerDisplayName": "demisto admin",
             "CustomerRecID": "9365da817530b0bfee892a48fb8815654c6071af03",
             "CustomerSubscriptionLevel": "",
             "CustomerTypeID": "",
@@ -233,7 +233,7 @@ There is no context output for this command.
             "IncidentchildID": "",
             "IncidentchildRecID": "",
             "KnowledgeArticleID": "",
-            "LastModBy": "Gina Mehra",
+            "LastModBy": "demisto admin",
             "LastModByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
             "LastModTimeStamp": "",
             "LastModifiedDateTime": "7/22/2021 12:53 PM",
@@ -250,7 +250,7 @@ There is no context output for this command.
             "MajorIncidentRecID": "",
             "NetworkEventID": "",
             "NextStatus": "In Progress",
-            "NextStatusOneStep": "<Trebuchet><ActionInfoDef ID=\"93d9abdb6242",
+            "NextStatusOneStep": "ActionInfoDef ID=\"93d9abdb6242",
             "NextStatusText": "Begin Work",
             "OnBehalfOf": "False",
             "PendingEndDateTime": "",
@@ -348,7 +348,7 @@ There is no context output for this command.
 >### Incident: 102383
 >|Approval Block ID|Assigned Team|Assigned Team ID|Assigned To|Assigned To ID|Assigned To Manager|Barcode|Breach Notes|CI Down End Date Time|CI Down Start Date Time|CI Downtime In Minutes|Call Source|Cart Item ID|Category|Cause|Change ID|Cloned Incident|Cloned Incident ID|Close Description|Closed By|Closed By ID|Closed Date Time|Closed On 1 St Call|Combined KB|Comments|Config Item Display Name|Config Item Rec ID|Config Item Type|Config Item Type ID|Cost|Created By|Created By Email|Created By ID|Created Date Time|Created During|Customer Department|Customer Display Name|Customer Rec ID|Customer Subscription Level|Customer Type ID|Default Team|Description|Description Sentiment Value|Email Notifications|ISMS Audits ID|Impact|In cident Duration In Days|In cident Duration In Hours|Incident ID|Incident Type|Incidentchild ID|Incidentchild Rec ID|Knowledge Article ID|Last Mod By|Last Mod By ID|Last Mod Time Stamp|Last Modified Date Time|Level 2 Escalation Complete|Level 2 Escalation Team|Level 3 Escalation Complete|Level 3 Escalation Team|Linked Problem|Linked SL As|Linked To Problem|Location|Major Incident|Major Incident ID|Major Incident Rec ID|Network Event ID|Next Status|Next Status One Step|Next Status Text|On Behalf Of|Pending End Date Time|Pending Previous Status|Pending Reason|Pending Start Date Time|Picked Up Date Time|Portal Affects Multiple Users|Portal Affects Primary Function|Portal Alt Contact Info|Priority|Public Id|Rec ID|Record Id|Recurring Incident|Reopened|Requester|Requester Department|Requester Email|Requester ID|Review By Deadline|SCT Fired|SCT Rec ID|SLAID|SLAID For CI|SLAID For Customer|SLAID For Service|SLA Name|SLA Name For CI|SLA Name For Customer|SLA Name For Service|SLA Resolution Warning|SLA Resolve By Deadline|SLA Respond By Deadline|SLA Response Warning|SLA Target Time ID|SLA_ Key|STC Time In Minutes|Security Event ID|Service|Service Cart ID|Service Catalog Template Name|Service Customer Is Entitled|Service Entitlements|Service ID|Show All Services|Show Contact Information|Skill ID|Smart Classify Search String|Specifics Type Id|Stat _24 X 7 Elapsed Time|Stat _ Date Time Assigned|Stat _ Date Time Closed|Stat _ Date Time In Progress|Stat _ Date Time Re Opened|Stat _ Date Time Resolved|Stat _ Date Time Responded|Stat _ First Call Resolution|Stat _ Incident Escalated|Stat _ Incident Reopened|Stat _ Number Of Escalations|Stat _ Number Of Touches|Stat _ Response Time|Stat _SLA Resolution Breached|Stat _SLA Resolution Good|Stat _SLA Resolution Warning|Stat _SLA Response Breached|Stat _SLA Response Good|Stat _SLA Response Warning|Status|Status Desc|Status ID|Status Order|Subcategory|Subcategory ID|Task Closed Count|Tasks Closed|Tasks In Progress|Tasks On Hold|Total STC Time In Minutes|Total Task Time|Total Tasks|Urgency|Wait Time|Walk Up Support Location|Was CI Down|Withdraw|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  |  |  | 0 | Phone |  | PeopleSoft |  |  | False |  |  |  |  |  | False |  |  |  |  |  |  | 0 | Gina Mehra | gina.mehra@RiverTCorp.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/22/2021 12:22 PM | 8 to 5 Monday thru Friday | Accounting | Lucas Sato | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook-<br/>-<br/>This is from the REST API-<br/>-<br/>This is from the REST API | 2 |  |  |  | 0.02 | 0.53 | 102383 | Service Request |  |  |  | Gina Mehra | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 |  | 7/22/2021 12:53 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | <Trebuchet><ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102383 | 94757184cce46253b3ab694ae58289b64d0cd867ce | 94757184cce46253b3ab694ae58289b64d0cd867ce | False | False |  | Accounting |  |  |  | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/26/2021 12:07 PM | 7/26/2021 12:22 PM | 7/22/2021 4:22 PM | 7/22/2021 4:07 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 4 | 0 | False | False | False | False | False | False | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0 | 0 |  | 0 |  | False | False |
+>|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  |  |  | 0 | Phone |  | PeopleSoft |  |  | False |  |  |  |  |  | False |  |  |  |  |  |  | 0 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/22/2021 12:22 PM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook-<br/>-<br/>This is from the REST API-<br/>-<br/>This is from the REST API | 2 |  |  |  | 0.02 | 0.53 | 102383 | Service Request |  |  |  | demisto admin | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 |  | 7/22/2021 12:53 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102383 | 94757184cce46253b3ab694ae58289b64d0cd867ce | 94757184cce46253b3ab694ae58289b64d0cd867ce | False | False |  | Accounting |  |  |  | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/26/2021 12:07 PM | 7/26/2021 12:22 PM | 7/22/2021 4:22 PM | 7/22/2021 4:07 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 4 | 0 | False | False | False | False | False | False | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0 | 0 |  | 0 |  | False | False |
 
 
 ### cherwell-download-attachments
@@ -657,13 +657,13 @@ There is no context output for this command.
                 "ConfigItemType": "",
                 "ConfigItemTypeID": "",
                 "Cost": "0.00",
-                "CreatedBy": "Gina Mehra",
-                "CreatedByEmail": "gina.mehra@RiverTCorp.com",
+                "CreatedBy": "demisto admin",
+                "CreatedByEmail": "user1@mail.com",
                 "CreatedByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
                 "CreatedDateTime": "7/21/2021 11:00:09 AM",
                 "CreatedDuring": "8 to 5 Monday thru Friday",
                 "CustomerDepartment": "Accounting",
-                "CustomerDisplayName": "Lucas Sato",
+                "CustomerDisplayName": "demisto admin",
                 "CustomerRecID": "9365da817530b0bfee892a48fb8815654c6071af03",
                 "CustomerSubscriptionLevel": "",
                 "CustomerTypeID": "",
@@ -697,7 +697,7 @@ There is no context output for this command.
                 "MajorIncidentRecID": "",
                 "NetworkEventID": "",
                 "NextStatus": "In Progress",
-                "NextStatusOneStep": "<Trebuchet><ActionInfoDef ID=\"93d9abdb6242",
+                "NextStatusOneStep": "ActionInfoDef ID=\"93d9abdb6242",
                 "NextStatusText": "Begin Work",
                 "OnBehalfOf": "False",
                 "PendingEndDateTime": "",
@@ -818,13 +818,13 @@ There is no context output for this command.
                 "ConfigItemType": "",
                 "ConfigItemTypeID": "",
                 "Cost": "0.00",
-                "CreatedBy": "Gina Mehra",
-                "CreatedByEmail": "gina.mehra@RiverTCorp.com",
+                "CreatedBy": "demisto admin",
+                "CreatedByEmail": "user1@mail.com",
                 "CreatedByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
                 "CreatedDateTime": "7/21/2021 11:01:52 AM",
                 "CreatedDuring": "8 to 5 Monday thru Friday",
                 "CustomerDepartment": "Accounting",
-                "CustomerDisplayName": "Lucas Sato",
+                "CustomerDisplayName": "demisto admin",
                 "CustomerRecID": "9365da817530b0bfee892a48fb8815654c6071af03",
                 "CustomerSubscriptionLevel": "",
                 "CustomerTypeID": "",
@@ -858,7 +858,7 @@ There is no context output for this command.
                 "MajorIncidentRecID": "",
                 "NetworkEventID": "",
                 "NextStatus": "In Progress",
-                "NextStatusOneStep": "<Trebuchet><ActionInfoDef ID=\"93d9abdb6242",
+                "NextStatusOneStep": "ActionInfoDef ID=\"93d9abdb6242",
                 "NextStatusText": "Begin Work",
                 "OnBehalfOf": "False",
                 "PendingEndDateTime": "",
@@ -979,13 +979,13 @@ There is no context output for this command.
                 "ConfigItemType": "",
                 "ConfigItemTypeID": "",
                 "Cost": "0.00",
-                "CreatedBy": "Gina Mehra",
-                "CreatedByEmail": "gina.mehra@RiverTCorp.com",
+                "CreatedBy": "demisto admin",
+                "CreatedByEmail": "user1@mail.com",
                 "CreatedByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
                 "CreatedDateTime": "7/21/2021 1:11:19 PM",
                 "CreatedDuring": "8 to 5 Monday thru Friday",
                 "CustomerDepartment": "Accounting",
-                "CustomerDisplayName": "Lucas Sato",
+                "CustomerDisplayName": "demisto admin",
                 "CustomerRecID": "9365da817530b0bfee892a48fb8815654c6071af03",
                 "CustomerSubscriptionLevel": "",
                 "CustomerTypeID": "",
@@ -1019,7 +1019,7 @@ There is no context output for this command.
                 "MajorIncidentRecID": "",
                 "NetworkEventID": "",
                 "NextStatus": "In Progress",
-                "NextStatusOneStep": "<Trebuchet><ActionInfoDef ID=\"93d9abdb6242",
+                "NextStatusOneStep": "ActionInfoDef ID=\"93d9abdb6242",
                 "NextStatusText": "Begin Work",
                 "OnBehalfOf": "False",
                 "PendingEndDateTime": "",
@@ -1140,13 +1140,13 @@ There is no context output for this command.
                 "ConfigItemType": "",
                 "ConfigItemTypeID": "",
                 "Cost": "0.00",
-                "CreatedBy": "Gina Mehra",
-                "CreatedByEmail": "gina.mehra@RiverTCorp.com",
+                "CreatedBy": "demisto admin",
+                "CreatedByEmail": "user1@mail.com",
                 "CreatedByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
                 "CreatedDateTime": "7/22/2021 12:22:27 PM",
                 "CreatedDuring": "8 to 5 Monday thru Friday",
                 "CustomerDepartment": "Accounting",
-                "CustomerDisplayName": "Lucas Sato",
+                "CustomerDisplayName": "demisto admin",
                 "CustomerRecID": "9365da817530b0bfee892a48fb8815654c6071af03",
                 "CustomerSubscriptionLevel": "",
                 "CustomerTypeID": "",
@@ -1163,7 +1163,7 @@ There is no context output for this command.
                 "IncidentchildID": "",
                 "IncidentchildRecID": "",
                 "KnowledgeArticleID": "",
-                "LastModBy": "Gina Mehra",
+                "LastModBy": "demisto admin",
                 "LastModByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
                 "LastModTimeStamp": "Byte[] Array",
                 "LastModifiedDateTime": "7/22/2021 12:22:31 PM",
@@ -1180,7 +1180,7 @@ There is no context output for this command.
                 "MajorIncidentRecID": "",
                 "NetworkEventID": "",
                 "NextStatus": "In Progress",
-                "NextStatusOneStep": "<Trebuchet><ActionInfoDef ID=\"93d9abdb6242",
+                "NextStatusOneStep": "ActionInfoDef ID=\"93d9abdb6242",
                 "NextStatusText": "Begin Work",
                 "OnBehalfOf": "False",
                 "PendingEndDateTime": "",
@@ -1301,13 +1301,13 @@ There is no context output for this command.
                 "ConfigItemType": "",
                 "ConfigItemTypeID": "",
                 "Cost": "0.00",
-                "CreatedBy": "Gina Mehra",
-                "CreatedByEmail": "gina.mehra@RiverTCorp.com",
+                "CreatedBy": "demisto admin",
+                "CreatedByEmail": "user1@mail.com",
                 "CreatedByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
                 "CreatedDateTime": "7/22/2021 12:54:18 PM",
                 "CreatedDuring": "8 to 5 Monday thru Friday",
                 "CustomerDepartment": "Accounting",
-                "CustomerDisplayName": "Lucas Sato",
+                "CustomerDisplayName": "demisto admin",
                 "CustomerRecID": "9365da817530b0bfee892a48fb8815654c6071af03",
                 "CustomerSubscriptionLevel": "",
                 "CustomerTypeID": "",
@@ -1324,7 +1324,7 @@ There is no context output for this command.
                 "IncidentchildID": "",
                 "IncidentchildRecID": "",
                 "KnowledgeArticleID": "",
-                "LastModBy": "Gina Mehra",
+                "LastModBy": "demisto admin",
                 "LastModByID": "9365b511f78906c1fe83644c3fb33e9ec1466f7d90",
                 "LastModTimeStamp": "Byte[] Array",
                 "LastModifiedDateTime": "7/22/2021 12:54:18 PM",
@@ -1341,7 +1341,7 @@ There is no context output for this command.
                 "MajorIncidentRecID": "",
                 "NetworkEventID": "",
                 "NextStatus": "In Progress",
-                "NextStatusOneStep": "<Trebuchet><ActionInfoDef ID=\"93d9abdb6242",
+                "NextStatusOneStep": "ActionInfoDef ID=\"93d9abdb6242",
                 "NextStatusText": "Begin Work",
                 "OnBehalfOf": "False",
                 "PendingEndDateTime": "",
@@ -1440,11 +1440,11 @@ There is no context output for this command.
 >### Query Results
 >|Approval Block ID|Assigned Team|Assigned Team ID|Assigned To|Assigned To ID|Assigned To Manager|Barcode|Breach Notes|Business Object Id|CI Down End Date Time|CI Down Start Date Time|CI Downtime In Minutes|Call Source|Cart Item ID|Category|Cause|Change ID|Cloned Incident|Cloned Incident ID|Close Description|Closed By|Closed By ID|Closed Date Time|Closed On 1 St Call|Combined KB|Comments|Config Item Display Name|Config Item Rec ID|Config Item Type|Config Item Type ID|Cost|Created By|Created By Email|Created By ID|Created Date Time|Created During|Customer Department|Customer Display Name|Customer Rec ID|Customer Subscription Level|Customer Type ID|Default Team|Description|Description Sentiment Value|Email Notifications|ISMS Audits ID|Impact|In cident Duration In Days|In cident Duration In Hours|Incident ID|Incident Type|Incidentchild ID|Incidentchild Rec ID|Knowledge Article ID|Last Mod By|Last Mod By ID|Last Mod Time Stamp|Last Modified Date Time|Level 2 Escalation Complete|Level 2 Escalation Team|Level 3 Escalation Complete|Level 3 Escalation Team|Linked Problem|Linked SL As|Linked To Problem|Location|Major Incident|Major Incident ID|Major Incident Rec ID|Network Event ID|Next Status|Next Status One Step|Next Status Text|On Behalf Of|Pending End Date Time|Pending Previous Status|Pending Reason|Pending Start Date Time|Picked Up Date Time|Portal Affects Multiple Users|Portal Affects Primary Function|Portal Alt Contact Info|Priority|Public Id|Rec ID|Record Id|Recurring Incident|Reopened|Requester|Requester Department|Requester Email|Requester ID|Review By Deadline|SCT Fired|SCT Rec ID|SLAID|SLAID For CI|SLAID For Customer|SLAID For Service|SLA Name|SLA Name For CI|SLA Name For Customer|SLA Name For Service|SLA Resolution Warning|SLA Resolve By Deadline|SLA Respond By Deadline|SLA Response Warning|SLA Target Time ID|SLA_ Key|STC Time In Minutes|Security Event ID|Service|Service Cart ID|Service Catalog Template Name|Service Customer Is Entitled|Service Entitlements|Service ID|Show All Services|Show Contact Information|Skill ID|Smart Classify Search String|Specifics Type Id|Stat _24 X 7 Elapsed Time|Stat _ Date Time Assigned|Stat _ Date Time Closed|Stat _ Date Time In Progress|Stat _ Date Time Re Opened|Stat _ Date Time Resolved|Stat _ Date Time Responded|Stat _ First Call Resolution|Stat _ Incident Escalated|Stat _ Incident Reopened|Stat _ Number Of Escalations|Stat _ Number Of Touches|Stat _ Response Time|Stat _SLA Resolution Breached|Stat _SLA Resolution Good|Stat _SLA Resolution Warning|Stat _SLA Response Breached|Stat _SLA Response Good|Stat _SLA Response Warning|Status|Status Desc|Status ID|Status Order|Subcategory|Subcategory ID|Task Closed Count|Tasks Closed|Tasks In Progress|Tasks On Hold|Total STC Time In Minutes|Total Task Time|Total Tasks|Urgency|Wait Time|Walk Up Support Location|Was CI Down|Withdraw|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | Gina Mehra | gina.mehra@RiverTCorp.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/21/2021 11:00:09 AM | 8 to 5 Monday thru Friday | Accounting | Lucas Sato | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.17 | 4.00 | 102379 | Service Request |  |  |  | Cherwell Admin | 93546560c6334c3c105d17437c843b9557775b2e0c | Byte[] Array | 7/21/2021 3:00:15 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | <Trebuchet><ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102379 | 947563943db20d178bf122451b8946535670196726 | 947563943db20d178bf122451b8946535670196726 | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/23/2021 10:45:09 AM | 7/23/2021 11:00:09 AM | 7/21/2021 3:00:09 PM | 7/21/2021 2:45:09 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 5 | 0 | False | False | False | True | False | True | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
->|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | Gina Mehra | gina.mehra@RiverTCorp.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/21/2021 11:01:52 AM | 8 to 5 Monday thru Friday | Accounting | Lucas Sato | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.17 | 4.00 | 102380 | Service Request |  |  |  | Cherwell Admin | 93546560c6334c3c105d17437c843b9557775b2e0c | Byte[] Array | 7/21/2021 3:02:01 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | <Trebuchet><ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 1 | 102380 | 94756398453cbed47f9b19434e91e320b92cb47d3d | 94756398453cbed47f9b19434e91e320b92cb47d3d | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/21/2021 2:56:52 PM | 7/21/2021 3:01:52 PM | 7/21/2021 11:26:52 AM | 7/21/2021 11:11:52 AM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 11 | 0 | True | False | True | True | False | True | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
->|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | Gina Mehra | gina.mehra@RiverTCorp.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/21/2021 1:11:19 PM | 8 to 5 Monday thru Friday | Accounting | Lucas Sato | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.79 | 19.00 | 102381 | Service Request |  |  |  | Cherwell Admin | 93546560c6334c3c105d17437c843b9557775b2e0c | Byte[] Array | 7/22/2021 8:11:20 AM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | <Trebuchet><ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102381 | 947564c7add241eb40f5ff40f5a026147a9fc0d47d | 947564c7add241eb40f5ff40f5a026147a9fc0d47d | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/23/2021 12:56:19 PM | 7/23/2021 1:11:19 PM | 7/22/2021 8:11:19 AM | 7/21/2021 4:56:19 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 5 | 0 | False | False | False | True | False | True | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
->|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | Gina Mehra | gina.mehra@RiverTCorp.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/22/2021 12:22:27 PM | 8 to 5 Monday thru Friday | Accounting | Lucas Sato | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.00 | 0.00 | 102382 | Service Request |  |  |  | Gina Mehra | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | Byte[] Array | 7/22/2021 12:22:31 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | <Trebuchet><ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102382 | 947571842387f6d7df118546e29cac13df2afafebc | 947571842387f6d7df118546e29cac13df2afafebc | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/26/2021 12:07:27 PM | 7/26/2021 12:22:27 PM | 7/22/2021 4:22:27 PM | 7/22/2021 4:07:27 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 1 | 0 | False | False | False | False | False | False | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
->|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | Gina Mehra | gina.mehra@RiverTCorp.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/22/2021 12:54:18 PM | 8 to 5 Monday thru Friday | Accounting | Lucas Sato | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.00 | 0.00 | 102384 | Service Request |  |  |  | Gina Mehra | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | Byte[] Array | 7/22/2021 12:54:18 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | <Trebuchet><ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102384 | 947571cec8a5b5f03850c940c2bf6ca2bf116ffce9 | 947571cec8a5b5f03850c940c2bf6ca2bf116ffce9 | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/26/2021 12:39:18 PM | 7/26/2021 12:54:18 PM | 7/22/2021 4:54:18 PM | 7/22/2021 4:39:18 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 1 | 0 | False | False | False | False | False | False | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
+>|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/21/2021 11:00:09 AM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.17 | 4.00 | 102379 | Service Request |  |  |  | Cherwell Admin | 93546560c6334c3c105d17437c843b9557775b2e0c | Byte[] Array | 7/21/2021 3:00:15 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102379 | 947563943db20d178bf122451b8946535670196726 | 947563943db20d178bf122451b8946535670196726 | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/23/2021 10:45:09 AM | 7/23/2021 11:00:09 AM | 7/21/2021 3:00:09 PM | 7/21/2021 2:45:09 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 5 | 0 | False | False | False | True | False | True | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
+>|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/21/2021 11:01:52 AM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.17 | 4.00 | 102380 | Service Request |  |  |  | Cherwell Admin | 93546560c6334c3c105d17437c843b9557775b2e0c | Byte[] Array | 7/21/2021 3:02:01 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 1 | 102380 | 94756398453cbed47f9b19434e91e320b92cb47d3d | 94756398453cbed47f9b19434e91e320b92cb47d3d | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/21/2021 2:56:52 PM | 7/21/2021 3:01:52 PM | 7/21/2021 11:26:52 AM | 7/21/2021 11:11:52 AM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 11 | 0 | True | False | True | True | False | True | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
+>|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/21/2021 1:11:19 PM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.79 | 19.00 | 102381 | Service Request |  |  |  | Cherwell Admin | 93546560c6334c3c105d17437c843b9557775b2e0c | Byte[] Array | 7/22/2021 8:11:20 AM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102381 | 947564c7add241eb40f5ff40f5a026147a9fc0d47d | 947564c7add241eb40f5ff40f5a026147a9fc0d47d | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/23/2021 12:56:19 PM | 7/23/2021 1:11:19 PM | 7/22/2021 8:11:19 AM | 7/21/2021 4:56:19 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 5 | 0 | False | False | False | True | False | True | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
+>|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/22/2021 12:22:27 PM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.00 | 0.00 | 102382 | Service Request |  |  |  | demisto admin | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | Byte[] Array | 7/22/2021 12:22:31 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102382 | 947571842387f6d7df118546e29cac13df2afafebc | 947571842387f6d7df118546e29cac13df2afafebc | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/26/2021 12:07:27 PM | 7/26/2021 12:22:27 PM | 7/22/2021 4:22:27 PM | 7/22/2021 4:07:27 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 1 | 0 | False | False | False | False | False | False | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
+>|  | 1st Level Support | 9365b4e90592c81e3b7a024555a6c0094ba77e8773 |  |  |  |  |  | 6dd53665c0c24cab86870a21cf6434ae |  |  | 0.00 | Phone |  | PeopleSoft |  |  |  |  |  |  |  |  | False |  |  |  |  |  |  | 0.00 | demisto admin | user1@mail.com | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | 7/22/2021 12:54:18 PM | 8 to 5 Monday thru Friday | Accounting | demisto admin | 9365da817530b0bfee892a48fb8815654c6071af03 |  |  | 1st Level Support | This incident was created by Cherwell test playbook | 1 |  |  |  | 0.00 | 0.00 | 102384 | Service Request |  |  |  | demisto admin | 9365b511f78906c1fe83644c3fb33e9ec1466f7d90 | Byte[] Array | 7/22/2021 12:54:18 PM | False | 2nd Level Support | False | 3rd Level Support |  | 93838607346b42be7074af487d9171ea9f948b7204 ,  ,  | False |  | False |  |  |  | In Progress | ActionInfoDef ID="93d9abdb6242 | Begin Work | False |  |  |  |  |  | False | False |  | 3 | 102384 | 947571cec8a5b5f03850c940c2bf6ca2bf116ffce9 | 947571cec8a5b5f03850c940c2bf6ca2bf116ffce9 | False | False |  | Accounting |  |  | 1/1/1900 12:00:00 AM | False |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | 93838607346b42be7074af487d9171ea9f948b7204 |  | Platinum |  | Platinum |  | 7/26/2021 12:39:18 PM | 7/26/2021 12:54:18 PM | 7/22/2021 4:54:18 PM | 7/22/2021 4:39:18 PM |  | Platinum_Service Request | 0 |  | Enterprise Apps |  |  | True | Platinum, Gold, Silver, Corporate | 9389f689ed2a47e91de7954ecb8f2fe733af0ecb06 | False | False | 9454f50880a42d63b93ce142d58fbbe97de1b3d672 | Submit Incident | 9398862125defd58a8deea46fe88acc411a96e2b00 | 0 |  |  |  |  |  |  | False | False | False | 0 | 1 | 0 | False | False | False | False | False | False | New |  | 938729d99cb110f2a6c3e5488ead246422a7cd115f | 1 | Submit Incident |  | 0 | False | False | False | 0 | 0.00 | 0.00 |  | 0 |  | False | False |
 
 
 ### cherwell-get-field-info
