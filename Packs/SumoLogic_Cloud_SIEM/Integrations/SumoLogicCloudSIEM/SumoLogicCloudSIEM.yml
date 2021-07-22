@@ -321,7 +321,7 @@ script:
       type: String
     - contextPath: SumoLogicSec.InsightList.RecordSummaryFields
       description: Record Summary Fields associated with the Insight.
-      type: Array
+      type: Unknown
     - contextPath: SumoLogicSec.InsightList.Resolution
       description: Resolution for closed Insight.
       type: String
