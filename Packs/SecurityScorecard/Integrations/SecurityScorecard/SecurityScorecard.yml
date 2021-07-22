@@ -68,9 +68,8 @@ script:
     description: List all Portfolios
     arguments:
     - name: limit
-      description: Limit the amount of Portfolios to return.
-      required: true
-      defaultvalue: 50
+      description: Limit the amount of Portfolios to return. Defaults to 50.
+      required: false
     outputs:
     - contextPath: SecurityScorecard.Portfolio.id
       description: Portfolio ID

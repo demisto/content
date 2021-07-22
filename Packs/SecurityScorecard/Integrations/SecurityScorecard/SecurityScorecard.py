@@ -399,8 +399,12 @@ def portfolios_list_command(client: SecurityScorecardClient, args: Dict[str, Any
     limit = arg_to_number(
         arg=args.get("limit"),
         arg_name="limit",
-        required=True
+        required=False
     )
+
+    # Enforce default if limit is not specified
+    if not limit:
+        limit = 50
 
     portfolios = client.get_portfolios()
 
