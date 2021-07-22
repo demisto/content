@@ -3,10 +3,11 @@ import json
 import os
 import zipfile
 
-import demistomock as demisto
 import pytest
-from CommonServerPython import Common
 from freezegun import freeze_time
+
+import demistomock as demisto
+from CommonServerPython import Common
 
 XDR_URL = 'https://api.xdrurl.com'
 
@@ -2670,3 +2671,24 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
             'parameters_values': {'process_name': 'process2.exe'}
         }
     }
+
+
+def test_get_endpoint_properties():
+    """
+    Given:
+        - Endpoint data
+    When
+        - The status of the enndpoint is 'Connected' with a capital C.
+    Then
+        - The status of the endpointn is determined to be 'Online'
+    """
+    from CortexXDRIR import get_endpoint_properties
+    endpoint = {
+        'endpoint_status': 'Connected',
+        'is_isolated': True,
+        'host_name': 'TEST',
+        'ip': '1.1.1.1'
+    }
+
+    status, is_isolated, hostname, ip = get_endpoint_properties(endpoint)
+    assert status == 'Online'
