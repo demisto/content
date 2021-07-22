@@ -2293,3 +2293,108 @@ Returns events corresponding to the given issue.
 >| login: tomneeman151293<br/>id: 70005542<br/>node_id: MDQ6VXNlcjcwMDA1NTQy<br/>avatar_url: https://avatars.githubusercontent.com/u/70005542?v=4<br/>gravatar_id: <br/>url: https://api.github.com/users/tomneeman151293<br/>html_url: https://github.com/tomneeman151293<br/>followers_url: https://api.github.com/users/tomneeman151293/followers<br/>following_url: https://api.github.com/users/tomneeman151293/following{/other_user}<br/>gists_url: https://api.github.com/users/tomneeman151293/gists{/gist_id}<br/>starred_url: https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}<br/>subscriptions_url: https://api.github.com/users/tomneeman151293/subscriptions<br/>organizations_url: https://api.github.com/users/tomneeman151293/orgs<br/>repos_url: https://api.github.com/users/tomneeman151293/repos<br/>events_url: https://api.github.com/users/tomneeman151293/events{/privacy}<br/>received_events_url: https://api.github.com/users/tomneeman151293/received_events<br/>type: User<br/>site_admin: false |  |  | 2021-01-28T13:00:26Z | labeled | 4260960414 | name: bug<br/>color: d73a4a | MDEyOkxhYmVsZWRFdmVudDQyNjA5NjA0MTQ= |  | https://api.github.com/repos/demisto/demisto-sdk/issues/events/4260960414 |
 >| login: tomneeman151293<br/>id: 70005542<br/>node_id: MDQ6VXNlcjcwMDA1NTQy<br/>avatar_url: https://avatars.githubusercontent.com/u/70005542?v=4<br/>gravatar_id: <br/>url: https://api.github.com/users/tomneeman151293<br/>html_url: https://github.com/tomneeman151293<br/>followers_url: https://api.github.com/users/tomneeman151293/followers<br/>following_url: https://api.github.com/users/tomneeman151293/following{/other_user}<br/>gists_url: https://api.github.com/users/tomneeman151293/gists{/gist_id}<br/>starred_url: https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}<br/>subscriptions_url: https://api.github.com/users/tomneeman151293/subscriptions<br/>organizations_url: https://api.github.com/users/tomneeman151293/orgs<br/>repos_url: https://api.github.com/users/tomneeman151293/repos<br/>events_url: https://api.github.com/users/tomneeman151293/events{/privacy}<br/>received_events_url: https://api.github.com/users/tomneeman151293/received_events<br/>type: User<br/>site_admin: false |  |  | 2021-01-28T15:20:27Z | closed | 4261648354 |  | MDExOkNsb3NlZEV2ZW50NDI2MTY0ODM1NA== |  | https://api.github.com/repos/demisto/demisto-sdk/issues/events/4261648354 |
 
+### GitHub-list-all-projects
+
+***
+List all project boards a user can see.
+
+#### Base Command
+
+`GitHub-list-all-projects`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_filter | Only list projects with the following numbers (Ids) | Optional | 
+| limit | The number of projects to return. Default is 20. Maximum is 100. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Project.Name | String | The name of the project board. | 
+| GitHub.Project.ID | Number | The ID of the  project board. | 
+| GitHub.Project.Number | Number | Project board number. | 
+| GitHub.Project.Columns.Name | String | Column Name. | 
+| GitHub.Project.Columns.ColumnID | Number | The ID of the column. | 
+| GitHub.Project.Columns.Cards.CardID | Number | The ID of the card. | 
+| GitHub.Project.Columns.Cards.ContentNumber | Number | The content number of this card, usually this is the issue number. | 
+| GitHub.Project.Issues | List | List of all issue numbers that are in this project board. | 
+            
+#### Command Example
+
+```!GitHub-list-all-projects project_filter="1,2"```
+
+#### Context Example
+```json
+{
+  "GitHub": {
+    "Project": {
+       "XSOAR Data": {
+        "Number": 23,
+        "ID": 2,
+        "Columns": {
+          "In progress": {
+            "Cards": [
+              {
+                "CardID": 55555,
+                "ContentNumber": 33883
+              },
+              {
+                "CardID": 66666,
+                "ContentNumber": 34852
+              },
+            ],
+            "Name": "In progress",
+            "ColumnID": 13241511
+          },
+          "Done": {
+            "Cards": [
+              {
+                "CardID": 61858005,
+                "ContentNumber": 37480
+              },
+              {
+                "CardID": 60428728,
+                "ContentNumber": 36608
+              },
+            ],
+            "Name": "Done",
+            "ColumnID": 13437971
+          }
+        },
+        "Issues": [
+          33883,
+          34852,
+          37480,
+          36608
+        ],
+        "Name": "XSOAR Data"
+      }
+  }
+}
+```
+
+
+### GitHub-move-issue-to-project-board
+
+***
+Move an issue in the project board to a different column.
+
+#### Base Command
+
+`GitHub-move-issue-to-project-board`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| column_id | Destination column ID | Required | 
+| card_id | Card ID to move | Required | 
+| position | The position of the card in the new column | Optional | 
+
+           
+#### Command Example
+
+```!GitHub-move-issue-to-project-board card_id=1111 column_id=1234 position="top"```
