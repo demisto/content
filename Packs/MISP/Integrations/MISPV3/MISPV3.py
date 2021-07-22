@@ -1215,6 +1215,9 @@ def add_object(event_id: str, obj: MISPObject):
         raise DemistoException(f'Error in `{demisto.command()}` command: {response}')
     for ref in obj.ObjectReference:
         response = PYMISP.add_object_reference(ref)
+    for attribute in response.get('Object', {}).get('Attribute', []):
+        convert_timestamp_to_readable(attribute, None)
+    response['Object']['timestamp'] = misp_convert_timestamp_to_date_string(response.get('Object', {}).get('timestamp'))
     formatted_response = replace_keys_from_misp_to_context_data(response)
     formatted_response.update({"ID": event_id})
 
