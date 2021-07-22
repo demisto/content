@@ -720,7 +720,7 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
     if portfolios and target_arg:
         raise DemistoException("Both 'portfolio' and 'target' argument have been set. Please remove one of them and try again.")
     else:
-        target = argToList(target_arg) or argToList(portfolios)
+        target = target_arg or portfolios
     if not target:
         raise DemistoException("Either 'portfolio' or 'target' argument must be given")
 
@@ -729,7 +729,7 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
         email=email,
         change_direction=change_direction,  # type: ignore
         score_types=score_types,
-        target=target
+        target=argToList(target)
     )
     demisto.debug(f"Response received: {response}")
     alert_id = response.get("id")
@@ -773,7 +773,7 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
     if portfolios and target_arg:
         raise DemistoException("Both 'portfolio' and 'target' argument have been set. Please remove one of them and try again.")
     else:
-        target = argToList(target_arg) or argToList(portfolios)
+        target = target_arg or portfolios
     if not target:
         raise DemistoException("Either 'portfolio' or 'target' argument must be given")
 
@@ -783,7 +783,7 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
         change_direction=change_direction,  # type: ignore
         threshold=threshold,  # type: ignore
         score_types=score_types,
-        target=target
+        target=argToList(target)
     )
     demisto.debug(f"Response received: {response}")
     alert_id = response.get("id")
