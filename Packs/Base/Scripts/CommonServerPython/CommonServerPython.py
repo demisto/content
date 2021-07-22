@@ -2397,6 +2397,7 @@ class Common(object):
 
             self.indicator = indicator
             self.indicator_type = indicator_type
+            # For integrations - The class will automatically determine the integration name.
             if demisto.callingContext.get('integration'):
                 self.integration_name = get_integration_name()
             else:
