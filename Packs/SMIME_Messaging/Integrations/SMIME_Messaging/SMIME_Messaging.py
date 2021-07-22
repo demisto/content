@@ -145,7 +145,7 @@ def decode_str_using_chardet(decrypted_text):
                       f"{confidence}")
         if confidence < 0.9:
             error = 'Note: detected encoding confidence is low, characters may be missing. You can try running this' \
-                    ' command again and pass the encoding code as argument.'
+                    ' command again and pass the encoding code as argument.\n'
         out = decrypted_text.decode(encoding)
     except UnicodeDecodeError:
         # In case the detected encoding fails apply the default encoding
