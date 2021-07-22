@@ -618,6 +618,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Addeds a note to an incident.
     execution: false
     name: rs-add-notes
   - arguments:
@@ -688,6 +689,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Addeds an artifact to an incident.
     execution: false
     name: rs-add-artifact
   dockerimage: demisto/resilient:1.0.0.18173
