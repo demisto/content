@@ -20,4 +20,4 @@ dockerimage: demisto/python3:3.9.6.22912
 runas: DBotWeakRole
 tests:
 - No test
-fromversion: 5.0.0
+fromversion: 5.5.0
