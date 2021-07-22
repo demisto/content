@@ -1,0 +1,27 @@
+{
+    "name": "ArcusTeam",
+    "description": "This pack exposes the power of the ArcusTeam's DeviceTotal Platform which predicts, identifies, and prioritizes vulnerabilities found on IoT devices and provides recommendations for managing and mitigating the threat of connected devices.",
+    "support": "partner",
+    "currentVersion": "6.11.0",
+    "author": "ArcusTeam",
+    "url": "https://arcusteam.com/pa-partnership/",
+    "email": "support@arcusteam.com",
+     "created": "2021-04-13T11:42:43.138Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "CVE",
+        "Vulnerabilities",
+        "Firmware"
+    ],
+    "useCases": [],
+    "keywords": [
+        "cve",
+        "score",
+        "Attack Surface Management",
+        "IOT",
+        "Network Devices"
+    ],
+    "githubUser": []
+}
