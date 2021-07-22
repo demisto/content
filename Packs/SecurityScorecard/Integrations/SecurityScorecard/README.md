@@ -46,11 +46,11 @@ List all Portfolios
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| `SecurityScorecard.Portfolio.id` | String | Portfolio ID |
-| `SecurityScorecard.Portfolio.name` | String | Portfolio name |
-| `SecurityScorecard.Portfolio.description` | String | Portfolio description |
-| `SecurityScorecard.Portfolio.privacy` | String | Portfolio privacy. Can be either private, shared or team. |
-| `SecurityScorecard.Portfolio.read_only` | Boolean | Whether the portfolio is read only. |
+| SecurityScorecard.Portfolio.id | String | Portfolio ID |
+| SecurityScorecard.Portfolio.name | String | Portfolio name |
+| SecurityScorecard.Portfolio.description | String | Portfolio description |
+| SecurityScorecard.Portfolio.privacy | String | Portfolio privacy. Can be either private, shared or team. |
+| SecurityScorecard.Portfolio.read_only | Boolean | Whether the portfolio is read only. |
 
 #### Command Example
 
@@ -113,22 +113,20 @@ Lists all companies in Portfolio.
 | `issue_type` | Issue type filter. | Optional |
 | `had_breach_within_last_days` | Domains with breaches in the last X days. Possible values are numbers, e.g. `1000`. | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| `SecurityScorecard.Portfolio.Company.domain` | String | Company domain. |
-| `SecurityScorecard.Portfolio.Company.name` | String | Company name. |
-| `SecurityScorecard.Portfolio.Company.score` | Number | Company overall score in numeric form \(55-100\). |
-| `SecurityScorecard.Portfolio.Company.grade` | String | Company overall score in letter grade. |
-| `SecurityScorecard.Portfolio.Company.grade_url` | String | Company overall score URL to SVG asset. |
-| `SecurityScorecard.Portfolio.Company.last30days_score_change` | Number | Company overall score numeric change \(±\) in the last month. |
-| `SecurityScorecard.Portfolio.Company.industry` | String | Industry category of the domain. |
-| `SecurityScorecard.Portfolio.Company.size` | String | Company size, e.g. `size_more_than_10000` |
-| `SecurityScorecard.Portfolio.Company.is_custom_vendor` | Boolean | Whether the company is a custom vendor. |
-| `SecurityScorecard.Portfolio.Company.total` | Number | Total number of companies in Portfolio. |
-
+| SecurityScorecard.Portfolio.Company.domain | String | Company domain. |
+| SecurityScorecard.Portfolio.Company.name | String | Company name. |
+| SecurityScorecard.Portfolio.Company.score | Number | Company overall score in numeric form \(55-100\). |
+| SecurityScorecard.Portfolio.Company.grade | String | Company overall score in letter grade. |
+| SecurityScorecard.Portfolio.Company.grade_url | String | Company overall score URL to SVG asset. |
+| SecurityScorecard.Portfolio.Company.last30days_score_change | Number | Company overall score numeric change \(±\) in the last month. |
+| SecurityScorecard.Portfolio.Company.industry | String | Industry category of the domain. |
+| SecurityScorecard.Portfolio.Company.size | String | Company size, e.g. `size_more_than_10000` |
+| SecurityScorecard.Portfolio.Company.is_custom_vendor | Boolean | Whether the company is a custom vendor. |
+| SecurityScorecard.Portfolio.Company.total | Number | Total number of companies in Portfolio. |
 
 #### Command Example
 ```!securityscorecard-portfolio-list-companies portfolio_id=xxxxxxxxxxxxxxxx grade=A industry=information_services```
@@ -180,13 +178,13 @@ Retrieve company overall score.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| `SecurityScorecard.Company.Score.domain` | String | Company domain. |
-| `SecurityScorecard.Company.Score.name` | String | Company name. |
-| `SecurityScorecard.Company.Score.score` | Number | Company overall score in numeric form \(55-100\). |
-| `SecurityScorecard.Company.Score.grade` | String | Company overall score in letter grade form \(A-F\). |
-| `SecurityScorecard.Company.Score.last30days_score_change` | Number | Company overall score numeric change \(±\) in the last month. |
-| `SecurityScorecard.Company.Score.industry` | String | ndustry category of the domain. |
-| `SecurityScorecard.Company.Score.size` | String | Company size, e.g. 'size_more_than_10000' |
+| SecurityScorecard.Company.Score.domain | String | Company domain. |
+| SecurityScorecard.Company.Score.name | String | Company name. |
+| SecurityScorecard.Company.Score.score | Number | Company overall score in numeric form \(55-100\). |
+| SecurityScorecard.Company.Score.grade | String | Company overall score in letter grade form \(A-F\). |
+| SecurityScorecard.Company.Score.last30days_score_change | Number | Company overall score numeric change \(±\) in the last month. |
+| SecurityScorecard.Company.Score.industry | String | ndustry category of the domain. |
+| SecurityScorecard.Company.Score.size | String | Company size, e.g. 'size_more_than_10000' |
 
 #### Command Example
 
@@ -241,16 +239,15 @@ Retrieve company factor score.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| `SecurityScorecard.Company.Factor.name` | String | Factor name. |
-| `SecurityScorecard.Company.Factor.score` | Number | Factor score in numeric form \(55-100\) |
-| `SecurityScorecard.Company.Factor.grade` | String | Factor score in letter grade form \(A-F\) |
-| `SecurityScorecard.Company.Factor.Issue.type` | String | Type of issue found |
-| `SecurityScorecard.Company.Factor.Issue.count` | Number | How many times the issue was found |
-| `SecurityScorecard.Company.Factor.Issue.severity` | String | Severity of the issue |
-| `SecurityScorecard.Company.Factor.Issue.total_score_impact` | Number | Contribution of issue on overall score |
-| `SecurityScorecard.Company.Factor.Issue.detail_url` | String | URL to the details of the issue |
-| `SecurityScorecard.Company.Factor.total` | Number | Number of factors returned |
-
+| SecurityScorecard.Company.Factor.name | String | Factor name. |
+| SecurityScorecard.Company.Factor.score | Number | Factor score in numeric form \(55-100\) |
+| SecurityScorecard.Company.Factor.grade | String | Factor score in letter grade form \(A-F\) |
+| SecurityScorecard.Company.Factor.Issue.type | String | Type of issue found |
+| SecurityScorecard.Company.Factor.Issue.count | Number | How many times the issue was found |
+| SecurityScorecard.Company.Factor.Issue.severity | String | Severity of the issue |
+| SecurityScorecard.Company.Factor.Issue.total_score_impact | Number | Contribution of issue on overall score |
+| SecurityScorecard.Company.Factor.Issue.detail_url | String | URL to the details of the issue |
+| SecurityScorecard.Company.Factor.total | Number | Number of factors returned |
 
 #### Command Example
 ```!securityscorecard-company-factor-score-get domain=some_domain.com severity_in=high```
@@ -519,9 +516,9 @@ Retrieve company historical scores
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| `SecurityScorecard.Company.ScoreHistory.domain` | String | Company domain. |
-| `SecurityScorecard.Company.ScoreHistory.date` | Date | Score date. |
-| `SecurityScorecard.Company.ScoreHistory.score` | Number | Company historical security score in numeric form \(55-100\) |
+| SecurityScorecard.Company.ScoreHistory.domain | String | Company domain. |
+| SecurityScorecard.Company.ScoreHistory.date | Date | Score date. |
+| SecurityScorecard.Company.ScoreHistory.score | Number | Company historical security score in numeric form \(55-100\) |
 
 #### Command Example
 ```!securityscorecard-company-history-score-get domain=some_domain.com from=2021-06-01 to=2021-06-28 timing=weekly```
@@ -596,10 +593,10 @@ Retrieve company historical factor scores
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| `SecurityScorecard.Company.FactorHistory.domain` | String | Company domain. |
-| `SecurityScorecard.Company.FactorHistory.date` | Date | Score date. |
-| `SecurityScorecard.Company.FactorHistory.Factor.name` | Number | Factor name. |
-| `SecurityScorecard.Company.FactorHistory.score` | Number | Company historical security score in numeric form \(55-100\) |
+| SecurityScorecard.Company.FactorHistory.domain | String | Company domain. |
+| SecurityScorecard.Company.FactorHistory.date | Date | Score date. |
+| SecurityScorecard.Company.FactorHistory.Factor.name | Number | Factor name. |
+| SecurityScorecard.Company.FactorHistory.score | Number | Company historical security score in numeric form \(55-100\) |
 
 
 #### Command Example
@@ -670,7 +667,7 @@ Create alert based on grade
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| `SecurityScorecard.Alerts.GradeChangeAlert.id` | String | Alert ID |
+| SecurityScorecard.Alerts.GradeChangeAlert.id | String | Alert ID |
 
 #### Command Example
 ```!securityscorecard-alert-grade-change-create change_direction=drops score_types=network_security,endpoint_security target=60c8c5f9139e40001908c6a4,my_scorecard```
@@ -709,13 +706,11 @@ Create alert based threshold met
 | `target` | What do you want to monitor with this alert. This argument is require if the `portfolios` argument is not specified. Possible values are: `my_scorecard`, `any_followed_company`. | Optional |
 | `portfolios` | A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `securityscorecard-portfolios-list`. | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| `SecurityScorecard.Alerts.ScoreThresholdAlert.id` | String | Alert ID |
-
+| SecurityScorecard.Alerts.ScoreThresholdAlert.id | String | Alert ID |
 
 #### Command Example
 ```!securityscorecard-alert-score-threshold-create change_direction=drops_below threshold=100 score_types=network_security,dns_health target=60c8c5f9139e40001908c6a4,my_scorecard```
@@ -779,14 +774,14 @@ List alerts triggered in the last week
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| `SecurityScorecard.Alerts.Alert.id` | String | Alert ID |
-| `SecurityScorecard.Alerts.Alert.email` | String | Alert email recipient. |
-| `SecurityScorecard.Alerts.Alert.change_type` | String | Alert change type configured \(score or threshold\) |
-| `SecurityScorecard.Alerts.Alert.domain` | String | Alert domain |
-| `SecurityScorecard.Alerts.Alert.company_name` | String | Alert company name |
-| `SecurityScorecard.Alerts.Alert.Portfolio.id` | array | Alert Portfolio ID |
-| `SecurityScorecard.Alerts.Alert.my_scorecard` | Boolean | Whether the alert was triggered on private scorecard. This depends on whether `my_scorecard` was added to the optional argument `target` when creating alerts using the `securityscorecard-alert-score-threshold-create` and `securityscorecard-alert-grade-change-create` commands. |
-| `SecurityScorecard.Alerts.Alert.created_at` | Date | Timestamp of when the alert was triggered |
+| SecurityScorecard.Alerts.Alert.id | String | Alert ID |
+| SecurityScorecard.Alerts.Alert.email | String | Alert email recipient. |
+| SecurityScorecard.Alerts.Alert.change_type | String | Alert change type configured \(score or threshold\) |
+| SecurityScorecard.Alerts.Alert.domain | String | Alert domain |
+| SecurityScorecard.Alerts.Alert.company_name | String | Alert company name |
+| SecurityScorecard.Alerts.Alert.Portfolio.id | array | Alert Portfolio ID |
+| SecurityScorecard.Alerts.Alert.my_scorecard | Boolean | Whether the alert was triggered on private scorecard. This depends on whether `my_scorecard` was added to the optional argument `target` when creating alerts using the `securityscorecard-alert-score-threshold-create` and `securityscorecard-alert-grade-change-create` commands. |
+| SecurityScorecard.Alerts.Alert.created_at | Date | Timestamp of when the alert was triggered |
 
 #### Command Example
 ```!securityscorecard-alerts-list```
@@ -842,9 +837,9 @@ Retrieve the service providers of a domain
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| `SecurityScorecard.Service.vendor_domain` | String | Vendor domain, e.g. Google, Amazon |
-| `SecurityScorecard.Service.client_domain` | String | Client domain. This value is identical to the input of the domain argument |
-| `SecurityScorecard.Service.categories` | array | Vendor service provider, e.g. `mail_provider`, `nameserver_provider` |
+| SecurityScorecard.Service.vendor_domain | String | Vendor domain, e.g. Google, Amazon |
+| SecurityScorecard.Service.client_domain | String | Client domain. This value is identical to the input of the domain argument |
+| SecurityScorecard.Service.categories | array | Vendor service provider, e.g. `mail_provider`, `nameserver_provider` |
 
 #### Command Example
 ```!securityscorecard-company-services-get domain=some_domain.com```
