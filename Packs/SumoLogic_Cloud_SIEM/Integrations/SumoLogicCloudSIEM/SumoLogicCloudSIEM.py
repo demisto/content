@@ -171,11 +171,7 @@ def insight_timestamp_to_created_format(timestamp_int):
     '''
     Querying Insights using 'created' as opposed to 'timestamp' requires this conversion
     '''
-    try:
-        created_time = datetime.utcfromtimestamp(timestamp_int)
-    except ValueError:
-        demisto.error('Error when converting timestamp to created format. Value: {}'.format(timestamp_int))
-        created_time = datetime.utcnow()
+    created_time = datetime.utcfromtimestamp(timestamp_int)
     return datetime.strftime(created_time, '%Y-%m-%dT%H:%M:%S.%f')
 
 
