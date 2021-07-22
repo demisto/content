@@ -421,9 +421,9 @@ def portfolios_list_command(client: SecurityScorecardClient, args: Dict[str, Any
 
     # If the number of portfolios returned is larger than the configured limit
     # filter the first elements
-    if portfolios_total > limit:
-        demisto.debug(f"portfolios_total > limit, slicing number of entries")
-        entries = entries[:limit]
+    if portfolios_total > limit:  # type: ignore
+        demisto.debug(f"portfolios_total ({portfolios_total}) > limit ({limit}), slicing number of entries")
+        entries = entries[:limit]  # type: ignore
 
     markdown = tableToMarkdown(
         f'Your SecurityScorecard Portfolios (first {limit})',
