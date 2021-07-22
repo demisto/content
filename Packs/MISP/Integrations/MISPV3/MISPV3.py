@@ -330,7 +330,7 @@ def reputation_command_to_human_readable(outputs, score, events_to_human_readabl
         'Dbot Score': score,
         'Attribute Value': outputs[0].get('Value'),
         'Attribute Category': outputs[0].get('Category'),
-        'Timestamp': misp_convert_timestamp_to_date_string(outputs[0].get('Timestamp')),
+        'Timestamp': outputs[0].get('Timestamp'),
         'Events with the scored tag': events_to_human_readable,
         'Scored Tag ID': found_tag_id,
         'Scored Tag Name': found_tag_name,
@@ -396,7 +396,6 @@ def parse_response_reputation_command(misp_response, malicious_tag_ids, suspicio
                                  malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids,
                                  is_attribute_in_event_with_bad_threat_level_id=
                                  is_attribute_in_event_with_bad_threat_level_id)
-
     formatted_response = replace_keys_from_misp_to_context_data(response)  # this is the outputs (Attribute)
     return formatted_response, score, found_tag, found_related_events
 
@@ -410,6 +409,7 @@ def prepare_attributes_array_to_context_data(response):
     for attribute in attributes_list:
         attribute["RelatedAttribute"] = []
         event = attribute.get('Event')
+        convert_timestamp_to_readable(attribute, event)
         found_related_events[event.get("id")] = {"Event Name": event.get("info"),
                                                  "Threat Level ID": event.get('threat_level_id'),
                                                  "Event ID": event.get("id")}
@@ -422,6 +422,17 @@ def prepare_attributes_array_to_context_data(response):
             attribute['Tag'] = limit_tag_output
             attributes_tag_ids.update(tag_ids)
     return found_related_events, attributes_tag_ids, event_tag_ids
+
+
+def convert_timestamp_to_readable(attribute, event):
+    if attribute.get('timestamp'):
+        attribute['timestamp'] = misp_convert_timestamp_to_date_string(attribute.get('timestamp'))
+    if event:
+        if event.get('timestamp'):
+            attribute['Event']['timestamp'] = misp_convert_timestamp_to_date_string(event.get('timestamp'))
+        if event.get('publish_timestamp'):
+            attribute['Event']['publish_timestamp'] = misp_convert_timestamp_to_date_string(
+                event.get('publish_timestamp'))
 
 
 def found_event_with_bad_threat_level_id(found_related_events):
@@ -810,6 +821,7 @@ def get_limit_attribute_search_outputs(attributes):
         build_galaxy_output(attributes[i])
         build_tag_output(attributes[i])
         build_sighting_output_from_attribute_search_response(attributes[i])
+        convert_timestamp_to_readable(attributes[i], None)
     formatted_attributes = replace_keys_from_misp_to_context_data(attributes)
     return formatted_attributes
 
@@ -889,7 +901,7 @@ def attribute_response_to_markdown_table(response: dict):
             'Attribute Tags': attribute_tags,
             'Attribute Sightings': attribute_sightings,
             'To IDs': attribute.get('ToIDs'),
-            'Timestamp': misp_convert_timestamp_to_date_string(attribute.get('Timestamp')),
+            'Timestamp': attribute.get('Timestamp'),
             'Event Info': event.get('Info'),
             'Event Organisation ID': event.get('OrganisationID'),
             'Event Distribution': event.get('Distribution'),
@@ -952,6 +964,8 @@ def build_events_search_response(response: Union[dict, requests.Response]) -> di
         build_galaxy_output(events[i])
         build_tag_output(events[i])
         build_object_output(events[i])
+        events[i]['timestamp'] = misp_convert_timestamp_to_date_string(events[i].get('timestamp'))
+        events[i]['publish_timestamp'] = misp_convert_timestamp_to_date_string(events[i].get('publish_timestamp'))
 
     formatted_events = replace_keys_from_misp_to_context_data(events)  # type: ignore
     return formatted_events  # type: ignore
@@ -986,7 +1000,7 @@ def event_to_human_readable(response: dict):
             'Event Tags': event_tags,
             'Event Galaxies': event_galaxies,
             'Event Objects': event_objects,
-            'Publish Timestamp': misp_convert_timestamp_to_date_string(event.get('PublishTimestamp')),
+            'Publish Timestamp': event.get('PublishTimestamp'),
             'Event Info': event.get('Info'),
             'Event Org ID': event.get('OrganisationID'),
             'Event Orgc ID': event.get('OwnerOrganisation.ID'),
