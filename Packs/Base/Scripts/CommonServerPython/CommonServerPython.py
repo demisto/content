@@ -2392,7 +2392,7 @@ class Common(object):
 
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
-        def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None,
+        def __init__(self, indicator, indicator_type, integration_name='', score=None, malicious_description=None,
                      reliability=None):
 
             if not DBotScoreType.is_valid_type(indicator_type):
@@ -2406,7 +2406,11 @@ class Common(object):
 
             self.indicator = indicator
             self.indicator_type = indicator_type
-            self.integration_name = integration_name or get_integration_name()
+            # For integrations - The class will automatically determine the integration name.
+            if demisto.callingContext.get('integration'):
+                self.integration_name = get_integration_name()
+            else:
+                self.integration_name = integration_name
             self.score = score
             self.malicious_description = malicious_description
             self.reliability = reliability

@@ -8,6 +8,14 @@ from VirusTotalV3 import (ScoreCalculator, encode_to_base64,
                           raise_if_ip_not_valid, create_relationships)
 
 from CommonServerPython import DemistoException
+import demistomock as demisto
+
+INTEGRATION_NAME = 'VirusTotal'
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'IntegrationBrand': INTEGRATION_NAME})
 
 
 class TestScoreCalculator:
