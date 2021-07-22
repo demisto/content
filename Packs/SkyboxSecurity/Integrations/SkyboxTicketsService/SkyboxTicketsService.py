@@ -181,55 +181,6 @@ def createAccessChangeTicket_command(client, args):
     accessChangeTicket_customFields_typeCode = args.get('accessChangeTicket_customFields_typeCode')
     accessChangeTicket_customFields_value = args.get('accessChangeTicket_customFields_value')
     accessChangeTicket_currentPhaseName = args.get('accessChangeTicket_currentPhaseName')
-    phases_comment = args.get('phases_comment')
-    phases_createdBy = args.get('phases_createdBy')
-    phases_creationTime = args.get('phases_creationTime')
-    phases_current = args.get('phases_current')
-    phases_demotionsCount = args.get('phases_demotionsCount')
-    phases_description = args.get('phases_description')
-    phases_dueDate = args.get('phases_dueDate')
-    phases_endDate = args.get('phases_endDate')
-    phases_id = args.get('phases_id')
-    phases_lastModificationTime = args.get('phases_lastModificationTime')
-    phases_lastModifiedBy = args.get('phases_lastModifiedBy')
-    phases_owner = args.get('phases_owner')
-    phases_revisedDueDate = args.get('phases_revisedDueDate')
-    phases_startDate = args.get('phases_startDate')
-    phases_ticketTypePhase_defaultOwner = args.get('phases_ticketTypePhase_defaultOwner')
-    phases_ticketTypePhase_id = args.get('phases_ticketTypePhase_id')
-    phases_ticketTypePhase_name = args.get('phases_ticketTypePhase_name')
-    phases_ticketTypePhase_order = args.get('phases_ticketTypePhase_order')
-    phases_ticketTypePhase_ticketType = args.get('phases_ticketTypePhase_ticketType')
-    phases_ticketTypePhase_waitingForClosure = args.get('phases_ticketTypePhase_waitingForClosure')
-
-    ticketTypePhase_type = client.get_type('ns0:ticketTypePhase')
-    ticketTypePhase = ticketTypePhase_type(
-        defaultOwner=phases_ticketTypePhase_defaultOwner,
-        id=phases_ticketTypePhase_id,
-        name=phases_ticketTypePhase_name,
-        order=phases_ticketTypePhase_order,
-        ticketType=phases_ticketTypePhase_ticketType,
-        waitingForClosure=phases_ticketTypePhase_waitingForClosure
-    )
-
-    phases_type = client.get_type('ns0:phase')
-    phases = phases_type(
-        comment=phases_comment,
-        createdBy=phases_createdBy,
-        creationTime=phases_creationTime,
-        current=phases_current,
-        demotionsCount=phases_demotionsCount,
-        description=phases_description,
-        dueDate=phases_dueDate,
-        endDate=phases_endDate,
-        id=phases_id,
-        lastModificationTime=phases_lastModificationTime,
-        lastModifiedBy=phases_lastModifiedBy,
-        owner=phases_owner,
-        revisedDueDate=phases_revisedDueDate,
-        startDate=phases_startDate,
-        ticketTypePhase=ticketTypePhase
-    )
 
     customField_type = client.get_type('ns0:customField')
     customField = customField_type(
@@ -276,8 +227,7 @@ def createAccessChangeTicket_command(client, args):
     )
 
     response = client.service.createAccessChangeTicket(
-        accessChangeTicket=accessChangeTicket,
-        phases=phases
+        accessChangeTicket=accessChangeTicket
     )
 
     command_results = CommandResults(
