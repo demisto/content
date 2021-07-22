@@ -1,6 +1,6 @@
 commonfields:
   id: ArcusTeam
-  version: 6.11.0
+  version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: ArcusTeam
 display: ArcusTeam
