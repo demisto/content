@@ -721,7 +721,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
                 if incident_created_time > latest_created_time:
                     latest_created_time = incident_created_time
 
-        if not resp_json.get('hasNextPage') or len(incidents) >= resp_json.get('total'):
+        total = resp_json.get('total')
+
+        if not resp_json.get('hasNextPage') or (total and isinstance(total, int) and len(incidents) >= total):
             hasNextPage = False
         else:
             offset = len(incidents)
