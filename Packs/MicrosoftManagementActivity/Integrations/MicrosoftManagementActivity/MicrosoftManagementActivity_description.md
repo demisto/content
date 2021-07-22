@@ -31,7 +31,3 @@ https://login.windows.net/common/oauth2/authorize?response_type=code&resource=ht
 7. Enter your client secret in the ***Key*** parameter field.
 8. Enter your tenant ID in the ***Token*** parameter field.
 9. Enter your redirect URI in the ***Redirect URI*** parameter field.
-
-
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-management-activity-api-o365-azure-events)
