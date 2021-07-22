@@ -1727,7 +1727,7 @@ def convert_os_to_standard(endpoint_os):
 
 
 def get_endpoint_properties(single_endpoint):
-    status = 'Online' if single_endpoint.get('endpoint_status').lower() == 'connected' else 'Offline'
+    status = 'Online' if single_endpoint.get('endpoint_status', '').lower() == 'connected' else 'Offline'
     is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
     hostname = single_endpoint['host_name'] if single_endpoint.get('host_name', '') else single_endpoint.get(
         'endpoint_name')
