@@ -1,5 +1,5 @@
 Get information from Azure Active Directory Identity Protection service.
-This integration was integrated and tested with version xx of Azure Active Directory Identity Protection
+This integration was integrated and tested with the Beta version of Azure Active Directory Identity Protection
 
 ## Configure Azure Active Directory Identity Protection on Cortex XSOAR
 
