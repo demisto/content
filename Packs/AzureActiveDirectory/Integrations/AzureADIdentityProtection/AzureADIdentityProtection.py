@@ -3,7 +3,7 @@ import urllib3
 
 urllib3.disable_warnings()
 
-OUTPUTS_PREFIX = "AAD_Identity_Protection"
+OUTPUTS_PREFIX = "AADIdentityProtection"
 BASE_URL = 'https://graph.microsoft.com/beta'
 REQUIRED_PERMISSIONS = (
     'offline_access',  # allows device-flow login
