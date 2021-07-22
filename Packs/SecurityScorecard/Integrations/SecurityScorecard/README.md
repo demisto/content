@@ -838,7 +838,6 @@ Retrieve the service providers of a domain
 | --- | --- | --- |
 | `domain` | Company domain. | Required |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
