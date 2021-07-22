@@ -22,24 +22,25 @@ def client(mocker):
                      azure_ad_endpoint='https://login.microsoftonline.com')
 
 
-@pytest.mark.parametrize('command,test_data_file,url_suffix,next_link_description,kwargs',
+@pytest.mark.parametrize('command,test_data_file,url_suffix,context_path,kwargs',
                          ((azure_ad_identity_protection_risk_detection_list_command,
                            'test_data/risk_detections_response.json',
                            'riskDetections',
-                           'risk_detection_list',
+                           'Risks',
                            {}),
                           (azure_ad_identity_protection_risky_users_list_command,
                            'test_data/risky_users_response.json',
                            'RiskyUsers',
-                           'risky_user_list',
+                           'RiskyUsers',
                            {}),
                           (azure_ad_identity_protection_risky_users_history_list_command,
                            'test_data/risky_user_history_response.json',
                            f'RiskyUsers/{dummy_user_id}/history',
-                           'risky_users_history_list',
+                           "RiskyUserHistory",
                            {'user_id': dummy_user_id})
                           ))
-def test_list_commands(client, requests_mock, command, test_data_file, url_suffix, next_link_description, kwargs):
+def test_list_commands(client, requests_mock, command, test_data_file, url_suffix, context_path,
+                       kwargs):
     """
     Given:
         - AAD Client
@@ -56,13 +57,13 @@ def test_list_commands(client, requests_mock, command, test_data_file, url_suffi
     result = command(client, limit=50, **kwargs)
 
     expected_values = api_response.get('value')
-    actual_values = result.outputs.get(f'{OUTPUTS_PREFIX}.values(val.id === obj.id)')
+    actual_values = result.outputs.get(f'{OUTPUTS_PREFIX}.{context_path}(val.id === obj.id)')
     assert actual_values == expected_values
 
     expected_next_link = api_response.get('@odata.nextLink')
     if expected_next_link:  # risky_users_history_list does not have next link
-        actual_next_url = result.outputs.get(f'{OUTPUTS_PREFIX}.NextLink(val.Description === '
-                                             f'"{next_link_description}")', {}).get('URL')
+        actual_next_url = result.outputs.get(f'{OUTPUTS_PREFIX}.NextLink(val.Description === "{context_path}")', {}) \
+            .get('URL')
         assert actual_next_url == expected_next_link
 
 
