@@ -16,7 +16,6 @@ READABLE_DATE_FORMAT = '%B %d, %Y at %I:%M:%S %p'
 API_VERSION = 2
 LOGGING_INTEGRATION_NAME = "[VMware Workspace ONE UEM (AirWatch MDM)]"
 URL_SUFFIX = {
-    'TEST': "devices/search",
     'SEARCH_DEVICES': "devices/search",
     'LIST_OS_UPDATES': "devices/{}/osupdate",
     'GET_DEVICE': "devices/{uuid}"
@@ -483,7 +482,7 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    client.http_request(method='GET', url_suffix=URL_SUFFIX['TEST'])
+    client.http_request(method='GET', url_suffix=URL_SUFFIX['SEARCH_DEVICES'])
     return 'ok'
 
 
@@ -597,13 +596,7 @@ def main() -> None:
     # get the service API url
     base_url = urljoin(dict_param['url'], '/API/mdm/')
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    # verify_certificate = not dict_param.get('insecure', False)
     verify_certificate = False
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = dict_param.get('proxy', False)
 
     demisto.debug(f'{LOGGING_INTEGRATION_NAME} Command being called is {command}')
