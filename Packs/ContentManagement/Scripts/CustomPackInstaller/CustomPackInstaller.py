@@ -30,13 +30,14 @@ def install_custom_pack(pack_id: str) -> bool:
             break
 
     if pack_file_entry_id:
-        res = demisto.executeCommand(
+        status, res = execute_command(
             'demisto-api-multipart',
             {'uri': '/contentpacks/installed/upload', 'entryID': pack_file_entry_id},
+            fail_on_error=False,
         )
 
-        if is_error(res):
-            error_message = f'{SCRIPT_NAME} - {get_error(res)}'
+        if not status:
+            error_message = f'{SCRIPT_NAME} - {res}'
             demisto.debug(error_message)
             return False
 
@@ -66,7 +67,7 @@ def main():
         )
 
         if installation_status != 'Success':
-            return_error(f'{SCRIPT_NAME} - Installation had failed for custom pack "{pack_id}".')
+            raise DemistoException(f'{SCRIPT_NAME} - Installation had failed for custom pack "{pack_id}".')
 
     except Exception as e:
         return_error(f'{SCRIPT_NAME} - Error occurred while installing custom pack "{pack_id}".\n{e}')

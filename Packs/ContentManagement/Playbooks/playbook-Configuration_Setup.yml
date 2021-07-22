@@ -822,5 +822,5 @@ view: |-
 inputs: []
 outputs: []
 tests:
-No tests (auto formatted)
+- No tests (auto formatted)
 fromversion: 6.0.0

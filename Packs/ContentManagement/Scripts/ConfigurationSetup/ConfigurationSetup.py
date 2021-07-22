@@ -258,11 +258,12 @@ def get_data_from_war_room_file(entry_id):
     Returns:
         str. The content of the configuration file.
     """
-    res = demisto.executeCommand('getFilePath', {'id': entry_id})
-    if is_error(res):
-        raise DemistoException(f'Could not read file {entry_id}.\n{get_error(res)}')
+    res = execute_command(
+        'getFilePath',
+        {'id': entry_id},
+    )
 
-    file_path = res[0]['Contents']['path']
+    file_path = res['path']
 
     with open(file_path, 'rb') as file:
         file_content = file.read()
@@ -270,13 +271,12 @@ def get_data_from_war_room_file(entry_id):
     return file_content
 
 
-def get_config_data() -> Dict:
+def get_config_data(args: Dict) -> Dict:
     """Gets the configuration data from Git or from a file entry in the war room..
 
     Returns:
         Dict. The parsed configuration file.
     """
-    args = demisto.args()
     configuration_file_entry_id = args.get('configuration_file_entry_id')
 
     config_data = get_data_from_war_room_file(configuration_file_entry_id)
@@ -289,7 +289,8 @@ def get_config_data() -> Dict:
 
 def main():
     try:
-        config_data = get_config_data()
+        args = demisto.args()
+        config_data = get_config_data(args)
         config = Configuration(config_data)
 
         return_results(

@@ -25,9 +25,14 @@ class ContentPackInstaller:
         """
         demisto.debug(f'{SCRIPT_NAME} - Fetching installed packs from marketplace.')
 
-        res = demisto.executeCommand('demisto-api-get', {'uri': '/contentpacks/metadata/installed'})
-        if is_error(res):
-            error_message = f'{SCRIPT_NAME} - {get_error(res)}'
+        status, res = execute_command(
+            'demisto-api-get',
+            {'uri': '/contentpacks/metadata/installed'},
+            fail_on_error=False,
+        )
+
+        if not status:
+            error_message = f'{SCRIPT_NAME} - {res}'
             demisto.debug(error_message)
             return
 
@@ -36,7 +41,7 @@ class ContentPackInstaller:
             self.installed_packs[pack['id']] = parse(pack['currentVersion'])
             self.already_on_machine_packs[pack['id']] = parse(pack['currentVersion'])
 
-    def get_pack_data_from_marketplace(self, pack_id) -> Dict[str, str]:
+    def get_pack_data_from_marketplace(self, pack_id: str) -> Dict[str, str]:
         """Returns the marketplace's data for a specific pack.
 
         Args:
@@ -51,16 +56,21 @@ class ContentPackInstaller:
 
         demisto.debug(f'{SCRIPT_NAME} - Fetching {pack_id} data from marketplace.')
 
-        res = demisto.executeCommand('demisto-api-get', {'uri': f'/contentpacks/marketplace/{pack_id}'})
-        if is_error(res):
-            error_message = f'{SCRIPT_NAME} - {get_error(res)}'
+        status, res = execute_command(
+            'demisto-api-get',
+            {'uri': f'/contentpacks/marketplace/{pack_id}'},
+            fail_on_error=False,
+        )
+
+        if not status:
+            error_message = f'{SCRIPT_NAME} - {res}'
             demisto.debug(error_message)
 
         self.packs_data[pack_id] = res
 
-        return res[0]
+        return res
 
-    def get_pack_dependencies_from_marketplace(self, pack_data) -> Dict[str, Dict[str, str]]:
+    def get_pack_dependencies_from_marketplace(self, pack_data: Dict[str, str]) -> Dict[str, Dict[str, str]]:
         """Returns the dependencies of the pack from marketplace's data.
 
         Args:
@@ -77,19 +87,21 @@ class ContentPackInstaller:
 
         demisto.debug(f'{SCRIPT_NAME} - Fetching {pack_key} dependencies data from marketplace.')
 
-        res = demisto.executeCommand(
-            'demisto-api-post', {
+        status, res = execute_command(
+            'demisto-api-post',
+            {
                 'uri': '/contentpacks/marketplace/search/dependencies',
                 'body': [pack_data]
-            }
+            },
+            fail_on_error=False,
         )
 
-        if is_error(res):
-            error_message = f'{SCRIPT_NAME} - {get_error(res)}'
+        if not status:
+            error_message = f'{SCRIPT_NAME} - {res}'
             demisto.debug(error_message)
 
         try:
-            self.packs_dependencies[pack_key] = res[0].get('Contents', {}).get('response', {}).get('packs', [])[0] \
+            self.packs_dependencies[pack_key] = res.get('response', {}).get('packs', [])[0] \
                 .get('extras', {}).get('pack', {}).get('dependencies')
         except Exception as e:
             demisto.debug(f'{SCRIPT_NAME} - Unable to parse {pack_data["id"]} pack dependencies from response.\n{e}')
@@ -97,7 +109,7 @@ class ContentPackInstaller:
 
         return self.packs_dependencies[pack_key]
 
-    def get_latest_version_for_pack(self, pack_id) -> str:
+    def get_latest_version_for_pack(self, pack_id: str) -> str:
         """Gets the latest version of the pack from the marketplace data.
 
         Args:
@@ -150,12 +162,11 @@ class ContentPackInstaller:
         packs_names_versions = {pack['id']: parse(pack['version']) for pack in packs_to_install}
         demisto.debug(f'{SCRIPT_NAME} - Sending installation request for: {packs_names_versions}')
 
-        res = demisto.executeCommand('demisto-api-post',
-                                     {'uri': '/contentpacks/marketplace/install', 'body': data})
-        if is_error(res):
-            error_message = f'{SCRIPT_NAME} - {get_error(res)}'
-            demisto.debug(error_message)
-            raise DemistoException(error_message)
+        execute_command(
+            'demisto-api-post',
+            {'uri': '/contentpacks/marketplace/install', 'body': data},
+            extract_contents=False
+        )
 
         self.installed_packs.update(packs_names_versions)
         self.newly_installed_packs.update(packs_names_versions)  # type: ignore[arg-type]
@@ -171,24 +182,20 @@ class ContentPackInstaller:
         """
         dependencies_to_install = []
 
-        try:
-            pack_dependencies = self.get_pack_dependencies_from_marketplace(pack_data)
+        pack_dependencies = self.get_pack_dependencies_from_marketplace(pack_data)
 
-            for dependency_id, dependency_data in pack_dependencies.items():
-                if dependency_data.get('mandatory'):
-                    dependency_version = dependency_data.get('minVersion', '1.0.0')
+        for dependency_id, dependency_data in pack_dependencies.items():
+            if dependency_data.get('mandatory'):
+                dependency_version = dependency_data.get('minVersion', '1.0.0')
 
-                    if parse(dependency_version) > self.installed_packs.get(dependency_id, parse('1.0.0')):
-                        dependencies_to_install.append({
-                            'id': dependency_id,
-                            'version': dependency_version
-                        })
+                if parse(dependency_version) > self.installed_packs.get(dependency_id, parse('1.0.0')):
+                    dependencies_to_install.append({
+                        'id': dependency_id,
+                        'version': dependency_version
+                    })
 
-            pack_key = self.PACK_ID_VERSION_FORMAT.format(pack_data['id'], pack_data['version'])
-            demisto.debug(f'{SCRIPT_NAME} - Dependencies found for {pack_key}: {dependencies_to_install}')
-
-        except DemistoException as e:
-            return_error(e)
+        pack_key = self.PACK_ID_VERSION_FORMAT.format(pack_data['id'], pack_data['version'])
+        demisto.debug(f'{SCRIPT_NAME} - Dependencies found for {pack_key}: {dependencies_to_install}')
 
         return dependencies_to_install
 
@@ -237,7 +244,7 @@ class ContentPackInstaller:
         self.install_packs([pack_data])
 
 
-def format_packs_data_for_installation(args) -> List[Dict[str, str]]:
+def format_packs_data_for_installation(args: Dict) -> List[Dict[str, str]]:
     """Creates the body of the installation request from the raw data.
 
     Returns:

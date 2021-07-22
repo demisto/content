@@ -43,5 +43,5 @@ timeout: '0'
 type: python
 dockerimage: demisto/xsoar-tools:1.0.0.19258
 tests:
-No tests (auto formatted)
+- No tests (auto formatted)
 fromversion: 6.0.0
