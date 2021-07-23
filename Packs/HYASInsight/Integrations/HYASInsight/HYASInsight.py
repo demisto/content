@@ -305,7 +305,7 @@ def passive_dns_lookup_to_markdown(results: List[Dict], title: str) -> str:
                 row[ckey] = f(result[rkey])
         out.append(row)
 
-    return tableToMarkdown(title, out, headers=headers)
+    return tableToMarkdown(title, out, headers=headers, removeNull=True)
 
 
 @logger
@@ -350,7 +350,7 @@ def dynamic_dns_lookup_to_markdown(results: List[Dict], title: str) -> str:
                 row[ckey] = f(result[rkey])
         out.append(row)
 
-    return tableToMarkdown(title, out, headers=headers)
+    return tableToMarkdown(title, out, headers=headers, removeNull=True)
 
 
 @logger
@@ -409,7 +409,7 @@ def whois_historic_lookup_to_markdown(results: List[Dict], title: str) -> str:
                 row[ckey] = f(result[rkey])
         out.append(row)
 
-    return tableToMarkdown(title, out, headers=headers)
+    return tableToMarkdown(title, out, headers=headers, removeNull=True)
 
 
 @logger
@@ -471,7 +471,7 @@ def whois_current_lookup_to_markdown(results: List[Dict], title: str) -> str:
                 row[ckey] = f(result[rkey])
         out.append(row)
 
-    return tableToMarkdown(title, out, headers=headers)
+    return tableToMarkdown(title, out, headers=headers, removeNull=True)
 
 
 @logger
@@ -516,7 +516,7 @@ def malware_samples_lookup_to_markdown(results: List[Dict], title: str) -> str:
                 row[ckey] = f(result[rkey])
         out.append(row)
 
-    return tableToMarkdown(title, out, headers=headers)
+    return tableToMarkdown(title, out, headers=headers, removeNull=True)
 
 
 @logger
@@ -535,7 +535,7 @@ def associated_ips_build_result_context(results: Dict) -> Dict:
 def associated_ips_lookup_to_markdown(results: List, title: str) -> str:
     headers = 'Associated IPs'
     out = results
-    return tableToMarkdown(title, out, headers=headers)
+    return tableToMarkdown(title, out, headers=headers, removeNull=True)
 
 
 @logger
@@ -554,7 +554,7 @@ def associated_domains_build_result_context(results: Dict) -> Dict:
 def associated_domains_lookup_to_markdown(results: List[Dict], title: str) -> str:
     headers = 'Associated Domains'
     out = results
-    return tableToMarkdown(title, out, headers=headers)
+    return tableToMarkdown(title, out, headers=headers, removeNull=True)
 
 
 @logger
