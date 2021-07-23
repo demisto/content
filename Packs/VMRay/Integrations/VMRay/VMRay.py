@@ -329,11 +329,12 @@ def submit(params, files=None):
     return results
 
 
-def build_submission_data(raw_response):
+def build_submission_data(raw_response, type_):
     """Process a submission response from VMRay Platform
 
     Args:
         raw_response: (dict)
+        type_: (str)
     """
 
     data = raw_response.get('data')
@@ -391,7 +392,7 @@ def build_submission_data(raw_response):
         'Sample URL': [sample.get('SampleURL') for sample in samples_list],
     }
     human_readable = tableToMarkdown(
-        'File submitted to VMRay',
+        type_ + ' submitted to VMRay',
         t=table,
         headers=['Jobs ID', 'Samples ID', 'Submissions ID', 'Sample URL'],
     )
@@ -430,7 +431,7 @@ def upload_sample_command():
         files = {'sample_file': (file_name, f)}
         # Request call
         raw_response = submit(params, files=files)
-        return build_submission_data(raw_response)
+        return build_submission_data(raw_response, "File")
 
 
 def upload_url_command():
@@ -446,7 +447,7 @@ def upload_url_command():
     params['sample_url'] = url
     raw_response = submit(params)
 
-    return build_submission_data(raw_response)
+    return build_submission_data(raw_response, "URL")
 
 
 def get_analysis(sample, params=None):
