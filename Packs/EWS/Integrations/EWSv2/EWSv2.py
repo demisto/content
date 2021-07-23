@@ -907,16 +907,15 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
         if not FETCH_ALL_HISTORY:
-
             tz = EWSTimeZone.timezone('UTC')
             first_fetch_datetime = dateparser.parse(FETCH_TIME)
             first_fetch_ews_datetime = EWSDateTime.from_datetime(tz.localize(first_fetch_datetime))
             qs = qs.filter(datetime_received__gte=first_fetch_ews_datetime)
     qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
     qs = qs.filter().order_by('datetime_received')
-
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
+    demisto.debug('Exclude ID list: {}'.format(exclude_ids))
 
     for item in qs:
         try:
@@ -928,7 +927,7 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
             future_utils.raise_from(ValueError(
                 'Got an error when pulling incidents. You might be using the wrong exchange version.'
             ), exc)
-    demisto.debug('EWS V2 - Got total of {} from ews query. {} results not excluded. '.format(len(qs), len(result)))
+    demisto.debug('EWS V2 - Got total of {} from ews query. '.format(len(result)))
     return result
 
 
@@ -1261,7 +1260,6 @@ def fetch_emails_as_incidents(account_email, folder_name):
 
         demisto.debug('EWS V2 - ending fetch - got {} incidents.'.format(len(incidents)))
         last_fetch_time = last_run.get(LAST_RUN_TIME)
-
         last_incident_run_time = incident.get("occurred", last_fetch_time)
 
         if isinstance(last_incident_run_time, EWSDateTime):
