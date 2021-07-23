@@ -1046,7 +1046,7 @@ Retrieves the Summary JSON v2 for a specific analysis.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| analysis_id | ID of the analysis from which to retrieve the Summary JSON v2 from. | Required | 
+| analysis_id | ID of the analysis from which to retrieve the Summary JSON v2 from (analysis ID is returned e.g. from vmray-get-analysis-by-sample). | Required | 
 
 
 #### Context Output

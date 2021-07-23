@@ -1124,7 +1124,7 @@ script:
     description: Retrieves the Summary JSON v2 for a specific analysis.
     arguments:
     - default: false
-      description: ID of the analysis from which to retrieve the Summary JSON v2 from.
+      description: ID of the analysis from which to retrieve the Summary JSON v2 from (analysis ID is returned e.g. from vmray-get-analysis-by-sample).
       isArray: false
       name: analysis_id
       required: true

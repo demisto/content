@@ -1,3 +1,5 @@
+import json
+
 import requests
 from CommonServerPython import *
 
@@ -151,6 +153,12 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
             raise ValueError
         response = r.json() if not get_raw else r.text
         if r.status_code not in {200, 201, 202, 204} and not ignore_errors:
+            if get_raw and isinstance(response, basestring):
+                # this might be json even if get_raw is True because the API will return errors as json
+                try:
+                    response = json.loads(response)
+                except json.JSONDecodeError:
+                    pass
             err = find_error(response)
             if not err:
                 err = r.text
