@@ -98,7 +98,7 @@ script:
       required: true
       isArray: false
     outputs: []
-  dockerimage: demisto/btfl-soup:1.0.1.20928
+  dockerimage: demisto/btfl-soup:1.0.1.23151
   feed: false
   isfetch: false
   longRunning: false
