@@ -50,8 +50,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filter devices based on device's platform type. For example:
-        Apple, Android, WindowsPC, etc.'
+      description: "Filter devices based on device's platform type. For example:
+        Apple, Android, WindowsPC, etc."
       isArray: false
       name: platform
       required: false
