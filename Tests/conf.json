@@ -3438,10 +3438,6 @@
             "integrations": "jamf v2",
             "playbookID": "Jamf_v2_test",
             "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "RSA encryption Tools",
-            "playbookID": "playbook-test-rsa-encryption-decryption"
         }
     ],
     "skipped_tests": {
