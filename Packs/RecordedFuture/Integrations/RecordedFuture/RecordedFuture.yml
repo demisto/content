@@ -67,7 +67,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.22912
   commands:
   - name: domain
     arguments:
@@ -742,7 +742,7 @@ script:
     - contextPath: RecordedFuture.IP.rules
       description: Risk rules
       type: string
-    - contextPath: RecordedFuture.Ip.concatRules
+    - contextPath: RecordedFuture.IP.concatRules
       description: All risk rules concatenated by comma
       type: string
     - contextPath: RecordedFuture.IP.score
@@ -1045,6 +1045,30 @@ script:
     - contextPath: RecordedFuture.Domain.metrics.value
       description: Recorded Future metrics value
       type: number
+    - contextPath: RecordedFuture.Domain.location.asn
+      description: ASN number
+      type: string
+    - contextPath: RecordedFuture.Domain.location.cidr.id
+      description: Recorded Future CIDR ID
+      type: string
+    - contextPath: RecordedFuture.Domain.location.cidr.name
+      description: Recorded Future CIDR
+      type: string
+    - contextPath: RecordedFuture.Domain.location.cidr.type
+      description: Recorded Future CIDR Type
+      type: string
+    - contextPath: RecordedFuture.Domain.location.location.city
+      description: IP Geolocation City
+      type: string
+    - contextPath: RecordedFuture.Domain.location.location.continent
+      description: IP Geolocation Continent
+      type: string
+    - contextPath: RecordedFuture.Domain.location.location.country
+      description: IP Geolocation Country
+      type: string
+    - contextPath: RecordedFuture.Domain.location.organization
+      description: IP Geolocation Organization
+      type: string
     - contextPath: RecordedFuture.Domain.threatLists.description
       description: Recorded Future threat list description
       type: string
@@ -1279,9 +1303,6 @@ script:
     - contextPath: RecordedFuture.CVE.intelCard
       description: Recorded Future Intelligence Card URL
       type: string
-    - contextPath: RecordedFuture.CVE.hashAlgorithm
-      description: Hash Algorithm
-      type: string
     - contextPath: RecordedFuture.CVE.type
       description: Entity Type
       type: string
@@ -1297,6 +1318,30 @@ script:
     - contextPath: RecordedFuture.CVE.metrics.value
       description: Recorded Future Metrics Value
       type: number
+    - contextPath: RecordedFuture.CVE.location.asn
+      description: ASN number
+      type: string
+    - contextPath: RecordedFuture.CVE.location.cidr.id
+      description: Recorded Future CIDR ID
+      type: string
+    - contextPath: RecordedFuture.CVE.location.cidr.name
+      description: Recorded Future CIDR
+      type: string
+    - contextPath: RecordedFuture.CVE.location.cidr.type
+      description: Recorded Future CIDR Type
+      type: string
+    - contextPath: RecordedFuture.CVE.location.location.city
+      description: IP Geolocation City
+      type: string
+    - contextPath: RecordedFuture.CVE.location.location.continent
+      description: IP Geolocation Continent
+      type: string
+    - contextPath: RecordedFuture.CVE.location.location.country
+      description: IP Geolocation Country
+      type: string
+    - contextPath: RecordedFuture.CVE.location.organization
+      description: IP Geolocation Organization
+      type: string
     - contextPath: RecordedFuture.CVE.threatLists.description
       description: Recorded Future Threat List Description
       type: string
@@ -1804,6 +1849,30 @@ script:
     - contextPath: RecordedFuture.URL.metrics.value
       description: Recorded Future Metrics Value
       type: number
+    - contextPath: RecordedFuture.URL.location.asn
+      description: ASN number
+      type: string
+    - contextPath: RecordedFuture.URL.location.cidr.id
+      description: Recorded Future CIDR ID
+      type: string
+    - contextPath: RecordedFuture.URL.location.cidr.name
+      description: Recorded Future CIDR
+      type: string
+    - contextPath: RecordedFuture.URL.location.cidr.type
+      description: Recorded Future CIDR Type
+      type: string
+    - contextPath: RecordedFuture.URL.location.location.city
+      description: IP Geolocation City
+      type: string
+    - contextPath: RecordedFuture.URL.location.location.continent
+      description: IP Geolocation Continent
+      type: string
+    - contextPath: RecordedFuture.URL.location.location.country
+      description: IP Geolocation Country
+      type: string
+    - contextPath: RecordedFuture.URL.location.organization
+      description: IP Geolocation Organization
+      type: string
     - contextPath: RecordedFuture.URL.threatLists.description
       description: Recorded Future Threat List Description
       type: string
@@ -2009,6 +2078,45 @@ script:
       description: Recorded Future Related Type
       type: string
     description: Get threat intelligence for an IP, Domain, CVE, URL or File.
+  - name: recordedfuture-links
+    arguments:
+    - name: entity_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - domain
+      - ip
+      - file
+      - url
+      - cve
+      description: The type of entity for which to fetch context. Should be provided
+        with its value in entityValue argument. Can be "domain", "ip", "file", "url",
+        or "cve".
+    - name: entity
+      required: true
+      description: 'The value of the entity for which to fetch context. Should be
+        provided with its type in entity_type argument. Supported hash types: MD5,
+        SHA1, SHA256, SHA512, CRC32, and CTPH. Vulnerability supports CVEs.'
+    outputs:
+    - contextPath: RecordedFuture.Links.category
+      description: Recorded Future links category
+      type: String
+    - contextPath: RecordedFuture.Links.type
+      description: Recorded Future Links Type
+      type: String
+    - contextPath: RecordedFuture.Links.lists.entity_type
+      description: Recorded Future Links type
+      type: String
+    - contextPath: RecordedFuture.Links.lists.entities.type
+      description: RRecorded Future Link entity type
+      type: String
+    - contextPath: RecordedFuture.Links.lists.entities.name
+      description: Recorded Future Link entity name
+      type: String
+    - contextPath: RecordedFuture.Links.lists.entities.score
+      description: Recorded Future Link Entity Risk Score
+      type: Number
+    description: Get Insikt Group Research Links for an IP, Domain, CVE, URL or File.
   isfetch: false
   runonce: false
 tests:

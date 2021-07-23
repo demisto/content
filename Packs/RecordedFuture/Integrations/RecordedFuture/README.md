@@ -66,6 +66,7 @@ Get a quick indicator of the risk associated with a domain.
 | RecordedFuture.Domain.name | string | Domain name |
 | RecordedFuture.Domain.maxRules | number | Maximum count of Recorded Future Domain Risk Rules |
 | RecordedFuture.Domain.ruleCount | number | Number of triggered Recorded Future Domain Risk Rules |
+| RecordedFuture.Domain.rules | string | All the rules concatenated by comma |
 
 
 #### Command Example
@@ -158,6 +159,7 @@ Get a quick indicator of the risk associated with an IP.
 | RecordedFuture.IP.name | string | IP Address |
 | RecordedFuture.IP.maxRules | number | Maximum count of Recorded Future IP Risk Rules |
 | RecordedFuture.IP.ruleCount | number | Number of triggered Recorded Future IP Risk Rules |
+| RecordedFuture.IP.rules | string | All the rules concatenated by comma |
 
 
 #### Command Example
@@ -242,6 +244,7 @@ Get a quick indicator of the risk associated with a file.
 | RecordedFuture.File.name | string | Hash |
 | RecordedFuture.File.maxRules | number | Maximum count of Recorded Future Hash Risk Rules |
 | RecordedFuture.File.ruleCount | number | Number of triggered Recorded Future Hash Risk Rules |
+| RecordedFuture.File.rules | string | All the rules concatenated by comma |
 
 
 #### Command Example
@@ -320,6 +323,10 @@ Get a quick indicator of the risk associated with a CVE.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| DBotScore.Indicator | string | The indicator that was tested |
+| DBotScore.Type | string | Indicator type |
+| DBotScore.Vendor | string | Vendor used to calculate the score |
+| DBotScore.Score | number | The actual score |
 | CVE.ID | string | Vulnerability name |
 | RecordedFuture.CVE.riskScore | number | Recorded Future Vulnerability Risk Score |
 | RecordedFuture.CVE.riskLevel | string | Recorded Future Vulnerability Risk Level |
@@ -332,6 +339,7 @@ Get a quick indicator of the risk associated with a CVE.
 | RecordedFuture.CVE.name | string | CVE |
 | RecordedFuture.CVE.maxRules | number | Maximum count of Recorded Future Vulnerability Risk Rules |
 | RecordedFuture.CVE.ruleCount | number | Number of triggered Recorded Future Vulnerability Risk Rules |
+| RecordedFuture.CVE.rules | string | All the rules concatenated by comma |
 
 
 #### Command Example
@@ -427,6 +435,7 @@ Get a quick indicator of the risk associated with a URL.
 | RecordedFuture.URL.name | string | URL |
 | RecordedFuture.URL.maxRules | number | Maximum count of Recorded Future URL Risk Rules |
 | RecordedFuture.URL.ruleCount | number | Number of triggered Recorded Future URL Risk Rules |
+| RecordedFuture.URL.rules | string | All the rules concatenated by comma |
 
 
 #### Command Example
@@ -518,6 +527,8 @@ The verdict output is determined by algorithms inside the API.
 | File.CRC32 | string | File CRC32 |
 | File.CTPH | string | File CTPH |
 | IP.Address | string | IP address |
+| IP.Geo.Country | string | IP Geolocation Country |
+| IP.ASN | string | ASN |
 | Domain.Name | string | Domain name |
 | URL.Data | string | URL name |
 | CVE.ID | string | Vulnerability name |
@@ -528,6 +539,7 @@ The verdict output is determined by algorithms inside the API.
 | RecordedFuture.Entities.name | string | Entity Name |
 | RecordedFuture.Entities.type | string | Entity Type |
 | RecordedFuture.Entities.score | string | Entity Score |
+| RecordedFuture.Entities.context | string | Contains the current context if there is evidence |
 | RecordedFuture.Entities.Evidence.ruleid | string | Recorded Future Risk Rule ID |
 | RecordedFuture.Entities.Evidence.timestamp | date | Recorded Future Evidence Timestamp |
 | RecordedFuture.Entities.Evidence.mitigation | string | Recorded Future Evidence Mitigation |
@@ -737,11 +749,11 @@ Get threat intelligence for an IP, Domain, CVE, URL or File.
 | RecordedFuture.IP.riskString | string | Risk String |
 | RecordedFuture.IP.riskSummary | string | Risk Summary |
 | RecordedFuture.IP.rules | string | Risk Rules |
+| RecordedFuture.IP.concatRules | string | All risk rules concatenated by comma |
 | RecordedFuture.IP.score | number | Risk Score |
 | RecordedFuture.IP.firstSeen | date | Evidence First Seen |
 | RecordedFuture.IP.lastSeen | date | Evidence Last Seen |
 | RecordedFuture.IP.intelCard | string | Recorded Future Intelligence Card URL |
-| RecordedFuture.IP.hashAlgorithm | string | Hash Algorithm |
 | RecordedFuture.IP.type | string | Entity Type |
 | RecordedFuture.IP.name | string | Entity |
 | RecordedFuture.IP.id | string | Recorded Future Entity ID |
@@ -828,11 +840,11 @@ Get threat intelligence for an IP, Domain, CVE, URL or File.
 | RecordedFuture.Domain.riskString | string | Risk String |
 | RecordedFuture.Domain.riskSummary | string | Risk Summary |
 | RecordedFuture.Domain.rules | string | Risk Rules |
+| RecordedFuture.Domain.concatRules | string | All risk rules concatenated by comma |
 | RecordedFuture.Domain.score | number | Risk Score |
 | RecordedFuture.Domain.firstSeen | date | Evidence First Seen |
 | RecordedFuture.Domain.lastSeen | date | Evidence Last Seen |
 | RecordedFuture.Domain.intelCard | string | Recorded Future Intelligence Card URL |
-| RecordedFuture.Domain.hashAlgorithm | string | Hash Algorithm |
 | RecordedFuture.Domain.type | string | Entity Type |
 | RecordedFuture.Domain.name | string | Entity |
 | RecordedFuture.Domain.id | string | Recorded Future Entity ID |
@@ -919,11 +931,11 @@ Get threat intelligence for an IP, Domain, CVE, URL or File.
 | RecordedFuture.CVE.riskString | string | Risk String |
 | RecordedFuture.CVE.riskSummary | string | Risk Summary |
 | RecordedFuture.CVE.rules | string | Risk Rules |
+| RecordedFuture.CVE.concatRules | string | All risk rules concatenated by comma |
 | RecordedFuture.CVE.score | number | Risk Score |
 | RecordedFuture.CVE.firstSeen | date | Evidence First Seen |
 | RecordedFuture.CVE.lastSeen | date | Evidence Last Seen |
 | RecordedFuture.CVE.intelCard | string | Recorded Future Intelligence Card URL |
-| RecordedFuture.CVE.hashAlgorithm | string | Hash Algorithm |
 | RecordedFuture.CVE.type | string | Entity Type |
 | RecordedFuture.CVE.name | string | Entity |
 | RecordedFuture.CVE.id | string | Recorded Future Entity ID |
@@ -1012,6 +1024,7 @@ Get threat intelligence for an IP, Domain, CVE, URL or File.
 | RecordedFuture.File.riskString | string | Risk String |
 | RecordedFuture.File.riskSummary | string | Risk Summary |
 | RecordedFuture.File.rules | string | Risk Rules |
+| RecordedFuture.File.concatRules | string | All risk rules concatenated by comma |
 | RecordedFuture.File.score | number | Risk Score |
 | RecordedFuture.File.firstSeen | date | Evidence First Seen |
 | RecordedFuture.File.lastSeen | date | Evidence Last Seen |
@@ -1095,11 +1108,11 @@ Get threat intelligence for an IP, Domain, CVE, URL or File.
 | RecordedFuture.URL.riskString | string | Risk String |
 | RecordedFuture.URL.riskSummary | string | Risk Summary |
 | RecordedFuture.URL.rules | string | Risk Rules |
+| RecordedFuture.URL.concatRules | string | All risk rules concatenated by comma |
 | RecordedFuture.URL.score | number | Risk Score |
 | RecordedFuture.URL.firstSeen | date | Evidence First Seen |
 | RecordedFuture.URL.lastSeen | date | Evidence Last Seen |
 | RecordedFuture.URL.intelCard | string | Recorded Future Intelligence Card URL |
-| RecordedFuture.URL.hashAlgorithm | string | Hash Algorithm |
 | RecordedFuture.URL.type | string | Entity Type |
 | RecordedFuture.URL.name | string | Entity |
 | RecordedFuture.URL.id | string | Recorded Future Entity ID |
@@ -1447,3 +1460,116 @@ Get threat intelligence for an IP, Domain, CVE, URL or File.
 >|---|---|
 >| DNS Server List (White List) | This list consists of DNS public or open DNS servers and is an absolute white list for Risk Scoring. |
 
+
+### recordedfuture-links
+***
+Get Insikt Group Research Links for an IP, Domain, CVE, URL or File.
+
+
+#### Base Command
+
+`recordedfuture-links`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity_type | The type of entity to fetch links for. (Should be provided with its value in entityValue argument) | Required |
+| entity | The value of the entity to fetch links for. (Should be provided with its type in entity_type argument, Hash types supported: MD5, SHA-1, SHA-256, SHA-512, CRC32, CTPH). Vulnerability supports CVEs. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RecordedFuture.Links.category | String | Recorded Future Links Category |
+| RecordedFuture.Links.type | String | Recorded Future Links Type |
+| RecordedFuture.Links.lists.entity_type | String | Recorded Future Links Entity Type |
+| RecordedFuture.Links.lists.entities.name | String | Recorded Future Link Entity Name |
+| RecordedFuture.Links.lists.entities.type | String | Recorded Future Link Entity Type |
+| RecordedFuture.Links.lists.entities.score | Number | Recorded Future Link Entity Risk Score |
+
+
+#### Command Example
+```!recordedfuture-links entity="152.169.22.67" entity_type="ip"```
+
+#### Context Example
+```
+{
+    "RecordedFuture": {
+        "Links": {
+            "Insikt Group Research Links": [
+                {
+                    "category": "Actors, Tools & TTPs",
+                    "lists": [
+                        {
+                            "entities": [
+                                {
+                                    "name": "Zero Day Exploit",
+                                    "score": null,
+                                    "type": "AttackVector",
+                                }
+                            ]
+                            "entity_type": "Attack Vector",
+
+                        }
+                    ]
+                },
+                {
+                    "category":"Indicators & Detection Rules",
+                    "lists": [
+                        {
+                            "entity_type":"IP address",
+                            "entities": [
+                                {
+                                    "name": "125.62.192.220",
+                                    "score": 69,
+                                    "type": "IpAddress",
+                                },
+                                {
+                                    "name": "22.33.66.85",
+                                    "score": 33,
+                                    "type": "IpAddress",
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "Technical Links": [
+                {
+                    "category": "Actors, Tools & TTPs",
+                    "lists": [
+                        {
+                            "entities": [
+                                {
+                                    "name": "TA0011",
+                                    "score": null,
+                                    "type": "MitreAttackIdentifier",
+                                }
+                            ]
+                            "entity_type": "MITRE ATT&CK Identifier",
+
+                        },
+                    ]
+                },
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Insikt Group Research Links for: 152.169.22.67
+>#### Category Actors, Tools & TTPs
+>---
+>| Attack Vector |
+>|---|
+>| Zero Day Exploit |
+>
+>#### Indicators & Detection Rules
+>---
+>| IP address |
+>|---|
+>| 125.62.192.220 |
+>| 22.33.66.85 |

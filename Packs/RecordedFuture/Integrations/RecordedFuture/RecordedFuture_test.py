@@ -83,7 +83,7 @@ class RFTest(unittest.TestCase):
         resp = self.actions.enrich_command("184.168.221.96", "ip", True, False, "Vulnerability Analyst")  # noqa
         self.assertIsInstance(resp[0], CommandResults)
         data = resp[0].raw_response['data']
-        list_of_lists = sorted(data['relatedEntities'].keys()) # noqa
+        list_of_lists = sorted([[*entry][0] for entry in data['relatedEntities']]) # noqa
         expected = ['RelatedMalwareCategory', 'RelatedMalware', 'RelatedThreatActor']  # noqa
         self.assertEqual(list_of_lists, sorted(expected))
 
@@ -172,9 +172,19 @@ class RFTest(unittest.TestCase):
         resp = self.actions.get_alert_single_command("fp0_an")
         self.assertTrue(resp.get('HumanReadable'))
 
+    @vcr.use_cassette()
+    def test_get_links_command(self):
+        """Get Technical Links"""
+        import pdb; pdb.set_trace()
+        resp = self.actions.get_links_command('152.169.22.67', 'ip')
+        context = resp.to_context()
+        self.assertIsInstance(resp, CommandResults)
+        self.assertTrue(context.get('HumanReadable'))
+        self.assertTrue(context.get('Contents'))
+
 
 def create_client():
-    base_url = "https://api.recordedfuture.com/v2/"
+    base_url = "https://api.recordedfuture.com/gw/xsoar/"
     verify_ssl = True
     token = os.environ.get("RF_TOKEN")
     headers = {

@@ -137,7 +137,7 @@ class Client(BaseClient):
                 "links",
             ],
         }
-        if entity_type == "url":
+        if entity_type == "url" or entity_type == "ip":
             entity = parse.quote_plus(entity)
         elif entity_type == "file":
             entity_type = "hash"
@@ -411,6 +411,8 @@ def get_output_prefix(entity_type: str) -> str:
         return "RecordedFuture.URL"
     elif entity_type in ["file", "vulnerability"]:
         return "RecordedFuture.File"
+    elif entity_type == "links":
+        return "RecordedFuture.Links"
     else:
         raise Exception(f"Unknown entity type: {entity_type}")
 
@@ -570,7 +572,6 @@ class Actions():
     ) -> List[CommandResults]:
         """Do Auto Triage."""
         zero_filter = entities.pop('filter', False)
-
         def include_score(score):
             if zero_filter and score > 0:
                 return True
@@ -699,9 +700,6 @@ class Actions():
         """Enrich command."""
         try:
             entity_data = self.client.entity_enrich(entity, entity_type, related, risky, profile)
-            formated_links = self.__format_links(entity_data.get("data", {}).pop("links"))
-            scored_links = self.__soar_links(formated_links)
-            entity_data["data"]["links"] = scored_links
             if entity_data.get("data", {}).get("relatedEntities"):
                     entity_data["data"]["relatedEntities"] = self.__handle_related_entities(
                         entity_data["data"].pop("relatedEntities")
@@ -719,65 +717,6 @@ class Actions():
                 )]
             else:
                 raise err
-
-    def __format_links(self, links_data: Dict[str, Any]):
-        links = []
-        LINK_CATEGORIES = {
-            "InternetDomainName": "Domain",
-            "Hash": "Hash",
-            "IpAddress": "IP address",
-            "MalwareSignature": "Malware Signature",
-            "MitreAttackIdentifier": "MITRE ATT&CK Identifier",
-            "CyberVulnerability": "Vulnerability",
-            "Organization": "Organization",
-            "AttackVector": "Attack Vector",
-            "Threat Actor": "Threat Actor",
-            "Technology": "Technology",
-            "Malware": "Malware"
-        }
-        for hit in links_data.get("hits", []):
-            for section in hit["sections"]:
-                lists = []
-                for sec_list in section["lists"]:
-                    entities = []
-                    for entity in sec_list["entities"]:
-                        link = {
-                            "name": entity["name"],
-                            "type": entity["type"]
-                        }
-                        entities.append(link)
-                    lists.append({
-                        "entities": entities,
-                        "entity_type":  LINK_CATEGORIES.get(sec_list["type"]["name"], "Undefined")
-                    })
-                links.append({
-                    "category": section["section_id"]["name"],
-                    "lists": lists
-                })
-        return links
-
-    def __soar_links(self, links_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        scored_links = links_data
-        SOAR_TRANS = {
-            "Hash": "hash",
-            "Domain": "domain",
-            "IP address": "ip",
-            "Vulnerability": "vulnerability",
-        }
-        entity_score_map = {}
-        for category in scored_links:
-            for category_list in category["lists"]:
-                if category_list["entity_type"] in SOAR_TRANS:
-                    entities = [entity["name"] for entity in category_list["entities"]]
-                    enriched_links = self.client.entity_lookup(entities, SOAR_TRANS[category_list["entity_type"]])
-                    entity_score_map.update({
-                        entity["entity"]["name"]: int(entity["risk"]["score"])
-                        for entity in enriched_links["data"]["results"]
-                    })
-                for entity in category_list["entities"]:
-                    entity["score"] = entity_score_map.get(entity["name"])
-        return scored_links
-
 
     def __build_intel_markdown(self, entity_data: Dict[str, Any], entity_type: str) -> str:
         """Build Intelligence markdown."""
@@ -934,27 +873,6 @@ class Actions():
                 )
             )
 
-            if data.get("links"):
-                markdown.append('### Insikt Group Research Links')
-                for category in data['links']:
-                    markdown.append(f'#### Category {category["category"]}\n--------')
-                    for category_list in category['lists']:
-                        names = []
-                        for entity in category_list['entities']:
-                            score = f'**risk score: {entity["score"]}**' if entity["score"] else ''
-                            link = {category_list['entity_type']: f'{entity["name"]}  {score}'}
-                            names.append(link)
-                        markdown.append(
-                            tableToMarkdown(
-                                '',
-                                names,
-                                category_list['entity_type'],
-                                removeNull=True,
-                            )
-                        )
-            else:
-                markdown.append('### Insikt Group Research Links \n**No entries**.')
-
             threatlist_table = [
                 {"Threat List Name": tl["name"], "Description": tl["description"]}
                 for tl in data.get("threatLists", [])
@@ -967,8 +885,13 @@ class Actions():
                 )
             )
             if data.get("relatedEntities"):
-                related_entities = data.get("relatedEntities")
-                table_values = {key: [value['name'] for value in values] for key, values in related_entities.items()}
+                related_entities = {}
+                for related_entity in data["relatedEntities"]:
+                    related_entities.update(related_entity)
+                table_values = {
+                    key: [value['name'] for value in values]
+                    for key, values in related_entities.items()
+                }
                 markdown.append(
                     tableToMarkdown(
                         "Related Entities",
@@ -1058,10 +981,10 @@ class Actions():
         return command_results
 
 
-    def __handle_related_entities(self, data: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
-        return_data = {}
+    def __handle_related_entities(self, data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        return_data = []
         for related in data:
-            return_data.update(
+            return_data.append(
                 {
                     related["type"]: [
                         {
@@ -1311,6 +1234,130 @@ class Actions():
             },
         }
 
+    def get_links_command(self, entity: str, entity_type: str) -> CommandResults:
+        try:
+            entity_data = self.client.entity_enrich(entity, entity_type, related=False, risky=False)
+            links_data = entity_data.get("data", {}).pop("links")
+            if "error" in links_data:
+                raise Exception(links_data["error"])
+            formated_links = self.__format_links(links_data)
+            scored_links = self.__soar_links(formated_links)
+            markdown = self.__build_links_markdown(entity, scored_links)
+            return self.__build_links_context(scored_links, markdown)
+        except DemistoException as err:
+            if "404" in str(err):
+                return [CommandResults(
+                    outputs_prefix="",
+                    outputs={},
+                    raw_response={},
+                    readable_output="No results found.",
+                    outputs_key_field="",
+                )]
+            else:
+                raise err
+
+    def __format_links(self, links_data: Dict[str, Any]) -> Dict[str, List]:
+        links = {}
+        LINK_CATEGORIES = {
+            "InternetDomainName": "Domain",
+            "Hash": "Hash",
+            "IpAddress": "IP address",
+            "MalwareSignature": "Malware Signature",
+            "MitreAttackIdentifier": "MITRE ATT&CK Identifier",
+            "CyberVulnerability": "Vulnerability",
+            "Organization": "Organization",
+            "AttackVector": "Attack Vector",
+            "Threat Actor": "Threat Actor",
+            "Technology": "Technology",
+            "Malware": "Malware",
+            "Username": "Username",
+        }
+        for hit in links_data.get("hits", []):
+            categories = []
+            for count in hit["counts"]:
+                if count["type"]["name"] != "Insikt Group":
+                    links_type = "Technical Links"
+                else:
+                    links_type = "Insikt Group Research Links"
+            for section in hit["sections"]:
+                lists = []
+                for sec_list in section["lists"]:
+                    entities = []
+                    for entity in sec_list["entities"]:
+                        link = {
+                            "name": entity["name"],
+                            "type": entity["type"]
+                        }
+                        entities.append(link)
+                    lists.append({
+                        "entities": entities,
+                        "entity_type":  LINK_CATEGORIES.get(sec_list["type"]["name"], sec_list["type"]["name"])
+                    })
+                categories.append({
+                    "category": section["section_id"]["name"],
+                    "lists": lists
+                })
+            links.update({links_type: categories})
+        return links
+
+    def __soar_links(self, links_data: Dict[str, List]) -> Dict[str, List]:
+        scored_links = links_data
+        SOAR_TRANS = {
+            "Hash": "hash",
+            "Domain": "domain",
+            "IP address": "ip",
+            "Vulnerability": "vulnerability",
+        }
+        entity_score_map = {}
+        for link_type_list in scored_links.values():
+            for category in link_type_list:
+                for category_list in category["lists"]:
+                    if category_list["entity_type"] in SOAR_TRANS:
+                        entities = [entity["name"] for entity in category_list["entities"]]
+                        enriched_links = self.client.entity_lookup(entities, SOAR_TRANS[category_list["entity_type"]])
+                        entity_score_map.update({
+                            entity["entity"]["name"]: int(entity["risk"]["score"])
+                            for entity in enriched_links["data"]["results"]
+                        })
+                    for entity in category_list["entities"]:
+                        entity["score"] = entity_score_map.get(entity["name"])
+        return scored_links
+
+    def __build_links_markdown(self, entity: str, links_data: Dict[str, List]) -> str:
+        markdown = []
+        if links_data:
+            for link_type, type_list in links_data.items():
+                markdown.append(f'### {link_type} for: {entity}')
+                for category in type_list:
+                    if category['lists']:
+                        markdown.append(f'#### Category {category["category"]}\n--------')
+                    for category_list in category['lists']:
+                        names = []
+                        for ioc in category_list['entities']:
+                            score = f'**risk score: {ioc["score"]}**' if ioc["score"] else ''
+                            link = {category_list['entity_type']: f'{ioc["name"]}  {score}'}
+                            names.append(link)
+                        markdown.append(
+                            tableToMarkdown(
+                                '',
+                                names,
+                                category_list['entity_type'],
+                                removeNull=True,
+                            )
+                        )
+        else:
+            markdown.append('### Recorded Future Links **No entries**.')
+        return "\n".join(markdown)
+
+    def __build_links_context(self, links_data: Dict[str, List], markdown: str) -> CommandResults:
+        return CommandResults(
+                    outputs_prefix=get_output_prefix('links'),
+                    outputs=links_data,
+                    readable_output=markdown,
+                    outputs_key_field=""
+                )
+
+
 
 def main() -> None:
     """Main method used to run actions."""
@@ -1393,6 +1440,13 @@ def main() -> None:
                     demisto_args.get("fetch_related_entities") == "yes",
                     demisto_args.get("fetch_riskyCIDRips") == "yes",
                     demisto_args.get("profile", '')
+                )
+            )
+        elif command == "recordedfuture-links":
+            return_results(
+                actions.get_links_command(
+                    demisto_args.get("entity"),
+                    demisto_args.get("entity_type")
                 )
             )
     except Exception as e:
