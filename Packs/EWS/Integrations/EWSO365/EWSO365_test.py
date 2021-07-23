@@ -155,7 +155,7 @@ class TestNormalCommands:
         actual_ec = res[1]
         assert expected == actual_ec
 
-        
+
 MESSAGES = [
     Message(subject='message1',
             message_id='message1',
@@ -224,9 +224,9 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     When:
         - Running fetch command.
     Then:
-        - Validates the new Last Run new excluded IDs and last run time. 
-
+        - Validates the new Last Run new excluded IDs and last run time.
     """
+
     class MockObject:
         def filter(self, last_modified_time__gte='', datetime_received__gte=''):
             return MockObject2()
