@@ -1260,22 +1260,30 @@ def fetch_emails_as_incidents(account_email, folder_name):
                     break
 
         demisto.debug('EWS V2 - ending fetch - got {} incidents.'.format(len(incidents)))
-        last_run_time = incident.get("occurred") or last_run.get(LAST_RUN_TIME) or EWSDateTime.utcnow()
-        if isinstance(last_run_time, EWSDateTime):
-            last_run_time = last_run_time.ewsformat()
+        last_fetch_time = last_run.get(LAST_RUN_TIME)
 
-        # If creation time is not different and we didn't get all result (due to max_fetch limitation),
-        # we save the ones we already got to avoid duplicates.
-        if last_run_time > last_run.get(LAST_RUN_TIME):
+        last_incident_run_time = incident.get("occurred", last_fetch_time)
+
+        if isinstance(last_incident_run_time, EWSDateTime):
+            last_incident_run_time = last_incident_run_time.ewsformat()
+
+        if isinstance(last_fetch_time, EWSDateTime):
+            last_fetch_time = last_fetch_time.ewsformat()
+
+        demisto.debug(
+            f'#### last_incident_time: {last_incident_run_time}({type(last_incident_run_time)}).'
+            f'last_fetch_time: {last_fetch_time}({type(last_fetch_time)}) ####')
+
+        if not last_incident_run_time or not last_fetch_time or last_incident_run_time > last_fetch_time:
             ids = current_fetch_ids
         else:
             ids = current_fetch_ids | excluded_ids
 
         new_last_run = {
-            LAST_RUN_TIME: last_run_time,
-            LAST_RUN_FOLDER: folder_name,
+            LAST_RUN_TIME: last_incident_run_time,
+            LAST_RUN_FOLDER: client.folder_name,
             LAST_RUN_IDS: list(ids),
-            ERROR_COUNTER: 0
+            ERROR_COUNTER: 0,
         }
 
         demisto.setLastRun(new_last_run)

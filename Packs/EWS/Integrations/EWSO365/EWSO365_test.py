@@ -215,7 +215,6 @@ CASES = [
     CASE_SECOND_RUN_NO_INCIDENTS
 ]
 
-
 @pytest.mark.parametrize('current_last_run, messages, expected_last_run', CASES)
 def test_last_run(mocker, current_last_run, messages, expected_last_run):
     """Check the fetch command.
