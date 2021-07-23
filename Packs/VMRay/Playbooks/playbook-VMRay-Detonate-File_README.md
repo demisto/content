@@ -104,4 +104,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![VMRay-Detonate-File](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/VMRay-Detonate-File.png) 
+![Detonate File - VMRay](https://raw.githubusercontent.com/demisto/content/b775f79abb03fef141bd8581cc3ada4f0771e71a/docs/images/playbooks/VMRay-Detonate-File.png)
