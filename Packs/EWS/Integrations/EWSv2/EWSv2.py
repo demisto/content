@@ -1270,9 +1270,9 @@ def fetch_emails_as_incidents(account_email, folder_name):
         if isinstance(last_fetch_time, EWSDateTime):
             last_fetch_time = last_fetch_time.ewsformat()
 
-        demisto.debug(
-            f'#### last_incident_time: {last_incident_run_time}({type(last_incident_run_time)}).'
-            f'last_fetch_time: {last_fetch_time}({type(last_fetch_time)}) ####')
+        debug_msg = f'#### last_incident_time: {last_incident_run_time}({type(last_incident_run_time)}).' \
+                    f'last_fetch_time: {last_fetch_time}({type(last_fetch_time)}) ####'
+        demisto.debug(debug_msg)
 
         if not last_incident_run_time or not last_fetch_time or last_incident_run_time > last_fetch_time:
             ids = current_fetch_ids
