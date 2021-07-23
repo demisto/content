@@ -16,7 +16,7 @@ tasks:
       id: 60d14579-f27c-4014-b49a-4df09938a69e
     nexttasks:
       '#none#':
-      - "3"
+      - "15"
     separatecontext: false
     view: |-
       {
@@ -82,61 +82,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     taskid: 628e8784-3064-4afb-8b31-3db10b925a01
-  "3":
-    id: "3"
-    type: condition
-    task:
-      version: -1
-      name: Is there any active VMRay instance?
-      description: Check for active instance
-      type: condition
-      iscommand: false
-      brand: ""
-      id: 860a0258-dc6a-425c-b76e-27f899821379
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: vmray
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    taskid: 860a0258-dc6a-425c-b76e-27f899821379
   "4":
     id: "4"
     type: condition
@@ -220,7 +165,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1770
+          "y": 1980
         }
       }
     note: false
@@ -346,7 +291,6 @@ tasks:
       - "7"
       "yes":
       - "13"
-      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -408,7 +352,7 @@ tasks:
       id: 399942d7-ccfe-491e-87c0-dc9534f491ae
     nexttasks:
       '#none#':
-      - "7"
+      - "14"
     scriptarguments:
       sample_id:
         complex:
@@ -421,8 +365,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 715,
-          "y": 1595
+          "x": 600,
+          "y": 1610
         }
       }
     note: false
@@ -455,14 +399,49 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 285,
-          "y": 1595
+          "x": 600,
+          "y": 1775
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     taskid: 4a576c94-a14a-4b4c-ad71-837742cfd371
+  "15":
+    id: "15"
+    taskid: bbcdb264-06cf-43f6-88c4-c816ee1c29dd
+    type: condition
+    task:
+      id: bbcdb264-06cf-43f6-88c4-c816ee1c29dd
+      version: -1
+      name: Is there an active VMRay instance?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    scriptarguments:
+      brandname:
+        simple: vmray
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -470,8 +449,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1785,
-        "width": 1045,
+        "height": 1995,
+        "width": 930,
         "x": 50,
         "y": 50
       }
@@ -542,7 +521,8 @@ outputs:
   description: Description of the Verdict Reason.
   type: String
 - contextPath: VMRay.Submission.Severity
-  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
+    Unknown). Deprecated.
   type: string
 - contextPath: VMRay.Submission.SSDeep
   description: The SSDeep hash of the sample in submission.
@@ -572,7 +552,8 @@ outputs:
   description: Description of the Verdict Reason.
   type: String
 - contextPath: VMRay.Sample.Severity
-  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
+    Unknown). Deprecated.
   type: string
 - contextPath: VMRay.Sample.Type
   description: The file type.
