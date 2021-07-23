@@ -630,4 +630,4 @@ outputs:
   description: The operation that caused the indicators.
 fromversion: 5.5.0
 tests:
-- no test
+- VMRay-Test-URL
