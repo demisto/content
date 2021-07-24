@@ -2170,6 +2170,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
 
         last_incident_run_time = incident.get("occurred", last_fetch_time)
 
+        # making sure both last fetch time and the time of most recent incident are the same type for comparing.
         if isinstance(last_incident_run_time, EWSDateTime):
             last_incident_run_time = last_incident_run_time.ewsformat()
 
@@ -2180,6 +2181,8 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
             f'#### last_incident_time: {last_incident_run_time}({type(last_incident_run_time)}).'
             f'last_fetch_time: {last_fetch_time}({type(last_fetch_time)}) ####')
 
+        # If the fetch query is not fully fetched (we didn't have any time progress) - then we keep the
+        # id's from current fetch until progress is made. This is for when max_fetch < incidents_from_query.
         if not last_incident_run_time or not last_fetch_time or last_incident_run_time > last_fetch_time:
             ids = current_fetch_ids
         else:
