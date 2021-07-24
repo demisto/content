@@ -102,6 +102,7 @@ def test_error_in_execute_command(mocker, action):
             action = 'link'  # command failed on link
         elif action == 'unlink & reopen':
             action = 'unlink'  # command failed on unlink
+
         assert res['Contents'] == COMMAND_ERROR_MSG.format(action=action, ids=','.join(INCIDENT_IDS))
 
 

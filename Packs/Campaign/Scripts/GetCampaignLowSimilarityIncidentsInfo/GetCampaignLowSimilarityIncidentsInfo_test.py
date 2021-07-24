@@ -36,8 +36,8 @@ def test_incidents_info_md_happy_path(mocker):
 
     """
     # prepare
-    mocker.patch('GetCampaignIncidentsInfo.update_incident_with_required_keys')
-    mocker.patch('GetCampaignIncidentsInfo.get_campaign_incidents_from_context', return_value=MOCKED_INCIDENTS)
+    mocker.patch('GetCampaignLowSimilarityIncidentsInfo.update_incident_with_required_keys')
+    mocker.patch('GetCampaignLowSimilarityIncidentsInfo.get_campaign_incidents_from_context', return_value=MOCKED_INCIDENTS)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'incidents', return_value=MOCKED_INCIDENTS)
     mocker.patch.object(demisto, 'executeCommand')
@@ -72,7 +72,7 @@ def test_incidents_info_md_for_empty_context(mocker):
     """
     # prepare
     mocker.patch.object(demisto, 'results')
-    mocker.patch('GetCampaignIncidentsInfo.get_campaign_incidents_from_context', return_value=[])
+    mocker.patch('GetCampaignLowSimilarityIncidentsInfo.get_campaign_incidents_from_context', return_value=[])
 
     # run
     main()
@@ -100,8 +100,8 @@ def test_incidents_info_md_with_invalid_keys(mocker):
     incident_without_status.pop('status')
     incidents = [incident_with_invalid_status, incident_without_status]
     mocker.patch.object(demisto, 'results')
-    mocker.patch('GetCampaignIncidentsInfo.get_campaign_incidents_from_context', return_value=incidents)
-    mocker.patch('GetCampaignIncidentsInfo.update_incident_with_required_keys', return_value=incidents)
+    mocker.patch('GetCampaignLowSimilarityIncidentsInfo.get_campaign_incidents_from_context', return_value=incidents)
+    mocker.patch('GetCampaignLowSimilarityIncidentsInfo.update_incident_with_required_keys', return_value=incidents)
 
     # run
     main()
@@ -128,7 +128,7 @@ def test_some_error(mocker):
 
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'context', side_effect=raise_exception)
-    mocker.patch('GetCampaignIncidentsInfo.update_incident_with_required_keys')
+    mocker.patch('GetCampaignLowSimilarityIncidentsInfo.update_incident_with_required_keys')
 
     # run
     try:
@@ -153,7 +153,7 @@ def test_updated_status_and_severity(mocker):
 
     # prepare
     mocker.patch.object(demisto, 'results')
-    mocker.patch('GetCampaignIncidentsInfo.get_campaign_incidents_from_context', return_value=MOCKED_INCIDENTS)
+    mocker.patch('GetCampaignLowSimilarityIncidentsInfo.get_campaign_incidents_from_context', return_value=MOCKED_INCIDENTS)
     mocker.patch.object(demisto,
                         'executeCommand',
                         return_value=[{'Contents': json.dumps(UPDATED_MOCKED_INCIDENTS), 'Type': 'str'}])

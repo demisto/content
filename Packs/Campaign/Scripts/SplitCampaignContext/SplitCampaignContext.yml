@@ -10,9 +10,6 @@ args:
 - name: SimilarityThresholdToSplitBy
   defaultValue: "0.8"
   description: The similarity value on which to split the context campaign data.
-- name: campaign_context_path
-  defaultValue: EmailCampaign
-  description: The context full path of the EmailCampaign.
 outputs:
 - contextPath: EmailCampaign.incidents.id
   description: The IDs of the incidents involved in the campaign.
