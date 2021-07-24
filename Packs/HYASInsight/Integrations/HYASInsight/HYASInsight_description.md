@@ -4,7 +4,7 @@ HYAS Insight is a threat investigation and attribution solution that uses exclus
 Use the HYAS Insight integration to interactively lookup PassiveDNS, DynamicDNS, WHOIS, Malware Information.
 
 ## How to get a HYAS API Key
-In order to be able to use HYAS Insight data with Cortex XSOAR, you will need a HYAS Insight API key. To request one, please contact HYAS Support at support@hyas.com or https://www.hyas.com/contact. You can also contact HYAS Support inside the HYAS Insight web UI by clicking the 'help' icon at the top right of the screen.
+In order to obtain a HYAS Insight API key to use with Cortex XSOAR, please contact your HYAS Insight Admin. If you are unsure who your Admin is, you can also contact HYAS Support via email at support@hyas.com, by visiting the HYAS website https://www.hyas.com/contact, or by using the HYAS Insight web UI by clicking the ‘help’ icon at the top right of the screen, to request a key.
 
 ## Partner Contributed Integration
 ### Integration Author: HYAS
