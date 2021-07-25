@@ -51,7 +51,7 @@ def getEditIssue(returnFields):
         else:
             field = issue.get('risk')
             if field is not None:
-                issue['risk'] = str(round(field * 100, 2)) + '%'
+                issue['risk'] = str(round(float(field) * 100, 2)) + '%'
             return issue
     return editIssue
 
@@ -120,6 +120,9 @@ def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
+def test_module(client):
+    return 'ok'
+
 """ MAIN FUNCTION """
 
 
@@ -167,11 +170,11 @@ def main() -> None:
         if demisto.command() == "arcusteam-get-devices":
             return_results(arcusteam_get_devices(client, demisto.args()))
 
-        if demisto.command() == "arcusteam-get-vulnerabilities":
-            return_results(arcusteam_get_vulnerabilities(client, demisto.args()))
-
         if demisto.command() == "test-module":
-            return_results("ok")
+            return_results(test_module(client))
+
+        elif demisto.command() == "arcusteam-get-vulnerabilities":
+            return_results(arcusteam_get_vulnerabilities(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
