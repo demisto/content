@@ -58,7 +58,7 @@ subtype: python3
 system: false
 tags:
 - ml
-timeout: '0'
+timeout: 60µs
 type: python
 dockerimage: demisto/ml:1.0.0.15569
 tests:
