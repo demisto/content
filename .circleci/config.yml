@@ -107,7 +107,8 @@ parameters:
     default: "master"
   delete_current_branch:
     type: string
-    default:
+    default: ""
+
 references:
   environment: &environment
     environment:
