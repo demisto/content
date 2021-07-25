@@ -11,13 +11,13 @@ with open('./test_data/signer.pem') as file_:
     public_key = file_.read()
 
 client = Client(private_key, public_key)
-error_msg = 'Note: detected encoding confidence is low, characters may be missing. You can try running this command again and pass the encoding code as argument.\n'
+note_msg = 'Note: detected encoding confidence is low, characters may be missing. You can try running this command again and pass the encoding code as argument.\n'
 
 test_data = [
     (
         b'Za\xbf\xf3\xb3\xe6 g\xea\xb6l\xb1 ja\xbc\xf1',
         'Za¿ó³æ gê¶l± ja¼ñ',
-        error_msg,
+        note_msg,
         ''
     ),
     (
@@ -28,7 +28,7 @@ test_data = [
     ),
     ('‚ª‚¢ƒ‚',
      'がいモ',
-     error_msg,
+     note_msg,
      ''
      ),
     (b'\xd7\xa9\xd7\x9c\xd7\x95\xd7\x9d',
@@ -80,7 +80,7 @@ def test_sign_and_encrypt(mocker):
 
 
 @pytest.mark.parametrize('decrypted_text_bytes, expected_output, error_msg, encoding', test_data)
-def test_decode_using_chardet(decrypted_text_bytes, expected_output,error_msg, encoding):
+def test_decode_using_chardet(decrypted_text_bytes, expected_output, error_msg, encoding):
     """
     Given:
         - Text in bytes to decode
@@ -93,7 +93,6 @@ def test_decode_using_chardet(decrypted_text_bytes, expected_output,error_msg, e
         message to note returned
 
     """
-    decrypted_text_bytes = b'Za\xbf\xf3\xb3\xe6 g\xea\xb6l\xb1 ja\xbc\xf1'
     out, msg = decode_str(decrypted_text_bytes)
     assert error_msg in msg
     assert out == expected_output
