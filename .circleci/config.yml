@@ -1336,10 +1336,11 @@ jobs:
             if [ -n "$DELETE_CURRENT_BRANCH" ]; then
               echo Deleting current branch
               echo << pipeline.git.branch >>
+            fi
+
 #              git checkout master
 #              git push origin --delete "${content_branch}" # delete remote branch
 #              git branch -D "${content_branch}" # delete local branch
-            fi
 workflows:
   version: 2
   commit:
