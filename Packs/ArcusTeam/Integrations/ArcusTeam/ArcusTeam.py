@@ -2,8 +2,6 @@ import json
 import requests
 import urllib3
 import traceback
-from CommonServerPython import *  # noqa: F401
-import demistomock as demisto  # noqa: F401
 from typing import Any, Dict
 
 
