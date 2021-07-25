@@ -1,4 +1,4 @@
-RSA Encryption Tools - Encrypt and Decrypt text and files using RSA encryption.
+RSA Encryption Tools - Encrypt and decrypt text and files using RSA encryption.
 
 ## Configure EncryptionTools on Cortex XSOAR
 
@@ -30,14 +30,14 @@ Encrypt text.
 #### Input
 
 | **Argument Name** | **Description**      | **Required** |
-| ----------------- | -------------------- | ------------ |
+| ------ | -------- | ------ |
 | text_to_encrypt   | The text to encrypt. | Required     |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| EncryptionTools.Value | String   | The value of the encrypted text. |
+| EncryptionTools.Value | String | The value of the encrypted text. |
 
 #### Command Example
 
@@ -58,8 +58,8 @@ Decrypt text.
 
 #### Input
 
-| **Argument Name** | **Description**             | **Required** |
-| ----------------- | --------------------------- | ------------ |
+| **Argument Name** | **Description** | **Required** |
+| ---------- | --------- | ------- |
 | base64_to_decrypt | The base64 text to decrypt. | Required     |
 
 #### Context Output
@@ -77,7 +77,7 @@ There is no context output for this command.
 #### Usage Recommendations:
 
 The output of this command is the decrypted value, which may be sensitive data. In order to wrap the output and prevent
-the data from being printed to the war room you should call the command from a script using the following code:
+the data from being printed to the War Room you should call the command from a script using the following code:
 `decrypted_content = execute_command('rsa-encryption-tools-decrypt-text', {'base64_to_decrypt': <decrypted_string>'}, True)`
 
 ### rsa-encryption-tools-encrypt-file
@@ -91,11 +91,10 @@ Encrypt file.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                               | **
-| Required**       |
-| ---------------- | --------------------------------------------------------------------------------------------- | -------- |
-| entry_id         | The entry ID of the file to encrypt.                                                          | Required |
-| output_as_file   | Whether to output the decrypted data to file. Default is "true".                              | Optional |
+| **Argument Name** | **Description**  | **Required**       |
+| ---------- | ---------- | -------- |
+| entry_id | The entry ID of the file to encrypt. | Required |
+| output_as_file | Whether to output the decrypted data to file. Default is "true". | Optional |
 | output_file_name | The name of the output encrypted file. If not provided, the "encrypted" suffix will be added. | Optional |
 
 #### Context Output
@@ -121,10 +120,9 @@ Decrypt file.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                               | **
-| Required**       |
-| ---------------- | --------------------------------------------------------------------------------------------- | -------- |
-| entry_id         | The entry ID of the file to decrypt.                                                          | Required |
+| **Argument Name** | **Description** | **Required** |
+| ---------- | ----------- | -------- |
+| entry_id | The entry ID of the file to decrypt. | Required |
 | output_file_name | The name of the output decrypted file. If not provided, the "decrypted" suffix will be added. | Optional |
 
 #### Context Output
@@ -141,8 +139,8 @@ There is no context output for this command.
 
 #### Usage Recommendations:
 
-The output of this command is the decrypted file, which might include be sensitive data. In order to wrap the output and
-prevent the file from being printed to the war room you should call the command from a script using the following code:
+The output of this command is the decrypted file, which might include sensitive data. In order to wrap the output and
+prevent the file from being printed to the War Room you should call the command from a script using the following code:
 `decrypted_content = execute_command('rsa-encryption-tools-decrypt-file', {'entry_id': <your_entry_id>, 'output_as_file': 'false'}, True)`
 
 ### rsa-encryption-tools-export-public-key
@@ -156,9 +154,9 @@ Exports the public key to a file.
 
 #### Input
 
-| **Argument Name** | **Description**              | **Required** |
-| ----------------- | ---------------------------- | ------------ |
-| output_file_name  | The name of the output file. | Required     |
+| **Argument Name** | **Description** | **Required** |
+| ------- | ---------- | ------------ |
+| output_file_name | The name of the output file. | Required |
 
 #### Context Output
 
