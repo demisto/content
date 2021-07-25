@@ -124,7 +124,8 @@ URL_SUFFIX: Dict[str, str] = {
 }
 
 OUTPUT_PREFIX: Dict[str, str] = {
-    'DRIVE': 'GoogleDrive.Drive',
+    'GOOGLE_DRIVE_HEADER': 'GoogleDrive.Drive',
+    'PAGE_TOKEN': 'PageToken',
 
     'DRIVE_CHANGES_LIST': 'GoogleDrive.DriveChange(val.time == obj.time && val.fileId == obj.fileId &&'
                           ' val.driveId == obj.driveId && val.userId == obj.userId)',
@@ -134,14 +135,14 @@ OUTPUT_PREFIX: Dict[str, str] = {
     'DRIVE_ACTIVITY_LIST': 'GoogleDrive.DriveActivity',
     'DRIVE_ACTIVITY_LIST_PAGE_TOKEN': 'GoogleDrive.PageToken.DriveActivity',
 
-    'DRIVES_LIST_PAGE_TOKEN': 'GoogleDrive.PageToken',
+    'GOOGLE_DRIVE_DRIVE_HEADER': 'GoogleDrive.Drive',
+    'DRIVE': 'Drive',
 
-    'FILES_LIST': 'GoogleDrive.File',
-    'FILES_LIST_PAGE_TOKEN': 'GoogleDrive.PageToken',
-    'FILE': 'GoogleDrive.File',
+    'GOOGLE_DRIVE_FILE_HEADER': 'GoogleDrive.File',
+    'FILE': 'File',
 
-    'FILE_PERMISSIONS_LIST_PAGE_TOKEN': 'GoogleDrive.PageToken',
-    'FILE_PERMISSION': 'GoogleDrive.FilePermission',
+    'GOOGLE_DRIVE_FILE_PERMISSION_HEADER': 'GoogleDrive.FilePermission',
+    'FILE_PERMISSION': 'FilePermission',
 
 }
 
@@ -727,7 +728,7 @@ def drive_create_command(client: GSuiteClient, args: Dict[str, str]) -> CommandR
                                       removeNull=True, headers=hr_output_fields)
 
     return CommandResults(
-        outputs_prefix=OUTPUT_PREFIX['DRIVE'],
+        outputs_prefix=OUTPUT_PREFIX['GOOGLE_DRIVE_HEADER'],
         outputs_key_field='id',
         outputs=response,
         readable_output=readable_output,
@@ -857,17 +858,20 @@ def handle_response_drive_list(response: Dict[str, Any]) -> CommandResults:
     for current_drive in cleaned_drives_context.get('drives', []):
         outputs_context.append(current_drive)
 
-    drives_hr = prepare_drives_human_readable(outputs_context)
-
     outputs: Dict = {
-        OUTPUT_PREFIX['DRIVE']: outputs_context
+        OUTPUT_PREFIX['GOOGLE_DRIVE_DRIVE_HEADER']: {
+            OUTPUT_PREFIX['DRIVE']: outputs_context,
+        },
     }
-    if response.get('nextPageToken', ''):
-        outputs[OUTPUT_PREFIX['DRIVES_LIST_PAGE_TOKEN']] = response['nextPageToken']
-        readable_output += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
-    outputs = GSuiteClient.remove_empty_entities(outputs)
+
+    drives_hr = prepare_drives_human_readable(outputs_context)
     readable_output += drives_hr if response.get('drives', '') \
         else HR_MESSAGES['NOT_FOUND'].format('Drives')
+
+    if response.get('nextPageToken', ''):
+        outputs[OUTPUT_PREFIX['GOOGLE_DRIVE_DRIVE_HEADER']][OUTPUT_PREFIX['PAGE_TOKEN']] = response['nextPageToken']
+        readable_output += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
+    outputs = GSuiteClient.remove_empty_entities(outputs)
 
     return CommandResults(
         outputs=outputs,
@@ -880,15 +884,16 @@ def handle_response_single_drive(response: Dict[str, Any], args: Dict[str, str])
     drive_context = set_true_for_empty_dict(response)
     outputs_context = GSuiteClient.remove_empty_entities(drive_context)
 
-    drive_hr = prepare_single_drive_human_readable(outputs_context, args)
-
     outputs: Dict = {
-        OUTPUT_PREFIX['DRIVE']: outputs_context
+        OUTPUT_PREFIX['GOOGLE_DRIVE_DRIVE_HEADER']: {
+            OUTPUT_PREFIX['DRIVE']: outputs_context,
+        },
     }
 
     outputs = GSuiteClient.remove_empty_entities(outputs)
 
     readable_output = ''
+    drive_hr = prepare_single_drive_human_readable(outputs_context, args)
     readable_output += drive_hr if response.get('id', '') \
         else HR_MESSAGES['NOT_FOUND'].format('Drive')
 
@@ -1006,14 +1011,17 @@ def handle_response_files_list(response: Dict[str, Any]) -> CommandResults:
     files_hr = prepare_files_human_readable(outputs_context)
 
     outputs: Dict = {
-        OUTPUT_PREFIX['FILES_LIST']: outputs_context
+        OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_HEADER']: {
+            OUTPUT_PREFIX['FILE']: outputs_context,
+        },
     }
-    if response.get('nextPageToken', ''):
-        outputs[OUTPUT_PREFIX['FILES_LIST_PAGE_TOKEN']] = response['nextPageToken']
-        readable_output += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
-    outputs = GSuiteClient.remove_empty_entities(outputs)
     readable_output += files_hr if response.get('files', '') \
         else HR_MESSAGES['NOT_FOUND'].format('Files')
+
+    if response.get('nextPageToken', ''):
+        outputs[OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_HEADER']][OUTPUT_PREFIX['PAGE_TOKEN']] = response['nextPageToken']
+        readable_output += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
+    outputs = GSuiteClient.remove_empty_entities(outputs)
 
     return CommandResults(
         outputs=outputs,
@@ -1028,9 +1036,10 @@ def handle_response_single_file(response: Dict[str, Any], args: Dict[str, str]):
     file_hr = prepare_single_file_human_readable(outputs_context, args)
 
     outputs: Dict = {
-        OUTPUT_PREFIX['FILE']: outputs_context
+        OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_HEADER']: {
+            OUTPUT_PREFIX['FILE']: outputs_context
+        }
     }
-
     outputs = GSuiteClient.remove_empty_entities(outputs)
 
     readable_output = file_hr if response.get('id', '') \
@@ -1099,8 +1108,7 @@ def prepare_single_file_human_readable(outputs_context: Dict[str, Any], args: Di
         GSuiteClient.remove_empty_entities(outputs_context),
         [x.strip() for x in args.get('fields', 'kind, id').split(',')],
         headerTransform=pascalToSpace,
-        removeNull=False,
-    )
+        removeNull=False)
 
 
 def prepare_file_command_request(client: GSuiteClient, args: Dict[str, str], scopes: List[str]) -> Dict[str, Any]:
@@ -1221,16 +1229,22 @@ def file_delete_command(client: GSuiteClient, args: Dict[str, str]) -> CommandRe
     url_suffix = URL_SUFFIX['DRIVE_FILES_ID'].format(args.get('file_id'))
     client.http_request(url_suffix=url_suffix, method='DELETE', params=http_request_params)
     outputs_context = {
-        'fileId': args.get('file_id'),
+        'id': args.get('file_id'),
+    }
+    outputs: Dict = {
+        OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_HEADER']: {
+            OUTPUT_PREFIX['FILE']: outputs_context,
+        }
     }
 
     table_hr_md = tableToMarkdown(HR_MESSAGES['DELETE_COMMAND_SUCCESS'].format('File(s)', 1),
                                   outputs_context,
-                                  ['fileId'],
+                                  ['id'],
                                   headerTransform=pascalToSpace,
                                   removeNull=False)
 
     ret_value = CommandResults(
+        outputs=outputs,
         readable_output=table_hr_md,
     )
     return ret_value
@@ -1249,7 +1263,9 @@ def handle_response_file_single(response: Dict[str, Any], args: Dict[str, str]) 
     files_hr = prepare_file_single_human_readable(outputs_context, args)
 
     outputs: Dict = {
-        OUTPUT_PREFIX['FILE']: outputs_context
+        OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_HEADER']: {
+            OUTPUT_PREFIX['FILE']: outputs_context
+        }
     }
     outputs = GSuiteClient.remove_empty_entities(outputs)
     readable_output += files_hr
@@ -1430,14 +1446,25 @@ def file_permission_delete_command(client: GSuiteClient, args: Dict[str, str]) -
 
     url_suffix = URL_SUFFIX['FILE_PERMISSION_DELETE'].format(args.get('file_id'), args.get('permission_id'))
     client.http_request(url_suffix=url_suffix, method='DELETE', params=http_request_params)
-    outputs = {'fileId': args.get('file_id'), 'permissionId': args.get('permission_id')}
+
+    outputs_context: Dict = {
+        'fileId': args.get('file_id'),
+        'id': args.get('permission_id'),
+    }
+    outputs: Dict = {
+        OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_PERMISSION_HEADER']: {
+            OUTPUT_PREFIX['FILE_PERMISSION']: outputs_context,
+        }
+    }
+
     table_hr_md = tableToMarkdown(HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1),
-                                  outputs,
-                                  ['fileId', 'permissionId'],
+                                  outputs_context,
+                                  ['fileId', 'id'],
                                   headerTransform=pascalToSpace,
                                   removeNull=False)
 
     return CommandResults(
+        outputs=outputs,
         readable_output=table_hr_md,
     )
 
@@ -1457,14 +1484,17 @@ def handle_response_permissions_list(response: Dict[str, Any], args: Dict[str, s
     files_hr = prepare_permissions_human_readable(outputs_context, args)
 
     outputs: Dict = {
-        OUTPUT_PREFIX['FILE_PERMISSION']: outputs_context
+        OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_PERMISSION_HEADER']: {
+            OUTPUT_PREFIX['FILE_PERMISSION']: outputs_context,
+        },
     }
-    if response.get('nextPageToken', ''):
-        outputs[OUTPUT_PREFIX['FILE_PERMISSIONS_LIST_PAGE_TOKEN']] = response['nextPageToken']
-        readable_output += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
-    outputs = GSuiteClient.remove_empty_entities(outputs)
     readable_output += files_hr if response.get('permissions', '') \
         else HR_MESSAGES['NOT_FOUND'].format('Permissions')
+
+    if response.get('nextPageToken', ''):
+        outputs[OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_PERMISSION_HEADER']][OUTPUT_PREFIX['PAGE_TOKEN']] = response['nextPageToken']
+        readable_output += NEXT_PAGE_TOKEN.format(response.get('nextPageToken'))
+    outputs = GSuiteClient.remove_empty_entities(outputs)
 
     return CommandResults(
         outputs=outputs,
@@ -1502,7 +1532,9 @@ def handle_response_permission_single(response: Dict[str, Any], args: Dict[str, 
     files_hr = prepare_permission_human_readable(outputs_context, args)
 
     outputs: Dict = {
-        OUTPUT_PREFIX['FILE_PERMISSION']: outputs_context
+        OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_PERMISSION_HEADER']: {
+            OUTPUT_PREFIX['FILE_PERMISSION']: outputs_context
+        }
     }
     outputs = GSuiteClient.remove_empty_entities(outputs)
     readable_output += files_hr
