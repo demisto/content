@@ -152,7 +152,7 @@ def decode_str_using_chardet(decrypted_text: str) -> Tuple[str, str]:
         demisto.info(f'Could not decode file using detected encoding:{encoding}, retrying '
                      f'using utf-8.\n')
         out = decrypted_text.decode('utf-8')
-    return out, error
+    return out, msg
 
 
 def decrypt_email_body(client: Client, args: Dict, file_path=None):
