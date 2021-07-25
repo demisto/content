@@ -1,7 +1,6 @@
 commonfields:
   id: ArcusTeam
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: ArcusTeam
 display: ArcusTeam
 category: Data Enrichment & Threat Intelligence
@@ -167,3 +166,6 @@ script:
   dockerimage: demisto/python3:3.9.1.14969
   runonce: false
   subtype: python3
+fromversion: 4.1.0
+tests:
+- No tests (auto formatted)
