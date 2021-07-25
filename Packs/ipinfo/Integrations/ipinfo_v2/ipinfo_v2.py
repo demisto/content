@@ -140,7 +140,6 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List
         ip=ip,
         dbot_score=Common.DBotScore(indicator=ip,
                                     indicator_type=DBotScoreType.IP,
-                                    integration_name='IPinfo_v2',
                                     reliability=dbot_reliability,
                                     score=Common.DBotScore.NONE),
         asn=asn,
