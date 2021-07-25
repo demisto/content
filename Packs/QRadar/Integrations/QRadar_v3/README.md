@@ -76,6 +76,7 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 This integration supports in mirroring from QRadar offenses to XSOAR.
 * When a field of an offense is updated in QRadar services, it is mirrored in XSOAR.
 * Mirroring events from QRadar to XSOAR is not supported.
+For further explanation about mirroring configurations, please click [here](https://xsoar.pan.dev/docs/integrations/mirroring_integration) 
 ## Choose your API version
 1. Visit the [QRadar API versions page](https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_getting_started.html) for a full list of available API versions according to the QRadar version.
 2. Choose one of the API versions listed under **Supported REST API versions** column in the line corresponding to your QRadar version.
