@@ -1,13 +1,10 @@
-import base64
 import json
-import re
-from typing import Dict, List, Optional, Set, Tuple
+from typing import List, Set
 
 import demistomock as demisto  # noqa: F401
 import jwt
 import requests
 from CommonServerPython import *  # noqa: F401
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -581,4 +578,4 @@ if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
 
 
-from MicrosoftApiModule import * # noqa: E402
+from MicrosoftApiModule import *   # noqa: E402
