@@ -16,8 +16,8 @@ script: |2
 
 
   try:
-      context = demisto.executeCommand("getContext", {'id': incident_id})
-      campaign_incident_id = demisto.get(context[0], "Contents.context.PartOfCampaign")
+      incident = demisto.incidents()
+      campaign_incident_id = str(incident[0].get('CustomFields', {}).get('partofcampaign', ''))
       urls = demisto.demistoUrls()
       server_url = urls.get('server', '')
       if campaign_incident_id and campaign_incident_id != "None":
