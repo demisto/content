@@ -80,6 +80,10 @@ def arcusteam_get_devices(client: Client, args: Dict[str, Any]):
     )
 
 
+def arcusteam_test_module(client):
+    return 'ok'
+
+
 def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> CommandResults:
     url = urljoin(client._base_url, "/get_vulnerabilities")
     returnFields = str(args.get("return_fields")).split(',')
@@ -118,8 +122,6 @@ def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def arcusteam_test_module(client):
-    return 'ok'
 
 """ MAIN FUNCTION """
 
@@ -168,8 +170,8 @@ def main() -> None:
         if demisto.command() == "arcusteam-get-devices":
             return_results(arcusteam_get_devices(client, demisto.args()))
 
-        if demisto.command() == "test-module":
-            return_results(arcusteam_test_module(client))
+#         if demisto.command() == "test-module":
+#             return_results(arcusteam_test_module(client))
 
         elif demisto.command() == "arcusteam-get-vulnerabilities":
             return_results(arcusteam_get_vulnerabilities(client, demisto.args()))
