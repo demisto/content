@@ -1,4 +1,4 @@
-!cherwell-create-business-object type=incident json=`{"Priority": "3", "CustomerDisplayName": "Lucas Sato", "Description": "This incident was created by Cherwell test playbook","Service":"Enterprise Apps","Category":"PeopleSoft","Subcategory":"Submit Incident"}`
+!cherwell-create-business-object type=incident json=`{"Priority": "3", "CustomerDisplayName": "demisto", "Description": "This incident was created by Cherwell test playbook","Service":"Enterprise Apps","Category":"PeopleSoft","Subcategory":"Submit Incident"}`
 !cherwell-get-business-object type=incident id_type=public_id id_value=102383
 !cherwell-update-business-object type=incident id_type=public_id id_value=102383 json=`{"Priority": "1"}`
 !cherwell-upload-attachment file_entry_id=13570@f0716e08-9825-481c-8938-8e0a91a20557 type=incident id_type=public_id id_value=102383
