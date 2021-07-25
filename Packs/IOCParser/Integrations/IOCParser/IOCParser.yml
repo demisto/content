@@ -68,6 +68,10 @@ script:
     description: Parses and extracts IOCs from a given JSON.
     execution: false
     name: ioc-parser-parse-text
+    outputs:
+    - contextPath: IOCParser.parseFromJSONText
+      description: All IOCs that were parsed from the JSON text.
+      type: Unknown
   - arguments:
     - default: false
       description: The text from which the IOCs will be extracted
@@ -91,6 +95,10 @@ script:
     description: Parses and extracts IOCs from a given text.
     execution: false
     name: ioc-parser-parse-raw-text
+    outputs:
+    - contextPath: IOCParser.parseFromRawText
+      description: All IOCs that were parsed from the raw text.
+      type: Unknown
   - arguments:
     - default: false
       description: The twitter account (user name) from which the IOCs will be extracted
@@ -114,6 +122,10 @@ script:
     description: Parses and extracts IOCs from a given twitter account.
     execution: false
     name: ioc-parser-parse-twitter
+    outputs:
+    - contextPath: IOCParser.parseFromTwitter
+      description: All IOCs that were parsed from the twitter account.
+      type: Unknown
   dockerimage: demisto/python3:3.9.5.22665
   feed: false
   isfetch: false
