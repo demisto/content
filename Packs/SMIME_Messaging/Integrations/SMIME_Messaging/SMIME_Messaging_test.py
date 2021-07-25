@@ -1,7 +1,7 @@
 import pytest
 
 from SMIME_Messaging import Client, sign_email, encrypt_email_body, verify, decrypt_email_body, sign_and_encrypt,\
-    decode_str_using_chardet
+    decode_str
 import demistomock as demisto
 
 
@@ -94,7 +94,7 @@ def test_decode_using_chardet(decrypted_text_bytes, expected_output,error_msg, e
 
     """
     decrypted_text_bytes = b'Za\xbf\xf3\xb3\xe6 g\xea\xb6l\xb1 ja\xbc\xf1'
-    out, msg = decode_str_using_chardet(decrypted_text_bytes)
+    out, msg = decode_str(decrypted_text_bytes)
     assert error_msg in msg
     assert out == expected_output
 
