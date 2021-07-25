@@ -244,12 +244,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: Asset id
-      isArray: false
-      name: id
-      required: false
-      secret: false
-    - default: false
       description: Asset location
       isArray: false
       name: location
@@ -826,12 +820,6 @@ script:
       description: Is risk score more than provided
       isArray: false
       name: risk_more_than
-      required: false
-      secret: false
-    - default: false
-      description: The vulnerability opened date
-      isArray: false
-      name: date_opened
       required: false
       secret: false
     - default: false

@@ -516,16 +516,14 @@ script:
       description: (Optional) Set to 1 to display the cloud details (Provider, Connector,
         Scan Type and Cloud Target) in the XML output. Otherwise the details are not
         displayed in the output.
+        The cloud details will show scan type "Cloud Perimeter" for cloud perimeter
+        scans.
     - name: client_id
       description: (Optional) Id assigned to the client (Consultant type subscription
         only). Parameter client_id or client_name may be specified for the same request.
     - name: client_name
       description: (Optional) Name of the client (Consultant type subscription only).
         Parameter client_id or client_name may be specified for the same request.
-    - name: show_cloud_details
-      description: (Optional) Set to 1 to display cloud details in the XML output.
-        The cloud details will show scan type "Cloud Perimeter" for cloud perimeter
-        scans.
     - name: limit
       description: Specify a positive numeric value to limit the amount of results
         in the requested list
