@@ -58,7 +58,40 @@
     "id": "3",
     "instance": "",
     "mirroring": "both",
-    "observables": [],
+    "observables": [
+          {
+  "_id": "1",
+  "_type": "Observable",
+  "_createdBy": "example@example.com",
+  "_createdAt": 1626869400687,
+  "dataType": "domain",
+  "data": "example.com",
+  "startDate": 1626869400687,
+  "tlp": 2,
+  "tags": [],
+  "ioc": false,
+  "sighted": false,
+  "reports": {},
+  "message": "try from test",
+  "extraData": {
+    "seen": {
+      "seen": 0,
+      "ioc": false
+    },
+    "permissions": [
+      "manageShare",
+      "manageAnalyse",
+      "manageTask",
+      "manageCaseTemplate",
+      "manageCase",
+      "manageUser",
+      "manageProcedure",
+      "managePage"
+    ],
+    "shareCount": 0
+  }
+}
+    ],
     "caseId": "3",
     "createdBy": "example@example.com",
     "createdAt": "2021-07-21T09:15:09Z",

@@ -204,8 +204,8 @@ class Client(BaseClient):
         if res.status_code != 200:
             return None
         if res.json():
-            task = res.json()[0]
-            task['logs'] = self.get_task_logs(task_id)
+            task = res.json()
+            res.json()['logs'] = self.get_task_logs(task_id)
         else:
             task = None
         return task
@@ -313,9 +313,9 @@ class Client(BaseClient):
 
     def create_user(self, user_data: dict):
         if self.version[0] == "4":
-            res = self._http_request('POST', 'v1/user', data=user_data, ok_codes=[201])
+            res = self._http_request('POST', 'v1/user', data=user_data, ok_codes=[201, 200])
         else:
-            res = self._http_request('POST', 'user', data=user_data, ok_codes=[201])
+            res = self._http_request('POST', 'user', data=user_data, ok_codes=[201, 200])
         return res
 
     def block_user(self, user_id: str = None):
@@ -362,11 +362,11 @@ class Client(BaseClient):
             )
         else:
             res = self._http_request('POST', 'case/artifact/_search', ok_codes=[200])
-            res[:] = [x for x in res if x['_parent'] == case_id] if case_id else res
+            res[:] = [x for x in res] if case_id else res
         return res
 
     def create_observable(self, case_id: str = None, data: dict = None):
-        res = self._http_request('POST', f'case/{case_id}/artifact', ok_codes=[201], data=data)
+        res = self._http_request('POST', f'case/{case_id}/artifact', ok_codes=[201, 200], data=data)
         return res
 
     def update_observable(self, artifact_id: str = None, data: dict = None):
@@ -646,11 +646,11 @@ def update_task_command(client: Client, args: dict):
     if task:
         updated_task = client.update_task(task_id=task_id, updates=data)
         if type(task) == dict:
-            task_date_dt = dateparser.parse(str(updated_task['createdAt']))
+            task_date_dt = dateparser.parse(str(updated_task['_createdAt']))
             if task_date_dt:
-                updated_task['createdAt'] = task_date_dt.strftime(DATE_FORMAT)
+                updated_task['_createdAt'] = task_date_dt.strftime(DATE_FORMAT)
             read = tableToMarkdown(f"Updated task with id: {task_id}", updated_task,
-                                   ['_id', 'title', 'createdAt', 'createdBy', 'status', 'group'])
+                                   ['_id', 'title', 'createdAt', '_createdBy', 'status', 'group'])
         else:
             read = f"failed to update the task"
     else:
@@ -668,6 +668,10 @@ def get_users_list_command(client: Client, args: dict = None):
     users = client.get_users()
     if users:
         read = tableToMarkdown('TheHive Users:', users, ['id', 'name', 'roles', 'status'])
+        for user in users:
+            user_date_dt = dateparser.parse(str(user['createdAt']))
+            if user_date_dt:
+                user['createdAt'] = user_date_dt.strftime(DATE_FORMAT)
     else:
         read = "No users found"
 
@@ -788,20 +792,16 @@ def create_observable_command(client: Client, args: dict):
 
 def update_observable_command(client: Client, args: dict):
     artifact_id = args.get('id')
-    artifact = "client.get_case(artifact_id)"
-    if not artifact:
-        read = f"No case found with id: {artifact_id}"
-        res = None
-    else:
-        data = {
-            "message": args.get('message'),
-            "tlp": args.get('tlp', None),
-            "ioc": True if args.get('ioc', 'false') == 'true' else False,
-            "status": args.get('status', None)
-        }
-        data = {k: v for k, v in data.items() if v}
-        res = client.update_observable(artifact_id=artifact_id, data=data)
-        read = "The observable was updated successfully" if res else f"No observable found with id: {artifact_id}"
+
+    data = {
+        "message": args.get('message'),
+        "tlp": args.get('tlp', None),
+        "ioc": True if args.get('ioc', 'false') == 'true' else False,
+        "status": args.get('status', None)
+    }
+    data = {k: v for k, v in data.items() if v}
+    res = client.update_observable(artifact_id=artifact_id, data=data)
+    read = "The observable was updated successfully" if res else f"No observable found with id: {artifact_id}"
 
     return CommandResults(
         outputs_prefix='TheHive.Observables',
@@ -1005,7 +1005,8 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
 
  # TODO: no option to add task via demisto not even when creating case
  # no attachments in demisto or product itself, no option to add one even
- #when updating task no description to update, update something else?
- # the search user command, does not have the option to filter, just get the list
- #create obserables lacks the tag arg
+ #when updating task no description to update, update something else? ...go over again
+ # the search user, cases command, does not have the option to filter, just return the whole list ...to delete filter
+ #create observables lacks the tag arg.... check if could be added
  #how is search cases supposed to work?
+#observables are not returned without specific case id
