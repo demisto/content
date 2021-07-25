@@ -1247,7 +1247,7 @@ class TestCopyAndUploadToStorage:
 
 
 class TestLoadUserMetadata:
-    @pytest.fixture(scope="class")
+    @pytest.fixture(scope="function")
     def dummy_pack(self):
         """ dummy pack fixture
         """
