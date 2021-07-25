@@ -67,20 +67,18 @@ def test_list_commands(client, requests_mock, command, test_data_file, url_suffi
         assert actual_next_url == expected_next_link
 
 
-@pytest.mark.parametrize('method,expected_output,url_suffix,kwargs', (
-        (
-                azure_ad_identity_protection_risky_users_confirm_compromised_command,
-                '✅ Confirmed successfully.',
-                'riskyUsers/confirmCompromised',
-                {'user_ids': [dummy_user_id]}
-        ),
-        (
-                azure_ad_identity_protection_risky_users_dismiss_command,
-                '✅ Dismissed successfully.',
-                'riskyUsers/dismiss',
-                {'user_ids': [dummy_user_id]}
-        )
-)
+@pytest.mark.parametrize('method,expected_output,url_suffix,kwargs',
+                         ((azure_ad_identity_protection_risky_users_confirm_compromised_command,
+                           '✅ Confirmed successfully.',
+                           'riskyUsers/confirmCompromised',
+                           {'user_ids': [dummy_user_id]}
+                           ),
+                          (azure_ad_identity_protection_risky_users_dismiss_command,
+                           '✅ Dismissed successfully.',
+                           'riskyUsers/dismiss',
+                           {'user_ids': [dummy_user_id]}
+                           )
+                          )
                          )
 def test_status_update_commands(client, requests_mock, method, expected_output, url_suffix, kwargs):
     """
