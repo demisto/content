@@ -64,7 +64,7 @@ def test_drive_create_command_success(mocker_http_request, gsuite_client):
     assert result.outputs == response_data
     assert result.readable_output.startswith("### " + HR_MESSAGES['DRIVE_CREATE_SUCCESS'])
     assert result.outputs_key_field == 'id'
-    assert result.outputs_prefix == OUTPUT_PREFIX['DRIVE']
+    assert result.outputs_prefix == OUTPUT_PREFIX['GOOGLE_DRIVE_HEADER']
 
 
 @patch(MOCKER_HTTP_METHOD)
@@ -519,12 +519,12 @@ def test_drives_list_command_success(mocker_http_request, gsuite_client):
     result = drives_list_command(gsuite_client, args)
 
     assert 'GoogleDrive.Drive' in result.outputs
-    assert result.outputs.get('GoogleDrive.PageToken') == 'myNextPageToken'
-    assert len(result.outputs['GoogleDrive.Drive']) == 4
+    assert result.outputs.get('GoogleDrive.Drive').get('PageToken') == 'myNextPageToken'
+    assert len(result.outputs['GoogleDrive.Drive'].get('Drive')) == 4
 
     assert result.raw_response == mock_response
 
-    assert result.readable_output.startswith("### Next Page Token: myNextPageToken")
+    assert result.readable_output.startswith("### Total Retrieved Drive(s): ")
     assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Drive(s)', 4) in result.readable_output
 
 
@@ -580,7 +580,7 @@ def test_drive_get_command_success(mocker_http_request, gsuite_client):
     result = drive_get_command(gsuite_client, args)
 
     assert 'GoogleDrive.Drive' in result.outputs
-    assert result.outputs.get('GoogleDrive.Drive').get('id') == '17'
+    assert result.outputs.get('GoogleDrive.Drive').get('Drive').get('id') == '17'
 
     assert result.raw_response == mock_response
 
@@ -640,12 +640,12 @@ def test_files_list_command_success(mocker_http_request, gsuite_client):
     result = files_list_command(gsuite_client, args)
 
     assert 'GoogleDrive.File' in result.outputs
-    assert result.outputs.get('GoogleDrive.PageToken') == 'myNextPageToken'
-    assert len(result.outputs['GoogleDrive.File']) == 2
+    assert result.outputs.get('GoogleDrive.File').get('PageToken') == 'myNextPageToken'
+    assert len(result.outputs['GoogleDrive.File'].get('File')) == 2
 
     assert result.raw_response == mock_response
 
-    assert result.readable_output.startswith("### Next Page Token: myNextPageToken")
+    assert result.readable_output.startswith("### Total Retrieved File(s): ")
     assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('File(s)', 2) in result.readable_output
 
 
@@ -701,7 +701,7 @@ def test_file_get_command_success(mocker_http_request, gsuite_client):
     result = file_get_command(gsuite_client, args)
 
     assert 'GoogleDrive.File' in result.outputs
-    assert result.outputs.get('GoogleDrive.File').get('id') == '17'
+    assert result.outputs.get('GoogleDrive.File').get('File').get('id') == '17'
 
     assert result.raw_response == mock_response
 
@@ -821,7 +821,7 @@ def test_file_permission_create_command_success(mocker_http_request, gsuite_clie
     result = file_permission_create_command(gsuite_client, args)
 
     assert 'GoogleDrive.FilePermission' in result.outputs
-    assert result.outputs.get('GoogleDrive.FilePermission').get('id') == '17'
+    assert result.outputs.get('GoogleDrive.FilePermission').get('FilePermission').get('id') == '17'
 
     assert result.raw_response == mock_response
 
@@ -881,7 +881,7 @@ def test_file_permission_update_command_success(mocker_http_request, gsuite_clie
     result = file_permission_update_command(gsuite_client, args)
 
     assert 'GoogleDrive.FilePermission' in result.outputs
-    assert result.outputs.get('GoogleDrive.FilePermission').get('id') == '17'
+    assert result.outputs.get('GoogleDrive.FilePermission').get('FilePermission').get('id') == '17'
 
     assert result.raw_response == mock_response
 
