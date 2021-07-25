@@ -31,7 +31,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: An Integration with Pentera
+description: Automate remediation actions based on Pentera, the Automated Security Validation Platform, proactively exposing high-risk vulnerabilities
 display: Pentera
 name: Pentera
 script:
