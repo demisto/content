@@ -1389,6 +1389,12 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
         logging.debug(f'Files string: {files_string}')
+#         files_string = """M	Tests/Marketplace/Tests/marketplace_services_test.py
+# M	Tests/Marketplace/Tests/test_data/user_pack_metadata.json
+# M	Tests/Marketplace/marketplace_services.py
+# M	Tests/scripts/collect_tests_and_content_packs.py
+# M	Tests/secrets_white_list.json
+# """
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name)
 
