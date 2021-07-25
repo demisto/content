@@ -21,15 +21,15 @@ configuration:
   name: insecure
   required: false
   type: 8
-- additionalinfo: Comma seperated list of event's or attribute's malicious tag IDs.
-    Malicious tags are stronger than suspicios tags.
+- additionalinfo: Comma separated list of event's or attribute's malicious tag IDs.
+    Malicious tags are stronger than suspicious tags.
   display: Malicious tag IDs
   hidden: false
   name: malicious_tag_ids
   required: false
   type: 12
-- additionalinfo: Comma seperated list of event's or attribute's suspicios tag IDs.
-    Malicious tags are stronger than suspicios tags.
+- additionalinfo: Comma separated list of event's or attribute's suspicios tag IDs.
+    Malicious tags are stronger than suspicious tags.
   display: Suspicious tag IDs
   hidden: false
   name: suspicious_tag_ids
@@ -137,9 +137,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search for events in MISP. This search command will return only inforamtaion
-      about the matched events. In case you want to get inforamation about attributes,
-      please use the commnads misp-search-attributes.
+    description: Search for events in MISP. This search command will return only information
+      about the matched events. In case you want to get information about attributes,
+      please use the commands misp-search-attributes.
     execution: false
     name: misp-search-events
     outputs:
@@ -1028,7 +1028,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: high
+      defaultValue: High
       description: MISP Threat level ID.
       isArray: false
       name: threat_level_id

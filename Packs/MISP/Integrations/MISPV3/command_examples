@@ -1,0 +1,21 @@
+!misp-create-event info="New Event" value=example.com
+!misp-add-attribute event_id=1386 value=1.1.1.2 distribution=All_communities comment=test
+!misp-add-sighting uuid="ccf241a4-971f-432d-be05-ee8cb6a3c28e" type=false_positive
+!misp-add-tag-to-event uuid="bd3adb29-4404-4b54-8f88-e87a58325ba1" tag="test"
+!misp-remove-tag-from-event tag="test" uuid="bd3adb29-4404-4b54-8f88-e87a58325ba1"
+!misp-add-tag-to-attribute tag=test uuid="ccf241a4-971f-432d-be05-ee8cb6a3c28e"
+!misp-remove-tag-from-attribute tag=test uuid="ccf241a4-971f-432d-be05-ee8cb6a3c28e"
+!misp-search-attributes tags="COVID-19"
+!misp-search-events category="Other" limit=3 page=1
+!misp-add-domain-object ip="5.6.4.4" event_id=1386 name=v.com text=new
+!misp-add-ip-object event_id=1386 dst_port=4545 ip_src=1.2.4.4 ip_dst=1.5.52.1 src_port=1001 comment=nice
+!misp-add-url-object event_id=1386 url=d.com
+!misp-add-object attributes="{'description':'Manager','make': 'Test', 'model': '308 GTS'}"  template=vehicle event_id=1386
+!file file=6c73d338ec64e0e44bd54ea61b6988b2 using="MISP V3_instance_1"
+!ip ip=1.2.3.4 using="MISP V3_instance_1"
+!url url=www.example.com using="MISP V3_instance_1"
+!email email=example@gmail.com using="MISP V3_instance_1"
+!domain domain=ahaaa0.com using="MISP V3_instance_1"
+!misp-add-events-from-feed limit=1 feed=Botvrij.eu
+!misp-delete-event event_id=1386
+!misp-add-file-object entry_id=${File.EntryID} event_id=1388
