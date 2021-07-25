@@ -67,11 +67,12 @@ configuration:
   - 'data'
   required: false
   type: 15
-- display: Query to fetch logs
+- defaultvalue: '(severity geq medium)'
+  display: Query to fetch logs
   name: query
   required: false
   type: 0
-  additionalinfo: Define a query to determine which logs to fetch. e.g,
+  additionalinfo: Define a query to determine which logs to fetch. e.g, 'severity geq medium'
 - defaultvalue: '50'
   display: Max incidents to fetch
   name: max_fetch

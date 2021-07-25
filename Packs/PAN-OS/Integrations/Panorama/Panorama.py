@@ -381,12 +381,15 @@ def panorama_test():
     if template:
         template_test(template)
 
-    # if fetch is turned on, execute a query logs call
+    # if fetch is turned on:
+    # generate the fetch query just as in the fetch flow and execute the fetch call
     params = demisto.params()
     if params.get('isFetch'):
+        first_fetch_time = params.get('first_fetch', '3 days').strip()
         query = str(params.get('query', ''))
-        number_of_logs = int(params.get('max_fetch', '50'))
         log_type = str(params.get('log_type', ''))
+        number_of_logs = int(params.get('max_fetch', '50'))
+        _, query = create_fetch_query(demisto.getLastRun(), first_fetch_time, query)
         panorama_query_logs(log_type=log_type, number_of_logs=number_of_logs, query=query)
 
     return_results('ok')
@@ -4212,11 +4215,15 @@ def panorama_query_logs(log_type: str, number_of_logs: str, query: str):
     if number_of_logs:
         params['nlogs'] = number_of_logs
 
-    result = http_request(
-        URL,
-        'GET',
-        params=params,
-    )
+    try:
+        result = http_request(
+            URL,
+            'GET',
+            params=params,
+        )
+    except Exception as err:
+        raise DemistoException(f'Failed querying logs. {err}')
+
     if result['response']['@status'] == 'error':
         if 'msg' in result['response'] and 'line' in result['response']['msg']:
             message = f'. Reason is: {result["response"]["msg"]["line"]}'
@@ -7087,6 +7094,18 @@ def fetch_incidents(params: dict, last_run: dict) -> Tuple[Optional[List], Optio
         result = panorama_get_logs(job_id)
         return parse_logs_to_incidents(result, last_run)
 
+    now, query = create_fetch_query(last_run, first_fetch_time, query)
+    demisto.info(f'PAN-OS executing fetch with logs_type: {log_type} and query: {query}')
+    submitted_job = panorama_query_logs(log_type=log_type, number_of_logs=number_of_logs, query=query)
+    job_id = submitted_job['response']['result']['job']  # get the job id
+    demisto.info(f'PAN-OS executed fetch job_id is: {job_id}')
+    # update the last_run time to now
+    next_run = {'fetch_status': 'pending', 'job_id': job_id, 'last_time': now}
+
+    return [], next_run
+
+
+def create_fetch_query(last_run: dict, first_fetch_time: str, query: str) -> Tuple[str, str]:
     # create a new job query time filters
     if not last_run:  # first time fetch
         last_time = to_pan_os_format_converter(first_fetch_time)
@@ -7096,17 +7115,10 @@ def fetch_incidents(params: dict, last_run: dict) -> Tuple[Optional[List], Optio
     # All Traffic Received Between The Date-Time Range Of:
     # (receive_time geq 'yyyy/mm/dd hh:mm:ss') and (receive_time leq 'YYYY/MM/DD HH:MM:SS')
     # example: (receive_time geq '2015/08/30 08:30:00') and (receive_time leq '2015/08/31 01:25:00')
-    if len(query) > 0 and query[-1] == ')':
+    if len(query) > 0:
         query += ' and '
     query += f"(receive_time geq '{last_time}') and (receive_time leq '{now}')"
-    demisto.info(f'PAN-OS executing fetch with logs_type: {log_type} and query: {str(query)}')
-    submitted_job = panorama_query_logs(log_type=log_type, number_of_logs=number_of_logs, query=query)
-    job_id = submitted_job['response']['result']['job']  # get the job id
-    demisto.info(f'PAN-OS executed fetch job_id is: {job_id}')
-    # update the last_run time to now
-    next_run = {'fetch_status': 'pending', 'job_id': job_id, 'last_time': now}
-
-    return [], next_run
+    return now, query
 
 
 def to_pan_os_format_converter(time_given: str = 'now') -> str:
