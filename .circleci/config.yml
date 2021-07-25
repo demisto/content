@@ -332,6 +332,10 @@ references:
     restore_cache:
       key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
 
+  remote_docker: &remote_docker
+    setup_remote_docker:
+      version: 20.10.6
+
   destroy_instances: &destroy_instances
     run:
       name: Destroy Instances
@@ -526,6 +530,12 @@ references:
               SERVER_URL=$(jq -r 'select(.[].Role == "Server Master") | .[].InstanceDNS' $ENV_RESULTS_PATH)
               python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
 
+  change_file_ids: &change_file_ids
+    run:
+      name: Change File IDs to prevent conflicts in XSOAR
+      command:
+        python3 ./Tests/scripts/sdk_nightly_change_json_file_fields.py Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json name
+
   upload_entities_to_cortex_xsoar: &upload_entities_to_cortex_xsoar
     run:
         name: Upload entities to Cortex XSOAR
@@ -691,7 +701,7 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - setup_remote_docker
+      - *remote_docker
       - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
@@ -1163,7 +1173,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - setup_remote_docker
+      - *remote_docker
       - *restore_cache
       - *prepare_environment
       - *secrets
@@ -1192,7 +1202,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - setup_remote_docker
+      - *remote_docker
       - *restore_cache
       - *prepare_environment
       - *download_configuration
@@ -1232,6 +1242,7 @@ jobs:
       - run:
           name: Run lint
           command: demisto-sdk lint -i Packs/HelloWorld/
+      - *change_file_ids
       - *upload_entities_to_cortex_xsoar
       - *destroy_instances
       - *store_artifacts
