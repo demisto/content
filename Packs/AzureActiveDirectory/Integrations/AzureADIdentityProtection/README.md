@@ -288,7 +288,7 @@ Retrieve the properties of a collection of riskDetection objects.
 | AADIdentityProtection.RiskyUsers.riskState | string | State of the user's risk. Possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, unknownFutureValue. | 
 | AADIdentityProtection.RiskyUsers.riskDetail | string | The possible values are none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue. | 
 | AADIdentityProtection.RiskyUsers.userDisplayName | string | Risky user display name. | 
-| AADIdentityProtection.RiskyUsers. | string | Risky user principal name. | 
+| AADIdentityProtection.RiskyUsers.userPrincipalName | string | Risky user principal name. | 
 
 
 #### Command Example
