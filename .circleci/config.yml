@@ -621,8 +621,8 @@ references:
 #          - Install Packs in Server Master
     - Delete Temporary Branch:
         context: bucket_upload_env
-        requires:
-          - Upload Packs To Marketplace
+#        requires:
+#          - Upload Packs To Marketplace
   check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
     when:
       condition:
