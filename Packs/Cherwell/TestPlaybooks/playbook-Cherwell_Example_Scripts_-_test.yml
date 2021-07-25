@@ -46,14 +46,18 @@ tasks:
       - "7"
     scriptarguments:
       customer_display_name:
-        simple: Playbook customer
+        simple: Lucas Sato
       description:
         simple: 'Example scripts test playbook '
       owned_by: {}
       priority:
         simple: "1"
       service:
-        simple: Account Management
+        simple: Enterprise Apps
+      category:
+        simple: PeopleSoft
+      sub_category:
+        simple: Submit incident
     separatecontext: false
     view: |-
       {
@@ -285,7 +289,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Account Management
+              simple: Enterprise Apps
       - - operator: isEqualString
           left:
             value:
@@ -293,7 +297,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Playbook customer
+              simple: Lucas Sato
       - - operator: isExists
           left:
             value:
@@ -303,11 +307,6 @@ tasks:
           left:
             value:
               simple: Cherwell.BusinessObjects.TotalTasks
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Cherwell.BusinessObjects.OwnedBy
             iscontext: true
     view: |-
       {
@@ -570,11 +569,6 @@ tasks:
           right:
             value:
               simple: Example scripts test playbook
-      - - operator: isExists
-          left:
-            value:
-              simple: Cherwell.QueryResults.OwnedBy
-            iscontext: true
       - - operator: containsGeneral
           left:
             value:
@@ -582,7 +576,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Account Management
+              simple: Enterprise Apps
       - - operator: containsGeneral
           left:
             value:
@@ -590,7 +584,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Playbook customer
+              simple: Lucas Sato
       - - operator: isExists
           left:
             value:
