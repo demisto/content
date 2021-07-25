@@ -1327,7 +1327,9 @@ jobs:
     <<: *environment
     steps:
       - run:
-          - echo "Hello!"
+          name: Hello world
+          command: |
+            echo 'Hello!'
 workflows:
   version: 2
   commit:
