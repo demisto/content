@@ -87,7 +87,8 @@
 #         NGINX_PROCESS = None
 #
 #
-# docker_only = pytest.mark.skipif('flask-nginx' not in os.getenv('DOCKER_IMAGE', ''), reason='test should run only within docker')
+# docker_only = pytest.mark.skipif('flask-nginx' not in os.getenv('DOCKER_IMAGE', ''),
+# reason='test should run only within docker')
 #
 #
 # @docker_only
