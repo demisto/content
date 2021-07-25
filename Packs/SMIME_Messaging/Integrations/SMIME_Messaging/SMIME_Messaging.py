@@ -144,7 +144,7 @@ def decode_str_using_chardet(decrypted_text: str) -> Tuple[str, str]:
         demisto.debug(f"Going to decode decrypted text using {encoding} encoding, detected with confidence: "
                       f"{confidence}")
         if confidence < 0.9:
-            error = 'Note: detected encoding confidence is low, characters may be missing. You can try running this' \
+            msg = 'Note: detected encoding confidence is low, characters may be missing. You can try running this' \
                     ' command again and pass the encoding code as argument.\n'
         out = decrypted_text.decode(encoding)
     except UnicodeDecodeError:
