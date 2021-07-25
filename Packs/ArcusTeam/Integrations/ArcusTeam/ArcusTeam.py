@@ -1,11 +1,9 @@
 import json
-import traceback
-from typing import Any, Dict, List, Optional
-
-import demistomock as demisto  # noqa: F401
 import requests
 import urllib3
-from CommonServerPython import *  # noqa: F401
+import traceback
+from typing import Any, Dict
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -44,14 +42,14 @@ def getEditIssue(returnFields):
         if not isinstance(issue, dict):
             key = returnFields[0]
             if key == "risk":
-                issue = str(round(issue*100, 2))+'%'
+                issue = str(round(issue * 100, 2)) + '%'
             data = dict()
             data[key] = issue
             return data
         else:
             field = issue.get('risk')
-            if field != None:
-                issue['risk'] = str(round(field*100, 2))+'%'
+            if field is not None:
+                issue['risk'] = str(round(int(field) * 100, 2)) + '%'
             return issue
     return editIssue
 
@@ -72,7 +70,7 @@ def arcusteam_get_devices(client: Client, args: Dict[str, Any]):
     }
     result = requests.request("POST", url, headers=client._headers, data=json.dumps(payload))
     resultJson = result.json()
-    markdown = '## Found '+str(len(resultJson))+' devices\n'
+    markdown = '## Found ' + str(len(resultJson)) + ' devices\n'
     markdown += "".join(list(map(deviceToMarkdown, resultJson)))
     return CommandResults(
         readable_output=markdown,
@@ -105,7 +103,7 @@ def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> Comma
 
     if len(resultJson.get('results')) > 0:
         markdown += tableToMarkdown(
-            'Number of CVE\'s found: '+str(resultJson.get("max_items")),
+            'Number of CVE\'s found: ' + str(resultJson.get("max_items")),
             resultJson.get('results'),
             headers=list(resultJson.get('results')[0].keys())
         )
@@ -119,6 +117,9 @@ def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> Comma
         outputs=result.json(),
     )
 
+
+def test_module(client):
+    return 'ok'
 
 """ MAIN FUNCTION """
 
@@ -166,6 +167,9 @@ def main() -> None:
         )
         if demisto.command() == "arcusteam-get-devices":
             return_results(arcusteam_get_devices(client, demisto.args()))
+
+        if demisto.command() == "test-module":
+            return_results(test_module(client))
 
         elif demisto.command() == "arcusteam-get-vulnerabilities":
             return_results(arcusteam_get_vulnerabilities(client, demisto.args()))
