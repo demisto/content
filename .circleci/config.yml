@@ -105,7 +105,7 @@ parameters:
   sdk_ref:
     type: string
     default: "master"
-  delete_current_brunch:
+  delete_current_branch:
     type: string
     default:
 references:
