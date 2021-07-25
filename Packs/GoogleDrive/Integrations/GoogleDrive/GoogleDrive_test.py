@@ -550,7 +550,7 @@ def test_drives_list_command_failure(mocker_http_request, gsuite_client):
         'use_domain_admin_access': True
     }
 
-    with pytest.raises(Exception, match="SOME_ERROR"):
+    with pytest.raises(ValueError, match="SOME_ERROR"):
         drives_list_command(gsuite_client, args)
 
 
@@ -610,7 +610,7 @@ def test_drive_get_command_failure(mocker_http_request, gsuite_client):
         'use_domain_admin_access': True
     }
 
-    with pytest.raises(Exception, match="SOME_ERROR"):
+    with pytest.raises(ValueError, match="SOME_ERROR"):
         drive_get_command(gsuite_client, args)
 
 
@@ -671,7 +671,7 @@ def test_files_list_command_failure(mocker_http_request, gsuite_client):
         'use_domain_admin_access': True
     }
 
-    with pytest.raises(Exception, match="SOME_ERROR"):
+    with pytest.raises(ValueError, match="SOME_ERROR"):
         files_list_command(gsuite_client, args)
 
 
@@ -731,7 +731,7 @@ def test_file_get_command_failure(mocker_http_request, gsuite_client):
         'use_domain_admin_access': True
     }
 
-    with pytest.raises(Exception, match="SOME_ERROR"):
+    with pytest.raises(ValueError, match="SOME_ERROR"):
         file_get_command(gsuite_client, args)
 
 
@@ -791,7 +791,7 @@ def test_file_permission_list_command_failure(mocker_http_request, gsuite_client
         'use_domain_admin_access': True
     }
 
-    with pytest.raises(Exception, match="SOME_ERROR"):
+    with pytest.raises(ValueError, match="SOME_ERROR"):
         file_permission_list_command(gsuite_client, args)
 
 
@@ -851,7 +851,7 @@ def test_file_permission_create_command_failure(mocker_http_request, gsuite_clie
         'use_domain_admin_access': True
     }
 
-    with pytest.raises(Exception, match="SOME_ERROR"):
+    with pytest.raises(ValueError, match="SOME_ERROR"):
         file_permission_create_command(gsuite_client, args)
 
 
@@ -911,5 +911,5 @@ def test_file_permission_update_command_failure(mocker_http_request, gsuite_clie
         'use_domain_admin_access': True
     }
 
-    with pytest.raises(Exception, match="SOME_ERROR"):
+    with pytest.raises(ValueError, match="SOME_ERROR"):
         file_permission_update_command(gsuite_client, args)
