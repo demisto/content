@@ -2,6 +2,8 @@ import json
 import requests
 import urllib3
 import traceback
+from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401
 from typing import Any, Dict
 
 
@@ -78,10 +80,6 @@ def arcusteam_get_devices(client: Client, args: Dict[str, Any]):
         outputs_key_field="",
         outputs={'devices': resultJson},
     )
-
-
-def arcusteam_test_module(client):
-    return 'ok'
 
 
 def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -170,8 +168,8 @@ def main() -> None:
         if demisto.command() == "arcusteam-get-devices":
             return_results(arcusteam_get_devices(client, demisto.args()))
 
-#         if demisto.command() == "test-module":
-#             return_results(arcusteam_test_module(client))
+        if demisto.command() == "test-module":
+            return_results("ok")
 
         elif demisto.command() == "arcusteam-get-vulnerabilities":
             return_results(arcusteam_get_vulnerabilities(client, demisto.args()))
