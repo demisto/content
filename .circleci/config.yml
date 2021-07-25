@@ -1408,7 +1408,6 @@ jobs:
               ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
-      - *persist_to_workspace
       - *destroy_instances
       - *store_artifacts
 
@@ -1441,7 +1440,6 @@ jobs:
               ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
-      - *persist_to_workspace
       - *destroy_instances
       - *store_artifacts
 
@@ -1474,7 +1472,6 @@ jobs:
               ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
-      - *persist_to_workspace
       - *destroy_instances
       - *store_artifacts
 
@@ -1507,6 +1504,7 @@ jobs:
               ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             fi
           when: always
+      - *persist_to_workspace
       - *destroy_instances
       - *store_artifacts
 
