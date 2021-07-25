@@ -1442,4 +1442,3 @@ workflows:
     when: << pipeline.parameters.bucket_upload>>
     jobs:
       *bucket_upload_jobs
-      -
