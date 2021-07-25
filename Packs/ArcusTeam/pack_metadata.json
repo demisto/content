@@ -1,6 +1,6 @@
 {
     "name": "ArcusTeam",
-    "description": "This pack exposes the power of the ArcusTeam's DeviceTotal Platform which predicts, identifies, and prioritizes vulnerabilities found on IoT devices and provides recommendations for managing and mitigating the threat of connected devices.",
+    "description": "This Pack for ArcusTeam's DeviceTotal Platform predict helps to identify and manage vevulnerabilities found on IoT devices",
     "support": "partner",
     "currentVersion": "6.11.0",
     "author": "ArcusTeam",
