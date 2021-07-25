@@ -11,7 +11,8 @@ with open('./test_data/signer.pem') as file_:
     public_key = file_.read()
 
 client = Client(private_key, public_key)
-note_msg = 'Note: detected encoding confidence is low, characters may be missing. You can try running this command again and pass the encoding code as argument.\n'
+note_msg = 'Note: detected encoding confidence is low, characters may be missing. You can try running this command ' \
+           'again and pass the encoding code as argument.\n'
 
 test_data = [
     (
