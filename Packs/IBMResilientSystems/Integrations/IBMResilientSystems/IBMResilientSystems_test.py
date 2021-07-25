@@ -39,6 +39,21 @@ def test_update_incident_command(mocker):
     expected_result = {
         'changes': [
             {
+                'field': {'name': 'confirmed'},
+                'old_value': {'boolean': 'true'},
+                'new_value': {'boolean': 'false'}
+            },
+            {
+                'field': {'name': 'discovered_date'},
+                'old_value': {'date': 1624782898000},
+                'new_value': {'date': 1624782898010}
+            },
+            {
+                'field': {'name': 'owner_id'},
+                'old_value': {'id': 1},
+                'new_value': {'id': 2}
+            },
+            {
                 'field': {'name': 'description'},
                 'old_value': {'textarea': {'format': 'html', 'content': 'The old description'}},
                 'new_value': {'textarea': {'format': 'html', 'content': 'The new description'}}
@@ -46,19 +61,7 @@ def test_update_incident_command(mocker):
             {
                 'field': {'name': 'name'},
                 'old_value': {'text': 'The old name'},
-                'new_value': {'text': 'The new name'}},
-            {
-                'field': {'name': 'owner_id'},
-                'old_value': {'id': 1},
-                'new_value': {'id': 2}},
-            {
-                'field': {'name': 'discovered_date'},
-                'old_value': {'date': 1624782898000},
-                'new_value': {'date': 1624782898010}},
-            {
-                'field': {'name': 'confirmed'},
-                'old_value': {'boolean': 'true'},
-                'new_value': {'boolean': 'false'}
+                'new_value': {'text': 'The new name'}
             }
         ]
     }
@@ -66,6 +69,7 @@ def test_update_incident_command(mocker):
 
     main()
 
+    print(mock_result.call_args.args[1])
     assert mock_result.call_args.args[1] == expected_result
 
 

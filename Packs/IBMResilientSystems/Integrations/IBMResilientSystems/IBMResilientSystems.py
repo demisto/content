@@ -1,4 +1,3 @@
-from typing import *  # noqa: F401
 import json
 import logging
 import time
@@ -1006,14 +1005,14 @@ def test():
 
 def add_notes(incident_id, comment):
     body = {'text': {'format': 'text', 'content': comment}}
-    CLIENT.post('/incidents/'+str(incident_id)+'/comments', body)
+    CLIENT.post('/incidents/' + str(incident_id) + '/comments', body)
     return 'The note was added successfully.'
 
 
 def add_incident_artifact(incident_id, artifact_type, artifact_value, artifact_description):
     body = {'type': artifact_type, 'value': artifact_value, 'description': {'format': 'text',
                                                                             'content': artifact_description}}
-    CLIENT.post('/incidents/'+str(incident_id)+'/artifacts', body)
+    CLIENT.post('/incidents/' + str(incident_id) + '/artifacts', body)
 
     return 'The artifact was added successfully.'
 
