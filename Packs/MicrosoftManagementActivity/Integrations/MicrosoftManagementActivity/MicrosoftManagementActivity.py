@@ -207,7 +207,7 @@ def test_module():
     if datetime.now() - timedelta(days=7) - timedelta(minutes=5) >= user_input_fetch_start_date:
         return 'Error: first fetch time delta should not be over one week.'
     if params.get('self_deployed'):
-        if not params.get('auth_code') or not demisto.params().get('redirect_uri'):
+        if not params.get('auth_code') or not params.get('redirect_uri'):
             return 'Error: in the self_deployed authentication flow the authentication code parameter and ' \
                    'redirect uri cannot be empty.'
     return 'The basic parameters are ok, authentication cannot be checked using the test module. ' \
