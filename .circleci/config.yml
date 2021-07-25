@@ -1335,7 +1335,7 @@ jobs:
           command: |
             if [ -n $DELETE_CURRENT_BRANCH ]; then
               echo Deleting
-              echo ${SDK_REF}'
+              echo ${SDK_REF}
             fi
 workflows:
   version: 2
