@@ -229,10 +229,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 58a24103-3bd7-4177-85c3-4b6c78461541
+    taskid: 115560a7-f570-41ad-89c4-7ac01dd152fc
     type: condition
     task:
-      id: 58a24103-3bd7-4177-85c3-4b6c78461541
+      id: 115560a7-f570-41ad-89c4-7ac01dd152fc
       version: -1
       name: Verify  Domain Outputs
       type: condition
@@ -269,6 +269,14 @@ tasks:
           right:
             value:
               simple: "0"
+        - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
       - - operator: isEqualString
           left:
             value:
@@ -326,10 +334,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: a865e40f-739a-4857-8c32-ce5b863800cc
+    taskid: 759d45a6-4393-4ed8-82ef-3cd3b4929694
     type: condition
     task:
-      id: a865e40f-739a-4857-8c32-ce5b863800cc
+      id: 759d45a6-4393-4ed8-82ef-3cd3b4929694
       version: -1
       name: Verify Email Outputs
       type: condition
@@ -374,6 +382,14 @@ tasks:
           right:
             value:
               simple: "0"
+        - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
     view: |-
       {
         "position": {
@@ -423,10 +439,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 74b0558a-7d8a-4a60-8ab5-3475d84bb26c
+    taskid: fce4f98e-71d4-4926-8205-dbcce886db36
     type: condition
     task:
-      id: 74b0558a-7d8a-4a60-8ab5-3475d84bb26c
+      id: fce4f98e-71d4-4926-8205-dbcce886db36
       version: -1
       name: Verify File Outputs
       type: condition
@@ -471,6 +487,14 @@ tasks:
           right:
             value:
               simple: "0"
+        - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
     view: |-
       {
         "position": {
@@ -520,10 +544,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 81e900f7-5a28-48c4-8f06-c4087ce8c634
+    taskid: 33c1aae0-48de-477c-8a54-242f763ab0a9
     type: condition
     task:
-      id: 81e900f7-5a28-48c4-8f06-c4087ce8c634
+      id: 33c1aae0-48de-477c-8a54-242f763ab0a9
       version: -1
       name: 'Verify URL Outputs '
       type: condition
@@ -568,6 +592,14 @@ tasks:
           right:
             value:
               simple: "0"
+        - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
     view: |-
       {
         "position": {
@@ -617,10 +649,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 83c0a8e0-f648-4af1-8a84-caf8fa6ad87c
+    taskid: 71f8d2be-62a9-4df1-88b0-98442ad98775
     type: condition
     task:
-      id: 83c0a8e0-f648-4af1-8a84-caf8fa6ad87c
+      id: 71f8d2be-62a9-4df1-88b0-98442ad98775
       version: -1
       name: Verify IP Outputs
       type: condition
@@ -665,6 +697,14 @@ tasks:
           right:
             value:
               simple: "0"
+        - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
     view: |-
       {
         "position": {
