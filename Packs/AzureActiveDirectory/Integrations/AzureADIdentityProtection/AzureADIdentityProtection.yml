@@ -432,3 +432,5 @@ script:
   type: python
 fromversion: 6.0.0
 beta: true
+tests:
+  - AzureADTest
