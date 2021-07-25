@@ -120,9 +120,6 @@ def arcusteam_get_vulnerabilities(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def test_module(client):
-    return 'ok'
-
 """ MAIN FUNCTION """
 
 
@@ -170,11 +167,11 @@ def main() -> None:
         if demisto.command() == "arcusteam-get-devices":
             return_results(arcusteam_get_devices(client, demisto.args()))
 
-        if demisto.command() == "test-module":
-            return_results(test_module(client))
-
-        elif demisto.command() == "arcusteam-get-vulnerabilities":
+        if demisto.command() == "arcusteam-get-vulnerabilities":
             return_results(arcusteam_get_vulnerabilities(client, demisto.args()))
+
+        if demisto.command() == "test-module":
+            return_results("ok")
 
     # Log exceptions and return errors
     except Exception as e:
