@@ -134,7 +134,11 @@ def verify(client: Client, args: Dict):
     return human_readable, {}
 
 
-def decode_str(decrypted_text: str, encoding: str) -> Tuple[str, str]:
+def decode_str(decrypted_text: bytes, encoding: str) -> Tuple[str, str]:
+    """
+    Detect encoding type using chardet, if the confidence of the detected encoding is lower than 0.9 we will add a
+    message indicates it. If encoding is given, will use it.
+    """
     msg = ''
     if not encoding:
         chardet_detection = chardet.detect(decrypted_text)

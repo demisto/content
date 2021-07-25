@@ -89,7 +89,7 @@ def test_decode_using_chardet(decrypted_text_bytes, expected_output, error_msg, 
         - searching for the right encoding code
 
     Then:
-        - Using chardet to find the correct encoding. If confidence of the detected code is under 0.7
+        - Using chardet to find the correct encoding. If confidence of the detected code is under 0.9
         message to note returned
 
     """
