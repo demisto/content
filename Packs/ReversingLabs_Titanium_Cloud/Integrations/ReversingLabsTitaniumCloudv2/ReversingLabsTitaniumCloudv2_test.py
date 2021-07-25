@@ -1,10 +1,17 @@
 import json
 from ReversingLabsTitaniumCloudv2 import file_reputation_output, av_scanners_output, file_analysis_output, \
     rha1_analytics_output, uri_statistics_output, url_report_output
+import demistomock as demisto
+import pytest
 
-
+INTEGRATION_NAME = 'ReversingLabs TitaniumCloud v2'
 test_hash = "21841b32c6165b27dddbd4d6eb3a672defe54271"
 url = "google.com"
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'IntegrationBrand': INTEGRATION_NAME})
 
 
 def load_json(file_path):
