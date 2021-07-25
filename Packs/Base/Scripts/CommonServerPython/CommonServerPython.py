@@ -2335,7 +2335,7 @@ def get_integration_name():
     :return: Calling integration's name
     :rtype: ``str``
     """
-    return demisto.callingContext.get('context').get('IntegrationBrand')
+    return demisto.callingContext.get('context', '').get('IntegrationBrand')
 
 
 class Common(object):
