@@ -3529,7 +3529,8 @@
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
         "O365 - EWS - Extension - Test": "Issue 39008",
         "Majestic Million Test Playbook": "Issue 30931",
-        "CircleCI-Test": "Issue 39222"
+        "CircleCI-Test": "Issue 39222",
+        "Azure SecurityCenter - Test": "Issue 27391"
     },
     "skipped_integrations": {
         
