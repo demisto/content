@@ -340,7 +340,7 @@ def search_incidents(args):
             'conditions': conditions
         }]
     }
-    response = CLIENT.post('/incidents/query', data)
+    response = CLIENT.post('/incidents/query', data)  # type: ignore
     return response
 
 
@@ -489,7 +489,7 @@ def update_incident_command(args):
 
 
 def update_incident(incident_id, data):
-    response = CLIENT.patch('/incidents/' + incident_id, data)
+    response = CLIENT.patch('/incidents/' + incident_id, data)  # type: ignore
     return response
 
 
@@ -534,12 +534,12 @@ def get_incident_command(incident_id):
 
 
 def get_incident(incident_id):
-    response = CLIENT.get('/incidents/' + incident_id + '?text_content_output_format=objects_convert_html')
+    response = CLIENT.get('/incidents/' + incident_id + '?text_content_output_format=objects_convert_html')  # type: ignore
     return response
 
 
 def list_open_incidents():
-    response = CLIENT.get('/incidents/open')
+    response = CLIENT.get('/incidents/open')  # type: ignore
     return response
 
 
@@ -577,7 +577,7 @@ def get_members_command(incident_id):
 
 
 def get_members(incident_id):
-    response = CLIENT.get('/incidents/' + incident_id + '/members')
+    response = CLIENT.get('/incidents/' + incident_id + '/members')  # type: ignore
     return response
 
 
@@ -604,12 +604,12 @@ def get_users_command():
 
 
 def get_users():
-    response = CLIENT.get('/users')
+    response = CLIENT.get('/users')  # type: ignore
     return response
 
 
 def get_phases():
-    response = CLIENT.get('/phases')
+    response = CLIENT.get('/phases')  # type: ignore
     return response
 
 
@@ -659,7 +659,7 @@ def get_tasks_command(incident_id):
 
 
 def get_tasks(incident_id):
-    response = CLIENT.get('/incidents/' + incident_id + '/tasks')
+    response = CLIENT.get('/incidents/' + incident_id + '/tasks')  # type: ignore
     return response
 
 
@@ -702,7 +702,7 @@ def set_member_command(incident_id, members):
 
 
 def set_member(incident_id, data):
-    response = CLIENT.put('/incidents/' + incident_id + '/members', data)
+    response = CLIENT.put('/incidents/' + incident_id + '/members', data)  # type: ignore
     return response
 
 
@@ -761,7 +761,7 @@ def create_incident_command(args):
 
 
 def create_incident(data):
-    response = CLIENT.post('/incidents', data)
+    response = CLIENT.post('/incidents', data)  # type: ignore
     return response
 
 
@@ -828,12 +828,12 @@ def incident_artifacts_command(incident_id):
 
 
 def incident_artifacts(incident_id):
-    response = CLIENT.get('/incidents/' + incident_id + '/artifacts')
+    response = CLIENT.get('/incidents/' + incident_id + '/artifacts')  # type: ignore
     return response
 
 
 def get_artifact_type(artifact_id):
-    response = CLIENT.get('/artifact_types/' + str(artifact_id))
+    response = CLIENT.get('/artifact_types/' + str(artifact_id))  # type: ignore
     return response['name']
 
 
@@ -880,7 +880,7 @@ def incident_attachments_command(incident_id):
 
 
 def incident_attachments(incident_id):
-    response = CLIENT.get('/incidents/' + incident_id + '/attachments')
+    response = CLIENT.get('/incidents/' + incident_id + '/attachments')  # type: ignore
     return response
 
 
@@ -938,7 +938,7 @@ def related_incidents_command(incident_id):
 
 
 def related_incidents(incident_id):
-    response = CLIENT.get('/incidents/' + incident_id + '/related_ex?want_artifacts=true')
+    response = CLIENT.get('/incidents/' + incident_id + '/related_ex?want_artifacts=true')  # type: ignore
     return response
 
 
@@ -1005,14 +1005,14 @@ def test():
 
 def add_notes(incident_id, comment):
     body = {'text': {'format': 'text', 'content': comment}}
-    CLIENT.post('/incidents/' + str(incident_id) + '/comments', body)
+    CLIENT.post('/incidents/' + str(incident_id) + '/comments', body)  # type: ignore
     return 'The note was added successfully.'
 
 
 def add_incident_artifact(incident_id, artifact_type, artifact_value, artifact_description):
     body = {'type': artifact_type, 'value': artifact_value, 'description': {'format': 'text',
                                                                             'content': artifact_description}}
-    CLIENT.post('/incidents/' + str(incident_id) + '/artifacts', body)
+    CLIENT.post('/incidents/' + str(incident_id) + '/artifacts', body)  # type: ignore
 
     return 'The artifact was added successfully.'
 
