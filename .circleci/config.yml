@@ -1327,7 +1327,7 @@ jobs:
     <<: *environment
     steps:
       - run:
-          - echo "Hello ${SDK_REF}!"
+          - echo "Hello!"
 workflows:
   version: 2
   commit:
