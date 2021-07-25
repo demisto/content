@@ -5,6 +5,7 @@
 # Silence Progress STDOUT (e.g. long http request download progress)
 $progressPreference = 'silentlyContinue'
 
+
 enum ServerLogLevel {
     debug
     info
