@@ -190,7 +190,7 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
             if encoding:
                 out = decrypted_text.decode(encoding)
             else:
-                out, error = decode_str_using_chardet(decrypted_text)
+                out, msg = decode_str_using_chardet(decrypted_text)
 
         else:
             raise Exception(e)
