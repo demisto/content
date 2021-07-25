@@ -1,3 +1,4 @@
+from typing import *  # noqa: F401
 import json
 import logging
 import time
@@ -1001,8 +1002,6 @@ def test():
             return_error('There is something wrong with the fetch date. Error: {}'.format(error))
 
     demisto.results('ok')
-
-
 
 
 def add_notes(incident_id, comment):
