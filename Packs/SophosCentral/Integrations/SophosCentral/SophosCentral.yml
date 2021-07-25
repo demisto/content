@@ -93,7 +93,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of items to return. Default is "50". Maximum
+      description: The maximum number of items to return. Maximum
         is "100".
       isArray: false
       name: limit
@@ -132,7 +132,7 @@ script:
       description: The ID of the referenced person object.
       type: String
     - contextPath: SophosCentral.Alert.personName
-      description: The Name of the referenced person object.
+      description: The name of the referenced person object.
       type: String
     - contextPath: SophosCentral.Alert.product
       description: Product type.
@@ -192,7 +192,7 @@ script:
       description: The ID of the referenced person object.
       type: String
     - contextPath: SophosCentral.Alert.personName
-      description: The Name of the referenced person object.
+      description: The name of the referenced person object.
       type: String
     - contextPath: SophosCentral.Alert.product
       description: Product type.
@@ -420,7 +420,7 @@ script:
       description: The ID of the referenced person object.
       type: String
     - contextPath: SophosCentral.Alert.personName
-      description: The Name of the referenced person object.
+      description: The name of the referenced person object.
       type: String
     - contextPath: SophosCentral.Alert.product
       description: Product type.
@@ -529,7 +529,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of items to return. Default is "50". Maximum
+      description: The maximum number of items to return. Maximum
         is "100".
       isArray: false
       name: limit
@@ -700,7 +700,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum size of the page requested. Default is "50". Maximum
+      description: The maximum size of the page requested. Maximum
         is "100".
       isArray: false
       name: page_size
@@ -990,7 +990,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum size of the page requested. Default is "50". Maximum
+      description: The maximum size of the page requested. Maximum
         is "100".
       isArray: false
       name: page_size
@@ -1227,7 +1227,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum size of the page requested. Default is "50". Maximum
+      description: The maximum size of the page requested. Maximum
         is "100".
       isArray: false
       name: page_size
@@ -1459,7 +1459,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum size of the page requested. Default is "50". Maximum
+      description: The maximum size of the page requested. Maximum
         is "100".
       isArray: false
       name: page_size
@@ -1615,7 +1615,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum size of the page requested. Default is "50". Maximum
+      description: The maximum size of the page requested. Maximum
         is "100".
       isArray: false
       name: page_size
