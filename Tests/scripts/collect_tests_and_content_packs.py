@@ -1256,6 +1256,8 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
     min_from_version = LooseVersion('99.99.99')
     max_from_version = LooseVersion('0.0.0')
 
+    logging.info("\n\n Tests list:")
+    logging.info(json.dumps(modified_packs))
     for pack_name in modified_packs:
         pack_metadata_path = os.path.join(tools.pack_name_to_path(pack_name), PACKS_PACK_META_FILE_NAME)
         pack_metadata = get_pack_metadata(pack_metadata_path)
