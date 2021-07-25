@@ -44,7 +44,7 @@ script:
     name: azure-ad-auth-test
   - deprecated: false
     description: Run this command to start the authorization process and follow the instructions shown.
-    execution: false
+    execution: true
     name: azure-ad-auth-start
   - deprecated: false
     description: Run this command to complete the authorization process. Should be
