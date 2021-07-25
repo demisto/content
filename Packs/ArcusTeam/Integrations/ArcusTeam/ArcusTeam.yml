@@ -22,7 +22,7 @@ configuration:
   type: 4
   required: true
   additionalinfo: ' The API Key required to authenticate to the service.'
-- display: ' The client ID'
+- display: 'The client ID'
   name: ClientID
   type: 0
   required: true
@@ -163,9 +163,10 @@ script:
       description: CVE url
       type: string
     description: ' Retrieve CVEs for an ArcusTeam device'
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.6.22912
   runonce: false
   subtype: python3
-fromversion: 4.1.0
+  dockerimage45: demisto/python3:3.9.1.14969
+fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
