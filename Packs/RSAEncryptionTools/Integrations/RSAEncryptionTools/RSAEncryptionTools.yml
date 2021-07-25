@@ -14,7 +14,7 @@ configuration:
   defaultvalue:
   type: 4
   additionalinfo: ""
-description: RSA Encryption Tools - Encrypt and Decrypt text and files using RSA encryption.
+description: RSA Encryption Tools - Encrypt and decrypt text and files using RSA encryption.
 script:
   commands:
   - arguments:
@@ -59,7 +59,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Encrypt file.
+    description: Encrypt a file.
     execution: false
     name: rsa-encryption-tools-encrypt-file
     outputs: []
@@ -71,7 +71,7 @@ script:
       required: true
       secret: false
     - name: output_as_file
-      description: Whether to output the decrypted data to file. Default is "true".
+      description: Whether to output the decrypted data to file.
       required: false
       isArray: false
       defaultValue: "true"
