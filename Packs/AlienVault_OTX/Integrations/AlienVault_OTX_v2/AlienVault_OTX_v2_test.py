@@ -6,6 +6,7 @@ import pytest
 # Import local packages
 from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command, url_command, domain_command, ip_command
 from CommonServerPython import *
+import demistomock as demisto
 
 # DBot calculation Test
 arg_names_dbot = "pulse, score"
@@ -500,6 +501,8 @@ IP_RELATIONSHIPS = [
      'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern', 'fields': {}, 'reliability': 'C - Fairly reliable',
      'brand': 'AlienVault OTX v2'}]
 
+INTEGRATION_NAME = 'AlienVault OTX v2'
+
 client = Client(
     base_url="base_url",
     headers={'X-OTX-API-KEY': "TOKEN"},
@@ -514,6 +517,11 @@ client = Client(
 @pytest.mark.parametrize(argnames=arg_names_dbot, argvalues=arg_values_dbot)
 def test_dbot_score(pulse: dict, score: int):
     assert calculate_dbot_score(client, pulse) == score, f"Error calculate DBot Score {pulse.get('count')}"
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'IntegrationBrand': INTEGRATION_NAME})
 
 
 @pytest.mark.parametrize('raw_response_general,raw_response_analysis,expected', [
