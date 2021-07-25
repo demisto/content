@@ -362,9 +362,9 @@ tasks:
       - "15"
     scriptarguments:
       data:
-        simple: Hello World
+        simple: Mein Büro
       filename:
-        simple: HelloWorld
+        simple: Mein Büro
     separatecontext: false
     view: |-
       {
