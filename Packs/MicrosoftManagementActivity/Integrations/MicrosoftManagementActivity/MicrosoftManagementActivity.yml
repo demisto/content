@@ -84,11 +84,6 @@ configuration:
   name: operations_filter
   required: false
   type: 0
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
 description: The Microsoft Management Activity API integration enables you to subscribe
   or unsubscribe to different audits, receive their content and fetch new content
   as incidents.
