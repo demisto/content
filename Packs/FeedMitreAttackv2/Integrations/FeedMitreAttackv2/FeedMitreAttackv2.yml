@@ -128,7 +128,7 @@ script:
     description: Shows the feed names and IDs from TAXII.
     execution: false
     name: mitre-show-feeds
-  dockerimage: demisto/taxii2:1.0.0.19258
+  dockerimage: demisto/taxii2:1.0.0.22630
   feed: true
   isfetch: false
   longRunning: false
