@@ -692,7 +692,7 @@ script:
     description: Addeds an artifact to an incident.
     execution: false
     name: rs-add-artifact
-  dockerimage: demisto/resilient:1.0.0.18173
+  dockerimage: demisto/resilient:1.0.0.23135
   feed: false
   isfetch: true
   longRunning: false

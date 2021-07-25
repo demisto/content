@@ -69,7 +69,6 @@ def test_update_incident_command(mocker):
 
     main()
 
-    print(mock_result.call_args.args[1])
     assert mock_result.call_args.args[1] == expected_result
 
 
