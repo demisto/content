@@ -93,7 +93,7 @@ def test_decode_using_chardet(decrypted_text_bytes, expected_output, error_msg, 
         message to note returned
 
     """
-    out, msg = decode_str(decrypted_text_bytes)
+    out, msg = decode_str(decrypted_text_bytes, encoding)
     assert error_msg in msg
     assert out == expected_output
 
