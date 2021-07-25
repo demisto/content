@@ -1017,7 +1017,7 @@ script:
     - contextPath: Edgescan.VulnerabilitiesRiskAccept
       description: The vulnerability retest result
       type: Unknown
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: true
   longRunning: false
