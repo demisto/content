@@ -619,7 +619,10 @@ references:
         requires:
           - Install Packs in Server 6_0
           - Install Packs in Server Master
-
+    - Delete Temporary Branch:
+        context: bucket_upload_env
+        requires:
+          - Upload Packs To Marketplace
   check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
     when:
       condition:
@@ -1318,6 +1321,13 @@ jobs:
       - *destroy_instances
       - *store_artifacts
 
+  Delete Temporary Branch:
+    <<: *container_config
+    resource_class: small
+    <<: *environment
+    steps:
+      - run:
+          - echo "Hello ${SDK_REF}!"
 workflows:
   version: 2
   commit:
@@ -1431,4 +1441,5 @@ workflows:
     # will initiate when using the trigger script.
     when: << pipeline.parameters.bucket_upload>>
     jobs:
-      - *bucket_upload_jobs
+      *bucket_upload_jobs
+      -
