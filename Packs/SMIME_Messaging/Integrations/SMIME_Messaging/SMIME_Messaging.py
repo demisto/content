@@ -134,7 +134,7 @@ def verify(client: Client, args: Dict):
     return human_readable, {}
 
 
-def decode_str_using_chardet(decrypted_text):
+def decode_str_using_chardet(decrypted_text: str) -> Tuple[str, str]:
     error = ''
     chardet_detection = chardet.detect(decrypted_text)
     encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
