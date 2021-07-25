@@ -77,7 +77,22 @@ class Client(BaseClient):
             raise DemistoException(response.text)
         return response.json()
 
-    def convert_id_to_name(self, object_name: str, object_id: str, url_suffix: str, field_key: str) -> str:
+    def convert_id_to_name(self, object_mapping_name: str, object_id: str, url_suffix: str, field_key: str) -> str:
+        """
+        Converts an object id to its name using API.
+        Notes:
+        * as a performance enhacement, will use integration context as a cache to avoid multiple API calls.
+        * Follows the best-effort approach. in case of an error, it will log the error and return an empty string.
+
+        Args:
+            object_mapping_name (str): the name of the object mapping.
+            object_id (str): the object ID to convert.
+            url_suffix (str): the URL endpoint for getting the object info.
+            field_key (str): the field key of the name in the API response.
+
+        Returns:
+            object name (str): the object name if successful, empty string otherwise.
+        """
         try:
             object_mapping = self.integration_context.setdefault(object_name, {})
             if object_mapping.get(object_id):
@@ -91,7 +106,7 @@ class Client(BaseClient):
             object_mapping[object_id] = response.get(field_key, '')
             return object_mapping[object_id]
         except Exception as exc:
-            demisto.debug(f'failed to convert the {object_name} id, Error: {exc}\nTrace{traceback.format_exc()}')
+            demisto.debug(f'failed to convert the {object_name} id, Error: {exc}\n{traceback.format_exc()}')
             return ''
 
     def get_person_name(self, person_id: str) -> str:
