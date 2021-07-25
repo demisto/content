@@ -18,6 +18,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict
+import CommonServerPython
 
 try:
     from StringIO import StringIO
@@ -47,6 +48,11 @@ def clear_version_cache():
     """
     yield
     get_demisto_version._version = None
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(CommonServerPython, 'get_integration_name', return_value='Test')
 
 
 def test_xml():
@@ -1543,7 +1549,7 @@ class TestCommandResults:
 
         dbot_score = Common.DBotScore(
             indicator='8.8.8.8',
-            integration_name='Virus Total',
+            integration_name='Test',
             indicator_type=DBotScoreType.IP,
             score=Common.DBotScore.GOOD
         )
@@ -1585,7 +1591,7 @@ class TestCommandResults:
                 'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
                     {
                         'Indicator': '8.8.8.8',
-                        'Vendor': 'Virus Total',
+                        'Vendor': 'Test',
                         'Score': 1,
                         'Type': 'ip'
                     }
@@ -1601,7 +1607,7 @@ class TestCommandResults:
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
         dbot_score1 = Common.DBotScore(
             indicator='8.8.8.8',
-            integration_name='Virus Total',
+            integration_name='Test',
             indicator_type=DBotScoreType.IP,
             score=Common.DBotScore.GOOD
         )
@@ -1620,7 +1626,7 @@ class TestCommandResults:
 
         dbot_score2 = Common.DBotScore(
             indicator='5.5.5.5',
-            integration_name='Virus Total',
+            integration_name='Test',
             indicator_type=DBotScoreType.IP,
             score=Common.DBotScore.GOOD
         )
@@ -1666,13 +1672,13 @@ class TestCommandResults:
                 'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
                     {
                         'Indicator': '8.8.8.8',
-                        'Vendor': 'Virus Total',
+                        'Vendor': 'Test',
                         'Score': 1,
                         'Type': 'ip'
                     },
                     {
                         'Indicator': '5.5.5.5',
-                        'Vendor': 'Virus Total',
+                        'Vendor': 'Test',
                         'Score': 1,
                         'Type': 'ip'
                     }
@@ -1802,7 +1808,7 @@ class TestCommandResults:
 
         dbot_score = Common.DBotScore(
             indicator='8.8.8.8',
-            integration_name='Virus Total',
+            integration_name='Test',
             score=Common.DBotScore.GOOD,
             indicator_type=DBotScoreType.IP,
             reliability=DBotScoreReliability.B,
@@ -1828,7 +1834,7 @@ class TestCommandResults:
                 {
                     'Indicator': '8.8.8.8',
                     'Type': 'ip',
-                    'Vendor': 'Virus Total',
+                    'Vendor': 'Test',
                     'Score': 1,
                     'Reliability': 'B - Usually reliable'
                 }
@@ -1905,7 +1911,7 @@ class TestCommandResults:
         mocker.patch.object(demisto, 'params', return_value={'insecure': True})
         dbot_score = Common.DBotScore(
             indicator='8.8.8.8',
-            integration_name='Virus Total',
+            integration_name='Test',
             indicator_type=DBotScoreType.IP,
             score=Common.DBotScore.GOOD
         )
@@ -1930,7 +1936,7 @@ class TestCommandResults:
                 {
                     'Indicator': '8.8.8.8',
                     'Type': 'ip',
-                    'Vendor': 'Virus Total',
+                    'Vendor': 'Test',
                     'Score': 1
                 }
             ]
@@ -3747,7 +3753,7 @@ class TestCommonTypes:
 
         dbot_score = Common.DBotScore(
             indicator='somedomain.com',
-            integration_name='Virus Total',
+            integration_name='Test',
             indicator_type=DBotScoreType.DOMAIN,
             score=Common.DBotScore.GOOD
         )
@@ -3924,7 +3930,7 @@ class TestCommonTypes:
                     {
                         'Indicator': 'somedomain.com',
                         'Type': 'domain',
-                        'Vendor': 'Virus Total',
+                        'Vendor': 'Test',
                         'Score': 1
                     }
                 ]
@@ -3948,7 +3954,7 @@ class TestCommonTypes:
 
         dbot_score = Common.DBotScore(
             indicator='bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d',
-            integration_name='test',
+            integration_name='Test',
             indicator_type=DBotScoreType.CERTIFICATE,
             score=Common.DBotScore.NONE
         )
@@ -4329,7 +4335,7 @@ class TestCommonTypes:
                 'val.Vendor == obj.Vendor && val.Type == obj.Type)': [{
                     "Indicator": "bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d",
                     "Type": "certificate",
-                    "Vendor": "test",
+                    "Vendor": "Test",
                     "Score": 0
                 }]
             },
