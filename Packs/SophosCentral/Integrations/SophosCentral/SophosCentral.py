@@ -94,11 +94,11 @@ class Client(BaseClient):
             object name (str): the object name if successful, empty string otherwise.
         """
         try:
-            object_mapping = self.integration_context.setdefault(object_name, {})
+            object_mapping = self.integration_context.setdefault(object_mapping_name, {})
             if object_mapping.get(object_id):
                 return object_mapping.get(object_id)
 
-            demisto.debug(f'did not find object id in {object_name} cache, retreiving from API')
+            demisto.debug(f'did not find object id in {object_mapping_name} cache, retreiving from API')
             response = self._http_request(
                 method='GET', url_suffix=url_suffix,
                 headers=self.headers,
@@ -106,7 +106,7 @@ class Client(BaseClient):
             object_mapping[object_id] = response.get(field_key, '')
             return object_mapping[object_id]
         except Exception as exc:
-            demisto.debug(f'failed to convert the {object_name} id, Error: {exc}\n{traceback.format_exc()}')
+            demisto.debug(f'failed to convert the {object_mapping_name} id, Error: {exc}\n{traceback.format_exc()}')
             return ''
 
     def get_person_name(self, person_id: str) -> str:
@@ -697,10 +697,10 @@ def create_alert_output(client: Client, item: Dict, table_headers: List[str]) ->
 
     managed_agent = item.get('managedAgent')
     if managed_agent:
-        managed_agent_morphed_id = flip_chars(managed_agent.get('id', ''))
-        alert_data['managedAgentId'] = managed_agent.get('id')
-        alert_data['managedAgentIdMorphed'] = managed_agent_morphed_id
-        alert_data['managedAgentName'] = client.get_managed_agent_name(managed_agent.get('id'))
+        managed_agent_id = managed_agent.get('id', '')
+        alert_data['managedAgentId'] = managed_agent_id
+        alert_data['managedAgentIdMorphed'] = flip_chars(managed_agent_id)
+        alert_data['managedAgentName'] = client.get_managed_agent_name(managed_agent_id)
         alert_data['managedAgentType'] = managed_agent.get('type')
 
     tenant = item.get('tenant')
@@ -711,10 +711,10 @@ def create_alert_output(client: Client, item: Dict, table_headers: List[str]) ->
 
     person = item.get('person')
     if person:
-        person_morphed_id = flip_chars(person.get('id', ''))
-        alert_data['person'] = person.get('id')
-        alert_data['personIdMorphed'] = person_morphed_id
-        alert_data['personName'] = client.get_person_name(person.get('id'))
+        person_id = person.get('id', '')
+        alert_data['person'] = person_id
+        alert_data['personIdMorphed'] = flip_chars(person_id)
+        alert_data['personName'] = client.get_person_name(person_id)
 
     return alert_data
 
