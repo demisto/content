@@ -140,7 +140,7 @@ def decode_str_using_chardet(decrypted_text: str) -> Tuple[str, str]:
     encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
     try:
         # Trying to decode using the detected encoding
-        confidence = chardet_detection.get('confidence')
+        confidence = chardet_detection.get('confidence', 0)
         demisto.debug(f"Going to decode decrypted text using {encoding} encoding, detected with confidence: "
                       f"{confidence}")
         if confidence < 0.9:
