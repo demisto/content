@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 from M2Crypto import BIO, SMIME, X509, m2
-from typing import Dict
+from typing import Dict, Tuple
 from tempfile import NamedTemporaryFile
 
 import chardet
@@ -134,24 +134,27 @@ def verify(client: Client, args: Dict):
     return human_readable, {}
 
 
-def decode_str_using_chardet(decrypted_text: str) -> Tuple[str, str]:
-    error = ''
-    chardet_detection = chardet.detect(decrypted_text)
-    encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
-    try:
-        # Trying to decode using the detected encoding
-        confidence = chardet_detection.get('confidence', 0)
-        demisto.debug(f"Going to decode decrypted text using {encoding} encoding, detected with confidence: "
-                      f"{confidence}")
-        if confidence < 0.9:
-            msg = 'Note: detected encoding confidence is low, characters may be missing. You can try running this' \
-                    ' command again and pass the encoding code as argument.\n'
+def decode_str(decrypted_text: str, encoding: str) -> Tuple[str, str]:
+    msg = ''
+    if not encoding:
+        chardet_detection = chardet.detect(decrypted_text)
+        encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
+        try:
+            # Trying to decode using the detected encoding
+            confidence = chardet_detection.get('confidence', 0)
+            demisto.debug(f"Going to decode decrypted text using {encoding} encoding, detected with confidence: "
+                          f"{confidence}")
+            if confidence < 0.9:
+                msg = 'Note: detected encoding confidence is low, characters may be missing. You can try running this' \
+                        ' command again and pass the encoding code as argument.\n'
+            out = decrypted_text.decode(encoding)
+        except UnicodeDecodeError:
+            # In case the detected encoding fails apply the default encoding
+            demisto.debug(f'Could not decode file using detected encoding:{encoding}, retrying using utf-8.\n')
+            out = decrypted_text.decode('utf-8')
+    else:
         out = decrypted_text.decode(encoding)
-    except UnicodeDecodeError:
-        # In case the detected encoding fails apply the default encoding
-        demisto.info(f'Could not decode file using detected encoding:{encoding}, retrying '
-                     f'using utf-8.\n')
-        out = decrypted_text.decode('utf-8')
+
     return out, msg
 
 
@@ -168,16 +171,13 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
     else:
         encrypt_message = demisto.getFilePath(args.get('encrypt_message'))
 
-    encoding = args.get('encoding')
-    error = ''
+    encoding = args.get('encoding', '')
+    msg = ''
     client.smime.load_key(client.private_key_file, client.public_key_file)
     try:
         p7, data = SMIME.smime_load_pkcs7(encrypt_message['path'])
         decrypted_text = client.smime.decrypt(p7)
-        if encoding:
-            out = decrypted_text.decode(encoding)
-        else:
-            out, error = decode_str_using_chardet(decrypted_text)
+        out, msg = decode_str(decrypted_text, encoding)
 
     except SMIME.SMIME_Error as e:
 
@@ -187,23 +187,17 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
             p7bio = BIO.MemoryBuffer(p7data)
             p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))
             decrypted_text = client.smime.decrypt(p7, flags=SMIME.PKCS7_NOVERIFY)
-            if encoding:
-                out = decrypted_text.decode(encoding)
-            else:
-                out, msg = decode_str_using_chardet(decrypted_text)
+            out, msg = decode_str(decrypted_text, encoding)
 
         else:
-            raise Exception(e)
+            raise
 
     entry_context = {
         'SMIME.Decrypted': {
             'Message': out
         }
     }
-    if error:
-        human_readable = f'{error}\nThe decrypted message is: \n{out}'
-    else:
-        human_readable = f'The decrypted message is: \n{out}'
+    human_readable = f'{msg}The decrypted message is: \n{out}'
 
     return human_readable, entry_context
 

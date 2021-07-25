@@ -386,7 +386,7 @@ b'a sign of our times'
     </tr>
     <tr>
       <td>encoding</td>
-      <td>The encoding code to use when decode the message body, e.g 'ISO-8859-2'.</td>
+      <td>The encoding code to use when decode the message body, e.g 'ISO-8859-2'. You can find description of the different encoding types <a href="https://docs.python.org/3/library/codecs.html#standard-encodings">here</a>.</td>
       <td> </td>
     </tr>
   </tbody>
