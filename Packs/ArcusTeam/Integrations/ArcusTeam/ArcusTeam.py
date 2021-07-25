@@ -169,7 +169,7 @@ def main() -> None:
 
         if demisto.command() == "arcusteam-get-vulnerabilities":
             return_results(arcusteam_get_vulnerabilities(client, demisto.args()))
-            
+
         if demisto.command() == "test-module":
             return_results("ok")
 
