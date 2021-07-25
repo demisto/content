@@ -1,5 +1,5 @@
-This pack uses RSA keys in order to let you encrypt and decrypt both text and files.
+This pack uses RSA keys to enable you to encrypt and decrypt both text and files.
 
 ##### What does this pack do?
-- Encrypt and Decrypt text.
-- Encrypt and Decrypt files.
+- Encrypt and decrypt text.
+- Encrypt and decrypt files.
