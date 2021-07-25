@@ -81,7 +81,7 @@ tasks:
       indicator_type:
         simple: domain
       indicator_value:
-        simple: edubolivia.org
+        simple: domain.org
       limit:
         simple: "5"
     separatecontext: false
@@ -456,7 +456,7 @@ tasks:
       indicator_type:
         simple: domain
       indicator_value:
-        simple: dulieuonline.net
+        simple: domain.net
       limit:
         simple: "5"
     separatecontext: false
@@ -1045,7 +1045,7 @@ tasks:
       - "13"
     scriptarguments:
       md5:
-        simple: 1d0a97c41afe5540edd0a8c1fb9a0f1c
+        simple: 1d0a97c41afe5540edd0a8c1fb9a0f2d
     separatecontext: false
     view: |-
       {
@@ -1118,7 +1118,7 @@ tasks:
       - "15"
     scriptarguments:
       md5:
-        simple: 1d0a97c41afe5540edd0a8c1fb9a0f1c
+        simple: 1d0a97c41afe5540edd0a8c1fb9a0f2d
     separatecontext: false
     view: |-
       {

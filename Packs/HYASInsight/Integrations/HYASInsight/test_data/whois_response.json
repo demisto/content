@@ -4,7 +4,7 @@
             "ha noi"
         ],
         "country": [],
-        "domain": "dulieuonline.net",
+        "domain": "domain.net",
         "domain_2tld": "",
         "domain_created_datetime": "2015-05-22T00:00:00Z",
         "domain_expires_datetime": "2016-05-22T00:00:00Z",
@@ -19,7 +19,7 @@
         ],
         "phone": [
             {
-                "phone": "+84986386242",
+                "phone": "+123456789123",
                 "phone_info": {
                     "carrier": "Viettel",
                     "country": "Vietnam",

@@ -26,8 +26,8 @@ WHOIS_CURRENT_RAW_RESPONSE2 = util_load_json('test_data/whoiscurrent_response.js
 MALWARE_SAMPLE_RESPONSE = util_load_json('test_data/malwaresample_response.json')
 ASSOCIATED_IPS_INPUT = [{'ipv4': '8.8.8.8'}]
 ASSOCIATED_DOMAINS_INPUT = [{'domain': 'butterfly.bigmoney.biz'}]
-ASSOCIATED_IPS = {'md5': '1d0a97c41afe5540edd0a8c1fb9a0f1c', 'ips': ['8.8.8.8']}
-ASSOCIATED_DOMAINS = {'md5': '1d0a97c41afe5540edd0a8c1fb9a0f1c', 'domains': ['butterfly.bigmoney.biz']}
+ASSOCIATED_IPS = {'md5': '1d0a97c41afe5540edd0a8c1fb9a0f2d', 'ips': ['8.8.8.8']}
+ASSOCIATED_DOMAINS = {'md5': '1d0a97c41afe5540edd0a8c1fb9a0f2d', 'domains': ['butterfly.bigmoney.biz']}
 
 
 @pytest.mark.parametrize('raw_response, expected', [(PASSIVE_DNS_RESPONSE, PASSIVE_DNS_RESPONSE)])
@@ -38,7 +38,7 @@ def test_get_passive_dns_records_by_indicator(mocker, raw_response, expected):
                                                                          'indicator_value': '189.70.45.212',
                                                                          'limit': 1})
     command_results_domain = get_passive_dns_records_by_indicator(client, {'indicator_type': 'domain',
-                                                                           'indicator_value': 'edubolivia.org',
+                                                                           'indicator_value': 'domain.org',
                                                                            'limit': 1})
     # results is CommandResults list
     context_ipv4 = command_results_ipv4.to_context()['Contents']
@@ -48,7 +48,7 @@ def test_get_passive_dns_records_by_indicator(mocker, raw_response, expected):
 
     with pytest.raises(ValueError):
         get_passive_dns_records_by_indicator(client, {'indicator_type': 'test',
-                                                      'indicator_value': 'edubolivia.org'})
+                                                      'indicator_value': 'domain.org'})
 
     with pytest.raises(ValueError):
         get_passive_dns_records_by_indicator(client, {'indicator_type': 'ipv4',
@@ -99,7 +99,7 @@ def test_get_whois_records_by_indicator(mocker, raw_response, expected):
                                                                     'limit': 1})
 
     command_results_domain = get_whois_records_by_indicator(client, {'indicator_type': 'domain',
-                                                                     'indicator_value': 'dulieuonline.net',
+                                                                     'indicator_value': 'domain.net',
                                                                      'limit': 1})
 
     command_results_email = get_whois_records_by_indicator(client, {'indicator_type': 'email',
@@ -155,7 +155,7 @@ def test_get_malware_samples_records_by_indicator(mocker, raw_response, expected
 
     command_results_md5 = get_malware_samples_records_by_indicator(client, {'indicator_type': 'md5',
                                                                             'indicator_value':
-                                                                                '1d0a97c41afe5540edd0a8c1fb9a0f1c',
+                                                                                '1d0a97c41afe5540edd0a8c1fb9a0f2d',
                                                                             'limit': 1})
 
     # results is CommandResults list
@@ -182,7 +182,7 @@ def test_get_malware_samples_records_by_indicator(mocker, raw_response, expected
 def test_get_associated_ips_by_hash(mocker, raw_response, expected):
     mocker.patch.object(client, 'query', side_effect=[raw_response] * 2)
 
-    command_results = get_associated_ips_by_hash(client, {'md5': '1d0a97c41afe5540edd0a8c1fb9a0f1c'})
+    command_results = get_associated_ips_by_hash(client, {'md5': '1d0a97c41afe5540edd0a8c1fb9a0f2d'})
 
     # results is CommandResults list
     context = command_results.to_context()['Contents']
@@ -196,7 +196,7 @@ def test_get_associated_ips_by_hash(mocker, raw_response, expected):
 def test_get_associated_domains_by_hash(mocker, raw_response, expected):
     mocker.patch.object(client, 'query', side_effect=[raw_response] * 2)
 
-    command_results = get_associated_domains_by_hash(client, {'md5': '1d0a97c41afe5540edd0a8c1fb9a0f1c'})
+    command_results = get_associated_domains_by_hash(client, {'md5': '1d0a97c41afe5540edd0a8c1fb9a0f2d'})
 
     # results is CommandResults list
     context = command_results.to_context()['Contents']

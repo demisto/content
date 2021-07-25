@@ -19,8 +19,8 @@
             "meta_data": "",
             "name": [],
             "nameserver": [
-                "ns09.domaincontrol.com",
-                "ns10.domaincontrol.com"
+                "n1.domaincontrol.com",
+                "n2.domaincontrol.com"
             ],
             "organization": [
                 "HYAS Infosec Inc."
@@ -34,13 +34,13 @@
             "whois_id": "70195358_DOMAIN_COM-VRSN",
             "whois_nameserver": [
                 {
-                    "domain": "ns09.domaincontrol.com",
-                    "domain_2tld": "ns09.domaincontrol.com",
+                    "domain": "n1.domaincontrol.com",
+                    "domain_2tld": "n1.domaincontrol.com",
                     "whois_related_nameserver_id": ""
                 },
                 {
-                    "domain": "ns10.domaincontrol.com",
-                    "domain_2tld": "ns10.domaincontrol.com",
+                    "domain": "n2.domaincontrol.com",
+                    "domain_2tld": "n2.domaincontrol.com",
                     "whois_related_nameserver_id": ""
                 }
             ],

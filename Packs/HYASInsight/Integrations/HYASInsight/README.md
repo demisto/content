@@ -61,7 +61,7 @@ Returns PassiveDNS records for the provided indicator value.
 
 
 #### Command Example
-```!hyas-get-passive-dns-records-by-indicator indicator_type="domain" indicator_value="edubolivia.org" limit="3"```
+```!hyas-get-passive-dns-records-by-indicator indicator_type="domain" indicator_value="domain.org" limit="3"```
 
 #### Context Example
 ```json
@@ -70,7 +70,7 @@ Returns PassiveDNS records for the provided indicator value.
         "PassiveDNS": [
             {
                 "count": "10571",
-                "domain": "edubolivia.org",
+                "domain": "domain.org",
                 "first_seen": "2019-03-14T23:36:40Z",
                 "ip": {
                     "geo": {
@@ -79,15 +79,15 @@ Returns PassiveDNS records for the provided indicator value.
                         "country_name": "United States",
                         "location_latitude": "42.8409",
                         "location_longitude": "-85.6636",
-                        "postal_code": "49548"
+                        "postal_code": "12345"
                     },
                     "ip": "",
                     "isp": {
-                        "autonomous_system_number": "AS32475",
-                        "autonomous_system_organization": "SingleHop LLC",
+                        "autonomous_system_number": "AS12345",
+                        "autonomous_system_organization": "System LLX",
                         "ip_address": "",
-                        "isp": "SingleHop LLC",
-                        "organization": "SingleHop LLC"
+                        "isp": "System LLX",
+                        "organization": "System LLX"
                     }
                 },
                 "ipv4": "",
@@ -99,7 +99,7 @@ Returns PassiveDNS records for the provided indicator value.
             },
             {
                 "count": "151",
-                "domain": "edubolivia.org",
+                "domain": "domain.org",
                 "first_seen": "2011-08-02T12:15:17Z",
                 "ip": {
                     "geo": {
@@ -112,11 +112,11 @@ Returns PassiveDNS records for the provided indicator value.
                     },
                     "ip": "",
                     "isp": {
-                        "autonomous_system_number": "AS32475",
-                        "autonomous_system_organization": "SingleHop LLC",
+                        "autonomous_system_number": "AS12345",
+                        "autonomous_system_organization": "System LLX",
                         "ip_address": "",
-                        "isp": "SingleHop LLC",
-                        "organization": "SingleHop LLC"
+                        "isp": "System LLX",
+                        "organization": "System LLX"
                     }
                 },
                 "ipv4": "",
@@ -127,7 +127,7 @@ Returns PassiveDNS records for the provided indicator value.
             },
             {
                 "count": "7439",
-                "domain": "edubolivia.org",
+                "domain": "domain.org",
                 "first_seen": "2014-04-08T03:30:41Z",
                 "ip": {
                     "geo": {
@@ -160,12 +160,12 @@ Returns PassiveDNS records for the provided indicator value.
 
 #### Human Readable Output
 
->### HYAS PassiveDNS records for domain : edubolivia.org
+>### HYAS PassiveDNS records for domain : domain.org
 >|Count|Domain|First seen|City Name|Country Code|Country Name|Latitude|Longitude|Postal Code|IP|ISP ASN|ISP ASN Organization|ISP IP Address|ISP|ISP Organization|IPV4|Last Seen|Sources|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 10571 | edubolivia.org | 2019-03-14T23:36:40Z | Cutlerville | US | United States | 42.8409 | -85.6636 | 49548 |  | AS32475 | SingleHop LLC |  | SingleHop LLC | SingleHop LLC |  | 2021-07-16T15:29:13.033000Z | hyas,<br/>farsight |
->| 151 | edubolivia.org | 2011-08-02T12:15:17Z | Chicago | US | United States | 41.8500 | -87.6500 | 60666 |  | AS32475 | SingleHop LLC |  | SingleHop LLC | SingleHop LLC |  | 2012-06-18T08:36:11Z | farsight |
->| 7439 | edubolivia.org | 2014-04-08T03:30:41Z | Denver | US | United States | 39.7392 | -104.9847 | 80208 |  | AS46606 | Unified Layer |  | Unified Layer | Unified Layer |  | 2018-11-25T08:06:47Z | farsight |
+>| 10571 | domain.org | 2019-03-14T23:36:40Z | Cutlerville | US | United States | 42.8409 | -85.6636 | 12345 |  | AS12345 | System LLX |  | System LLX | System LLX |  | 2021-07-16T15:29:13.033000Z | hyas,<br/>farsight |
+>| 151 | domain.org | 2011-08-02T12:15:17Z | Chicago | US | United States | 41.8500 | -87.6500 | 60666 |  | AS12345 | System LLX |  | System LLX | System LLX |  | 2012-06-18T08:36:11Z | farsight |
+>| 7439 | domain.org | 2014-04-08T03:30:41Z | Denver | US | United States | 39.7392 | -104.9847 | 80208 |  | AS46606 | Unified Layer |  | Unified Layer | Unified Layer |  | 2018-11-25T08:06:47Z | farsight |
 
 
 ### hyas-get-dynamic-dns-records-by-indicator
@@ -211,7 +211,7 @@ Returns DynamicDNS records for the provided indicator value.
                 "account": "free",
                 "created": "2019-03-30T14:39:49Z",
                 "created_ip": "",
-                "domain": "seyir.duckdns.org",
+                "domain": "domain.org",
                 "domain_creator_ip": "",
                 "email": ""
             },
@@ -220,7 +220,7 @@ Returns DynamicDNS records for the provided indicator value.
                 "account": "free",
                 "created": "2020-05-09T03:39:28Z",
                 "created_ip": "",
-                "domain": "tempoary.duckdns.org",
+                "domain": "domain.org",
                 "domain_creator_ip": "",
                 "email": ""
             },
@@ -243,8 +243,8 @@ Returns DynamicDNS records for the provided indicator value.
 >### HYAS DynamicDNS records for ip : 4.4.4.4
 >|A Record|Account|Created Date|Account Holder IP Address|Domain|Domain Creator IP Address|Email Address|
 >|---|---|---|---|---|---|---|
->| 4.4.4.4 | free | 2019-03-30T14:39:49Z |  | seyir.duckdns.org |  |  |
->| 4.4.4.4 | free | 2020-05-09T03:39:28Z |  | tempoary.duckdns.org |  |  |
+>| 4.4.4.4 | free | 2019-03-30T14:39:49Z |  | domain.org |  |  |
+>| 4.4.4.4 | free | 2020-05-09T03:39:28Z |  | domain.org |  |  |
 >| 4.4.4.4 | free | 2020-05-09T03:39:24Z |  | bensonwonghk.duckdns.org | |  |
 
 
@@ -289,7 +289,7 @@ Returns WHOIS records for the provided indicator value.
 
 
 #### Command Example
-```!hyas-get-whois-records-by-indicator indicator_type="domain" indicator_value="dulieuonline.net" limit="3"```
+```!hyas-get-whois-records-by-indicator indicator_type="domain" indicator_value="domain.net" limit="3"```
 
 #### Context Example
 ```json
@@ -302,7 +302,7 @@ Returns WHOIS records for the provided indicator value.
                     "ha noi"
                 ],
                 "country": [],
-                "domain": "dulieuonline.net",
+                "domain": "domain.net",
                 "domain_2tld": "None",
                 "domain_created_datetime": "2015-05-22T00:00:00Z",
                 "domain_expires_datetime": "2016-05-22T00:00:00Z",
@@ -317,7 +317,7 @@ Returns WHOIS records for the provided indicator value.
                 ],
                 "phone": [
                     {
-                        "phone": "+84986386242",
+                        "phone": "+123456789123",
                         "phone_info": {
                             "carrier": "Viettel",
                             "country": "Vietnam",
@@ -336,7 +336,7 @@ Returns WHOIS records for the provided indicator value.
                 "country": [
                     "VN"
                 ],
-                "domain": "dulieuonline.net",
+                "domain": "domain.net",
                 "domain_2tld": "None",
                 "domain_created_datetime": "2019-10-29T09:48:04Z",
                 "domain_expires_datetime": "2020-10-29T09:48:04Z",
@@ -376,8 +376,8 @@ Returns WHOIS records for the provided indicator value.
                 "country": [
                     "VN"
                 ],
-                "domain": "dulieuonline.net",
-                "domain_2tld": "dulieuonline.net",
+                "domain": "domain.net",
+                "domain_2tld": "domain.net",
                 "domain_created_datetime": "2019-10-29T09:48:04Z",
                 "domain_expires_datetime": "2020-10-29T09:48:04Z",
                 "domain_updated_datetime": "None",
@@ -407,12 +407,12 @@ Returns WHOIS records for the provided indicator value.
 
 #### Human Readable Output
 
->### HYAS WHOIS records for domain : dulieuonline.net
+>### HYAS WHOIS records for domain : domain.net
 >|Address|City|Country|Domain|Domain_2tld|Domain Created Time|Domain Expires Time|Domain Updated Time|Email Address|IDN Name|Nameserver|Phone Info|Privacy_punch|Registrar|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  | ha noi |  | dulieuonline.net | None | 2015-05-22T00:00:00Z | 2016-05-22T00:00:00Z | 2017-06-14T19:06:36.577650Z | ngoc.mycomputer@gmail.com | None | ns2.inet.vn,<br/>ns1.inet.vn | {'phone': '+84986386242', 'phone_info': {'carrier': 'Viettel', 'country': 'Vietnam', 'geo': 'Vietnam'}} | false | onlinenic, inc. |
->|  | hcm | VN | dulieuonline.net | None | 2019-10-29T09:48:04Z | 2020-10-29T09:48:04Z | 2019-10-31T01:09:53.933724Z | "",<br/>abuse-contact@publicdomainregistry.com | None | viendong.mars.orderbox-dns.com,<br/>viendong.venus.orderbox-dns.com,<br/>viendong.earth.orderbox-dns.com,<br/>viendong.mercury.orderbox-dns.com | {'phone': '+84909095309', 'phone_info': {'carrier': 'MobiFone', 'country': 'Vietnam', 'geo': 'Vietnam'}} | false | pdr ltd. d/b/a publicdomainregistry.comvien dong co., ltd. |
->| 32 duong 885 kp 5 tt ba tri,<br/>vn | hcm | VN | dulieuonline.net | dulieuonline.net | 2019-10-29T09:48:04Z | 2020-10-29T09:48:04Z | None | "",<br/>dns@cloudflare.com | None |  | {'phone': '+84909095309', 'phone_info': {'carrier': 'MobiFone', 'country': 'Vietnam', 'geo': 'Vietnam'}} | true | pdr ltd. d/b/a publicdomainregistry.com |
+>|  | ha noi |  | domain.net | None | 2015-05-22T00:00:00Z | 2016-05-22T00:00:00Z | 2017-06-14T19:06:36.577650Z | ngoc.mycomputer@gmail.com | None | ns2.inet.vn,<br/>ns1.inet.vn | {'phone': '+123456789123', 'phone_info': {'carrier': 'Viettel', 'country': 'Vietnam', 'geo': 'Vietnam'}} | false | onlinenic, inc. |
+>|  | hcm | VN | domain.net | None | 2019-10-29T09:48:04Z | 2020-10-29T09:48:04Z | 2019-10-31T01:09:53.933724Z | "",<br/>abuse-contact@publicdomainregistry.com | None | viendong.mars.orderbox-dns.com,<br/>viendong.venus.orderbox-dns.com,<br/>viendong.earth.orderbox-dns.com,<br/>viendong.mercury.orderbox-dns.com | {'phone': '+84909095309', 'phone_info': {'carrier': 'MobiFone', 'country': 'Vietnam', 'geo': 'Vietnam'}} | false | pdr ltd. d/b/a publicdomainregistry.comvien dong co., ltd. |
+>| 32 duong 885 kp 5 tt ba tri,<br/>vn | hcm | VN | domain.net | domain.net | 2019-10-29T09:48:04Z | 2020-10-29T09:48:04Z | None | "",<br/>dns@cloudflare.com | None |  | {'phone': '+84909095309', 'phone_info': {'carrier': 'MobiFone', 'country': 'Vietnam', 'geo': 'Vietnam'}} | true | pdr ltd. d/b/a publicdomainregistry.com |
 
 
 ### hyas-get-whois-current-records-by-domain
@@ -476,8 +476,8 @@ Returns WHOIS Current records for the provided indicator value.
             "email": [],
             "idn_name": "None",
             "nameserver": [
-                "ns09.domaincontrol.com",
-                "ns10.domaincontrol.com"
+                "n1.domaincontrol.com",
+                "n2.domaincontrol.com"
             ],
             "organization": [
                 "HYAS Infosec Inc."
@@ -497,7 +497,7 @@ Returns WHOIS Current records for the provided indicator value.
 >### HYAS WHOISCurrent records for domain : www.hyas.com
 >|Abuse Emails|Address|City|Country|Domain|Domain_2tld|Domain Created Time|Domain Expires Time|Domain Updated Time|Email Address|IDN Name|Nameserver|Organization|Phone Info|Registrar|State|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  |  |  | Canada | hyas.com | hyas.com | 2001-05-01T23:42:14 | 2026-05-01T23:42:14 | 2020-06-30T15:43:39 |  | None | ns09.domaincontrol.com,<br/>ns10.domaincontrol.com | HYAS Infosec Inc. |  | GoDaddy.com, LLC | British Columbia |
+>|  |  |  | Canada | hyas.com | hyas.com | 2001-05-01T23:42:14 | 2026-05-01T23:42:14 | 2020-06-30T15:43:39 |  | None | n1.domaincontrol.com,<br/>n2.domaincontrol.com | HYAS Infosec Inc. |  | GoDaddy.com, LLC | British Columbia |
 
 
 ### hyas-get-malware-samples-records-by-indicator
@@ -604,7 +604,7 @@ Returns associated IP's for the provided hash value.
 
 
 #### Command Example
-```!hyas-get-associated-ips-by-hash md5="1d0a97c41afe5540edd0a8c1fb9a0f1c"```
+```!hyas-get-associated-ips-by-hash md5="1d0a97c41afe5540edd0a8c1fb9a0f2d"```
 
 #### Context Example
 ```json
@@ -614,7 +614,7 @@ Returns associated IP's for the provided hash value.
             "ips": [
                 "106.187.43.98"
             ],
-            "md5": "1d0a97c41afe5540edd0a8c1fb9a0f1c"
+            "md5": "1d0a97c41afe5540edd0a8c1fb9a0f2d"
         }
     }
 }
@@ -622,7 +622,7 @@ Returns associated IP's for the provided hash value.
 
 #### Human Readable Output
 
->### HYAS HASH-IP records for md5 : 1d0a97c41afe5540edd0a8c1fb9a0f1c
+>### HYAS HASH-IP records for md5 : 1d0a97c41afe5540edd0a8c1fb9a0f2d
 >|Associated IPs|
 >|---|
 >| 106.187.43.98 |
@@ -652,7 +652,7 @@ Returns associated Domain's for the provided hash value.
 
 
 #### Command Example
-```!hyas-get-associated-domains-by-hash md5="1d0a97c41afe5540edd0a8c1fb9a0f1c"```
+```!hyas-get-associated-domains-by-hash md5="1d0a97c41afe5540edd0a8c1fb9a0f2d"```
 
 #### Context Example
 ```json
@@ -660,11 +660,11 @@ Returns associated Domain's for the provided hash value.
     "HYAS": {
         "HASH-DOMAIN": {
             "domains": [
-                "butterfly.sinip.es",
+                "domain.es",
                 "qwertasdfg.sinip.es",
                 "butterfly.bigmoney.biz"
             ],
-            "md5": "1d0a97c41afe5540edd0a8c1fb9a0f1c"
+            "md5": "1d0a97c41afe5540edd0a8c1fb9a0f2d"
         }
     }
 }
@@ -672,10 +672,10 @@ Returns associated Domain's for the provided hash value.
 
 #### Human Readable Output
 
->### HYAS HASH-DOMAIN records for md5 : 1d0a97c41afe5540edd0a8c1fb9a0f1c
+>### HYAS HASH-DOMAIN records for md5 : 1d0a97c41afe5540edd0a8c1fb9a0f2d
 >|Associated Domains|
 >|---|
->| butterfly.sinip.es |
+>| domain.es |
 >| qwertasdfg.sinip.es |
 >| butterfly.bigmoney.biz |
 
