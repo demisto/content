@@ -167,5 +167,5 @@ runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test
 - DBotCreatePhishingClassifierV2FromFile-Test
-- Test Build Phishing Classifier Test - Multiple Algorithms
+- DBot Build Phishing Classifier Test - Multiple Algorithms
 fromversion: 5.0.0

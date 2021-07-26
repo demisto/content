@@ -1,7 +1,7 @@
 id: DBot Build Phishing Classifier Test - Multiple Algorithms
 version: -1
 name: DBot Build Phishing Classifier Test - Multiple Algorithms
-description: Test Build Phishing Classifier Test - Multiple Algorithms
+description: DBot Build Phishing Classifier Test - Multiple Algorithms
 starttaskid: "0"
 tasks:
   "0":

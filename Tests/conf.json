@@ -3444,7 +3444,7 @@
             "fromversion": "5.5.0"
         },
         {
-            "playbookID": "Test Build Phishing Classifier Test - Multiple Algorithms",
+            "playbookID": "DBot Build Phishing Classifier Test - Multiple Algorithms",
             "timeout": 60000,
             "fromversion": "6.1.0",
             "instance_names": "ml_dummy_prod",
