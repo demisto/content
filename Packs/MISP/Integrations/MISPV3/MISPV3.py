@@ -404,7 +404,7 @@ def prepare_attributes_array_to_context_data(response):
     if not attributes_list:
         return None
     for attribute in attributes_list:
-        attribute["RelatedAttribute"] = []
+        attribute.pop("RelatedAttribute")
         event = attribute.get('Event')
         convert_timestamp_to_readable(attribute, event)
         found_related_events[event.get("id")] = {"Event Name": event.get("info"),
