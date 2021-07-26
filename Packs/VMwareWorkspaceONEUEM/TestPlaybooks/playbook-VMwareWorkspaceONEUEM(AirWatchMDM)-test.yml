@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7c69be7b-fbb4-4a15-8819-da2eeb53ed72
+    taskid: 42fb0c23-6399-4d26-8eb6-9f1ce1d86851
     type: start
     task:
-      id: 7c69be7b-fbb4-4a15-8819-da2eeb53ed72
+      id: 42fb0c23-6399-4d26-8eb6-9f1ce1d86851
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: bf054164-de3f-4c2b-8e74-69ec2db8f819
+    taskid: a145c5f1-9433-4f5d-8fec-5b22b408b57a
     type: regular
     task:
-      id: bf054164-de3f-4c2b-8e74-69ec2db8f819
+      id: a145c5f1-9433-4f5d-8fec-5b22b408b57a
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -65,10 +65,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: c6019abf-6466-456b-8216-d01b6ab94b99
+    taskid: e6ad3ad3-eb59-477a-8332-6125cb943805
     type: regular
     task:
-      id: c6019abf-6466-456b-8216-d01b6ab94b99
+      id: e6ad3ad3-eb59-477a-8332-6125cb943805
       version: -1
       name: vmwuem-devices-search
       script: '|||vmwuem-devices-search'
@@ -104,10 +104,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 01260801-41b3-4102-8481-8a46b0961529
+    taskid: 032ce23d-d6d3-436d-8077-076ea6034dd6
     type: condition
     task:
-      id: 01260801-41b3-4102-8481-8a46b0961529
+      id: 032ce23d-d6d3-436d-8077-076ea6034dd6
       version: -1
       name: Verify Outputs
       type: condition
@@ -414,10 +414,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: ec4fce7c-ac2a-4352-8949-45be115f7948
+    taskid: 6486cb85-d67b-4b61-81e2-fcdc69051cbb
     type: regular
     task:
-      id: ec4fce7c-ac2a-4352-8949-45be115f7948
+      id: 6486cb85-d67b-4b61-81e2-fcdc69051cbb
       version: -1
       name: vmwuem-device-get
       script: '|||vmwuem-device-get'
@@ -447,10 +447,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 222ecf1c-87da-4b80-8a7b-2018df8bb3d8
+    taskid: 001cd294-2e8a-429a-8c34-e2667ce70f30
     type: condition
     task:
-      id: 222ecf1c-87da-4b80-8a7b-2018df8bb3d8
+      id: 001cd294-2e8a-429a-8c34-e2667ce70f30
       version: -1
       name: Verify Outputs
       type: condition
@@ -631,10 +631,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 4208d861-baaa-44e4-8c2d-187d62611db3
+    taskid: 52edc537-5d2b-486d-8cdf-1ff65f0ff159
     type: regular
     task:
-      id: 4208d861-baaa-44e4-8c2d-187d62611db3
+      id: 52edc537-5d2b-486d-8cdf-1ff65f0ff159
       version: -1
       name: vmwuem-device-os-updates-list
       script: '|||vmwuem-device-os-updates-list'
@@ -647,7 +647,7 @@ tasks:
     scriptarguments:
       uuid:
         complex:
-          root: VMwareWorkspaceONEUEM.Device.[2]
+          root: VMwareWorkspaceONEUEM.Device.[0]
           accessor: Uuid
     separatecontext: false
     view: |-
@@ -664,10 +664,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 42f69f6c-86c3-40c8-8bca-51dc4b803b98
+    taskid: 098c5e66-1b63-40b2-827c-b54b93d9420d
     type: condition
     task:
-      id: 42f69f6c-86c3-40c8-8bca-51dc4b803b98
+      id: 098c5e66-1b63-40b2-827c-b54b93d9420d
       version: -1
       name: Verify Outputs
       type: condition
@@ -771,10 +771,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 973d3e5c-0a6f-4ae7-8820-2daef615f02c
+    taskid: 50064f28-8e5c-45b7-8814-39b80d9dfcf4
     type: title
     task:
-      id: 973d3e5c-0a6f-4ae7-8820-2daef615f02c
+      id: 50064f28-8e5c-45b7-8814-39b80d9dfcf4
       version: -1
       name: Test Done
       type: title
@@ -796,10 +796,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: ad4f0ec4-cb39-49b4-8308-d3535513afb5
+    taskid: d8fb1099-011d-43c3-868f-ebbc5b7cbca3
     type: regular
     task:
-      id: ad4f0ec4-cb39-49b4-8308-d3535513afb5
+      id: d8fb1099-011d-43c3-868f-ebbc5b7cbca3
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -827,10 +827,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: bb98792b-2639-4b0c-8f73-0e880bd62156
+    taskid: 255ded8e-2222-4fee-854d-3e886eadc612
     type: condition
     task:
-      id: bb98792b-2639-4b0c-8f73-0e880bd62156
+      id: 255ded8e-2222-4fee-854d-3e886eadc612
       version: -1
       name: Is device list empty?
       type: condition
@@ -866,10 +866,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 181b35b8-54e0-4fb4-8c36-ac04620546a5
+    taskid: d15c7abb-ce2f-46b3-8af0-f0a62a310444
     type: condition
     task:
-      id: 181b35b8-54e0-4fb4-8c36-ac04620546a5
+      id: d15c7abb-ce2f-46b3-8af0-f0a62a310444
       version: -1
       name: Is OS update list empty?
       type: condition
