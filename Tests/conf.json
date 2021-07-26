@@ -3442,6 +3442,7 @@
         {
             "integrations": ["ServiceNow v2", "Demisto REST API"],
             "playbookID": "Fetch Incidents Test",
+            "instance_names": "snow_basic_auth",
             "fromversion": "6.0.0",
             "is_mockable": false,
             "timeout": 2400
