@@ -380,8 +380,15 @@ def test_fetch_incidents_first_time_fetch(mocker):
         'result': {'msg': {'line': 'query job enqueued with jobid 9440'}, 'job': '9440'}}
     }
     mocker.patch('Panorama.panorama_query_logs', return_value=submitted_job)
-    _, next_run = fetch_incidents(params=demisto.params(), last_run={})
-    # {'fetch_status': 'pending', 'job_id': '9440', 'last_time': '2021/07/19 16:29:16'}
+
+    params = demisto.params()
+    _, next_run = fetch_incidents(
+        last_run={},
+        query=params.get('query'),
+        first_fetch_time=params.get('first_fetch_time'),
+        number_of_logs=params.get('number_of_logs'),
+        log_type=params.get('log_type')
+    )
     assert next_run.get('fetch_status') == 'pending'
     assert next_run.get('job_id') == '9440'
     assert next_run.get('last_time') == '2021/07/10 17:34:14'
@@ -424,13 +431,55 @@ def test_fetch_incidents_second_time_fetch_no_logs(mocker):
         }
     }
     mocker.patch('Panorama.panorama_get_logs', return_value=result)
-    incidents, next_run = fetch_incidents(params=demisto.params(),
-                                          last_run={
-                                              'fetch_status': 'pending',
-                                              'job_id': '9440',
-                                              'last_time': '2021/07/19 16:29:16'}
-                                          )
+
+    params = demisto.params()
+    incidents, next_run = fetch_incidents(
+        last_run={
+            'fetch_status': 'pending',
+            'job_id': '9440',
+            'last_time': '2021/07/19 16:29:16'},
+        query=params.get('query'),
+        first_fetch_time=params.get('first_fetch_time'),
+        number_of_logs=params.get('number_of_logs'),
+        log_type=params.get('log_type')
+    )
     assert not len(incidents)
     assert next_run.get('fetch_status') == 'new'
     assert next_run.get('job_id') == '-1'
     assert next_run.get('last_time') == '2021/07/19 16:29:16'
+
+
+def test_fetch_incidents_second_time_fetch_with_logs(mocker):
+    """Unit test
+    Given
+    - fetch incidents command
+    - command args
+    When
+    - mock the integration parameters
+    - mock the panorama_get_logs response, that 3 logs matched the query
+    Then
+    - validate that 3 incidents have been generated
+    - Validate that the fetch_status is new
+    - Validate that the job_id is -1
+    - Validate that the last_time is as the received_time of the last log plus 1 second
+    """
+    from Panorama import fetch_incidents
+    from test_data.responses import TRAFFIC_LOGS
+    mocker.patch('Panorama.panorama_get_logs', return_value=TRAFFIC_LOGS)
+
+    params = demisto.params()
+    incidents, next_run = fetch_incidents(
+        last_run={
+            'fetch_status': 'pending',
+            'job_id': '668',
+            'last_time': '2021/07/19 16:29:16'},
+        query=params.get('query'),
+        first_fetch_time=params.get('first_fetch_time'),
+        number_of_logs=params.get('number_of_logs'),
+        log_type=params.get('log_type')
+    )
+    assert len(incidents) == 3
+    assert incidents[0].get('name') == '1 PAN-OS log TRAFFIC received at: 2020/10/11 19:16:29'
+    assert next_run.get('fetch_status') == 'new'
+    assert next_run.get('job_id') == '-1'
+    assert next_run.get('last_time') == '2020/10/11 19:16:30'

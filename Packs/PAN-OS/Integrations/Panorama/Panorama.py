@@ -13,6 +13,7 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
+PAN_OS_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 URL = ''
 API_KEY = None
 USE_SSL = None
@@ -7039,6 +7040,7 @@ def parse_logs_to_incidents(result: dict, last_run: dict) -> Tuple[Optional[List
         next_run: This will be last_run in the next fetch-incidents
 
     """
+    timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
     if result['response']['result']['job']['status'] != 'FIN':  # if fetch is not over, keep the context as is
         demisto.debug('Querying the logs job is in progress to fetch PAN-OS logs as incidents.')
         return [], last_run
@@ -7052,42 +7054,46 @@ def parse_logs_to_incidents(result: dict, last_run: dict) -> Tuple[Optional[List
     logs_dict = result['response']['result']['log']['logs']
     if logs_dict['@count'] == '0':  # fetch is over, no new logs found. reset the status and job id
         demisto.debug('Querying the logs job to fetch PAN-OS logs as incidents did not find any new logs.')
-        last_run['fetch_status'] = 'new'
-        last_run['job_id'] = '-1'
-        return [], last_run
+        next_run = {'fetch_status': 'new', 'job_id': '-1', 'last_time': last_run.get('last_time')}
+        demisto.debug(f'PAN-OS fetch next_run is: {str(next_run)}.')
+        return [], next_run
 
     # logs where retrieved successfully. reset the status and job id
     raw_logs = logs_dict['entry']
     demisto.debug(f'Creating {len(raw_logs)} PAN-OS logs as incidents')
-    next_run = {'fetch_status': 'new'}
+    next_run = {'fetch_status': 'new', 'job_id': '-1'}
     incidents = [{
-        'name': f'{raw_log.get("TimeReceived")} PAN-OS log',
-        'occurred': raw_log.get("TimeReceived"),
+        'name': f'{raw_log.get("@logid")} PAN-OS log {raw_log.get("type")} received at: {raw_log.get("time_received")}',
+        'occurred': dateparser.parse(raw_log.get("time_received")).strftime(timestamp_format),
         'rawJSON': json.dumps(raw_log)
     } for raw_log in raw_logs]
-    # TODO set the next_run['last_time'] correctly
+
+    last_incident_time_date_obj = dateparser.parse(raw_logs[-1].get('time_received'))
+    last_incident_time_date_obj += timedelta(seconds=1)  # add 1 seconds to not re fetch logs
+    last_incident_time = last_incident_time_date_obj.strftime(PAN_OS_DATE_FORMAT)
+    next_run['last_time'] = last_incident_time
+
     return incidents, next_run
 
 
-def fetch_incidents(params: dict, last_run: dict) -> Tuple[Optional[List], Optional[Dict]]:
+def fetch_incidents(last_run: dict, query: str, first_fetch_time: str, number_of_logs: int, log_type: str) ->\
+        Tuple[Optional[List], Optional[Dict]]:
     """
     Fetching incidents from PAN-OS.
     Will first execute a query. than, as long as the query is not 'completed' will pull on it in the next fetch.
     When completed - will return the logs as incidents, reset the KEY and will execute a new query in the next fetch.
 
     Args:
-        params (Dict): instance params.
         last_run (dict): last run data including the status, job_id and time.
+        query (str): the fetch query
+        first_fetch_time (str): from when to start fetching
+        number_of_logs (int): maximum number of logs to retrieve
+        log_type (str): the log type to retrieve
 
     Returns:
         incidents: Incidents that will be created in Cortex XSOAR
         next_run: This will be last_run in the next fetch-incidents
     """
-    query = str(params.get('query', ''))
-    first_fetch_time = params.get('first_fetch', '3 days').strip()
-    number_of_logs = int(params.get('max_fetch', '50'))
-    log_type = str(params.get('log_type', 'threat'))
-
     fetch_status = last_run.get('fetch_status')
     job_id = last_run.get('job_id')
     if fetch_status and fetch_status != 'new':  # if we do not need to initiate a new query, try to get the logs
@@ -7099,7 +7105,6 @@ def fetch_incidents(params: dict, last_run: dict) -> Tuple[Optional[List], Optio
     submitted_job = panorama_query_logs(log_type=log_type, number_of_logs=number_of_logs, query=query)
     job_id = submitted_job['response']['result']['job']  # get the job id
     demisto.info(f'PAN-OS executed fetch job_id is: {job_id}')
-    # update the last_run time to now
     next_run = {'fetch_status': 'pending', 'job_id': job_id, 'last_time': now}
 
     return [], next_run
@@ -7107,10 +7112,10 @@ def fetch_incidents(params: dict, last_run: dict) -> Tuple[Optional[List], Optio
 
 def create_fetch_query(last_run: dict, first_fetch_time: str, query: str) -> Tuple[str, str]:
     # create a new job query time filters
-    if not last_run:  # first time fetch
+    if last_run and last_run.get('last_time'):
+        last_time = last_run.get('last_time')
+    else:  # first time fetch
         last_time = to_pan_os_format_converter(first_fetch_time)
-    else:
-        last_time = last_run['last_time']
     now = to_pan_os_format_converter()
     # All Traffic Received Between The Date-Time Range Of:
     # (receive_time geq 'yyyy/mm/dd hh:mm:ss') and (receive_time leq 'YYYY/MM/DD HH:MM:SS')
@@ -7134,9 +7139,8 @@ def to_pan_os_format_converter(time_given: str = 'now') -> str:
         Returns:
             The time given in PAN-OS format.
         """
-    pan_os_date_format = '%Y/%m/%d %H:%M:%S'
     date_obj = dateparser.parse(time_given)
-    return date_obj.strftime(pan_os_date_format)
+    return date_obj.strftime(PAN_OS_DATE_FORMAT)
 
 
 def main() -> None:
@@ -7508,7 +7512,15 @@ def main() -> None:
 
         # Fetch
         elif command == 'fetch-incidents':
-            incidents, next_run = fetch_incidents(params=params, last_run=demisto.getLastRun())
+            query = str(params.get('query', ''))
+            first_fetch_time = params.get('first_fetch', '3 days').strip()
+            number_of_logs = int(params.get('max_fetch', '50'))
+            log_type = str(params.get('log_type', 'threat'))
+            incidents, next_run = fetch_incidents(last_run=demisto.getLastRun(),
+                                                  query=query,
+                                                  first_fetch_time=first_fetch_time,
+                                                  number_of_logs=number_of_logs,
+                                                  log_type=log_type)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
