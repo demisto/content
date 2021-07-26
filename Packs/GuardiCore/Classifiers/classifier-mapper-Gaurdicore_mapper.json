@@ -1,0 +1,54 @@
+{
+  "defaultIncidentType": "",
+  "description": "",
+  "feed": false,
+  "id": "GuardiCore Incoming Mapper",
+  "mapping": {
+    "Guardicore Incident": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "Close Time": {
+          "complex": null,
+          "simple": "closed_time"
+        },
+        "End Time": {
+          "complex": null,
+          "simple": "end_time"
+        },
+        "GuardiCore End Time": {
+          "complex": null,
+          "simple": "end_time"
+        },
+        "Last Update Time": {
+          "complex": null,
+          "simple": "last_updated_time"
+        },
+        "Source IP": {
+          "complex": null,
+          "simple": "source_asset.ip"
+        },
+        "Start Time": {
+          "complex": null,
+          "simple": "start_time"
+        },
+        "severity": {
+          "complex": null,
+          "simple": "severity"
+        }
+      }
+    },
+    "dbot_classification_incident_type_all": {
+      "dontMapEventToLabels": true,
+      "internalMapping": {
+        "severity": {
+          "complex": null,
+          "simple": "severity"
+        }
+      }
+    }
+  },
+  "name": "GuardiCore Incoming Mapper",
+  "type": "mapping-incoming",
+  "version": -1,
+  "fromVersion": "6.0.0"
+}

@@ -1,0 +1,420 @@
+id: GuardiCoreV2-Test
+version: 17
+vcShouldKeepItemLegacyProdMachine: false
+name: GuardiCoreV2-Test
+starttaskid: "0"
+fromversion: 6.0.0
+tasks:
+  "0":
+    id: "0"
+    taskid: ce7fd7b5-b0f4-46b3-81ac-3ab7afbc3779
+    type: start
+    task:
+      id: ce7fd7b5-b0f4-46b3-81ac-3ab7afbc3779
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9968252b-c8b4-4304-8c61-10f87fc4b68b
+    type: regular
+    task:
+      id: 9968252b-c8b4-4304-8c61-10f87fc4b68b
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "3"
+        - "2"
+        - "4"
+        - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: ea6680af-e656-4826-8563-5da9b5b8bbd1
+    type: regular
+    task:
+      id: ea6680af-e656-4826-8563-5da9b5b8bbd1
+      version: -1
+      name: guardicore-search-endpoint
+      script: '|||guardicore-search-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "9"
+    scriptarguments:
+      ip_address:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: aeeeb86b-c2db-4eeb-8fc1-1fab70af981b
+    type: regular
+    task:
+      id: aeeeb86b-c2db-4eeb-8fc1-1fab70af981b
+      version: -1
+      name: guardicore-get-incident
+      script: '|||guardicore-get-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "5"
+    scriptarguments:
+      id:
+        simple: c2acca07-e9bf-4d63-9a26-ff6c749d24d2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: f2074712-e6ed-4e5a-8ed6-89232b3fa95c
+    type: regular
+    task:
+      id: f2074712-e6ed-4e5a-8ed6-89232b3fa95c
+      version: -1
+      name: guardicore-get-incidents
+      script: '|||guardicore-get-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "10"
+    scriptarguments:
+      from_time:
+        simple: "2019-09-02T23:05:12Z"
+      limit:
+        simple: "3"
+      to_time:
+        simple: "2021-07-13T18:27:36Z"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 39e7c3b5-3bcc-4d83-809b-0e01155533c2
+    type: condition
+    task:
+      id: 39e7c3b5-3bcc-4d83-809b-0e01155533c2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "8"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Guardicore.Incident.start_time
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Guardicore.Incident.id
+                iscontext: true
+              right:
+                value:
+                  simple: c2acca07-e9bf-4d63-9a26-ff6c749d24d2
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 245a9f06-329b-4ac2-8d13-073fc1709dd6
+    type: regular
+    task:
+      id: 245a9f06-329b-4ac2-8d13-073fc1709dd6
+      version: -1
+      name: endpoint
+      script: '|||endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "7"
+    scriptarguments:
+      hostname:
+        simple: Accounting-web-1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 46811921-e0d5-4d6f-8058-5bb851f97ae1
+    type: condition
+    task:
+      id: 46811921-e0d5-4d6f-8058-5bb851f97ae1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "8"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Endpoint.ID
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Guardicore.Endpoint.asset_id
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 2ca4c2c7-ad9a-4aa5-8c2a-92aaf21166c4
+    type: title
+    task:
+      id: 2ca4c2c7-ad9a-4aa5-8c2a-92aaf21166c4
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: dc57710c-95da-43d9-8d4f-bbdb153f46c1
+    type: condition
+    task:
+      id: dc57710c-95da-43d9-8d4f-bbdb153f46c1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "8"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Guardicore.Endpoint.name
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 3e44864e-cc53-4542-8004-beb1dcfa0b16
+    type: condition
+    task:
+      id: 3e44864e-cc53-4542-8004-beb1dcfa0b16
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "8"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  complex:
+                    root: Guardicore
+                    accessor: Incident
+                    transformers:
+                      - operator: count
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Guardicore.Incident.[0].affected_assets.[0].ip
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 745,
+        "width": 1670,
+        "x": 50,
+        "y": 40
+      }
+    }
+  }
+inputs: []
+outputs: []

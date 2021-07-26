@@ -2,7 +2,8 @@
     "associatedToAll": false,
     "associatedTypes": [
         "Qradar Generic",
-        "Carbon Black Endpoint Standard"
+        "Carbon Black Endpoint Standard",
+        "Guardicore Incident"
     ],
     "breachScript": "",
     "caseInsensitive": true,

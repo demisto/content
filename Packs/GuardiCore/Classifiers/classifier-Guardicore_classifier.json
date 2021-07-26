@@ -1,0 +1,16 @@
+{
+    "defaultIncidentType": "Guardicore Incident",
+    "description": "",
+    "feed": false,
+    "id": "c937165c-ee3b-40c8-8af3-846b803b115a",
+    "name": "Guardicore classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1
+}
