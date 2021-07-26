@@ -61,6 +61,11 @@ def parse_list(raw_response: dict, human_readable_title: str, context_path: str)
 
 class AADClient(MicrosoftClient):
     def __init__(self, app_id: str, subscription_id: str, verify: bool, proxy: bool, azure_ad_endpoint: str):
+        if '@' in app_id:  # for use in test-playbook
+            app_id, refresh_token = app_id.split('@')
+            integration_context = get_integration_context()
+            integration_context.update(current_refresh_token=refresh_token)
+            set_integration_context(integration_context)
 
         super().__init__(azure_ad_endpoint=azure_ad_endpoint,
                          self_deployed=True,
@@ -71,12 +76,6 @@ class AADClient(MicrosoftClient):
                          verify=verify,
                          proxy=proxy,
                          scope=' '.join(REQUIRED_PERMISSIONS))
-
-        if '@' in app_id:  # for use in test-playbook
-            app_id, refresh_token = app_id.split('@')
-            integration_context = get_integration_context()
-            integration_context.update(current_refresh_token=refresh_token)
-            set_integration_context(integration_context)
 
         self.subscription_id = subscription_id
 
