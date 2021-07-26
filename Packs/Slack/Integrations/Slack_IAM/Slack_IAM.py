@@ -183,25 +183,10 @@ class GroupClient(BaseClient):
             data=data
         )
 
-    def replace_group(self, group_id, data):
-        uri = f'/Groups/{group_id}'
-        return self.http_request(
-            method="PUT",
-            url_suffix=uri,
-            data=data
-        )
-
     def delete_group(self, group_id):
         uri = f'/Groups/{group_id}'
         return self.http_request(
             method="DELETE",
-            url_suffix=uri
-        )
-
-    def get_group_by_id(self, group_id):
-        uri = f'groups/{group_id}'
-        return self.http_request(
-            method='GET',
             url_suffix=uri
         )
 
@@ -371,9 +356,12 @@ def get_group_command(client, args):
     if not (group_id or group_name):
         return_error("You must supply either 'id' or 'displayName' in the scim data")
     if not group_id:
+        demisto.log(f'group_name is {group_name}')
         res = client.search_group(group_name)
-        res = client.search_group(group_name)
+
         res_json = res.json()
+        demisto.log(f'res is {res_json}')
+
         if res.status_code == 200:
             if res_json.get('totalResults') < 1:
                 generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=404,
@@ -391,6 +379,7 @@ def get_group_command(client, args):
                 )
             else:
                 group_id = res_json['Resources'][0].get('id')
+                demisto.log(f'Group id is -> {group_id}')
         else:
             generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
                                                 errorCode=res_json['Errors']['code'],
@@ -406,9 +395,9 @@ def get_group_command(client, args):
                 outputs,
                 generic_iam_context.data
             )
-
     res = client.get_group_by_id(group_id)
     res_json = res.json()
+    demisto.log(f'res is {res_json}')
 
     if res.status_code == 200:
         include_members = args.get('includeMembers')
@@ -568,44 +557,6 @@ def update_group_command(client, args):
     )
 
 
-def replace_group_command(client, args):
-    group_id = args.get('groupId')
-    group_name = args.get('groupName')
-
-    if not (group_id or group_name):
-        return_error("You must supply either 'groupId' or 'groupName")
-    if not group_id:
-        group_id = client.get_group_id(group_name)
-
-    group_input = {}
-    group_input['schemas'] = [SLACK_SCIM_CORE_SCHEMA_KEY]
-    group_input['displayName'] = args.get('newGroupName')
-    members = []
-    member_ids = args.get('memberIds')
-    if member_ids:
-        if type(member_ids) is not list:
-            try:
-                member_ids = json.loads(member_ids)
-            except JSONDecodeError:
-                return_error("memberIds is not a valid list")
-            for member_id in member_ids:
-                members.append({"value": member_id})
-
-    group_input['members'] = members
-    res = client.replace_group(group_id, group_input)
-    res_json = res.json()
-
-    if res.status_code not in [200, 201]:
-        return_error(f"Error in API call. Status Code: [{res.status_code}]. Error Response: {res_json}")
-
-    readable_output = tableToMarkdown(f"Slack Group replaced: {group_id}", res_json)
-
-    return (
-        readable_output,
-        {},
-        res_json)
-
-
 def main():
     user_profile = None
     params = demisto.params()
@@ -680,24 +631,20 @@ def main():
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
 
-    if command == 'get-group':
+    if command == 'iam-get-group':
         human_readable, outputs, raw_response = get_group_command(group_client, args)
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
-    elif command == 'create-group':
+    elif command == 'iam-create-group':
         human_readable, outputs, raw_response = create_group_command(group_client, args)
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
-    elif command == 'update-group':
+    elif command == 'iam-update-group':
         human_readable, outputs, raw_response = update_group_command(group_client, args)
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
-    elif command == 'delete-group':
+    elif command == 'iam-delete-group':
         human_readable, outputs, raw_response = delete_group_command(group_client, args)
-        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
-
-    elif command == 'slack-replace-group':
-        human_readable, outputs, raw_response = replace_group_command(group_client, args)
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 

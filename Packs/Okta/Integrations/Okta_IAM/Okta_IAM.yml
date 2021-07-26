@@ -440,7 +440,7 @@ script:
     deprecated: false
     description: Retrieves the group information including members
     execution: false
-    name: get-group
+    name: iam-get-group
     outputs:
     - contextPath: GetGroup.id
       description: Group Id
@@ -515,7 +515,7 @@ script:
     deprecated: false
     description: Gets logs by providing optional filters.
     execution: false
-    name: okta-get-logs-v2
+    name: okta-get-logs
     outputs:
     - contextPath: Okta.Logs.Events.actor.alternateId
       description: Alternative ID of the actor.

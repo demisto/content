@@ -156,7 +156,9 @@ class Client(BaseClient):
             resp_type='response',
         )
         paged_results = response.json()
-
+        demisto.log("##")
+        demisto.log(str(response))
+        demisto.log(str(paged_results))
         if response.status_code != 200:
             raise Exception(
                 f'Error occurred while calling Okta API: {response.request.url}. Response: {response.json()}')
@@ -778,9 +780,6 @@ def get_group_command(client, args):
     demisto.log(f'scim is -> {(scim)}')
     group_id = scim.get('id')
     group_name = scim.get('displayName')
-    #for testing issues
-    group_id = "00g91glt13un0ZFmU0h7"
-    demisto.log(f'group id is -> {(group_id)}')
 
     if not (group_id or group_name):
         return_error("You must supply either 'id' or 'displayName' in the scim data")
@@ -981,11 +980,11 @@ def main():
             context = set_configuration(args)
             demisto.setIntegrationContext(context)
 
-        elif command == 'get-group':
+        elif command == 'iam-get-group':
             human_readable, outputs, raw_response = get_group_command(client, args)
             return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
-        elif command == 'okta-get-logs-v2':
+        elif command == 'okta-get-logs':
             human_readable, outputs, raw_response = get_logs_command(client, args)
             return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 

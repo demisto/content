@@ -265,7 +265,7 @@ script:
     deprecated: false
     description: Creates an empty group
     execution: false
-    name: create-group
+    name: iam-create-group
     outputs:
     - contextPath: CreateGroup.id
       description: Group Id
@@ -302,7 +302,7 @@ script:
     deprecated: false
     description: Retrieves the group information including members
     execution: false
-    name: get-group
+    name: iam-get-group
     outputs:
     - contextPath: GetGroup.id
       description: Group Id
@@ -335,7 +335,7 @@ script:
     deprecated: false
     description: Permanently removes a group.
     execution: false
-    name: delete-group
+    name: iam-delete-group
     outputs:
     - contextPath: DeleteGroup.id
       description: Group Id
@@ -378,7 +378,7 @@ script:
       (or groups of) users to be added or removed from the group with a single operation.
       A max of 15,000 users can be modified in 1 call
     execution: false
-    name: update-group
+    name: iam-update-group
     outputs:
     - contextPath: UpdateGroup.id
       description: Group Id
@@ -395,40 +395,6 @@ script:
     - contextPath: UpdateGroup.errorMessage
       description: Error Details if there is failure
       type: Unknown
-  - arguments:
-    - default: false
-      description: Group ID
-      isArray: false
-      name: groupId
-      required: false
-      secret: false
-    - default: false
-      description: Group name of the group to replace
-      isArray: false
-      name: groupName
-      required: false
-      secret: false
-    - default: false
-      description: New Group Name if the group name needs to be updated. If no update
-        is needed,, provide the old group name
-      isArray: false
-      name: newGroupName
-      required: true
-      secret: false
-    - default: false
-      description: 'List of slack user ID values (example: ["U0W0NQFFC","U0W0C30RE"]).
-        This will replace all members of a group with the members provided here'
-      isArray: true
-      name: memberIds
-      required: false
-      secret: false
-    deprecated: false
-    description: Updates an existing group resource, overwriting all values for a
-      group even if an attribute is empty or not provided. A maximum of 15,000 users
-      per call can be updated using this endpoint. If the member list is not provided,
-      all members will be removed from the group
-    execution: false
-    name: slack-replace-group
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false
