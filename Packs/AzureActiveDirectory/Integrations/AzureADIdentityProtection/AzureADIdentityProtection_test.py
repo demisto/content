@@ -1,13 +1,13 @@
 import json
 
 import pytest
-
 from AzureADIdentityProtection import (AADClient, OUTPUTS_PREFIX,
                                        azure_ad_identity_protection_risk_detection_list_command,
                                        azure_ad_identity_protection_risky_users_list_command,
                                        azure_ad_identity_protection_risky_users_history_list_command,
                                        azure_ad_identity_protection_risky_users_confirm_compromised_command,
-                                       azure_ad_identity_protection_risky_users_dismiss_command)
+                                       azure_ad_identity_protection_risky_users_dismiss_command,
+                                       parse_list)
 
 dummy_user_id = 'dummy_id'
 
@@ -98,3 +98,29 @@ def test_status_update_commands(client, requests_mock, method, expected_output, 
     result = method(client, **kwargs)
     assert requests_mock.request_history[0].json() == {'userIds': [dummy_user_id]}
     assert result == expected_output
+
+
+def test_parse_list():
+    """
+    Given
+        - A Microsoft Graph List response (collection of objects)
+    When
+        - calling parse_list()
+    Then
+        - Validate output parsing
+    """
+    with open('test_data/risk_detections_response.json') as f:
+        response = json.load(f)
+
+    human_readable_title = "Risks"
+    context_path = "Risks_path"
+
+    outputs = parse_list(response, human_readable_title=human_readable_title, context_path=context_path).outputs
+    assert len(outputs) == 2
+
+    values = outputs[f'AADIdentityProtection.{context_path}(val.id === obj.id)'][0]
+    assert len(values) == len(response['value'][0])  # all fields parsed
+
+    next_link_dict = outputs[f'AADIdentityProtection.NextLink(val.Description === "{context_path}")']
+    assert next_link_dict == {'Description': context_path,
+                              'URL': 'https://graph.microsoft.com/beta/riskDetections?$skiptoken=dummy_skip_token'}
