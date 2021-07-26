@@ -2338,7 +2338,7 @@ def get_integration_name():
     :return: Calling integration's name
     :rtype: ``str``
     """
-    return demisto.callingContext.get('IntegrationBrand')
+    return demisto.callingContext.get('context', '').get('IntegrationBrand')
 
 
 class Common(object):
@@ -2362,7 +2362,8 @@ class Common(object):
         :param indicator_type: use DBotScoreType class
 
         :type integration_name: ``str``
-        :param integration_name: integration name
+        :param integration_name: For integrations - The class will automatically determine the integration name.
+                                For scripts - The class will use the given integration name.
 
         :type score: ``DBotScore``
         :param score: DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD
@@ -5965,7 +5966,7 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
         sys.exit(0)
 
 
-def execute_command(command, args, extract_contents=True):
+def execute_command(command, args, extract_contents=True, fail_on_error=True):
     """
     Runs the `demisto.executeCommand()` function and checks for errors.
 
@@ -5978,21 +5979,41 @@ def execute_command(command, args, extract_contents=True):
     :type extract_contents: ``bool``
     :param extract_contents: Whether to return only the Contents part of the results. Default is True.
 
+    :type fail_on_error: ``bool``
+    :param fail_on_error: Whether to fail the command when receiving an error from the command. Default is True.
+
     :return: The command results.
-    :rtype: ``list`` or ``dict`` or ``str``
+    :rtype:
+        - When `fail_on_error` is True - ``list`` or ``dict`` or ``str``.
+        - When `fail_on_error` is False -``bool`` and ``str``.
+
+    Note:
+    For backward compatibility, only when `fail_on_error` is set to False, two values will be returned.
     """
     if not hasattr(demisto, 'executeCommand'):
         raise DemistoException('Cannot run demisto.executeCommand() from integrations.')
 
     res = demisto.executeCommand(command, args)
     if is_error(res):
-        return_error('Failed to execute {}. Error details:\n{}'.format(command, get_error(res)))
+        error_message = get_error(res)
+        if fail_on_error:
+            return_error('Failed to execute {}. Error details:\n{}'.format(command, error_message))
+        else:
+            return False, error_message
 
     if not extract_contents:
-        return res
+        if fail_on_error:
+            return res
+        else:
+            return True, res
 
     contents = [entry.get('Contents', {}) for entry in res]
-    return contents[0] if len(contents) == 1 else contents
+    contents = contents[0] if len(contents) == 1 else contents
+
+    if fail_on_error:
+        return contents
+
+    return True, contents
 
 
 def camelize(src, delim=' ', upper_camel=True):
