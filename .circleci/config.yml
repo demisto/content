@@ -628,7 +628,7 @@ references:
         context: bucket_upload_env
         requires:
 #          - Upload Packs To Marketplace
-          - Setup Environment
+#          - Setup Environment
   check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
     when:
       condition:
@@ -1334,20 +1334,19 @@ jobs:
     steps:
       - run:
           name: Delete Temporary Branch
+          shell: /bin/bash
           command: |
             if [ -n "$DELETE_CURRENT_BRANCH" ]; then
               current_branch=<< pipeline.git.branch >>
               echo Deleting current branch - $current_branch
-              pwd
-              ls
+              find / -name ".git"
+#              git init
+#              git remote add origin {remote-url}
               git checkout master
               git branch -D "${current_branch}" # delete local branch
               git push origin --delete $current_branch # delete remote branch
             fi
 
-#              git checkout master
-#              git push origin --delete "${content_branch}" # delete remote branch
-#              git branch -D "${content_branch}" # delete local branch
 workflows:
   version: 2
   commit:
