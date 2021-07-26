@@ -206,6 +206,7 @@ def create_relationships(args: dict) -> Tuple[List[EntityRelationship], str]:
 def main():
     try:
         args = validate_arguments(demisto.args())
+        handle_stix_types(entities_types)
         if argToBoolean(args.get('create_indicator')):
             create_indicators(args)
         relationships, human_readable = create_relationships(args)
