@@ -1339,12 +1339,12 @@ jobs:
             if [ -n "$DELETE_CURRENT_BRANCH" ]; then
               current_branch=<< pipeline.git.branch >>
               echo Deleting current branch - $current_branch
-              find / -name ".git"
+              find '/' -name ".git"
 #              git init
 #              git remote add origin {remote-url}
-              git checkout master
-              git branch -D "${current_branch}" # delete local branch
-              git push origin --delete $current_branch # delete remote branch
+#              git checkout master
+#              git branch -D "${current_branch}" # delete local branch
+#              git push origin --delete $current_branch # delete remote branch
             fi
 
 workflows:
