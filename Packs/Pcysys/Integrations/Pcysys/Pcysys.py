@@ -23,7 +23,6 @@ CANCEL_TASK_URL_SUFFIX = '/api/v1/taskRun/{taskRunId}/cancel'
 GET_TASK_STATS_URL_SUFFIX = '/api/v1/taskRun/{taskRunId}'
 RUN_BULK_URL_SUFFIX = '/api/v1/template/runBulk'
 EXPORT_CSV_URL_SUFFIX = '/api/v1/taskRun/{taskRunId}/fullActionReportCSV'
-FULL_ACTION_REPORT_FIELDNAMES = ['Severity', 'Time', 'Duration', 'Operation Type', 'Techniques', 'Parameters', 'Status']
 RAW_NTLM_HASH_LENGTH = 32
 
 
@@ -201,22 +200,19 @@ def pentera_get_task_run_full_action_report_command(client: Client, args, access
                 return json.loads(str_parameters)
             return None
 
-        csv_reader = csv.DictReader(io.StringIO(csv_file), fieldnames=FULL_ACTION_REPORT_FIELDNAMES)
+        csv_reader = csv.DictReader(io.StringIO(csv_file))
         data = []
         for row in csv_reader:
-            # Skipping first line
-            if list(row.values()) != FULL_ACTION_REPORT_FIELDNAMES:
-                row_copy = row.copy()
-                converted_params = _map_parameters_string_to_object(row_copy.get('Parameters'))
-                if converted_params:
-                    if 'hash' in converted_params:
-                        hash_parameter = converted_params['hash']
-                        parsed_hash_parameters = _handle_hash_parameter(hash_parameter)
-                        if parsed_hash_parameters:
-                            converted_params = parsed_hash_parameters
-                    row_copy['Parameters'] = converted_params
-                data.append(row_copy)
-
+            row_copy = row.copy()
+            converted_params = _map_parameters_string_to_object(row_copy.get('Parameters'))
+            if converted_params:
+                if 'hash' in converted_params:
+                    hash_parameter = converted_params['hash']
+                    parsed_hash_parameters = _handle_hash_parameter(hash_parameter)
+                    if parsed_hash_parameters:
+                        converted_params = parsed_hash_parameters
+                row_copy['Parameters'] = converted_params
+            data.append(row_copy)
         return data
 
     def _convert_full_action_report_time(full_action_report_list: List[dict]):
@@ -252,8 +248,7 @@ def pentera_get_task_run_full_action_report_command(client: Client, args, access
         entries.append(entry)
         csv_dict = _convert_csv_file_to_dict(response_csv)
         date_converted_csv_dict = _convert_full_action_report_time(csv_dict)
-        human_readable = tableToMarkdown(readable_output, date_converted_csv_dict,
-                                         headers=FULL_ACTION_REPORT_FIELDNAMES)
+        human_readable = tableToMarkdown(readable_output, date_converted_csv_dict)
         entries.append({
             "Type": entryTypes["note"],
             "ContentsFormat": formats["json"],
