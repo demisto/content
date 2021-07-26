@@ -159,7 +159,7 @@ Retrieve the properties of a collection of riskDetection objects.
 | AADIdentityProtection.Risks.location.state | string | State of the sign-in. | 
 | AADIdentityProtection.Risks.activityDateTime | string | Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. | 
 | AADIdentityProtection.Risks.detectedDateTime | string | Date and time that the risk was detected. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. | 
-| AADIdentityProtection.Risks.activityDateTime | string | Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. | 
+| AADIdentityProtection.Risks.lastUpdatedDateTime | string | Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. | 
 | AADIdentityProtection.Risks.userId | string | Unique ID of the user. | 
 | AADIdentityProtection.Risks.userDisplayName | string | Risky user display name. | 
 | AADIdentityProtection.Risks.userPrincipalName | string | Risky user principal name. | 
