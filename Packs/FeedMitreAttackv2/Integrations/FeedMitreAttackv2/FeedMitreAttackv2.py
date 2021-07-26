@@ -572,9 +572,8 @@ def get_mitre_value_from_id(client, args):
             readable_output=tableToMarkdown('MITRE ATTACK Attack Patterns values:', attack_values)
         )
 
-    return CommandResults(
-            readable_output=f'MITRE ATTACK Attack Patterns values: No Attack Patterns found for {attack_ids}.'
-        )
+    return CommandResults(readable_output=f'MITRE ATTACK Attack Patterns values: '
+                                          f'No Attack Patterns found for {attack_ids}.')
 
 
 def main():
