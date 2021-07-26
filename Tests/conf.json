@@ -3438,6 +3438,13 @@
             "integrations": "jamf v2",
             "playbookID": "Jamf_v2_test",
             "fromversion": "5.5.0"
+        },
+        {
+        "integrations": ["AutoFocus Daily Feed", "Demisto REST API"],
+        "playbookID": "Fetch Test",
+        "fromversion": "6.0.0",
+        "is_mockable": false,
+        "timeout": 2400
         }
     ],
     "skipped_tests": {
