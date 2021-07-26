@@ -13,6 +13,7 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
+INTEGRATION_NAME = 'PAN-OS'
 PAN_OS_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 URL = ''
 API_KEY = None
@@ -7042,25 +7043,25 @@ def parse_logs_to_incidents(result: dict, last_run: dict) -> Tuple[Optional[List
     """
     timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
     if result['response']['result']['job']['status'] != 'FIN':  # if fetch is not over, keep the context as is
-        demisto.debug('Querying the logs job is in progress to fetch PAN-OS logs as incidents.')
+        demisto.debug(f'{INTEGRATION_NAME} Querying the logs job is in progress to fetch logs as incidents.')
         return [], last_run
 
     if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result']\
             or 'logs' not in result['response']['result']['log']:
         # if no logs, querying the logs failed for an unknown reason. reset the status and job id
         demisto.setLastRun(None)
-        raise DemistoException('PAN-OS is missing logs in response.')
+        raise DemistoException(f'{INTEGRATION_NAME} is missing logs in response.')
 
     logs_dict = result['response']['result']['log']['logs']
     if logs_dict['@count'] == '0':  # fetch is over, no new logs found. reset the status and job id
-        demisto.debug('Querying the logs job to fetch PAN-OS logs as incidents did not find any new logs.')
+        demisto.debug(f'{INTEGRATION_NAME} Querying the logs job to fetch logs as incidents did not find any new logs.')
         next_run = {'fetch_status': 'new', 'job_id': '-1', 'last_time': last_run.get('last_time')}
-        demisto.debug(f'PAN-OS fetch next_run is: {str(next_run)}.')
+        demisto.debug(f'{INTEGRATION_NAME} fetch next_run is: {str(next_run)}.')
         return [], next_run
 
     # logs where retrieved successfully. reset the status and job id
     raw_logs = logs_dict['entry']
-    demisto.debug(f'Creating {len(raw_logs)} PAN-OS logs as incidents')
+    demisto.debug(f'{INTEGRATION_NAME} Creating {len(raw_logs)} logs as incidents')
     next_run = {'fetch_status': 'new', 'job_id': '-1'}
     incidents = [{
         'name': f'{raw_log.get("@logid")} PAN-OS log {raw_log.get("type")} received at: {raw_log.get("time_received")}',
@@ -7096,17 +7097,24 @@ def fetch_incidents(last_run: dict, query: str, first_fetch_time: str, number_of
     """
     fetch_status = last_run.get('fetch_status')
     job_id = last_run.get('job_id')
-    if fetch_status and fetch_status != 'new':  # if we do not need to initiate a new query, try to get the logs
-        result = panorama_get_logs(job_id)
+
+    # If we do not need to initiate a new query, try to get the logs
+    if fetch_status and fetch_status != 'new':
+        try:
+            result = panorama_get_logs(job_id)
+        except Exception as err:  # catch in case of Invalid Job ID error: No such query job
+            demisto.debug(f'{INTEGRATION_NAME} {str(err)}')
+            next_run = {'fetch_status': 'new', 'job_id': '-1', 'last_time': last_run.get('last_time')}
+            return [], next_run
         return parse_logs_to_incidents(result, last_run)
 
+    # Initiate a new query, no incidents will be returned this iteration
     now, query = create_fetch_query(last_run, first_fetch_time, query)
-    demisto.info(f'PAN-OS executing fetch with logs_type: {log_type} and query: {query}')
+    demisto.info(f'{INTEGRATION_NAME} executing fetch with logs_type: {log_type} and query: {query}')
     submitted_job = panorama_query_logs(log_type=log_type, number_of_logs=number_of_logs, query=query)
     job_id = submitted_job['response']['result']['job']  # get the job id
-    demisto.info(f'PAN-OS executed fetch job_id is: {job_id}')
+    demisto.info(f'{INTEGRATION_NAME} executed fetch job_id is: {job_id}')
     next_run = {'fetch_status': 'pending', 'job_id': job_id, 'last_time': now}
-
     return [], next_run
 
 
@@ -7151,7 +7159,7 @@ def main() -> None:
         additional_malicious = argToList(demisto.params().get('additional_malicious'))
         additional_suspicious = argToList(demisto.params().get('additional_suspicious'))
         initialize_instance(args=args, params=params)
-        LOG(f'Command being called is: {command}')
+        LOG(f'Command being called in {INTEGRATION_NAME} is: {command}')
 
         # Remove proxy if not set to true in params
         handle_proxy()
