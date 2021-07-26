@@ -252,7 +252,10 @@ def main() -> None:
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}', e)
+        return_error("\n".join((f'Failed to execute command "{demisto.command()}".',
+                                f'Error:{str(e)}',
+                                f'Traceback: {traceback.format_exc()}'
+                                )), e)
 
 
 from MicrosoftApiModule import *  # noqa: E402
