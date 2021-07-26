@@ -49,7 +49,7 @@ def check_fields_command(args: Dict[str, Any]) -> CommandResults:
     Returns: Command Results with context and human readable output
     """
     fields_to_search = argToList(args.get('fields_to_search'))
-    context = args.get('context', '{}')
+    context = args.get('object', '{}')
 
     # Call the standalone function and get the raw response
     result = check_fields(fields_to_search, context)
