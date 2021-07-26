@@ -177,7 +177,7 @@ tasks:
       name: Check If Fields Exists
       description: Receives names of fields and map. Checks if this map contains these
         fields.
-      scriptName: VerifyContextFieldsList
+      scriptName: VerifyObjectFieldsList
       type: regular
       iscommand: false
       brand: ""
@@ -185,7 +185,7 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      context:
+      object:
         simple: ${Indicators}
       fields_to_search:
         simple: ${serverConfig.response.sysConf.searchfield}

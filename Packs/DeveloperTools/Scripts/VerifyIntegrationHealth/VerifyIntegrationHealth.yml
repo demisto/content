@@ -5,7 +5,7 @@ args:
   name: integration_name
   required: true
   secret: false
-comment: 'Heath check for integration'
+comment: 'Check integration for existing errors.'
 commonfields:
   id: VerifyIntegrationHealth
   version: -1

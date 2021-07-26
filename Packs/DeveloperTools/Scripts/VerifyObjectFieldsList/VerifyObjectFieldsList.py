@@ -48,19 +48,12 @@ def check_fields_command(args: Dict[str, Any]) -> CommandResults:
 
     Returns: Command Results with context and human readable output
     """
-    fields_to_search = args.get('fields_to_search', '')
+    fields_to_search = argToList(args.get('fields_to_search'))
     context = args.get('context', '{}')
 
-    fields_to_search_array = [field.strip() for field in fields_to_search.split(',')]
-
-    if not fields_to_search:
-        raise ValueError('fields_to_search not specified')
-    if not context:
-        raise ValueError('context not specified')
-
     # Call the standalone function and get the raw response
-    result = check_fields(fields_to_search_array, context)
-    readable_output = f'Fields {",".join(fields_to_search_array)} are in given context.' if result \
+    result = check_fields(fields_to_search, context)
+    readable_output = f'Fields {",".join(fields_to_search)} are in given context.' if result \
         else 'There are some fields that not in context.'
 
     return CommandResults(

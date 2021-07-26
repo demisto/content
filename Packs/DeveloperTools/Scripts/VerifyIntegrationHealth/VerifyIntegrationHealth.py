@@ -16,8 +16,6 @@ def health_check(health_dict, integration_name: str) -> bool:
 def health_check_command(args: Dict[str, Any]) -> CommandResults:
 
     integration_name = args.get('integration_name', '')
-    if not integration_name:
-        raise ValueError('integration_name not specified')
 
     raw_result = demisto.executeCommand(
         "demisto-api-post",
@@ -48,9 +46,6 @@ def main():
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute Script. Error: {str(ex)}')
-
-
-''' ENTRY POINT '''
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

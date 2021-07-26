@@ -3,7 +3,7 @@ args:
   required: true
   description: Fields to search if there are exsist in map
   isArray: true
-- name: context
+- name: object
   required: true
   description: Map to search fields in
   isArray: true
