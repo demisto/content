@@ -1,0 +1,30 @@
+args:
+- name: fields_to_search
+  required: true
+  description: Fields to search if there are exsist in map
+  isArray: true
+- name: object
+  required: true
+  description: Map to search fields in
+  isArray: true
+comment: Verify that a given object includes all the given fields. (Available from Cortex XSOAR 6.0.0).
+commonfields:
+  id: VerifyObjectFieldsList
+  version: -1
+enabled: false
+name: VerifyObjectFieldsList
+outputs:
+- contextPath: FieldsExists
+  description: Return true or fasle.
+  type: boolean
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.6.22912
+fromversion: 6.0.0
+tests:
+- No test
