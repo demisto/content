@@ -347,7 +347,7 @@ def update_incident_command(client, args):
     if len(args.keys()) == 1:
         raise Exception('No fields to update were given')
     incident_id = args['incident-id']
-    incident = get_incident(client, incident_id)
+    incident = get_incident(client, incident_id, True)
     changes = []
     if 'severity' in args:
         old_value = incident['severity_code']
@@ -536,8 +536,11 @@ def get_incident_command(client, incident_id):
     return entry
 
 
-def get_incident(client, incident_id):
-    response = client.get('/incidents/' + incident_id + '?text_content_output_format=objects_convert_html')
+def get_incident(client, incident_id, content_format: bool = False):
+    url = '/incidents/' + incident_id
+    if content_format:
+        url += '?text_content_output_format=objects_convert_html'
+    response = client.get(url)
     return response
 
 
@@ -1006,14 +1009,15 @@ def test():
     demisto.results('ok')
 
 
-def add_note(client, incident_id, comment):
+def add_note(client, incident_id, note):
     body = {
         'text': {
             'format': 'text',
-            'content': comment
+            'content': note
         }
     }
     client.post('/incidents/' + str(incident_id) + '/comments', body)
+
     return f'The note was added successfully to incident {incident_id}'
 
 
@@ -1098,7 +1102,7 @@ def main():
             demisto.results(incident_attachments_command(client, args['incident-id']))
         elif demisto.command() == 'rs-related-incidents':
             demisto.results(related_incidents_command(client, args['incident-id']))
-        elif demisto.command() == 'rs-add-notes':
+        elif demisto.command() == 'rs-add-note':
             demisto.results(add_note(client, args['incident-id'], args['note']))
         elif demisto.command() == 'rs-add-artifact':
             demisto.results(add_incident_artifact(client, args['incident-id'], args['artifact-type'],

@@ -22,19 +22,12 @@ class MockClient:
 
 
 def test_update_incident_command(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'proxy': True,
-        'server': 'www.example.com:8080',
-        'org': 'org'
-    })
-    mocker.patch.object(demisto, 'args', return_value={
+    args = {
         "incident-id": "1234",
         "other-fields": '{"description": {"textarea": {"format": "html", "content": "The new description"}},'
                         '"name": {"text": "The new name"}, "owner_id": {"id": 2},'
                         '"discovered_date": {"date": 1624782898010}, "confirmed": {"boolean": "false"}}'
-    })
-    mocker.patch.object(demisto, 'command', return_value='rs-update-incident')
-    mocker.patch('IBMResilientSystems.get_client', return_value=MockClient)
+    }
     mock_result = mocker.patch('IBMResilientSystems.update_incident')
     expected_result = {
         'changes': [
@@ -65,25 +58,19 @@ def test_update_incident_command(mocker):
             }
         ]
     }
-    from IBMResilientSystems import main
+    from IBMResilientSystems import update_incident_command
 
-    main()
+    update_incident_command(MockClient, args)
 
-    assert mock_result.call_args.args[1] == expected_result
+    assert mock_result.call_args.args[2] == expected_result
 
 
 def test_add_notes(mocker):
-    mocker.patch.object(demisto, 'params', return_value={
-        'proxy': True,
-        'server': 'www.example.com:8080',
-        'org': 'org'
-    })
-    mocker.patch('IBMResilientSystems.CLIENT', return_value=MockClient)
-    mock_result = mocker.patch('IBMResilientSystems.CLIENT.post')
+    mock_result = mocker.patch(MockClient.post)
     expected_result = ('/incidents/1234/comments', {'text': {'format': 'text', 'content': 'This is a new note'}})
-    from IBMResilientSystems import add_notes
+    from IBMResilientSystems import add_note
 
-    add_notes("1234", "This is a new note")
+    add_note(MockClient, "1234", "This is a new note")
 
     assert mock_result.call_args.args == expected_result
 
