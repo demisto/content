@@ -42,11 +42,12 @@ def main():
     pr_number = payload.get('pull_request', {}).get('number')
     merged_pr = content_repo.get_pull(pr_number)
     merged_pr_url = merged_pr.html_url
-    merged_pr_author = merged_pr.author.login
     body = f'## Original External PR\r\n[external pull request]({merged_pr_url})\r\n\r\n'
     title = merged_pr.title
+    if '## Contributor' not in merged_pr.body:
+        merged_pr_author = merged_pr.user.login
+        body += f'## Contributor\r\n{merged_pr_author}\r\n\r\n'
     body += merged_pr.body
-    body += f'### Contributor\n{merged_pr_author}\n'
     base_branch = 'master'
     head_branch = merged_pr.base.ref
     pr = content_repo.create_pull(title=title, body=body, base=base_branch, head=head_branch, draft=False)
@@ -58,6 +59,11 @@ def main():
         pr.add_to_labels(docs_approved_label)
         print(f'{t.cyan}"docs-approved" label added{t.normal}')
 
+    # Add 'Contribution' Label to PR
+    contribution_label = 'Contribution'
+    pr.add_to_labels(contribution_label)
+    print(f'{t.cyan}Added "Contribution" label to the PR{t.normal}')
+
     merged_by = merged_pr.merged_by.login
     reviewers, _ = merged_pr.get_review_requests()
     reviewers_logins = [reviewer.login for reviewer in reviewers]
@@ -65,11 +71,6 @@ def main():
     new_pr_reviewers = [merged_by] if merged_by else reviewers_logins
     pr.create_review_request(reviewers=new_pr_reviewers)
     print(f'{t.cyan}Requested review from {new_pr_reviewers}{t.normal}')
-
-    # Add 'Contribution' Label to PR
-    contribution_label = 'Contribution'
-    pr.add_to_labels(contribution_label)
-    print(f'{t.cyan}Added "Contribution" label to the PR{t.normal}')
 
     # assign same users as in the merged PR
     assignees = [assignee.login for assignee in merged_pr.assignees]
