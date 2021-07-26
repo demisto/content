@@ -60,7 +60,7 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List
                                             entity_a_type=FeedIndicatorType.IP,
                                             entity_b=hostname,
                                             entity_b_type=FeedIndicatorType.Domain,
-                                            brand='IPinfo',
+                                            brand='ipinfo_v2',
                                             source_reliability=reliability))
 
     if 'org' in raw_result:
