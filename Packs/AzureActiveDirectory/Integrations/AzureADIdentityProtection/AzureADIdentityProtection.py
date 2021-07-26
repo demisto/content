@@ -23,8 +23,8 @@ def __reorder_first_headers(headers: List[str], first_headers: List[str]) -> Non
 
 
 def __json_list_to_headers(value_list: List[Dict[str, Any]]) -> List[str]:
-    headers = []
-    seen = set()
+    headers: List[str] = []
+    seen: Set[str] = set()
     for value in value_list:
         headers.extend((k for k in value if k not in seen))  # to preserve order
         seen.update(value.keys())
@@ -48,13 +48,14 @@ def parse_list(raw_response: dict, human_readable_title: str, context_path: str)
     # removing whitespaces so they aren't mistakenly considered as argument separators in CLI
     next_link = raw_response.get('@odata.nextLink', '').replace(' ', '%20')
     if next_link:
-        next_link_key = f'{OUTPUTS_PREFIX}.NextLink(val.Description === "{context_path}")'
+        next_link_key = f'{OUTPUTS_PREFIX}.NextLink(obj.Description === "{context_path}")'
         next_link_value = {'Description': context_path, 'URL': next_link}
         outputs[next_link_key] = next_link_value
 
     return CommandResults(outputs=outputs,
                           readable_output=readable_output,
                           raw_response=raw_response)
+
 
 
 class AADClient(MicrosoftClient):
