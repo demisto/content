@@ -146,10 +146,26 @@ script:
       name: upload
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '60'
     deprecated: false
     description: Uploads a file to WildFire for analysis.
     execution: false
     name: wildfire-upload
+    polling: true
     outputs:
     - contextPath: WildFire.Report.MD5
       description: MD5 hash of the submission.
@@ -173,10 +189,26 @@ script:
       name: upload
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '60'
     deprecated: false
     description: Uploads the URL of a remote file to WildFire for analysis.
     execution: false
     name: wildfire-upload-file-url
+    polling: true
     outputs:
     - contextPath: WildFire.Report.MD5
       description: MD5 hash of the submission.
@@ -428,12 +460,34 @@ script:
       description: URL to submit to WildFire.
       isArray: true
       name: upload
-      required: true
+      required: false ##### fix
       secret: false
+    - default: false
+      description: URL to submit to WildFire. ##### only for polling, fix
+      isArray: true
+      name: url
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '60'
     deprecated: false
     description: Uploads a URL of a webpage to WildFire for analysis.
     execution: false
     name: wildfire-upload-url
+    polling: true
     outputs:
     - contextPath: WildFire.Report.MD5
       description: MD5 of the submission.
