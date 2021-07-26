@@ -12,17 +12,37 @@ REQUIRED_PERMISSIONS = (
 )
 
 
+def __reorder_first_headers(headers: List[str], first_headers: List[str]) -> None:
+    """
+    brings given headers to the head of the list, while preserving their order
+    used for showing important content first.
+    """
+    for h in reversed(first_headers):
+        if h in headers:
+            headers.insert(0, headers.pop(headers.index(h)))
+
+
+def __json_list_to_headers(value_list: List[Dict[str, Any]]) -> List[str]:
+    headers = []
+    seen = set()
+    for value in value_list:
+        headers.extend((k for k in value if k not in seen))  # to preserve order
+        seen.update(value.keys())
+    return headers
+
+
 def parse_list(raw_response: dict, human_readable_title: str, context_path: str) -> CommandResults:
     """
     converts a response of Microsoft's graph search into a CommandResult object
     """
     values = raw_response.get('value', [])
+    headers = __json_list_to_headers(values)
+    __reorder_first_headers(headers,
+                            ['Id', 'userId', 'userPrincipalName', 'userDisplayName', 'ipAddress', 'detectedDateTime'])
     readable_output = tableToMarkdown(f'{human_readable_title.title()} ({len(values)} results)',
                                       values,
                                       removeNull=True,
-                                      headerTransform=pascalToSpace,
-                                      first_headers=['Id', 'userId', 'userPrincipalName', 'userDisplayName',
-                                                     'ipAddress', 'detectedDateTime'])
+                                      headerTransform=pascalToSpace)
     outputs = {f'{OUTPUTS_PREFIX}.{context_path}(val.id === obj.id)': values}
 
     # removing whitespaces so they aren't mistakenly considered as argument separators in CLI

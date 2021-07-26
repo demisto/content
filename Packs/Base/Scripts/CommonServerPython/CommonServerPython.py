@@ -1729,8 +1729,7 @@ def create_clickable_url(url):
     return '[{}]({})'.format(url, url)
 
 
-def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
-                    first_headers=None):
+def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1755,9 +1754,6 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 
        :type url_keys: ``list``
        :param url_keys: a list of keys in the given JSON table that should be turned in to clickable
-
-       :type first_headers: ``list``
-       :param first_headers: a list of keys to be shown first
 
        :return: A string representation of the markdown table
        :rtype: ``str``
@@ -1796,12 +1792,6 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if not headers:
         headers = list(t[0].keys())
         headers.sort()
-
-    if first_headers:
-        for h in reversed(first_headers):
-            if h in headers:
-                headers.insert(0, headers.pop(headers.index(h)))
-
     if removeNull:
         headers_aux = headers[:]
         for header in headers:
