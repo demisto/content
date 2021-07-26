@@ -1792,6 +1792,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if not headers:
         headers = list(t[0].keys())
         headers.sort()
+
     if removeNull:
         headers_aux = headers[:]
         for header in headers:
