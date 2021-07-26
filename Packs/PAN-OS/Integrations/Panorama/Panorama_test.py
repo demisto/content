@@ -10,6 +10,7 @@ integration_params = {
     'server': 'https://1.1.1.1',
     'key': 'thisisabogusAPIKEY!',
     'isFetch': True,
+    'query': '',
     'log_type': 'threat',
     'first_fetch': '7 days',
     'max_fetch': '50'
@@ -385,7 +386,7 @@ def test_fetch_incidents_first_time_fetch(mocker):
     _, next_run = fetch_incidents(
         last_run={},
         query=params.get('query'),
-        first_fetch_time=params.get('first_fetch_time'),
+        first_fetch_time=params.get('first_fetch'),
         number_of_logs=params.get('number_of_logs'),
         log_type=params.get('log_type')
     )
@@ -439,7 +440,7 @@ def test_fetch_incidents_second_time_fetch_no_logs(mocker):
             'job_id': '9440',
             'last_time': '2021/07/19 16:29:16'},
         query=params.get('query'),
-        first_fetch_time=params.get('first_fetch_time'),
+        first_fetch_time=params.get('first_fetch'),
         number_of_logs=params.get('number_of_logs'),
         log_type=params.get('log_type')
     )
@@ -474,7 +475,7 @@ def test_fetch_incidents_second_time_fetch_with_logs(mocker):
             'job_id': '668',
             'last_time': '2021/07/19 16:29:16'},
         query=params.get('query'),
-        first_fetch_time=params.get('first_fetch_time'),
+        first_fetch_time=params.get('first_fetch'),
         number_of_logs=params.get('number_of_logs'),
         log_type=params.get('log_type')
     )

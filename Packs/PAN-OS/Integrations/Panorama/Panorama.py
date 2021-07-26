@@ -7120,7 +7120,7 @@ def create_fetch_query(last_run: dict, first_fetch_time: str, query: str) -> Tup
     # All Traffic Received Between The Date-Time Range Of:
     # (receive_time geq 'yyyy/mm/dd hh:mm:ss') and (receive_time leq 'YYYY/MM/DD HH:MM:SS')
     # example: (receive_time geq '2015/08/30 08:30:00') and (receive_time leq '2015/08/31 01:25:00')
-    if len(query) > 0:
+    if query and len(query) > 0:
         query += ' and '
     query += f"(receive_time geq '{last_time}') and (receive_time leq '{now}')"
     return now, query
