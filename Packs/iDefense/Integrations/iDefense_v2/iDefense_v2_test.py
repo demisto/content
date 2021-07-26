@@ -2,11 +2,20 @@ import requests_mock
 from iDefense_v2 import Client, url_command, ip_command, _calculate_dbot_score
 from CommonServerPython import DemistoException, DBotScoreReliability
 from test_data.response_constants import URL_RES_JSON, IP_RES_JSON
+import demistomock as demisto
+import pytest
 
 API_URL = "https://test.com"
 
 DBOT_KEY = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && ' \
            'val.Vendor == obj.Vendor && val.Type == obj.Type)'
+
+INTEGRATION_NAME = 'iDefense'
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
 
 
 def test_ip_command():

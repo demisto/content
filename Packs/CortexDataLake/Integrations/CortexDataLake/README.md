@@ -666,6 +666,7 @@ Searches the Cortex firewall.traffic table. Traffic logs contain entries for the
 ##### Command Example
 ```!cdl-query-traffic-logs action="allow" fields="vendor_name,log_source,rule_matched,dest_location,log_time" time_range="10 days" limit="5"```
 
+```!cdl-query-traffic-logs query="log_source_id = '{firewall_target}'" fields=all limit=5 start_time="2018-07-13 00:00:00"```
 ##### Context Example
 ```
 {
