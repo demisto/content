@@ -472,7 +472,11 @@ def update_incident_command(args):
             }
         })
     if args.get('other-fields'):
-        for field_name, field_value in json.loads(args['other-fields']).items():
+        try:
+            other_fields = json.loads(args['other-fields'])
+        except Exception as e:
+            raise e
+        for field_name, field_value in other_fields.items():
             changes.append(
                 {
                     'field': {'name': field_name},
