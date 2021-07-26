@@ -165,7 +165,7 @@ def test_report_chunked_response(mocker):
                         return_value={'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
                                       'format': 'xml'})
     mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "https://wildfire.paloaltonetworks.com/publicapi")
-    wildfire_get_report_command()
+    wildfire_get_report_command(demisto.args())
     result = {'Type': 1,
               'Contents': [{'version': '2.0', 'platform': '100', 'software': 'PDF Static Analyzer',
                             'sha256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',

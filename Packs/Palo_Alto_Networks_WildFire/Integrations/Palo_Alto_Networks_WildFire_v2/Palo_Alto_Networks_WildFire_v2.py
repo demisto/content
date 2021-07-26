@@ -340,12 +340,24 @@ def wildfire_upload_file(upload):
     return result, upload_file_data
 
 
-def wildfire_upload_file_command():
-    uploads = argToList(demisto.args().get('upload'))
-    for upload in uploads:
-        result, upload_file_data = wildfire_upload_file(upload)
-        create_upload_entry(upload_file_data, 'WildFire Upload File', result)
+def wildfire_upload_file_with_polling_command(args):  # TODO: handle more than one url
+    return run_polling_command(args, 'wildfire-upload', wildfire_upload_file_command,
+                               wildfire_get_report_command, 'FILE')
 
+
+def wildfire_upload_file_command(args):
+    uploads = argToList(args.get('upload'))
+    command_results_list = []
+    for upload in uploads:
+        result, upload_body = wildfire_upload_file(upload)
+        pretty_upload_body = prettify_upload(upload_body)
+        human_readable = tableToMarkdown('WildFire Upload File', pretty_upload_body, removeNull=True)
+        command_results = (CommandResults(outputs_prefix="WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val"
+                                                         ".MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)",
+                                          outputs=pretty_upload_body, readable_output=human_readable,
+                                          raw_response=result))
+        command_results_list.append(command_results)
+    return command_results_list
 
 @logger
 def wildfire_upload_file_url(upload):
@@ -372,11 +384,23 @@ Content-Disposition: form-data; name="url"
     return result, upload_file_url_data
 
 
-def wildfire_upload_file_url_command():
-    uploads = argToList(demisto.args().get('upload'))
+def wildfire_upload_file_url_with_polling_command(args):
+    return run_polling_command(args, 'wildfire-upload-file-url', wildfire_upload_file_url_command, wildfire_get_report_command,
+                        'URL')
+
+
+def wildfire_upload_file_url_command(args):
+    command_results_list = []
+    uploads = argToList(args.get('upload'))
     for upload in uploads:
-        result, upload_file_url_data = wildfire_upload_file_url(upload)
-        create_upload_entry(upload_file_url_data, 'WildFire Upload File URL', result)
+        result, upload_body = wildfire_upload_file_url(upload)
+        pretty_upload_body = prettify_upload(upload_body)
+        human_readable = tableToMarkdown('WildFire Upload File URL', pretty_upload_body, removeNull=True)
+        command_results = CommandResults(outputs_prefix="WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val"
+                                                        ".MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)",
+                                         outputs=pretty_upload_body, readable_output=human_readable, raw_response=result)
+        command_results_list.append(command_results)
+    return command_results_list
 
 
 @logger
@@ -806,19 +830,21 @@ def wildfire_get_url_report(url: str) -> Tuple:
 
         else:
             entry_context['Status'] = 'Success'
-            entry_context.update(json.loads(report))
-            human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=entry_context,
+            report = json.loads(report)
+            report.update(entry_context)
+            human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=report,
                                              headers=['sha256', 'type', 'verdict', 'iocs'], removeNull=True)
 
     except NotFoundError:
         entry_context['Status'] = 'NotFound'
         human_readable = 'Report not found.'
-        response = ''
+        report = ''
 
     finally:
         command_results = CommandResults(outputs_prefix='WildFire.Report', outputs_key_field='url',
-                                         outputs=entry_context, readable_output=human_readable, raw_response=response)
+                                         outputs=entry_context, readable_output=human_readable, raw_response=report)
         return command_results, entry_context['Status']
+
 
 
 @logger
@@ -865,7 +891,7 @@ def wildfire_get_file_report(file_hash: str):
         command_results = CommandResults(outputs_prefix='WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256'
                                                         ' || val.MD5 && val.MD5 == obj.MD5)',
                                          outputs=remove_empty_elements(entry_context),
-                                         human_readable=human_readable, indicator=indicator, raw_response=json_res)
+                                         readable_output=human_readable, indicator=indicator, raw_response=json_res)
         return command_results, entry_context['Status']
 
 
@@ -883,7 +909,6 @@ def wildfire_get_report_command(args):
     """
     command_results_list = []
     urls = argToList(args.get('url', ''))
-    demisto.info(f'urls:{urls}')
     if 'sha256' in args:
         sha256 = args.get('sha256')
     elif 'hash' in args:
@@ -966,10 +991,16 @@ def main():
             test_module()
 
         elif command == 'wildfire-upload':
-            wildfire_upload_file_command()
+            if args.get('polling') == 'true':
+                return_results(wildfire_upload_file_with_polling_command(args))
+            else:
+                return_results(wildfire_upload_file_command(args))
 
         elif command in ['wildfire-upload-file-remote', 'wildfire-upload-file-url']:
-            wildfire_upload_file_url_command()
+            if args.get('polling') == 'true':
+                return_results(wildfire_upload_file_url_with_polling_command(args))
+            else:
+                return_results(wildfire_upload_file_url_command(args))
 
         elif command == 'wildfire-upload-url':
             if args.get('polling') == 'true':
