@@ -13,9 +13,11 @@ SUFFIX = '-----END RSA PRIVATE KEY-----'  # guardrails-disable-line
 def test_module():
     try:
         get_public_key()
-        get_private_key()
     except Exception:
-        raise DemistoException('You must provide public and/or private keys.')
+        try:
+            get_private_key()
+        except Exception:
+            raise DemistoException('You must provide valid public and/or private keys.')
 
     return 'ok'
 
