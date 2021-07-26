@@ -1,0 +1,52 @@
+{
+  "computer": {
+    "general": {
+      "id": 1,
+      "name": "Computer 95",
+      "network_adapter_type": "",
+      "mac_address": "12:5B:35:CA:12:56",
+      "alt_network_adapter_type": "",
+      "alt_mac_address": "A1:34:95:EC:97:C4",
+      "ip_address": "123.243.192.12",
+      "last_reported_ip": "192.168.1.15",
+      "serial_number": "AB40F81C60A3",
+      "udid": "AB40F812-60A3-11E4-90B8-12DF261F2C7E",
+      "jamf_version": "9.6.29507.c",
+      "platform": "Mac",
+      "barcode_1": "",
+      "barcode_2": "",
+      "asset_tag": "",
+      "remote_management": {
+        "managed": false,
+        "management_username": "",
+        "management_password_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b123"
+      },
+      "supervised": false,
+      "mdm_capable": false,
+      "mdm_capable_users": {},
+      "report_date": "2021-03-29 12:44:12",
+      "report_date_epoch": 1617021852595,
+      "report_date_utc": "2021-03-29T12:44:12.595+0000",
+      "last_contact_time": "2014-10-24 10:26:55",
+      "last_contact_time_epoch": 1414146415335,
+      "last_contact_time_utc": "2014-10-24T10:26:55.335+0000",
+      "initial_entry_date": "2021-03-29",
+      "initial_entry_date_epoch": 1617021852322,
+      "initial_entry_date_utc": "2021-03-29T12:44:12.322+0000",
+      "last_cloud_backup_date_epoch": 0,
+      "last_cloud_backup_date_utc": "",
+      "last_enrolled_date_epoch": 1414146339607,
+      "last_enrolled_date_utc": "2014-10-24T10:25:39.607+0000",
+      "mdm_profile_expiration_epoch": 0,
+      "mdm_profile_expiration_utc": "",
+      "distribution_point": "",
+      "sus": "",
+      "netboot_server": "",
+      "site": {
+        "id": -1,
+        "name": "None"
+      },
+      "itunes_store_account_is_active": false
+    }
+  }
+}
