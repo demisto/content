@@ -11,16 +11,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
-* FindSimilarIncidents
-* CopyLinkedAnalystNotes
 * RestartFailedTasks
+* CopyLinkedAnalystNotes
 * DeleteContext
+* FindSimilarIncidents
 
 ### Commands
+* setIncident
 * generateGeneralReport
 * closeInvestigation
 * send-mail
-* setIncident
 
 ## Playbook Inputs
 ---
@@ -39,4 +39,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![JOB - Integrations and Incidents Health Check](https://raw.githubusercontent.com/demisto/content/63a3dc4dadf030473dc093d855c25fc3b3f57ded/Packs/IntegrationsAndIncidentsHealthCheck/doc_files/JOB_-_Integrations_and_Playbooks_Checkup.png)
+![JOB - Integrations and Incidents Health Check](Insert the link to your image here)

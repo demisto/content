@@ -343,12 +343,12 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 4e25c5f2-fd48-4a44-8481-b82d29251056
+    taskid: bd2a9755-07bb-47e7-80e6-5e4f97a98f9a
     type: condition
     task:
-      id: 4e25c5f2-fd48-4a44-8481-b82d29251056
+      id: bd2a9755-07bb-47e7-80e6-5e4f97a98f9a
       version: -1
-      name: Re run health check tests?
+      name: Should rerun health check tests?
       description: Asks the user to re-run the health check tests.
       type: condition
       iscommand: false
@@ -785,10 +785,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 43d7dc18-121a-440b-8878-752b37cde639
+    taskid: 6d53ef9b-8ca5-45a5-8688-3981028db6be
     type: regular
     task:
-      id: 43d7dc18-121a-440b-8878-752b37cde639
+      id: 6d53ef9b-8ca5-45a5-8688-3981028db6be
       version: -1
       name: Restart failed tasks
       description: Use this Script to re-run failed tasks. Run in the same incident
@@ -809,8 +809,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 1815
+          "x": 610,
+          "y": 1805
         }
       }
     note: false
@@ -820,12 +820,12 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: b28d758f-cb89-4e55-822b-5d68f5c961f1
+    taskid: a89c38b7-1b12-46ab-87fc-16c0f5aab464
     type: condition
     task:
-      id: b28d758f-cb89-4e55-822b-5d68f5c961f1
+      id: a89c38b7-1b12-46ab-87fc-16c0f5aab464
       version: -1
-      name: Restart failed tasks?
+      name: Should restart failed tasks?
       description: Whether to restart the failed tasks identified automatically.
       type: condition
       iscommand: false
@@ -853,7 +853,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1590
+          "y": 1600
         }
       }
     note: false
@@ -941,7 +941,7 @@ view: |-
       "36_30_yes": 0.3,
       "37_38_yes": 0.43,
       "37_39_#default#": 0.44,
-      "41_40_yes": 0.52
+      "41_40_yes": 0.36
     },
     "paper": {
       "dimensions": {
