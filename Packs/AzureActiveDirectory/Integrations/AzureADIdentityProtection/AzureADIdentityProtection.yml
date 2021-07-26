@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: Azure Active Directory Identity Protection
+  id: AzureAD
   version: -1
 configuration:
 - display: Application ID
