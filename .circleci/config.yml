@@ -1339,6 +1339,7 @@ jobs:
               current_branch=<< pipeline.git.branch >>
               echo Deleting current branch - $current_branch
               pwd
+              ls
               git checkout master
               git branch -D "${current_branch}" # delete local branch
               git push origin --delete $current_branch # delete remote branch
