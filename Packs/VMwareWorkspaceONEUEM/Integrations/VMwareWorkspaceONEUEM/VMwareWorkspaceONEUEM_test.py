@@ -2,7 +2,7 @@ import json
 import io
 import pytest
 from CommonServerPython import *
-from VMwareWorkspaceONEUEM import Client, HTTP_ERROR, MESSAGES, URL_SUFFIX
+from VMwareWorkspaceONEUEM import Client, HTTP_ERROR, MESSAGES
 from test_data import input_data
 
 SERVER_URL = "https://host.awmdm.com"
@@ -89,7 +89,7 @@ def test_vmwuem_device_os_updates_list_command_when_valid_response_is_returned(r
 
     expected_response = util_load_json("test_data/vmwuem_device_osupdates_list_command_response.json")
 
-    requests_mock.get(BASE_URL + URL_SUFFIX['LIST_OS_UPDATES'].format(uuid), json=expected_response)
+    requests_mock.get(BASE_URL + 'devices/{}/osupdate'.format(uuid), json=expected_response)
 
     expected_context_output = util_load_json("test_data/vmwuem_device_osupdates_list_command_context.json")
 
@@ -142,7 +142,7 @@ def test_vmwuem_device_os_updates_list_command_when_no_records_found(requests_mo
     expected_response = {
         "OSUpdateList": []
     }
-    requests_mock.get(BASE_URL + URL_SUFFIX['LIST_OS_UPDATES'].format(uuid), json=expected_response)
+    requests_mock.get(BASE_URL + 'devices/{}/osupdate'.format(uuid), json=expected_response)
 
     response = vmwuem_device_os_updates_list_command(client, args={'uuid': uuid})
 
@@ -158,7 +158,7 @@ def test_vmwuem_device_osupdates_list_command_when_laptop_device_provided(reques
 
     expected_response = util_load_json("test_data/vmwuem_device_osupdates_list_command_response_laptop.json")
 
-    requests_mock.get(BASE_URL + URL_SUFFIX['LIST_OS_UPDATES'].format(uuid), json=expected_response)
+    requests_mock.get(BASE_URL + 'devices/{}/osupdate'.format(uuid), json=expected_response)
 
     expected_context_output = util_load_json("test_data/vmwuem_device_osupdates_list_command_context_laptop.json")
 
@@ -181,7 +181,7 @@ def test_vmuem_devices_search_command_when_no_records_found(requests_mock):
     Test no records found test case for vmuem-devices-search
     """
     from VMwareWorkspaceONEUEM import vmwuem_devices_search_command
-    requests_mock.get(BASE_URL + URL_SUFFIX['SEARCH_DEVICES'], text="", status_code=200)
+    requests_mock.get(BASE_URL + 'devices/search', text="", status_code=200)
 
     command_results = vmwuem_devices_search_command(client, {})
     assert command_results.outputs is None
@@ -209,7 +209,7 @@ def test_vmuem_devices_search_command_when_valid_response_is_returned(requests_m
 
     response = util_load_json("test_data/devices_search_resp.json")
     ec = util_load_json("test_data/devices_search_ec.json")
-    requests_mock.get(BASE_URL + URL_SUFFIX['SEARCH_DEVICES'], json=response)
+    requests_mock.get(BASE_URL + 'devices/search', json=response)
 
     command_results = vmwuem_devices_search_command(client, {})
 
@@ -226,7 +226,7 @@ def test_vmuem_device_get_command_when_no_records_found_json_response(requests_m
     from VMwareWorkspaceONEUEM import vmwuem_device_get_command
     response = util_load_json("test_data/get_device_404_no_records_found_message.json")
 
-    requests_mock.get(BASE_URL + URL_SUFFIX['GET_DEVICE'].format(uuid="12345678-1234-1234-1234-123456789ABC"),
+    requests_mock.get(BASE_URL + 'devices/{uuid}'.format(uuid="12345678-1234-1234-1234-123456789ABC"),
                       json=response, status_code=404)
 
     with pytest.raises(DemistoException) as e:
@@ -243,7 +243,7 @@ def test_vmuem_device_get_command_when_no_records_found_html_response(requests_m
     with open("test_data/get_device_404_no_records_found_message.html") as file:
         response = file.read()
 
-    requests_mock.get(BASE_URL + URL_SUFFIX['GET_DEVICE'].format(uuid="1234"),
+    requests_mock.get(BASE_URL + 'devices/{uuid}'.format(uuid="1234"),
                       text=response, status_code=404)
     with pytest.raises(DemistoException) as e:
         vmwuem_device_get_command(client, {"uuid": "1234"})
@@ -291,7 +291,7 @@ def test_vmuem_device_get_command_when_valid_response_is_returned(requests_mock)
 
     response = util_load_json("test_data/device_get_resp.json")
     ec = util_load_json("test_data/device_get_ec.json")
-    requests_mock.get(BASE_URL + URL_SUFFIX['GET_DEVICE'].format(uuid="12345678-1234-1234-1234-123456789ABC"),
+    requests_mock.get(BASE_URL + 'devices/{uuid}'.format(uuid="12345678-1234-1234-1234-123456789ABC"),
                       json=response)
 
     command_results = vmwuem_device_get_command(client, {"uuid": "12345678-1234-1234-1234-123456789ABC"})

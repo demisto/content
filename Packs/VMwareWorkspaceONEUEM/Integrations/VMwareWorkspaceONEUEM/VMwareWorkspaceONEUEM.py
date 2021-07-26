@@ -15,11 +15,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 READABLE_DATE_FORMAT = '%B %d, %Y at %I:%M:%S %p'
 API_VERSION = 2
 LOGGING_INTEGRATION_NAME = "[VMware Workspace ONE UEM (AirWatch MDM)]"
-URL_SUFFIX = {
-    'SEARCH_DEVICES': "devices/search",
-    'LIST_OS_UPDATES': "devices/{}/osupdate",
-    'GET_DEVICE': "devices/{uuid}"
-}
 HTTP_ERROR = {
     401: "An error occurred while validating the credentials, please check the username or password.",
     403: "Invalid API key or the user doesn't have sufficient permissions to perform this operation.",
@@ -59,11 +54,6 @@ CONSTANT_STRING = {
     "USER_EMAIL": "User Email Address",
     "LAST_SEEN": "Last Seen (In UTC)"
 }
-OUTPUT_PREFIX = {
-    "SEARCH_DEVICES": "VMwareWorkspaceONEUEM.Device",
-    "LIST_OS_UPDATES": "VMwareWorkspaceONEUEM.OSUpdate",
-    "GET_DEVICE": "VMwareWorkspaceONEUEM.Device",
-}
 ''' CLIENT CLASS '''
 
 
@@ -102,45 +92,16 @@ class Client(BaseClient):
 
         super().__init__(base_url=base_url, auth=(username, password), headers=headers, verify=verify, proxy=proxy)
 
-    def http_request(self, method: str, url_suffix: str = '', full_url: str = None, params: Dict = None,
-                     data: Dict = None) -> requests.Response:
+    def http_request(self, *args, **kwargs) -> requests.Response:
         """
         Overrides the _http_request method of base class and authenticate using bearer token generated from
         session id which is cached in IntegrationContext
-
-        :param method: HTTP method(GET, POST etc.)
-        :type method: ``str``
-
-        :param url_suffix: endpoint for baseUrl
-        :type url_suffix: ``str``
-
-        :param full_url: if provided then will ignore joining endpoint with baseurl, instead will take it as request url
-        :type full_url: ``str``
-
-        :type params: ``dict``
-        :param params: parameters to specify the query.
-
-        :type data: ``dict``
-        :param data: json data to send.
-
-        :return: http response
-        :rtype: ``dict``
-
-        :raises DemistoException: if any problem in sending http request
         """
 
-        response = self._http_request(
-            method=method,
-            url_suffix=url_suffix,
-            full_url=full_url,
-            params=params,
-            json_data=data,
-            resp_type='response',
-            error_handler=self.exception_handler,
-            ok_codes=(200, 201, 204)
-        )
-
-        return response
+        kwargs['ok_codes'] = (200, 201, 204)
+        kwargs['error_handler'] = self.exception_handler
+        kwargs['resp_type'] = 'response'
+        return super()._http_request(*args, **kwargs)
 
     @staticmethod
     def exception_handler(response: requests.models.Response):
@@ -482,7 +443,7 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    client.http_request(method='GET', url_suffix=URL_SUFFIX['SEARCH_DEVICES'])
+    client.http_request(method='GET', url_suffix='devices/search')
     return 'ok'
 
 
@@ -503,7 +464,7 @@ def vmwuem_devices_search_command(client: Client, args: dict) -> CommandResults:
     params = validate_and_parameterize_devices_search_arguments(args)
 
     # Make the call.
-    response = client.http_request(method='GET', url_suffix=URL_SUFFIX['SEARCH_DEVICES'], params=params)
+    response = client.http_request(method='GET', url_suffix='devices/search', params=params)
 
     if not response.text:
         return CommandResults(readable_output=MESSAGES['NO_RECORDS_FOUND'].format('device'))
@@ -511,7 +472,7 @@ def vmwuem_devices_search_command(client: Client, args: dict) -> CommandResults:
     # Prepare context and human readable
     json_response = response.json()
     outputs, readable_output = prepare_context_and_hr_for_devices_search(json_response)
-    return CommandResults(outputs_prefix=OUTPUT_PREFIX['SEARCH_DEVICES'], outputs_key_field="Uuid", outputs=outputs,
+    return CommandResults(outputs_prefix='VMwareWorkspaceONEUEM.Device', outputs_key_field="Uuid", outputs=outputs,
                           readable_output=readable_output, raw_response=json_response)
 
 
@@ -530,12 +491,12 @@ def vmwuem_device_get_command(client: Client, args: Dict) -> CommandResults:
     # Validate uuid argument.
     uuid = validate_uuid_argument(args)
 
-    response = client.http_request(method='GET', url_suffix=URL_SUFFIX['GET_DEVICE'].format(uuid=uuid))
+    response = client.http_request(method='GET', url_suffix='devices/{uuid}'.format(uuid=uuid))
 
     # Prepare context and human readable
     json_response = response.json()
     outputs, readable_output = prepare_context_and_hr_for_devices_get(json_response)
-    return CommandResults(outputs_prefix=OUTPUT_PREFIX['GET_DEVICE'], outputs_key_field="Uuid", outputs=outputs,
+    return CommandResults(outputs_prefix='VMwareWorkspaceONEUEM.Device', outputs_key_field="Uuid", outputs=outputs,
                           readable_output=readable_output, raw_response=json_response)
 
 
@@ -555,7 +516,7 @@ def vmwuem_device_os_updates_list_command(client: Client, args: dict) -> Command
     # validating arguments
     uuid = validate_uuid_argument(args)
 
-    response = client.http_request(method='GET', url_suffix=URL_SUFFIX['LIST_OS_UPDATES'].format(uuid))
+    response = client.http_request(method='GET', url_suffix='devices/{}/osupdate'.format(uuid))
     result = response.json()
 
     if not result.get('OSUpdateList', []):
@@ -565,7 +526,7 @@ def vmwuem_device_os_updates_list_command(client: Client, args: dict) -> Command
     context_data, hr_output = prepare_context_hr_os_updates_list_command(result, uuid)
 
     return CommandResults(
-        outputs_prefix=OUTPUT_PREFIX['LIST_OS_UPDATES'],
+        outputs_prefix='VMwareWorkspaceONEUEM.OSUpdate',
         outputs_key_field='Uuid',
         outputs=context_data,
         readable_output=hr_output,
