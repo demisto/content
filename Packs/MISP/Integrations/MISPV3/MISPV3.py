@@ -629,8 +629,8 @@ def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_id
         readable_output += tableToMarkdown('Related events', list(found_related_events.values()))
         return CommandResults(indicator=indicator,
                               raw_response=misp_response,
-                              outputs=outputs,
-                              outputs_prefix='MISP',
+                              outputs=all_attributes,
+                              outputs_prefix='MISP.Attribute',
                               outputs_key_field='ID',
                               readable_output=readable_output)
     else:
