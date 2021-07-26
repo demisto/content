@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -46,6 +46,7 @@ tasks:
     nexttasks:
       '#none#':
       - "24"
+      - "25"
     scriptarguments:
       historicListName:
         simple: test_phishing_historic_data
@@ -55,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 720
         }
       }
@@ -98,8 +99,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 265,
+          "y": 1245
         }
       }
     note: false
@@ -123,8 +124,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3345
+          "x": 265,
+          "y": 3170
         }
       }
     note: false
@@ -154,7 +155,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -185,8 +186,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1770
+          "x": 265,
+          "y": 1595
         }
       }
     note: false
@@ -196,10 +197,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 7eb7ed81-d96b-407b-89fe-1af2e2b6dd3a
+    taskid: 46cb2799-57bf-45f1-8a3b-171b79820a9b
     type: condition
     task:
-      id: 7eb7ed81-d96b-407b-89fe-1af2e2b6dd3a
+      id: 46cb2799-57bf-45f1-8a3b-171b79820a9b
       version: -1
       name: Model evaluation exist
       type: condition
@@ -212,16 +213,19 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: hasLength
           left:
             value:
               simple: DBotPhishingClassifier.EvaluationScores.Precision.All
             iscontext: true
+          right:
+            value:
+              simple: "2"
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 265,
+          "y": 1070
         }
       }
     note: false
@@ -258,8 +262,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1595
+          "x": 265,
+          "y": 1420
         }
       }
     note: false
@@ -296,8 +300,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2120
+          "x": 265,
+          "y": 1945
         }
       }
     note: false
@@ -339,8 +343,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1945
+          "x": 265,
+          "y": 1770
         }
       }
     note: false
@@ -370,8 +374,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2295
+          "x": 265,
+          "y": 2120
         }
       }
     note: false
@@ -402,7 +406,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 545
         }
       }
@@ -435,7 +439,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -460,7 +464,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+      - "14"
     scriptarguments:
       dedupThreshold:
         simple: "0"
@@ -484,7 +488,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 895
         }
       }
@@ -536,7 +540,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 895
         }
       }
     note: false
@@ -573,8 +577,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2645
+          "x": 265,
+          "y": 2470
         }
       }
     note: false
@@ -604,8 +608,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2820
+          "x": 265,
+          "y": 2645
         }
       }
     note: false
@@ -647,8 +651,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2995
+          "x": 265,
+          "y": 2820
         }
       }
     note: false
@@ -685,8 +689,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3170
+          "x": 265,
+          "y": 2995
         }
       }
     note: false
@@ -728,8 +732,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2470
+          "x": 265,
+          "y": 2295
         }
       }
     note: false
@@ -742,8 +746,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3360,
-        "width": 380,
+        "height": 3185,
+        "width": 810,
         "x": 50,
         "y": 50
       }
