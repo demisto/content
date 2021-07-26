@@ -12,6 +12,13 @@ from CommonServerPython import DBotScoreReliability
 
 import json
 
+INTEGRATION_NAME = 'Whois'
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'IntegrationBrand': INTEGRATION_NAME})
+
 
 def load_test_data(json_path):
     with open(json_path) as f:
