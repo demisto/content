@@ -189,11 +189,8 @@ def main():
     private_build = option.private
 
     if private_build:
-        packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
+        # TODO: SHOULD PASS A CONTENT PRIVATE ARGUMENT instead of creating it here
         zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
-        if not os.path.exists(packs_dir):
-            logging.debug("Packs dir not found. Creating.")
-            os.mkdir(packs_dir)
         if not os.path.exists(zip_path):
             logging.debug("Temp dir not found. Creating.")
             os.mkdir(zip_path)
