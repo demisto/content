@@ -516,7 +516,7 @@ def vmwuem_device_os_updates_list_command(client: Client, args: dict) -> Command
     # validating arguments
     uuid = validate_uuid_argument(args)
 
-    response = client.http_request(method='GET', url_suffix='devices/{}/osupdate'.format(uuid))
+    response = client.http_request(method='GET', url_suffix=f'devices/{uuid}/osupdate')
     result = response.json()
 
     if not result.get('OSUpdateList', []):
