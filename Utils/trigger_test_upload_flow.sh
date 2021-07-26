@@ -58,7 +58,7 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -db|--delete_branch) _delete_branch=true
+  -db|--delete_branch) _delete_branch="true"
     shift
     shift;;
 
