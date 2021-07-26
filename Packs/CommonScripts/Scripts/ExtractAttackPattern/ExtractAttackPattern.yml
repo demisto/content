@@ -2,7 +2,7 @@ commonfields:
   id: ExtractAttackPattern
   version: -1
 name: ExtractAttackPattern
-comment: Extract Attack Pattern Threat Intel Object, After auto extract extracts Attack Attack ID, this script is executed and extracts the value (name) of the Attack Pattern.
+comment: Extract Attack Pattern Threat Intel Object. After auto extract extracts the Attack Pattern IDs, this script is executed and extracts the value (name) of the Attack Pattern.
 script: |2
 type: python
 tags:
@@ -10,7 +10,7 @@ tags:
 enabled: true
 args:
 - name: input
-  description: Extract Attack Pattern value from ID.
+  description: A comma-separated list of Attack Pattern IDs.
   default: true
   isArray: true
 scripttarget: 0
