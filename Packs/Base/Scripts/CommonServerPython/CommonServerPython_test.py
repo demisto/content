@@ -3451,6 +3451,97 @@ class TestExecuteCommand:
         with raises(DemistoException, match=r'Cannot run demisto.executeCommand\(\) from integrations.'):
             execute_command('bad', {'arg1': 'value'})
 
+    @staticmethod
+    def test_multiple_results_fail_on_error_false(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+            - fail_on_error set to False.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the status of the execution is True for successful run.
+            - Assert that the "Contents" values of all entries are returned.
+        """
+        from CommonServerPython import execute_command, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            {'Type': EntryType.NOTE, 'Contents': {'entry': '2'}},
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        status, res = execute_command('command', {'arg1': 'value'}, fail_on_error=False)
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(res, list)
+        assert len(res) == 3
+        assert status
+        assert res[0] == {'hello': 'world'}
+        assert res[1] == {}
+        assert res[2] == {'entry': '2'}
+
+    @staticmethod
+    def test_raw_results_fail_on_error_false(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+            - fail_on_error set to False.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the status of the execution is True for successful run.
+            - Assert that the entire entries are returned.
+        """
+        from CommonServerPython import execute_command, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            'text',
+            1337,
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        status, res = execute_command('command', {'arg1': 'value'}, extract_contents=False, fail_on_error=False)
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(res, list)
+        assert len(res) == 4
+        assert status
+        assert res[0] == {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}}
+        assert res[1] == {'Type': EntryType.NOTE, 'Context': 'no contents here'}
+        assert res[2] == 'text'
+        assert res[3] == 1337
+
+    @staticmethod
+    def test_failure_fail_on_error_false(mocker):
+        """
+        Given:
+            - A command that fails.
+            - fail_on_error set to False.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the status of the execution is False for failed run.
+            - Assert that the original errors are returned as a value, and not to the war-room.
+        """
+        from CommonServerPython import execute_command, EntryType
+        error_entries = [
+            {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
+            {'Type': EntryType.NOTE, 'Contents': 'not an error'},
+            {'Type': EntryType.ERROR, 'Contents': 'error number 2'},
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=error_entries)
+        demisto_results_mock = mocker.patch.object(demisto, 'results')
+
+        status, error_text = execute_command('bad', {'arg1': 'value'}, fail_on_error=False)
+
+        assert demisto_execute_mock.call_count == 1
+        assert demisto_results_mock.call_count == 0
+        assert not status
+        assert 'error number 1' in error_text
+        assert 'error number 2' in error_text
+        assert 'not an error' not in error_text
+
 
 def test_arg_to_int__valid_numbers():
     """
