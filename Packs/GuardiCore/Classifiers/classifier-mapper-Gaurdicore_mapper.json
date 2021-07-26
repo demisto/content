@@ -15,10 +15,6 @@
           "complex": null,
           "simple": "end_time"
         },
-        "GuardiCore End Time": {
-          "complex": null,
-          "simple": "end_time"
-        },
         "Last Update Time": {
           "complex": null,
           "simple": "last_updated_time"
