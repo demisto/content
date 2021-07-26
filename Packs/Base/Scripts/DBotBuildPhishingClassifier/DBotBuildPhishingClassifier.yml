@@ -151,10 +151,10 @@ args:
 comment: Create a phishing classifier using machine learning technique, based on email
   content.
 commonfields:
-  id: DBotBuildPhishingClassifier2
+  id: DBotBuildPhishingClassifier
   version: -1
 enabled: false
-name: DBotBuildPhishingClassifier2
+name: DBotBuildPhishingClassifier
 script: '-'
 subtype: python3
 system: false
@@ -166,4 +166,6 @@ dockerimage: demisto/ml:1.0.0.19023
 runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test
+- DBotCreatePhishingClassifierV2FromFile-Test
+- Test Build Phishing Classifier Test - Multiple Algorithms
 fromversion: 5.0.0

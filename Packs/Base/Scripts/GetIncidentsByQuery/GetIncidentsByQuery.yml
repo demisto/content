@@ -116,4 +116,5 @@ runas: DBotRole
 dockerimage: demisto/python3:3.9.4.19537
 tests:
 - Create Phishing Classifier V2 ML Test
+- Test Build Phishing Classifier Test - Multiple Algorithms
 fromversion: 5.0.0
