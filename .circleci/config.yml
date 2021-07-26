@@ -1335,9 +1335,11 @@ jobs:
           name: Delete Temporary Branch
           command: |
             if [ -n "$DELETE_CURRENT_BRANCH" ]; then
-              echo Deleting current branch
-              content_branch=<< pipeline.git.branch >>
-              echo $content_branch
+              current_branch=<< pipeline.git.branch >>
+              echo Deleting current branch - $current_branch
+              git checkout master
+              git branch -D "${current_branch}" # delete local branch
+              git push origin --delete $current_branch # delete remote branch
             fi
 
 #              git checkout master
