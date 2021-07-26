@@ -1340,7 +1340,6 @@ jobs:
           instance_created: "true"
       - start-tunnel
       - *wait_until_server_ready
-      -
       - run:
           name: Delete Temporary Branch
           shell: /bin/bash
