@@ -123,7 +123,11 @@ def perform_add_to_campaign(ids, action):
             _remove_incident_from_lower_similarity_context(campaign_incident_context, incident_id)
 
             # Add the incident to context under "incidents":
-            incident_context: list = demisto.dt(campaign_incident_context, 'Contents.context.EmailCampaign.incidents')
+            incident_context = demisto.dt(campaign_incident_context, 'Contents.context.EmailCampaign.incidents')
+            if isinstance(incident_context, dict):
+                incident_context = [incident_context]
+            if isinstance(incident_context, str):
+                incident_context = [incident_context]
             incident_context.append(similar_incident_data)
 
             demisto.executeCommand('SetByIncidentId', {'key': 'EmailCampaign.incidents',
