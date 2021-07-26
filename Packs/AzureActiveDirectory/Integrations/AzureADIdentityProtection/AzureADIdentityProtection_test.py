@@ -62,7 +62,7 @@ def test_list_commands(client, requests_mock, command, test_data_file, url_suffi
 
     expected_next_link = api_response.get('@odata.nextLink')
     if expected_next_link:  # risky_users_history_list does not have next link
-        actual_next_url = result.outputs.get(f'{OUTPUTS_PREFIX}.NextLink(val.Description === "{context_path}")', {}) \
+        actual_next_url = result.outputs.get(f'{OUTPUTS_PREFIX}.NextLink(obj.Description === "{context_path}")', {}) \
             .get('URL')
         assert actual_next_url == expected_next_link
 
@@ -121,6 +121,6 @@ def test_parse_list():
     values = outputs[f'AADIdentityProtection.{context_path}(val.id === obj.id)'][0]
     assert len(values) == len(response['value'][0])  # all fields parsed
 
-    next_link_dict = outputs[f'AADIdentityProtection.NextLink(val.Description === "{context_path}")']
+    next_link_dict = outputs[f'AADIdentityProtection.NextLink(obj.Description === "{context_path}")']
     assert next_link_dict == {'Description': context_path,
                               'URL': 'https://graph.microsoft.com/beta/riskDetections?$skiptoken=dummy_skip_token'}
