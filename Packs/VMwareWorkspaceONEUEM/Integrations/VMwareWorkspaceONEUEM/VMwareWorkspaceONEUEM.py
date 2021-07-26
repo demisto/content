@@ -491,7 +491,7 @@ def vmwuem_device_get_command(client: Client, args: Dict) -> CommandResults:
     # Validate uuid argument.
     uuid = validate_uuid_argument(args)
 
-    response = client.http_request(method='GET', url_suffix='devices/{uuid}'.format(uuid=uuid))
+    response = client.http_request(method='GET', url_suffix=f'devices/{uuid}')
 
     # Prepare context and human readable
     json_response = response.json()
