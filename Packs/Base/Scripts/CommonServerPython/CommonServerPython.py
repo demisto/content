@@ -1362,6 +1362,12 @@ class IntegrationLogger(object):
                 a = self.encode(a)
                 to_add.append(stringEscape(a))
                 to_add.append(stringUnEscape(a))
+                js = json.dumps(a)
+                if js.startswith('"'):
+                    js = js[1:]
+                if js.endswith('"'):
+                    js = js[:-1]
+                to_add.append(js)
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
@@ -2377,7 +2383,7 @@ class Common(object):
 
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
-        def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None,
+        def __init__(self, indicator, indicator_type, integration_name='', score=None, malicious_description=None,
                      reliability=None):
 
             if not DBotScoreType.is_valid_type(indicator_type):
@@ -2391,7 +2397,11 @@ class Common(object):
 
             self.indicator = indicator
             self.indicator_type = indicator_type
-            self.integration_name = integration_name or get_integration_name()
+            # For integrations - The class will automatically determine the integration name.
+            if demisto.callingContext.get('integration'):
+                self.integration_name = get_integration_name()
+            else:
+                self.integration_name = integration_name
             self.score = score
             self.malicious_description = malicious_description
             self.reliability = reliability
@@ -7735,12 +7745,14 @@ class IndicatorsSearcher:
         self._value = value
         self._original_limit = limit
         self._next_limit = limit
+        self._search_is_done = False
 
     def __iter__(self):
         self._total = None
         self._search_after_param = None
         self._page = self._original_page
         self.limit = self._original_limit
+        self._search_is_done = False
         return self
 
     # python2
@@ -7748,7 +7760,7 @@ class IndicatorsSearcher:
         return self.__next__()
 
     def __next__(self):
-        if self._is_search_done():
+        if self._search_is_done:
             raise StopIteration
         size = min(self._size, self.limit or self._size)
         res = self.search_indicators_by_version(from_date=self._from_date,
@@ -7756,11 +7768,12 @@ class IndicatorsSearcher:
                                                 size=size,
                                                 to_date=self._to_date,
                                                 value=self._value)
-        fetched_len = len(res.get('iocs', []))
+        fetched_len = len(res.get('iocs', []) or [])
         if fetched_len == 0:
             raise StopIteration
         if self.limit:
             self.limit -= fetched_len
+        self._search_is_done = self._is_search_done()
         return res
 
     @property
@@ -7786,6 +7799,9 @@ class IndicatorsSearcher:
         2. for search_after if self.total was populated by a previous search, but no self._search_after_param
         3. for page if self.total was populated by a previous search, but page is too large
         """
+        if self._search_is_done:
+            return True
+
         reached_limit = isinstance(self.limit, int) and self.limit <= 0
         if reached_limit:
             return True
@@ -7836,10 +7852,13 @@ class IndicatorsSearcher:
         res = demisto.searchIndicators(**search_iocs_params)
         if len(res.get('iocs', [])) > 0:
             self._page += 1  # advance pages for search_after, as fallback
+        else:
+            self._search_is_done = True
         self._search_after_param = res.get(self._search_after_title)
         self._total = res.get('total')
         if self._search_after_title in res and self._search_after_param is None:
             demisto.info('Elastic search using searchAfter returned all indicators')
+            self._search_is_done = True
         return res
 
 
