@@ -278,7 +278,7 @@ tasks:
       PollingCommandName:
         simple: VerifyEnoughIndicators
       Timeout:
-        simple: "5"
+        simple: "10"
       dt:
         simple: IndicatorsCheck(val.ConditionMet !== true).Query
     separatecontext: true
