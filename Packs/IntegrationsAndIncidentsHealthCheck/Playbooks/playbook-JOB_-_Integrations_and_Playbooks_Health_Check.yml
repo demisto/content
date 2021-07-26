@@ -976,8 +976,7 @@ inputs:
 - key: playbookExclusion
   value: {}
   required: false
-  description: Comma Separated list of failed tasks to exclude from restart based
-    on playbook string match.
+  description: Comma separated list of playbook names to exclude from restarting their failed tasks.
   playbookInputQuery:
 - key: AutoRestartFailedTasks
   value:
