@@ -7,7 +7,7 @@ VENDOR_NAME = 'Anomali Enterprise'
 
 @pytest.fixture(autouse=True)
 def handle_calling_context(mocker):
-    mocker.patch.object(demisto, 'callingContext', {'IntegrationBrand': VENDOR_NAME})
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': VENDOR_NAME}})
 
 
 def test_domain_command_benign(mocker):
