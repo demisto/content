@@ -1342,6 +1342,7 @@ jobs:
               echo Deleting current branch - $current_branch
               cd ../../../
               find ./ -name ".git"
+              cd ./home/circleci/project/
               git branch
             fi
 #              git init
