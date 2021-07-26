@@ -51,8 +51,6 @@ try:
 except PyMISPError as e:
     handle_connection_errors(e.message)
 
-INTEGRATION_NAME = "MISP V3"
-
 PREDEFINED_FEEDS = {
     'CIRCL': {'name': 'CIRCL OSINT Feed',
               'url': 'https://www.circl.lu/doc/misp/feed-osint',
@@ -621,7 +619,6 @@ def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_id
                                                                                             malicious_tag_ids,
                                                                                             suspicious_tag_ids)
         dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
-                                integration_name=INTEGRATION_NAME,
                                 score=score, reliability=reliability, malicious_description="Match found in MISP")
         indicator = get_dbot_indicator(dbot_type, dbot, value)
         all_attributes = outputs.get('Attribute')
@@ -637,7 +634,7 @@ def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_id
                               outputs_key_field='ID',
                               readable_output=readable_output)
     else:
-        dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type, integration_name=INTEGRATION_NAME,
+        dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
                                 score=Common.DBotScore.NONE, reliability=reliability,
                                 malicious_description="No results were found in MISP")
         indicator = get_dbot_indicator(dbot_type, dbot, value)
