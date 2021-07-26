@@ -55,18 +55,18 @@ class Client(BaseClient):
                 "GuardicoreV2 - Generating a new token (old one isn't valid anymore).")
             self.generate_new_token()
 
-    def save_access_token(self, access_token):
+    def save_access_token(self, access_token: str):
         self.access_token = access_token
         authorization_value = f'bearer {access_token}'
         self._headers = {
             "Authorization": authorization_value}
 
-    def is_access_token_valid(self, integration_context):
+    def is_access_token_valid(self, integration_context: dict):
         access_token_expiration = integration_context.get('expires_in')
         access_token = integration_context.get('access_token')
         demisto.debug(
-            f'GuardicoreV2 - Checking if context has valid access token...' +
-            f'expiration: {access_token_expiration}, access_token: {access_token}')
+            'GuardicoreV2 - Checking if context has valid access token...'
+            + f'expiration: {access_token_expiration}, access_token: {access_token}')
         if access_token and access_token_expiration:
             access_token_expiration_datetime = datetime.strptime(
                 access_token_expiration, DATE_FORMAT)
@@ -78,10 +78,10 @@ class Client(BaseClient):
         self.save_jwt_token(token)
         self.save_access_token(token)
 
-    def save_jwt_token(self, token):
-        expiration = get_jwt_expiration(token)
+    def save_jwt_token(self, access_token: str):
+        expiration = get_jwt_expiration(access_token)
         expiration_timestamp = datetime.fromtimestamp(expiration)
-        context = {"access_token": token,
+        context = {"access_token": access_token,
                    "expires_in": expiration_timestamp.strftime(DATE_FORMAT)}
         set_integration_context(context)
         demisto.debug(
@@ -99,7 +99,7 @@ class Client(BaseClient):
             json_data=body)
 
         if not new_token or not new_token.get('access_token'):
-            return_error(
+            raise DemistoException(
                 "GuardiCore error: The client credentials are invalid.")
 
         new_token = new_token.get('access_token')
@@ -131,7 +131,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_jwt_expiration(token):
+def get_jwt_expiration(token: str) -> str:
     if "." not in token:
         return 0
     jwt_token = base64.b64decode(token.split(".")[1] + '==')
@@ -154,7 +154,7 @@ def calculate_fetch_start_time(last_fetch: Optional[str],
         return int(last_fetch)
 
 
-def filter_human_readable(results, human_columns=[]):
+def filter_human_readable(results: dict, human_columns=List[str]) -> dict:
     # Takes in results dict and filters out relevant human_columns.
     filtered = {}
     for hc in human_columns:
@@ -262,7 +262,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]):
         start_time = inc.get('start_time')
         if not id or "-" not in id or not start_time:
             demisto.debug(
-                f'GuardiCoreV2 - Fetch incidents: skipped fetched incident because no start time or id')
+                'GuardiCoreV2 - Fetch incidents: skipped fetched incident because no start time or id')
             continue
 
         incident = {
@@ -300,7 +300,7 @@ def get_indicent(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_assets(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     ip_address = args.get('ip_address', None)
     name = args.get('name', None)
     asset_id = args.get('asset_id', None)
@@ -348,7 +348,7 @@ def endpoint_command(client: Client, args: Dict[str, Any]):
     hostname = args.get("hostname", None)
     if not id and not ip_address and not hostname:
         raise DemistoException(
-            f'GuardiCoreV2 - In order to run this command, please provide valid id, ip or hostname')
+            'GuardiCoreV2 - In order to run this command, please provide valid id, ip or hostname')
 
     params = {}
     if id:
@@ -432,6 +432,9 @@ def main() -> None:
             return_results(get_assets(client, args))
         elif demisto.command() == 'endpoint':
             return_results(endpoint_command(client, args))
+        else:
+            raise NotImplementedError(
+                f'Command {demisto.command()} is not implemented.')
 
     # Log exceptions and return errors
     except Exception as e:
