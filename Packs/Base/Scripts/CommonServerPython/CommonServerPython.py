@@ -241,6 +241,7 @@ class DBotScoreType(object):
     CERTIFICATE = 'certificate'
     CRYPTOCURRENCY = 'cryptocurrency'
     EMAIL = 'email'
+    CUSTOM = 'custom'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
