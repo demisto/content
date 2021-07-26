@@ -1333,6 +1333,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
+      - *persist_to_workspace
       - run:
           name: Delete Temporary Branch
           shell: /bin/bash
@@ -1340,17 +1341,11 @@ jobs:
             if [ -n "$DELETE_CURRENT_BRANCH" ]; then
               current_branch=<< pipeline.git.branch >>
               echo Deleting current branch - $current_branch
-              cd ../../../
-              find ./ -name ".git"
-              cd ./home/circleci/project/
-              git branch
+              git checkout master
+              git branch -D "${current_branch}" # delete local branch
+              git push origin --delete $current_branch # delete remote branch
             fi
-#              git init
-#              git remote add origin {remote-url}
-#              git checkout master
-#              git branch -D "${current_branch}" # delete local branch
-#              git push origin --delete $current_branch # delete remote branch
-#            fi
+
 
 workflows:
   version: 2
