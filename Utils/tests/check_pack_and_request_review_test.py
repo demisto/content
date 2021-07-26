@@ -2,11 +2,13 @@ import pytest
 from Utils.request_contributor_review import check_reviewers, send_email_to_reviewers
 
 
-@pytest.mark.parametrize('pr_author,version,reviewers,call_count,expected',
-                         [('xsoar-bot', '1.0.0', {'reviewer'}, 0, False),
-                          ('xsoar-bot', '1.0.2', {'reviewer'}, 1, True),
-                          ('xsoar-bot', '1.0.0', {}, 0, False)])
-def test_check_reviewers(mocker, pr_author, version, reviewers, call_count, expected):
+@pytest.mark.parametrize('pr_author,version,reviewers,call_count,tagged_packs_reviewers,expected',
+                         [('xsoar-bot', '1.0.0', {'reviewer'}, 0, set(), False),
+                          ('xsoar-bot', '1.0.2', {'reviewer'}, 1, set(), True),
+                          ('xsoar-bot', '1.0.0', set(), 0, set(), False),
+                          ('xsoar-bot', '1.0.0', {'reviewA'}, 0, {'reviewA'}, True),
+                          ('xsoar-bot', '1.0.2', {'reviewA', 'reviewB'}, 1, {'reviewA'}, True)])
+def test_check_reviewers(mocker, pr_author, version, reviewers, call_count, tagged_packs_reviewers, expected):
     """
        Given
         - pr_author - author of thr pr
@@ -25,7 +27,8 @@ def test_check_reviewers(mocker, pr_author, version, reviewers, call_count, expe
     notified = check_reviewers(reviewers=reviewers, pr_author=pr_author, version=version,
                                modified_files=['Pack/TestPack/file1'], pack='TestPack', pr_number='1',
                                github_token='github_token',
-                               verify_ssl=True)
+                               verify_ssl=True,
+                               tagged_packs_reviewers=tagged_packs_reviewers)
     assert check_reviewers_mock.call_count == call_count
     assert notified == expected
 

@@ -2,8 +2,8 @@
 <p> </p>
 <h2>Overview</h2>
 <hr>
-<p>Use the Salesforce integration to search, query, and add new objects (tasks, accounts, cases, and so on) to Salesforce directly from Demisto.</p>
-<p>The <em><strong>fetch incident</strong></em> option enables you to monitor the creation of new Salesforce cases and manage them in Demisto.</p>
+<p>Use the Salesforce integration to search, query, and add new objects (tasks, accounts, cases, and so on) to Salesforce directly from Cortex XSOAR.</p>
+<p>The <em><strong>fetch incident</strong></em> option enables you to monitor the creation of new Salesforce cases and manage them in Cortex XSOAR.</p>
 <h2>Use cases</h2>
 <hr>
 <p><strong>Search for data:</strong> !salesforce-search pattern=”1234”</p>
@@ -14,14 +14,14 @@
 <p>This command will create a new Salesforce case with the given data.</p>
 <p><strong>Submitting Chatter message:</strong> !salesforce-push-comment oid=5003600000Smg4sAAB text="adding comment to case" link="google.com"</p>
 <p>This command will add a new comment to the object oid and result with the following comment.<br><a href="https://user-images.githubusercontent.com/30797606/44449362-98450c80-a5f6-11e8-94e0-6a5b31093efb.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/44449362-98450c80-a5f6-11e8-94e0-6a5b31093efb.png" alt="image"></a></p>
-<h2>Configure Salesforce to Work with Demisto</h2>
+<h2>Configure Salesforce to Work with Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Add a new connected App in Salesforce. For more information, see the <a href="https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_defining_remote_access_applications.htm">Salesforce documentation</a>.</li>
 <li>If you already have a connected App, navigate to <strong>Setup</strong> &gt; <strong>App Manager</strong> and select the correct App from the list, and click <strong>View</strong>.</li>
 <li>You can find the Consumer Key / Secret under <strong>API (Enable OAuth Settings).</strong><br>For detailed instructions see the <a href="#h_5753070501321535544438325">Credentials walkthrough</a> section.</li>
 </ol>
-<h2>Configure the Salesforce Integration on Demisto</h2>
+<h2>Configure the Salesforce Integration on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers `&` Services</strong>.</li>
@@ -35,9 +35,9 @@
 <li>
 <strong>Credentials</strong>: The username for accessing the instance</li>
 <li>
-<strong>Consumer Key</strong>: The Consumer Key set for this integration with Demisto, as explained in 'Setting Salesforce'</li>
+<strong>Consumer Key</strong>: The Consumer Key set for this integration with Cortex XSOAR, as explained in 'Setting Salesforce'</li>
 <li>
-<strong>Consumer Secret</strong>: The Consumer Secret set for this integration with Demisto, as explained in 'Setting Salesforce' above.</li>
+<strong>Consumer Secret</strong>: The Consumer Secret set for this integration with Cortex XSOAR, as explained in 'Setting Salesforce' above.</li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Fetch type: cases/comments (Only fetch comments when using the SalesforceAskUser automation)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
@@ -52,7 +52,7 @@
 <p>The fetch command monitors the creation of new cases starting from the time the option was enabled.</p>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_50080178671536046395132">Search Salesforce records: salesforce-search</a></li>
 <li><a href="#h_9372658171001536046400797">Perform a query using SOQL: salesforce-query</a></li>

@@ -1,0 +1,17 @@
+{
+    "blacklisted-hosts": [
+        {
+            "annotation": [
+                "blacklisted inbound"
+            ],
+            "cid": [
+                -1
+            ],
+            "hostAddress": "1.1.1.1",
+            "pgid": [
+                -1
+            ],
+            "updateTime": 1615814171
+        }
+    ]
+}

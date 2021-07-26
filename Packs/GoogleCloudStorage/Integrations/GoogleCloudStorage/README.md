@@ -6,9 +6,9 @@
 <ol>
 <li>Go to the <a href="https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount">Google documentation</a> and follow the procedure in the Creating a Service Account section. After you create a service account, a Service Account Private Key file is downloaded. You will need this file in step 3.</li>
 <li>Grant the Storage Admin permission to the Service Account to enable the Service Account to perform all Google Storage API commands.</li>
-<li>In Demisto, configure an instance of the Google Cloud Storage integration. For the Service Account Private Key parameter, copy the JSON contents of the file you downloaded in step 1.</li>
+<li>In Cortex XSOAR, configure an instance of the Google Cloud Storage integration. For the Service Account Private Key parameter, copy the JSON contents of the file you downloaded in step 1.</li>
 </ol>
-<h2>Configure Google Cloud Storage on Demisto</h2>
+<h2>Configure Google Cloud Storage on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong>  &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Google Cloud Storage.</li>
@@ -28,7 +28,7 @@
 <li>Click <strong>Test</strong> to validate the new instance.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_0b662964-deaa-49ea-9d66-8161b6b81b81" target="_self">Retrieves the list of buckets: gcs-list-buckets</a></li>
 <li><a href="#h_3951a5e9-88ad-4f26-b0d4-33bd27beb754" target="_self">Retrieves bucket information: gcs-get-bucket</a></li>

@@ -1,6 +1,7 @@
 from freezegun import freeze_time
 import pytest
 from McAfee_ESM_v2 import *
+from McAfee_ESM_v2 import McAfeeESMClient
 
 list_test_filtering_incidents = [
     {'id': 3},
@@ -206,3 +207,40 @@ def test_time_fields(test_input, output):
 def test_mcafee_severity_to_demisto(test_input, output):
     temp = mcafee_severity_to_demisto(test_input)
     assert temp == output, f'mcafee_severity_to_demisto({test_input}) returns: {temp} instead: {output}.'
+
+
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
+def test_edit_case(mocker):
+    params = {
+        "url": "https://example.com",
+        "insecure": True,
+        "credentials": {
+            "identifier": "TEST",
+            "password": "TEST"
+        },
+        "version": "11.3"}
+    raw_response_has_event_list = {"assignedTo": 8207, "closeTime": "2021-05-25T10:29:17Z", "dataSourceList": ["47"],
+                                   "deviceList": None,
+                                   "eventList": [
+                                       {"id": "144117387300438016|6204912068", "lastTime": "2021-05-25T09:47:10Z",
+                                        "message": "TEST"}],
+                                   "history": "\n------- Viewed: 05/25/2021 10:26:37(GMT)"
+                                              "TEST@TEST -------\n\n------- Viewed: 05/25/2021 10:27:34("
+                                              "GMT) "
+                                              "   TEST@TEST -------\n",
+                                   "id": 58136,
+                                   "notes": "------- Opened on 2021/05/25 09:53:53(GMT) by Triggered Condition -------"
+                                            "\n\n------- In Progress: 05/25/2021 10:29:17(GMT)   Xsoar@TEST -------"
+                                            "\n\n------- Changes:  05/25/2021 10:29:17(GMT)   Xsoar@TEST -------"
+                                            "\n  Organization\n    old: None\n    new: BRD"
+                                            "\n\n", "openTime": "2021-05-25T09:53:53Z",
+                                   "orgId": 2, "severity": 50, "statusId": 3,
+                                   "summary": "ALERT - Scan"}
+
+    mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__login', return_value={})
+    mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__request', return_value={})
+    mocker.patch.object(McAfeeESMClient, 'get_case_detail', return_value=('', {}, raw_response_has_event_list))
+    client = McAfeeESMClient(params)
+    client.edit_case()
+    result = client._McAfeeESMClient__request.call_args.kwargs['data']['caseDetail']
+    assert len(result['eventList']) > 0

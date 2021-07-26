@@ -21,7 +21,7 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
     <li>open web vectors</li>
 </ul>
 
-<h2>Configure PhishLabs IOC DRP on Demisto</h2>
+<h2>Configure PhishLabs IOC DRP on Cortex XSOAR</h2>
 <ol>
     <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
         &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.
@@ -102,7 +102,7 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
 </pre>
 <h2>Commands</h2>
 <p>
-    You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+    You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
     After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -583,12 +583,6 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
     </tr>
     </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="phishlabs-ioc-drp-get-case-by-id">2. phishlabs-ioc-drp-get-case-by-id</h3>
@@ -994,12 +988,6 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
     </tr>
     </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 
 <h3 id="phishlabs-ioc-drp-get-open-cases">3. phishlabs-ioc-drp-get-open-cases</h3>
 <hr>
@@ -1433,12 +1421,6 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
     </tr>
     </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="phishlabs-ioc-drp-get-closed-cases">4. phishlabs-ioc-drp-get-closed-cases</h3>
@@ -1913,8 +1895,3 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
     </tbody>
 </table>
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->

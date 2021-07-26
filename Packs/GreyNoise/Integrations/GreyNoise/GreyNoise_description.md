@@ -1,6 +1,6 @@
  
 
-To use GreyNoise on Demisto, retrieve your user account's API key and enter it in the integration's configuration.
+To use GreyNoise on Cortex XSOAR, retrieve your user account's API key and enter it in the integration's configuration.
 
 #### Configure an API account on GreyNoise
  - [Login](https://viz.greynoise.io/login) / [Register](https://viz.greynoise.io/signup) at GreyNoise

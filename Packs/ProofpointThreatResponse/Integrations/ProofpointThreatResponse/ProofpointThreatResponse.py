@@ -16,7 +16,7 @@ if BASE_URL and BASE_URL[-1] != '/':
 API_KEY = demisto.params().get('apikey')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure')
 # How many time before the first fetch to retrieve incidents
-FIRST_FETCH, _ = parse_date_range(demisto.params().get('first_fetch', '3 days'), date_format=TIME_FORMAT)
+FIRST_FETCH, _ = parse_date_range(demisto.params().get('first_fetch', '12 hours') or '12 hours', date_format=TIME_FORMAT)
 
 ''' COMMAND FUNCTIONS '''
 

@@ -1,0 +1,23 @@
+{
+    "id": "Proofpoint TAP - Click Blocked",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Proofpoint TAP - Click Blocked",
+    "prevName": "Proofpoint TAP - Click Blocked",
+    "color": "#4DB6AC",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 2,
+    "layout": "Proofpoint TAP Clicks Layout",
+    "fromVersion": "5.0.0"
+}

@@ -1,0 +1,45 @@
+{
+    "single_host_output": {
+        "annotation": [
+            "Test whitelisted inbound"
+        ],
+        "cid": [
+            -1
+        ],
+        "hostAddress": "1.1.1.1",
+        "pgid": [
+            -1
+        ],
+        "updateTime": 1616064517
+    },
+    "multiple_hosts_output": {
+        "hosts": [
+            {
+                "annotation": [
+                    "Test whitelisted inbound"
+                ],
+                "cid": [
+                    -1
+                ],
+                "hostAddress": "2.2.2.2",
+                "pgid": [
+                    -1
+                ],
+                "updateTime": 1616064636
+            },
+            {
+                "annotation": [
+                    "Test whitelisted inbound"
+                ],
+                "cid": [
+                    -1
+                ],
+                "hostAddress": "3.3.3.3",
+                "pgid": [
+                    -1
+                ],
+                "updateTime": 1616064636
+            }
+        ]
+    }
+}

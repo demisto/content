@@ -9,7 +9,7 @@ This integration was integrated and tested with version xx of VulnDB
 ## Use Cases
 ---
 
-## Configure VulnDB on Demisto
+## Configure VulnDB on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -27,7 +27,7 @@ This integration was integrated and tested with version xx of VulnDB
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. vulndb-get-vuln-by-id
 2. vulndb-get-vendor

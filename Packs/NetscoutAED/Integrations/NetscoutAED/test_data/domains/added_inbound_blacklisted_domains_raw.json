@@ -1,0 +1,41 @@
+{
+    "single_domain_output":
+        {
+            "annotation": [],
+            "cid": [
+                -1
+            ],
+            "domain": "google.com",
+            "pgid": [
+                -1
+            ],
+            "updateTime": 1616086166
+        },
+
+    "multiple_domains_output": {
+        "domains": [
+            {
+                "annotation": [],
+                "cid": [
+                    -1
+                ],
+                "domain": "google.com",
+                "pgid": [
+                    -1
+                ],
+                "updateTime": 1616086166
+            },
+            {
+                "annotation": [],
+                "cid": [
+                    -1
+                ],
+                "domain": "sport.com",
+                "pgid": [
+                    -1
+                ],
+                "updateTime": 1616088326
+            }
+        ]
+    }
+}

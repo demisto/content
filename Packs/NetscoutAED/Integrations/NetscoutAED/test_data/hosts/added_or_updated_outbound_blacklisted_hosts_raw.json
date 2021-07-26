@@ -1,0 +1,22 @@
+{
+    "single_host_output": {
+        "annotation": "Test blacklisted outbound",
+        "hostAddress": "1.1.1.1",
+        "updateTime": 1616063936
+    },
+
+    "multiple_hosts_output":{
+        "hosts": [
+            {
+                "annotation": "Test blacklisted outbound",
+                "hostAddress": "2.2.2.2",
+                "updateTime": 1616064087
+            },
+            {
+                "annotation": "Test blacklisted outbound",
+                "hostAddress": "3.3.3.3",
+                "updateTime": 1616064087
+            }
+        ]
+    }
+}

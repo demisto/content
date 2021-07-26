@@ -1,7 +1,7 @@
 
 Use the FireEye feed integration to fetch indicators from the FireEye Intelligence Feed feed.
 
-## Configure FireEye Feed on Demisto
+## Configure FireEye Feed on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.

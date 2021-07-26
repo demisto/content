@@ -7,7 +7,7 @@ This automation accepts an XSOAR custom content bundle, and either returns a lis
 | --- | --- |
 | Script Type | python3 |
 | Tags | Utility |
-| Demisto Version | 6.0.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

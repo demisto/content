@@ -1,0 +1,76 @@
+{
+    "size": 5,
+    "dataType": "metrics",
+    "params": {
+        "groupBy": [
+            "command"
+        ],
+        "keys": [
+            "sum|errorCount"
+        ],
+        "showGraphValues": false,
+        "showOthers": true,
+        "tableColumns": [
+            {
+                "isDefault": true,
+                "key": "count",
+                "position": 0
+            },
+            {
+                "isDefault": true,
+                "key": "data",
+                "position": 1
+            },
+            {
+                "isDefault": true,
+                "key": "floatData",
+                "position": 2
+            },
+            {
+                "isDefault": true,
+                "key": "groups",
+                "position": 3
+            },
+            {
+                "isDefault": true,
+                "key": "name",
+                "position": 4
+            },
+            {
+                "isDefault": true,
+                "key": "pivot",
+                "position": 5
+            },
+            {
+                "isDefault": true,
+                "key": "color",
+                "position": 6
+            }
+        ],
+        "valuesFormat": "abbreviated",
+        "xAxisLabel": "",
+        "yAxisLabel": ""
+    },
+    "query": "type:integration",
+    "modified": "2021-05-31T14:39:05.210795094Z",
+    "name": "Command execution errors",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "command-execution-errors",
+    "widgetType": "pie",
+    "fromVersion": "6.2.0",
+    "description": "Command execution errors"
+}

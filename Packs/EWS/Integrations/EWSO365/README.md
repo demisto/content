@@ -29,7 +29,7 @@ The EWS integration can be used for the following use cases.
     A less common use case is to remove emails that were marked as malicious from a user’s mailbox.  
     You can delete the items permanently (hard delete), or delete the items (soft delete), so they can be recovered by running the `ews-recover-messages` command.
 
-## Configure EWS O365 on Demisto
+## Configure EWS O365 on Cortex XSOAR
 
 1.  Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2.  Search for EWS O365.
@@ -58,7 +58,7 @@ You can't manage the **Office 365 Exchange Online** app permissions via the Azur
 
 ## Fetched Incidents Data
 
-The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email, Demisto fetches information about the attached email and downloads all of its attachments (if there are any) as files.
+The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email, Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files.
 
 To use Fetch incidents, configure a new instance and select the `Fetches incidents` option in the instance settings.
 
@@ -72,7 +72,7 @@ Pay special attention to the following fields in the instance settings:
 
 ## Commands
 
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1.  Get the attachments of an item: ews-get-attachment
 2.  Delete the attachments of an item: ews-delete-attachment

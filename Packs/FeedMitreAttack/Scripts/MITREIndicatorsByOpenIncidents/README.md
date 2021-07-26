@@ -5,7 +5,7 @@ This is a widget script returning MITRE indicators information for top indicator
 | --- | --- |
 | Script Type | python3 |
 | Tags | widget |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 ## Inputs
 ---
 There are no inputs for this script.

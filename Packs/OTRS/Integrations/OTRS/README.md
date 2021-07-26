@@ -5,7 +5,7 @@ This integration was integrated and tested with versions 5, 6 and 7 of OTRS.
 
 You have to enable the webservices in your OTRS instance. It is recommended to use the provided [template](https://gitlab.com/rhab/PyOTRS/raw/master/webservices_templates/GenericTicketConnectorREST.yml). This YAML configuration template includes the Route: /TicketList endpoint that is required for PyOTRS but which is not included in the default OTRS webservice setup.
 
-## Configure OTRS on Demisto
+## Configure OTRS on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for OTRS.
@@ -25,7 +25,7 @@ You have to enable the webservices in your OTRS instance. It is recommended to u
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### otrs-get-ticket
 ***

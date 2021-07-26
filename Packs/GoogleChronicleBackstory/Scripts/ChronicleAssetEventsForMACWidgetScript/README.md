@@ -6,7 +6,7 @@ Displays the list of events fetched for an asset identified as a "ChronicleAsset
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-indicator-section |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
 ---

@@ -123,7 +123,7 @@ def test_hostname(requests_mock):
     API response. Checks the output of the command function with the expected output.
     """
 
-    mock_url = f'{TEST_URL}{URLS.Entities}?search=%2F%5ECorporateDC%24%2Fi&page=1&pageSize={PAGE_SIZE}'
+    mock_url = f'{TEST_URL}{URLS.Entities}?search=%7B%22%24regex%22%3A+%22%2FCorporateDC%2Fi%22%7D&pageSize={PAGE_SIZE}&page=1'
     xm = mock_request_and_get_xm_mock('test_data/hostname.json', requests_mock, mock_url)
 
     response = hostname_command(xm, {
@@ -156,7 +156,7 @@ def test_ip(requests_mock):
     API response. Checks the output of the command function with the expected output.
     """
 
-    mock_url = f'{TEST_URL}{URLS.Entities}?search=%2F%5E172.0.0.1%24%2Fi&page=1&pageSize={PAGE_SIZE}'
+    mock_url = f'{TEST_URL}{URLS.Entities}?search=%7B%22%24regex%22%3A+%22%2F172.0.0.1%2Fi%22%7D&pageSize={PAGE_SIZE}&page=1'
     xm = mock_request_and_get_xm_mock('test_data/hostname.json', requests_mock, mock_url)
 
     response = ip_command(xm, {

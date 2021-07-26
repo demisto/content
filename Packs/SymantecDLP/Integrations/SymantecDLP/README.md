@@ -24,8 +24,8 @@ OR
 More details at: <a href="https://knowledge.broadcom.com/external/article/159761/unable-to-authenticate-to-reporting-api.html">https://knowledge.broadcom.com/external/article/159761/unable-to-authenticate-to-reporting-api.html</a>
 </p>
 <h2>Fetch Incidents</h2>
-<p>The Symantec Data Loss Prevention integration is configured to fetch incidents and integrate them into Demisto's incidents and has the fetch limit parameter.</p>
-<h2>Configure Symantec Data Loss Prevention on Demisto</h2>
+<p>The Symantec Data Loss Prevention integration is configured to fetch incidents and integrate them into Cortex XSOAR's incidents and has the fetch limit parameter.</p>
+<h2>Configure Symantec Data Loss Prevention on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -97,7 +97,7 @@ secondary summary selected are chosen.</li>
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -205,12 +205,6 @@ secondary summary selected are chosen.</li>
 <p>
 <h3>Additional Information</h3>
 <p></p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>2. symantec-dlp-get-incident-details</h3>
@@ -512,14 +506,6 @@ The value "none" is default.</td>
     </tr>
   </tbody>
 </table>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3>3. symantec-dlp-update-incident</h3>
 <hr>
@@ -637,14 +623,6 @@ There are no context output for this command.
     </tr>
   </tbody>
 </table>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3>4. symantec-dlp-incident-binaries</h3>
 <hr>
@@ -793,14 +771,6 @@ incident, might include binary files.</p>
     </tr>
   </tbody>
 </table>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3>5. symantec-dlp-list-custom-attributes</h3>
 <hr>
@@ -840,14 +810,6 @@ There are no context output for this command.
     </tr>
   </tbody>
 </table>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3>6. symantec-dlp-list-incident-status</h3>
 <hr>
@@ -887,14 +849,6 @@ There are no context output for this command.
     </tr>
   </tbody>
 </table>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3>7. symantec-dlp-incident-violations</h3>
 <hr>
@@ -1076,14 +1030,6 @@ There are no context output for this command.
     </tr>
   </tbody>
 </table>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 <hr>
 <h2>Troubleshooting</h2>
 <p>If you are encountering issues authenticating the configured API user, you can perform a test that the user you've configured has the proper role by running the following curl command:</p>

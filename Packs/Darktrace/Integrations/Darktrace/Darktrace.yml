@@ -478,7 +478,7 @@ script:
         keys. It is recommended to run the command once to check the relevant outputs
         in context.
       type: Unknown
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: true
   longRunning: false

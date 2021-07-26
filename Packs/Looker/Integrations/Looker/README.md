@@ -52,7 +52,7 @@
 </ol>
 </div>
 <div class="cl-preview-section">
-<p><strong>Option B:</strong><span> </span>Demisto commands</p>
+<p><strong>Option B:</strong><span> </span>Cortex XSOAR commands</p>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -85,7 +85,7 @@
 <p>You will see the field name in the following format:<span> </span><code>object_name.field_name</code>.</p>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-looker-on-demisto">Configure Looker on Demisto</h2>
+<h2 id="configure-looker-on-demisto">Configure Looker on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -109,7 +109,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>

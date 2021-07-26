@@ -161,7 +161,11 @@ def test_build_headers_input(client):
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_build_message(client):
+def test_build_message(client, tmp_path, mocker):
+    attachment_name = 'attachment.txt'
+    attachment = tmp_path / attachment_name
+    attachment.touch()
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': str(attachment), 'name': attachment_name})
     message_input = {
         'to_recipients': ['dummy@recipient.com'],  # disable-secrets-detection
         'cc_recipients': ['dummyCC@recipient.com'],  # disable-secrets-detection
@@ -174,7 +178,7 @@ def test_build_message(client):
         'internet_message_headers': None,
         'attach_ids': [],
         'attach_names': [],
-        'attach_cids': [],
+        'attach_cids': [str(attachment)],
         'manual_attachments': []
     }
 
@@ -186,7 +190,39 @@ def test_build_message(client):
                         # disable-secrets-detection
                         'subject': 'Dummy Subject', 'body': {'content': 'Dummy Body', 'contentType': 'text'},
                         'bodyPreview': 'Dummy Body', 'importance': 'Normal', 'flag': {'flagStatus': 'flagged'},
-                        'attachments': []}
+                        'attachments': [{
+                            '@odata.type': client.FILE_ATTACHMENT,
+                            'contentBytes': '',
+                            'isInline': True,
+                            'name': attachment_name,
+                            'size': 0,
+                            'contentId': str(attachment)
+                        }]
+                        }
     result_message = client._build_message(**message_input)
 
     assert result_message == expected_message
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_reply_mail_command(client, mocker):
+    """
+    Given:
+        - reply-mail arguments
+    When:
+        - send a reply mail message
+    Then:
+        - validates that the outputs fit the updated reply mail message
+    """
+    args = {'to': ['ex@example.com'], 'body': "test body", 'subject': "test subject", "inReplyTo": "id",
+            'from': "ex1@example.com"}
+    mocker.patch.object(client.ms_client, 'http_request')
+
+    reply_message = client.reply_mail(args)
+
+    assert reply_message.outputs_prefix == "MicrosoftGraph"
+    assert reply_message.outputs_key_field == "SentMail"
+    assert reply_message.outputs['ID'] == args['inReplyTo']
+    assert reply_message.outputs['subject'] == 'Re: ' + args['subject']
+    assert reply_message.outputs['toRecipients'] == args['to']
+    assert reply_message.outputs['bodyPreview'] == args['body']

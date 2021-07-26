@@ -270,13 +270,6 @@ def concat_text_fields(data, target_field, text_fields):
     return data
 
 
-def clean_html(text):
-    cleaned = text
-    for pattern in HTML_PATTERNS:
-        cleaned = pattern.sub(" ", cleaned)
-    return unescape(cleaned).strip()
-
-
 def remove_line_breaks(text):
     return re.sub(r"\s+", " ", text.replace("\r", " ").replace("\n", " ")).strip()
 
@@ -284,7 +277,7 @@ def remove_line_breaks(text):
 def pre_process_batch(data, source_text_field, target_text_field, remove_html_tags, pre_process_type, hash_seed):
     raw_text_data = [x[source_text_field] for x in data]
     if remove_html_tags:
-        raw_text_data = [clean_html(x) for x in raw_text_data]
+        raw_text_data = [clean_html_from_text(x) for x in raw_text_data]
     raw_text_data = [remove_line_breaks(x) for x in raw_text_data]
     tokenized_text_data = []
     for raw_text in raw_text_data:
@@ -314,10 +307,13 @@ def pre_process_tokenizer(text, seed):
 
 
 def pre_process_none(text, seed):
-    original_text = clean_html_from_text(text)
-    tokenized_text = original_text
-    original_words_to_tokens = {x: x for x in text.split()}
-    return create_text_result(original_text, tokenized_text, original_words_to_tokens, seed)
+    cleaned_text = clean_html_from_text(text)
+    tokenized_text = text
+    original_words_to_tokens = {x: x for x in cleaned_text.split()}
+    return create_text_result(original_text=cleaned_text,
+                              tokenized_text=tokenized_text,
+                              original_words_to_tokens=original_words_to_tokens,
+                              hash_seed=seed)
 
 
 PRE_PROCESS_TYPES = {
@@ -329,7 +325,8 @@ PRE_PROCESS_TYPES = {
 def remove_short_text(data, text_field, target_text_field, remove_short_threshold):
     description = ""
     before_count = len(data)
-    data = [x for x in data if len(x[text_field].split(" ")) > remove_short_threshold and len(x[target_text_field]) > 0]
+    data = [x for x in data if len(x[text_field].split(" ")) > remove_short_threshold
+            and len(x[target_text_field]) > remove_short_threshold]
     after_count = len(data)
     dropped_count = before_count - after_count
     if dropped_count > 0:

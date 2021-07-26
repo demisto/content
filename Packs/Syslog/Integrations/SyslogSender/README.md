@@ -9,11 +9,11 @@ Use the Syslog Sender integration to send messages and mirror incident War Room 
 * Send messages to Syslog via TCP or UDP.
 * Mirror incident war room entries to Syslog.
 
-## Configure Syslog Sender on Demisto
+## Configure Syslog Sender on Cortex XSOAR
 ---
 
 ### Usage example for rsyslog
-To allow sending messages to rsyslog via Demisto, the following lines have to be in the rsyslog configuration:
+To allow sending messages to rsyslog via Cortex XSOAR, the following lines have to be in the rsyslog configuration:
 
 For TCP:
 ```
@@ -46,7 +46,7 @@ input(type="imudp" port="<port>")
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. mirror-investigation
 2. send-notification
@@ -85,7 +85,7 @@ Sends a message to syslog.
 | --- | --- | --- |
 | message | The message content. | Optional | 
 | entry | An entry ID to send as a link. | Optional | 
-| ignoreAddURL | Whether to include a URL to the relevant component in Demisto. Can be "true" or "false". The default value is "false'. | Optional | 
+| ignoreAddURL | Whether to include a URL to the relevant component in Cortex XSOAR. Can be "true" or "false". The default value is "false'. | Optional | 
 | level | Log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL". | Optional | 
 
 
@@ -132,7 +132,6 @@ Message sent to Syslog successfully.
 ## Troubleshooting
 ---
 Make sure you can access the Syslog server on the provided IP address and the port is open.
-If you're experiencing further issues, contact us at [support@demisto.com](mailto:support@demisto.com)
 
 ## Demo Video
 ---

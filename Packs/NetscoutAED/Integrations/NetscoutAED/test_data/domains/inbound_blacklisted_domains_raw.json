@@ -1,0 +1,39 @@
+{
+    "blacklisted-domains": [
+        {
+            "annotation": [],
+            "cid": [
+                -1
+            ],
+            "domain": "google.com",
+            "pgid": [
+                -1
+            ],
+            "updateTime": 1616086166
+        },
+        {
+            "annotation": [
+                "try1"
+            ],
+            "cid": [
+                -1
+            ],
+            "domain": "sport.co.il",
+            "pgid": [
+                -1
+            ],
+            "updateTime": 1615824024
+        },
+        {
+            "annotation": [],
+            "cid": [
+                -1
+            ],
+            "domain": "ynet.com",
+            "pgid": [
+                -1
+            ],
+            "updateTime": 1616086190
+        }
+    ]
+}

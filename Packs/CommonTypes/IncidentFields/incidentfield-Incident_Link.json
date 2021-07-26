@@ -17,10 +17,7 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedTypes": [
-        "FraudWatch Incident"
-    ],
-    "associatedToAll": false,
+    "associatedToAll": true,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,

@@ -73,7 +73,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. [Run any command supported in the Panorama API: panorama](#panorama)
@@ -266,7 +266,9 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 `panorama-commit`
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| description | Commit description. | Optional | 
 
 #### Context Output
 
@@ -311,7 +313,10 @@ Pushes rules from PAN-OS to the configured device group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device-group | The device group for which to return addresses (Panorama instances). | Optional | 
+| device-group | The device group for which to return addresses (Panorama instances). | Optional |
+| validate-only | Pre policy validation. | Optional. |
+| include-template | Whether to include template changes. | Optional. |
+| description | Push description. | Optional |
 
 
 #### Context Output
@@ -3031,7 +3036,8 @@ Checks whether a session matches a specified security policy. This command is on
 | to | The to zone. | Optional | 
 | protocol | The IP protocol value. | Required | 
 | source | The source IP address. | Required | 
-| source-user | The source user. | Optional | 
+| source-user | The source user. | Optional |
+| target | Target number of the firewall. Use only on a Panorama instance. | Optional | 
 
 
 #### Context Output

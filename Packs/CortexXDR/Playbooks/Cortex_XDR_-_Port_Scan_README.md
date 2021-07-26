@@ -52,7 +52,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | IsolateEndpointAutomatically | Whether to automatically isolate endpoints, or opt for manual user approval. True means isolation will be done automatically. | False | Optional |
 | InternalIPRanges | A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
 | CriticalHostnames | A list of comma-separated names of critical endpoints in the organization. This will affect the calculated severity of the incident. | AdminPC | Optional |
-| RoleForEscalation | The name of the Demisto role of the users that the incident can be escalated to in case of developments like lateral movement. |  | Optional |
+| RoleForEscalation | The name of the Cortex XSOAR role of the users that the incident can be escalated to in case of developments like lateral movement. |  | Optional |
 | BlockMaliciousFiles | Whether to automatically block malicious files involved with the incident across all endpoints in the organization. | False | Optional |
 | CriticalADGroups | CSV of DN names of critical Active Directory groups. This will affect the severity calculated for this incident. | admins | Optional |
 | OnCall | Set to true to assign only the users that are currently on shift. | false | Optional |
@@ -60,7 +60,3 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![Cortex XDR - Port Scan](Insert the link to your image here)

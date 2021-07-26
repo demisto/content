@@ -7,7 +7,7 @@ Merges common user defined code into each server script when it runs.
 | --- | --- |
 | Script Type | powershell |
 | Tags | infra, server |
-| Demisto Version | 5.5.0+ |
+| Cortex XSOAR Version | 5.5.0+ |
 
 ## Inputs
 ---

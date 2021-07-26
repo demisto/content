@@ -6,7 +6,7 @@ This script is used to simplify the process of creating the incident in BMC Heli
 | --- | --- |
 | Script Type | python3 |
 | Tags | bmcremedyforce  |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
 ---

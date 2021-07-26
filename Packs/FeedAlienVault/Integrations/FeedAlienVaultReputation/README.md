@@ -1,6 +1,6 @@
 Use the AlienVault Reputation feed integration to fetch indicators from the feed.
 
-## Configure AlienVault Reputation Feed on Demisto
+## Configure AlienVault Reputation Feed on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -23,7 +23,7 @@ Use the AlienVault Reputation feed integration to fetch indicators from the feed
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get indicators from the feed: alienvault-get-indicators

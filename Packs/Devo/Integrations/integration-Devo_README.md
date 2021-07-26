@@ -4,7 +4,7 @@
 <p>Use the Devo integration to query data in Devo.</p>
 <p>This integration was integrated and tested with API v2 version of Devo.</p>
 <p> </p>
-<h2>Configure Devo on Demisto</h2>
+<h2>Configure Devo on Cortex XSOAR</h2>
 <hr>
 <p>To use the Devo integration, a user with the administrator role is required.</p>
 <p>You can access the API key and API secret in the Devo UI under <strong>Administration</strong> &gt; <strong>Credentials</strong>.</p>
@@ -26,7 +26,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_65353040761539088083740">Perform a query in Devo: devo-query</a></li>
 </ol>

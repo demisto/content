@@ -12,15 +12,15 @@ tools in an elegant, responsive browser-based interface.
 <li>Collect meta-information about a capture file</li>
 <li>Manage and organize capture files in CS Enterprise</li>
 </ul>
-<h2>To set up CS Enterprise to work with Demisto</h2>
+<h2>To set up CS Enterprise to work with Cortex XSOAR</h2>
 You will need the following before setting up the CS Enterprise integration on
-Demisto:
+Cortex XSOAR:
 <ul>
 <li><b>CS Enterprise URL</b> The URL of your CS Enterprise instance</li>
 <li><b><a href="https://support.cloudshark.io/api/">API Token</a>:</b> An API Token from
 CloudShark with upload, info, download, and delete permissions enabled on it</li>
 </ul>
-<h2> Configure the CS Enterprise Integration on Demisto</h2>
+<h2> Configure the CS Enterprise Integration on Cortex XSOAR</h2>
 <ol type="1">
   <li>Go to <b>Settings > Integrations > Servers & Services</b></li>
   <li>Search for CloudShark</li>
@@ -35,7 +35,7 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -137,11 +137,6 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
 <p>
 [Open Capture in CloudShark]($CLOUDSHARK_URL/captures/5277a3a64076)
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>2. cloudshark-info</h3>
@@ -312,12 +307,6 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>3. cloudshark-download</h3>
@@ -384,14 +373,6 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
 
 <h3>4. cloudshark-delete</h3>
 <hr>
@@ -482,11 +463,5 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 <!-- <h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2> -->

@@ -8,7 +8,7 @@
     "closeForm": false,
     "columns": [
         {
-            "displayName": "message",
+            "displayName": "analysis stage",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
@@ -17,7 +17,19 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 640
+            "width": 900
+        },
+        {
+            "displayName": "severity",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "severity",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 200
         },
         {
             "displayName": "time",
@@ -29,7 +41,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 113
+            "width": 200
         }
     ],
     "content": true,
@@ -40,7 +52,7 @@
     ],
     "editForm": true,
     "group": 0,
-    "hidden": false,
+    "hidden": true,
     "id": "incident_rubrikpolarismessage",
     "isReadOnly": false,
     "locked": false,
@@ -52,8 +64,8 @@
     "system": false,
     "threshold": 72,
     "type": "grid",
-    "unmapped": false,
-    "unsearchable": false,
+    "unmapped": true,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0"

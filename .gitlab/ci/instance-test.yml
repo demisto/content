@@ -11,8 +11,10 @@ test_instances:
   dependencies:
     - create-instances
   script:
+    - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     - !reference [.open-ssh-tunnel]
-    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
-    - ./Tests/scripts/instance_test.sh
-    - python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS $CIRCLE_ARTIFACTS/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - ./Tests/scripts/instance_test.sh || EXIT_CODE=$?
+    - python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS $CIRCLE_ARTIFACTS/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
+    - exit "$EXIT_CODE"

@@ -2,9 +2,9 @@
 <section class="article-info">
         <div class="article-content">
           <div class="article-body"><h2>Overview</h2>
-<p>Use this integration to manage and orchestrate your IBM Resilient Systems incident response from Demisto.</p>
+<p>Use this integration to manage and orchestrate your IBM Resilient Systems incident response from Cortex XSOAR.</p>
 <hr>
-<h2>Configure the IBM Resilient Systems Integration on Demisto</h2>
+<h2>Configure the IBM Resilient Systems Integration on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for IBM&nbsp;Resilient Systems.</li>
@@ -27,7 +27,7 @@
 <p>Need more information.</p>
 <hr>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_43150070651528808250950">Search for incidents: rs-search-incidents</a></li>
 <li><a href="#h_736120856181528808732843">Update an incident: rs-update-incident</a></li>

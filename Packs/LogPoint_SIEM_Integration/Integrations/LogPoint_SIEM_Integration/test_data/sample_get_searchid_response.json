@@ -1,0 +1,15 @@
+{
+    "search_id": "0a2d5929-d1d9-415d-b5ad-13f701dd6a64",
+    "client_type": "UI",
+    "query_filter": "",
+    "latest": false,
+    "lookup": false,
+    "query_type": "chart",
+    "time_range": [
+        1622096956,
+        1622098756
+    ],
+    "searchId": "0a2d5929-d1d9-415d-b5ad-13f701dd6a64",
+    "clientType": "UI",
+    "success": true
+}

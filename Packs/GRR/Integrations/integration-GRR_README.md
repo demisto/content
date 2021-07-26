@@ -3,7 +3,7 @@
 <hr>
 <p>Use the GRR integration to manage and communicate with the clients connected to your GRR server.</p>
 <p>This integration was integrated and tested with GRR Rapid Response v3.2.3.2.</p>
-<h2>Configure GRR on Demisto</h2>
+<h2>Configure GRR on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -27,7 +27,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_760325549601535960963666">Start a flow on a client: grr-set-flows</a></li>
 <li><a href="#h_7791868101241535960968842">Get a list of flows: grr-get-flows</a></li>

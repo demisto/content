@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <p>Use the Cisco ISE integration to get endpoint data, and to manage and update endpoints and ANC policies.</p>
 <p> </p>
-<h2>Configure Cisco ISE on Demisto</h2>
+<h2>Configure Cisco ISE on Cortex XSOAR</h2>
 <p> </p>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
@@ -21,7 +21,7 @@
 </ol>
 <p> </p>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <p> </p>
 <ol>
 <li><a href="#h_5bf25414-e9b3-41fe-a855-1bf7de70d143" target="_self">Get an endpoint ID: cisco-ise-get-endpoint-id</a></li>

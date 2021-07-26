@@ -9,7 +9,11 @@ To use this integration you must have a Service Account with one of the followin
 - **Pub/Sub Admin**
 - **Pub/Sub Editor**
 
-## Configure GooglePubSub on Demisto
+## Known Limitations
+When clicking on **Reset the "last run" timestamp**, messages that were recently pulled (including pulls via classification mapper) might take a few minutes before they can be fetched again.
+Because the fetch ignores older messages once newer ones were fetched, it's recommended to wait a few minutes following a reset before trying to fetch again, to prevent older messages from being dropped.
+
+## Configure GooglePubSub on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for GooglePubSub.
@@ -28,7 +32,7 @@ To use this integration you must have a Service Account with one of the followin
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### gcp-pubsub-topics-list
 ***
@@ -992,4 +996,3 @@ There is no context output for this command.
 |ACK ID|
 |---|
 | example_ack_id |
-

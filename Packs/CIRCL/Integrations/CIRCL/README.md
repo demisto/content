@@ -8,7 +8,7 @@
 <li>Query certificate for IP history.</li>
 <li>Query certificate details.</li>
 </ol>
-<h2>Configure CIRCL on Demisto</h2>
+<h2>Configure CIRCL on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for CIRCL.</li>
@@ -25,7 +25,7 @@
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_69075190541546439897277">Get DNS records: circl-dns-get</a></li>
 <li><a href="#h_327258507361546439902765">Get SSL certificate history for IP address or CIDR blocks: circl-ssl-list-certificates</a></li>

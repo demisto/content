@@ -1,2 +1,8 @@
 [file:MicrosoftGraphGroups-Test.yml]
 ignore=auto-test
+
+[file:README.md]
+ignore=RM106
+
+[file:MicrosoftGraphGroups.yml]
+ignore=DS107

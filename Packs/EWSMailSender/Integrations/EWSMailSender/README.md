@@ -8,7 +8,7 @@ Exchange Web Services and Office 365 Email sender.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | ewsServer | Exchange URL or Server IP address | True |
-    | credentials | Authentication: Email address \(for Office 365\) or DOMAIN\\USERNAME \(e.g. DEMISTO.INT\\admin\) | True |
+    | credentials | Authentication: Email address \(for Office 365\) or DOMAIN\\USERNAME \(e.g. XSOAR.INT\\admin\) | True |
     | defaultServerVersion | Server Version \(2007, 2010, 2010_SP2, 2013, or 2016\) | True |
     | authType | Authentication Type \(NTLM, Basic, or Digest\). For Office 365 use Basic. | True |
     | insecure | Trust any certificate \(not secure\) | False |

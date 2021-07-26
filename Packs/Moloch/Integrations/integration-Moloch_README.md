@@ -4,7 +4,7 @@
 <p>Use the Moloch integration to store and index network traffic in standard PCAP format.</p>
 <p>This integration was integrated and tested with Moloch v1.5.1.</p>
 <p> </p>
-<h2>Configure Moloch on Demisto</h2>
+<h2>Configure Moloch on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -23,7 +23,7 @@
 <p> </p>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_69960582341534849781507">Retrieve connections data in JSON: moloch_connections_json</a></li>
 <li><a href="#h_904296321891534849786929">Retrieve connections data in CSV: moloch_connections_csv</a></li>

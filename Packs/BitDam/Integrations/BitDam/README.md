@@ -6,7 +6,7 @@
 <h2>Use cases</h2>
 <hr>
 <p>Scan any supported time in a short time. The BitDam scan file playbook enables you to scan a file and return the result as soon as the file scan completes. This provides a decisive verdict, stating whether the file is benign or malicious.</p>
-<h2>Configure BitDam on Demisto</h2>
+<h2>Configure BitDam on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -25,7 +25,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_92944668351540898353940">Upload a file: bitdam-upload-file</a></li>
 <li><a href="#h_56122540381540898358695">Get the verdict for a file: bitdam-get-verdict</a></li>

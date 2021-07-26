@@ -1,4 +1,4 @@
-The Cognni connector offers a quick and simple integration with Demisto 
+The Cognni connector offers a quick and simple integration with Cortex XSOAR 
 in order to provide ongoing insights into how your important information is used. 
 With Cognni, you can autonomously detect information-specific incidents 
 based on contextual factors, and automatically compile insights to investigate 

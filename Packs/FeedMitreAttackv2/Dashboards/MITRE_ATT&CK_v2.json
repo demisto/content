@@ -1487,7 +1487,7 @@
                 "prevName": "test",
                 "dataType": "scripts",
                 "widgetType": "text",
-                "query": "MITREIndicatorsByOpenIncidents",
+                "query": "MITREIndicatorsByOpenIncidentsV2",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {

@@ -1,0 +1,266 @@
+{
+ "pipeline_schedule": {
+  "mock_response": [
+   {
+    "id": 1,
+    "description": "Run the Build",
+    "ref": "master",
+    "cron": "* * * * *",
+    "cron_timezone": "UTC",
+    "next_run_at": "2021-06-16T00:05:00.000Z",
+    "active": true,
+    "created_at": "2021-05-23T14:00:34.105Z",
+    "updated_at": "2021-06-15T00:05:06.617Z",
+    "owner": {
+     "id": 11,
+     "name": "User Name 2",
+     "username": "user2",
+     "state": "active",
+     "avatar_url": "https://secure.gravatar.com/avatar/as52123asjklaslsajf?s=80&d=identicon",
+     "web_url": "https://gitlab_server/user2"
+    }
+   },
+   {
+    "id": 2,
+    "description": "Run the Expected Pipeline",
+    "ref": "upload_flow",
+    "cron": "* * * * *",
+    "cron_timezone": "UTC",
+    "next_run_at": "2021-05-24T02:05:00.000Z",
+    "active": false,
+    "created_at": "2021-05-12T11:57:47.436Z",
+    "updated_at": "2021-05-23T08:28:39.885Z",
+    "owner": {
+     "id": 22,
+     "name": "User Name",
+     "username": "user",
+     "state": "active",
+     "avatar_url": "https://secure.gravatar.com/avatar/as52123asjklaslsajf?s=80&d=identicon",
+     "web_url": "https://gitlab_server/user"
+    }
+   }
+  ],
+  "expected_outputs": [
+   {
+    "id": 1,
+    "description": "Run the Build",
+    "ref": "master",
+    "next_run_at": "2021-06-16T00:05:00.000Z",
+    "active": true,
+    "created_at": "2021-05-23T14:00:34.105Z",
+    "updated_at": "2021-06-15T00:05:06.617Z"
+   },
+   {
+    "id": 2,
+    "description": "Run the Expected Pipeline",
+    "ref": "upload_flow",
+    "next_run_at": "2021-05-24T02:05:00.000Z",
+    "active": false,
+    "created_at": "2021-05-12T11:57:47.436Z",
+    "updated_at": "2021-05-23T08:28:39.885Z"
+   }
+  ],
+  "expected_prefix": "GitLab.PipelineSchedule",
+  "expected_url_mock_suffix": "projects/1/pipeline_schedules",
+  "expected_key_field": "id",
+  "args": {
+   "project_id": 1
+  }
+ },
+ "pipeline": {
+  "mock_response": [
+   {
+    "id": 1,
+    "project_id": 3,
+    "sha": "skd5h31245ljkasl4kj45l324",
+    "ref": "Pipeline 1",
+    "status": "running",
+    "created_at": "2021-06-15T14:31:29.607Z",
+    "updated_at": "2021-06-15T14:31:32.964Z",
+    "web_url": "https://server_url/project/-/pipelines/1"
+   },
+   {
+    "id": 2,
+    "project_id": 3,
+    "sha": "zxfmle54j14jazskl4jqlk421l4",
+    "ref": "Pipeline 2",
+    "status": "running",
+    "created_at": "2021-06-15T14:26:00.460Z",
+    "updated_at": "2021-06-15T14:26:03.452Z",
+    "web_url": "https://server_url/project/-/pipelines/2"
+   }
+  ],
+  "expected_outputs": [
+   {
+    "id": 1,
+    "project_id": 3,
+    "sha": "skd5h31245ljkasl4kj45l324",
+    "ref": "Pipeline 1",
+    "status": "running",
+    "created_at": "2021-06-15T14:31:29.607Z",
+    "updated_at": "2021-06-15T14:31:32.964Z",
+    "web_url": "https://server_url/project/-/pipelines/1"
+   },
+   {
+    "id": 2,
+    "project_id": 3,
+    "sha": "zxfmle54j14jazskl4jqlk421l4",
+    "ref": "Pipeline 2",
+    "status": "running",
+    "created_at": "2021-06-15T14:26:00.460Z",
+    "updated_at": "2021-06-15T14:26:03.452Z",
+    "web_url": "https://server_url/project/-/pipelines/2"
+   }
+  ],
+  "expected_prefix": "GitLab.Pipeline",
+  "expected_url_mock_suffix": "projects/3/pipelines",
+  "expected_key_field": "id",
+  "args": {
+   "project_id": "3"
+  }
+ },
+ "jobs": {
+  "mock_response": [
+   {
+    "id": 31,
+    "status": "failed",
+    "stage": "run-instances",
+    "name": "server_master",
+    "ref": "master",
+    "tag": false,
+    "coverage": null,
+    "allow_failure": false,
+    "created_at": "2021-06-15T00:05:09.139Z",
+    "started_at": "2021-06-15T00:35:52.125Z",
+    "finished_at": "2021-06-15T01:44:16.559Z",
+    "duration": 4104.433651,
+    "user": {
+     "id": 1,
+     "name": "User name",
+     "username": "user",
+     "state": "active",
+     "avatar_url": "https://server_url/uploads/-/system/user/avatar/1/avatar.png",
+     "web_url": "https://server_url/user",
+     "created_at": "2020-10-26T19:36:25.259Z",
+     "bio": "",
+     "bio_html": "",
+     "location": "",
+     "public_email": "",
+     "skype": "",
+     "linkedin": "",
+     "twitter": "",
+     "website_url": "",
+     "organization": "",
+     "job_title": "",
+     "bot": false,
+     "work_information": null,
+     "followers": 0,
+     "following": 0
+    },
+    "commit": {
+     "id": "sdm45mk43214ask4la43kj12l3kj",
+     "short_id": "sd45123",
+     "created_at": "2021-06-14T18:57:03.000+03:00",
+     "parent_ids": [
+      "as41p24aslkjrsklas412234jkas"
+     ],
+     "title": "Update Issue 1",
+     "message": "Updated issue 1 by user",
+     "author_name": "bot",
+     "author_email": "bot@gmail.com",
+     "authored_date": "2021-06-14T18:57:03.000+03:00",
+     "committer_name": "GitHub",
+     "committer_email": "noreply@github.com",
+     "committed_date": "2021-06-14T18:57:03.000+03:00",
+     "web_url": "https://server_url/-/commit/sdm45mk43214ask4la43kj12l3kj"
+    },
+    "pipeline": {
+     "id": 12,
+     "project_id": 4,
+     "sha": "as5235knlsadjr5lsdk45jl1k2j3lsdr",
+     "ref": "master",
+     "status": "failed",
+     "created_at": "2021-06-15T00:05:09.041Z",
+     "updated_at": "2021-06-15T01:44:17.793Z",
+     "web_url": "https://server_url/-/pipelines/12"
+    },
+    "web_url": "https://server_url/-/jobs/31",
+    "artifacts_file": {
+     "filename": "artifacts.zip",
+     "size": 136861712
+    },
+    "artifacts": [
+     {
+      "file_type": "archive",
+      "size": 136861712,
+      "filename": "artifacts.zip",
+      "file_format": "zip"
+     },
+     {
+      "file_type": "metadata",
+      "size": 1138,
+      "filename": "metadata.gz",
+      "file_format": "gzip"
+     },
+     {
+      "file_type": "trace",
+      "size": 26318,
+      "filename": "job.log",
+      "file_format": null
+     }
+    ],
+    "artifacts_expire_at": "2021-07-15T01:44:11.659Z",
+    "tag_list": []
+   }
+  ],
+  "expected_outputs": [
+   {
+    "id": 31,
+    "stage": "run-instances",
+    "name": "server_master",
+    "ref": "master",
+    "created_at": "2021-06-15T00:05:09.139Z",
+    "started_at": "2021-06-15T00:35:52.125Z",
+    "finished_at": "2021-06-15T01:44:16.559Z",
+    "duration": 4104.433651,
+    "pipeline": {
+     "id": 12,
+     "project_id": 4,
+     "sha": "as5235knlsadjr5lsdk45jl1k2j3lsdr",
+     "ref": "master",
+     "status": "failed",
+     "created_at": "2021-06-15T00:05:09.041Z",
+     "updated_at": "2021-06-15T01:44:17.793Z",
+     "web_url": "https://server_url/-/pipelines/12"
+    },
+    "web_url": "https://server_url/-/jobs/31"
+   }
+  ],
+  "expected_prefix": "GitLab.Job",
+  "expected_url_mock_suffix": "projects/4/pipelines/12/jobs",
+  "expected_key_field": "id",
+  "args": {
+   "project_id": "4",
+   "pipeline_id": "12"
+  }
+ },
+ "artifact-get": {
+  "mock_response": "Failed Unit Test",
+  "expected_outputs": {
+   "job_id": "32",
+   "artifact_path_suffix": "artifacts/failed_tests.txt",
+   "artifact_data": "\"Failed Unit Test\""
+  },
+  "expected_prefix": "GitLab.Artifact",
+  "expected_url_mock_suffix": "projects/45/jobs/32/artifacts/artifacts/failed_tests.txt",
+  "expected_key_field": [
+   "job_id",
+   "artifact_path_suffix"
+  ],
+  "args": {
+   "project_id": "45",
+   "job_id": "32",
+   "artifact_path_suffix": "artifacts/failed_tests.txt"
+  }
+ }
+}

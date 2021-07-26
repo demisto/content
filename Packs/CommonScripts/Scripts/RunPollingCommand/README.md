@@ -7,7 +7,7 @@ Runs a one time specified polling command. This is useful for initiating a local
 | --- | --- |
 | Script Type | python |
 | Tags | - |
-| Demisto Version | 4.0.0+ |
+| Cortex XSOAR Version | 4.0.0+ |
 
 ## Inputs
 ---

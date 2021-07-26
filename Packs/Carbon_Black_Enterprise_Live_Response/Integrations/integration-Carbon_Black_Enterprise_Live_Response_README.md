@@ -40,7 +40,7 @@
 <li>Set up a VMware API Connector. This gives you access to the apiKey and connectorId<strong>.</strong>
 </li>
 </ol>
-<h2>Configure VMware Carbon Black EDR (Live Response API) on Demisto</h2>
+<h2>Configure VMware Carbon Black EDR (Live Response API) on Cortex XSOAR</h2>
 <p>You can set up the integration to work with either VMware Carbon Black EDR or VMware Carbon Black Endpoint Standard<strong>.</strong></p>
 <p>Set the required fields to suit your instance ONLY.</p>
 <h3>To set up the integration to work with VMware Carbon Black EDR:</h3>
@@ -112,7 +112,7 @@
 <h2>Known Limitations</h2>
 <p><strong>Session Limitations</strong><br> Only one session per sensor is allowed at a given time. An error will occur when trying to open a new session for a sensor with existing active session.</p>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_984625453191541320806517">Archive a session: cb-archive</a></li>
 <li><a href="#h_8239514313281541320813075">Cancel a pending command: cb-command-cancel</a></li>

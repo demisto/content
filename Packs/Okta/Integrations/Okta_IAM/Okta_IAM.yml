@@ -20,17 +20,22 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: iam-create-user Command Enabled
+  display: Allow creating users
   name: create-user-enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: iam-update-user Command Enabled
+  display: Allow updating users
   name: update-user-enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: iam-disable-user Command Enabled
+  display: Allow enabling users
+  name: enable-user-enabled
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Allow disabling users
   name: disable-user-enabled
   required: false
   type: 8
@@ -624,6 +629,7 @@ script:
       description: Display name of a target.
       type: String
   dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: true
   longRunning: false
@@ -632,6 +638,8 @@ script:
   script: '-'
   subtype: python3
   type: python
+  ismappable: true
+  isremotesyncout: true
 tests:
 - Okta IAM - Test Playbook
 defaultmapperin: Okta IAM - App Sync (mapper)

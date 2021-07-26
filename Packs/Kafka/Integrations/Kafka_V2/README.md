@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <p>Use the Kafka integration to manage messages and partitions.</p>
 <p>This integration was integrated and tested with version 2.6 of Kafka.</p>
-<h2>Configure Kafka v2 on Demisto</h2>
+<h2>Configure Kafka v2 on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Kafka v2.</li>
@@ -28,7 +28,7 @@
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li>Print all partitions for a topic: kafka-print-topics</li>
 <li>Publish a message to Kafka: kafka-publish-msg</li>

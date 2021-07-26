@@ -1,16 +1,16 @@
 {
-  "name": "Jask",
-  "description": "Freeing the analyst with autonomous decisions",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Analytics & SIEM"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "Jask",
+    "description": "Freeing the analyst with autonomous decisions",
+    "support": "xsoar",
+    "currentVersion": "1.1.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
 }

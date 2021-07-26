@@ -6,7 +6,7 @@ Whether value is within an hour range.
 | --- | --- |
 | Script Type | python3 |
 | Tags | transformer, date |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

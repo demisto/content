@@ -7,8 +7,8 @@ import re
 VALID_EXTENSION = r'(?!\S*\.(?:zip|jpg|jpeg|csv|png|gif|bmp|txt|pdf|ppt|pptx|xls|xlsx|doc|docx|eml|msg)(?:\s*$))'
 
 """
-First Group - [a-z0-9._%+-]+ :
-    any character of: 'A-Z', '0-9','.', '_', '%', '+', '-' 1 or more times
+First Group - [a-z0-9.!#$%&'*+-/=?^_`{|}~]+ :
+    any valid character in the valid local part (see in: https://datatracker.ietf.org/doc/html/rfc3696#section-3) 1 or more times
 Second Group - [a-z0-9.-]+ :
     any character of: 'A-Z', '0-9','.', '-' 1 or more times
 Third Group - [a-z]{2,} :
@@ -16,7 +16,7 @@ Third Group - [a-z]{2,} :
 
 The pattern will be: <First Group>@<Second Group>.<Third Group>
 """
-VALID_ADDRESS_FORMAT = r'[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}'
+VALID_ADDRESS_FORMAT = r"[a-z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-z0-9.-]+\.[a-z]{2,}"
 VALID_ADDRESS_REGEX = VALID_EXTENSION + VALID_ADDRESS_FORMAT
 
 

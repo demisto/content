@@ -1,0 +1,44 @@
+{
+    "num_aggregated": 3841,
+    "columns": [
+        "count()"
+    ],
+    "query_type": "chart",
+    "rows": [
+        {
+            "_type_str": " col_type count()",
+            "count()": 299,
+            "_type_num": " count()",
+            "_type_ip": "",
+            "_group": [
+                "office365"
+            ],
+            "col_type": "office365"
+        },
+        {
+            "_type_str": " col_type count()",
+            "count()": 3542,
+            "_type_num": " count()",
+            "_type_ip": "",
+            "_group": [
+                "filesystem"
+            ],
+            "col_type": "filesystem"
+        }
+    ],
+    "grouping": [
+        "col_type"
+    ],
+    "version": 5,
+    "interesting_fields": [],
+    "time_range": [
+        1621410334,
+        1621412134
+    ],
+    "orig_search_id": "fd51ec39-1169-4ca3-8329-9927387f63b8",
+    "success": true,
+    "final": true,
+    "totalPages": 1,
+    "complete": true,
+    "showAdditionalPanels": true
+}

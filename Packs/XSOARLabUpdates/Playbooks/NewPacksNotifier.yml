@@ -1,7 +1,7 @@
 description: Send updates on new released packs to slack channel
 id: NewPacksNotifier
 inputs:
-- description: The channel name on slack to send the notification to.
+- description: Comma seperated channel names on slack to send the notification to.
   key: channel_name
   playbookInputQuery:
   required: true
@@ -22,12 +22,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 64d1bcb1-dd77-4f0b-8cd6-062014b5c9dd
+      id: 7fe56a7c-aaed-4ea4-8831-b36e9f57b1c1
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 64d1bcb1-dd77-4f0b-8cd6-062014b5c9dd
+    taskid: 7fe56a7c-aaed-4ea4-8831-b36e9f57b1c1
     timertriggers: []
     type: start
     view: |-
@@ -58,13 +58,13 @@ tasks:
       brand: ""
       description: Extract the index and gets a list of all new packs since last run
         into context.
-      id: f3e7f5ab-c532-4a82-88e5-a24d95338f4a
+      id: b2ea0809-c82d-44e0-8973-ab7b319bca3e
       iscommand: false
       name: Build Slack Blocks From Index
       script: BuildSlackBlocksFromIndex
       type: regular
       version: -1
-    taskid: f3e7f5ab-c532-4a82-88e5-a24d95338f4a
+    taskid: b2ea0809-c82d-44e0-8973-ab7b319bca3e
     timertriggers: []
     type: regular
     view: |-
@@ -92,7 +92,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "4"
+      - "13"
     note: false
     quietmode: 0
     separatecontext: false
@@ -100,12 +100,12 @@ tasks:
     task:
       brand: ""
       description: Check if slack blocks is not "no new packs"
-      id: 41d9d248-0fe9-4ae2-88d7-c84a00ade6c9
+      id: c4ed36d2-575d-42bd-8a88-709db0bce50d
       iscommand: false
       name: Check If Blocks Exists
       type: condition
       version: -1
-    taskid: 41d9d248-0fe9-4ae2-88d7-c84a00ade6c9
+    taskid: c4ed36d2-575d-42bd-8a88-709db0bce50d
     timertriggers: []
     type: condition
     view: |-
@@ -113,40 +113,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 1245
-        }
-      }
-  "4":
-    id: "4"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "5"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      blocks:
-        simple: ${Blocks}
-      channel:
-        simple: ${inputs.channel_name}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sends a message to a user, group, or channel.
-      id: 7b295a8e-2c7f-4241-8406-f02602eaca55
-      iscommand: true
-      name: Send Slack Message
-      script: '|||send-notification'
-      type: regular
-      version: -1
-    taskid: 7b295a8e-2c7f-4241-8406-f02602eaca55
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1420
         }
       }
   "5":
@@ -167,20 +133,20 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.list.set
-      id: a7ee6b52-ef6b-4cf8-87e0-aa124c419aea
+      id: 1a889442-4435-40d5-8d85-e3d3429a107f
       iscommand: true
       name: Set Last Run
       script: Builtin|||setList
       type: regular
       version: -1
-    taskid: a7ee6b52-ef6b-4cf8-87e0-aa124c419aea
+    taskid: 1a889442-4435-40d5-8d85-e3d3429a107f
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
   "6":
@@ -201,13 +167,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.list.get
-      id: 9877bb43-0955-496b-84f4-59e308c11c3b
+      id: 67fa3bf9-2731-481a-87ed-495c551556be
       iscommand: true
       name: Get Last Run
       script: Builtin|||getList
       type: regular
       version: -1
-    taskid: 9877bb43-0955-496b-84f4-59e308c11c3b
+    taskid: 67fa3bf9-2731-481a-87ed-495c551556be
     timertriggers: []
     type: regular
     view: |-
@@ -226,20 +192,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b50b8950-7856-478b-855e-e222a06f545f
+      id: 03ac1d7d-3ae2-4193-8a5e-767ba818736e
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: b50b8950-7856-478b-855e-e222a06f545f
+    taskid: 03ac1d7d-3ae2-4193-8a5e-767ba818736e
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
         }
       }
   "8":
@@ -260,13 +226,13 @@ tasks:
     task:
       brand: ""
       description: Check if list exist in demisto lists.
-      id: b9e0237d-8cd5-4b78-8b23-6275b35e8c11
+      id: 1c9704b6-417c-4c11-8574-50f6103e8072
       iscommand: false
       name: Check If NewPacksNotifierLastRun List Exists
       script: IsListExist
       type: condition
       version: -1
-    taskid: b9e0237d-8cd5-4b78-8b23-6275b35e8c11
+    taskid: 1c9704b6-417c-4c11-8574-50f6103e8072
     timertriggers: []
     type: condition
     view: |-
@@ -295,13 +261,13 @@ tasks:
       brand: ""
       description: |
         Retrieves the current date and time.
-      id: ca431bc0-42e8-4037-8cd8-7348c7778c10
+      id: cff86449-7cab-4231-8091-93913cb90498
       iscommand: false
       name: Get Week Ago Time
       script: GetTime
       type: regular
       version: -1
-    taskid: ca431bc0-42e8-4037-8cd8-7348c7778c10
+    taskid: cff86449-7cab-4231-8091-93913cb90498
     timertriggers: []
     type: regular
     view: |-
@@ -329,13 +295,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.list.create
-      id: 16ab84f9-cb44-41cf-8d85-6dbdfa7b0161
+      id: b8d42a22-a11b-4665-86f0-5be4b3d3c82b
       iscommand: true
       name: Create NewPacksNotifierLastRun List
       script: Builtin|||createList
       type: regular
       version: -1
-    taskid: 16ab84f9-cb44-41cf-8d85-6dbdfa7b0161
+    taskid: b8d42a22-a11b-4665-86f0-5be4b3d3c82b
     timertriggers: []
     type: regular
     view: |-
@@ -361,20 +327,20 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.close.inv
-      id: 2260253a-cd1f-472f-8fac-c37456369b1d
+      id: e0919f70-7e74-417e-815a-724950e4ab61
       iscommand: true
       name: Close Incident
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 2260253a-cd1f-472f-8fac-c37456369b1d
+    taskid: e0919f70-7e74-417e-815a-724950e4ab61
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1945
         }
       }
   "12":
@@ -397,13 +363,13 @@ tasks:
     task:
       brand: ""
       description: Sends http request. Returns the response as json.
-      id: a68123ca-d1b6-4255-8626-c56a2e8e3504
+      id: 5388715e-5da4-49dd-89d2-28f5e4cddffc
       iscommand: false
       name: Download index.zip from marketplace-dist bucket
       script: http
       type: regular
       version: -1
-    taskid: a68123ca-d1b6-4255-8626-c56a2e8e3504
+    taskid: 5388715e-5da4-49dd-89d2-28f5e4cddffc
     timertriggers: []
     type: regular
     view: |-
@@ -413,13 +379,81 @@ tasks:
           "y": 195
         }
       }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      arrayData:
+        simple: ${inputs.channel_name}
+      contextKey:
+        simple: channels
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Will create an array object in context from given string input '
+      id: 17c2d0c1-b995-4b34-8786-02aaf3483e89
+      iscommand: false
+      name: Split Channels
+      script: CreateArray
+      type: regular
+      version: -1
+    taskid: 17c2d0c1-b995-4b34-8786-02aaf3483e89
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocks:
+        simple: ${Blocks}
+      channel:
+        simple: ${channels}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a message to a user, group, or channel.
+      id: 32e70211-5ee4-441e-8234-bbe07736a702
+      iscommand: true
+      name: Send Slack Message
+      script: '|||send-notification'
+      type: regular
+      version: -1
+    taskid: 32e70211-5ee4-441e-8234-bbe07736a702
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1960,
+        "height": 2135,
         "width": 492.5,
         "x": 50,
         "y": 50

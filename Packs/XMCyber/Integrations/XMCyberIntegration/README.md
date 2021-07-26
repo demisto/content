@@ -19,7 +19,7 @@ This integration was integrated and tested with version 1.38 of XMCyber
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### xmcyber-affected-critical-assets-list
 ***
@@ -315,7 +315,7 @@ List all entities at risk from an entity and the complexity of the attack
 
 ### xmcyber-version-supported
 ***
-Check if current XM version supports Demisto integration
+Check if current XM version supports Cortex XSOAR integration
 
 
 #### Base Command

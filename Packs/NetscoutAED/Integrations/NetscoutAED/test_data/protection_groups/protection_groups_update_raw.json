@@ -1,0 +1,24 @@
+{
+    "active": 0,
+    "bpsDropped": 0,
+    "bpsPassed": 0,
+    "bytesDropped": 0,
+    "bytesPassed": 0,
+    "description": "The default protection group on 0.0.0.0/0",
+    "name": "Default Protection Group",
+    "packetsDropped": 0,
+    "packetsPassed": 0,
+    "pgid": 7,
+    "ppsDropped": 0,
+    "ppsPassed": 0,
+    "prefixes": [
+        "0.0.0.0/0"
+    ],
+    "profiling": false,
+    "profilingDuration": 0,
+    "profilingStart": 0,
+    "protectionLevel": 1,
+    "serverName": "Generic Server",
+    "serverType": 0,
+    "timeCreated": 1610891653
+}

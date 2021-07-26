@@ -398,14 +398,20 @@ def test_email_with_special_character(mocker):
     assert results[0]['EntryContext']['Email']['Subject'] == 'Hello dear friend'
 
 
-def test_utf_subject_convert():
-    subject = ('[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?='
-               ' =?utf-8?q?mmer=C3=A7ant_Pickup_!?=')
-    decoded = convert_to_unicode(subject)
-    assert '[TESTING]' in decoded
+@pytest.mark.parametrize('encoded_subject, decoded_subject', [
+    (
+        '[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?= =?utf-8?q?mmer=C3=A7ant_Pickup_!?=',  # noqa E501
+        '[TESTING]\xf0\x9f\x94\x92 \xe2\x9c\x94 Votre colis est disponible chez votre commer\xc3\xa7ant Pickup !'
+    ),
+    (
+        'This =?UTF-8?B?VGVzdMKu?= passes',
+        'This Test® passes'
+    ),
+])
+def test_utf_subject_convert(encoded_subject, decoded_subject):
+    decoded = convert_to_unicode(encoded_subject)
+    assert decoded == decoded_subject
     assert 'utf-8' not in decoded
-    assert 'Votre' in decoded
-    assert 'chez' in decoded
 
 
 def test_unfold():
@@ -658,6 +664,40 @@ def test_eml_contains_htm_attachment(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email'][u'Attachments'] == '1.htm'
+
+
+def test_eml_contains_html_and_text(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('multipart_alternative_format.p7m',
+                                                          info="multipart/alternative;, "
+                                                               "ISO-8859 text, with CRLF line terminators"))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert "<p class=\"MsoNormal\"><span style='font-size:10.0pt;font-family:" \
+           "\"xxxxx\",sans-serif;color:black'>żółć<o:p></o:p>" in results[0]['EntryContext']['Email']['HTML']
+
+
+def test_eml_format_multipart_mix(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('multipart_mixed_format.p7m',
+                                                          info="multipart/mixed"))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert "Warsaw, Poland <o:p></o:p>" in results[0]['EntryContext']['Email']['HTML']
 
 
 def test_eml_base64_header_comment_although_string(mocker):

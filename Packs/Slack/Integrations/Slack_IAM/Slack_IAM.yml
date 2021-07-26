@@ -6,7 +6,7 @@ configuration:
 - display: Access Token
   name: access_token
   required: true
-  type: 0
+  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -18,17 +18,22 @@ configuration:
 - additionalinfo: If set to false, iam-create-user command will be skipped, and user
     will not be created.
   defaultvalue: 'true'
-  display: Enabled The Command iam-create-user
+  display: Allow creating users
   name: create_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Enabled The Command iam-update-user
+  display: Allow updating users
   name: update_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Enabled The Command iam-disable-user
+  display: Allow enabling users
+  name: enable_user_enabled
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Allow disabling users
   name: disable_user_enabled
   required: false
   type: 8
@@ -396,6 +401,7 @@ script:
       description: Error Details if there is failure
       type: Unknown
   dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: false
   longRunning: false
@@ -404,6 +410,8 @@ script:
   script: '-'
   subtype: python3
   type: python
+  ismappable: true
+  isremotesyncout: true
 tests:
 - No tests
 fromversion: 6.0.0

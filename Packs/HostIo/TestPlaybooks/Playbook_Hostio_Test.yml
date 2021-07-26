@@ -1,0 +1,258 @@
+id: HostIo_Test
+version: -1
+fromversion: 5.0.0
+name: HostIo_Test
+description: this is a test playbook to test the flow of the HostIo integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 92d36af9-ca05-4375-8195-9c062ecd3cdb
+    type: start
+    task:
+      id: 92d36af9-ca05-4375-8195-9c062ecd3cdb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 2a44bdc5-a355-44fc-830d-d1ffdde1156e
+    type: regular
+    task:
+      id: 2a44bdc5-a355-44fc-830d-d1ffdde1156e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7251d9ec-6bef-449a-8700-869de7bcaaba
+    type: regular
+    task:
+      id: 7251d9ec-6bef-449a-8700-869de7bcaaba
+      version: -1
+      name: domain
+      description: Returns Domain information.
+      script: HostIo|||domain
+      type: regular
+      iscommand: true
+      brand: HostIo
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain:
+        simple: google.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 70205281-10c8-42b2-87d0-3285e905d39b
+    type: regular
+    task:
+      id: 70205281-10c8-42b2-87d0-3285e905d39b
+      version: -1
+      name: hostio-domain-search
+      description: Returns a list of domains associated with a specific field, and
+        the total amount of these domains
+      script: HostIo|||hostio-domain-search
+      type: regular
+      iscommand: true
+      brand: HostIo
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      field:
+        simple: twitter
+      limit:
+        simple: "5"
+      value:
+        simple: elonmusk
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ec880cd9-675b-4501-8faf-6049506375f9
+    type: condition
+    task:
+      id: ec880cd9-675b-4501-8faf-6049506375f9
+      version: -1
+      name: verify results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HostIo.Search.Field
+            iscontext: true
+          right:
+            value:
+              simple: twitter
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HostIo.Search.Value
+            iscontext: true
+          right:
+            value:
+              simple: elonmusk
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HostIo.Domain.web.server
+            iscontext: true
+          right:
+            value:
+              simple: gws
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 10023621-b72c-4644-84d0-a0710f385492
+    type: title
+    task:
+      id: 10023621-b72c-4644-84d0-a0710f385492
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      type: title
+      iscommand: false
+      brand: builtin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 985,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

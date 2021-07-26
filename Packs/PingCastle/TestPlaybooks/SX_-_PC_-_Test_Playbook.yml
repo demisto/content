@@ -1,0 +1,169 @@
+id: SX - PC - Test Playbook
+inputs: []
+name: SX - PC - Test Playbook
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d03defee-4cea-4ec8-8679-b53337f9eaf0
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: d03defee-4cea-4ec8-8679-b53337f9eaf0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f6a09e84-6443-4f40-82c9-2089b2b00b0b
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: f6a09e84-6443-4f40-82c9-2089b2b00b0b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      delete_report: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f9448fb8-cbc2-4a47-8721-2248501b9545
+      iscommand: true
+      name: pingcastle-get-report
+      script: '|||pingcastle-get-report'
+      type: regular
+      version: -1
+    taskid: f9448fb8-cbc2-4a47-8721-2248501b9545
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PingCastle.Report.report
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 444264a6-1961-482b-836a-5313e96317cb
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 444264a6-1961-482b-836a-5313e96317cb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c11707aa-c128-4b79-82b8-142fe8ee602e
+      iscommand: false
+      name: Test Done
+      type: title
+      version: -1
+      description: ''
+    taskid: c11707aa-c128-4b79-82b8-142fe8ee602e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 815,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 5.0.0
+description: This is a test playbook

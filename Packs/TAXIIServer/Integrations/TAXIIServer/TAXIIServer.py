@@ -640,7 +640,7 @@ def validate_credentials(f: Callable) -> Callable:
     @functools.wraps(f)
     def validate(*args, **kwargs):
         headers = request.headers
-
+        global SERVER
         if SERVER.auth:
             credentials: str = headers.get('Authorization', '')
             if not credentials or 'Basic ' not in credentials:
@@ -872,6 +872,7 @@ def run_server(taxii_server: TAXIIServer, is_test=False):
     ssl_args = dict()
 
     try:
+
         if taxii_server.certificate and taxii_server.private_key and not taxii_server.http_server:
             certificate_file = NamedTemporaryFile(delete=False)
             certificate_path = certificate_file.name
@@ -896,6 +897,7 @@ def run_server(taxii_server: TAXIIServer, is_test=False):
             time.sleep(5)
             server_process.terminate()
         else:
+            demisto.updateModuleHealth('')
             wsgi_server.serve_forever()
     except SSLError as e:
         ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'

@@ -7,7 +7,7 @@
 <hr>
 <h2>Use cases</h2>
 <hr>
-<h2>Configure Threat Grid on Demisto</h2>
+<h2>Configure Threat Grid on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -27,7 +27,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_16996161761540718403094">Get samples: threat-grid-get-samples</a></li>
 <li><a href="#h_1561995056331540718972103">Get a sample by sample ID: threat-grid-get-sample-by-id</a></li>
@@ -422,7 +422,7 @@
 <tbody>
 <tr>
 <td style="width: 161px;">file-id</td>
-<td style="width: 476px;">The sample file. Click the chain icon after you upload a file in Demisto to find the file-id. </td>
+<td style="width: 476px;">The sample file. Click the chain icon after you upload a file in Cortex XSOAR to find the file-id. </td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>

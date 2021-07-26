@@ -2,7 +2,7 @@
 ---
 Uptycs combines the open source universal agent, osquery, with a scalable security analytics platform for fleet visibility, intrusion detection, vulnerability monitoring and compliance.  Uptycs deploys osquery to your entire infrastructure, regardless of operating system mix or hosting environment, collects, and stores system state data.  Uptycs will stream that data over secure TLS protocol, storing it in your unique instance, and continuously monitoring for suspicious activity.  Integrated third party feeds of known malware, threats and over 170,000 indicators of compromise (IOCs) further enhance threat visibility.  Finally, take action with real-time alerts, dashboards and reports packaged for multiple security protocols.
 
-The Demisto-Uptycs integration connects to the Uptycs backend via the Uptycs API.  The integration allows the use of Uptycs data in existing workflows.  Features include fetching and handling alerts, threat investigation, posting new threat sources, setting tags on assets, and the ability to run arbitrary SQL queries against your Uptycs database or in real-time against registered endpoints.
+The Cortex XSOAR-Uptycs integration connects to the Uptycs backend via the Uptycs API.  The integration allows the use of Uptycs data in existing workflows.  Features include fetching and handling alerts, threat investigation, posting new threat sources, setting tags on assets, and the ability to run arbitrary SQL queries against your Uptycs database or in real-time against registered endpoints.
 
 ## Uptycs Playbook
 ---
@@ -21,7 +21,7 @@ The Demisto-Uptycs integration connects to the Uptycs backend via the Uptycs API
 *  Mac EDR
 
 
-## Configure Uptycs on Demisto
+## Configure Uptycs on Cortex XSOAR
 ---
 
 ## How to get an API Key and API Secret
@@ -49,12 +49,12 @@ In order to create an instance of the integration, you need to download a user A
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---
-The Demisto-Uptycs integration creates incients from Uptycs alerts using the Uptycs API 
+The Cortex XSOAR-Uptycs integration creates incients from Uptycs alerts using the Uptycs API 
 
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. uptycs-get-assets
 2. uptycs-run-query
@@ -1734,7 +1734,7 @@ post a new threat source to your threat sources in Uptycs
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | description | A short description for the threat source | Required | 
-| entry_id | entry_id for the file with threat information.  This file should be uploaded to demisto in the Playground War Room using the paperclip icon next to the CLI. | Required | 
+| entry_id | entry_id for the file with threat information.  This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI. | Required | 
 | filename | The name of the file being uploaded | Required | 
 | name | The name for the threat source | Required | 
 
@@ -2587,5 +2587,5 @@ In order to create an instance of the integration, a user API key and secret mus
 ## Known Limitations
 ---
 
-While the Demisto-Uptycs integration provides multiple commands with which to access the Uptycs backend, not all features are supported.  In particular, configuration changes are best made using the Uptycs UI.  Many of the commands have a limit set to reduce the number of rows returned from a query or api call.  The limit can be raised, or turned off, however, this may cause the queries take longer to return and potentially return large numbers of rows.  When writing queries, it can sometimes be easier to test using the Uptycs UI rather than the integration.
+While the Cortex XSOAR-Uptycs integration provides multiple commands with which to access the Uptycs backend, not all features are supported.  In particular, configuration changes are best made using the Uptycs UI.  Many of the commands have a limit set to reduce the number of rows returned from a query or api call.  The limit can be raised, or turned off, however, this may cause the queries take longer to return and potentially return large numbers of rows.  When writing queries, it can sometimes be easier to test using the Uptycs UI rather than the integration.
 

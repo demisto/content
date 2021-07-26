@@ -42,7 +42,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | CriticalUsernames | A list of comma-separated names of critical users in the organization. This will affect the calculated severity of the incident. | admin,administrator | Optional |
 | CriticalHostnames | A list of comma-separated names of critical endpoints in the organization. This will affect the calculated severity of the incident. |  | Optional |
 | CriticalADGroups | CSV of DN names of critical Active Directory groups. This will affect the severity calculated for this incident. |  | Optional |
-| InternalDomainName | The organization's internal domain name. This is provided for the \*\*\*IsInternalHostName\*\*\* script that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example, demisto.com. If there is more than one domain, use the \| character to separate values such as \(demisto.com\|test.com\) |  | Optional |
+| InternalDomainName | The organization's internal domain name. This is provided for the \*\*\*IsInternalHostName\*\*\* script that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example, xsoar.com. If there is more than one domain, use the \| character to separate values such as \(xsoar.com\|test.com\) |  | Optional |
 | InternalHostRegex | This is provided for the \*\*\*IsInternalHostName\*\*\* script that checks if the detected host names are internal or external if the hosts match the organization's naming convention. For example, the host testpc1 will have the following regex \\w\{6\}\\d\{1\} |  | Optional |
 
 ## Playbook Outputs

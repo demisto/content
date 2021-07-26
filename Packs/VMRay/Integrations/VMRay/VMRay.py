@@ -302,6 +302,18 @@ def test_module():
     )
 
 
+def encode_file_name(file_name):
+    """
+    encodes the file name - i.e ignoring non ASCII chars and removing backslashes
+
+    Args:
+        file_name (str): name of the file
+
+    Returns: encoded file name
+    """
+    return file_name.encode('ascii', 'ignore').replace('\\', '')
+
+
 def upload_sample(file_id, params):
     """Uploading sample to VMRay
 
@@ -315,7 +327,7 @@ def upload_sample(file_id, params):
     suffix = 'sample/submit'
     file_obj = demisto.getFilePath(file_id)
     # Ignoring non ASCII
-    file_name = file_obj['name'].encode('ascii', 'ignore')
+    file_name = encode_file_name(file_obj['name'])
     file_path = file_obj['path']
     with open(file_path, 'rb') as f:
         files = {'sample_file': (file_name, f)}
@@ -630,11 +642,11 @@ def get_threat_indicators_command():
             entry_context_list.append(entry)
 
         human_readable = tableToMarkdown(
-            'Threat indicators for sample ID: {}. Showing first indicator:'.format(
+            'Threat indicators for sample ID: {}:'.format(
                 sample_id
             ),
-            entry_context_list[0],
-            headers=['AnalysisID', 'Category', 'Classification', 'Operation'],
+            entry_context_list,
+            headers=['ID', 'AnalysisID', 'Category', 'Classification', 'Operation'],
         )
 
         entry_context = {'VMRay.ThreatIndicator(obj.ID === val.ID)': entry_context_list}

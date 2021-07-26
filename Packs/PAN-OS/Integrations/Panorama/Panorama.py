@@ -485,10 +485,13 @@ def panorama_command(args: dict):
 
 
 @logger
-def panorama_commit():
+def panorama_commit(args):
+    command: str = ''
+    if device_group := args.get('device-group'):
+        command += f'<device-group><entry name="{device_group}"/></device-group>'
     params = {
         'type': 'commit',
-        'cmd': '<commit></commit>',
+        'cmd': f'<commit>{command}</commit>',
         'key': API_KEY
     }
     result = http_request(
@@ -500,17 +503,18 @@ def panorama_commit():
     return result
 
 
-def panorama_commit_command():
+def panorama_commit_command(args: dict):
     """
-    Commit and show message in warroom
+    Commit and show message in the war room
     """
-    result = panorama_commit()
+    result = panorama_commit(args)
 
     if 'result' in result['response']:
         # commit has been given a jobid
         commit_output = {
             'JobID': result['response']['result']['job'],
-            'Status': 'Pending'
+            'Status': 'Pending',
+            'Description': args.get('description')
         }
         return_results({
             'Type': entryTypes['note'],
@@ -531,7 +535,7 @@ def panorama_commit_command():
 def panorama_commit_status(args: dict):
     params = {
         'type': 'op',
-        'cmd': '<show><jobs><id>' + args['job_id'] + '</id></jobs></show>',
+        'cmd': f'<show><jobs><id>{args.get("job_id")}</id></jobs></show>',
         'key': API_KEY
     }
     result = http_request(
@@ -586,14 +590,24 @@ def panorama_commit_status_command(args: dict):
 
 
 @logger
-def panorama_push_to_device_group():
+def panorama_push_to_device_group(args: dict):
+    command: str = ''
+    command += f'<device-group><entry name="{DEVICE_GROUP}"/></device-group>'
+
+    if argToBoolean(args.get('validate-only', 'false')):
+        command += '<validate-only>yes</validate-only>'
+    if not argToBoolean(args.get('include-template', 'true')):
+        command += '<include-template>no</include-template>'
+    if description := args.get('description'):
+        command += f'<description>{description}</description>'
+
     params = {
         'type': 'commit',
         'action': 'all',
-        'cmd': '<commit-all><shared-policy><device-group><entry name=\"' + DEVICE_GROUP
-               + '\"/></device-group></shared-policy></commit-all>',
+        'cmd': f'<commit-all><shared-policy>{command}</shared-policy></commit-all>',
         'key': API_KEY
     }
+
     result = http_request(
         URL,
         'POST',
@@ -603,14 +617,15 @@ def panorama_push_to_device_group():
     return result
 
 
-def panorama_push_to_device_group_command():
+def panorama_push_to_device_group_command(args: dict):
     """
     Push Panorama configuration and show message in warroom
     """
+
     if not DEVICE_GROUP:
         raise Exception("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
 
-    result = panorama_push_to_device_group()
+    result = panorama_push_to_device_group(args)
     if 'result' in result['response']:
         # commit has been given a jobid
         push_output = {
@@ -638,7 +653,7 @@ def panorama_push_to_device_group_command():
 def panorama_push_status(job_id: str):
     params = {
         'type': 'op',
-        'cmd': '<show><jobs><id>' + job_id + '</id></jobs></show>',
+        'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
         'key': API_KEY
     }
     result = http_request(
@@ -669,8 +684,8 @@ def panorama_push_status_command(job_id: str):
     """
     result = panorama_push_status(job_id)
     job = result.get('response', {}).get('result', {}).get('job', {})
-    if job.get('type', '') != 'CommitAll':
-        raise Exception('JobID given is not of a Push.')
+    if job.get('type', '') not in ('CommitAll', 'ValidateAll'):
+        raise Exception('JobID given is not of a Push neither of a validate.')
 
     push_status_output = {'JobID': job.get('id')}
     if job.get('status', '') == 'FIN':
@@ -692,12 +707,16 @@ def panorama_push_status_command(job_id: str):
 
     # WARNINGS - Job warnings
     status_warnings = []  # type: ignore
+    status_errors = []  # type: ignore
     devices = safeget(result, ["response", "result", "job", "devices", "entry"])
     if devices:
         for device in devices:
             device_warnings = safeget(device, ["details", "msg", "warnings", "line"])
             status_warnings.extend([] if not device_warnings else device_warnings)
+            status_errors = safeget(device, ["details", "msg", "errors", "line"])
+            status_errors.extend([] if not status_errors else status_errors)
     push_status_output["Warnings"] = status_warnings
+    push_status_output["Errors"] = status_errors
 
     return_results({
         'Type': entryTypes['note'],
@@ -705,7 +724,7 @@ def panorama_push_status_command(job_id: str):
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Push to Device Group status:', push_status_output,
-                                         ['JobID', 'Status', 'Details', 'Warnings'], removeNull=True),
+                                         ['JobID', 'Status', 'Details', 'Errors', 'Warnings'], removeNull=True),
         'EntryContext': {"Panorama.Push(val.JobID == obj.JobID)": push_status_output}
     })
 
@@ -717,23 +736,22 @@ def prettify_addresses_arr(addresses_arr: list) -> List:
     if not isinstance(addresses_arr, list):
         return prettify_address(addresses_arr)
     pretty_addresses_arr = []
+
     for address in addresses_arr:
         pretty_address = {'Name': address['@name']}
         if DEVICE_GROUP:
             pretty_address['DeviceGroup'] = DEVICE_GROUP
         if 'description' in address:
             pretty_address['Description'] = address['description']
-
         if 'ip-netmask' in address:
             pretty_address['IP_Netmask'] = address['ip-netmask']
-
         if 'ip-range' in address:
             pretty_address['IP_Range'] = address['ip-range']
-
         if 'fqdn' in address:
             pretty_address['FQDN'] = address['fqdn']
-
-        if 'tag' in address and 'member' in address['tag']:
+        if 'tag' in address and address['tag'] is not None and 'member' in address['tag']:
+            # handling edge cases in which the Tag value is None, e.g:
+            # {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}
             pretty_address['Tags'] = address['tag']['member']
 
         pretty_addresses_arr.append(pretty_address)
@@ -798,7 +816,9 @@ def prettify_address(address: Dict) -> Dict:
     if 'fqdn' in address:
         pretty_address['FQDN'] = address['fqdn']
 
-    if 'tag' in address and 'member' in address['tag']:
+    if 'tag' in address and address['tag'] is not None and 'member' in address['tag']:
+        # handling edge cases in which the Tag value is None, e.g:
+        # {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}
         pretty_address['Tags'] = address['tag']['member']
 
     return pretty_address
@@ -967,7 +987,9 @@ def prettify_address_groups_arr(address_groups_arr: list) -> List:
             pretty_address_group['DeviceGroup'] = DEVICE_GROUP
         if 'description' in address_group:
             pretty_address_group['Description'] = address_group['description']
-        if 'tag' in address_group and 'member' in address_group['tag']:
+        if 'tag' in address_group and address_group['tag'] is not None and 'member' in address_group['tag']:
+            # handling edge cases in which the Tag value is None, e.g:
+            # {'@name': 'test', 'static': {'member': 'test_address'}, 'tag': None}
             pretty_address_group['Tags'] = address_group['tag']['member']
 
         if pretty_address_group['Type'] == 'static':
@@ -1031,10 +1053,11 @@ def prettify_address_group(address_group: Dict) -> Dict:
     }
     if DEVICE_GROUP:
         pretty_address_group['DeviceGroup'] = DEVICE_GROUP
-
     if 'description' in address_group:
         pretty_address_group['Description'] = address_group['description']
-    if 'tag' in address_group and 'member' in address_group['tag']:
+    if 'tag' in address_group and address_group['tag'] is not None and 'member' in address_group['tag']:
+        # handling edge cases in which the Tag value is None, e.g:
+        # {'@name': 'test', 'static': {'member': 'test_address'}, 'tag': None}
         pretty_address_group['Tags'] = address_group['tag']['member']
 
     if pretty_address_group['Type'] == 'static':
@@ -1338,7 +1361,7 @@ def prettify_services_arr(services_arr: Union[dict, list]):
             pretty_service['DeviceGroup'] = DEVICE_GROUP
         if 'description' in service:
             pretty_service['Description'] = service['description']
-        if 'tag' in service and 'member' in service['tag']:
+        if 'tag' in service and service['tag'] is not None and 'member' in service['tag']:
             pretty_service['Tags'] = service['tag']['member']
 
         protocol = ''
@@ -1411,7 +1434,7 @@ def prettify_service(service: Dict):
         pretty_service['DeviceGroup'] = DEVICE_GROUP
     if 'description' in service:
         pretty_service['Description'] = service['description']
-    if 'tag' in service and 'member' in service['tag']:
+    if 'tag' in service and service['tag'] is not None and 'member' in service['tag']:
         pretty_service['Tags'] = service['tag']['member']
 
     protocol = ''
@@ -1590,7 +1613,9 @@ def prettify_service_groups_arr(service_groups_arr: list):
         }
         if DEVICE_GROUP:
             pretty_service_group['DeviceGroup'] = DEVICE_GROUP
-        if 'tag' in service_group and 'member' in service_group['tag']:
+        if 'tag' in service_group and service_group['tag'] is not None and 'member' in service_group['tag']:
+            # handling edge cases in which the Tag value is None, e.g:
+            # {'@name': 'sg_group', 'members': {'member': 'test_sg'}, 'tag': None}
             pretty_service_group['Tags'] = service_group['tag']['member']
 
         pretty_service_groups_arr.append(pretty_service_group)
@@ -1646,7 +1671,9 @@ def prettify_service_group(service_group: dict):
     }
     if DEVICE_GROUP:
         pretty_service_group['DeviceGroup'] = DEVICE_GROUP
-    if 'tag' in service_group and 'member' in service_group['tag']:
+    if 'tag' in service_group and service_group['tag'] is not None and 'member' in service_group['tag']:
+        # handling edge cases in which the Tag value is None, e.g:
+        # {'@name': 'sg_group', 'members': {'member': 'test_sg'}, 'tag': None}
         pretty_service_group['Tags'] = service_group['tag']['member']
 
     return pretty_service_group
@@ -4493,8 +4520,8 @@ def panorama_security_policy_match(application: Optional[str] = None, category: 
                                    destination: Optional[str] = None, destination_port: Optional[str] = None,
                                    from_: Optional[str] = None, to_: Optional[str] = None,
                                    protocol: Optional[str] = None, source: Optional[str] = None,
-                                   source_user: Optional[str] = None):
-    params = {'type': 'op', 'key': API_KEY,
+                                   source_user: Optional[str] = None, target: Optional[str] = None):
+    params = {'type': 'op', 'key': API_KEY, 'target': target,
               'cmd': build_policy_match_query(application, category, destination, destination_port, from_, to_,
                                               protocol, source, source_user)}
 
@@ -4561,8 +4588,11 @@ def prettify_query_fields(application: Optional[str] = None, category: Optional[
 
 
 def panorama_security_policy_match_command(args: dict):
-    if not VSYS:
-        raise Exception("The 'panorama-security-policy-match' command is only relevant for a Firewall instance.")
+    target = args.get('target')
+    if not VSYS and not target:
+        err_msg = "The 'panorama-security-policy-match' command is relevant for a Firewall instance " \
+                  "or for a Panorama instance, to be used with the target argument."
+        raise DemistoException(err_msg)
 
     application = args.get('application')
     category = args.get('category')
@@ -4575,7 +4605,7 @@ def panorama_security_policy_match_command(args: dict):
     source_user = args.get('source-user')
 
     matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
-                                                    protocol, source, source_user)
+                                                    protocol, source, source_user, target)
     if not matching_rules:
         return_results('The query did not match a Security policy.')
     else:
@@ -7030,13 +7060,13 @@ def main():
             panorama_command(args)
 
         elif demisto.command() == 'panorama-commit':
-            panorama_commit_command()
+            panorama_commit_command(args)
 
         elif demisto.command() == 'panorama-commit-status':
             panorama_commit_status_command(args)
 
         elif demisto.command() == 'panorama-push-to-device-group':
-            panorama_push_to_device_group_command()
+            panorama_push_to_device_group_command(args)
 
         elif demisto.command() == 'panorama-push-status':
             panorama_push_status_command(**args)

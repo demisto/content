@@ -605,7 +605,7 @@ Adds a new file attachment to the incident associated with the specified inciden
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The ID of the incident to add a file attachment to. Incident ID is the 'identifier' field returned by the 'fraudwatch-incidents-list' command. | Required | 
-| entry_id | The entry id in Demisto of the attachment to be added to the incident. | Required | 
+| entry_id | The entry id in Cortex XSOAR of the attachment to be added to the incident. | Required | 
 
 
 #### Context Output

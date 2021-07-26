@@ -1,0 +1,4 @@
+[file:README.md]
+ignore=RM106
+[file:incidentfield-Alert_Type.json]
+ignore=IF100

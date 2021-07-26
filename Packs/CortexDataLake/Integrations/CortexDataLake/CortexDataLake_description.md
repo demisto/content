@@ -8,7 +8,7 @@ This integration was integrated and tested with version 2 of Cortex Data Lake
 
 ---
 
-## Configure Cortex Data Lake on Demisto
+## Configure Cortex Data Lake on XSOAR
 
 ---
 
