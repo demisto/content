@@ -27,7 +27,7 @@ FASTTEXT_TRAINING_ALGO = 'fasttext'
 AUTO_TRAINING_ALGO = 'auto'
 
 # the following mapping need to correspond to predict_phishing_words func at DBotPredictPhishingWords
-ALGO_TO_MODEL_TYPE = {FROM_SCRATCH_TRAINING_ALGO: 'Phishing', FASTTEXT_TRAINING_ALGO: 'torch'}
+ALGO_TO_MODEL_TYPE = {FASTTEXT_TRAINING_ALGO: 'Phishing', FINETUNE_TRAINING_ALGO: 'torch'}
 FINETUNE_LABELS = ['Malicious', 'Non-Malicious']
 
 

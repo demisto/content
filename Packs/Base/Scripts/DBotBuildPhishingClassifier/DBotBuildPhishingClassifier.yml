@@ -151,10 +151,10 @@ args:
 comment: Create a phishing classifier using machine learning technique, based on email
   content.
 commonfields:
-  id: DBotBuildPhishingClassifier
+  id: DBotBuildPhishingClassifier2
   version: -1
 enabled: false
-name: DBotBuildPhishingClassifier
+name: DBotBuildPhishingClassifier2
 script: '-'
 subtype: python3
 system: false
