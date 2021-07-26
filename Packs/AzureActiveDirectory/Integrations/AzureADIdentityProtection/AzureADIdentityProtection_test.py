@@ -115,7 +115,8 @@ def test_parse_list():
     human_readable_title = "Risks"
     context_path = "Risks_path"
 
-    outputs = parse_list(response, human_readable_title=human_readable_title, context_path=context_path).outputs
+    parsed = parse_list(response, human_readable_title=human_readable_title, context_path=context_path)
+    outputs = parsed.outputs
     assert len(outputs) == 2
 
     values = outputs[f'AADIdentityProtection.{context_path}(val.id === obj.id)'][0]
@@ -124,3 +125,24 @@ def test_parse_list():
     next_link_dict = outputs[f'AADIdentityProtection.NextLink(obj.Description === "{context_path}")']
     assert next_link_dict == {'Description': context_path,
                               'URL': 'https://graph.microsoft.com/beta/riskDetections?$skiptoken=dummy_skip_token'}
+    assert parsed.readable_output.startswith("### Risks (1 result)")
+
+
+def test_parse_list_empty():
+    """
+    Given
+        - A Microsoft Graph List response (collection of objects)
+    When
+        - calling parse_list()
+    Then
+        - Validate output parsing
+    """
+    empty_response = dict()
+    human_readable_title = "Risks"
+    context_path = "Risks_path"
+
+    parsed = parse_list(empty_response, human_readable_title=human_readable_title, context_path=context_path)
+    outputs = parsed.outputs
+    assert outputs == {f'AADIdentityProtection.{context_path}(val.id === obj.id)': []}  # no next_link
+    assert f"{human_readable_title} (0 results)" in parsed.readable_output
+    assert "**No entries.**" in parsed.readable_output

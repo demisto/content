@@ -39,7 +39,8 @@ def parse_list(raw_response: dict, human_readable_title: str, context_path: str)
     headers = __json_list_to_headers(values)
     __reorder_first_headers(headers,
                             ['Id', 'userId', 'userPrincipalName', 'userDisplayName', 'ipAddress', 'detectedDateTime'])
-    readable_output = tableToMarkdown(f'{human_readable_title.title()} ({len(values)} results)',
+    readable_output = tableToMarkdown(f'{human_readable_title.title()} '
+                                      f'({len(values)} {"result" if len(values) == 1 else "results"})',
                                       values,
                                       removeNull=True,
                                       headers=headers,
