@@ -22,13 +22,11 @@ def filter_by_threshold(context: list, threshold: float):
     low = []
     high = []
     for item in context:
-        demisto.log(f'campaign: {item}')
         if item.get('similarity') >= threshold:
             high.append(item)
         else:
             campaign = _get_incident_campaign(item['id'])
             if campaign:
-                demisto.log(f'campaign found : {campaign}')
                 high.append(item)
             else:
                 low.append(item)

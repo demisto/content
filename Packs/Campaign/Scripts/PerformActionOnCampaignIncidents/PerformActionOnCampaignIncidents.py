@@ -86,7 +86,7 @@ def perform_unlink_and_reopen(ids, action):
 def _add_campaign_to_incident(incident_id, campaign_id):
     demisto.executeCommand('setIncident', {'id': incident_id,
                                            'customFields': {'partofcampaign': campaign_id}})
-    demisto.log(f"Added campaign {campaign_id} to incident {incident_id}")
+    demisto.debug(f"Added campaign {campaign_id} to incident {incident_id}")
 
 
 def _remove_incident_from_lower_similarity_context(incident_context, incident_id):
@@ -102,16 +102,16 @@ def _remove_incident_from_lower_similarity_context(incident_context, incident_id
 
 
 def perform_add_to_campaign(ids, action):
-    demisto.log('starting add to campaign')
+    demisto.debug('starting add to campaign')
     campaign_id = demisto.incident()['id']
     campaign_incident_context = demisto.executeCommand('getContext', {'id': campaign_id})
-    demisto.log(f'got incident context: {campaign_incident_context}')
+    demisto.debug(f'got incident context: {campaign_incident_context}')
 
     if isError(campaign_incident_context):
         return_error(COMMAND_ERROR_MSG.format(action=action, ids=','.join(ids)))
 
     for incident_id in ids:
-        demisto.log(demisto.executeCommand('getContext', {'id': incident_id}))
+        demisto.debug(demisto.executeCommand('getContext', {'id': incident_id}))
 
         search_path = f'Contents.context.EmailCampaign.LowerSimilarityIncidents(val.id=={incident_id})'
         similar_incident_data: dict = demisto.dt(campaign_incident_context, search_path)
