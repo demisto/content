@@ -1778,6 +1778,16 @@
             "is_mockable": false
         },
         {
+            "integrations": "Microsoft 365 Defender",
+            "playbookID": "Microsoft_365_Defender-Test",
+            "instance_names": "ms_365_defender_device_code"
+        },
+        {
+            "integrations": "Microsoft 365 Defender",
+            "playbookID": "Microsoft_365_Defender-Test",
+            "instance_names": "ms_365_defender_client_cred"
+        },
+        {
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
             "nightly": true,
