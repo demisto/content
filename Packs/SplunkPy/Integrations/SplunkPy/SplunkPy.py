@@ -292,6 +292,9 @@ class Notable:
 
         incident["occurred"] = occurred
         notable_data = parse_notable(notable_data)
+        notable_id = notable_data.get('rule_id')
+        if notable_id:
+            notable_data['comments_data'] = MessagesHandler.get_messages_data(notable_id)
         notable_data.update({
             'mirror_instance': demisto.integrationInstance(),
             'mirror_direction': MIRROR_DIRECTION.get(demisto.params().get('mirror_direction'))
@@ -997,6 +1000,8 @@ def get_remote_data_command(service, args, close_incident):
     for item in results.ResultsReader(service.jobs.oneshot(search)):
         updated_notable = parse_notable(item, to_dict=True)
     delta = {field: updated_notable.get(field) for field in INCOMING_MIRRORED_FIELDS if updated_notable.get(field)}
+    if delta.get('comment'):
+        delta['comments_data'] = MessagesHandler.get_messages_data(notable_id)
 
     if delta:
         demisto.debug('notable {} delta: {}'.format(notable_id, delta))
@@ -1628,7 +1633,8 @@ def build_search_human_readable(args, parsed_search_results):
 
                 headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
-    human_readable = tableToMarkdown("Splunk Search results for query: {}".format(args['query']),
+    query = args['query'].replace('`', r'\`')
+    human_readable = tableToMarkdown("Splunk Search results for query: {}".format(query),
                                      parsed_search_results, headers)
     return human_readable
 
@@ -2162,6 +2168,24 @@ def get_store_data(service):
         yield store.data.query(**query)
 
 
+class MessagesHandler:
+
+    service = None
+
+    @staticmethod
+    def get_messages_data(notable_id):
+        comments = []
+        query = '|`incident_review` | where rule_id="{}" | search comment=* reviewer=*'.format(notable_id)
+        for comment in json.load(MessagesHandler.service.jobs.oneshot(query, output_mode='json'))['results']:
+            comments.append({
+                'comment': comment['comment'],
+                'reviewer': comment['reviewer'],
+                'time': comment['_time']
+            })
+
+        return comments
+
+
 def main():
     command = demisto.command()
     if command == 'splunk-parse-raw':
@@ -2208,6 +2232,7 @@ def main():
     if service is None:
         demisto.error("Could not connect to SplunkPy")
 
+    MessagesHandler.service = service
     # The command command holds the command sent from the user.
     if command == 'test-module':
         test_module(service)
