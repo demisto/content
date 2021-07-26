@@ -807,7 +807,7 @@ def wildfire_get_url_report(url: str) -> Tuple:
         else:
             entry_context['Status'] = 'Success'
             entry_context.update(json.loads(report))
-            human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=report,
+            human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=entry_context,
                                              headers=['sha256', 'type', 'verdict', 'iocs'], removeNull=True)
 
     except NotFoundError:
