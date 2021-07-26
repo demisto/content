@@ -42,6 +42,7 @@ def parse_list(raw_response: dict, human_readable_title: str, context_path: str)
     readable_output = tableToMarkdown(f'{human_readable_title.title()} ({len(values)} results)',
                                       values,
                                       removeNull=True,
+                                      headers=headers,
                                       headerTransform=pascalToSpace)
     outputs = {f'{OUTPUTS_PREFIX}.{context_path}(val.id === obj.id)': values}
 
