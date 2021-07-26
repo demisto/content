@@ -10,7 +10,7 @@ INTEGRATION_NAME = "Group-IB TDS Polygon"
 
 @pytest.fixture(autouse=True)
 def handle_calling_context(mocker):
-    mocker.patch.object(demisto, 'callingContext', {'IntegrationBrand': INTEGRATION_NAME})
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
 
 
 with open("test_data/args.json", "r") as f:
