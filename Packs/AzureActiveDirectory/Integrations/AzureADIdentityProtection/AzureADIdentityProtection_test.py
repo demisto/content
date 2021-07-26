@@ -53,7 +53,7 @@ def test_list_commands(client, requests_mock, command, test_data_file, url_suffi
     with open(test_data_file) as f:
         api_response = json.load(f)
 
-    requests_mock.get(f'{client.ms_client._base_url}/{url_suffix}?$top=50', json=api_response)
+    requests_mock.get(f'{client._base_url}/{url_suffix}?$top=50', json=api_response)
     result = command(client, limit=50, **kwargs)
 
     expected_values = api_response.get('value')
@@ -94,7 +94,7 @@ def test_status_update_commands(client, requests_mock, method, expected_output, 
         - Verify command outputs
     """
 
-    requests_mock.post(f'{client.ms_client._base_url}/{url_suffix}', status_code=204)
+    requests_mock.post(f'{client._base_url}/{url_suffix}', status_code=204)
     result = method(client, **kwargs)
     assert requests_mock.request_history[0].json() == {'userIds': [dummy_user_id]}
     assert result == expected_output

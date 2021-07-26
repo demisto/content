@@ -1,5 +1,5 @@
-from CommonServerPython import *
 import urllib3
+from MicrosoftApiModule import *
 
 urllib3.disable_warnings()
 
@@ -37,29 +37,31 @@ def parse_list(raw_response: dict, human_readable_title: str, context_path: str)
                           raw_response=raw_response)
 
 
-class AADClient:
-    def __init__(self, app_id: str, subscription_id: str, verify: bool, proxy: bool, azure_ad_endpoint: str):
-        if '@' in app_id:
+class AADClient(MicrosoftClient):
+    def __init__(self, app_id: str, subscription_id: str, verify: bool, proxy: bool, azure_ad_endpoint: str,
+                 *args, **kwargs):
+
+        super().__init__(azure_ad_endpoint=azure_ad_endpoint,
+                         self_deployed=True,
+                         auth_id=app_id,
+                         grant_type=DEVICE_CODE,
+                         base_url=BASE_URL,
+                         token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+                         verify=verify,
+                         proxy=proxy,
+                         scope=' '.join(REQUIRED_PERMISSIONS),
+                         *args, **kwargs)
+
+        if '@' in app_id:  # for use in test-playbook
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        self.ms_client = MicrosoftClient(
-            self_deployed=True,
-            auth_id=app_id,
-            grant_type=DEVICE_CODE,
-            base_url=BASE_URL,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            verify=verify,
-            proxy=proxy,
-            scope=' '.join(REQUIRED_PERMISSIONS),
-            azure_ad_endpoint=azure_ad_endpoint
-        )
         self.subscription_id = subscription_id
 
     def http_request(self, **kwargs):
-        return self.ms_client.http_request(**kwargs)
+        return super().http_request(**kwargs)
 
     def query_list(self,
                    url_suffix: str,
@@ -191,17 +193,17 @@ def azure_ad_identity_protection_risky_users_dismiss_command(client: AADClient, 
 
 
 def start_auth(client: AADClient) -> CommandResults:
-    result = client.ms_client.start_auth('!azure-ad-auth-complete')
+    result = client.start_auth('!azure-ad-auth-complete')
     return CommandResults(readable_output=result)
 
 
 def complete_auth(client: AADClient) -> str:
-    client.ms_client.get_access_token()  # exception on failure
+    client.get_access_token()  # exception on failure
     return '✅ Authorization completed successfully.'
 
 
 def test_connection(client: AADClient) -> str:
-    client.ms_client.get_access_token()  # exception on failure
+    client.get_access_token()  # exception on failure
     return '✅ Success!'
 
 
