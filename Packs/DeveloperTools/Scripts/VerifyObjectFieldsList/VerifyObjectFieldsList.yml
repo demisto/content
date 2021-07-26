@@ -7,12 +7,12 @@ args:
   required: true
   description: Map to search fields in
   isArray: true
-comment: Receive fields and context. Verifies that these field exists in context.
+comment: Verify that a given object includes all the given fields. (Available from Cortex XSOAR 6.0.0).
 commonfields:
-  id: VerifyContextFieldsList
+  id: VerifyObjectFieldsList
   version: -1
 enabled: false
-name: VerifyContextFieldsList
+name: VerifyObjectFieldsList
 outputs:
 - contextPath: FieldsExists
   description: Return true or fasle.
