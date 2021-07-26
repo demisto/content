@@ -19,8 +19,8 @@ def get_campaign_incidents():
     if isError(res):
         return_error(f'Error occurred while trying to get the incident context: {get_error(res)}')
 
-    incidents = set(demisto.get(res[0], 'Contents.context.EmailCampaign.LowerSimilarityIncidents') ).union(
-           set(demisto.get(res[0], 'Contents.context.EmailCampaign.incidents')))
+    incidents = set(demisto.get(res[0], 'Contents.context.EmailCampaign.LowerSimilarityIncidents')).union(
+        set(demisto.get(res[0], 'Contents.context.EmailCampaign.incidents')))
     return list(incidents)
 
 
@@ -44,7 +44,6 @@ def get_incident_ids_as_options(incidents):
 
 
 def main():
-
     try:
         incidents = get_campaign_incidents()
         if incidents:
