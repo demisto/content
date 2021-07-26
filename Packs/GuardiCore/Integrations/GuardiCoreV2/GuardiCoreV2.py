@@ -39,7 +39,7 @@ class Client(BaseClient):
         super().__init__(proxy=proxy, verify=verify, base_url=base_url)
         self.username = username
         self.password = password
-        self.access_token = None
+        self.access_token = ""
         self.base_url = base_url
 
         self.login()
