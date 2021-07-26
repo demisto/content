@@ -173,6 +173,7 @@ references:
         echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
         echo 'export ENV_RESULTS_PATH=/home/circleci/project/artifacts/env_results.json' >> $BASH_ENV
         echo 'export GCS_PRODUCTION_BUCKET="marketplace-dist"' >> $BASH_ENV
+        echo 'export DELETE_CURRENT_BRANCH=${DELETE_CURRENT_BRANCH}" >> $BASH_ENV
         echo 'source /home/circleci/project/.circleci/content_release_vars.sh' >> $BASH_ENV
         chmod +x .circleci/gitlab-ci-env-variables.sh
         ./.circleci/gitlab-ci-env-variables.sh
