@@ -1,6 +1,5 @@
 id: DBot Build Phishing Classifier Test - Multiple Algorithms
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: DBot Build Phishing Classifier Test - Multiple Algorithms
 description: Test Build Phishing Classifier Test - Multiple Algorithms
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -31,8 +31,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: b69dfd36-72c2-45d5-89e8-ec352f19da0b
@@ -66,8 +64,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 75b10e3d-b0c1-4989-8ca7-8e2cbd818ffe
@@ -111,8 +107,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 75ba6523-3818-4c88-8736-83af433ed54c
@@ -124,6 +118,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -137,8 +132,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: a9d12700-5f2e-452e-874a-ef39a923524d
@@ -170,8 +163,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 6fa502b9-80f1-495e-81c7-fb9e62a39f64
@@ -203,8 +194,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 7eb7ed81-d96b-407b-89fe-1af2e2b6dd3a
@@ -240,8 +229,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: d241bfcd-fb25-42d0-82b7-946ef5fa6ff0
@@ -280,8 +267,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: fb13748f-e9aa-4b26-87d0-5d53bd31d9c6
@@ -320,8 +305,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: 41c1ca4f-4edf-4172-8fa9-8623b9a37b75
@@ -365,8 +348,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: 8db801e1-caf7-4707-810e-3288cc79d971
@@ -398,8 +379,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: 9b09235c-838c-47d7-82dd-116a162ee0a3
@@ -432,8 +411,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: c52d9f00-08f4-440f-89ce-7a3e3fc678c2
@@ -467,8 +444,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: c77d62d9-5c5e-4270-8151-64a068137b8d
@@ -518,8 +493,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "25":
     id: "25"
     taskid: 207ac741-ed5c-4dda-8746-1cea0049e047
@@ -571,8 +544,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "26":
     id: "26"
     taskid: d12ea91f-62e1-4500-8439-0307689af82a
@@ -611,8 +582,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: 057a7310-07d6-4813-8756-0e8d0c1318e6
@@ -644,8 +613,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "28":
     id: "28"
     taskid: 315a17d4-d262-400a-8eaf-f21033a4566c
@@ -689,8 +656,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "29":
     id: "29"
     taskid: 35e9ea5c-30ed-4fe4-83b1-7499a7a04833
@@ -729,8 +694,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "30":
     id: "30"
     taskid: 8727184b-1ed3-432d-85da-2082b4d2383d
@@ -774,8 +737,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -791,3 +752,4 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Create Phishing Classifier V2 ML Test
+fromversion: 6.1.0

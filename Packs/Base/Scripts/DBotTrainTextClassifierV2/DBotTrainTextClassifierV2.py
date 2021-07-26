@@ -346,8 +346,8 @@ def get_X_and_y_from_data(data, text_field):
 
 
 def validate_labels_and_decide_algorithm(y, algorithm):
-    labels = Counter(y)
-    illegal_labels_for_fine_tune = [label for label in labels if label not in FINETUNE_LABELS]
+    labels_counter = Counter(y)   # type: Dict[str, int]
+    illegal_labels_for_fine_tune = [label for label in labels_counter if label not in FINETUNE_LABELS]
     if algorithm == FINETUNE_TRAINING_ALGO and len(illegal_labels_for_fine_tune) > 0:
         error = ['When trainingAlgorithm is set to {}, all labels mus be mapped to {}.\n'.format(algorithm,
                                                                                                  ', '.join(
