@@ -1,0 +1,497 @@
+id: Fetch Incidents Test
+version: 7
+vcShouldKeepItemLegacyProdMachine: false
+name: Fetch Incidents Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2d04959b-053b-449c-8504-0bda1fe27354
+    type: start
+    task:
+      id: 2d04959b-053b-449c-8504-0bda1fe27354
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 06a7596c-6db0-4ecb-8da5-c0bf9f43df49
+    type: condition
+    task:
+      id: 06a7596c-6db0-4ecb-8da5-c0bf9f43df49
+      version: -1
+      name: Check If Incidents exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IncidentsCheck.ConditionMet
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 26074e49-6b29-4d6a-8fd9-ded45f989e06
+    type: regular
+    task:
+      id: 26074e49-6b29-4d6a-8fd9-ded45f989e06
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6947f916-2e08-4c2d-86a6-50ee406a089e
+    type: regular
+    task:
+      id: 6947f916-2e08-4c2d-86a6-50ee406a089e
+      version: -1
+      name: Get Incident Fields to search
+      description: send HTTP GET requests
+      script: '|||demisto-api-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      extend-context:
+        simple: serverConfig=
+      uri:
+        simple: /system/config
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: db3eb6fa-f009-46b0-87ff-76eb33a13804
+    type: title
+    task:
+      id: db3eb6fa-f009-46b0-87ff-76eb33a13804
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e0ea2027-5364-4b49-86f5-6aed5c35a5b7
+    type: regular
+    task:
+      id: e0ea2027-5364-4b49-86f5-6aed5c35a5b7
+      version: -1
+      name: Check If Fields Exists
+      description: Receive fields and context. Verifies that these field exists in
+        context.
+      scriptName: VerifyContextFieldsList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      context:
+        simple: ${foundIncidents}
+      fields_to_search:
+        simple: ${serverConfig.response.sysConf.searchfield}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 2509bb5a-c256-4d7e-8845-19baa61833b1
+    type: condition
+    task:
+      id: 2509bb5a-c256-4d7e-8845-19baa61833b1
+      version: -1
+      name: Return Value
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: CheckIfFieldsExists.FieldsExists
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 5eae02de-ef1b-44dc-8b0b-7df129f33d21
+    type: playbook
+    task:
+      id: 5eae02de-ef1b-44dc-8b0b-7df129f33d21
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: size
+      AdditionalPollingCommandArgValues:
+        simple: "1"
+      Ids:
+        simple: ${searchQuery}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: query
+      PollingCommandName:
+        simple: VerifyEnoughIncidents
+      Timeout:
+        simple: "5"
+      dt:
+        simple: IncidentsCheck(val.ConditionMet !== true).Query
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 1b979897-97c5-413a-8cdf-e23a787a61d4
+    type: regular
+    task:
+      id: 1b979897-97c5-413a-8cdf-e23a787a61d4
+      version: -1
+      name: VerifyIntegrationHealth
+      description: Heath check for integration
+      scriptName: VerifyIntegrationHealth
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      integration_name:
+        simple: ${serverConfig.response.sysConf.sourcebrand}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 78296bae-dc0b-4e35-818d-9e6fed2bd671
+    type: condition
+    task:
+      id: 78296bae-dc0b-4e35-818d-9e6fed2bd671
+      version: -1
+      name: Check Health status
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IntegrationHealth.isHealth
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 6a5736c1-0bfc-48f8-80e3-13f2fc6fa536
+    type: regular
+    task:
+      id: 6a5736c1-0bfc-48f8-80e3-13f2fc6fa536
+      version: -1
+      name: Set Incidents Search Query
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: searchQuery
+      value:
+        simple: sourceBrand:"${serverConfig.response.sysConf.sourcebrand}"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 3fa9cbf7-480f-48b5-8c4d-49192c0b704c
+    type: regular
+    task:
+      id: 3fa9cbf7-480f-48b5-8c4d-49192c0b704c
+      version: -1
+      name: SearchIncidentsV2
+      description: Searches Demisto incidents
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      extend-context:
+        simple: Incidents=
+      query:
+        simple: ${searchQuery}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: a3329f63-f23a-439e-81de-919adb7b3f8d
+    type: regular
+    task:
+      id: a3329f63-f23a-439e-81de-919adb7b3f8d
+      version: -1
+      name: VerifyEnoughIncidents
+      description: Returns, whether there're, are enough incidents in the system.
+      scriptName: VerifyEnoughIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      query:
+        simple: ${searchQuery}
+      size:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2135,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

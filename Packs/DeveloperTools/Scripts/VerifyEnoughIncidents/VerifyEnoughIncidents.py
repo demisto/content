@@ -4,14 +4,12 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     args = demisto.args()
-    demisto.info('hi1')
     query = args.get('query')
     size = int(args.get('size'))
-    demisto.info('hi')
 
     raw_result = demisto.executeCommand("SearchIncidentsV2", {"query": query,
                                                               "size": size})
-    incidents_len = len(raw_result[0].get("Contents", [""])[0].get("Contents", {}).get("data"))
+    incidents_len = len(raw_result[0].get("Contents", [{}])[0].get("Contents", {}).get("data"))
     outputs = {
         'Query': query,
         'Size': incidents_len,

@@ -6,7 +6,7 @@ fromversion: 6.0.0
 script: ''
 type: python
 tags: []
-comment: Returns, whether there're, are enough incidents in the system.
+comment: Check whether a given query returns enough incidents.
 enabled: true
 args:
 - name: query
