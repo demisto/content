@@ -188,7 +188,7 @@ script:
         represents date and time information using ISO 8601 format and is always in
         UTC time.
       type: string
-    - contextPath: AADIdentityProtection.Risks.activityDateTime
+    - contextPath: AADIdentityProtection.Risks.lastUpdatedDateTime
       description: Date and time that the risk detection was last updated. The DateTimeOffset
         type represents date and time information using ISO 8601 format and is always
         in UTC time.
