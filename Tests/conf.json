@@ -3092,7 +3092,7 @@
         },
         {
             "playbookID": "EvaluateMLModllAtProduction-Test",
-            "fromversion": "4.5.0"
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "GCP Whitelist Feed",
