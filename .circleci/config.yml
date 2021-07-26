@@ -1332,6 +1332,8 @@ jobs:
     resource_class: small
     <<: *environment
     steps:
+      - *attach_workspace
+      -
       - run:
           name: Delete Temporary Branch
           shell: /bin/bash
