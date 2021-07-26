@@ -17,7 +17,7 @@ INTEGRATION_NAME = 'Whois'
 
 @pytest.fixture(autouse=True)
 def handle_calling_context(mocker):
-    mocker.patch.object(demisto, 'callingContext', {'IntegrationBrand': INTEGRATION_NAME})
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
 
 
 def load_test_data(json_path):
