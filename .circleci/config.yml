@@ -1333,6 +1333,13 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - set-instance-role-env-variable:
+          instance_role: Server Master
+          instance_created: "true"
+      - start-tunnel
+      - *wait_until_server_ready
       -
       - run:
           name: Delete Temporary Branch
@@ -1340,6 +1347,7 @@ jobs:
           command: |
             if [ -n "$DELETE_CURRENT_BRANCH" ]; then
               current_branch=<< pipeline.git.branch >>
+              git
               echo Deleting current branch - $current_branch
               cd ../../../
               find ./ -name ".git"
