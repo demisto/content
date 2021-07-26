@@ -8,8 +8,9 @@ from operator import itemgetter
 from typing import Any, Dict, Tuple
 
 import dateparser
-import demistomock as demisto  # noqa: F401
 import urllib3
+
+import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
@@ -123,7 +124,15 @@ class Client(BaseClient):
             Performs basic get request to get item samples
         """
         last_one_day, _ = parse_date_range(first_fetch_time, TIME_FORMAT)
-        self.get_incidents(lte_creation_time=last_one_day, limit=1)
+        try:
+            self.get_incidents(lte_creation_time=last_one_day, limit=1)
+        except Exception as err:
+            if 'API request Unauthorized' in str(err):
+                # this error is received from the XDR server when the client clock is not in sync to the server
+                raise DemistoException(f'{str(err)} please validate that your both '
+                                       f'XSOAR and XDR server clocks are in sync')
+            else:
+                raise
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, sort_by_modification_time=None,
@@ -1717,14 +1726,19 @@ def convert_os_to_standard(endpoint_os):
     return os_type
 
 
+def get_endpoint_properties(single_endpoint):
+    status = 'Online' if single_endpoint.get('endpoint_status', '').lower() == 'connected' else 'Offline'
+    is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
+    hostname = single_endpoint['host_name'] if single_endpoint.get('host_name') else single_endpoint.get(
+        'endpoint_name')
+    ip = single_endpoint.get('ip')
+    return status, is_isolated, hostname, ip
+
+
 def generate_endpoint_by_contex_standard(endpoints, ip_as_string):
     standard_endpoints = []
     for single_endpoint in endpoints:
-        status = 'Online' if single_endpoint.get('endpoint_status') == 'connected' else 'Offline'
-        is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
-        hostname = single_endpoint['host_name'] if single_endpoint.get('host_name', '') else single_endpoint.get(
-            'endpoint_name')
-        ip = single_endpoint.get('ip')
+        status, is_isolated, hostname, ip = get_endpoint_properties(single_endpoint)
         # in the `xdr-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
         # in the `endpoint` command we use the standard
         if ip_as_string and isinstance(ip, list):

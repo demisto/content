@@ -83,7 +83,8 @@ configuration:
   name: events_limit
   required: false
   type: 0
-  additionalinfo: This field is require when running as ‘long running instance’ - please set the max amount of events to fetch.
+  additionalinfo: This field is require when running as ‘long running instance’ -
+    please set the max amount of events to fetch.
 - additionalinfo: Comma-separated configuration for advanced parameters values. e.g.
     EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
   display: Advanced Parameters
@@ -1391,7 +1392,7 @@ script:
     - contextPath: QRadar.Properties.username
       description: The owner of the event regex property.
       type: String
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: false
   longRunning: true
@@ -1405,3 +1406,5 @@ script:
 defaultmapperin: QRadar-mapper
 defaultclassifier: QRadar
 fromversion: 6.0.0
+tests:
+- test_Qradar_v2

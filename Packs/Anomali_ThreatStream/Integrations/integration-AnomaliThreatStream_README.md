@@ -36,7 +36,7 @@
 <strong>API Key |</strong> The API key you copied in the previous procedure. (Required)</li>
 </ul>
 </li>
-<li>Click the <strong>Test</strong> button to verify the the URL and token.<br>A green light means the test was successful. If you experience any issues, contact <a href="mailto:support@demisto.com">Cortex XSOAR Support</a>.</li>
+<li>Click the <strong>Test</strong> button to verify the the URL and token.<br>A green light means the test was successful.</li>
 </ol>
 <hr>
 <h2>Use Cases</h2>

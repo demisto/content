@@ -1,0 +1,33 @@
+{
+    "id": "incident_f5silverlinesecurityseverity",
+    "version": -1,
+    "modified": "2021-05-19T13:43:24.285364953Z",
+    "name": "F5 Silverline Security Severity",
+    "ownerOnly": false,
+    "cliName": "f5silverlinesecurityseverity",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "F5 Silverline iRule Events",
+        "F5 Silverline L7 DDoS Events",
+        "F5 Silverline Threat Intelligence Events",
+        "F5 Silverline WAF Events"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

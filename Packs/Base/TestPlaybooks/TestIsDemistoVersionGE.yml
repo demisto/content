@@ -1,0 +1,32 @@
+commonfields:
+  id: TestIsDemistoVersionGE
+  version: -1
+name: TestIsDemistoVersionGE
+script: |-
+  if (isDemistoVersionGE('1.0.0') === false) {
+      throw new Error('Failed verifying isDemistoVersionGE > 1.0.0');
+  }
+
+  if (isDemistoVersionGE('99.0.0') === true) {
+      throw new Error('Failed verifying isDemistoVersionGE < 99.0.0');
+  }
+  var version = demistoVersion().version;
+
+  if (isDemistoVersionGE(version, '1') === false) {
+      throw new Error('Failed verifying buildNumber > 1');
+  }
+
+  if (isDemistoVersionGE(version, '99999999') === true) {
+      throw new Error('Failed verifying buildNumber < 99999999');
+  }
+
+  return 'ok'
+type: javascript
+tags: []
+enabled: true
+scripttarget: 0
+pswd: ""
+runonce: false
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 5.0.0

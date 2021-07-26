@@ -82,10 +82,8 @@ def test_create_issue_command_before_fix_mandatory_args_summary_missing(mocker, 
         # when there are missing arguments, an Exception is raised to the user
         create_issue_command()
     assert e
-    assert (
-        demisto.results.call_args[0][0]["Contents"]
-        == "You must provide at least one of the following: project_key or project_name"
-    )
+    assert (demisto.results.call_args[0][0]["Contents"] == "You must provide at least one of the following: "
+                                                           "project_key or project_name")
 
 
 def test_issue_query_command_no_issues(mocker):
@@ -254,7 +252,8 @@ def test_fetch_incidents_with_incidents_and_full_last_run(mocker):
     mocker.patch.object(demisto, "debug")
     mocker.patch("JiraV2.run_query", return_value=QUERY_ISSUE_RESPONSE)
     mocker.patch.object(demisto, 'setLastRun')
-    mocker.patch.object(demisto, 'getLastRun', return_value={'idOffset': 1000, 'lastCreatedTime': '2019-04-04T00:55:22.743+0300'})
+    mocker.patch.object(demisto, 'getLastRun',
+                        return_value={'idOffset': 1000, 'lastCreatedTime': '2019-04-04T00:55:22.743+0300'})
     incidents = fetch_incidents(
         "status=Open AND labels=lies",
         id_offset=1,
@@ -1024,7 +1023,7 @@ def test_get_modified_data_command(mocker):
 
 
 def test_get_modified_data_command_when_getting_exception_for_get_user_info_data(
-    mocker,
+        mocker,
 ):
     """
     Given:
@@ -1048,7 +1047,7 @@ def test_get_modified_data_command_when_getting_exception_for_get_user_info_data
 
 
 def test_get_modified_data_command_when_getting_not_ok_status_code_for_get_user_info_data(
-    mocker,
+        mocker,
 ):
     """
     Given:
@@ -1104,9 +1103,7 @@ def test_get_comments_command(mocker):
     _, outputs, context = get_comments_command(123)
     assert list(outputs.keys())[0] == "Ticket(val.Id == obj.Id)"
     assert outputs["Ticket(val.Id == obj.Id)"]["Id"] == 123
-    assert (
-        outputs["Ticket(val.Id == obj.Id)"]["Comment"][0]["Comment"] == "comment text"
-    )
+    assert (outputs["Ticket(val.Id == obj.Id)"]["Comment"][0]["Comment"] == "comment text")
     assert outputs["Ticket(val.Id == obj.Id)"]["Comment"][0]["User"] == "Test"
     assert outputs["Ticket(val.Id == obj.Id)"]["Comment"][0]["Created"] == "10.12"
     assert context == comments
@@ -1138,3 +1135,10 @@ def test_get_issue_fields_issuejson_param():
     from JiraV2 import get_issue_fields
     res = get_issue_fields(issueJson='{"description": "test"}')
     assert {'description': 'test', 'fields': {}} == res
+
+
+def test_get_issue_fields():
+    from JiraV2 import get_issue_fields
+    issue_fields = get_issue_fields(False, False, **{"components": "Test, Test 1", "security": "Anyone", "environment": "Test"})
+    assert issue_fields == {'fields': {'components': [{'name': 'Test'}, {'name': 'Test 1'}], 'environment': 'Test',
+                                       'security': {'name': 'Anyone'}}}

@@ -19,8 +19,15 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 SCOPES = ['https://www.googleapis.com/auth/chronicle-backstory']
 
-BACKSTORY_API_V1_URL = 'https://backstory.googleapis.com/v1'
-BACKSTORY_API_V2_URL = 'https://backstory.googleapis.com/v2'
+BACKSTORY_API_V1_URL = 'https://{}backstory.googleapis.com/v1'
+BACKSTORY_API_V2_URL = 'https://{}backstory.googleapis.com/v2'
+MAX_ATTEMPTS = 60
+
+REGIONS = {
+    "General": "",
+    "Europe": "europe-",
+    "Asia": "asia-southeast1-"
+}
 
 ISO_DATE_REGEX = (r'^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):'
                   r'([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?Z$')
@@ -35,6 +42,7 @@ CHRONICLE_OUTPUT_PATHS = {
     'UserAlert': 'GoogleChronicleBackstory.UserAlert(val.User && val.User == obj.User)',
     'Events': 'GoogleChronicleBackstory.Events',
     'Detections': 'GoogleChronicleBackstory.Detections(val.id == obj.id && val.ruleVersion == obj.ruleVersion)',
+    'Rules': 'GoogleChronicleBackstory.Rules(val.ruleId == obj.ruleId)',
     'Token': 'GoogleChronicleBackstory.Token(val.name == obj.name)'
 }
 
@@ -111,6 +119,7 @@ class Client:
         credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credential,
                                                                                        scopes=SCOPES)
         self.http_client = credentials.authorize(get_http_client(proxy, disable_ssl))
+        self.region = params.get("region") if params.get("region") else "General"
 
 
 ''' HELPER FUNCTIONS '''
@@ -158,26 +167,24 @@ def validate_response(client, url, method='GET'):
 
     :return: response
     """
-    for _ in range(3):
-        raw_response = client.http_client.request(url, method)
-
-        if not raw_response:
-            raise ValueError('Technical Error while making API call to Chronicle. Empty response received')
-        if raw_response[0].status == 500:
-            raise ValueError('Internal server error occurred, please try again later')
-        if raw_response[0].status == 429:
-            demisto.debug('API Rate limit exceeded. Retrying in {} seconds...'.format(1))
-            time.sleep(1)
-            continue
-        if raw_response[0].status != 200:
-            return_error(
-                'Status code: {}\nError: {}'.format(raw_response[0].status, parse_error_message(raw_response[1])))
-        try:
-            response = json.loads(raw_response[1])
-            return response
-        except json.decoder.JSONDecodeError:
-            raise ValueError('Invalid response format while making API call to Chronicle. Response not in JSON format')
-    raise ValueError('API rate limit exceeded. Try again later.')
+    raw_response = client.http_client.request(url.format(REGIONS[client.region]), method)
+    if not raw_response:
+        raise ValueError('Technical Error while making API call to Chronicle. Empty response received')
+    if raw_response[0].status == 500:
+        raise ValueError('Internal server error occurred, Reattempt will be initiated.')
+    if raw_response[0].status == 429:
+        raise ValueError('API rate limit exceeded. Reattempt will be initiated.')
+    if raw_response[0].status == 400 or raw_response[0].status == 404:
+        raise ValueError(
+            'Status code: {}\nError: {}'.format(raw_response[0].status, parse_error_message(raw_response[1])))
+    if raw_response[0].status != 200:
+        return_error(
+            'Status code: {}\nError: {}'.format(raw_response[0].status, parse_error_message(raw_response[1])))
+    try:
+        response = json.loads(raw_response[1])
+        return response
+    except json.decoder.JSONDecodeError:
+        raise ValueError('Invalid response format while making API call to Chronicle. Response not in JSON format')
 
 
 def get_params_for_reputation_command():
@@ -1526,7 +1533,7 @@ def deduplicate_events_and_create_incidents(contexts: List, event_identifiers: L
     new_event_hashes = []
     for event in contexts:
         try:
-            event_hash = sha256(str(event).encode()).hexdigest()
+            event_hash = sha256(str(event).encode()).hexdigest()  # NOSONAR
             new_event_hashes.append(event_hash)
         except Exception as e:
             demisto.error("[CHRONICLE] Skipping insertion of current event since error occurred while calculating"
@@ -1606,16 +1613,21 @@ def convert_events_to_actionable_incidents(events: list) -> list:
 
 
 def fetch_detections(client_obj, start_time, end_time, max_fetch, detection_to_process, detection_to_pull,
-                     pending_rule_or_version_id: list, alert_state):
-    """Fetch detections in given time slot."""
+                     pending_rule_or_version_id: list, alert_state, simple_backoff_rules):
+    """
+    Fetch detections in given time slot. This method calls the get_max_fetch_detections method.
+    If detections are more than max_fetch then it partition it into 2 part, from which
+    one part(total detection = max_fetch) will be pushed and another part(detection more than max_fetch) will be
+    kept in 'detection_to_process' for next cycle. If all rule_id covers, then it will return empty list.
+    """
 
-    if not pending_rule_or_version_id and not detection_to_process and not detection_to_pull:
-        return [], detection_to_process, detection_to_pull, pending_rule_or_version_id
+    if not pending_rule_or_version_id and not detection_to_process and not detection_to_pull and not simple_backoff_rules:
+        return [], detection_to_process, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules
 
     # get detections using API call.
-    detection_to_process, detection_to_pull, pending_rule_or_version_id \
-        = get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detection_to_process, detection_to_pull,
-                                   pending_rule_or_version_id, alert_state)
+    detection_to_process, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules = get_max_fetch_detections(
+        client_obj, start_time, end_time, max_fetch, detection_to_process, detection_to_pull,
+        pending_rule_or_version_id, alert_state, simple_backoff_rules)
 
     if len(detection_to_process) > max_fetch:
         events, detection_to_process = detection_to_process[:max_fetch], detection_to_process[max_fetch:]
@@ -1623,19 +1635,30 @@ def fetch_detections(client_obj, start_time, end_time, max_fetch, detection_to_p
         events = detection_to_process
         detection_to_process = []
 
-    return events, detection_to_process, detection_to_pull, pending_rule_or_version_id
+    return events, detection_to_process, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules
 
 
 def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detection_incidents, detection_to_pull,
-                             pending_rule_or_version_id, alert_state):
-    """Get list of detection using detection_to_pull and pending_rule_or_version_id."""
+                             pending_rule_or_version_id, alert_state, simple_backoff_rules):
+    """
+    Get list of detection using detection_to_pull and pending_rule_or_version_id. If the API responds
+    with 429, 500 error then it will retry it for 60 times(each attempt take one minute). If it responds
+    with 400 or 404 error, then it will skip that rule_id. In case of an empty response for any next_page_token
+    it will skip that rule_id.
+    """
 
-    while len(detection_incidents) < max_fetch and (len(pending_rule_or_version_id) != 0 or detection_to_pull):
+    # loop if length of detection is less than max_fetch and if any further rule_id(with or without next_page_token)
+    # or any retry attempt remaining
+    while len(detection_incidents) < max_fetch and (len(pending_rule_or_version_id) != 0
+                                                    or detection_to_pull or simple_backoff_rules):
 
         next_page_token = ''
         if detection_to_pull:
             rule_id = detection_to_pull.get('rule_id')
             next_page_token = detection_to_pull.get('next_page_token')
+        elif simple_backoff_rules:
+            rule_id = simple_backoff_rules.get('rule_id')
+            next_page_token = simple_backoff_rules.get('next_page_token')
         else:
             rule_id = pending_rule_or_version_id.pop(0)
 
@@ -1643,11 +1666,42 @@ def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detect
             _, raw_resp = get_detections(client_obj, rule_id, max_fetch, start_time, end_time, next_page_token,
                                          alert_state)
         except ValueError as e:
-            demisto.info("Error while fetching incidents: " + str(e))
-            pending_rule_or_version_id.insert(0, rule_id)
+            if str(e).endswith('Reattempt will be initiated.'):
+                attempts = simple_backoff_rules.get('attempts', 0)
+                if attempts < MAX_ATTEMPTS:
+                    demisto.error(
+                        f"[CHRONICLE DETECTIONS] Error while fetching incidents: {str(e)} Attempt no : {attempts + 1} "
+                        f"for the rule_id : {rule_id} and next_page_token : {next_page_token}")
+                    simple_backoff_rules = {'rule_id': rule_id, 'next_page_token': next_page_token,
+                                            'attempts': attempts + 1}
+                else:
+                    demisto.error(f"[CHRONICLE DETECTIONS] Skipping the rule_id : {rule_id} due to the maximum "
+                                  f"number of attempts ({MAX_ATTEMPTS}). You'll experience data loss for the given rule_id. "
+                                  f"Switching to next rule id.")
+                    simple_backoff_rules = {}
+                    detection_to_pull = {}
+                break
+
+            if str(e).startswith('Status code: 404') or str(e).startswith('Status code: 400'):
+                if str(e).startswith('Status code: 404'):
+                    demisto.error(
+                        f"[CHRONICLE DETECTIONS] Error while fetching incidents: Rule with ID {rule_id} not found.")
+                else:
+                    demisto.error(
+                        f"[CHRONICLE DETECTIONS] Error while fetching incidents: Rule with ID {rule_id} is invalid.")
+                detection_to_pull = {}
+                simple_backoff_rules = {}
+                break
+
+            demisto.error("Error while fetching incidents: " + str(e))
+            if not detection_to_pull:
+                pending_rule_or_version_id.insert(0, rule_id)
+
             break
 
         if not raw_resp:
+            detection_to_pull = {}
+            simple_backoff_rules = {}
             continue
 
         detections: List[Dict[str, Any]] = raw_resp.get('detections', [])
@@ -1658,12 +1712,14 @@ def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detect
         if raw_resp.get('nextPageToken'):
             next_page_token = str(raw_resp.get('nextPageToken'))
             detection_to_pull = {'rule_id': rule_id, 'next_page_token': next_page_token}
+            simple_backoff_rules = {'rule_id': rule_id, 'next_page_token': next_page_token}
 
         # when exact size is returned but no next_page_token
         if len(detections) <= max_fetch and not raw_resp.get('nextPageToken'):
             detection_to_pull = {}
+            simple_backoff_rules = {}
 
-    return detection_incidents, detection_to_pull, pending_rule_or_version_id
+    return detection_incidents, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules
 
 
 def add_detections_in_incident_list(detections: List, detection_incidents: List) -> None:
@@ -1818,6 +1874,8 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
     detection_to_process: List[Dict[str, Any]] = []
     # detections that are larger than max_fetch and had a next page token for fetch incident.
     detection_to_pull: Dict[str, Any] = {}
+    # max_attempts track for 429 and 500 error
+    simple_backoff_rules: Dict[str, Any] = {}
     # rule_id or version_id and alert_state for which detections are yet to be fetched.
     pending_rule_or_version_id_with_alert_state: Dict[str, Any] = {}
     detection_identifiers: List = []
@@ -1831,17 +1889,20 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
         detection_identifiers = last_run.get('detection_identifiers', detection_identifiers)
         detection_to_process = last_run.get('detection_to_process', detection_to_process)
         detection_to_pull = last_run.get('detection_to_pull', detection_to_pull)
+        simple_backoff_rules = last_run.get('simple_backoff_rules', simple_backoff_rules)
         pending_rule_or_version_id_with_alert_state = last_run.get('pending_rule_or_version_id_with_alert_state',
                                                                    pending_rule_or_version_id_with_alert_state)
 
         end_time = last_run.get('rule_first_fetched_time') or end_time
+    if not last_run.get('rule_first_fetched_time'):
+        demisto.info(f"Starting new time window from START-TIME :  {start_time} to END_TIME : {end_time}")
 
     delayed_start_time = generate_delayed_start_time(time_window, start_time)
     fetch_detection_by_alert_state = pending_rule_or_version_id_with_alert_state.get('alert_state', '')
 
     # giving priority to comma separated detection ids over check box of fetch all live detections
     if not pending_rule_or_version_id_with_alert_state.get("rule_id") and \
-            not detection_to_pull and not detection_to_process:
+            not detection_to_pull and not detection_to_process and not simple_backoff_rules:
         fetch_detection_by_ids = params.get('fetch_detection_by_ids') or ""
         fetch_detection_by_ids = get_unique_value_from_list(
             [r_v_id.strip() for r_v_id in fetch_detection_by_ids.split(',')])
@@ -1858,16 +1919,18 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
         pending_rule_or_version_id_with_alert_state.update({'rule_id': fetch_detection_by_ids,
                                                             'alert_state': fetch_detection_by_alert_state})
 
-    events, detection_to_process, detection_to_pull, pending_rule_or_version_id \
+    events, detection_to_process, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules \
         = fetch_detections(client_obj, delayed_start_time, end_time, int(max_fetch), detection_to_process,
                            detection_to_pull, pending_rule_or_version_id_with_alert_state.get('rule_id', ''),
-                           pending_rule_or_version_id_with_alert_state.get('alert_state', ''))
+                           pending_rule_or_version_id_with_alert_state.get('alert_state', ''), simple_backoff_rules)
 
     # The batch processing is in progress i.e. detections for pending rules are yet to be fetched
     # so updating the end_time to the start time when considered for current batch
-    if pending_rule_or_version_id or detection_to_pull:
+    if pending_rule_or_version_id or detection_to_pull or simple_backoff_rules:
         rule_first_fetched_time = end_time
         end_time = start_time
+    else:
+        demisto.info(f"End of current time window from START-TIME : {start_time} to END_TIME : {end_time}")
 
     pending_rule_or_version_id_with_alert_state.update({'rule_id': pending_rule_or_version_id,
                                                         'alert_state': fetch_detection_by_alert_state})
@@ -1883,6 +1946,7 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
         'rule_first_fetched_time': rule_first_fetched_time,
         'detection_to_process': detection_to_process,
         'detection_to_pull': detection_to_pull,
+        'simple_backoff_rules': simple_backoff_rules,
         'pending_rule_or_version_id_with_alert_state': pending_rule_or_version_id_with_alert_state
     })
 
@@ -2043,6 +2107,99 @@ def get_user_alert_hr_and_ec(client_obj: Client, start_time: str, end_time: str,
     }
 
     return hr, ec, alerts
+
+
+def get_context_for_rules(rule_resp: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], Dict[str, str]]:
+    """
+    Convert rules response into Context data
+
+    :param rule_resp: Response fetched from the API call for rules
+    :type rule_resp: Dict[str, Any]
+
+    :return: list of rules and token to populate context data
+    :rtype: Tuple[List[Dict[str, Any]], Dict[str, str]]
+    """
+    rules_ec = []
+    token_ec = {}
+    next_page_token = rule_resp.get('nextPageToken')
+    if next_page_token:
+        token_ec = {'name': 'gcb-list-rules', 'nextPageToken': next_page_token}
+    rules = rule_resp.get('rules', [])
+    for rule in rules:
+        rules_ec.append(rule)
+
+    return rules_ec, token_ec
+
+
+def get_rules(client_obj, args: Dict[str, str]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    """
+    Returns context data and raw response for gcb-list-rules command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args:  Dict[str, str]
+    :param args: it contain arguments of gcb-list-rules command
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response for the fetched rules
+    """
+    page_size = args.get('page_size', 100)
+    validate_page_size(page_size)
+    page_token = args.get('page_token', '')
+    if int(page_size) > 1000:
+        raise ValueError('Page size should be in the range from 1 to 1000.')
+
+    live_rule = args.get('live_rule', '').lower()
+    if live_rule and live_rule != 'true' and live_rule != 'false':
+        raise ValueError('Live rule should be true or false.')
+
+    request_url = '{}/detect/rules?pageSize={}'.format(BACKSTORY_API_V2_URL, page_size)
+
+    # Append parameters if specified
+    if page_token:
+        request_url += '&page_token={}'.format(page_token)
+
+    # get list of rules from Chronicle Backstory
+    json_data = validate_response(client_obj, request_url)
+    if live_rule:
+        if live_rule == 'true':
+            list_live_rule = [rule for rule in json_data.get('rules', []) if rule.get('liveRuleEnabled')]
+        else:
+            list_live_rule = [rule for rule in json_data.get('rules', []) if not rule.get('liveRuleEnabled')]
+        json_data = {
+            'rules': list_live_rule
+        }
+    raw_resp = deepcopy(json_data)
+    parsed_ec, token_ec = get_context_for_rules(json_data)
+    ec: Dict[str, Any] = {
+        CHRONICLE_OUTPUT_PATHS['Rules']: parsed_ec
+    }
+    if token_ec:
+        ec.update({CHRONICLE_OUTPUT_PATHS['Token']: token_ec})
+    return ec, raw_resp
+
+
+def get_list_rules_hr(rules: List[Dict[str, Any]]) -> str:
+    """
+    Converts rules response into human readable.
+
+    :param rules: list of rules
+    :type rules: list
+
+    :return: returns human readable string for gcb-list-rules command
+    :rtype: str
+    """
+    hr_dict = []
+    for rule in rules:
+        hr_dict.append({
+            'Rule ID': rule.get('ruleId'),
+            'Rule Name': rule.get('ruleName'),
+            'Compilation State': rule.get('compilationState', '')
+        })
+    hr = tableToMarkdown('Rule(s) Details', hr_dict, ['Rule ID', 'Rule Name', 'Compilation State'],
+                         removeNull=True)
+    return hr
 
 
 ''' REQUESTS FUNCTIONS '''
@@ -2529,6 +2686,36 @@ def gcb_list_detections_command(client_obj, args: Dict[str, str]):
     return hr, ec, json_data
 
 
+def gcb_list_rules_command(client_obj, args: Dict[str, str]):
+    """
+    Returns the latest version of all rules.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args:  Dict[str, str]
+    :param args: it contain arguments of gcb-list-rules command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    ec, json_data = get_rules(client_obj, args)
+
+    rules = json_data.get('rules', [])
+    if not rules:
+        hr = 'No Rules Found'
+        return hr, {}, {}
+
+    hr = get_list_rules_hr(rules)
+
+    next_page_token = json_data.get('nextPageToken')
+    if next_page_token:
+        hr += '\nMaximum number of rules specified in page_size has been returned. To fetch the next set of' \
+              ' rules, execute the command with the page token as {}.'.format(next_page_token)
+
+    return hr, ec, json_data
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -2540,7 +2727,8 @@ def main():
         'gcb-ioc-details': gcb_ioc_details_command,
         'gcb-list-alerts': gcb_list_alerts_command,
         'gcb-list-events': gcb_list_events_command,
-        'gcb-list-detections': gcb_list_detections_command
+        'gcb-list-detections': gcb_list_detections_command,
+        'gcb-list-rules': gcb_list_rules_command
     }
     # initialize configuration parameter
     proxy = demisto.params().get('proxy')

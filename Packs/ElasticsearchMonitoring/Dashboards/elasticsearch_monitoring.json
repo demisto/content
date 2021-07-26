@@ -22,7 +22,7 @@
             "w": 2,
             "h": 1,
             "widget": {
-                "id": "es-cpu-current-usage",
+                "id": "es-cpu-current",
                 "version": -1,
                 "modified": "2021-01-10T13:24:20.812878Z",
                 "name": "Elasticsearch CPU Current Usage",
@@ -61,7 +61,7 @@
             "w": 2,
             "h": 1,
             "widget": {
-                "id": "es-disk-current-usage",
+                "id": "es-disk-current",
                 "version": -1,
                 "modified": "2021-01-10T13:24:20.812147Z",
                 "name": "Elasticsearch Disk Current Usage",
@@ -102,7 +102,7 @@
             "w": 2,
             "h": 1,
             "widget": {
-                "id": "es-jvm-memory-current-usage",
+                "id": "es-jvm-memory-current",
                 "version": -1,
                 "modified": "2021-01-10T13:24:20.812147Z",
                 "name": "Elasticsearch JVM Memory Current Usage",
@@ -184,7 +184,7 @@
                 "version": -1,
                 "fromVersion": "6.1.0",
                 "modified": "2021-01-12T07:58:09.265012Z",
-                "name": "Elasticsearch Active Shards",
+                "name": "Active Shards",
                 "dataType": "system",
                 "widgetType": "number",
                 "query": "es-shard.used",
@@ -208,7 +208,7 @@
                         "isEnabled": true,
                         "items": {
                             "#00CD33": {
-                                "value": 0
+                                "value": 2
                             },
                             "#FF1B15": {
                                 "value": -1
@@ -231,7 +231,7 @@
                 "id": "es-failed-shards",
                 "modified": "2021-01-12T08:00:56.215781Z",
                 "fromServerVersion": "6.1.0",
-                "name": "Elasticsearch Failing Shards",
+                "name": "Unassigned / Failing Shards",
                 "dataType": "system",
                 "widgetType": "number",
                 "query": "es-shard.failed",
