@@ -125,7 +125,12 @@ def create_new_edl(request_args: RequestArguments) -> str:
     Returns: Formatted indicators to display in EDL
     """
     limit = request_args.offset + request_args.limit
-    indicator_searcher = IndicatorsSearcher(filter_fields=EDL_FILTER_FIELDS, query=request_args.query, size=PAGE_SIZE)
+    indicator_searcher = IndicatorsSearcher(
+        filter_fields=EDL_FILTER_FIELDS,
+        query=request_args.query,
+        size=PAGE_SIZE,
+        limit=limit
+    )
     iocs = []
     formatted_iocs: set = set()
     while True:
