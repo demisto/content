@@ -1919,10 +1919,9 @@ def init_globals(command_name: str = ''):
     BOT_TOKEN = demisto.params().get('bot_token', {}).get('password', '')
     APP_TOKEN = demisto.params().get('app_token', {}).get('password', '')
     PROXIES = handle_proxy()
-    proxy_url = demisto.params().get('proxy_url')
-    PROXY_URL = proxy_url or PROXIES.get('http')  # aiohttp only supports http proxy
+    PROXY_URL = PROXIES.get('http')  # aiohttp only supports http proxy
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
-    ASYNC_CLIENT = AsyncWebClient(token=BOT_TOKEN, ssl=handle_ssl_verification(), proxy=PROXY_URL)
+    ASYNC_CLIENT = AsyncWebClient(token=BOT_TOKEN, ssl=SSL_CONTEXT, proxy=PROXY_URL)
     CLIENT = slack_sdk.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
@@ -1958,13 +1957,6 @@ def slack_get_integration_context():
     return_results(fileResult('slack_integration_context', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
 
 
-def handle_ssl_verification():
-    SSL_CONTEXT = ssl.create_default_context()
-    SSL_CONTEXT.check_hostname = False
-    SSL_CONTEXT.verify_mode = ssl.CERT_NONE
-    return SSL_CONTEXT
-
-
 def main() -> None:
     """
     Main
@@ -1976,14 +1968,11 @@ def main() -> None:
     commands = {
         'test-module': test_module,
         'long-running-execution': long_running_main,
-        'slack-mirror-investigation': mirror_investigation,
         'mirror-investigation': mirror_investigation,
-        'slack-send': slack_send,
         'send-notification': slack_send,
         'slack-send-file': slack_send_file,
         'slack-set-channel-topic': set_channel_topic,
         'close-channel': close_channel,
-        'slack-close-channel': close_channel,
         'slack-create-channel': create_channel,
         'slack-invite-to-channel': invite_to_channel,
         'slack-kick-from-channel': kick_from_channel,
