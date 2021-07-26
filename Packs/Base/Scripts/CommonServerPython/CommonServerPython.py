@@ -2382,8 +2382,7 @@ class Common(object):
         def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None,
                      reliability=None):
 
-            dbot_score_type = DBotScoreType()
-            if not dbot_score_type.is_valid_type(indicator_type):
+            if not DBotScoreType.is_valid_type(indicator_type):
                 raise TypeError('indicator_type must be of type DBotScoreType enum')
 
             if not Common.DBotScore.is_valid_score(score):
