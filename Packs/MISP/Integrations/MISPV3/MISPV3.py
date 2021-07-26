@@ -1346,9 +1346,9 @@ def is_tag_list_valid(tag_ids):
         try:
             tag = int(tag)
             if tag <= 0:
-                raise DemistoException(f"Tag id has to be an integer, please change the given: '{tag}' id.")
+                raise DemistoException(f"Tag id has to be a positive integer, please change the given: '{tag}' id.")
         except ValueError:
-            raise DemistoException(f"Tag id has to be an integer, please change the given: '{tag}' id.")
+            raise DemistoException(f"Tag id has to be a positive integer, please change the given: '{tag}' id.")
 
 
 def main():
