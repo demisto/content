@@ -40,7 +40,7 @@ Display information about assets.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_address | IP Address. | Optional | 
+| ip_address | IP Address (takes priority before name if defined). | Optional | 
 | name | Name of endpoint. | Optional | 
 | asset_id | Asset ID (must start with :vm). | Optional | 
 | limit | Limit results. Default is 50. | Optional | 
@@ -2752,7 +2752,7 @@ Display information about incidents.
 
 ### endpoint
 ***
-Endpoint results
+Endpoint command (uses `guardicore-search-endpoint` internally).
 
 
 #### Base Command
@@ -2762,8 +2762,8 @@ Endpoint results
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The asset ID. | Optional | 
-| ip | Query assets with specified IP address. | Optional | 
+| id | The asset ID (takes priority over ip and hostname). | Optional | 
+| ip | Query assets with specified IP address (ip takes priority over hostname). | Optional | 
 | hostname | Query assets with matching hostname. | Optional | 
 
 

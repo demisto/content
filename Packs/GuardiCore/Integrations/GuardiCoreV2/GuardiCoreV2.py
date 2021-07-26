@@ -30,6 +30,8 @@ class Client(BaseClient):
        Args:
           username (str): The GuardiCore username for API access.
           password (str): The GuardiCore password for API access.
+          access_token (str): The GuardiCore access token, generated automatically from username and password.
+          base_url (str): The GuardiCore API server URL.
     """
 
     def __init__(self, proxy: bool, verify: bool, base_url: str, username: str,
@@ -49,6 +51,8 @@ class Client(BaseClient):
             access_token = integration_context.get('access_token')
             self.save_access_token(access_token)
         else:
+            demisto.debug(
+                "GuardicoreV2 - Generating a new token (old one isn't valid anymore).")
             self.generate_new_token()
 
     def save_access_token(self, access_token):
@@ -60,6 +64,9 @@ class Client(BaseClient):
     def is_access_token_valid(self, integration_context):
         access_token_expiration = integration_context.get('expires_in')
         access_token = integration_context.get('access_token')
+        demisto.debug(
+            f'GuardicoreV2 - Checking if context has valid access token...' +
+            f'expiration: {access_token_expiration}, access_token: {access_token}')
         if access_token and access_token_expiration:
             access_token_expiration_datetime = datetime.strptime(
                 access_token_expiration, DATE_FORMAT)
@@ -148,6 +155,7 @@ def calculate_fetch_start_time(last_fetch: Optional[str],
 
 
 def filter_human_readable(results, human_columns=[]):
+    # Takes in results dict and filters out relevant human_columns.
     filtered = {}
     for hc in human_columns:
         if hc in results:
@@ -309,7 +317,6 @@ def get_assets(client: Client, args: Dict[str, Any]) -> CommandResults:
         "offset": offset
     }
 
-    # TODO: description, we take one (with priority)
     if ip_address:
         params['search'] = ip_address
     elif name:

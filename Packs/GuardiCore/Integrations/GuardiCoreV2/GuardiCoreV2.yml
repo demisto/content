@@ -91,7 +91,7 @@ script:
   commands:
     - arguments:
         - default: true
-          description: IP Address
+          description: IP Address (takes priority before name if defined).
           isArray: false
           name: ip_address
           required: false
@@ -1215,13 +1215,13 @@ script:
           type: String
     - arguments:
         - default: false
-          description: The asset ID
+          description: The asset ID (takes priority over ip and hostname).
           isArray: false
           name: id
           required: false
           secret: false
         - default: true
-          description: Query assets with specified IP address
+          description: Query assets with specified IP address (ip takes priority over hostname)
           isArray: false
           name: ip
           required: false
@@ -1233,7 +1233,7 @@ script:
           required: false
           secret: false
       deprecated: false
-      description: Endpoint results
+      description: Endpoint command (uses `guardicore-search-endpoint` internally).
       execution: false
       name: endpoint
       outputs:
