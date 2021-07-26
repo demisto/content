@@ -149,14 +149,13 @@ upload-packs-to-marketplace:
     - section_end "Upload Packs To Marketplace Storage"
     - section_start "Download packs from GCP"
     - |
-        if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
-          STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
-        fi
-
+      if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
+        STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
+      fi
       PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
-        ZIP_FOLDER=$(mktemp -d)
-        echo "export ZIP_FOLDER=$ZIP_FOLDER" >> $BASH_ENV
-        gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
+      ZIP_FOLDER=$(mktemp -d)
+      echo "export ZIP_FOLDER=$ZIP_FOLDER" >> $BASH_ENV
+      gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
     - section_end "Download packs from GCP"
     - section_start "Zip Content Packs From GCS"
     - |
