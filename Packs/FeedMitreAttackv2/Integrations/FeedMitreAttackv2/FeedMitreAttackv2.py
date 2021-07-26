@@ -446,6 +446,7 @@ def build_command_result(value, score, md, attack_obj):
         indicator=value,
         indicator_type=DBotScoreType.ATTACKPATTERN,
         score=score,
+        integration_name="MITRE ATT&CK v2"
     )
     attack_context = Common.AttackPattern(
         stix_id=attack_obj.get('stixid'),
@@ -572,8 +573,7 @@ def get_mitre_value_from_id(client, args):
         )
 
     return CommandResults(
-            readable_output=tableToMarkdown(f'MITRE ATTACK Attack Patterns values: '
-                                            f'No Attack Patterns found for {attack_ids}.')
+            readable_output=f'MITRE ATTACK Attack Patterns values: No Attack Patterns found for {attack_ids}.'
         )
 
 
