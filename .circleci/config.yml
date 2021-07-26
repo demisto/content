@@ -598,10 +598,10 @@ references:
   bucket_upload_jobs: &bucket_upload_jobs
     - Setup Environment:
         context: bucket_upload_env
-#    - Run Unit Testing And Lint:
-#        context: bucket_upload_env
-#        requires:
-#          - Setup Environment
+    - Run Unit Testing And Lint:
+        context: bucket_upload_env
+        requires:
+          - Setup Environment
 #    - Run Validations:
 #        context: bucket_upload_env
 #        requires:
@@ -1333,13 +1333,10 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
+      - *remote_docker
+      - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
-      - set-instance-role-env-variable:
-          instance_role: Server Master
-          instance_created: "true"
-      - start-tunnel
-      - *wait_until_server_ready
       - run:
           name: Delete Temporary Branch
           shell: /bin/bash
