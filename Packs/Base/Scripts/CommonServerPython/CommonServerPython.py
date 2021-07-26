@@ -2335,7 +2335,7 @@ def get_integration_name():
     :return: Calling integration's name
     :rtype: ``str``
     """
-    return demisto.callingContext.get('IntegrationBrand')
+    return demisto.callingContext.get('context', '').get('IntegrationBrand')
 
 
 class Common(object):
@@ -2359,7 +2359,8 @@ class Common(object):
         :param indicator_type: use DBotScoreType class
 
         :type integration_name: ``str``
-        :param integration_name: integration name
+        :param integration_name: For integrations - The class will automatically determine the integration name.
+                                For scripts - The class will use the given integration name.
 
         :type score: ``DBotScore``
         :param score: DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD
@@ -2383,7 +2384,7 @@ class Common(object):
 
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
-        def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None,
+        def __init__(self, indicator, indicator_type, integration_name='', score=None, malicious_description=None,
                      reliability=None):
 
             if not DBotScoreType.is_valid_type(indicator_type):
@@ -2397,7 +2398,11 @@ class Common(object):
 
             self.indicator = indicator
             self.indicator_type = indicator_type
-            self.integration_name = integration_name or get_integration_name()
+            # For integrations - The class will automatically determine the integration name.
+            if demisto.callingContext.get('integration'):
+                self.integration_name = get_integration_name()
+            else:
+                self.integration_name = integration_name
             self.score = score
             self.malicious_description = malicious_description
             self.reliability = reliability
@@ -5892,7 +5897,7 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
         sys.exit(0)
 
 
-def execute_command(command, args, extract_contents=True):
+def execute_command(command, args, extract_contents=True, fail_on_error=True):
     """
     Runs the `demisto.executeCommand()` function and checks for errors.
 
@@ -5905,21 +5910,41 @@ def execute_command(command, args, extract_contents=True):
     :type extract_contents: ``bool``
     :param extract_contents: Whether to return only the Contents part of the results. Default is True.
 
+    :type fail_on_error: ``bool``
+    :param fail_on_error: Whether to fail the command when receiving an error from the command. Default is True.
+
     :return: The command results.
-    :rtype: ``list`` or ``dict`` or ``str``
+    :rtype:
+        - When `fail_on_error` is True - ``list`` or ``dict`` or ``str``.
+        - When `fail_on_error` is False -``bool`` and ``str``.
+
+    Note:
+    For backward compatibility, only when `fail_on_error` is set to False, two values will be returned.
     """
     if not hasattr(demisto, 'executeCommand'):
         raise DemistoException('Cannot run demisto.executeCommand() from integrations.')
 
     res = demisto.executeCommand(command, args)
     if is_error(res):
-        return_error('Failed to execute {}. Error details:\n{}'.format(command, get_error(res)))
+        error_message = get_error(res)
+        if fail_on_error:
+            return_error('Failed to execute {}. Error details:\n{}'.format(command, error_message))
+        else:
+            return False, error_message
 
     if not extract_contents:
-        return res
+        if fail_on_error:
+            return res
+        else:
+            return True, res
 
     contents = [entry.get('Contents', {}) for entry in res]
-    return contents[0] if len(contents) == 1 else contents
+    contents = contents[0] if len(contents) == 1 else contents
+
+    if fail_on_error:
+        return contents
+
+    return True, contents
 
 
 def camelize(src, delim=' ', upper_camel=True):
@@ -7741,12 +7766,14 @@ class IndicatorsSearcher:
         self._value = value
         self._original_limit = limit
         self._next_limit = limit
+        self._search_is_done = False
 
     def __iter__(self):
         self._total = None
         self._search_after_param = None
         self._page = self._original_page
         self.limit = self._original_limit
+        self._search_is_done = False
         return self
 
     # python2
@@ -7754,7 +7781,7 @@ class IndicatorsSearcher:
         return self.__next__()
 
     def __next__(self):
-        if self._is_search_done():
+        if self._search_is_done:
             raise StopIteration
         size = min(self._size, self.limit or self._size)
         res = self.search_indicators_by_version(from_date=self._from_date,
@@ -7762,11 +7789,12 @@ class IndicatorsSearcher:
                                                 size=size,
                                                 to_date=self._to_date,
                                                 value=self._value)
-        fetched_len = len(res.get('iocs', []))
+        fetched_len = len(res.get('iocs', []) or [])
         if fetched_len == 0:
             raise StopIteration
         if self.limit:
             self.limit -= fetched_len
+        self._search_is_done = self._is_search_done()
         return res
 
     @property
@@ -7792,6 +7820,9 @@ class IndicatorsSearcher:
         2. for search_after if self.total was populated by a previous search, but no self._search_after_param
         3. for page if self.total was populated by a previous search, but page is too large
         """
+        if self._search_is_done:
+            return True
+
         reached_limit = isinstance(self.limit, int) and self.limit <= 0
         if reached_limit:
             return True
@@ -7842,10 +7873,13 @@ class IndicatorsSearcher:
         res = demisto.searchIndicators(**search_iocs_params)
         if len(res.get('iocs', [])) > 0:
             self._page += 1  # advance pages for search_after, as fallback
+        else:
+            self._search_is_done = True
         self._search_after_param = res.get(self._search_after_title)
         self._total = res.get('total')
         if self._search_after_title in res and self._search_after_param is None:
             demisto.info('Elastic search using searchAfter returned all indicators')
+            self._search_is_done = True
         return res
 
 
