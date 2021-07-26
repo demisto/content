@@ -41,6 +41,8 @@
 <li><a href="#h_1823709132691528812526569">Get attachments of an incident: rs-incident-attachments</a></li>
 <li><a href="#h_9184065563181528813233519">Get related incidents: rs-related-incidents</a></li>
 <li><a href="#h_7077667663711528814261115">Get tasks for an incident: rs-incidents-get-tasks</a></li>
+<li><a href="#h_9184065563181528813233520">Add a note to an incident: rs-add-note</a></li>
+<li><a href="#h_7077667663711528814261121">Add an artifact to an incident: rs-add-artifact</a></li>
 </ol>
 <p>&nbsp;</p>
 <h3 id="h_43150070651528808250950">Search for incidents: rs-search-incidents</h3>
@@ -204,6 +206,10 @@ Severity:Low</pre>
 <tr>
 <td style="width: 211px;">nist</td>
 <td style="width: 503px;">NIST Attack Vectors (added to the current list of NIST attack vendors)</td>
+</tr>
+<tr>
+<td style="width: 211px;">other-fields</td>
+<td style="width: 503px;">A json object of the form: {field_name: new_field_value} currently we support the following field types<br /><img src="../../doc_files/support_field_types.png" /></td>
 </tr>
 </tbody>
 </table>
@@ -861,3 +867,79 @@ Required:true
 Status:Closed
 }
 ]</pre></div></div></section>
+<hr>
+<h3 id="h_9184065563181528813233520">Add a note to an incident: rs-add-note</h3>
+<p>Add a note to an incident</p>
+<h5>Command Example</h5>
+<p><code>!rs-add-note incident-id=2111 note="This is a note"</code></p>
+<h5>Input</h5>
+<table style="height: 287px; width: 737px;" border="2" cellpadding="6">
+<tbody>
+<tr>
+<td style="width: 211px;"><strong>&nbsp;Parameter</strong></td>
+<td style="width: 503px;"><strong>Description</strong></td>
+</tr>
+<tr>
+<td style="width: 211px;">incident-id</td>
+<td style="width: 503px;">
+<p>Incident ID to add the note there</p>
+</td>
+</tr>
+<tr>
+<td style="width: 211px;">note</td>
+<td style="width: 503px;">
+<p>The text of the note</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<p>There is no context output for this command.</p>
+<p>&nbsp;</p>
+<h5>Raw Output</h5>
+<pre>The note was added successfully to incident 2111.</pre>
+<hr>
+<h3 id="h_7077667663711528814261121">Add an artifact to an incident: rs-add-artifact</h3>
+<p>Add an artifact to an incident.</p>
+<h5>Command Example</h5>
+<p><code>!rs-add-artifact incident-id=2111 artifact-type="IP Address" artifact-value="1.1.1.1" artifact-description"Description of the artifact"</code></p>
+<h5>Input</h5>
+<table style="height: 287px; width: 737px;" border="2" cellpadding="6">
+<tbody>
+<tr>
+<td style="width: 211px;"><strong>&nbsp;Parameter</strong></td>
+<td style="width: 503px;"><strong>Description</strong></td>
+</tr>
+<tr>
+<td style="width: 211px;">incident-id</td>
+<td style="width: 503px;">
+<p>Incident ID to add the artifact there</p>
+</td>
+</tr>
+<tr>
+<td style="width: 211px;">artifact-type</td>
+<td style="width: 503px;">
+<p>The type of the artifact</p>
+</td>
+</tr>
+<tr>
+<td style="width: 211px;">artifact-value</td>
+<td style="width: 503px;">
+<p>The value of the artifact</p>
+</td>
+</tr>
+<tr>
+<td style="width: 211px;">artifact-description</td>
+<td style="width: 503px;">
+<p>The description of the artifact</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<p>There is no context output for this command.</p>
+<p>&nbsp;</p>
+<h5>Raw Output</h5>
+<pre>The artifact was added successfully to incident 2111.</pre>

@@ -296,11 +296,12 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A json object of field_names and new_field_values for example
+      description: 'A json object of the form: {field_name: new_field_value}. for example
         {"description": {"textarea": {"format": "html", "content": "The new description"}},
         "name": {"text": "The new name"}}. Because of API limitations we currently
-        support only regular fields (We do not support fields like ''artifact'').
-        in case of conflicts refer to ''other-fields''.'
+        support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea
+        as you can see in the README.
+        In case of conflicts refer to ''other-fields''.'
       isArray: false
       name: other-fields
       required: false
@@ -614,13 +615,13 @@ script:
     - default: false
       description: The text of the note.
       isArray: false
-      name: comment
+      name: note
       required: true
       secret: false
     deprecated: false
-    description: Addeds a note to an incident.
+    description: Adde a note to an incident.
     execution: false
-    name: rs-add-notes
+    name: rs-add-note
   - arguments:
     - default: false
       description: The ID of the incident.
@@ -689,7 +690,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Addeds an artifact to an incident.
+    description: Add an artifact to an incident.
     execution: false
     name: rs-add-artifact
   dockerimage: demisto/resilient:1.0.0.23135

@@ -26,7 +26,6 @@ if not demisto.params()['proxy']:
     del os.environ['https_proxy']
 
 ''' GLOBAL VARS '''
-CLIENT = None
 URL = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
 # Remove the http/s from the url (It's added automatically later)
 URL = URL.replace('http://', '').replace('https://', '')
@@ -122,9 +121,9 @@ def normalize_timestamp(timestamp):
     return datetime.fromtimestamp(timestamp / 1000.0).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
-def prettify_incidents(incidents):
-    users = get_users()
-    phases = get_phases()['entities']
+def prettify_incidents(client, incidents):
+    users = get_users(client)
+    phases = get_phases(client)['entities']
     for incident in incidents:
         incident['id'] = str(incident['id'])
         if isinstance(incident['description'], unicode):
@@ -174,11 +173,11 @@ def prettify_incidents(incidents):
 ''' FUNCTIONS '''
 
 
-def search_incidents_command(args):
-    incidents = search_incidents(args)
+def search_incidents_command(client, args):
+    incidents = search_incidents(client, args)
     entry = None
     if incidents:
-        pretty_incidents = prettify_incidents(incidents)
+        pretty_incidents = prettify_incidents(client, incidents)
         result_incidents = createContext(pretty_incidents, id=None, keyTransform=underscoreToCamelCase, removeNull=True)
         ec = {
             'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incidents
@@ -199,7 +198,7 @@ def search_incidents_command(args):
         return 'No results found.'
 
 
-def search_incidents(args):
+def search_incidents(client, args):
     conditions = []
     if 'severity' in args:
         value = []
@@ -340,15 +339,15 @@ def search_incidents(args):
             'conditions': conditions
         }]
     }
-    response = CLIENT.post('/incidents/query', data)  # type: ignore
+    response = client.post('/incidents/query', data)
     return response
 
 
-def update_incident_command(args):
+def update_incident_command(client, args):
     if len(args.keys()) == 1:
         raise Exception('No fields to update were given')
     incident_id = args['incident-id']
-    incident = get_incident(incident_id)
+    incident = get_incident(client, incident_id)
     changes = []
     if 'severity' in args:
         old_value = incident['severity_code']
@@ -487,18 +486,18 @@ def update_incident_command(args):
     data = {
         'changes': changes
     }
-    response = update_incident(incident_id, data)
+    response = update_incident(client, incident_id, data)
     if response.status_code == 200:
         return 'Incident ' + args['incident-id'] + ' was updated successfully.'
 
 
-def update_incident(incident_id, data):
-    response = CLIENT.patch('/incidents/' + incident_id, data)  # type: ignore
+def update_incident(client, incident_id, data):
+    response = client.patch('/incidents/' + incident_id, data)
     return response
 
 
-def get_incident_command(incident_id):
-    incident = get_incident(incident_id)
+def get_incident_command(client, incident_id):
+    incident = get_incident(client, incident_id)
     wanted_keys = ['create_date', 'discovered_date', 'description', 'due_date', 'id', 'name', 'owner_id',
                    'phase_id', 'severity_code', 'confirmed', 'employee_involved', 'negative_pr_likely',
                    'confirmed', 'start_date', 'due_date', 'negative_pr_likely', 'reporter', 'exposure_type_id',
@@ -509,7 +508,7 @@ def get_incident_command(incident_id):
     if incident['resolution_summary']:
         pretty_incident['resolution_summary'] = incident['resolution_summary'].replace('<div>', '').replace('</div>',
                                                                                                             '')
-    pretty_incident = prettify_incidents([pretty_incident])
+    pretty_incident = prettify_incidents(client, [pretty_incident])
     result_incident = createContext(pretty_incident, id=None, keyTransform=underscoreToCamelCase, removeNull=True)
     ec = {
         'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incident
@@ -537,21 +536,21 @@ def get_incident_command(incident_id):
     return entry
 
 
-def get_incident(incident_id):
-    response = CLIENT.get('/incidents/' + incident_id + '?text_content_output_format=objects_convert_html')  # type: ignore
+def get_incident(client, incident_id):
+    response = client.get('/incidents/' + incident_id + '?text_content_output_format=objects_convert_html')
     return response
 
 
-def list_open_incidents():
-    response = CLIENT.get('/incidents/open')  # type: ignore
+def list_open_incidents(client):
+    response = client.get('/incidents/open')
     return response
 
 
-def get_members_command(incident_id):
-    response = get_members(incident_id)['members']
-    incident = get_incident(incident_id)
+def get_members_command(client, incident_id):
+    response = get_members(client, incident_id)['members']
+    incident = get_incident(client, incident_id)
     response.append(incident['owner_id'])
-    users = get_users()
+    users = get_users(client)
     members = []
     for user in users:
         if user['id'] in response:
@@ -580,13 +579,13 @@ def get_members_command(incident_id):
     return entry
 
 
-def get_members(incident_id):
-    response = CLIENT.get('/incidents/' + incident_id + '/members')  # type: ignore
+def get_members(client, incident_id):
+    response = client.get('/incidents/' + incident_id + '/members')
     return response
 
 
-def get_users_command():
-    response = get_users()
+def get_users_command(client):
+    response = get_users(client)
     users = []
     for user in response:
         users.append({
@@ -607,18 +606,18 @@ def get_users_command():
     return entry
 
 
-def get_users():
-    response = CLIENT.get('/users')  # type: ignore
+def get_users(client):
+    response = client.get('/users')
     return response
 
 
-def get_phases():
-    response = CLIENT.get('/phases')  # type: ignore
+def get_phases(client):
+    response = client.get('/phases')
     return response
 
 
-def get_tasks_command(incident_id):
-    response = get_tasks(incident_id)
+def get_tasks_command(client, incident_id):
+    response = get_tasks(client, incident_id)
     if response:
         tasks = []
         for task in response:
@@ -634,7 +633,7 @@ def get_tasks_command(incident_id):
                 task_object['Form'] = task['form']
             if task['user_notes']:
                 task_object['UserNotes'] = task['user_notes']
-            task_object['Creator'] = task['creator_principal']['display_name']
+            task_object['Creator'] = task.get('creator_principal', {}).get('display_name')
             task_object['Category'] = task['cat_name']
             if task['instr_text']:
                 task_object['Instructions'] = task['instr_text']
@@ -662,21 +661,21 @@ def get_tasks_command(incident_id):
         return 'No tasks found for this incident.'
 
 
-def get_tasks(incident_id):
-    response = CLIENT.get('/incidents/' + incident_id + '/tasks')  # type: ignore
+def get_tasks(client, incident_id):
+    response = client.get('/incidents/' + incident_id + '/tasks')
     return response
 
 
-def set_member_command(incident_id, members):
+def set_member_command(client, incident_id, members):
     members = [int(x) for x in members.split(',')]
-    incident = get_incident(incident_id)
+    incident = get_incident(client, incident_id)
     incident_version = incident['vers']
     data = {
         'vers': incident_version,
         'members': members
     }
-    response = set_member(incident_id, data)
-    users = get_users()
+    response = set_member(client, incident_id, data)
+    users = get_users(client)
     entry = {}
     if response:
         for user in users:
@@ -705,13 +704,13 @@ def set_member_command(incident_id, members):
     return entry
 
 
-def set_member(incident_id, data):
-    response = CLIENT.put('/incidents/' + incident_id + '/members', data)  # type: ignore
+def set_member(client, incident_id, data):
+    response = client.put('/incidents/' + incident_id + '/members', data)
     return response
 
 
-def close_incident_command(incident_id):
-    incident = get_incident(incident_id)
+def close_incident_command(client, incident_id):
+    incident = get_incident(client, incident_id)
     if not incident['resolution_id'] or not incident['resolution_summary']:
         return 'Resolution and resolution summary of the incident should be updated before closing an incident.'
     response = close_incident(incident_id, incident)
@@ -735,13 +734,13 @@ def close_incident(incident_id, incident):
     return update_incident(incident_id, data)
 
 
-def create_incident_command(args):
+def create_incident_command(client, args):
     incident_name = args['name']
     data = {
         "name": incident_name,
         "discovered_date": 0
     }
-    response = create_incident(data)
+    response = create_incident(client, data)
     hr = {
         'ID': response['id'],
         'Name': incident_name
@@ -764,22 +763,22 @@ def create_incident_command(args):
     return entry
 
 
-def create_incident(data):
-    response = CLIENT.post('/incidents', data)  # type: ignore
+def create_incident(client, data):
+    response = client.post('/incidents', data)
     return response
 
 
-def incident_artifacts_command(incident_id):
-    response = incident_artifacts(incident_id)
+def incident_artifacts_command(client, incident_id):
+    response = incident_artifacts(client, incident_id)
     if response:
-        users = get_users()
+        users = get_users(client)
         ec_artifacts = []
         hr_artifacts = []
         for artifact in response:
             incident_name = artifact['inc_name']
             artifact_object = {
                 'ID': artifact['id'],
-                'Type': get_artifact_type(artifact['type']),
+                'Type': get_artifact_type(client, artifact['type']),
                 'Value': artifact['value'],
                 'CreatedDate': normalize_timestamp(artifact['created']),
                 'Creator': artifact['creator']['fname'] + artifact['creator']['lname']
@@ -831,18 +830,18 @@ def incident_artifacts_command(incident_id):
         return 'No artifacts found.'
 
 
-def incident_artifacts(incident_id):
-    response = CLIENT.get('/incidents/' + incident_id + '/artifacts')  # type: ignore
+def incident_artifacts(client, incident_id):
+    response = client.get('/incidents/' + incident_id + '/artifacts')
     return response
 
 
-def get_artifact_type(artifact_id):
-    response = CLIENT.get('/artifact_types/' + str(artifact_id))  # type: ignore
+def get_artifact_type(client, artifact_id):
+    response = client.get('/artifact_types/' + str(artifact_id))
     return response['name']
 
 
-def incident_attachments_command(incident_id):
-    response = incident_attachments(incident_id)
+def incident_attachments_command(client, incident_id):
+    response = incident_attachments(client, incident_id)
     if response:
         attachments = []
         users = get_users()
@@ -883,12 +882,12 @@ def incident_attachments_command(incident_id):
         return 'No attachments found.'
 
 
-def incident_attachments(incident_id):
-    response = CLIENT.get('/incidents/' + incident_id + '/attachments')  # type: ignore
+def incident_attachments(client, incident_id):
+    response = client.get('/incidents/' + incident_id + '/attachments')
     return response
 
 
-def related_incidents_command(incident_id):
+def related_incidents_command(client, incident_id):
     response = related_incidents(incident_id)['incidents']
     if response:
         ec_incidents = []
@@ -941,12 +940,12 @@ def related_incidents_command(incident_id):
         return 'No related incidents found.'
 
 
-def related_incidents(incident_id):
-    response = CLIENT.get('/incidents/' + incident_id + '/related_ex?want_artifacts=true')  # type: ignore
+def related_incidents(client, incident_id):
+    response = client.get('/incidents/' + incident_id + '/related_ex?want_artifacts=true')
     return response
 
 
-def fetch_incidents():
+def fetch_incidents(client):
     last_run = demisto.getLastRun() and demisto.getLastRun().get('time')
     if not last_run:
         last_run = date_to_timestamp(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
@@ -954,7 +953,7 @@ def fetch_incidents():
     else:
         args = {'date-created-after': normalize_timestamp(last_run)}
 
-    resilient_incidents = search_incidents(args)
+    resilient_incidents = search_incidents(client, args)
     incidents = []
 
     if resilient_incidents:
@@ -1007,18 +1006,29 @@ def test():
     demisto.results('ok')
 
 
-def add_notes(incident_id, comment):
-    body = {'text': {'format': 'text', 'content': comment}}
-    CLIENT.post('/incidents/' + str(incident_id) + '/comments', body)  # type: ignore
-    return 'The note was added successfully.'
+def add_note(client, incident_id, comment):
+    body = {
+        'text': {
+            'format': 'text',
+            'content': comment
+        }
+    }
+    client.post('/incidents/' + str(incident_id) + '/comments', body)
+    return f'The note was added successfully to incident {incident_id}'
 
 
-def add_incident_artifact(incident_id, artifact_type, artifact_value, artifact_description):
-    body = {'type': artifact_type, 'value': artifact_value, 'description': {'format': 'text',
-                                                                            'content': artifact_description}}
-    CLIENT.post('/incidents/' + str(incident_id) + '/artifacts', body)  # type: ignore
+def add_incident_artifact(client, incident_id, artifact_type, artifact_value, artifact_description):
+    body = {
+        'type': artifact_type,
+        'value': artifact_value,
+        'description': {
+            'format': 'text',
+            'content': artifact_description
+        }
+    }
+    client.post('/incidents/' + str(incident_id) + '/artifacts', body)
 
-    return 'The artifact was added successfully.'
+    return f'The artifact was added successfully to incident {incident_id}'
 
 
 ''' EXECUTION CODE '''
@@ -1048,51 +1058,51 @@ def get_client():
     return resilient_client
 
 
-# Disable SDK logging warning messages
-integration_logger = logging.getLogger('resilient')  # type: logging.Logger
-integration_logger.propagate = False
-
-LOG('command is %s' % (demisto.command(),))
-
-
 def main():
-    global CLIENT
-    CLIENT = get_client()
+    client = get_client()
+
+    # Disable SDK logging warning messages
+    integration_logger = logging.getLogger('resilient')  # type: logging.Logger
+    integration_logger.propagate = False
+
+    LOG('command is %s' % (demisto.command(),))
+
     try:
+        args = demisto.args()
         if demisto.command() == 'test-module':
             # Checks if there is an authenticated session
             test()
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents()
+            fetch_incidents(client)
         elif demisto.command() == 'rs-search-incidents':
-            demisto.results(search_incidents_command(demisto.args()))
+            demisto.results(search_incidents_command(client, args))
         elif demisto.command() == 'rs-update-incident':
-            demisto.results(update_incident_command(demisto.args()))
+            demisto.results(update_incident_command(client, args))
         elif demisto.command() == 'rs-incidents-get-members':
-            demisto.results(get_members_command(demisto.args()['incident-id']))
+            demisto.results(get_members_command(client, args['incident-id']))
         elif demisto.command() == 'rs-get-incident':
-            demisto.results(get_incident_command(demisto.args()['incident-id']))
+            demisto.results(get_incident_command(client, args['incident-id']))
         elif demisto.command() == 'rs-incidents-update-member':
-            demisto.results(set_member_command(demisto.args()['incident-id'], demisto.args()['members']))
+            demisto.results(set_member_command(client, args['incident-id'], args['members']))
         elif demisto.command() == 'rs-incidents-get-tasks':
-            demisto.results(get_tasks_command(demisto.args()['incident-id']))
+            demisto.results(get_tasks_command(client, args['incident-id']))
         elif demisto.command() == 'rs-get-users':
-            demisto.results(get_users_command())
+            demisto.results(get_users_command(client))
         elif demisto.command() == 'rs-close-incident':
-            demisto.results(close_incident_command(demisto.args()['incident-id']))
+            demisto.results(close_incident_command(client, args['incident-id']))
         elif demisto.command() == 'rs-create-incident':
-            demisto.results(create_incident_command(demisto.args()))
+            demisto.results(create_incident_command(client, args))
         elif demisto.command() == 'rs-incident-artifacts':
-            demisto.results(incident_artifacts_command(demisto.args()['incident-id']))
+            demisto.results(incident_artifacts_command(client, args['incident-id']))
         elif demisto.command() == 'rs-incident-attachments':
-            demisto.results(incident_attachments_command(demisto.args()['incident-id']))
+            demisto.results(incident_attachments_command(client, args['incident-id']))
         elif demisto.command() == 'rs-related-incidents':
-            demisto.results(related_incidents_command(demisto.args()['incident-id']))
+            demisto.results(related_incidents_command(client, args['incident-id']))
         elif demisto.command() == 'rs-add-notes':
-            demisto.results(add_notes(demisto.args()['incident-id'], demisto.args()['comment']))
+            demisto.results(add_note(client, args['incident-id'], args['note']))
         elif demisto.command() == 'rs-add-artifact':
-            demisto.results(add_incident_artifact(demisto.args()['incident-id'], demisto.args()[
-                            'artifact-type'], demisto.args()['artifact-value'], demisto.args()['artifact-description']))
+            demisto.results(add_incident_artifact(client, args['incident-id'], args['artifact-type'],
+                                                  args['artifact-value'], args['artifact-description']))
     except Exception as e:
         LOG(e.message)
         LOG.print_log()
