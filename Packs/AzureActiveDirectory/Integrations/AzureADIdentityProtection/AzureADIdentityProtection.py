@@ -38,8 +38,7 @@ def parse_list(raw_response: dict, human_readable_title: str, context_path: str)
 
 
 class AADClient(MicrosoftClient):
-    def __init__(self, app_id: str, subscription_id: str, verify: bool, proxy: bool, azure_ad_endpoint: str,
-                 *args, **kwargs):
+    def __init__(self, app_id: str, subscription_id: str, verify: bool, proxy: bool, azure_ad_endpoint: str):
 
         super().__init__(azure_ad_endpoint=azure_ad_endpoint,
                          self_deployed=True,
@@ -49,8 +48,7 @@ class AADClient(MicrosoftClient):
                          token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
                          verify=verify,
                          proxy=proxy,
-                         scope=' '.join(REQUIRED_PERMISSIONS),
-                         *args, **kwargs)
+                         scope=' '.join(REQUIRED_PERMISSIONS))
 
         if '@' in app_id:  # for use in test-playbook
             app_id, refresh_token = app_id.split('@')
