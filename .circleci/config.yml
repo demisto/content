@@ -1346,10 +1346,10 @@ jobs:
           command: |
             if [ -n "$DELETE_CURRENT_BRANCH" ]; then
               current_branch=<< pipeline.git.branch >>
-              git
               echo Deleting current branch - $current_branch
               cd ../../../
               find ./ -name ".git"
+              git branch
             fi
 #              git init
 #              git remote add origin {remote-url}
