@@ -565,12 +565,13 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
 
 
 def generic_reputation_command(demisto_args, reputation_type, dbot_type, malicious_tag_ids, suspicious_tag_ids,
-                               reliability):
+                               reliability, attributes_limit):
     reputation_value_list = argToList(demisto_args.get(reputation_type), ',')
     command_results = []
     for value in reputation_value_list:
         command_results.append(
-            get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability))
+            get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability,
+                                  attributes_limit))
     return command_results
 
 
@@ -594,7 +595,7 @@ def reputation_value_validation(value, dbot_type):
             raise DemistoException(f"Error: The given email address: {value} is not valid")
 
 
-def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability):
+def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability, attributes_limit):
     """
     This function searches for the given attribute value in MISP and then calculates it's dbot score.
     The score is calculated by the tags ids (attribute tags and event tags).
@@ -604,6 +605,7 @@ def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_id
         malicious_tag_ids (set): Tag ids should be recognised as malicious.
         suspicious_tag_ids (set): Tag ids should be recognised as suspicious
         reliability (DBotScoreReliability): integration reliability score.
+        attributes_limit (int) : Limits the number of attributes that will be written to the context
 
     Returns:
         CommandResults includes all the indicator results.
@@ -1145,12 +1147,14 @@ def add_sighting(demisto_args: dict):
     raise DemistoException(f"An error was occurred: {json.dumps(response)}")
 
 
-def test(malicious_tag_ids, suspicious_tag_ids):
+def test(malicious_tag_ids, suspicious_tag_ids, attributes_limit):
     """
     Test module.
     """
     is_tag_list_valid(malicious_tag_ids)
     is_tag_list_valid(suspicious_tag_ids)
+    if attributes_limit < 0:
+        raise DemistoException('Attribute limit has to be a positive number.')
     response = PYMISP._prepare_request('GET', 'servers/getPyMISPVersion.json')
     if PYMISP._check_json_response(response):
         return 'ok'
@@ -1357,15 +1361,17 @@ def main():
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
         Exception("MISP V3 error: Please provide a valid value for the Source Reliability parameter")
-
+    attributes_limit = arg_to_number(params.get('attributes_limit', 10), "attributes_limit", required=True)
     command = demisto.command()
     demisto.debug(f'[MISP V3]: command is {command}')
     args = demisto.args()
 
     try:
+
         malicious_tag_ids, suspicious_tag_ids = handle_tag_duplication_ids(malicious_tag_ids, suspicious_tag_ids)
         if command == 'test-module':
-            return_results(test(malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids))
+            return_results(test(malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids,
+                                attributes_limit=attributes_limit))
         elif command == 'misp-create-event':
             return_results(create_event_command(args))
         elif command == 'misp-add-attribute':
@@ -1390,20 +1396,23 @@ def main():
             return_results(add_events_from_feed(demisto_args=args, use_ssl=VERIFY, proxies=PROXIES))
         elif command == 'file':
             return_results(
-                generic_reputation_command(args, 'file', 'FILE', malicious_tag_ids, suspicious_tag_ids, reliability))
+                generic_reputation_command(args, 'file', 'FILE', malicious_tag_ids, suspicious_tag_ids, reliability,
+                                           attributes_limit))
         elif command == 'url':
             return_results(
-                generic_reputation_command(args, 'url', 'URL', malicious_tag_ids, suspicious_tag_ids, reliability))
+                generic_reputation_command(args, 'url', 'URL', malicious_tag_ids, suspicious_tag_ids, reliability,
+                                           attributes_limit))
         elif command == 'ip':
             return_results(
-                generic_reputation_command(args, 'ip', 'IP', malicious_tag_ids, suspicious_tag_ids, reliability))
+                generic_reputation_command(args, 'ip', 'IP', malicious_tag_ids, suspicious_tag_ids, reliability,
+                                           attributes_limit))
         elif command == 'domain':
             return_results(
                 generic_reputation_command(args, 'domain', 'DOMAIN', malicious_tag_ids, suspicious_tag_ids,
-                                           reliability))
+                                           reliability, attributes_limit))
         elif command == 'email':
             return_results(generic_reputation_command(args, 'email', 'EMAIL', malicious_tag_ids, suspicious_tag_ids,
-                                                      reliability))
+                                                      reliability, attributes_limit))
         elif command == 'misp-add-file-object':
             return_results(add_file_object(args))
         elif command == 'misp-add-domain-object':

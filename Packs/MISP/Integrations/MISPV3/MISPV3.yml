@@ -49,6 +49,13 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- additionalinfo: This field limits the number of attributes that will be written to the context for every reputation command. Please pay attrntion, raising the number of attributes may result in high memory and disk usage.
+  defaultvalue: '10'
+  display: Maximum attributes to be returned
+  hidden: false
+  name: attributes_limit
+  required: false
+  type: 0
 description: Malware information sharing platform and threat sharing.
 display: MISP v3
 name: MISP V3
