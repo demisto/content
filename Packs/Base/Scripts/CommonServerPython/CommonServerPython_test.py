@@ -5082,7 +5082,6 @@ class TestCustomIndicator:
         Then: Create a valid custom indicator
         """
         from CommonServerPython import Common, DBotScoreType
-        dbot_score_type = DBotScoreType()
         dbot_score = Common.DBotScore(
             'test',
             DBotScoreType.CUSTOM,
@@ -5090,11 +5089,27 @@ class TestCustomIndicator:
             score=Common.DBotScore.BAD,
             malicious_description='malicious!'
         )
-        indicator = Common.CustomIndicator('test', 'test_value', dbot_score,
-                                           dbot_score_type, {'param': 'value'}, 'prefix')
+        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
         assert indicator.CONTEXT_PATH == 'prefix(val.value && val.value == obj.value)'
         assert indicator.param == 'value'
         assert indicator.value == 'test_value'
+
+    def test_custom_indicator_init_existin_type(self):
+        """
+        Given: Data needed for creating a custom indicator
+        When: Type already exists
+        Then: raise a Value Error
+        """
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common, DBotScoreType
+            dbot_score = Common.DBotScore(
+                'test',
+                DBotScoreType.CUSTOM,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+            Common.CustomIndicator('ip', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
 
     def test_custom_indicator_init_no_prefix(self):
         """
@@ -5104,7 +5119,6 @@ class TestCustomIndicator:
         """
         with pytest.raises(ValueError):
             from CommonServerPython import Common, DBotScoreType
-            dbot_score_type = DBotScoreType()
             dbot_score = Common.DBotScore(
                 'test',
                 DBotScoreType.CUSTOM,
@@ -5112,7 +5126,7 @@ class TestCustomIndicator:
                 score=Common.DBotScore.BAD,
                 malicious_description='malicious!'
             )
-            Common.CustomIndicator('test', 'test_value', dbot_score, dbot_score_type, {'param': 'value'}, None)
+            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, None)
 
     def test_custom_indicator_init_no_dbot_score(self):
         """
@@ -5122,9 +5136,8 @@ class TestCustomIndicator:
         """
         with pytest.raises(ValueError):
             from CommonServerPython import Common, DBotScoreType
-            dbot_score_type = DBotScoreType()
             dbot_score = ''
-            Common.CustomIndicator('test', 'test_value', dbot_score, dbot_score_type, {'param': 'value'}, 'prefix')
+            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
 
     def test_custom_indicator_to_context(self):
         """
@@ -5133,7 +5146,6 @@ class TestCustomIndicator:
         Then: Raise ValueError
         """
         from CommonServerPython import Common, DBotScoreType
-        dbot_score_type = DBotScoreType()
         dbot_score = Common.DBotScore(
             'test',
             DBotScoreType.CUSTOM,
@@ -5141,40 +5153,39 @@ class TestCustomIndicator:
             score=Common.DBotScore.BAD,
             malicious_description='malicious!'
         )
-        indicator = Common.CustomIndicator('test', 'test_value', dbot_score,
-                                           dbot_score_type, {'param': 'value'}, 'prefix')
+        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
         context = indicator.to_context()
         assert context['DBotScore']['Indicator'] == 'test'
         assert context['prefix(val.value && val.value == obj.value)']['Value'] == 'test_value'
 
 
-class TestDBotScoreType:
-    def test_is_valid_type_fail(self):
-        from CommonServerPython import DBotScoreType
-        dbot = DBotScoreType()
-        assert dbot.is_valid_type('fake_type') is False
-
-    def test_is_valid_type_success(self):
-        from CommonServerPython import DBotScoreType
-        dbot = DBotScoreType()
-        assert dbot.is_valid_type(DBotScoreType.IP) is True
-
-    def test_add_custom_type(self):
-        from CommonServerPython import DBotScoreType
-        dbot = DBotScoreType()
-        dbot.add_custom_type('custom_name')
-        assert dbot.__getattribute__('CUSTOM_NAME') == 'custom_name'
-
-    def test_add_existing_custom_type(self):
-        from CommonServerPython import DBotScoreType
-        dbot = DBotScoreType()
-        dbot.add_custom_type('custom_name')
-        dbot.add_custom_type('custom_name')
-        assert dbot.__getattribute__('CUSTOM_NAME') == 'custom_name'
-
-    def test_is_valid_type_success_custom_name(self):
-        from CommonServerPython import DBotScoreType
-        dbot = DBotScoreType()
-        dbot.add_custom_type('custom_name')
-        assert dbot.is_valid_type('custom_name') is True
-    # TODO: add docstring
+# class TestDBotScoreType:
+#     def test_is_valid_type_fail(self):
+#         from CommonServerPython import DBotScoreType
+#         dbot = DBotScoreType()
+#         assert dbot.is_valid_type('fake_type') is False
+#
+#     def test_is_valid_type_success(self):
+#         from CommonServerPython import DBotScoreType
+#         dbot = DBotScoreType()
+#         assert dbot.is_valid_type(DBotScoreType.IP) is True
+#
+#     def test_add_custom_type(self):
+#         from CommonServerPython import DBotScoreType
+#         dbot = DBotScoreType()
+#         dbot.add_custom_type('custom_name')
+#         assert dbot.__getattribute__('CUSTOM_NAME') == 'custom_name'
+#
+#     def test_add_existing_custom_type(self):
+#         from CommonServerPython import DBotScoreType
+#         dbot = DBotScoreType()
+#         dbot.add_custom_type('custom_name')
+#         dbot.add_custom_type('custom_name')
+#         assert dbot.__getattribute__('CUSTOM_NAME') == 'custom_name'
+#
+#     def test_is_valid_type_success_custom_name(self):
+#         from CommonServerPython import DBotScoreType
+#         dbot = DBotScoreType()
+#         dbot.add_custom_type('custom_name')
+#         assert dbot.is_valid_type('custom_name') is True
+#     # TODO: add docstring

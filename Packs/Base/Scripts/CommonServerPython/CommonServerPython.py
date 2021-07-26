@@ -247,15 +247,23 @@ class DBotScoreType(object):
         # required to create __init__ for create_server_docs.py purpose
         pass
 
-    def is_valid_type(self, _type):
+    @classmethod
+    def is_valid_type(cls, _type):
         # type: (str) -> bool
-        try:
-            return self.__getattribute__(_type.upper()) is not None
-        except AttributeError:
-            return False
-
-    def add_custom_type(self, _type):
-        self.__setattr__(_type.upper(), _type.lower())
+        return _type in (
+            DBotScoreType.IP,
+            DBotScoreType.FILE,
+            DBotScoreType.DOMAIN,
+            DBotScoreType.URL,
+            DBotScoreType.CVE,
+            DBotScoreType.ACCOUNT,
+            DBotScoreType.CIDR,
+            DBotScoreType.DOMAINGLOB,
+            DBotScoreType.CERTIFICATE,
+            DBotScoreType.CRYPTOCURRENCY,
+            DBotScoreType.EMAIL,
+            DBotScoreType.CUSTOM,
+        )
 
 
 class DBotScoreReliability(object):
@@ -2425,7 +2433,7 @@ class Common(object):
 
     class CustomIndicator(Indicator):
 
-        def __init__(self, indicator_type, value, dbot_score, dbot_score_type, params, prefix_str):
+        def __init__(self, indicator_type, value, dbot_score, params, prefix_str):
             """
             :type indicator_type: ``Str``
             :param indicator_type: type name of the indicator
@@ -2436,9 +2444,6 @@ class Common(object):
             :type dbot_score: ``DBotScore``
             :param dbot_score: If custom indicator has a score then create and set a DBotScore object.
 
-            :type dbot_score_type: ``DBotScoreType``
-            :param dbot_score: DBotScoreType instance to hold the created type
-
             :type params: ``Dict(Str,Any)``
             :param params: A dictionary containing all the param names and their values
 
@@ -2448,7 +2453,8 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
-
+            if hasattr(DBotScoreType, indicator_type.upper()):
+                raise ValueError('Creating a custom indicator type with an existing type name is not allowed')
             if not prefix_str:
                 raise ValueError('prefix_str is mandatory for creating the indicator')
 
@@ -2459,8 +2465,8 @@ class Common(object):
                 raise ValueError('dbot_score must be of type DBotScore')
 
             self.dbot_score = dbot_score
+            self.indicator_type = indicator_type
 
-            dbot_score_type.add_custom_type(indicator_type)
             INDICATOR_TYPE_TO_CONTEXT_KEY[indicator_type.lower()] = indicator_type.capitalize()
 
             for key in params:
@@ -2478,7 +2484,8 @@ class Common(object):
             }
 
             if self.dbot_score:
-                ret_value.update(self.dbot_score.to_context())
+                ret_value.update(self.dbot_score.to_context()) # TODO: seems like it does add the 'custom' type
+            ret_value['Type'] = self.indicator_type
 
             return ret_value
 
