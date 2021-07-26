@@ -19,12 +19,12 @@ configuration:
   name: client_version
   required: false
   type: 0
-- additionalinfo: The API Key to use for connection
+- additionalInfo: The API Key to use for connection
   display: API Key
   name: api_key
   required: true
   type: 4
-- additionalinfo: Reliability of the source providing the intelligence data.
+- additionalInfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
   name: integrationReliability
@@ -46,7 +46,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Search Safe Browsing, The Safe Browsing APIs (v4) let your client applications check URLs against Google's constantly updated lists of unsafe web resources.
+description: Search Safe Browsing, The Safe Browsing APIs (v4) let your client applications
+  check URLs against Google's constantly updated lists of unsafe web resources.
 display: Google Safe Browsing v2
 name: Google Safe Browsing v2
 script:
@@ -54,7 +55,7 @@ script:
   - arguments:
     - default: true
       description: url
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false

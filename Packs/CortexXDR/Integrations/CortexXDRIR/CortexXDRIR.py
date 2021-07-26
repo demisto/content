@@ -1763,7 +1763,7 @@ def endpoint_command(client, args):
         ip_list=endpoint_ip_list,
         hostname=endpoint_hostname_list,
     )
-    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, True)
+    standard_endpoints =ipinfo generate_endpoint_by_contex_standard(endpoints, True)
     command_results = []
     if standard_endpoints:
         for endpoint in standard_endpoints:
