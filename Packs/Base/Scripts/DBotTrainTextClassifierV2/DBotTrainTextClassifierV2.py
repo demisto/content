@@ -20,10 +20,14 @@ DBOT_TAG_FIELD = "dbot_internal_tag_field"
 MIN_INCIDENTS_THRESHOLD = 100
 PREDICTIONS_OUT_FILE_NAME = 'predictions_on_test_set.csv'
 
-FASTTEXT_TRAINING_ALGO = 'fasttext'
+# FROM_SCRATCH_TRAINING_ALGO is the UI equivalent of FASTTEXT_TRAINING_ALGO
+FROM_SCRATCH_TRAINING_ALGO = 'from_scratch'
 FINETUNE_TRAINING_ALGO = 'fine_tune'
+FASTTEXT_TRAINING_ALGO = 'fasttext'
+AUTO_TRAINING_ALGO = 'auto'
+
 # the following mapping need to correspond to predict_phishing_words func at DBotPredictPhishingWords
-ALGO_TO_MODEL_TYPE = {FASTTEXT_TRAINING_ALGO: 'Phishing', FINETUNE_TRAINING_ALGO: 'torch'}
+ALGO_TO_MODEL_TYPE = {FROM_SCRATCH_TRAINING_ALGO: 'Phishing', FASTTEXT_TRAINING_ALGO: 'torch'}
 FINETUNE_LABELS = ['Malicious', 'Non-Malicious']
 
 
@@ -341,16 +345,20 @@ def get_X_and_y_from_data(data, text_field):
     return X, y
 
 
-def validate_labels_and_algorithm(y, algorithm):
-    if algorithm == FINETUNE_TRAINING_ALGO:
-        labels = set(y)
-        illegal_labels = [label for label in labels if label not in FINETUNE_LABELS]
-        if len(illegal_labels) > 0:
-            error = ['When trainingAlgorithm is set to {}, all labels mus be mapped to {}.\n'.format(algorithm,
-                     ', '.join(FINETUNE_LABELS))]
-            error += ['The following labels/verdicts need to be mapped to one of those values: ']
-            error += [', '.join(illegal_labels) + '.']
-            return_error('\n'.join(error))
+def validate_labels_and_decide_algorithm(y, algorithm):
+    labels = Counter(y)
+    illegal_labels_for_fine_tune = [label for label in labels if label not in FINETUNE_LABELS]
+    if algorithm == FINETUNE_TRAINING_ALGO and len(illegal_labels_for_fine_tune) > 0:
+        error = ['When trainingAlgorithm is set to {}, all labels mus be mapped to {}.\n'.format(algorithm,
+                                                                                                 ', '.join(
+                                                                                                     FINETUNE_LABELS))]
+        error += ['The following labels/verdicts need to be mapped to one of those values: ']
+        error += [', '.join(illegal_labels_for_fine_tune) + '.']
+        return_error('\n'.join(error))
+    elif algorithm == AUTO_TRAINING_ALGO:
+        return FASTTEXT_TRAINING_ALGO
+    else:
+        return algorithm
 
 
 def main():
@@ -366,7 +374,10 @@ def main():
     keyword_min_score = float(demisto.args()['keywordMinScore'])
     return_predictions_on_test_set = demisto.args().get('returnPredictionsOnTestSet', 'false') == 'true'
     original_text_fields = demisto.args().get('originalTextFields', '')
-    algorithm = demisto.args().get('trainingAlgorithm', FASTTEXT_TRAINING_ALGO)
+    algorithm = demisto.args().get('trainingAlgorithm', AUTO_TRAINING_ALGO)
+    # FASTTEXT_TRAINING_ALGO and FROM_SCRATCH_TRAINING_ALGO are equivalent, replacement is done because ml_lib
+    # expects algorithm as one of (FASTTEXT_TRAINING_ALGO, FINETUNE_TRAINING_ALGO)
+    algorithm = FASTTEXT_TRAINING_ALGO if algorithm == FROM_SCRATCH_TRAINING_ALGO else algorithm
 
     if input_type.endswith("filename"):
         data = read_files_by_name(input, input_type.split("_")[0].strip())
@@ -395,10 +406,11 @@ def main():
         except Exception:
             pass
     X, y = get_X_and_y_from_data(data, text_field)
-    validate_labels_and_algorithm(y, algorithm)
+    algorithm = validate_labels_and_decide_algorithm(y, algorithm)
     test_index, train_index = get_train_and_test_sets_indices(X, y)
     X_train, X_test = [X[i] for i in train_index], [X[i] for i in test_index]
     y_train, y_test = [y[i] for i in train_index], [y[i] for i in test_index]
+    # sys.exit(0)
     phishing_model = demisto_ml.train_model_handler(X_train, y_train, algorithm=algorithm, compress=False)
     ft_test_predictions = phishing_model.predict(X_test)
     y_pred = [{y_tuple[0]: float(y_tuple[1])} for y_tuple in ft_test_predictions]

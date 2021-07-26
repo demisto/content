@@ -130,17 +130,21 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: fasttext
-  description: 'The training algorithm to use for training the model. Use "fasttext"
-    to train a new model from scratch. "fastext" should perform better where number
-    of incidents (500 incidents or more per each verdict). "fine-tune" is training
-    a model based on our out-of-the-box model. "fine-tune" should perform better when
-    number of incidents is relatively low. It''s possible to train multiple models
-    using different algorithms options, and compare their results. '
+  defaultValue: auto
+  description: 'The training algorithm to use for training the model. Default is "Auto".
+    If "Auto" is selected, the training algorithm will be chosen automatically based
+    on the number of incidents per each label.  Use "from_scratch" to train a new
+    model from scratch, based on your incidents only. In general, "from_scratch" should
+    perform better where number of incidents (500 incidents or more per each verdict).
+    "fine-tune" is training a model based on our out-of-the-box model. "fine-tune"
+    should perform better when number of incidents is relatively low. It''s possible
+    to train multiple models using different algorithms options, and compare their
+    results. '
   isArray: false
   name: trainingAlgorithm
   predefined:
-  - fasttext
+  - auto
+  - from_scratch
   - fine_tune
   required: false
   secret: false
