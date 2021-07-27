@@ -8,7 +8,7 @@
 <li>Send notifications, message and files from Cortex XSOAR to Slack.</li>
 <li>Get notifications in Slack about events in Cortex XSOAR.</li>
 <li>Manage Cortex XSOAR incidents via direct messages to the Cortex XSOAR bot.</li>
-<li>Manage Slack channels (create, edit, invite, kick, close).</li>
+<li>Manage Slack channels (create, edit, filter, invite, kick, close).</li>
 </ul><h2>Detailed Description</h2>
 <ul>
 <li>To allow us access to Slack, the Cortex XSOAR app has to be added to the relevant workspace. Do so by clicking on the following <a href="https://oproxy.demisto.ninja/slack">link</a>.</li>
@@ -61,6 +61,7 @@
   <li>slack-kick-from-channel: slack-kick-from-channel</li>
   <li>slack-rename-channel: slack-rename-channel</li>
   <li>slack-get-user-details: slack-get-user-details</li>
+  <li>slack-filter-channels: slack-filter-channels</li>
 </ol>
 <h3>1. mirror-investigation</h3>
 <!-- <hr> -->
@@ -726,6 +727,164 @@ Channel renamed successfully.
       <td>cool_user</td>
       <td>Cool User</td>
       <td>cool_user@coolorg.com</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>11. slack-filter-channels</h3>
+<!-- <hr> -->
+<p>Get channels matching provided criteria.</p>
+<h5>Base Command</h5>
+<p>
+  <code>slack-filter-channels</code>
+</p>
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>name</td>
+      <td>The name of a channel or a regex pattern</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>creator</td>
+      <td>The member ID who created the channel</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>is_archived</td>
+      <td>True or False</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>is_general</td>
+      <td>True or False</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>is_private</td>
+      <td>True or False</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>limit</td>
+      <td>The maximum number of channels to return. Default is "20"</td>
+      <td>Optional</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Slack.Channel.ID</td>
+      <td>String</td>
+      <td>The channel ID</td>
+    </tr>
+    <tr>
+      <td>Slack.Channel.Name</td>
+      <td>String</td>
+      <td>The channel name</td>
+    </tr>
+    <tr>
+      <td>Slack.Channel.Created</td>
+      <td>Number</td>
+      <td>The channel creation timestamp</td>
+    </tr>
+    <tr>
+      <td>Slack.Channel.Creator</td>
+      <td>String</td>
+      <td>The channel creator's member ID</td>
+    </tr>
+    <tr>
+      <td>Slack.Channel.IsArchived</td>
+      <td>Boolean</td>
+      <td>Has the channel been archived?</td>
+    </tr>
+    <tr>
+      <td>Slack.Channel.IsGeneral</td>
+      <td>Boolean</td>
+      <td>Is the channel the general channel?</td>
+    </tr>
+    <tr>
+      <td>Slack.Channel.IsPrivate</td>
+      <td>Boolean</td>
+      <td>Is the channel a private channel?</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!slack-filter-channels name="^general$"</code>
+</p>
+<h5>Context Example</h5>
+<pre>
+{
+    "Slack.Channel": {
+        "ID": "CXXXXXXXX",
+        "Name": "general",
+        "Created": 1449252889,
+        "Creator": "UXXXXXXXX",
+        "IsArchived": false,
+        "IsGeneral": true,
+        "IsPrivate": false,
+    }
+}
+</pre>
+<h5>Human Readable Output</h5>
+<p>
+<h3>Results</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>ID</strong></th>
+      <th><strong>Name</strong></th>
+      <th><strong>Created</strong></th>
+      <th><strong>Creator</strong></th>
+      <th><strong>IsArchived</strong></th>
+      <th><strong>IsGeneral</strong></th>
+      <th><strong>IsPrivate</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>CXXXXXXXX</td>
+      <td>general</td>
+      <td>1449252889</td>
+      <td>UXXXXXXXX</td>
+      <td>false</td>
+      <td>true</td>
+      <td>false</td>
     </tr>
   </tbody>
 </table>

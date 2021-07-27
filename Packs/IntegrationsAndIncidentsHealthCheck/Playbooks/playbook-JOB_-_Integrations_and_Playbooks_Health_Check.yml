@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": -40
+          "y": -430
         }
       }
     note: false
@@ -48,13 +48,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "33"
+      - "42"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 220,
-          "y": 160
+          "y": -230
         }
       }
     note: false
@@ -82,7 +82,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 530
+          "y": 140
         }
       }
     note: false
@@ -98,7 +98,7 @@ tasks:
       id: 802e016d-5606-4568-8faa-acb55df55621
       version: -1
       name: JOB - Integrations and Incidents Health Check - Lists handling
-      description: This playbook is triggered by a 'JOB - Integrations and Playbooks
+      description: This playbook is triggered by a 'JOB - Integrations and Incidents
         Health' playbook and is responsible for creating or updating related XSOAR
         lists.
       playbookName: JOB - Integrations and Incidents Health Check - Lists handling
@@ -119,7 +119,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 680
+          "y": 290
         }
       }
     note: false
@@ -163,7 +163,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1010
+          "y": 620
         }
       }
     note: false
@@ -190,13 +190,12 @@ tasks:
     scriptarguments:
       name:
         simple: Integrations and Incidents Health Check
-      type: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 660,
-          "y": 1350
+          "y": 960
         }
       }
     note: false
@@ -236,7 +235,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1180
+          "y": 790
         }
       }
     note: false
@@ -261,19 +260,13 @@ tasks:
       '#none#':
       - "21"
     scriptarguments:
-      attachCIDs: {}
       attachIDs:
         complex:
           root: InfoFile
           accessor: EntryID
-      attachNames: {}
-      bcc: {}
       body:
         simple: Please find attached Integrations and Incidents Health Check report
           for enabled integrations and open incidents.
-      cc: {}
-      htmlBody: {}
-      replyTo: {}
       subject:
         simple: Integrations and Incidents Health Check Report
       to:
@@ -284,7 +277,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 1510
+          "y": 1120
         }
       }
     note: false
@@ -312,7 +305,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 870
+          "y": 480
         }
       }
     note: false
@@ -334,13 +327,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "22"
+      - "41"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 220,
-          "y": 1850
+          "y": 1460
         }
       }
     note: false
@@ -350,12 +343,12 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 4e25c5f2-fd48-4a44-8481-b82d29251056
+    taskid: bd2a9755-07bb-47e7-80e6-5e4f97a98f9a
     type: condition
     task:
-      id: 4e25c5f2-fd48-4a44-8481-b82d29251056
+      id: bd2a9755-07bb-47e7-80e6-5e4f97a98f9a
       version: -1
-      name: Re run health check tests?
+      name: Should rerun health check tests?
       description: Asks the user to re-run the health check tests.
       type: condition
       iscommand: false
@@ -393,14 +386,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+      - "43"
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -447,7 +436,7 @@ tasks:
       id: 2834100f-3f00-489f-8cb5-6ba3cb1d1b04
       version: -1
       name: JOB - Integrations and Incidents Health Check - Lists handling
-      description: This playbook is triggered by a 'JOB - Integrations and Playbooks
+      description: This playbook is triggered by a 'JOB - Integrations and Incidents
         Health' playbook and is responsible for creating or updating related XSOAR
         lists.
       playbookName: JOB - Integrations and Incidents Health Check - Lists handling
@@ -467,7 +456,7 @@ tasks:
       {
         "position": {
           "x": 610,
-          "y": 2480
+          "y": 2490
         }
       }
     note: false
@@ -495,7 +484,7 @@ tasks:
       {
         "position": {
           "x": -310,
-          "y": 870
+          "y": 480
         }
       }
     note: false
@@ -520,243 +509,6 @@ tasks:
       '#none#':
       - "32"
     scriptarguments:
-      accountid: {}
-      accountinformationbreached: {}
-      accountname: {}
-      addLabels: {}
-      addcctoemail: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      app: {}
-      appendMultiSelect: {}
-      appendTags: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      assignmentgroup: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      attorneygeneralnotification: {}
-      blockedaction: {}
-      breachconfirmation: {}
-      bugtraq: {}
-      caller: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      cloudservice: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      consumerreportingagenciesnotification: {}
-      contactaddress: {}
-      contactemailaddress: {}
-      contactname: {}
-      contacttelephonenumber: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      createddatefailedincidents: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      dbotMirrorDirection: {}
-      dbotMirrorId: {}
-      dbotMirrorInstance: {}
-      dbotMirrorTags: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      dest: {}
-      desthostname: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationnetwork: {}
-      destinationport: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectedexternalhosts: {}
-      detectedexternalips: {}
-      detectedinternalhosts: {}
-      detectedinternalips: {}
-      detectedusers: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      devicehash: {}
-      devicename: {}
-      dpoemailaddress: {}
-      dponotification: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      escalation: {}
-      eventid: {}
-      eventtype: {}
-      externaladdresses: {}
-      failedincidentscreateddate: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      financialinformationbreached: {}
-      firstname: {}
-      firstseen: {}
-      healthinsurancebreached: {}
-      helloworldid: {}
-      helloworldstatus: {}
-      helloworldtype: {}
-      hostname: {}
-      id: {}
-      individualsnotification: {}
-      infectedhosts: {}
-      integrationscategories: {}
-      integrationsfailedcategories: {}
-      integrationstestgrid: {}
-      internaladdresses: {}
-      investigationstage: {}
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastname: {}
-      lastseen: {}
-      likelyimpact: {}
-      logsource: {}
-      macaddress: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      malwarename: {}
-      managementnotification: {}
-      measurestomitigate: {}
-      medianotification: {}
-      medicalinformationbreached: {}
-      mobiledevicemodel: {}
-      moshe: {}
-      name: {}
-      numberofentriesiderrors: {}
-      numberoffailedincidents: {}
-      occurred: {}
-      os: {}
-      osversion: {}
-      otherpiidatabreached: {}
-      owner: {}
-      parentprocessid: {}
-      pcapencryptionkey: {}
-      pcapendtime: {}
-      pcapfile: {}
-      pcapfilename: {}
-      pcapfilesize: {}
-      pcapflows: {}
-      pcapnumberofpackets: {}
-      pcapnumberofstreams: {}
-      pcapstarttime: {}
-      phase: {}
-      phishingsubtype: {}
-      phonenumber: {}
-      pid: {}
-      piidatatype: {}
-      playbooknameswithfailedtasks: {}
-      playbooksfailedcommands: {}
-      playbookswithfailedtasks: {}
-      playbooktaskserrors: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      protocol: {}
-      protocols: {}
-      quarantined: {}
-      rating: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      residentnotificationoption: {}
-      residentsemailaddress: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      samaccountname: {}
-      secretarynotification: {}
-      sectorofaffectedparty: {}
-      servicenowassignedto: {}
-      servicenowassignmentgroup: {}
-      servicenowcaller: {}
-      servicenowcallerid: {}
-      servicenowcategory: {}
-      servicenowclosedby: {}
-      servicenowcloseddate: {}
-      servicenowdescription: {}
-      servicenowduedate: {}
-      servicenowescalation: {}
-      servicenowimpact: {}
-      servicenownotify: {}
-      servicenowopeneddate: {}
-      servicenowpriority: {}
-      servicenowresolutioncode: {}
-      servicenowresolutionnotes: {}
-      servicenowresolvedtime: {}
-      servicenowseverity: {}
-      servicenowstate: {}
-      servicenowticketnumber: {}
-      servicenowurgency: {}
-      servicetest: {}
-      severity: {}
-      signature: {}
       similarincident:
         complex:
           root: similarIncidentList
@@ -767,58 +519,12 @@ tasks:
               separator:
                 value:
                   simple: ','
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourcenetwork: {}
-      sourceport: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      state: {}
-      statecisonotification: {}
-      statewherethebreachtookplace: {}
-      subcategory: {}
-      subtype: {}
-      systems: {}
-      telephoneno: {}
-      tenantname: {}
-      terminatedaction: {}
-      threatactor: {}
-      ticketcloseddate: {}
-      ticketnumber: {}
-      ticketopeneddate: {}
-      totalfailedinstances: {}
-      totalgoodinstances: {}
-      totalinstances: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      unassignedincidents: {}
-      uniquebiometricdatabreached: {}
-      uniqueidentificationnumberbreached: {}
-      uniqueports: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -540,
-          "y": 1350
+          "y": 960
         }
       }
     note: false
@@ -843,11 +549,8 @@ tasks:
       '#none#':
       - "21"
     scriptarguments:
-      assetid: {}
       closeNotes:
         simple: Created a new incident type.
-      closeReason: {}
-      emailclassification: {}
       id:
         complex:
           root: similarIncident
@@ -858,15 +561,12 @@ tasks:
                   simple: similarIncident
                 iscontext: true
           accessor: rawId
-      incomingmirrorerror: {}
-      outgoingmirrorerror: {}
-      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -540,
-          "y": 1680
+          "y": 1290
         }
       }
     note: false
@@ -896,81 +596,7 @@ tasks:
       {
         "position": {
           "x": -540,
-          "y": 1520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "33":
-    id: "33"
-    taskid: d7237109-c6a2-4c0c-8290-368d7cb437c7
-    type: playbook
-    task:
-      id: d7237109-c6a2-4c0c-8290-368d7cb437c7
-      version: -1
-      name: Integrations and Playbooks Health Check - Running Scripts
-      description: This playbook is triggered by a 'JOB - Integrations and Playbooks
-        Health' playbook and is responsible for running failed integrations and failed
-        incidents scripts. The playbook may run separately from the main playbook
-        to run health tests on enabled integrations and open incidents.
-      playbookName: Integrations and Playbooks Health Check - Running Scripts
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 220,
-          "y": 315
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "34":
-    id: "34"
-    taskid: 546f4835-af8d-4334-87a0-14c2f2239f83
-    type: playbook
-    task:
-      id: 546f4835-af8d-4334-87a0-14c2f2239f83
-      version: -1
-      name: Integrations and Playbooks Health Check - Running Scripts
-      description: This playbook is triggered by a 'JOB - Integrations and Playbooks
-        Health' playbook and is responsible for running failed integrations and failed
-        incidents scripts. The playbook may run separately from the main playbook
-        to run health tests on enabled integrations and open incidents.
-      playbookName: Integrations and Playbooks Health Check - Running Scripts
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "26"
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 610,
-          "y": 2305
+          "y": 1130
         }
       }
     note: false
@@ -995,27 +621,16 @@ tasks:
       '#none#':
       - "36"
     scriptarguments:
-      filterQuery: {}
-      hoursBack: {}
       ignoreClosedIncidents:
         simple: "yes"
-      incidentFieldsAppliedCondition: {}
-      maxNumberOfIncidents: {}
-      maxResults: {}
-      similarContextKeys: {}
-      similarCustomFields: {}
       similarIncidentFields:
         simple: type,details
-      similarIncidentKeys: {}
-      similarLabelsKeys: {}
-      skipMissingValues: {}
-      timeField: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -310,
-          "y": 990
+          "y": 600
         }
       }
     note: false
@@ -1031,7 +646,7 @@ tasks:
       id: 318d9e89-ac74-4629-8e41-0f3e21bab904
       version: -1
       name: Found similar incidents?
-      description: "Checks if found similar incident from previous task"
+      description: Checks if found similar incident from previous task
       type: condition
       iscommand: false
       brand: ""
@@ -1054,7 +669,7 @@ tasks:
       {
         "position": {
           "x": -310,
-          "y": 1180
+          "y": 780
         }
       }
     note: false
@@ -1127,13 +742,6 @@ tasks:
     nexttasks:
       '#none#':
       - "25"
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      emailclassification: {}
-      id: {}
-      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
@@ -1175,6 +783,150 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "40":
+    id: "40"
+    taskid: 6d53ef9b-8ca5-45a5-8688-3981028db6be
+    type: regular
+    task:
+      id: 6d53ef9b-8ca5-45a5-8688-3981028db6be
+      version: -1
+      name: Restart failed tasks
+      description: Use this Script to re-run failed tasks. Run in the same incident
+        after running `GetFailedTasks` for restarting all of the failed tasks or some
+        of them.
+      scriptName: RestartFailedTasks
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      playbook_exclusion:
+        complex:
+          root: inputs.playbookExclusion
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: a89c38b7-1b12-46ab-87fc-16c0f5aab464
+    type: condition
+    task:
+      id: a89c38b7-1b12-46ab-87fc-16c0f5aab464
+      version: -1
+      name: Should restart failed tasks?
+      description: Whether to restart the failed tasks identified automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoRestartFailedTasks
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 7b8c190c-cc5f-4e4b-8f68-b12e2a42abb3
+    type: playbook
+    task:
+      id: 7b8c190c-cc5f-4e4b-8f68-b12e2a42abb3
+      version: -1
+      name: Integrations and Incidents Health Check - Running Scripts
+      description: This playbook is triggered by a 'JOB - Integrations and Incidents
+        Health' playbook and is responsible for running failed integrations and failed
+        incidents scripts. The playbook may run separately from the main playbook
+        to run health tests on enabled integrations and open incidents.
+      playbookName: Integrations and Incidents Health Check - Running Scripts
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 1deb7f16-0555-40be-8caf-d24c3512a4e8
+    type: playbook
+    task:
+      id: 1deb7f16-0555-40be-8caf-d24c3512a4e8
+      version: -1
+      name: Integrations and Incidents Health Check - Running Scripts
+      playbookName: Integrations and Incidents Health Check - Running Scripts
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 system: true
 view: |-
   {
@@ -1188,14 +940,15 @@ view: |-
       "36_21_#default#": 0.14,
       "36_30_yes": 0.3,
       "37_38_yes": 0.43,
-      "37_39_#default#": 0.44
+      "37_39_#default#": 0.44,
+      "41_40_yes": 0.36
     },
     "paper": {
       "dimensions": {
-        "height": 3105,
+        "height": 3495,
         "width": 1580,
         "x": -540,
-        "y": -40
+        "y": -430
       }
     }
   }
@@ -1219,6 +972,17 @@ inputs:
   required: false
   description: This input determines if the investigation should close automatically
     after the re-run of the scripts.
+  playbookInputQuery:
+- key: playbookExclusion
+  value: {}
+  required: false
+  description: Comma separated list of playbook names to exclude from restarting their failed tasks.
+  playbookInputQuery:
+- key: AutoRestartFailedTasks
+  value:
+    simple: "False"
+  required: false
+  description: Whether to automatically run the RestartFailedTasks automation.
   playbookInputQuery:
 outputs: []
 tests:
