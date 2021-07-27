@@ -368,7 +368,7 @@ def update_incident_command(client, args):
             }
         })
     if 'owner' in args:
-        users = get_users()
+        users = get_users(client)
         old_value = incident['owner_id']
         full_name = args['owner'].split(' ')
         first_name, last_name = full_name[0], full_name[1]
@@ -536,7 +536,7 @@ def get_incident_command(client, incident_id):
     return entry
 
 
-def get_incident(client, incident_id, content_format: bool = False):
+def get_incident(client, incident_id, content_format=False):
     url = '/incidents/' + incident_id
     if content_format:
         url += '?text_content_output_format=objects_convert_html'
@@ -716,12 +716,12 @@ def close_incident_command(client, incident_id):
     incident = get_incident(client, incident_id)
     if not incident['resolution_id'] or not incident['resolution_summary']:
         return 'Resolution and resolution summary of the incident should be updated before closing an incident.'
-    response = close_incident(incident_id, incident)
+    response = close_incident(client, incident_id, incident)
     if response.status_code == 200:
         return 'Incident ' + incident_id + ' was closed.'
 
 
-def close_incident(incident_id, incident):
+def close_incident(client, incident_id, incident):
     old_status = incident['plan_status']
     data = {
         'changes': [{
@@ -734,7 +734,7 @@ def close_incident(incident_id, incident):
             }
         }]
     }
-    return update_incident(incident_id, data)
+    return update_incident(client, incident_id, data)
 
 
 def create_incident_command(client, args):
@@ -847,7 +847,7 @@ def incident_attachments_command(client, incident_id):
     response = incident_attachments(client, incident_id)
     if response:
         attachments = []
-        users = get_users()
+        users = get_users(client)
         for attachment in response:
             incident_name = attachment['inc_name']
             attachment_object = {}
@@ -891,7 +891,7 @@ def incident_attachments(client, incident_id):
 
 
 def related_incidents_command(client, incident_id):
-    response = related_incidents(incident_id)['incidents']
+    response = related_incidents(client, incident_id)['incidents']
     if response:
         ec_incidents = []
         hr_incidents = []
@@ -948,6 +948,56 @@ def related_incidents(client, incident_id):
     return response
 
 
+def add_note_command(client, incident_id, note):
+    body = {
+        'text': {
+            'format': 'text',
+            'content': note
+        }
+    }
+
+    response = client.post('/incidents/' + str(incident_id) + '/comments', body)
+
+    ec = {
+        'Resilient.incidentNote(val.Id && val.Id === obj.Id)': response
+    }
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'EntryContext': ec,
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': 'The note was added successfully to incident {0}'.format(incident_id)
+    }
+    return entry
+
+
+def add_artifact_command(client, incident_id, artifact_type, artifact_value, artifact_description):
+    body = {
+        'type': artifact_type,
+        'value': artifact_value,
+        'description': {
+            'format': 'text',
+            'content': artifact_description
+        }
+    }
+    response = client.post('/incidents/' + str(incident_id) + '/artifacts', body)
+
+    ec = {
+        'Resilient.incidentArtifact(val.Id && val.Id === obj.Id)': response
+    }
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'EntryContext': ec,
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': 'The artifact was added successfully to incident {0}'.format(incident_id)
+    }
+
+    return entry
+
+
 def fetch_incidents(client):
     last_run = demisto.getLastRun() and demisto.getLastRun().get('time')
     if not last_run:
@@ -965,10 +1015,10 @@ def fetch_incidents(client):
         for incident in resilient_incidents:
             incident_creation_time = incident.get('create_date')
             if incident_creation_time > last_run:  # timestamp in milliseconds
-                artifacts = incident_artifacts(str(incident.get('id', '')))
+                artifacts = incident_artifacts(client, str(incident.get('id', '')))
                 if artifacts:
                     incident['artifacts'] = artifacts
-                attachments = incident_attachments(str(incident.get('id', '')))
+                attachments = incident_attachments(client, str(incident.get('id', '')))
                 if attachments:
                     incident['attachments'] = attachments
                 if isinstance(incident.get('description'), unicode):
@@ -1007,32 +1057,6 @@ def test():
             return_error('There is something wrong with the fetch date. Error: {}'.format(error))
 
     demisto.results('ok')
-
-
-def add_note_command(client, incident_id, note):
-    body = {
-        'text': {
-            'format': 'text',
-            'content': note
-        }
-    }
-    client.post('/incidents/' + str(incident_id) + '/comments', body)
-
-    return f'The note was added successfully to incident {incident_id}'
-
-
-def add_artifact_command(client, incident_id, artifact_type, artifact_value, artifact_description):
-    body = {
-        'type': artifact_type,
-        'value': artifact_value,
-        'description': {
-            'format': 'text',
-            'content': artifact_description
-        }
-    }
-    client.post('/incidents/' + str(incident_id) + '/artifacts', body)
-
-    return f'The artifact was added successfully to incident {incident_id}'
 
 
 ''' EXECUTION CODE '''
@@ -1106,7 +1130,7 @@ def main():
             demisto.results(add_note_command(client, args['incident-id'], args['note']))
         elif demisto.command() == 'rs-add-artifact':
             demisto.results(add_artifact_command(client, args['incident-id'], args['artifact-type'],
-                                                  args['artifact-value'], args['artifact-description']))
+                                                 args['artifact-value'], args.get('artifact-description')))
     except Exception as e:
         LOG(e.message)
         LOG.print_log()

@@ -1,6 +1,3 @@
-import demistomock as demisto
-
-
 class MockClient:
     @staticmethod
     def get(incident_id):
@@ -93,7 +90,7 @@ def test_add_note(mocker):
     output = add_note_command(MockClient, "1234", "This is a new note")
 
     assert mock_result.call_args.args == expected_result
-    assert '1234' in output
+    assert '1234' in output.get('HumanReadable')
 
 
 def test_add_incident_artifact(mocker):
@@ -116,4 +113,4 @@ def test_add_incident_artifact(mocker):
     output = add_artifact_command(MockClient, "1234", "IP Address", "1.1.1.1", "This is the artifact description")
 
     assert mock_result.call_args.args == expected_result
-    assert '1234' in output
+    assert '1234' in output.get('HumanReadable')
