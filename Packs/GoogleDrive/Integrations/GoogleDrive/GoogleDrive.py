@@ -799,7 +799,6 @@ def prepare_drives_request(client: GSuiteClient, args: Dict[str, str]) -> Dict[s
     client.set_authorized_http(scopes=COMMAND_SCOPES['DRIVES'], subject=user_id)
 
     return {
-        'client': client,
         'http_request_params': http_request_params,
         'user_id': user_id,
     }
