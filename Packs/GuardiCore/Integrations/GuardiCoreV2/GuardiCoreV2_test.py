@@ -45,16 +45,19 @@ def test_filter_human_readable(input, columns, output):
     [
         (100000, None, 100000),
         (100000, '1 days', 100000),
-        (None, None,
-         int(parse('3 days').replace(tzinfo=utc).timestamp()) * 1000),
-        (None, '4 days',
-         int(parse('4 days').replace(tzinfo=utc).timestamp()) * 1000),
-
     ]
 )
 def test_calculate_fetch_start_time(last_fetch, first_fetch, output):
     from GuardiCoreV2 import calculate_fetch_start_time
     assert calculate_fetch_start_time(last_fetch, first_fetch) == output
+
+
+def test_calculate_fetch_start_time_dynamic():
+    from GuardiCoreV2 import calculate_fetch_start_time
+    out = int(parse('3 days').replace(tzinfo=utc).timestamp()) * 1000
+    assert calculate_fetch_start_time(None, None) == out
+    out = int(parse('4 days').replace(tzinfo=utc).timestamp()) * 1000
+    assert calculate_fetch_start_time(None, '4 days') == out
 
 
 def test_authenticate(requests_mock):
@@ -85,7 +88,8 @@ def test_get_incident(mocker, requests_mock):
 
 
 def test_get_incidents(mocker, requests_mock):
-    from GuardiCoreV2 import Client, get_incidents, INCIDENT_COLUMNS, filter_human_readable
+    from GuardiCoreV2 import Client, get_incidents, INCIDENT_COLUMNS, \
+        filter_human_readable
 
     requests_mock.post(
         'https://api.guardicoreexample.com/api/v3.0/authenticate',
