@@ -1,0 +1,39 @@
+[
+  {
+    "id": "158",
+    "type": "integration_submissions",
+    "links": {
+      "self": "https://triage.example.com/api/public/v2/integration_submissions/158"
+    },
+    "attributes": {
+      "status": "complete",
+      "result": "{\"wildfire\":{\"version\":\"2.0\",\"file_info\":{\"file_signer\":\"None\",\"malware\":\"no\",\"sha1\":\"c9e751efeab9435cf2108824087ada1e31231b87\",\"filetype\":\"PE\",\"sha256\":\"3ccd3dd86c82d15fef330c81c8e7762def5b3de145341dd690917a5d882931e1\",\"md5\":\"f033362ca459dcab56aa6b2274751d13\",\"size\":\"55296\"},\"task_info\":{\"report\":[{\"version\":\"3.0\",\"platform\":\"60\",\"software\":\"Windows XP, Adobe Reader 9.4.0, Flash 10, Office 2007\",\"sha256\":\"3ccd3dd86c82d15fef330c81c8e7762def5b3de145341dd690917a5d882931e1\",\"md5\":\"f033362ca459dcab56aa6b2274751d13\",\"size\":\"55296\",\"malware\":\"yes\",\"summary\":[{\"entry\":\"This is a WildFire test sample\",\"id\":\"105\",\"details\":\"WildFire test samples exercise the capabilities of the WildFire analysis engine for purposes of testing.\",\"score\":\"1.0\"},{\"entry\":\"Created or modified a file in the Windows system folder\",\"id\":\"2\",\"details\":\"The Windows system folder contains configuration files and executables that control the underlying functions of the system. Malware often modifies the contents of this folder to manipulate the system, establish persistence, and avoid detection.\",\"score\":\"0.4\"},{\"entry\":\"Created or modified a file\",\"id\":\"3\",\"details\":\"Legitimate software creates or modifies files to preserve data across system restarts. Malware may create or modify files to deliver malicious payloads or maintain persistence on a system.\",\"score\":\"0.1\"},{\"entry\":\"Modified the Windows Registry\",\"id\":\"13\",\"details\":\"The Windows Registry houses system configuration settings and options, including information about installed applications, services, and drivers. Malware often modifies registry data to establish persistence on the system and avoid detection.\",\"score\":\"0.1\"}],\"evidence\":{\"file\":null,\"registry\":null,\"process\":null,\"mutex\":null},\"timeline\":{\"entry\":[\"Created Process c:\\\\documents and settings\\\\administrator\\\\sample.exe\",\"Set key \\\\REGISTRY\\\\MACHINE\\\\SOFTWARE\\\\PaloAlto\\\\PanCar to value 1\"]},\"network\":null,\"process_tree\":{\"process\":{\"name\":\"sample.exe\",\"pid\":\"1812\",\"text\":\"c:\\\\documents and settings\\\\administrator\\\\sample.exe\"}},\"process_list\":{\"process\":{\"command\":\"c:\\\\documents and settings\\\\administrator\\\\sample.exe\",\"name\":\"sample.exe\",\"pid\":\"1812\",\"process_activity\":null,\"registry\":{\"Create\":{\"key\":\"HKEY_LOCAL_MACHINE\",\"subkey\":\"Software\\\\PaloAlto\"},\"Set\":{\"data\":\"1\",\"key\":\"\\\\REGISTRY\\\\MACHINE\\\\SOFTWARE\\\\PaloAlto\",\"subkey\":\"PanCar\"}},\"file\":null,\"service\":null,\"mutex\":null,\"java_api\":null}}},{\"version\":\"3.0\",\"platform\":\"61\",\"software\":\"Windows 7 x64 SP1, Adobe Reader 11, Flash 11, Office 2010\",\"sha256\":\"3ccd3dd86c82d15fef330c81c8e7762def5b3de145341dd690917a5d882931e1\",\"md5\":\"f033362ca459dcab56aa6b2274751d13\",\"size\":\"55296\",\"malware\":\"yes\",\"summary\":[{\"entry\":\"This is a WildFire test sample\",\"id\":\"105\",\"details\":\"WildFire test samples exercise the capabilities of the WildFire analysis engine for purposes of testing.\",\"score\":\"1.0\"},{\"entry\":\"Created or modified a file\",\"id\":\"3\",\"details\":\"Legitimate software creates or modifies files to preserve data across system restarts. Malware may create or modify files to deliver malicious payloads or maintain persistence on a system.\",\"score\":\"0.1\"},{\"entry\":\"Modified the Windows Registry\",\"id\":\"13\",\"details\":\"The Windows Registry houses system configuration settings and options, including information about installed applications, services, and drivers. Malware often modifies registry data to establish persistence on the system and avoid detection.\",\"score\":\"0.1\"}],\"evidence\":{\"file\":null,\"registry\":null,\"process\":null,\"mutex\":null},\"timeline\":{\"entry\":[\"Created Process C:\\\\Users\\\\Administrator\\\\sample.exe\",\"Set key \\\\REGISTRY\\\\MACHINE\\\\SOFTWARE\\\\Wow6432Node\\\\PaloAlto\\\\PanCar to value 1\"]},\"network\":null,\"process_tree\":{\"process\":{\"name\":\"sample.exe\",\"pid\":\"1680\",\"text\":\"C:\\\\Users\\\\Administrator\\\\sample.exe\"}},\"process_list\":{\"process\":{\"command\":\"C:\\\\Users\\\\Administrator\\\\sample.exe\",\"name\":\"sample.exe\",\"pid\":\"1680\",\"process_activity\":null,\"registry\":{\"Create\":{\"key\":\"HKEY_LOCAL_MACHINE\",\"subkey\":\"Software\\\\PaloAlto\"},\"Set\":{\"data\":\"1\",\"key\":\"\\\\REGISTRY\\\\MACHINE\\\\SOFTWARE\\\\Wow6432Node\\\\PaloAlto\",\"subkey\":\"PanCar\"}},\"file\":null,\"service\":null,\"mutex\":null,\"java_api\":null}}},{\"version\":\"3.0\",\"platform\":\"204\",\"software\":\"PE Static Analyzer\",\"sha256\":\"3ccd3dd86c82d15fef330c81c8e7762def5b3de145341dd690917a5d882931e1\",\"md5\":\"f033362ca459dcab56aa6b2274751d13\",\"malware\":\"no\",\"metadata\":{\"compilation_timestamp\":\"2012-12-20 19:14:11\",\"sections\":{\"section\":[{\"name\":\".text\",\"raw_size\":\"36864\",\"virtual_addr\":\"4096\",\"virtual_size\":\"36378\"},{\"name\":\".rdata\",\"raw_size\":\"9728\",\"virtual_addr\":\"40960\",\"virtual_size\":\"9386\"},{\"name\":\".data\",\"raw_size\":\"4096\",\"virtual_addr\":\"53248\",\"virtual_size\":\"11408\"},{\"name\":\".reloc\",\"raw_size\":\"3584\",\"virtual_addr\":\"65536\",\"virtual_size\":\"3344\"}]}},\"doc_embedded_files\":null,\"summary\":[{\"entry\":\"Contains an invalid checksum\",\"id\":\"3015\",\"details\":\"The PE file checksum is required for drivers, boot-time DLLs, and other DLLs loaded into secure system processes. Malware often ignores this value or sets it to zero.\",\"score\":\"0.0\"},{\"entry\":\"Contains sections set to both writable and executable\",\"id\":\"3052\",\"details\":\"Standard sections are set to either writable or executable. PE files with sections set to both writable and executable are likely packed or obfuscated.\",\"score\":\"0.0\"},{\"entry\":\"Contains sections with size discrepancies\",\"id\":\"3013\",\"details\":\"Sections with a large discrepancy between raw and virtual sizes may indicate a packed or obfuscated PE file.\",\"score\":\"0.0\"},{\"entry\":\"Last section is executable\",\"id\":\"3006\",\"details\":\"In standard PE files the execute flag is reserved for the first section. Use of the execute flag in the last section may indicate a packed or obfuscated file.\",\"score\":\"0.0\"},{\"entry\":\"First section is writable\",\"id\":\"3007\",\"details\":\"In standard PE files the write flag is reserved for sections after the first. Use of the write flag in the first section may indicate a packed or obfuscated file.\",\"score\":\"0.0\"}]}]}}}",
+      "kind": "Hash",
+      "risk_score": 0,
+      "created_at": "2021-04-13T15:43:59.609Z",
+      "updated_at": "2021-04-13T15:52:11.485Z"
+    },
+    "relationships": {
+      "integration": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/integration_submissions/158/relationships/integration",
+          "related": "https://triage.example.com/api/public/v2/integration_submissions/158/integration"
+        },
+        "data": {
+          "type": "integrations",
+          "id": "6"
+        }
+      },
+      "target": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/integration_submissions/158/relationships/target",
+          "related": "https://triage.example.com/api/public/v2/integration_submissions/158/target"
+        },
+        "data": {
+          "type": "attachment_payloads",
+          "id": "190"
+        }
+      }
+    }
+  }
+]
