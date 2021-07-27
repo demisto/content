@@ -1,0 +1,33 @@
+{
+	"brands": null,
+	"defaultIncidentType": "Grafana Alert",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "63460894-c18b-4332-88fd-d5986a9b6904",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 0,
+	"mapping": null,
+	"name": "Grafana Alert Classifier",
+	"nameRaw": "Grafana Alert Classifier",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": "id"
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1,
+    "fromVersion": "6.0.0"
+}

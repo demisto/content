@@ -1,0 +1,913 @@
+category: Utilities
+commonfields:
+  id: Grafana
+  version: -1
+configuration:
+- defaultvalue: https://www.example.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- additionalinfo: max -> 50
+  defaultvalue: '20'
+  display: Maximum number of incidents to fetch
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First Fetch Time of Alerts
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- display: Dashboard Id to fetch
+  hidden: false
+  name: dashboard_id
+  required: false
+  type: 0
+- display: Panel Id to fetch
+  hidden: false
+  name: panel_id
+  required: false
+  type: 0
+- display: Alert name to fetch
+  hidden: false
+  name: alert_name
+  required: false
+  type: 0
+- display: State to fetch
+  hidden: false
+  name: state
+  options:
+  - all
+  - no_data
+  - paused
+  - alerting
+  - ok
+  - pending
+  required: false
+  type: 15
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Grafana alerting service
+display: Grafana
+name: Grafana
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: A comma-separated list of dashboard ids by which to filter the
+        results.
+      isArray: true
+      name: dashboard_id
+      required: false
+      secret: false
+    - default: false
+      description: Panel ids by which to filter the results.
+      isArray: false
+      name: panel_id
+      required: false
+      secret: false
+    - default: false
+      description: Contained in the name of an alert.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of states by which to filter the results.
+        The options are: all, no_data, paused, alerting, ok, pending.'
+      isArray: true
+      name: state
+      required: false
+      secret: false
+    - default: false
+      description: Limit response to X number of alerts.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of folder ids by which to filter the results.
+      isArray: true
+      name: folder_id
+      required: false
+      secret: false
+    - default: false
+      description: Dashboard's name by which to filter the results.
+      isArray: false
+      name: dashboard_query
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of dashboard tags by which to filter the
+        results.
+      isArray: true
+      name: dashboard_tag
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets alerts.
+    execution: false
+    name: grafana-alerts-list
+    outputs:
+    - contextPath: Grafana.Alert.id
+      description: Alert id
+      type: Number
+    - contextPath: Grafana.Alert.dashboardId
+      description: Alert dashboard id
+      type: Number
+    - contextPath: Grafana.Alert.dashboardUid
+      description: Alert dashboard uid
+      type: String
+    - contextPath: Grafana.Alert.dashboardSlug
+      description: Alert dashboard slug
+      type: String
+    - contextPath: Grafana.Alert.panelId
+      description: Alert panel id
+      type: Number
+    - contextPath: Grafana.Alert.name
+      description: Alert name
+      type: String
+    - contextPath: Grafana.Alert.state
+      description: Alert state
+      type: String
+    - contextPath: Grafana.Alert.newStateDate
+      description: Alert new state date
+      type: Date
+    - contextPath: Grafana.Alert.evalDate
+      description: Alert eval date
+      type: Date
+    - contextPath: Grafana.Alert.evalData
+      description: Alert eval data
+      type: Unknown
+    - contextPath: Grafana.Alert.executionError
+      description: Alert execution error
+      type: String
+    - contextPath: Grafana.Alert.url
+      description: Alert url
+      type: String
+    - contextPath: Grafana.Alert.evalData.noData
+      description: Alert eval data - has data?
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Alert id to pause.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Pauses an alert by id.
+    execution: false
+    name: grafana-alert-pause
+    outputs:
+    - contextPath: Grafana.Alert.id
+      description: Alert id paused.
+      type: Number
+    - contextPath: Grafana.Alert.state
+      description: Alert's new state.
+      type: String
+  - arguments:
+    - default: false
+      description: Alert id to unpause.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Unpauses an alert by id.
+    execution: false
+    name: grafana-alert-unpause
+    outputs:
+    - contextPath: Grafana.Alert.id
+      description: Alert id paused.
+      type: Number
+    - contextPath: Grafana.Alert.state
+      description: Alert's new state.
+      type: String
+  - arguments:
+    - default: false
+      description: Number of results wanted in one page.
+      isArray: false
+      name: perpage
+      required: false
+      secret: false
+    - default: false
+      description: Index of page of results wanted.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Value is contained in one of the name, login or email fields.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets users.
+    execution: false
+    name: grafana-users-search
+    outputs:
+    - contextPath: Grafana.User.id
+      description: User id
+      type: Number
+    - contextPath: Grafana.User.name
+      description: User name
+      type: String
+    - contextPath: Grafana.User.login
+      description: User login
+      type: String
+    - contextPath: Grafana.User.email
+      description: User email
+      type: String
+    - contextPath: Grafana.User.avatarUrl
+      description: User avatar url
+      type: String
+    - contextPath: Grafana.User.isAdmin
+      description: Is user admin?
+      type: Boolean
+    - contextPath: Grafana.User.isDisabled
+      description: Is user disabled?
+      type: Boolean
+    - contextPath: Grafana.User.lastSeenAt
+      description: User last seen at
+      type: Date
+    - contextPath: Grafana.User.lastSeenAtAge
+      description: User last seen at age
+      type: String
+  - arguments:
+    - default: false
+      description: User id to get teams for.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the user's teams by user id.
+    execution: false
+    name: grafana-user-teams-get
+    outputs:
+    - contextPath: Grafana.User.id
+      description: user id
+      type: Number
+    - contextPath: Grafana.User.teams.id
+      description: Team id
+      type: Number
+    - contextPath: Grafana.User.teams.orgId
+      description: Team organization id
+      type: Number
+    - contextPath: Grafana.User.teams.name
+      description: Team name
+      type: String
+    - contextPath: Grafana.User.teams.email
+      description: Team email
+      type: String
+    - contextPath: Grafana.User.teams.avatarUrl
+      description: Team avatar url
+      type: String
+    - contextPath: Grafana.User.teams.memberCount
+      description: Team member count
+      type: Number
+    - contextPath: Grafana.User.teams.permission
+      description: Team permission
+      type: Number
+  - arguments:
+    - default: false
+      description: User id
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets user's organizations by user id.
+    execution: false
+    name: grafana-user-orgs-get
+    outputs:
+    - contextPath: Grafana.User.id
+      description: User id
+      type: Number
+    - contextPath: Grafana.User.orgs.orgId
+      description: Organization id
+      type: Number
+    - contextPath: Grafana.User.orgs.name
+      description: Organization name
+      type: String
+    - contextPath: Grafana.User.orgs.role
+      description: Organization role
+      type: String
+  - arguments:
+    - default: false
+      description: User email
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - default: false
+      description: User name
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: username
+      isArray: false
+      name: login
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: User theme
+      isArray: false
+      name: theme
+      predefined:
+      - light
+      - dark
+      required: false
+      secret: false
+    - default: false
+      description: User id
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Login or name is mandatory. Pay attantion that if you change your
+      own login information, you won't be able to continue quering.
+    execution: false
+    name: grafana-user-update
+  - arguments:
+    - default: false
+      description: Dashboard id
+      isArray: false
+      name: dashboard_id
+      required: false
+      secret: false
+    - default: false
+      description: Panel id
+      isArray: false
+      name: panel_id
+      required: false
+      secret: false
+    - default: false
+      description: Time
+      isArray: false
+      name: time
+      required: false
+      secret: false
+    - default: false
+      description: End time
+      isArray: false
+      name: time_end
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of tags by which to filter the results.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Text
+      isArray: false
+      name: text
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates annotation.
+    execution: false
+    name: grafana-annotation-create
+    outputs:
+    - contextPath: Grafana.Annotation.id
+      description: Annotation id
+      type: Number
+  - arguments:
+    - default: false
+      description: Number of results wanted in one page.
+      isArray: false
+      name: perpage
+      required: false
+      secret: false
+    - default: false
+      description: Index of page of results wanted.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Contained in the name of a team
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The name of the team
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets teams.
+    execution: false
+    name: grafana-teams-search
+    outputs:
+    - contextPath: Grafana.Team.id
+      description: Team id
+      type: Number
+    - contextPath: Grafana.Team.orgId
+      description: Team organization id
+      type: Number
+    - contextPath: Grafana.Team.name
+      description: Team name
+      type: String
+    - contextPath: Grafana.Team.email
+      description: Team email
+      type: String
+    - contextPath: Grafana.Team.avatarUrl
+      description: Team avatar url
+      type: String
+    - contextPath: Grafana.Team.memberCount
+      description: Team member count
+      type: Number
+    - contextPath: Grafana.Team.permission
+      description: Team permission
+      type: Number
+  - arguments:
+    - default: false
+      description: Team id
+      isArray: false
+      name: team_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a list of all team members by team id.
+    execution: false
+    name: grafana-team-members-list
+    outputs:
+    - contextPath: Grafana.Team.id
+      description: Team id
+      type: Number
+    - contextPath: Grafana.Team.members.orgId
+      description: Member organization id
+      type: Number
+    - contextPath: Grafana.Team.members.teamId
+      description: Member team id
+      type: Number
+    - contextPath: Grafana.Team.members.userId
+      description: Member user id
+      type: Number
+    - contextPath: Grafana.Team.members.auth_module
+      description: Member authentication module
+      type: String
+    - contextPath: Grafana.Team.members.email
+      description: Member email
+      type: String
+    - contextPath: Grafana.Team.members.name
+      description: Member name
+      type: String
+    - contextPath: Grafana.Team.members.login
+      description: Member login
+      type: String
+    - contextPath: Grafana.Team.members.avatarUrl
+      description: Member avatar url
+      type: String
+    - contextPath: Grafana.Team.members.labels
+      description: Member labels
+      type: Unknown
+    - contextPath: Grafana.Team.members.permission
+      description: Member permission
+      type: Number
+  - arguments:
+    - default: false
+      description: User id
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: Team id
+      isArray: false
+      name: team_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a user to a team.
+    execution: false
+    name: grafana-user-add-to-team
+  - arguments:
+    - default: false
+      description: Team id
+      isArray: false
+      name: team_id
+      required: true
+      secret: false
+    - default: false
+      description: User id
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a user from a team.
+    execution: false
+    name: grafana-user-remove-from-team
+  - arguments:
+    - default: false
+      description: Name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Email
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - default: false
+      description: Organization id
+      isArray: false
+      name: org_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new team.
+    execution: false
+    name: grafana-team-add
+    outputs:
+    - contextPath: Grafana.Team.id
+      description: Team id
+      type: Number
+  - arguments:
+    - default: false
+      description: Team id
+      isArray: false
+      name: team_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a team.
+    execution: false
+    name: grafana-team-delete
+  - arguments:
+    - default: false
+      description: Name
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Creats an organization.
+    execution: false
+    name: grafana-org-create
+    outputs:
+    - contextPath: Grafana.Organization.id
+      description: Organization id
+      type: Number
+  - arguments:
+    - default: false
+      description: Query
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of tags by which to filter the results.
+      isArray: true
+      name: tag
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type
+      isArray: false
+      name: type
+      predefined:
+      - dash-folder
+      - dash-db
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of dashboard IDs by which to filter the
+        results.
+      isArray: true
+      name: dashboard_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of folder IDs by which to filter the results.
+      isArray: true
+      name: folder_ids
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indices if only starred dashboards should be returned.
+      isArray: false
+      name: starred
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Limit
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Page
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Searchs dashboards.
+    execution: false
+    name: grafana-dashboards-search
+    outputs:
+    - contextPath: Grafana.Dashboard.id
+      description: Dashboard id
+      type: Number
+    - contextPath: Grafana.Dashboard.uid
+      description: Dashboard uid
+      type: String
+    - contextPath: Grafana.Dashboard.title
+      description: Dashboard title
+      type: String
+    - contextPath: Grafana.Dashboard.uri
+      description: Dashboard uri
+      type: String
+    - contextPath: Grafana.Dashboard.url
+      description: Dashboard url
+      type: String
+    - contextPath: Grafana.Dashboard.slug
+      description: Dashboard slug
+      type: String
+    - contextPath: Grafana.Dashboard.type
+      description: Dashboard type
+      type: String
+    - contextPath: Grafana.Dashboard.tags
+      description: Dashboard tags
+      type: Unknown
+    - contextPath: Grafana.Dashboard.isStarred
+      description: Is dashboard starred?
+      type: Boolean
+    - contextPath: Grafana.Dashboard.sortMeta
+      description: Dashboard sort meta
+      type: Number
+  - arguments:
+    - default: false
+      description: User id
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a user by id.
+    execution: false
+    name: grafana-user-get-by-id
+    outputs:
+    - contextPath: Grafana.User.id
+      description: User id
+      type: Number
+    - contextPath: Grafana.User.email
+      description: User email
+      type: String
+    - contextPath: Grafana.User.name
+      description: User name
+      type: String
+    - contextPath: Grafana.User.login
+      description: User login
+      type: String
+    - contextPath: Grafana.User.theme
+      description: User theme
+      type: String
+    - contextPath: Grafana.User.orgId
+      description: Organization id
+      type: Number
+    - contextPath: Grafana.User.isGrafanaAdmin
+      description: Is user Grafana admin?
+      type: Boolean
+    - contextPath: Grafana.User.isDisabled
+      description: Is user disabled?
+      type: Boolean
+    - contextPath: Grafana.User.isExternal
+      description: Is user external?
+      type: Boolean
+    - contextPath: Grafana.User.updatedAt
+      description: User updated at
+      type: Date
+    - contextPath: Grafana.User.createdAt
+      description: User created at
+      type: Date
+    - contextPath: Grafana.User.avatarUrl
+      description: User avatar url
+      type: String
+  - arguments:
+    - default: false
+      description: Team id
+      isArray: false
+      name: team_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a team by id.
+    execution: false
+    name: grafana-team-get-by-id
+    outputs:
+    - contextPath: Grafana.Team.id
+      description: Team id
+      type: Number
+    - contextPath: Grafana.Team.orgId
+      description: Team organization id
+      type: Number
+    - contextPath: Grafana.Team.name
+      description: Team name
+      type: String
+    - contextPath: Grafana.Team.email
+      description: Team email
+      type: String
+    - contextPath: Grafana.Team.avatarUrl
+      description: Team avatar url
+      type: String
+    - contextPath: Grafana.Team.memberCount
+      description: Team member count
+      type: Number
+    - contextPath: Grafana.Team.permission
+      description: Team permission
+      type: Number
+  - arguments:
+    - default: false
+      description: Alert id
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets an alert by id.
+    execution: false
+    name: grafana-alert-get-by-id
+    outputs:
+    - contextPath: Grafana.Alert.id
+      description: Alert id
+      type: Number
+    - contextPath: Grafana.Alert.version
+      description: Alert version
+      type: Number
+    - contextPath: Grafana.Alert.orgId
+      description: Alert organization id
+      type: Number
+    - contextPath: Grafana.Alert.dashboardId
+      description: Alert dashboard id
+      type: Number
+    - contextPath: Grafana.Alert.panelId
+      description: Alert panel id
+      type: Number
+    - contextPath: Grafana.Alert.name
+      description: Alert name
+      type: String
+    - contextPath: Grafana.Alert.message
+      description: Alert message
+      type: String
+    - contextPath: Grafana.Alert.severity
+      description: Alert severity
+      type: String
+    - contextPath: Grafana.Alert.state
+      description: Alert state
+      type: String
+    - contextPath: Grafana.Alert.handler
+      description: Alert handler
+      type: Number
+    - contextPath: Grafana.Alert.silenced
+      description: Alert eval data - silenced
+      type: Boolean
+    - contextPath: Grafana.Alert.executionError
+      description: Alert execution error
+      type: String
+    - contextPath: Grafana.Alert.frequency
+      description: Alert frequency
+      type: Number
+    - contextPath: Grafana.Alert.for
+      description: Alert for
+      type: Number
+    - contextPath: Grafana.Alert.evalData
+      description: Alert eval data
+      type: Unknown
+    - contextPath: Grafana.Alert.evalData.noData
+      description: Alert eval data - has data?
+      type: Boolean
+    - contextPath: Grafana.Alert.newStateDate
+      description: Alert new state date
+      type: Date
+    - contextPath: Grafana.Alert.stateChanges
+      description: Alert state changes
+      type: Number
+    - contextPath: Grafana.Alert.created
+      description: Alert created
+      type: Date
+    - contextPath: Grafana.Alert.updated
+      description: Alert updated
+      type: Date
+    - contextPath: Grafana.Alert.settings
+      description: Alert settings
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Number of results wanted in one page.
+      isArray: false
+      name: perpage
+      required: false
+      secret: false
+    - default: false
+      description: Index of page of results wanted.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets organizations.
+    execution: false
+    name: grafana-org-list
+    outputs:
+    - contextPath: Grafana.Organization.id
+      description: Organization id
+      type: Number
+    - contextPath: Grafana.Organization.name
+      description: Organization name
+      type: String
+  - arguments:
+    - default: false
+      description: Name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets an organization by name.
+    execution: false
+    name: grafana-org-get-by-name
+    outputs:
+    - contextPath: Grafana.Organization.id
+      description: Organization id
+      type: Number
+    - contextPath: Grafana.Organization.name
+      description: Organization name
+      type: String
+    - contextPath: Grafana.Organization.address
+      description: Organization address
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Organization id
+      isArray: false
+      name: org_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets an organization by id.
+    execution: false
+    name: grafana-org-get-by-id
+    outputs:
+    - contextPath: Grafana.Organization.id
+      description: Organization id
+      type: Number
+    - contextPath: Grafana.Organization.name
+      description: Organization name
+      type: String
+    - contextPath: Grafana.Organization.address
+      description: Organization address
+      type: Unknown
+  dockerimage: demisto/python3:3.9.6.22912
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
