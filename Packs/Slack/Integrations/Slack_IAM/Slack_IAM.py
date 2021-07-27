@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from json import JSONDecodeError
 import traceback
 
 # Disable insecure warnings
@@ -528,9 +527,7 @@ def update_group_command(client, args):
                 }
             )
 
-    group_input = {}
-    group_input['schemas'] = [SLACK_SCIM_CORE_SCHEMA_KEY]
-    group_input['members'] = member_ids_json_list
+    group_input = {'schemas': [SLACK_SCIM_CORE_SCHEMA_KEY], 'members': member_ids_json_list}
 
     res = client.update_group(group_id, group_input)
 

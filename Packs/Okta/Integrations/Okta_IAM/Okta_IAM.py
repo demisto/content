@@ -998,12 +998,6 @@ def main():
                                                   fetch_query_filter, auto_generate_query_filter, context)
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
-        #for Testing
-        elif command == 'test-create-group':
-            client.test_create_group()
-        elif command == 'test-list-group':
-            client.test_list_group()
-
 
     except Exception:
         # For any other integration command exception, return an error

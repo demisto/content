@@ -470,17 +470,6 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      isArray: false
-      required: false
-      secret: false
-    deprecated: false
-    execution: false
-    name: test-create-group
-  - deprecated: false
-    execution: false
-    name: test-list-group
-  - arguments:
-    - default: false
       description: 'Useful for performing structured queries where constraints on
         LogEvent attribute values can be explicitly targeted.  The following expressions
         are supported for events with the filter query parameter: eventType eq " :eventType"
@@ -628,8 +617,7 @@ script:
     - contextPath: Okta.Logs.Events.target.displayName
       description: Display name of a target.
       type: String
-  dockerimage: demisto/python3:3.9.4.18682
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: true
   longRunning: false
