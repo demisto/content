@@ -11,11 +11,11 @@ Supported integrations for this playbook:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Block Domain - FireEye Email Security
-* Block Domain - Proofpoint Threat Response
-* Block Domain - Zscaler
 * Block Domain - Symantec Messaging Gateway 
+* Block Domain - Proofpoint Threat Response
 * Block Domain - Trend Micro Apex One
+* Block Domain - FireEye Email Security
+* Block Domain - Zscaler
 
 ### Integrations
 This playbook does not use any integrations.
@@ -40,4 +40,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Block Domain - Generic](https://raw.githubusercontent.com/demisto/content/7d20d193ddfe06ad3ead0effb87db3e71fe675a8/Packs/CommonPlaybooks/doc_files/Block_Domain_-_Generic.png)
+![Block Domain - Generic](Insert the link to your image here)
