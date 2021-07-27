@@ -370,9 +370,12 @@ def limit_tag_output_to_id_and_name(attribute_dict, is_event_level):
 def parse_response_reputation_command(misp_response, malicious_tag_ids, suspicious_tag_ids, attributes_limit):
     """
     After getting all the attributes which match the required indicator value, this function parses the response.
-    This function goes over all the attributes that found and by sub-functions calculated the score of the indicator.
+    This function goes over all the attributes that found (after limit the attributes amount to the given limit)
+    and by sub-functions calculated the score of the indicator.
     For the context data outputs, for every attribute we remove the "Related Attribute" list and limits the tags and
-    galaxies lists. Eventually, the outputs will be a list of attributes along with thier evetns objects.
+    galaxies lists. Eventually, the outputs will be a list of attributes along with their events objects.
+    Note: When limits the attributes amount, we sort the attributes list by the event ids as the greater event ids are
+    the newer ones.
 
     Returns:
         response (dict): The parsed outputs to context data (array of attributes).
@@ -405,7 +408,7 @@ def prepare_attributes_array_to_context_data(attributes_list):
     if not attributes_list:
         return None
     for attribute in attributes_list:
-        attribute.pop("RelatedAttribute")
+        attribute.pop("RelatedAttribute")  # get rid of this useless list
         event = attribute.get('Event')
         convert_timestamp_to_readable(attribute, event)
         found_related_events[event.get("id")] = {"Event Name": event.get("info"),
