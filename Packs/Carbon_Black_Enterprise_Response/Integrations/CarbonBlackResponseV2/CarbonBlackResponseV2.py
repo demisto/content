@@ -710,7 +710,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         last_fetch = int(last_fetch)
 
     latest_created_time = last_fetch
-
+    demisto.debug(f'last fetch: {last_fetch}')
     incidents: List[Dict[str, Any]] = []
 
     # multiple statuses are not supported by api. If multiple statuses provided, gets the incidents for each status.
@@ -718,12 +718,16 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     alerts = []
     if status:
         for current_status in argToList(status):
+            demisto.debug(f'Fetching incident from Server with status: {current_status}')
             res = client.get_alerts(status=current_status, feedname=feedname)
             alerts += res.get('results', [])
+            demisto.debug(f'fetched {len(alerts)} so far.')
     else:
+        demisto.debug(f'Fetching incident from Server with status: {status}')
         res = client.get_alerts(feedname=feedname, query=query)
         alerts += res.get('results', [])
 
+    demisto.debug(f'Got total of {len(alerts)} alerts from CB server.')
     for alert in alerts[:max_results]:
         incident_created_time = dateparser.parse(alert.get('created_time'))
         incident_created_time_ms = int(incident_created_time.timestamp()) if incident_created_time else '0'
@@ -731,6 +735,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
         if last_fetch:
             if incident_created_time_ms <= last_fetch:
+                demisto.debug(f'alert {str(alert)} created at {incident_created_time_ms}. Skipping.')
                 continue
 
         alert_id = alert.get('unique_id', '')
