@@ -1,5 +1,5 @@
 id: Fetch Incidents Test
-version: 7
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Fetch Incidents Test
 starttaskid: "0"
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
@@ -60,7 +60,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 895
         }
       }
@@ -94,7 +94,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 195
         }
       }
@@ -130,7 +130,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 370
         }
       }
@@ -156,8 +156,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2120
+          "x": 162.5,
+          "y": 2295
         }
       }
     note: false
@@ -194,7 +194,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -231,7 +231,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -290,7 +290,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 275,
           "y": 1070
         }
       }
@@ -324,8 +324,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1770
+          "x": 162.5,
+          "y": 1945
         }
       }
     note: false
@@ -361,8 +361,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1945
+          "x": 162.5,
+          "y": 2120
         }
       }
     note: false
@@ -397,7 +397,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 545
         }
       }
@@ -423,7 +423,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "22"
     scriptarguments:
       extend-context:
         simple: Incidents=
@@ -433,7 +433,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1245
         }
       }
@@ -469,8 +469,47 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: a6c3f60e-51d9-4394-8553-ef51e95f93c9
+    type: condition
+    task:
+      id: a6c3f60e-51d9-4394-8553-ef51e95f93c9
+      version: -1
+      name: Check If Incidents exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
         }
       }
     note: false
@@ -485,8 +524,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
-        "width": 492.5,
+        "height": 2310,
+        "width": 605,
         "x": 50,
         "y": 50
       }

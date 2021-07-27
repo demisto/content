@@ -7,9 +7,12 @@ def main():
     query = args.get('query')
     size = int(args.get('size'))
 
-    raw_result = demisto.executeCommand("SearchIncidentsV2", {"query": query,
-                                                              "size": size})
-    incidents_len = len(raw_result[0].get("Contents", [{}])[0].get("Contents", {}).get("data"))
+    try:
+        raw_result = demisto.executeCommand("SearchIncidentsV2", {"query": query,
+                                                                  "size": size})
+        incidents_len = len(raw_result[0].get("Contents", [{}])[0].get("Contents", {}).get("data"))
+    except Exception:
+        incidents_len = 0
     outputs = {
         'Query': query,
         'Size': incidents_len,
