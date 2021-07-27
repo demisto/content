@@ -16,7 +16,8 @@ You need to create a separate integration instance for Palo Alto Networks Firewa
 - Go to Panorama --> Device Groups.
 - Choose a device group name.
 
-### Query to fetch logs
+### Fetch incidents
+Please make sure that the `log` XML API feature is enabled for your [Admin role](https://docs.paloaltonetworks.com/pan-os/9-0/pan-os-panorama-api/get-started-with-the-pan-os-xml-api/enable-api-access.html)
 You can apply additional (optional) filters for the fetch-incident query using the *Query to fetch logs* integration parameter. For more information on how to use the filter syntax:
 - Visit [PAN-OS Filter Logs Documentation](https://docs.paloaltonetworks.com/pan-os/8-0/pan-os-admin/monitoring/view-and-manage-logs/filter-logs.html) for explanation about logs.
 - Visit [PAN-OS Basics of Traffic Monitor Filtering](https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClSlCAK) for explanation about logs filtering syntax.
