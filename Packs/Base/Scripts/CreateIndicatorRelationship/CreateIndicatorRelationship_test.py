@@ -105,6 +105,7 @@ def test_validate_arguments(mocker):
     except Exception as e:
         assert "entity_a is a list, Please insert a single entity_a to create the relationship" in e.args[0]
 
+    # Handle the Threat Intel Indicators in server versions:
     args = {
         'entity_a': '1',
         'entity_a_type': 'STIX Malware',
