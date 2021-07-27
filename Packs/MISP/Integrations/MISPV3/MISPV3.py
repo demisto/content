@@ -1366,7 +1366,7 @@ def main():
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
         Exception("MISP V3 error: Please provide a valid value for the Source Reliability parameter")
-    attributes_limit = arg_to_number(params.get('attributes_limit', 10), "attributes_limit", required=True)
+    attributes_limit = arg_to_number(params.get('attributes_limit', 20), "attributes_limit", required=True)
     command = demisto.command()
     demisto.debug(f'[MISP V3]: command is {command}')
     args = demisto.args()

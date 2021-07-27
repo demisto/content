@@ -3723,6 +3723,7 @@ Search for attributes in MISP.
 ## Breaking changes from the previous version of this integration - MISP v3
 %%Reputation commands%%
 The main change in this version is that searching indicators (reputation commands) implemented with search-attributes (and not with search-events as in previous version).
+Please see the new commands(ip, file, url...) context output.
 
 ### Commands
 #### The following commands were removed in this version:
