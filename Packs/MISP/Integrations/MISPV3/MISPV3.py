@@ -294,7 +294,7 @@ def misp_convert_timestamp_to_date_string(timestamp: Union[str, int]) -> str:
     """
     Gets a timestamp from MISP response (1546713469) and converts it to human readable format
     """
-    return datetime.utcfromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S') if timestamp else ""
+    return datetime.utcfromtimestamp(int(timestamp)).strftime('%Y-%m-%dT%H:%M:%SZ') if timestamp else ""
 
 
 def replace_keys_from_misp_to_context_data(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]:
