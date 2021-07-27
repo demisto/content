@@ -93,7 +93,7 @@ tasks:
       - "6"
     scriptarguments:
       incident-id:
-        simple: ${Resilient.Incidents.[0].Id}
+        simple: ${Resilient.Incidents.Id}
     separatecontext: false
     view: |-
       {

@@ -1009,7 +1009,7 @@ def test():
     demisto.results('ok')
 
 
-def add_note(client, incident_id, note):
+def add_note_command(client, incident_id, note):
     body = {
         'text': {
             'format': 'text',
@@ -1021,7 +1021,7 @@ def add_note(client, incident_id, note):
     return f'The note was added successfully to incident {incident_id}'
 
 
-def add_incident_artifact(client, incident_id, artifact_type, artifact_value, artifact_description):
+def add_artifact_command(client, incident_id, artifact_type, artifact_value, artifact_description):
     body = {
         'type': artifact_type,
         'value': artifact_value,
@@ -1103,9 +1103,9 @@ def main():
         elif demisto.command() == 'rs-related-incidents':
             demisto.results(related_incidents_command(client, args['incident-id']))
         elif demisto.command() == 'rs-add-note':
-            demisto.results(add_note(client, args['incident-id'], args['note']))
+            demisto.results(add_note_command(client, args['incident-id'], args['note']))
         elif demisto.command() == 'rs-add-artifact':
-            demisto.results(add_incident_artifact(client, args['incident-id'], args['artifact-type'],
+            demisto.results(add_artifact_command(client, args['incident-id'], args['artifact-type'],
                                                   args['artifact-value'], args['artifact-description']))
     except Exception as e:
         LOG(e.message)

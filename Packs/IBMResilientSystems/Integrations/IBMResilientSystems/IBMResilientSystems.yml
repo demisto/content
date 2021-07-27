@@ -619,7 +619,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Adde a note to an incident.
+    description: Add a note to an incident.
     execution: false
     name: rs-add-note
   - arguments:
