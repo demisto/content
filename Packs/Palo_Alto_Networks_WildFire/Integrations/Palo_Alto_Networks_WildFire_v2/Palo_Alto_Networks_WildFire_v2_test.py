@@ -1,9 +1,13 @@
+import json, io
+
 from requests import Response
 
 import demistomock as demisto
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
     create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
-    file_args_handler, wildfire_get_sample_command, wildfire_get_report_command
+    file_args_handler, wildfire_get_sample_command, wildfire_get_report_command, run_polling_command, \
+    wildfire_upload_file_command, wildfire_upload_file_url_command, wildfire_upload_url_command
+
 
 
 def test_will_return_ok():
@@ -165,26 +169,46 @@ def test_report_chunked_response(mocker):
                         return_value={'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
                                       'format': 'xml'})
     mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "https://wildfire.paloaltonetworks.com/publicapi")
-    wildfire_get_report_command(demisto.args())
-    result = {'Type': 1,
-              'Contents': [{'version': '2.0', 'platform': '100', 'software': 'PDF Static Analyzer',
-                            'sha256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
-                            'md5': '4b41a3475132bd861b30a878e30aa56a', 'malware': 'no', 'summary': None}],
-              'ContentsFormat': 'json',
-              'HumanReadable': '### WildFire File Report\n|FileType|MD5|SHA256|Size|Status|\n|---|---|---|---|---|\n'
-                               '| PDF | 4b41a3475132bd861b30a878e30aa56a | '
-                               '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 | 3028 '
-                               '| Completed |\n',
-              'ReadableContentsFormat': 'markdown',
-              'EntryContext':
-                  {'WildFire.Report(val.SHA256 === obj.SHA256)': {
-                      'Status': 'Success',
-                      'SHA256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51'},
-                      'DBotScore': [
-                          {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
-                           'Type': 'hash',
-                           'Vendor': 'WildFire', 'Score': 1, 'Reliability': 'B - Usually reliable'},
-                          {'Indicator': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
-                           'Type': 'file',
-                           'Vendor': 'WildFire', 'Score': 1, 'Reliability': 'B - Usually reliable'}]}}
-    assert demisto.results.call_args[0][0] == result
+    command_results, status = wildfire_get_report_command({'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+                                      'format': 'xml'})
+    hr = '### WildFire File Report\n|FileType|MD5|SHA256|Size|Status|\n|---|---|---|---|---|\n|' \
+         ' PDF | 4b41a3475132bd861b30a878e30aa56a | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 |' \
+         ' 3028 | Completed |\n'
+    context = {'Status': 'Success', 'SHA256': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51'}
+
+    assert command_results[0].outputs == context
+    assert command_results[0].readable_output == hr
+
+
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+def test_running_polling_command_upload_command_success(mocker):
+    """
+    Given:
+        An upload request of an url or a file using the polling flow.
+    When:
+        When initiating an upload using the builtin polling command, and there is no need for polling since the request
+        is complete.
+    Then:
+        Return a command results object, without scheduling a new command.
+    """
+    args = {'url': 'MOCK_URL'}
+    response = util_load_json('./tests_data/upload_url_response.json')
+    upload_url_data = {'url': 'https://www.demisto.com', 'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb', 'md5': '67632f32e6af123aa8ffd1fe8765a783'}
+    mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response, upload_url_data))
+
+    command_results = run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command, wildfire_get_report_command, 'URL')
+    pass
+
+
+def test_running_polling_command_upload_command_pending(mocker):
+    pass
+def test_running_polling_command_results_command_success(mocker):
+    pass
+def test_running_polling_command_results_command_pending(mocker):
+    pass
+
+

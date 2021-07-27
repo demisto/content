@@ -862,7 +862,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
     # necessarily one of them as passed the hash_args_handler
     sha256 = file_hash if sha256Regex.match(file_hash) else None
     md5 = file_hash if md5Regex.match(file_hash) else None
-    entry_context = {'MD5': md5, 'SHA256': sha256}
+    entry_context = {key: value for key, value in (['MD5', md5], ['SHA256', sha256]) if value}
 
     try:
         json_res = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
