@@ -20,7 +20,7 @@ def save_to_context(items: list, context_path: str, delete_existing: bool = Fals
 def _get_incident_campaign(id: int):
     res = demisto.executeCommand('GetByIncidentId', {'incident_id': id, 'get_key': 'partofcampaign'})
     if is_error(res):
-        return_error('Failed to get campaign data from incident {}. Error details:\n{}'.format(id, get_error(res)))
+        return
     return res
 
 
