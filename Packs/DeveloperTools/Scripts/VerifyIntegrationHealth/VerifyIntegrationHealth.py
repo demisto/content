@@ -10,7 +10,7 @@ def health_check(health_dict, integration_name: str) -> bool:
     for _, integration in health_dict.items():
         if integration.get('brand') == integration_name:
             return False if integration.get('lastError') else True
-    return False
+    return True
 
 
 def health_check_command(args: Dict[str, Any]) -> CommandResults:
