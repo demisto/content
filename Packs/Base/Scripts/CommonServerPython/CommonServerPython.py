@@ -2483,8 +2483,8 @@ class Common(object):
             }
 
             if self.dbot_score:
-                ret_value.update(self.dbot_score.to_context()) # TODO: seems like it does add the 'custom' type
-            ret_value['Type'] = self.indicator_type
+                ret_value.update(self.dbot_score.to_context())
+            ret_value[Common.DBotScore.get_context_path()]['Type'] = self.indicator_type
 
             return ret_value
 

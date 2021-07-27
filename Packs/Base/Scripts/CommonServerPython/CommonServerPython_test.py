@@ -5094,7 +5094,7 @@ class TestCustomIndicator:
         assert indicator.param == 'value'
         assert indicator.value == 'test_value'
 
-    def test_custom_indicator_init_existin_type(self):
+    def test_custom_indicator_init_existing_type(self):
         """
         Given: Data needed for creating a custom indicator
         When: Type already exists
@@ -5135,15 +5135,15 @@ class TestCustomIndicator:
         Then: Raise ValueError
         """
         with pytest.raises(ValueError):
-            from CommonServerPython import Common, DBotScoreType
+            from CommonServerPython import Common
             dbot_score = ''
             Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
 
     def test_custom_indicator_to_context(self):
         """
         Given: Data needed for Custom indicator
-        When: Dbotscore is not a DBotScore object
-        Then: Raise ValueError
+        When: there's a call to to_context
+        Then: create a valid context
         """
         from CommonServerPython import Common, DBotScoreType
         dbot_score = Common.DBotScore(
@@ -5155,37 +5155,7 @@ class TestCustomIndicator:
         )
         indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
         context = indicator.to_context()
-        assert context['DBotScore']['Indicator'] == 'test'
+        assert context['DBotScore(val.Indicator &&'
+                       ' val.Indicator == obj.Indicator &&'
+                       ' val.Vendor == obj.Vendor && val.Type == obj.Type)']['Indicator'] == 'test'
         assert context['prefix(val.value && val.value == obj.value)']['Value'] == 'test_value'
-
-
-# class TestDBotScoreType:
-#     def test_is_valid_type_fail(self):
-#         from CommonServerPython import DBotScoreType
-#         dbot = DBotScoreType()
-#         assert dbot.is_valid_type('fake_type') is False
-#
-#     def test_is_valid_type_success(self):
-#         from CommonServerPython import DBotScoreType
-#         dbot = DBotScoreType()
-#         assert dbot.is_valid_type(DBotScoreType.IP) is True
-#
-#     def test_add_custom_type(self):
-#         from CommonServerPython import DBotScoreType
-#         dbot = DBotScoreType()
-#         dbot.add_custom_type('custom_name')
-#         assert dbot.__getattribute__('CUSTOM_NAME') == 'custom_name'
-#
-#     def test_add_existing_custom_type(self):
-#         from CommonServerPython import DBotScoreType
-#         dbot = DBotScoreType()
-#         dbot.add_custom_type('custom_name')
-#         dbot.add_custom_type('custom_name')
-#         assert dbot.__getattribute__('CUSTOM_NAME') == 'custom_name'
-#
-#     def test_is_valid_type_success_custom_name(self):
-#         from CommonServerPython import DBotScoreType
-#         dbot = DBotScoreType()
-#         dbot.add_custom_type('custom_name')
-#         assert dbot.is_valid_type('custom_name') is True
-#     # TODO: add docstring
