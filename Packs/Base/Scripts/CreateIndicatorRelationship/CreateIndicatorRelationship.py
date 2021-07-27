@@ -143,6 +143,11 @@ def validate_arguments(args: dict) -> Dict[str, str]:
     return args
 
 
+def handle_stix_types(args: dict):
+    args['entity_a_type'] = FeedIndicatorType.indicator_type_by_server_version(args.get('entity_a_type'))
+    args['entity_b_type'] = FeedIndicatorType.indicator_type_by_server_version(args.get('entity_b_type'))
+
+
 def create_indicators(args: dict):
     """
     When the create_indicator argument is set to True, create the new indicator first.
@@ -206,7 +211,7 @@ def create_relationships(args: dict) -> Tuple[List[EntityRelationship], str]:
 def main():
     try:
         args = validate_arguments(demisto.args())
-        handle_stix_types(entities_types)
+        handle_stix_types(args)
         if argToBoolean(args.get('create_indicator')):
             create_indicators(args)
         relationships, human_readable = create_relationships(args)
