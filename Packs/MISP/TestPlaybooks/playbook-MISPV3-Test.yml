@@ -869,7 +869,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: MISP.Event.Timestamp
+              simple: MISP.Event.LastChanged
             iscontext: true
       - - operator: isFalse
           left:
@@ -983,7 +983,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: MISP.Attribute.Timestamp
+              simple: MISP.Attribute.LastChanged
             iscontext: true
       - - operator: isFalse
           left:
