@@ -414,8 +414,8 @@ tasks:
     task:
       id: c7d7f6f0-89e5-49b1-8cf6-6e0e4217515e
       version: -1
-      name: rs-add-notes
-      script: IBM Resilient Systems|||rs-add-notes
+      name: rs-add-note
+      script: IBM Resilient Systems|||rs-add-note
       type: regular
       iscommand: true
       brand: ""
@@ -423,7 +423,7 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      comment:
+      note:
         simple: This is a note
       incident-id:
         simple: ${Resilient.Incidents.Id}
