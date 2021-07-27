@@ -3416,6 +3416,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "VMware Workspace ONE UEM (AirWatch MDM)",
+            "playbookID": "VMware Workspace ONE UEM (AirWatch MDM)-Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "CarbonBlackLiveResponseCloud",
             "playbookID": "CarbonBlackLiveResponseCloud-Test",
             "fromversion": "5.5.0",
@@ -3462,7 +3467,6 @@
         "ArcSight Logger test": "Issue 19117",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
-        "RecordedFutureFeed - Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "Test Playbook TrendMicroDDA": "Issue 16501",
@@ -3531,13 +3535,14 @@
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
         "O365 - EWS - Extension - Test": "Issue 39008",
         "Majestic Million Test Playbook": "Issue 30931",
-        "CircleCI-Test": "Issue 39222"
+        "Azure SecurityCenter - Test": "Issue 27391"
     },
     "skipped_integrations": {
         
         "_comment1": "~~~ NO INSTANCE ~~~",
         "SolarWinds": "No instance - developed by Crest",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
+        "VMware Workspace ONE UEM (AirWatch MDM)": "No instance - developed by crest",
         "ServiceDeskPlus (On-Premise)": "No instance",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
