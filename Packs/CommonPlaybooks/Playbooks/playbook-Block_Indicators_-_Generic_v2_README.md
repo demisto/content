@@ -92,4 +92,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Block Indicators - Generic v2](Insert the link to your image here)
+![Block Indicators - Generic v2](https://raw.githubusercontent.com/demisto/content/1d674c76b038bef0467d6acb53cee697e7c55e45/Packs/CommonPlaybooks/doc_files/Block_Indicators_-_Generic_v2.png)
