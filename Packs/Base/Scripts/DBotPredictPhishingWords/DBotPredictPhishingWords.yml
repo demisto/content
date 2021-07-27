@@ -163,7 +163,7 @@ system: false
 tags:
 - ml
 - phishing
-timeout: '0'
+timeout: 60µs
 type: python
 dockerimage: demisto/ml:1.0.0.20606
 runonce: true
