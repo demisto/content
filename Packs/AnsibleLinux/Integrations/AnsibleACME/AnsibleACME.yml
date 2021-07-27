@@ -56,7 +56,7 @@ configuration:
   required: false
   type: 4
 description: Control Automatic Certificate Management Environment on Linux hosts
-display: ACME
+display: Ansible ACME
 fromversion: 6.0.0
 name: AnsibleACME
 script:
