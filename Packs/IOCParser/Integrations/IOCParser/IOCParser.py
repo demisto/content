@@ -43,6 +43,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/url',
             headers={'Content-Type': 'application/json'},
+            # The API requires the data to be a string in json format
             data=json.dumps(data),
             return_empty_response=True
         )
@@ -62,6 +63,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/text',
             headers={'Content-Type': 'application/json'},
+            # The API requires the data to be a string in json format
             data=json.dumps(data),
             return_empty_response=True
         )
@@ -80,6 +82,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/raw',
             headers={'Content-Type': 'text/plain'},
+            # The API requires the data to be a string
             data=raw_text,
             return_empty_response=True
         )
@@ -99,6 +102,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/twitter',
             headers={'Content-Type': 'application/json'},
+            # The API requires the data to be a string in json format
             data=json.dumps(data),
             return_empty_response=True
         )
@@ -131,7 +135,7 @@ def remove_unwanted_keys(response_data: Dict[str, List], keys: List[str]) -> Non
 
     keys_list = list(response_data.keys())
     for ioc_type in keys_list:
-        if ioc_type not in keys or not response_data[ioc_type]:
+        if ioc_type not in keys:
             del response_data[ioc_type]
 
 
@@ -148,10 +152,9 @@ def limit_response(response_data: Dict[str, List], limit: int) -> Dict[str, List
 
     limited_response = {}
     for ioc_type, iocs in response_data.items():
+        limited_response[ioc_type] = []
         for ioc in iocs:
             if limit > 0:
-                if not limited_response.get(ioc_type):
-                    limited_response[ioc_type] = []
                 limited_response.get(ioc_type).append(ioc)
                 limit -= 1
             else:
@@ -172,14 +175,12 @@ def process_response(response: Dict[str, Any], keys: List[str], limit: int) -> D
 
     try:
         response_data = response.get('data')
-    except Exception:
-        raise Exception('The response from the API is empty')
+    except Exception as e:
+        raise Exception('The response from the API is empty') from e
 
     remove_unwanted_keys(response_data, keys)
     if limit is not None:
         response_data = limit_response(response_data, limit)
-    if not response_data:
-        raise Exception('The response from the API is empty from limit')
     return response_data
 
 
@@ -188,7 +189,7 @@ def unite_all_tweets_into_dict(twitter_response: Dict[str, Any]) -> None:
     """
 
     Args:
-        twitter_response: The data key from the API's response
+        twitter_response: A dictionary that represents the response
     """
 
     try:
@@ -230,22 +231,19 @@ def test_module(client: Client) -> str:
 
 def ioc_from_url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
-    Returns the results of the Parse IOCs from URL API call
+    Returns the results of the Parse IOCs from URL API call.
     Args:
-        client: IOCParser client to use
+        client: IOCParser client to use.
         args: All command arguments, url, limit, keys (if specified).
 
     Returns:
         CommandResults object containing the results of the parse from url as
-        returned from the API and its readable output
+        returned from the API and its readable output.
     """
 
     url = args.get('url')
-    keys = argToList(args.get('keys')) or KEYS
+    keys = list_to_upper_case(argToList(args.get('keys'))) or KEYS
     limit = arg_to_number(args.get('limit'))
-
-    if not url:
-        raise ValueError('url not specified')
 
     response = client.ioc_from_url(url)
 
@@ -269,24 +267,25 @@ def ioc_from_url_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
     return command_results
 
 
-def ioc_from_text_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def ioc_from_json_text_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
-        Returns the results of the Parse IOCs from text API call
+        Returns the results of the Parse IOCs from text API call.
         Args:
-            client: IOCParser client to use
+            client: IOCParser client to use.
             args: All command arguments, text, limit, and keys (if specified).
 
         Returns:
             CommandResults object containing the results of the parse from
-            text (in JSON format) as returned from the API and its readable output
+            text (in JSON format) as returned from the API and its readable output.
     """
 
     data = args.get('data')
-    keys = argToList(args.get('keys')) or KEYS
+    try:
+        a_json = json.loads(data)
+    except ValueError as e:
+        raise ValueError(f'Data should be in JSON format. Error: {str(e)}')
+    keys = list_to_upper_case(argToList(args.get('keys'))) or KEYS
     limit = arg_to_number(args.get('limit'))
-
-    if not data:
-        raise ValueError('text not specified')
 
     response = client.ioc_from_json_text(data)
 
@@ -322,13 +321,29 @@ def ioc_from_raw_text_command(client: Client, args: Dict[str, Any]) -> List[Comm
             text (in JSON format) as returned from the API and its readable output
     """
 
-    data = args.get('data')
-    keys = argToList(args.get('keys')) or KEYS
+    raw_text = args.get('data')
+    file = args.get('entry_id')
+    if raw_text:
+        if file:
+            raise ValueError('Both data and entry id were inserted - please insert only one.')
+        data = raw_text
+
+    elif file:
+        demisto.debug('getting the path of the file from its entry id')
+        result = demisto.getFilePath(args.get('entry_id'))
+        if not result:
+            raise ValueError('No file was found for given entry id')
+        file_path, file_name = result['path'], result['name']
+        if not file_name.endswith('.txt'):
+            raise ValueError('File should be in txt format.')
+        with open(file_path, 'r') as f:
+            data = f.read()
+        f.close()
+
+    else:
+        raise ValueError('Neither data nor entry id specified.')
+    keys = list_to_upper_case(argToList(args.get('keys'))) or KEYS
     limit = arg_to_number(args.get('limit'))
-
-    if not data:
-        raise ValueError('text not specified')
-
     response = client.ioc_from_raw_text(data)
 
     response_data = process_response(response, keys, limit)
@@ -364,11 +379,8 @@ def ioc_from_twitter_command(client: Client, args: Dict[str, Any]) -> List[Comma
     """
 
     twitter_account = args.get('data')
-    keys = argToList(args.get('keys')) or KEYS
+    keys = list_to_upper_case(argToList(args.get('keys'))) or KEYS
     limit = arg_to_number(args.get('limit'))
-
-    if not twitter_account:
-        raise ValueError('twitter user name not specified')
 
     twitter_response = client.ioc_from_twitter(twitter_account)
     unite_all_tweets_into_dict(twitter_response)
@@ -386,14 +398,6 @@ def ioc_from_twitter_command(client: Client, args: Dict[str, Any]) -> List[Comma
                 outputs_prefix=f'IOCParser.parseFromTwitter',
                 outputs=outputs
             ))
-
-    #
-    # for ioc_type, iocs in response_data.items():
-    #     command_results.append(CommandResults(
-    #         readable_output=tableToMarkdown(f'results for {ioc_type} from {twitter_account}', iocs, headers=ioc_type),
-    #         outputs_prefix=f'IOCParser.parseFromTwitter',
-    #         outputs=outputs
-    #     ))
 
     command_results.append(CommandResults(
         raw_response=response_data
@@ -421,7 +425,7 @@ def main() -> None:
         if command == 'ioc-parser-parse-url':
             return_results(ioc_from_url_command(client, args))
         elif command == 'ioc-parser-parse-text':
-            return_results(ioc_from_text_command(client, args))
+            return_results(ioc_from_json_text_command(client, args))
         elif command == 'ioc-parser-parse-raw-text':
             return_results(ioc_from_raw_text_command(client, args))
         elif command == 'ioc-parser-parse-twitter':

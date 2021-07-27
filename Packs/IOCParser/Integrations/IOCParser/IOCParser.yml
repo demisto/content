@@ -74,10 +74,11 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The text from which the IOCs will be extracted
+      description: The text from which the IOCs will be extracted. If an entry ID
+        is supplied, do not use this argument.
       isArray: false
       name: data
-      required: true
+      required: false
       secret: false
     - default: false
       description: IOC Types to return
@@ -89,6 +90,13 @@ script:
       description: limits the results to the specified number
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The text file from which the IOCs will be extracted. If data is
+        supplied, do not use this argument.
+      isArray: false
+      name: entry_id
       required: false
       secret: false
     deprecated: false
