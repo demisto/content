@@ -18,6 +18,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Malicious tag IDs | Comma separated list of event's or attribute's malicious tag IDs. Malicious tags are stronger than suspicious tags. | False |
     | Suspicious tag IDs | Comma separated list of event's or attribute's suspicious tag IDs. Malicious tags are stronger than suspicious tags. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
+    | Maximum attributes to be returned | This field limits the number of attributes that will be written to the context for every reputation command. Please pay attention, raising the number of attributes may result in high memory and disk usage. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -61,7 +62,7 @@ Search for events in MISP. This search command will return only information abou
 | MISP.Event.Info | string | Event name. |
 | MISP.Event.AttributeCount | string | Number of attributes of the event. |
 | MISP.Event.OrganisationID | string | Event organization ID. |
-| MISP.Event.Date | date | Event creation date. |
+| MISP.Event.CreationDate | date | Event creation date. |
 | MISP.Event.Locked | boolean | Is the event locked. |
 | MISP.Event.Organisation.ID | number | Organization ID. |
 | MISP.Event.Organisation.Name | string | Organization name. |
@@ -72,7 +73,7 @@ Search for events in MISP. This search command will return only information abou
 | MISP.Event.OwnerOrganisation.UUID | string | Owner organization UUID. |
 | MISP.Event.OwnerOrganisation.local | boolean | Is the owner organization local. |
 | MISP.Event.ProposalEmailLock | boolean | If email lock proposed. |
-| MISP.Event.Timestamp | string | Timestamp of the event. |
+| MISP.Event.LastChanged | date | Last change event timestamp. |
 | MISP.Event.Galaxy.Description | string | Event's galaxy description. |
 | MISP.Event.Galaxy.Name | string | Galaxy name. |
 | MISP.Event.Galaxy.Type | number | Galaxy type. |
@@ -100,7 +101,7 @@ Search for events in MISP. This search command will return only information abou
             {
                 "Analysis": "2",
                 "AttributeCount": "147",
-                "Date": "2019-03-18",
+                "CreationDate": "2019-03-18",
                 "DisableCorrelation": false,
                 "Distribution": "1",
                 "Galaxy": [],
@@ -171,13 +172,13 @@ Search for events in MISP. This search command will return only information abou
                     }
                 ],
                 "ThreatLevelID": "3",
-                "Timestamp": "2021-07-18 13:10:09",
+                "LastChanged": "2021-07-18 13:10:09",
                 "UUID": "5c93d7f7-7de4-4548-ae4c-403ec0a8ab16"
             },
             {
                 "Analysis": "2",
                 "AttributeCount": "9",
-                "Date": "2020-04-06",
+                "CreationDate": "2020-04-06",
                 "DisableCorrelation": false,
                 "Distribution": "1",
                 "Galaxy": [],
@@ -218,13 +219,13 @@ Search for events in MISP. This search command will return only information abou
                     }
                 ],
                 "ThreatLevelID": "2",
-                "Timestamp": "2021-07-01 12:34:41",
+                "LastChanged": "2021-07-01 12:34:41",
                 "UUID": "5e8b8ba5-df0c-4e7b-bfb4-b27ec0a8ab16"
             },
             {
                 "Analysis": "2",
                 "AttributeCount": "22",
-                "Date": "2021-04-17",
+                "CreationDate": "2021-04-17",
                 "DisableCorrelation": false,
                 "Distribution": "1",
                 "Galaxy": [],
@@ -265,7 +266,7 @@ Search for events in MISP. This search command will return only information abou
                     }
                 ],
                 "ThreatLevelID": "3",
-                "Timestamp": "2021-05-04 18:49:48",
+                "LastChanged": "2021-05-04 18:49:48",
                 "UUID": "e74cba52-0314-43c2-9958-43a55619fcf5"
             }
         ]
@@ -314,7 +315,7 @@ Checks the reputation of the given domain.
 | MISP.Attribute.EventID | string | Attribute event ID. |
 | MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
 | MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
-| MISP.Attribute.Timestamp | string | Attribute timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute creation timestamp. |
 | MISP.Attribute.ObjectID | string | Attribute object id. |
 | MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
 | MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled? |
@@ -328,9 +329,9 @@ Checks the reputation of the given domain.
 | MISP.Attribute.Event.ID | string | MISP event ID. |
 | MISP.Attribute.Event.Distribution | string | MISP event distribution. |
 | MISP.Attribute.Event.Info | string | MISP event name. |
-| MISP.Attribute.Event.Timestamp | string | Timestamp of the event. |
+| MISP.Attribute.Event.LastChanged | string | Timestamp of the event. |
 | MISP.Attribute.Event.Published | boolean | Is the event published. |
-| MISP.Attribute.Event.Date | date | Event Date. |
+| MISP.Attribute.Event.CreationDate | date | Event creation date. |
 | MISP.Attribute.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). |
 | MISP.Attribute.Event.PublishTimestamp | string | Timestamp of the publish time \(if published\). |
 | MISP.Attribute.Event.OrganisationID | string | MISP event organisation ID. |
@@ -389,7 +390,7 @@ Checks the reputation of the given domain.
                 "Distribution": "5",
                 "Event": {
                     "Analysis": "2",
-                    "Date": "2014-11-13",
+                    "CreationDate": "2014-11-13",
                     "Distribution": "1",
                     "ID": "1208",
                     "Info": "OSINT Expansion campaign",
@@ -415,7 +416,7 @@ Checks the reputation of the given domain.
                         }
                     ],
                     "ThreatLevelID": "2",
-                    "Timestamp": "2014-11-13 14:32:53",
+                    "LastChanged": "2014-11-13 14:32:53",
                     "UUID": "5464bf96-1f14-43f1-af86-08ce950d210b",
                     "extends_uuid": ""
                 },
@@ -423,7 +424,6 @@ Checks the reputation of the given domain.
                 "ID": "111718",
                 "ObjectID": "0",
                 "ObjectRelation": null,
-                "RelatedAttribute": [],
                 "SharingGroupID": "0",
                 "Sighting": [],
                 "Tag": [
@@ -436,7 +436,7 @@ Checks the reputation of the given domain.
                         "Name": "tlp:green"
                     }
                 ],
-                "Timestamp": "2014-11-13 14:30:17",
+                "LastChanged": "2014-11-13 14:30:17",
                 "ToIDs": true,
                 "Type": "domain",
                 "UUID": "5464c079-3a08-4195-8bc9-491c950d210b",
@@ -491,7 +491,7 @@ Checks the reputation of the given email address.
 | MISP.Attribute.EventID | string | Attribute event ID. |
 | MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
 | MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
-| MISP.Attribute.Timestamp | string | Attribute timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute creation timestamp. |
 | MISP.Attribute.ObjectID | string | Attribute object id. |
 | MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
 | MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled? |
@@ -505,9 +505,9 @@ Checks the reputation of the given email address.
 | MISP.Attribute.Event.ID | string | MISP event ID. |
 | MISP.Attribute.Event.Distribution | string | MISP event distribution. |
 | MISP.Attribute.Event.Info | string | MISP event name. |
-| MISP.Attribute.Event.Timestamp | string | Timestamp of the event. |
+| MISP.Attribute.Event.LastChanged | string | Timestamp of the event. |
 | MISP.Attribute.Event.Published | boolean | Is the event published. |
-| MISP.Attribute.Event.Date | date | Event Date. |
+| MISP.Attribute.Event.CreationDate | date | Event creation date. |
 | MISP.Attribute.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). |
 | MISP.Attribute.Event.PublishTimestamp | string | Timestamp of the publish time \(if published\). |
 | MISP.Attribute.Event.OrganisationID | string | MISP event organisation ID. |
@@ -551,7 +551,7 @@ Checks the reputation of the given email address.
                 "Distribution": "5",
                 "Event": {
                     "Analysis": "2",
-                    "Date": "2014-10-03",
+                    "CreationDate": "2014-10-03",
                     "Distribution": "1",
                     "ID": "517",
                     "Info": "OSINT New Indicators of Compromise for APT Group",
@@ -577,7 +577,7 @@ Checks the reputation of the given email address.
                         }
                     ],
                     "ThreatLevelID": "2",
-                    "Timestamp": "2021-07-22 12:10:08",
+                    "LastChanged": "2021-07-22 12:10:08",
                     "UUID": "54323f2c-e50c-4268-896c-4867950d210b",
                     "extends_uuid": ""
                 },
@@ -585,7 +585,6 @@ Checks the reputation of the given email address.
                 "ID": "112893",
                 "ObjectID": "0",
                 "ObjectRelation": null,
-                "RelatedAttribute": [],
                 "SharingGroupID": "0",
                 "Sighting": [],
                 "Tag": [
@@ -598,7 +597,7 @@ Checks the reputation of the given email address.
                         "Name": "tlp:green"
                     }
                 ],
-                "Timestamp": "2021-07-20 14:58:00",
+                "LastChanged": "2021-07-20 14:58:00",
                 "ToIDs": true,
                 "Type": "email",
                 "UUID": "ad6337d0-3e2b-4923-bafb-16f32d20a8ac",
@@ -655,7 +654,7 @@ Checks the file reputation of the given hash.
 | MISP.Attribute.EventID | string | Attribute event ID. |
 | MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
 | MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
-| MISP.Attribute.Timestamp | string | Attribute timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute creation timestamp. |
 | MISP.Attribute.ObjectID | string | Attribute object id. |
 | MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
 | MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled? |
@@ -669,9 +668,9 @@ Checks the file reputation of the given hash.
 | MISP.Attribute.Event.ID | string | MISP event ID. |
 | MISP.Attribute.Event.Distribution | string | MISP event distribution. |
 | MISP.Attribute.Event.Info | string | MISP event name. |
-| MISP.Attribute.Event.Timestamp | string | Timestamp of the event. |
+| MISP.Attribute.Event.LastChanged | string | Timestamp of the event. |
 | MISP.Attribute.Event.Published | boolean | Is the event published. |
-| MISP.Attribute.Event.Date | date | Event Date. |
+| MISP.Attribute.Event.CreationDate | date | Event creation date. |
 | MISP.Attribute.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). |
 | MISP.Attribute.Event.PublishTimestamp | string | Timestamp of the publish time \(if published\). |
 | MISP.Attribute.Event.OrganisationID | string | MISP event organisation ID. |
@@ -719,7 +718,7 @@ Checks the file reputation of the given hash.
                 "Distribution": "5",
                 "Event": {
                     "Analysis": "0",
-                    "Date": "2020-03-13",
+                    "CreationDate": "2020-03-13",
                     "Distribution": "3",
                     "ID": "149",
                     "Info": "Capitalizing on Coronavirus Panic, Threat Actors Target Victims Worldwide",
@@ -737,11 +736,11 @@ Checks the file reputation of the given hash.
                     "Tag": [
                         {
                             "ID": "121",
-                            "Name": "misp-galaxy:malpedia=\"Loki Password Stealer (PWS)\""
+                            "Name": "misp-galaxy:malpedia"
                         },
                         {
                             "ID": "122",
-                            "Name": "misp-galaxy:mitre-malware=\"TrickBot - S0266\""
+                            "Name": "misp-galaxy:mitre-malware"
                         },
                         {
                             "ID": "123",
@@ -765,7 +764,7 @@ Checks the file reputation of the given hash.
                         },
                         {
                             "ID": "127",
-                            "Name": "misp-galaxy:mitre-malware=\"Agent Tesla - S0331\""
+                            "Name": "misp-galaxy:mitre-malware=\"Agent \""
                         },
                         {
                             "ID": "128",
@@ -785,7 +784,7 @@ Checks the file reputation of the given hash.
                         }
                     ],
                     "ThreatLevelID": "1",
-                    "Timestamp": "2021-07-20 11:50:07",
+                    "LastChanged": "2021-07-20 11:50:07",
                     "UUID": "5e6b322a-9f80-4e2f-9f2a-3cab0a3b4631",
                     "extends_uuid": ""
                 },
@@ -793,7 +792,6 @@ Checks the file reputation of the given hash.
                 "ID": "70942",
                 "ObjectID": "0",
                 "ObjectRelation": null,
-                "RelatedAttribute": [],
                 "SharingGroupID": "0",
                 "Sighting": [
                     {
@@ -844,7 +842,7 @@ Checks the file reputation of the given hash.
                     },
                     {
                         "ID": "127",
-                        "Name": "misp-galaxy:mitre-malware=\"Agent Tesla - S0331\""
+                        "Name": "misp-galaxy:mitre-malware=\"Agent\""
                     },
                     {
                         "ID": "128",
@@ -863,7 +861,7 @@ Checks the file reputation of the given hash.
                         "Name": "misp-galaxy:target-information=\"Ukraine\""
                     }
                 ],
-                "Timestamp": "2021-07-18 08:06:40",
+                "LastChanged": "2021-07-18 08:06:40",
                 "ToIDs": true,
                 "Type": "md5",
                 "UUID": "5e6b336e-5224-445f-b1b3-457dd7dd9f6d",
@@ -879,7 +877,7 @@ Checks the file reputation of the given hash.
                 "Distribution": "5",
                 "Event": {
                     "Analysis": "2",
-                    "Date": "2017-05-03",
+                    "CreationDate": "2017-05-03",
                     "Distribution": "1",
                     "ID": "144",
                     "Info": "Snake: Coming soon in Mac OS X flavour",
@@ -898,10 +896,10 @@ Checks the file reputation of the given hash.
                         {
                             "ID": "2",
                             "Name": "tlp:white"
-                        },
+                        }
                     ],
                     "ThreatLevelID": "3",
-                    "Timestamp": "2021-07-14 08:20:25",
+                    "LastChanged": "2021-07-14 08:20:25",
                     "UUID": "590c76a9-0bac-4d1e-b8af-416ac0a8ab16",
                     "extends_uuid": ""
                 },
@@ -909,7 +907,6 @@ Checks the file reputation of the given hash.
                 "ID": "71741",
                 "ObjectID": "0",
                 "ObjectRelation": null,
-                "RelatedAttribute": [],
                 "SharingGroupID": "0",
                 "Sighting": [],
                 "Tag": [
@@ -920,9 +917,9 @@ Checks the file reputation of the given hash.
                     {
                         "ID": "2",
                         "Name": "tlp:white"
-                    },
+                    }
                 ],
-                "Timestamp": "2021-07-14 08:20:25",
+                "LastChanged": "2021-07-14 08:20:25",
                 "ToIDs": true,
                 "Type": "md5",
                 "UUID": "f6b054cf-3dbb-4c7b-aab1-a37193e5e841",
@@ -938,7 +935,7 @@ Checks the file reputation of the given hash.
                 "Distribution": "5",
                 "Event": {
                     "Analysis": "2",
-                    "Date": "2016-01-04",
+                    "CreationDate": "2016-01-04",
                     "Distribution": "1",
                     "ID": "145",
                     "Info": "DDOS.TF = (new)",
@@ -960,7 +957,7 @@ Checks the file reputation of the given hash.
                         }
                     ],
                     "ThreatLevelID": "2",
-                    "Timestamp": "2021-06-28 07:33:03",
+                    "LastChanged": "2021-06-28 07:33:03",
                     "UUID": "56d76936-0d34-44ff-a8c5-5280c0a8ab16",
                     "extends_uuid": ""
                 },
@@ -968,7 +965,6 @@ Checks the file reputation of the given hash.
                 "ID": "71742",
                 "ObjectID": "0",
                 "ObjectRelation": null,
-                "RelatedAttribute": [],
                 "SharingGroupID": "0",
                 "Sighting": [],
                 "Tag": [
@@ -985,7 +981,7 @@ Checks the file reputation of the given hash.
                         "Name": "tlp:white"
                     }
                 ],
-                "Timestamp": "2021-06-28 07:33:03",
+                "LastChanged": "2021-06-28 07:33:03",
                 "ToIDs": false,
                 "Type": "md5",
                 "UUID": "ec686712-d0a5-4dd8-8736-330da8abefa6",
@@ -1042,7 +1038,7 @@ Checks the reputation of the given email address.
 | MISP.Attribute.EventID | string | Attribute event ID. |
 | MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
 | MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
-| MISP.Attribute.Timestamp | string | Attribute timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute creation timestamp. |
 | MISP.Attribute.ObjectID | string | Attribute object id. |
 | MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
 | MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled? |
@@ -1056,9 +1052,9 @@ Checks the reputation of the given email address.
 | MISP.Attribute.Event.ID | string | MISP event ID. |
 | MISP.Attribute.Event.Distribution | string | MISP event distribution. |
 | MISP.Attribute.Event.Info | string | MISP event name. |
-| MISP.Attribute.Event.Timestamp | string | Timestamp of the event. |
+| MISP.Attribute.Event.LastChanged | string | Timestamp of the event. |
 | MISP.Attribute.Event.Published | boolean | Is the event published. |
-| MISP.Attribute.Event.Date | date | Event Date. |
+| MISP.Attribute.Event.CreationDate | date | Event creation date. |
 | MISP.Attribute.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). |
 | MISP.Attribute.Event.PublishTimestamp | string | Timestamp of the publish time \(if published\). |
 | MISP.Attribute.Event.OrganisationID | string | MISP event organisation ID. |
@@ -1099,7 +1095,7 @@ Checks the reputation of the given email address.
                 "Distribution": "5",
                 "Event": {
                     "Analysis": "2",
-                    "Date": "2019-03-18",
+                    "CreationDate": "2019-03-18",
                     "Distribution": "1",
                     "ID": "238",
                     "Info": "New Variant Targets Enterprise Wireless Presentation & Display Systems",
@@ -1121,7 +1117,7 @@ Checks the reputation of the given email address.
                         }
                     ],
                     "ThreatLevelID": "3",
-                    "Timestamp": "2021-07-18 13:10:09",
+                    "LastChanged": "2021-07-18 13:10:09",
                     "UUID": "5c93d7f7-7de4-4548-ae4c-403ec0a8ab16",
                     "extends_uuid": ""
                 },
@@ -1134,7 +1130,6 @@ Checks the reputation of the given email address.
                 },
                 "ObjectID": "16348",
                 "ObjectRelation": "url",
-                "RelatedAttribute": [],
                 "SharingGroupID": "0",
                 "Sighting": [
                     {
@@ -1480,7 +1475,7 @@ Checks the reputation of the given email address.
                         "Name": "tlp:white"
                     }
                 ],
-                "Timestamp": "2021-07-18 13:10:09",
+                "LastChanged": "2021-07-18 13:10:09",
                 "ToIDs": true,
                 "Type": "url",
                 "UUID": "dc8cdcff-110f-4c6e-b92d-4609ef50c788",
@@ -1496,7 +1491,7 @@ Checks the reputation of the given email address.
                 "Distribution": "5",
                 "Event": {
                     "Analysis": "2",
-                    "Date": "2019-03-18",
+                    "CreationDate": "2019-03-18",
                     "Distribution": "1",
                     "ID": "238",
                     "Info": "New Variant Targets Enterprise Wireless Presentation & Display Systems",
@@ -1518,7 +1513,7 @@ Checks the reputation of the given email address.
                         }
                     ],
                     "ThreatLevelID": "3",
-                    "Timestamp": "2021-07-18 13:10:09",
+                    "LastChanged": "2021-07-18 13:10:09",
                     "UUID": "5c93d7f7-7de4-4548-ae4c-403ec0a8ab16",
                     "extends_uuid": ""
                 },
@@ -1531,7 +1526,6 @@ Checks the reputation of the given email address.
                 },
                 "ObjectID": "16348",
                 "ObjectRelation": "resource_path",
-                "RelatedAttribute": [],
                 "SharingGroupID": "0",
                 "Sighting": [],
                 "Tag": [
@@ -1540,7 +1534,7 @@ Checks the reputation of the given email address.
                         "Name": "tlp:white"
                     }
                 ],
-                "Timestamp": "2021-07-06 07:50:18",
+                "LastChanged": "2021-07-06 07:50:18",
                 "ToIDs": false,
                 "Type": "text",
                 "UUID": "cc4a2000-b453-412e-8bdd-e5c562d15c78",
@@ -1602,7 +1596,7 @@ Checks the reputation of an IP address.
 | MISP.Attribute.EventID | string | Attribute event ID. |
 | MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
 | MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
-| MISP.Attribute.Timestamp | string | Attribute timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute creation timestamp. |
 | MISP.Attribute.ObjectID | string | Attribute object id. |
 | MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
 | MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled? |
@@ -1616,9 +1610,9 @@ Checks the reputation of an IP address.
 | MISP.Attribute.Event.ID | string | MISP event ID. |
 | MISP.Attribute.Event.Distribution | string | MISP event distribution. |
 | MISP.Attribute.Event.Info | string | MISP event name. |
-| MISP.Attribute.Event.Timestamp | string | Timestamp of the event. |
+| MISP.Attribute.Event.LastChanged | string | Timestamp of the event. |
 | MISP.Attribute.Event.Published | boolean | Is the event published. |
-| MISP.Attribute.Event.Date | date | Event Date. |
+| MISP.Attribute.Event.CreationDate | date | Event creation date. |
 | MISP.Attribute.Event.ThreatLevelID | string | Threat level of the MISP event \(1 High, 2 Medium, 3 Low, 4 Undefined\). |
 | MISP.Attribute.Event.PublishTimestamp | string | Timestamp of the publish time \(if published\). |
 | MISP.Attribute.Event.OrganisationID | string | MISP event organisation ID. |
@@ -1666,7 +1660,7 @@ Checks the reputation of an IP address.
                 "Distribution": "5",
                 "Event": {
                     "Analysis": "1",
-                    "Date": "2021-06-29",
+                    "CreationDate": "2021-06-29",
                     "Distribution": "2",
                     "ID": "488",
                     "Info": "final create test",
@@ -1696,7 +1690,7 @@ Checks the reputation of an IP address.
                         }
                     ],
                     "ThreatLevelID": "3",
-                    "Timestamp": "2021-07-18 13:05:31",
+                    "LastChanged": "2021-07-18 13:05:31",
                     "UUID": "2bf3a888-f2e0-40e9-944c-e87590b637b9",
                     "extends_uuid": ""
                 },
@@ -1704,7 +1698,6 @@ Checks the reputation of an IP address.
                 "ID": "80040",
                 "ObjectID": "0",
                 "ObjectRelation": null,
-                "RelatedAttribute": [],
                 "SharingGroupID": "0",
                 "Sighting": [
                     {
@@ -2059,7 +2052,7 @@ Checks the reputation of an IP address.
                     },
                     {
                         "ID": "282",
-                        "Name": "misp-galaxy:financial-fraud=\"ATM skimming\""
+                        "Name": "misp-galaxy:financial-fraud"
                     },
                     {
                         "ID": "283",
@@ -2070,7 +2063,7 @@ Checks the reputation of an IP address.
                         "Name": "test2345"
                     }
                 ],
-                "Timestamp": "2021-07-18 13:05:31",
+                "LastChanged": "2021-07-18 13:05:31",
                 "ToIDs": false,
                 "Type": "other",
                 "UUID": "f8d0501b-1c59-444a-be0c-52af8815a304",
@@ -2106,7 +2099,7 @@ Checks the reputation of an IP address.
                 "Distribution": "5",
                 "Event": {
                     "Analysis": "1",
-                    "Date": "2021-06-29",
+                    "CreationDate": "2021-06-29",
                     "Distribution": "2",
                     "ID": "488",
                     "Info": "final create test",
@@ -2136,7 +2129,7 @@ Checks the reputation of an IP address.
                         }
                     ],
                     "ThreatLevelID": "3",
-                    "Timestamp": "2021-07-18 13:05:31",
+                    "LastChanged": "2021-07-18 13:05:31",
                     "UUID": "2bf3a888-f2e0-40e9-944c-e87590b637b9",
                     "extends_uuid": ""
                 },
@@ -2149,7 +2142,6 @@ Checks the reputation of an IP address.
                 },
                 "ObjectID": "16035",
                 "ObjectRelation": "ip",
-                "RelatedAttribute": [],
                 "SharingGroupID": "0",
                 "Sighting": [],
                 "Tag": [
@@ -2166,7 +2158,7 @@ Checks the reputation of an IP address.
                         "Name": "test2345"
                     }
                 ],
-                "Timestamp": "2021-06-30 07:37:32",
+                "LastChanged": "2021-06-30 07:37:32",
                 "ToIDs": true,
                 "Type": "ip-dst",
                 "UUID": "d777a0f6-5aa7-4798-b193-bd7da635dc42",
@@ -2227,7 +2219,7 @@ Creates a new MISP event.
 | MISP.Event.Info | string | Event name. |
 | MISP.Event.AttributeCount | string | Number of attributes of the event. |
 | MISP.Event.OrganisationID | string | Event organization ID. |
-| MISP.Event.Date | date | Event creation date. |
+| MISP.Event.CreationDate | date | Event creation date. |
 | MISP.Event.Locked | boolean | Is the event locked. |
 | MISP.Event.Organisation.ID | number | Organization ID. |
 | MISP.Event.Organisation.Name | string | Organization name. |
@@ -2238,7 +2230,7 @@ Creates a new MISP event.
 | MISP.Event.OwnerOrganisation.UUID | string | Owner organization UUID. |
 | MISP.Event.OwnerOrganisation.local | boolean | Is the owner organization local. |
 | MISP.Event.ProposalEmailLock | boolean | If email lock proposed. |
-| MISP.Event.Timestamp | string | Timestamp of the event. |
+| MISP.Event.LastChanged | date | Last change event timestamp. |
 | MISP.Event.Galaxy.Description | string | Event's galaxy description. |
 | MISP.Event.Galaxy.Name | string | Galaxy name. |
 | MISP.Event.Galaxy.Type | number | Galaxy type. |
@@ -2265,7 +2257,7 @@ Creates a new MISP event.
         "Event": {
             "Analysis": "0",
             "AttributeCount": "1",
-            "Date": "2021-07-25",
+            "CreationDate": "2021-07-25",
             "DisableCorrelation": false,
             "Distribution": "0",
             "EventCreatorEmail": "admin@admin.test",
@@ -2294,7 +2286,7 @@ Creates a new MISP event.
             "RelatedEvent": [],
             "SharingGroupID": "0",
             "ThreatLevelID": "1",
-            "Timestamp": "2021-07-25 08:40:34",
+            "LastChanged": "2021-07-25 08:40:34",
             "UUID": "b91cfab1-aef5-4552-a74a-64367c3bf945"
         }
     }
@@ -2337,7 +2329,7 @@ Adds an attribute to an existing MISP event.
 | MISP.Attribute.EventID | string | Attribute event ID. |
 | MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
 | MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
-| MISP.Attribute.Timestamp | string | Attribute timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute creation timestamp. |
 | MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
 | MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled? |
 | MISP.Attribute.Type | string | Attribute type. |
@@ -2381,7 +2373,7 @@ Adds an attribute to an existing MISP event.
             "ObjectID": "0",
             "ObjectRelation": null,
             "SharingGroupID": "0",
-            "Timestamp": "2021-07-25 08:40:36",
+            "LastChanged": "2021-07-25 08:40:36",
             "ToIDs": true,
             "Type": "other",
             "UUID": "a5ce7c0f-0473-48f8-8e25-9e517c40d350",
@@ -2453,7 +2445,7 @@ Removes a tag from the given UUID event .
 | MISP.Event.Info | string | Event name. |
 | MISP.Event.AttributeCount | string | Number of attributes of the event. |
 | MISP.Event.OrganisationID | string | Event organization ID. |
-| MISP.Event.Date | date | Event creation date. |
+| MISP.Event.CreationDate | date | Event creation date. |
 | MISP.Event.Locked | boolean | Is the event locked. |
 | MISP.Event.Organisation.ID | number | Organization ID. |
 | MISP.Event.Organisation.Name | string | Organization name. |
@@ -2464,7 +2456,7 @@ Removes a tag from the given UUID event .
 | MISP.Event.OwnerOrganisation.UUID | string | Owner organization UUID. |
 | MISP.Event.OwnerOrganisation.local | boolean | Is the owner organization local. |
 | MISP.Event.ProposalEmailLock | boolean | If email lock proposed. |
-| MISP.Event.Timestamp | string | Timestamp of the event. |
+| MISP.Event.LastChanged | date | Last change event timestamp. |
 | MISP.Event.Galaxy.Description | string | Event's galaxy description. |
 | MISP.Event.Galaxy.Name | string | Galaxy name. |
 | MISP.Event.Galaxy.Type | number | Galaxy type. |
@@ -2491,7 +2483,7 @@ Removes a tag from the given UUID event .
         "Event": {
             "Analysis": "0",
             "AttributeCount": "3",
-            "Date": "2021-07-25",
+            "CreationDate": "2021-07-25",
             "DisableCorrelation": false,
             "Distribution": "0",
             "EventCreatorEmail": "admin@admin.test",
@@ -2520,7 +2512,7 @@ Removes a tag from the given UUID event .
             "RelatedEvent": [],
             "SharingGroupID": "0",
             "ThreatLevelID": "1",
-            "Timestamp": "2021-07-25 08:40:39",
+            "LastChanged": "2021-07-25 08:40:39",
             "UUID": "bd3adb29-4404-4b54-8f88-e87a58325ba1"
         }
     }
@@ -2559,7 +2551,7 @@ Adds a tag to the given UUID event .
 | MISP.Event.Info | string | Event name. |
 | MISP.Event.AttributeCount | string | Number of attributes of the event. |
 | MISP.Event.OrganisationID | string | Event organization ID. |
-| MISP.Event.Date | date | Event creation date. |
+| MISP.Event.CreationDate | date | Event creation date. |
 | MISP.Event.Locked | boolean | Is the event locked. |
 | MISP.Event.Organisation.ID | number | Organization ID. |
 | MISP.Event.Organisation.Name | string | Organization name. |
@@ -2570,7 +2562,7 @@ Adds a tag to the given UUID event .
 | MISP.Event.OwnerOrganisation.UUID | string | Owner organization UUID. |
 | MISP.Event.OwnerOrganisation.local | boolean | Is the owner organization local. |
 | MISP.Event.ProposalEmailLock | boolean | If email lock proposed. |
-| MISP.Event.Timestamp | string | Timestamp of the event. |
+| MISP.Event.LastChanged | date | Last change event timestamp. |
 | MISP.Event.Galaxy.Description | string | Event's galaxy description. |
 | MISP.Event.Galaxy.Name | string | Galaxy name. |
 | MISP.Event.Galaxy.Type | number | Galaxy type. |
@@ -2597,7 +2589,7 @@ Adds a tag to the given UUID event .
         "Event": {
             "Analysis": "0",
             "AttributeCount": "3",
-            "Date": "2021-07-25",
+            "CreationDate": "2021-07-25",
             "DisableCorrelation": false,
             "Distribution": "0",
             "EventCreatorEmail": "admin@admin.test",
@@ -2632,7 +2624,7 @@ Adds a tag to the given UUID event .
                 }
             ],
             "ThreatLevelID": "1",
-            "Timestamp": "2021-07-25 08:40:39",
+            "LastChanged": "2021-07-25 08:40:39",
             "UUID": "bd3adb29-4404-4b54-8f88-e87a58325ba1"
         }
     }
@@ -2668,7 +2660,7 @@ Adds a tag to the given UUID attribute .
 | MISP.Attribute.EventID | string | Attribute event ID. |
 | MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
 | MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
-| MISP.Attribute.Timestamp | string | Attribute timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute creation timestamp. |
 | MISP.Attribute.ObjectID | string | Attribute object id. |
 | MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
 | MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled? |
@@ -2721,7 +2713,7 @@ Adds a tag to the given UUID attribute .
                     "is_galaxy": null
                 }
             ],
-            "Timestamp": "2021-07-25 08:40:43",
+            "LastChanged": "2021-07-25 08:40:43",
             "ToIDs": true,
             "Type": "other",
             "UUID": "ccf241a4-971f-432d-be05-ee8cb6a3c28e",
@@ -2762,7 +2754,7 @@ Removes a tag from the given UUID attribute .
 | MISP.Attribute.EventID | string | Attribute event ID. |
 | MISP.Attribute.last_seen | string | Attribute last_seen timestamp. |
 | MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
-| MISP.Attribute.Timestamp | string | Attribute timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute creation timestamp. |
 | MISP.Attribute.ObjectID | string | Attribute object id. |
 | MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
 | MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled? |
@@ -2809,7 +2801,7 @@ Removes a tag from the given UUID attribute .
             "ObjectID": "0",
             "ObjectRelation": null,
             "SharingGroupID": "0",
-            "Timestamp": "2021-07-25 08:40:43",
+            "LastChanged": "2021-07-25 08:40:43",
             "ToIDs": true,
             "Type": "other",
             "UUID": "ccf241a4-971f-432d-be05-ee8cb6a3c28e",
@@ -2912,13 +2904,13 @@ Adds an file object to the specified event ID.
 | MISP.Event.Object.TemplateVersion | Number | Template version of the object. |
 | MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. |
 | MISP.Event.Object.TemplateUUID | String | UUID of the template. |
-| MISP.Event.Object.Timestamp | String | Timestamp when the object was created. |
+| MISP.Event.Object.LastChanged | String | Timestamp when the object was created. |
 | MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. |
 | MISP.Event.Object.ID | Number | ID of the object. |
 | MISP.Event.Object.UUID | String | UUID of the object. |
 | MISP.Event.Object.Attribute.Value | String | Value of the attribute. |
 | MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. |
-| MISP.Event.Object.Attribute.Timestamp | Date | Timestamp when the object was created. |
+| MISP.Event.Object.Attribute.LastChanged | Date | Timestamp when the object was created. |
 | MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted. |
 | MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. |
 | MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. |
@@ -2954,7 +2946,7 @@ Adds a domain object to MISP.
 | --- | --- | --- |
 | event_id | ID of a MISP event. | Required |
 | name | The domain name, for example "google.com". | Required |
-| ip | A comma sperated list of IP addresses resolved by DNS. | Required |
+| ip | A comma separated`` list of IP addresses resolved by DNS. | Required |
 | text | A description of the domain. | Optional |
 
 
@@ -2969,13 +2961,13 @@ Adds a domain object to MISP.
 | MISP.Event.Object.TemplateVersion | Number | Template version of the object. |
 | MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. |
 | MISP.Event.Object.TemplateUUID | String | UUID of the template. |
-| MISP.Event.Object.Timestamp | String | Timestamp when the object was created. |
+| MISP.Event.Object.LastChanged | String | Timestamp when the object was created. |
 | MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. |
 | MISP.Event.Object.ID | Number | ID of the object. |
 | MISP.Event.Object.UUID | String | UUID of the object. |
 | MISP.Event.Object.Attribute.Value | String | Value of the attribute. |
 | MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. |
-| MISP.Event.Object.Attribute.Timestamp | Date | Timestamp of object creation |
+| MISP.Event.Object.Attribute.LastChanged | Date | Timestamp of object creation |
 | MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted. |
 | MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. |
 | MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. |
@@ -3012,7 +3004,7 @@ Adds a domain object to MISP.
                         "ObjectID": "17631",
                         "ObjectRelation": "ip",
                         "SharingGroupID": "0",
-                        "Timestamp": "2021-07-25 08:40:50",
+                        "LastChanged": "2021-07-25 08:40:50",
                         "ToIDs": true,
                         "Type": "ip-dst",
                         "UUID": "ca25f831-8f91-4a1c-8a06-017269c69990",
@@ -3033,7 +3025,7 @@ Adds a domain object to MISP.
                         "ObjectID": "17631",
                         "ObjectRelation": "domain",
                         "SharingGroupID": "0",
-                        "Timestamp": "2021-07-25 08:40:50",
+                        "LastChanged": "2021-07-25 08:40:50",
                         "ToIDs": true,
                         "Type": "domain",
                         "UUID": "5ab66f03-cfcb-4540-9a0d-21f8cfad71ad",
@@ -3054,7 +3046,7 @@ Adds a domain object to MISP.
                         "ObjectID": "17631",
                         "ObjectRelation": "text",
                         "SharingGroupID": "0",
-                        "Timestamp": "2021-07-25 08:40:50",
+                        "LastChanged": "2021-07-25 08:40:50",
                         "ToIDs": false,
                         "Type": "text",
                         "UUID": "59dd3a7c-d6f8-464c-9f15-817309c58a2e",
@@ -3076,7 +3068,7 @@ Adds a domain object to MISP.
                 "SharingGroupID": "0",
                 "TemplateUUID": "43b3b146-77eb-4931-b4cc-b66c60f28734",
                 "TemplateVersion": "9",
-                "Timestamp": "2021-07-25 08:40:50",
+                "LastChanged": "2021-07-25 08:40:50",
                 "UUID": "65a87177-9366-4aa9-9287-cce28ffb3ef8",
                 "first_seen": null,
                 "last_seen": null
@@ -3120,13 +3112,13 @@ Adds a URL object to a MISP event.
 | MISP.Event.Object.TemplateVersion | Number | Template version of the object. |
 | MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. |
 | MISP.Event.Object.TemplateUUID | String | UUID of the template. |
-| MISP.Event.Object.Timestamp | String | Timestamp when the object was created. |
+| MISP.Event.Object.LastChanged | String | Timestamp when the object was created. |
 | MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. |
 | MISP.Event.Object.ID | Number | ID of the object. |
 | MISP.Event.Object.UUID | String | UUID of the object. |
 | MISP.Event.Object.Attribute.Value | String | Value of the attribute. |
 | MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. |
-| MISP.Event.Object.Attribute.Timestamp | Date | Timestamp when the object was created. |
+| MISP.Event.Object.Attribute.LastChanged | Date | Timestamp when the object was created. |
 | MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted. |
 | MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. |
 | MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. |
@@ -3163,7 +3155,7 @@ Adds a URL object to a MISP event.
                         "ObjectID": "17633",
                         "ObjectRelation": "url",
                         "SharingGroupID": "0",
-                        "Timestamp": "2021-07-25 08:40:54",
+                        "LastChanged": "2021-07-25 08:40:54",
                         "ToIDs": true,
                         "Type": "url",
                         "UUID": "9477a4ec-1d34-48e0-a549-21b1bb32590e",
@@ -3184,7 +3176,7 @@ Adds a URL object to a MISP event.
                         "ObjectID": "17633",
                         "ObjectRelation": "resource_path",
                         "SharingGroupID": "0",
-                        "Timestamp": "2021-07-25 08:40:54",
+                        "LastChanged": "2021-07-25 08:40:54",
                         "ToIDs": false,
                         "Type": "text",
                         "UUID": "6fbfe727-a739-46c9-ae83-710aa17e003c",
@@ -3206,7 +3198,7 @@ Adds a URL object to a MISP event.
                 "SharingGroupID": "0",
                 "TemplateUUID": "60efb77b-40b5-4c46-871b-ed1ed999fce5",
                 "TemplateVersion": "9",
-                "Timestamp": "2021-07-25 08:40:54",
+                "LastChanged": "2021-07-25 08:40:54",
                 "UUID": "f31dbe26-032c-40c7-87c9-662cb320a0d1",
                 "first_seen": null,
                 "last_seen": null
@@ -3248,13 +3240,13 @@ Adds any other object to MISP.
 | MISP.Event.Object.TemplateVersion | Number | Template version of the object. |
 | MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. |
 | MISP.Event.Object.TemplateUUID | String | UUID of the template. |
-| MISP.Event.Object.Timestamp | String | Timestamp when the object was created. |
+| MISP.Event.Object.LastChanged | String | Timestamp when the object was created. |
 | MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. |
 | MISP.Event.Object.ID | Number | ID of the object. |
 | MISP.Event.Object.UUID | String | UUID of the object. |
 | MISP.Event.Object.Attribute.Value | String | Value of the attribute. |
 | MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. |
-| MISP.Event.Object.Attribute.Timestamp | Date | Timestamp when the object was created. |
+| MISP.Event.Object.Attribute.LastChanged | Date | Timestamp when the object was created. |
 | MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted? |
 | MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. |
 | MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. |
@@ -3291,7 +3283,7 @@ Adds any other object to MISP.
                         "ObjectID": "17634",
                         "ObjectRelation": "description",
                         "SharingGroupID": "0",
-                        "Timestamp": "2021-07-25 08:40:55",
+                        "LastChanged": "2021-07-25 08:40:55",
                         "ToIDs": false,
                         "Type": "text",
                         "UUID": "ed5824e2-d512-4b11-bb52-94698fa0d467",
@@ -3312,7 +3304,7 @@ Adds any other object to MISP.
                         "ObjectID": "17634",
                         "ObjectRelation": "make",
                         "SharingGroupID": "0",
-                        "Timestamp": "2021-07-25 08:40:55",
+                        "LastChanged": "2021-07-25 08:40:55",
                         "ToIDs": false,
                         "Type": "text",
                         "UUID": "b04476f3-3179-4ebd-926a-95992f803946",
@@ -3333,7 +3325,7 @@ Adds any other object to MISP.
                         "ObjectID": "17634",
                         "ObjectRelation": "model",
                         "SharingGroupID": "0",
-                        "Timestamp": "2021-07-25 08:40:55",
+                        "LastChanged": "2021-07-25 08:40:55",
                         "ToIDs": false,
                         "Type": "text",
                         "UUID": "fd533823-8484-40d3-92b1-e9282e04bad0",
@@ -3355,7 +3347,7 @@ Adds any other object to MISP.
                 "SharingGroupID": "0",
                 "TemplateUUID": "683c076c-f695-4ff2-8efa-e98a418049f4",
                 "TemplateVersion": "3",
-                "Timestamp": "2021-07-25 08:40:55",
+                "LastChanged": "2021-07-25 08:40:55",
                 "UUID": "68e21313-43a6-450c-a830-fd5d42f6ecb2",
                 "first_seen": null,
                 "last_seen": null
@@ -3405,13 +3397,13 @@ Adds an IP object to the MISP event. The following arguments are optional, but a
 | MISP.Event.Object.TemplateVersion | Number | Template version of the object. |
 | MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. |
 | MISP.Event.Object.TemplateUUID | String | UUID of the template. |
-| MISP.Event.Object.Timestamp | String | Timestamp when the object was created. |
+| MISP.Event.Object.LastChanged | String | Timestamp when the object was created. |
 | MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. |
 | MISP.Event.Object.ID | Number | ID of the object. |
 | MISP.Event.Object.UUID | String | UUID of the object. |
 | MISP.Event.Object.Attribute.Value | String | Value of the attribute. |
 | MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. |
-| MISP.Event.Object.Attribute.Timestamp | Date | Timestamp when the object was created. |
+| MISP.Event.Object.Attribute.LastChanged | Date | Timestamp when the object was created. |
 | MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted. |
 | MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. |
 | MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. |
@@ -3448,7 +3440,7 @@ Adds an IP object to the MISP event. The following arguments are optional, but a
                         "ObjectID": "17632",
                         "ObjectRelation": "dst-port",
                         "SharingGroupID": "0",
-                        "Timestamp": "2021-07-25 08:40:52",
+                        "LastChanged": "2021-07-25 08:40:52",
                         "ToIDs": false,
                         "Type": "port",
                         "UUID": "70450b90-7900-418c-aef8-f21b6eae5103",
@@ -3469,7 +3461,7 @@ Adds an IP object to the MISP event. The following arguments are optional, but a
                         "ObjectID": "17632",
                         "ObjectRelation": "src-port",
                         "SharingGroupID": "0",
-                        "Timestamp": "2021-07-25 08:40:52",
+                        "LastChanged": "2021-07-25 08:40:52",
                         "ToIDs": false,
                         "Type": "port",
                         "UUID": "dd5fcb17-9323-4eb3-9b34-fa5ba5bfa0a0",
@@ -3490,7 +3482,7 @@ Adds an IP object to the MISP event. The following arguments are optional, but a
                         "ObjectID": "17632",
                         "ObjectRelation": "ip-src",
                         "SharingGroupID": "0",
-                        "Timestamp": "2021-07-25 08:40:52",
+                        "LastChanged": "2021-07-25 08:40:52",
                         "ToIDs": true,
                         "Type": "ip-src",
                         "UUID": "0c884a97-5211-495f-84d4-2be378140766",
@@ -3511,7 +3503,7 @@ Adds an IP object to the MISP event. The following arguments are optional, but a
                         "ObjectID": "17632",
                         "ObjectRelation": "ip-dst",
                         "SharingGroupID": "0",
-                        "Timestamp": "2021-07-25 08:40:52",
+                        "LastChanged": "2021-07-25 08:40:52",
                         "ToIDs": true,
                         "Type": "ip-dst",
                         "UUID": "d2ac7a54-ad89-4ce7-9d5a-75bab87604ba",
@@ -3532,7 +3524,7 @@ Adds an IP object to the MISP event. The following arguments are optional, but a
                         "ObjectID": "17632",
                         "ObjectRelation": "text",
                         "SharingGroupID": "0",
-                        "Timestamp": "2021-07-25 08:40:52",
+                        "LastChanged": "2021-07-25 08:40:52",
                         "ToIDs": false,
                         "Type": "text",
                         "UUID": "93aa78e6-fad8-4424-b41c-ecdd001ad8fe",
@@ -3554,7 +3546,7 @@ Adds an IP object to the MISP event. The following arguments are optional, but a
                 "SharingGroupID": "0",
                 "TemplateUUID": "9f8cea74-16fe-4968-a2b4-026676949ac6",
                 "TemplateVersion": "8",
-                "Timestamp": "2021-07-25 08:40:52",
+                "LastChanged": "2021-07-25 08:40:52",
                 "UUID": "ee93accc-b707-4788-aa90-97a747447007",
                 "first_seen": null,
                 "last_seen": null
@@ -3583,7 +3575,7 @@ Search for attributes in MISP.
 | type | The attribute type. Use any valid MISP attribute type. | Optional |
 | value | Search for the specified value in the attributes' value field. | Optional |
 | category | The attribute category. Use any valid MISP attribute category. | Optional |
-| uuid | Return attributues with the given UUID. Alternatively, return all the attributes that are part of the given UUID's event. E.g., 59523300-4be8-4fa6-8867-0037ac110002 . | Optional |
+| uuid | Return attributes with the given UUID. Alternatively, return all the attributes that are part of the given UUID's event. E.g., 59523300-4be8-4fa6-8867-0037ac110002 . | Optional |
 | to_ids | Whether to return only the attributes set with the "to_ids" flag. The default is to return all attributes without with and with out to_ids flag. Possible values are: true, false. | Optional |
 | last | Search attributes of events published within the last "x" amount of time. Valid time values are days, hours, and minutes (for example "5d", "12h", "30m"). This filter uses the published timestamp of the event. | Optional |
 | include_decay_score | Whether to return the decay score at the attribute level. Default is false. Possible values are: true, false. | Optional |
@@ -3591,9 +3583,9 @@ Search for attributes in MISP.
 | tags | A comma-separated list of tags to include in the results. To exclude a tag, prefix the tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":". To chain logical operators use ";". for example, "AND:tag1,tag2;OR:tag3". | Optional |
 | from | Events with the date set to a date after the one specified. This filter will use the date of the event. | Optional |
 | to | Events with the date set to a date before the one specified. This filter will use the date of the event. | Optional |
-| event_id | A comma-separated list of event ids, rerutn the attributes that are part of the given event ids. | Optional |
+| event_id | A comma-separated list of event ids, return the attributes that are part of the given event ids. | Optional |
 | include_sightings | Whether to include the the sightings of the matching attributes. Default is false. Possible values are: true, false. | Optional |
-| include_correlations | Whether to include the full correlations of the matching attributes. Defaule is false. Possible values are: true, false. | Optional |
+| include_correlations | Whether to include the full correlations of the matching attributes. Default is false. Possible values are: true, false. | Optional |
 | page | If a limit is set, sets the page to be returned. page 3, limit 100 will return records 201-&gt;300). | Optional |
 | limit | Limit the number of attributes returned. Default is 50. | Optional |
 | enforceWarninglist | Whether to return only the values that are not on the warninglists. Possible values are: true, false. | Optional |
@@ -3609,14 +3601,14 @@ Search for attributes in MISP.
 | MISP.Attribute.first_seen | string | Attribute first_seen timestamp. |
 | MISP.Attribute.Value | string | Attribute value. |
 | MISP.Attribute.EventID | string | Attribute event ID. |
-| MISP.Attribute.Timestamp | number | Attribute timestamp. |
+| MISP.Attribute.LastChanged | date | Attribute creation timestamp. |
 | MISP.Attribute.Deleted | boolean | Is the attribute deleted. |
 | MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. |
 | MISP.Attribute.Type | string | Attribute type. |
 | MISP.Attribute.ObjectID | string | Attribute's object ID. |
 | MISP.Attribute.ID | string | Attribute ID. |
 | MISP.Attribute.UUID | string | Attribute UUID. |
-| MISP.Attribute.ObjectRelation | string | Attribute's object realtion. |
+| MISP.Attribute.ObjectRelation | string | Attribute's object relation. |
 | MISP.Attribute.ShadowAttribute | Unknown | Attribute shadow attribute. |
 | MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. |
 | MISP.Attribute.Category | string | Attribute category. |
@@ -3669,7 +3661,7 @@ Search for attributes in MISP.
                         "is_galaxy": null
                     }
                 ],
-                "Timestamp": "2021-07-19 12:44:27",
+                "LastChanged": "2021-07-19 12:44:27",
                 "ToIDs": true,
                 "Type": "sha256",
                 "UUID": "7f78d940-c1f1-4a75-87a5-11b0fcd61e53",
@@ -3706,7 +3698,7 @@ Search for attributes in MISP.
                         "is_galaxy": null
                     }
                 ],
-                "Timestamp": "2021-06-21 12:35:10",
+                "LastChanged": "2021-06-21 12:35:10",
                 "ToIDs": true,
                 "Type": "ip-dst",
                 "UUID": "de95a690-97b9-491c-bd94-1ab7ee885622",

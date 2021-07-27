@@ -28,7 +28,7 @@ configuration:
   name: malicious_tag_ids
   required: false
   type: 12
-- additionalinfo: Comma separated list of event's or attribute's suspicios tag IDs.
+- additionalinfo: Comma separated list of event's or attribute's suspicious tag IDs.
     Malicious tags are stronger than suspicious tags.
   display: Suspicious tag IDs
   hidden: false
@@ -49,7 +49,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: This field limits the number of attributes that will be written to the context for every reputation command. Please pay attrntion, raising the number of attributes may result in high memory and disk usage.
+- additionalinfo: This field limits the number of attributes that will be written to the context for every reputation command. Please pay attention, raising the number of attributes may result in high memory and disk usage.
   defaultvalue: '10'
   display: Maximum attributes to be returned
   hidden: false
@@ -209,7 +209,7 @@ script:
       type: boolean
     - contextPath: MISP.Event.LastChanged
       description: Last change event timestamp.
-      type: string
+      type: date
     - contextPath: MISP.Event.Galaxy.Description
       description: Event's galaxy description.
       type: string
@@ -299,7 +299,7 @@ script:
       type: string
     - contextPath: MISP.Attribute.LastChanged
       description: Attribute creation timestamp.
-      type: string
+      type: date
     - contextPath: MISP.Attribute.ObjectID
       description: Attribute object id.
       type: string
@@ -346,7 +346,7 @@ script:
       description: Is the event published.
       type: boolean
     - contextPath: MISP.Attribute.Event.CreationDate
-      description: Event creation Date.
+      description: Event creation date.
       type: date
     - contextPath: MISP.Attribute.Event.ThreatLevelID
       description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
@@ -440,7 +440,7 @@ script:
       type: string
     - contextPath: MISP.Attribute.LastChanged
       description: Attribute creation timestamp.
-      type: string
+      type: date
     - contextPath: MISP.Attribute.ObjectID
       description: Attribute object id.
       type: string
@@ -487,7 +487,7 @@ script:
       description: Is the event published.
       type: boolean
     - contextPath: MISP.Attribute.Event.CreationDate
-      description: Event creation Date.
+      description: Event creation date.
       type: date
     - contextPath: MISP.Attribute.Event.ThreatLevelID
       description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
@@ -587,7 +587,7 @@ script:
       type: string
     - contextPath: MISP.Attribute.LastChanged
       description: Attribute creation timestamp.
-      type: string
+      type: date
     - contextPath: MISP.Attribute.ObjectID
       description: Attribute object id.
       type: string
@@ -634,7 +634,7 @@ script:
       description: Is the event published.
       type: boolean
     - contextPath: MISP.Attribute.Event.CreationDate
-      description: Event creation Date.
+      description: Event creation date.
       type: date
     - contextPath: MISP.Attribute.Event.ThreatLevelID
       description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
@@ -728,7 +728,7 @@ script:
       type: string
     - contextPath: MISP.Attribute.LastChanged
       description: Attribute creation timestamp.
-      type: string
+      type: date
     - contextPath: MISP.Attribute.ObjectID
       description: Attribute object id.
       type: string
@@ -775,7 +775,7 @@ script:
       description: Is the event published.
       type: boolean
     - contextPath: MISP.Attribute.Event.CreationDate
-      description: Event creation Date.
+      description: Event creation date.
       type: date
     - contextPath: MISP.Attribute.Event.ThreatLevelID
       description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
@@ -869,7 +869,7 @@ script:
       type: string
     - contextPath: MISP.Attribute.LastChanged
       description: Attribute creation timestamp.
-      type: string
+      type: date
     - contextPath: MISP.Attribute.ObjectID
       description: Attribute object id.
       type: string
@@ -916,7 +916,7 @@ script:
       description: Is the event published.
       type: boolean
     - contextPath: MISP.Attribute.Event.CreationDate
-      description: Event creation Date.
+      description: Event creation date.
       type: date
     - contextPath: MISP.Attribute.Event.ThreatLevelID
       description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
@@ -1122,7 +1122,7 @@ script:
       type: boolean
     - contextPath: MISP.Event.LastChanged
       description: Last change event timestamp.
-      type: string
+      type: date
     - contextPath: MISP.Event.Galaxy.Description
       description: Event's galaxy description.
       type: string
@@ -1246,7 +1246,7 @@ script:
       type: string
     - contextPath: MISP.Attribute.LastChanged
       description: Attribute creation timestamp.
-      type: string
+      type: date
     - contextPath: MISP.Attribute.Deleted
       description: Is the attribute deleted.
       type: boolean
@@ -1380,7 +1380,7 @@ script:
       type: boolean
     - contextPath: MISP.Event.LastChanged
       description: Last change event timestamp.
-      type: string
+      type: date
     - contextPath: MISP.Event.Galaxy.Description
       description: Event's galaxy description.
       type: string
@@ -1500,7 +1500,7 @@ script:
       type: boolean
     - contextPath: MISP.Event.LastChanged
       description: Last change event timestamp.
-      type: string
+      type: date
     - contextPath: MISP.Event.Galaxy.Description
       description: Event's galaxy description.
       type: string
@@ -1578,7 +1578,7 @@ script:
       type: string
     - contextPath: MISP.Attribute.LastChanged
       description: Attribute creation timestamp.
-      type: string
+      type: date
     - contextPath: MISP.Attribute.ObjectID
       description: Attribute object id.
       type: string
@@ -1668,7 +1668,7 @@ script:
       type: string
     - contextPath: MISP.Attribute.LastChanged
       description: Attribute creation timestamp.
-      type: string
+      type: date
     - contextPath: MISP.Attribute.ObjectID
       description: Attribute object id.
       type: string
@@ -1890,7 +1890,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma sperated list of IP addresses resolved by DNS.
+      description: A comma separated list of IP addresses resolved by DNS.
       isArray: true
       name: ip
       required: true
@@ -2374,7 +2374,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Return attributues with the given UUID. Alternatively, return all
+      description: Return attributes with the given UUID. Alternatively, return all
         the attributes that are part of the given UUID's event. E.g., 59523300-4be8-4fa6-8867-0037ac110002
         .
       isArray: false
@@ -2441,7 +2441,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of event ids, rerutn the attributes that
+      description: A comma-separated list of event ids, return the attributes that
         are part of the given event ids.
       isArray: true
       name: event_id
@@ -2461,7 +2461,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Whether to include the full correlations of the matching attributes.
-        Defaule is false.
+        Default is false.
       isArray: false
       name: include_correlations
       predefined:
@@ -2527,7 +2527,7 @@ script:
       type: string
     - contextPath: MISP.Attribute.LastChanged
       description: Attribute creation timestamp.
-      type: number
+      type: date
     - contextPath: MISP.Attribute.Deleted
       description: Is the attribute deleted.
       type: boolean
@@ -2547,7 +2547,7 @@ script:
       description: Attribute UUID.
       type: string
     - contextPath: MISP.Attribute.ObjectRelation
-      description: Attribute's object realtion.
+      description: Attribute's object relation.
       type: string
     - contextPath: MISP.Attribute.ShadowAttribute
       description: Attribute shadow attribute.
