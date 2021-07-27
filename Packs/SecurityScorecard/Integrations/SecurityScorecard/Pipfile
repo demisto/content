@@ -1,18 +1,12 @@
 [[source]]
-name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-
-[dev-packages]
-pylint = "*"
-pytest = "==5.0.1"
-pytest-mock = "*"
-requests-mock = "*"
-pytest-asyncio = "*"
+name = "pypi"
 
 [packages]
-pytest = "*"
-requests = "*"
+pytest-mock = "*"
+
+[dev-packages]
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"

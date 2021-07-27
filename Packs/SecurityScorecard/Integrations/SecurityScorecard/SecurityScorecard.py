@@ -262,8 +262,45 @@ class SecurityScorecardClient(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def get_last_run(last_run: str, first_fetch: str):
 
+    """
+    Helper function to return the last incident fetch runtime as
+    a UNIX timestamp
+
+    Args:
+        ``last_run`` (``str``): The last runtime, ``demisto.getLastRun().get("last_run")``
+        ``first_fetch`` (``str``): The first fetch configuration from ``demisto.params().get("first_fetch"")``
+
+    Returns:
+        int, Last run timestamp.
+    """
+
+    # Check for existence of last run
+    # When integration runs for the first time, it will not exist
+    # Set 3 days by default if the first fetch parameter is not set
+
+    if last_run:
+        return int(last_run)
+    else:
+        if not first_fetch:
+            days_ago = "3 days"
+        else:
+            days_ago = first_fetch
+
+        fetch_days_ago = arg_to_datetime(arg=days_ago, arg_name="first_fetch", required=False)
+
+        demisto.debug(f"getLastRun is 'None' in Integration context, using parameter 'first_fetch' value '{fetch_days_ago}'")
+        demisto.debug(f"{days_ago} => {fetch_days_ago}")
+
+        return int(fetch_days_ago.timestamp())  # type: ignore
+
+
+def incidents_to_import(
+    alerts: List[Dict[str, Any]],
+    last_run: Optional[str] = demisto.getLastRun().get("last_run"),
+    first_fetch: Optional[str] = demisto.params().get("first_fetch")
+) -> List[Dict[str, Any]]:
     """
     Helper function to filter events that need to be imported.
     It filters the events based on the `created_at` timestamp.
@@ -271,34 +308,13 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
     Args:
         ``alerts``(``List[Dict[str, Any]]``): A list of alerts to sort through.
-
+        ``last_run``(``str``): UNIX timestamp when the fetch incidents had last run.
+        ``first_fetch`` (``str``): Configured 'First fetch' parameter
     Returns:
-        ``List[Dict[str, Any]]``: Events to import
+        ``List[Dict[str, Any]]``: Alerts to import
     """
 
-    # Check for existence of last run
-    # When integration runs for the first time, it will not exist
-    # Set 3 days by default if the first fetch parameter is not set
-    if demisto.getLastRun().get("last_run"):
-        last_run = int(demisto.getLastRun().get("last_run"))
-    else:
-        days_ago_arg = demisto.params().get("first_fetch")
-
-        if not days_ago_arg:
-            days_ago_str = "3 days"
-        else:
-            days_ago_str = days_ago_arg
-
-        fetch_days_ago = arg_to_datetime(days_ago_str, arg_name="first_fetch", required=False)
-
-        # to prevent mypy incompatible assignment
-        assert fetch_days_ago is not None
-        valid_fetch_days_ago: datetime = fetch_days_ago
-
-        demisto.debug(f"getLastRun is None in integration context, using parameter 'first_fetch' value '{days_ago_arg}'")
-        demisto.debug(f"{days_ago_str} => {valid_fetch_days_ago}")
-
-        last_run = int(valid_fetch_days_ago.timestamp())
+    last_run = get_last_run(last_run=last_run, first_fetch=first_fetch)  # type: ignore
 
     demisto.debug(f"Last run timestamp: {last_run}")
 
@@ -328,13 +344,11 @@ def incidents_to_import(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
             alert_id = alert.get("id")
 
-            debug_msg = f"""
-            last_run: {last_run}, alert_timestamp: {alert_timestamp},
-            should import alert '{alert_id}'? (last_run < alert_timestamp): {(last_run < alert_timestamp)}
-            """
+            debug_msg = f"import alert '{alert_id}'? (last_run < alert_timestamp): {(last_run < alert_timestamp)}"  # type: ignore
+
             demisto.debug(debug_msg)
 
-            if alert_timestamp > last_run:
+            if alert_timestamp > last_run:  # type: ignore
                 incident = {}
                 incident["name"] = f"SecurityScorecard '{alert.get('change_type')}' Incident"
                 incident["occurred"] = \
