@@ -47,7 +47,7 @@ def main():
     root_context_path = 'EmailCampaign'
     above_threshold_context_path = f'{root_context_path}.{ABOVE_THE_THRESHOLD_ITEMS_CONTEXT_PATH}'
     below_threshold_context_path = f'{root_context_path}.{BELOW_THRESHOLD_ITEMS_CONTEXT_PATH}'
-    context = demisto.get(demisto.context(), f'{root_context_path}.incidents')
+    context = demisto.get(demisto.context(), f'{above_threshold_context_path}')
 
     # If there are no incident to split
     if not context:
