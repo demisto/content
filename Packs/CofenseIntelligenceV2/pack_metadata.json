@@ -1,6 +1,6 @@
 {
     "name": "Cofense Intelligence v2",
-    "description": "Cofense Intelligence is designed to help enterprises stop dangerous malware and phishing attacks.",
+    "description": "Cofense Intelligence allows users to search for threat intelligence reports based on IPs, email address, file hashes, URLs and extracted strings.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Cofense",
