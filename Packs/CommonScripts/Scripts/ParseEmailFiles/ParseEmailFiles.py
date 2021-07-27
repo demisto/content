@@ -3409,7 +3409,7 @@ def convert_to_unicode(s, is_msg_header=True):
                 if word_mime_encoded:
                     word_mime_decoded = mime_decode(word_mime_encoded)
                     if word_mime_decoded and not MIME_ENCODED_WORD.search(word_mime_decoded):
-                        # ensure decoding was yielded
+                        # ensure decoding was successful
                         return word_mime_decoded
             except Exception as e:
                 # in case we failed to mine-decode, we continue and try to decode
