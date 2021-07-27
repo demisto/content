@@ -128,6 +128,28 @@ args:
   name: emailbodyhtml
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: Any
+  description: The language of the input text. Default is "Any". Can be "Any", "English",
+    "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other". If
+    "Any"  or "Other" is selected, the script preprocess the entire input, no matter
+    what its acutual language is. If a specific language is selected, the script filters
+    out any other language from the output text.
+  isArray: false
+  name: language
+  predefined:
+  - Any
+  - English
+  - German
+  - French
+  - Spanish
+  - Portuguese
+  - Italian
+  - Dutch
+  - Other
+  required: false
+  secret: false
 comment: Create a phishing classifier using machine learning technique, based on email
   content.
 commonfields:
