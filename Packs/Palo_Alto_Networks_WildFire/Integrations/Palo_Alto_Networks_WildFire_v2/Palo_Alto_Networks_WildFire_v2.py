@@ -340,7 +340,7 @@ def wildfire_upload_file(upload):
     return result, upload_file_data
 
 
-def wildfire_upload_file_with_polling_command(args):  # TODO: handle more than one url
+def wildfire_upload_file_with_polling_command(args):
     return run_polling_command(args, 'wildfire-upload', wildfire_upload_file_command,
                                wildfire_get_report_command, 'FILE')
 
@@ -458,8 +458,9 @@ def get_search_identifier(outputs, uploaded_item):
     """
     This function is used for the polling flow. After calling a search command on a url\file, in order to check the
     status of the call, we need to retrieve the suitable identifier to call the results command on. for searching a url,
-     the identifier is the url itself, but for a file we need to extract the file hash from the results of the search call.
-     therefore, this function extract that identifier from the context data.
+     the identifier is the url itself, but for a file we need to extract the file hash from the results of the initial
+     search call. Therefore, this function extract that identifier from the data inserted to the context data by the
+      search command.
     Args:
         outputs: the context data from the search command
         uploaded_item: 'FILE' or 'URL'
@@ -468,38 +469,61 @@ def get_search_identifier(outputs, uploaded_item):
 
     """
     if uploaded_item == 'FILE':
-        identifier = {'md5': outputs.get('MD5')}  # TODO: make sure lower case
+        identifier = {'md5': outputs.get('MD5')}
     else:
         identifier = {'url': outputs.get('URL')}
     return identifier
 
 
-def run_polling_command(args: dict, cmd: str, search_function: Callable, results_function: Callable, uploaded_item):
+def run_polling_command(args: dict, cmd: str, upload_function: Callable, results_function: Callable, uploaded_item):
+    """
+    This function is generically handling the polling flow. In the polling flow, there is always an initial call that
+    starts the uploading to the API (referred here as the 'upload' function) and another call that retrieves the status
+    of that upload (referred here as the 'results' function).
+    The run_polling_command function runs the 'upload' function and returns a ScheduledCommand object that schedules
+    the next 'results' function, until the polling is complete.
+    Args:
+        args: the arguments required to the command being called, under cmd
+        cmd: the command to schedule by after the current command
+        upload_function: the function that initiates the uploading to the API
+        results_function: the function that retrieves the status of the previously initiated upload process
+        uploaded_item: the type of item being uploaded
+
+    Returns:
+
+    """
     ScheduledCommand.raise_error_if_not_supported()
+    command_results_list = []
     interval_in_secs = int(args.get('interval_in_seconds', 60))
-    is_new_search = 'upload' in args  # the 'upload' argument will only be present in the search command args
+    # distinguish between the initial run, which is the upload run, and the results run -
+    # the 'upload' argument will only be present in the upload command args
+    is_new_search = 'upload' in args
     if is_new_search:
-        # create new search
-        command_results = search_function(args)[0]
-        outputs = command_results.outputs
-        identifier = get_search_identifier(outputs, uploaded_item)
-        if outputs.get('Status') != 'Completed':
-            polling_args = {  # TODO: make sure we do not support format and verbose in the polling sequence OR add them as args for the search function
-                'interval_in_seconds': interval_in_secs,
-                'polling': True,
-                **identifier,
-            }
-            scheduled_command = ScheduledCommand(
-                command=cmd,
-                next_run_in_seconds=interval_in_secs,
-                args=polling_args,
-                timeout_in_seconds=6000)
-            command_results.scheduled_command = scheduled_command
-            return command_results
-        else:
-            # the search is complete, return the search results using the results function
-            command_results, status = results_function(identifier)
-            return command_results
+        for upload in argToList(args['upload']):
+            # narrow the args to the current single url or file
+            args['upload'] = upload
+            # create new search
+            command_results = upload_function(args)[0]
+            outputs = command_results.outputs
+            identifier = get_search_identifier(outputs, uploaded_item)
+            if outputs.get('Status') != 'Completed':
+                polling_args = {  # TODO: make sure we do not support format and verbose in the polling sequence OR add them as args for the search function
+                    'interval_in_seconds': interval_in_secs,
+                    'polling': True,
+                    **identifier,
+                }
+                scheduled_command = ScheduledCommand(
+                    command=cmd,
+                    next_run_in_seconds=interval_in_secs,
+                    args=polling_args,
+                    timeout_in_seconds=6000)
+                command_results.scheduled_command = scheduled_command
+                command_results_list.append(command_results)
+            else:
+                # the search is complete, return the search results using the results function
+                command_results, status = results_function(identifier)
+                command_results_list.append(command_results)
+        return command_results_list
     # not a new search, get search status
     command_results, status = results_function(args)
     if status != 'Success':
@@ -842,7 +866,7 @@ def wildfire_get_url_report(url: str) -> Tuple:
 
     finally:
         command_results = CommandResults(outputs_prefix='WildFire.Report', outputs_key_field='url',
-                                         outputs=entry_context, readable_output=human_readable, raw_response=report)
+                                         outputs=report, readable_output=human_readable, raw_response=report)
         return command_results, entry_context['Status']
 
 
