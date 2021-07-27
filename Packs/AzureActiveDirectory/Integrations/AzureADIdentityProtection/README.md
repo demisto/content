@@ -268,7 +268,7 @@ Retrieve the properties of a collection of riskDetection objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| updated_time | The date and time that the risky user was last updated. | Optional | 
+| updated_time | The time elapsed since the risky user was last updated, formatted as `<number> <time unit>`, e.g., `12 hours` or `7 days`. | Optional | 
 | risk_level | Level of the detected risky user. Possible values are: low, medium, high, hidden, none, unknownFeatureValue. | Optional | 
 | risk_state | State of the user's risk. Possible values are: none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, unknownFutureValue. | Optional | 
 | risk_detail | Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue. | Optional | 

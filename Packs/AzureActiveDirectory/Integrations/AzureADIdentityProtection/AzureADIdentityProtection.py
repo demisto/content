@@ -10,6 +10,7 @@ REQUIRED_PERMISSIONS = (
     'IdentityRiskEvent.Read.All',
     'IdentityRiskyUser.ReadWrite.All'
 )
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 def __reorder_first_headers(headers: List[str], first_headers: List[str]) -> None:
@@ -150,7 +151,8 @@ class AADClient(MicrosoftClient):
             filter_arguments.append(f"riskDetail eq '{risk_level}'")
         if user_principal_name:
             filter_arguments.append(f"userPrincipalName eq '{user_principal_name}'")
-        if updated_time:
+        if updated_time is not None:
+            updated_time = arg_to_datetime(updated_time).strftime(DATE_FORMAT)
             filter_arguments.append(f"riskLastUpdatedDateTime gt {updated_time}")  # '' wrap only required for strings
 
         raw_response = self.query_list(

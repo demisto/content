@@ -208,7 +208,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The date and time that the risky user was last updated
+      description: The time elapsed since the risky user was last updated, formatted as <number> <time unit>, e.g., 12 hours, 7 days.
       isArray: false
       name: updated_time
       required: false
