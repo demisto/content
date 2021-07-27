@@ -36,11 +36,19 @@ class Client(BaseClient):
 
     def get_last_workflow_runs(self, vc_type: str, organization: str, project: str, workflow_name: str,
                                page_token: Optional[str] = None):
+        branch: str = demisto.args().get('branch', '')
+
         url_suffix = f'insights/{vc_type}/{organization}/{project}/workflows/{workflow_name}'
+        params = {}
+        if page_token:
+            params['page-token'] = page_token
+        if branch:
+            params['branch'] = branch
+
         return self._http_request(
             method='GET',
             url_suffix=url_suffix,
-            params={'page-token': page_token} if page_token else None
+            params=params
         )
 
     def get_workflow_jobs(self, workflow_id: str, page_token: Optional[str] = None):
@@ -49,6 +57,19 @@ class Client(BaseClient):
             method='GET',
             url_suffix=url_suffix,
             params={'page-token': page_token} if page_token else None
+        )
+
+    def trigger_workflow(self, vc_type: str, organization: str, project: str, parameters: str):
+        headers = self._headers
+        headers['Circle-Token'] = demisto.params().get('api_key')
+
+        url_suffix = f'project/{vc_type}/{organization}/{project}/pipeline'
+
+        return self._http_request(
+            method='POST',
+            url_suffix=url_suffix,
+            json_data=parameters,
+            resp_type='text'
         )
 
 
@@ -245,6 +266,28 @@ def circleci_workflow_last_runs_command(client: Client, args: Dict[str, Any]) ->
     )
 
 
+def circleci_trigger_workflow_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    vc_type, organization, project, _ = get_common_arguments(client, args)
+    parameters_json: str = args.get('parameters')
+
+    try:
+        parameters = json.loads(parameters_json)
+    except ValueError:
+        raise DemistoException("Failed to parse parameters argument")
+
+    # response = client.trigger_workflow(vc_type, organization,project, parameters)
+    response_json = '{"number" : 102812,"state" : "pending","id" : "21afca11-345c-4958-92aa-ff6e0adb5d28","created_at" : "2021-07-26T15:16:51.066Z"}'
+
+    response = json.loads(response_json)
+
+    return CommandResults(
+        outputs_prefix='CircleCI.WorkflowTrigger',
+        outputs_key_field='id',
+        readable_output=f"CircleCI Workflow created successfully, ID={response.get('number')}",
+        outputs=response
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -288,6 +331,10 @@ def main() -> None:
 
         elif command == 'circleci-workflow-last-runs':
             return_results(circleci_workflow_last_runs_command(client, args))
+
+        elif command == 'circleci-trigger-workflow':
+            return_results(circleci_trigger_workflow_command(client, args))
+
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
