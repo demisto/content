@@ -81,7 +81,7 @@ tasks:
     scriptarguments:
       next_page_id: {}
       page_size:
-        simple: "8"
+        simple: "2"
       response_policy_zone_name:
         simple: ${Infoblox.ResponsePolicyZones.FQDN(val === 'infoblow.com')}
     separatecontext: false

@@ -226,6 +226,7 @@ class DBotScoreType(object):
     DBotScoreType.ACCOUNT
     DBotScoreType.CRYPTOCURRENCY
     DBotScoreType.EMAIL
+    DBotScoreType.ATTACKPATTERN
     DBotScoreType.CUSTOM
 
     :return: None
@@ -242,7 +243,7 @@ class DBotScoreType(object):
     CERTIFICATE = 'certificate'
     CRYPTOCURRENCY = 'cryptocurrency'
     EMAIL = 'email'
-    CUSTOM = 'custom'
+    ATTACKPATTERN = 'attackpattern'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -251,6 +252,7 @@ class DBotScoreType(object):
     @classmethod
     def is_valid_type(cls, _type):
         # type: (str) -> bool
+
         return _type in (
             DBotScoreType.IP,
             DBotScoreType.FILE,
@@ -263,6 +265,7 @@ class DBotScoreType(object):
             DBotScoreType.CERTIFICATE,
             DBotScoreType.CRYPTOCURRENCY,
             DBotScoreType.EMAIL,
+            DBotScoreType.ATTACKPATTERN,
             DBotScoreType.CUSTOM,
         )
 
@@ -1365,6 +1368,12 @@ class IntegrationLogger(object):
                 a = self.encode(a)
                 to_add.append(stringEscape(a))
                 to_add.append(stringUnEscape(a))
+                js = json.dumps(a)
+                if js.startswith('"'):
+                    js = js[1:]
+                if js.endswith('"'):
+                    js = js[:-1]
+                to_add.append(js)
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
@@ -2332,7 +2341,7 @@ def get_integration_name():
     :return: Calling integration's name
     :rtype: ``str``
     """
-    return demisto.callingContext.get('IntegrationBrand')
+    return demisto.callingContext.get('context', '').get('IntegrationBrand')
 
 
 class Common(object):
@@ -2356,7 +2365,8 @@ class Common(object):
         :param indicator_type: use DBotScoreType class
 
         :type integration_name: ``str``
-        :param integration_name: integration name
+        :param integration_name: For integrations - The class will automatically determine the integration name.
+                                For scripts - The class will use the given integration name.
 
         :type score: ``DBotScore``
         :param score: DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD
@@ -2380,7 +2390,7 @@ class Common(object):
 
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
-        def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None,
+        def __init__(self, indicator, indicator_type, integration_name='', score=None, malicious_description=None,
                      reliability=None):
 
             if not DBotScoreType.is_valid_type(indicator_type):
@@ -2394,7 +2404,11 @@ class Common(object):
 
             self.indicator = indicator
             self.indicator_type = indicator_type
-            self.integration_name = integration_name or get_integration_name()
+            # For integrations - The class will automatically determine the integration name.
+            if demisto.callingContext.get('integration'):
+                self.integration_name = get_integration_name()
+            else:
+                self.integration_name = integration_name
             self.score = score
             self.malicious_description = malicious_description
             self.reliability = reliability
@@ -3909,6 +3923,72 @@ class Common(object):
 
             ret_value = {
                 Common.Cryptocurrency.CONTEXT_PATH: crypto_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+    class AttackPattern(Indicator):
+        """
+        Attack Pattern indicator
+        :type stix_id: ``str``
+        :param stix_id: The Attack Pattern STIX ID
+        :type kill_chain_phases: ``str``
+        :param kill_chain_phases: The Attack Pattern kill chain phases.
+        :type first_seen_by_source: ``str``
+        :param first_seen_by_source: The Attack Pattern first seen by source
+        :type description: ``str``
+        :param description: The Attack Pattern description
+        :type operating_system_refs: ``str``
+        :param operating_system_refs: The operating system refs of the Attack Pattern.
+        :type publications: ``str``
+        :param publications: The Attack Pattern publications
+        :type mitre_id: ``str``
+        :param mitre_id: The Attack Pattern kill mitre id.
+        :type tags: ``str``
+        :param tags: The Attack Pattern kill tags.
+        :type dbot_score: ``DBotScore``
+        :param dbot_score:  If the address has reputation then create DBotScore object.
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'AttackPattern(val.value && val.value == obj.value)'
+
+        def __init__(self, stix_id, kill_chain_phases, first_seen_by_source, description,
+                     operating_system_refs, publications, mitre_id, tags, dbot_score):
+            self.stix_id = stix_id
+            self.kill_chain_phases = kill_chain_phases
+            self.first_seen_by_source = first_seen_by_source
+            self.description = description
+            self.operating_system_refs = operating_system_refs
+            self.publications = publications
+            self.mitre_id = mitre_id
+            self.tags = tags
+
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            attack_pattern_context = {
+                'STIXID': self.stix_id,
+                "KillChainPhases": self.kill_chain_phases,
+                "FirstSeenBySource": self.first_seen_by_source,
+                'OperatingSystemRefs': self.operating_system_refs,
+                "Publications": self.publications,
+                "MITREID": self.mitre_id,
+                "Tags": self.tags,
+                "Description": self.description
+            }
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                attack_pattern_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            ret_value = {
+                Common.AttackPattern.CONTEXT_PATH: attack_pattern_context
             }
 
             if self.dbot_score:
@@ -5947,7 +6027,7 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
         sys.exit(0)
 
 
-def execute_command(command, args, extract_contents=True):
+def execute_command(command, args, extract_contents=True, fail_on_error=True):
     """
     Runs the `demisto.executeCommand()` function and checks for errors.
 
@@ -5960,21 +6040,41 @@ def execute_command(command, args, extract_contents=True):
     :type extract_contents: ``bool``
     :param extract_contents: Whether to return only the Contents part of the results. Default is True.
 
+    :type fail_on_error: ``bool``
+    :param fail_on_error: Whether to fail the command when receiving an error from the command. Default is True.
+
     :return: The command results.
-    :rtype: ``list`` or ``dict`` or ``str``
+    :rtype:
+        - When `fail_on_error` is True - ``list`` or ``dict`` or ``str``.
+        - When `fail_on_error` is False -``bool`` and ``str``.
+
+    Note:
+    For backward compatibility, only when `fail_on_error` is set to False, two values will be returned.
     """
     if not hasattr(demisto, 'executeCommand'):
         raise DemistoException('Cannot run demisto.executeCommand() from integrations.')
 
     res = demisto.executeCommand(command, args)
     if is_error(res):
-        return_error('Failed to execute {}. Error details:\n{}'.format(command, get_error(res)))
+        error_message = get_error(res)
+        if fail_on_error:
+            return_error('Failed to execute {}. Error details:\n{}'.format(command, error_message))
+        else:
+            return False, error_message
 
     if not extract_contents:
-        return res
+        if fail_on_error:
+            return res
+        else:
+            return True, res
 
     contents = [entry.get('Contents', {}) for entry in res]
-    return contents[0] if len(contents) == 1 else contents
+    contents = contents[0] if len(contents) == 1 else contents
+
+    if fail_on_error:
+        return contents
+
+    return True, contents
 
 
 def camelize(src, delim=' ', upper_camel=True):
@@ -7796,12 +7896,14 @@ class IndicatorsSearcher:
         self._value = value
         self._original_limit = limit
         self._next_limit = limit
+        self._search_is_done = False
 
     def __iter__(self):
         self._total = None
         self._search_after_param = None
         self._page = self._original_page
         self.limit = self._original_limit
+        self._search_is_done = False
         return self
 
     # python2
@@ -7809,7 +7911,7 @@ class IndicatorsSearcher:
         return self.__next__()
 
     def __next__(self):
-        if self._is_search_done():
+        if self._search_is_done:
             raise StopIteration
         size = min(self._size, self.limit or self._size)
         res = self.search_indicators_by_version(from_date=self._from_date,
@@ -7817,11 +7919,12 @@ class IndicatorsSearcher:
                                                 size=size,
                                                 to_date=self._to_date,
                                                 value=self._value)
-        fetched_len = len(res.get('iocs', []))
+        fetched_len = len(res.get('iocs', []) or [])
         if fetched_len == 0:
             raise StopIteration
         if self.limit:
             self.limit -= fetched_len
+        self._search_is_done = self._is_search_done()
         return res
 
     @property
@@ -7847,6 +7950,9 @@ class IndicatorsSearcher:
         2. for search_after if self.total was populated by a previous search, but no self._search_after_param
         3. for page if self.total was populated by a previous search, but page is too large
         """
+        if self._search_is_done:
+            return True
+
         reached_limit = isinstance(self.limit, int) and self.limit <= 0
         if reached_limit:
             return True
@@ -7897,10 +8003,13 @@ class IndicatorsSearcher:
         res = demisto.searchIndicators(**search_iocs_params)
         if len(res.get('iocs', [])) > 0:
             self._page += 1  # advance pages for search_after, as fallback
+        else:
+            self._search_is_done = True
         self._search_after_param = res.get(self._search_after_title)
         self._total = res.get('total')
         if self._search_after_title in res and self._search_after_param is None:
             demisto.info('Elastic search using searchAfter returned all indicators')
+            self._search_is_done = True
         return res
 
 
