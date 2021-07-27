@@ -78,6 +78,13 @@ def initialize_server(host, port, secure_connection, unsecure):
     :rtype: Server
     """
 
+    if secure_connection == "TLS":
+        demisto.debug("initializing sever with TLS (unsecure: {}). port: {}". format(unsecure, port or 'default(636)'))
+        tls = Tls(validate=ssl.CERT_NONE)
+        if port:
+            return Server(host, port=port, use_ssl=unsecure, tls=tls)
+        return Server(host, use_ssl=unsecure, tls=tls)
+
     if secure_connection == "SSL":
         # intialize server with ssl
         # port is configured by default as 389 or as 636 for LDAPS if not specified in configuration
@@ -1560,6 +1567,11 @@ def main():
         else:
             # here username should be the user dn
             conn = Connection(server, user=USERNAME, password=PASSWORD)
+
+
+        if SECURE_CONNECTION == 'TLS':
+            conn.open()
+            conn.start_tls()
 
         # bind operation is the “authenticate” operation.
         try:
