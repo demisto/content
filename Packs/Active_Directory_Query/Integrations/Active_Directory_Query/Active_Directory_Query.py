@@ -741,9 +741,11 @@ def search_group_members(default_base_dn, page_size):
     attributes = list(set(custom_attributes + default_attributes))
 
     if member_type == 'group':
-        query = "(&(objectCategory={})(memberOf{}={})(sAMAccountName={}))".format(member_type, nested_search, group_dn, account_name)
+        query = "(&(objectCategory={})(memberOf{}={})(sAMAccountName={}))".format(member_type, nested_search, group_dn,
+                                                                                  account_name)
     else:
-        query = "(&(objectCategory={})(objectClass=user)(memberOf{}={})(sAMAccountName={}))".format(member_type, nested_search, group_dn, account_name)
+        query = "(&(objectCategory={})(objectClass=user)(memberOf{}={})(sAMAccountName={}))"\
+            .format(member_type, nested_search, group_dn, account_name)
 
     entries = search_with_paging(
         query,
@@ -1567,7 +1569,6 @@ def main():
         else:
             # here username should be the user dn
             conn = Connection(server, user=USERNAME, password=PASSWORD)
-
 
         if SECURE_CONNECTION == 'TLS':
             conn.open()
