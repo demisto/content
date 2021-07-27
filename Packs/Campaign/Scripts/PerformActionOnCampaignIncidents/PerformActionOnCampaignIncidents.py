@@ -84,8 +84,11 @@ def perform_unlink_and_reopen(ids, action):
 
 
 def _add_campaign_to_incident(incident_id, campaign_id):
-    demisto.executeCommand('setIncident', {'id': incident_id,
-                                           'customFields': {'partofcampaign': campaign_id}})
+    res = demisto.executeCommand('setIncident', {'id': incident_id,
+                                                 'customFields': {'partofcampaign': campaign_id}})
+    if is_error(res):
+        return_error('Failed to add campaign data to incident {}. Error details:\n{}'.format(incident_id,
+                                                                                             get_error(res)))
     demisto.debug(f"Added campaign {campaign_id} to incident {incident_id}")
 
 
@@ -95,11 +98,13 @@ def _remove_incident_from_lower_similarity_context(incident_context, incident_id
 
     lower_similarity_incident_context = list(filter(
         lambda x: x.get('id') != incident_id, lower_similarity_incident_context))
-    demisto.executeCommand('DeleteContext', {'key': 'EmailCampaign.LowerSimilarityIncidents'})
-
-    demisto.executeCommand('SetByIncidentId', {'key': 'EmailCampaign.LowerSimilarityIncidents',
+    res = demisto.executeCommand('DeleteContext', {'key': 'EmailCampaign.LowerSimilarityIncidents'})
+    if is_error(res):
+        return_error('Failed to delete current context. Error details:\n{}'.format(get_error(res)))
+    res = demisto.executeCommand('SetByIncidentId', {'key': 'EmailCampaign.LowerSimilarityIncidents',
                                                'value': lower_similarity_incident_context})
-
+    if is_error(res):
+        return_error('Failed to change context. Error details:\n{}'.format(get_error(res)))
 
 def perform_add_to_campaign(ids, action):
     demisto.debug('starting add to campaign')
@@ -111,8 +116,6 @@ def perform_add_to_campaign(ids, action):
         return_error(COMMAND_ERROR_MSG.format(action=action, ids=','.join(ids)))
 
     for incident_id in ids:
-        demisto.debug(demisto.executeCommand('getContext', {'id': incident_id}))
-
         search_path = f'Contents.context.EmailCampaign.LowerSimilarityIncidents(val.id=={incident_id})'
         similar_incident_data: dict = demisto.dt(campaign_incident_context, search_path)
 
@@ -130,8 +133,10 @@ def perform_add_to_campaign(ids, action):
                 incident_context = [incident_context]
             incident_context.append(similar_incident_data)
 
-            demisto.executeCommand('SetByIncidentId', {'key': 'EmailCampaign.incidents',
-                                                       'value': incident_context})
+            res = demisto.executeCommand('SetByIncidentId', {'key': 'EmailCampaign.incidents',
+                                                             'value': incident_context})
+            if is_error(res):
+                return_error('Failed to change current context. Error details:\n{}'.format(get_error(res)))
 
     return COMMAND_SUCCESS.format(action=action, ids=','.join(ids))
 

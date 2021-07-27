@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -7,7 +9,9 @@ ABOVE_THE_THRESHOLD_ITEMS_CONTEXT_PATH = 'incidents'
 
 def save_to_context(items: list, context_path: str, delete_existing: bool = False, is_sub_playbook: str = 'auto'):
     if delete_existing:
-        demisto.executeCommand('DeleteContext', {"key": context_path, "subplaybook": is_sub_playbook})
+        res = demisto.executeCommand('DeleteContext', {"key": context_path, "subplaybook": is_sub_playbook})
+        if is_error(res):
+            return_error('Failed to delete current context. Error details:\n{}'.format(get_error(res)))
 
     return CommandResults(
         outputs_prefix=context_path,
@@ -15,8 +19,10 @@ def save_to_context(items: list, context_path: str, delete_existing: bool = Fals
 
 
 def _get_incident_campaign(id: int):
-    return demisto.executeCommand('GetByIncidentId', {'incident_id': id, 'get_key': 'partofcampaign'})
-
+    res = demisto.executeCommand('GetByIncidentId', {'incident_id': id, 'get_key': 'partofcampaign'})
+    if is_error(res):
+        return_error('Failed to get campaign data from incident {}. Error details:\n{}'.format(id, get_error(res)))
+    return res
 
 def filter_by_threshold(context: list, threshold: float) -> Tuple[list, list]:
     low = []
