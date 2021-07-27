@@ -160,7 +160,6 @@ class Client(BaseClient):
             )
             if res.status_code != 200:
                 return None
-            merit = res.json()
             tasks = [x for x in res.json()]
             # if x['_parent'] and x['_parent'] == case_id
         if tasks:
@@ -210,15 +209,15 @@ class Client(BaseClient):
             task = None
         return task
 
-    def create_task(self, case_id: str = None, data: dict = None):
+    def create_task(self, case_id: str = None, data: dict = None):  # not used
         res = self._http_request(
             'POST',
             f'case/{case_id}/task',
             data=data,
-            ok_codes=[201],
+            ok_codes=[201, 200],
             resp_type='response'
         )
-        if res.status_code != 201:
+        if res.status_code not in [201, 200]:
             return None
         return res.json()
 
@@ -529,6 +528,26 @@ def remove_case_command(client: Client, args: dict):
         else f'Case ID {case_id} removed successfully'
 
     demisto.results(message)
+
+
+def create_task_command(client: Client, args: dict):
+    case_id = args.get('id')
+    args.pop('id')
+    task = client.create_task(case_id, args)
+    if task:
+        task_date_dt = dateparser.parse(str(task['createdAt']))
+        if task_date_dt:
+            task['createdAt'] = task_date_dt.strftime(DATE_FORMAT)
+        read = tableToMarkdown("The newly created task", task, ['id', 'title', 'createdAt', 'status'])
+    else:
+        read = "failed to create a new task"
+
+    return CommandResults(
+        outputs_prefix='TheHive.Tasks',
+        outputs_key_field="id",
+        outputs=task,
+        readable_output=read
+    )
 
 
 def get_linked_cases_command(client: Client, args: dict):
@@ -967,7 +986,8 @@ def main() -> None:
         'get-remote-data': get_remote_data_command,
         'get-modified-remote-data': get_modified_remote_data_command,
         'update-remote-system': update_remote_system_command,
-        'get-mapping-fields': get_mapping_fields_command
+        'get-mapping-fields': get_mapping_fields_command,
+        'thehive-create-task': create_task_command
     }
     demisto.debug(f'Command being called is {command}')
     try:
@@ -1003,10 +1023,7 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
 
 
- # TODO: no option to add task via demisto not even when creating case
+ # TODO: no option to add task via demisto
  # no attachments in demisto or product itself, no option to add one even
- #when updating task no description to update, update something else? ...go over again
  # the search user, cases command, does not have the option to filter, just return the whole list ...to delete filter
- #create observables lacks the tag arg.... check if could be added
- #how is search cases supposed to work?
 #observables are not returned without specific case id

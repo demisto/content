@@ -910,6 +910,50 @@ script:
       description: Created by
       type: string
     description: Create a new case
+  - name: thehive-create-task
+    arguments:
+    - name: id
+      required: true
+      description: Case Id
+    - name: title
+      required: true
+      description: Title
+    - name: description
+      description: Description
+    - name: startDate
+      description: Start date (default = now)
+    outputs:
+    - contextPath: TheHive.Tasks.status
+      description: Status
+      type: string
+    - contextPath: TheHive.TasKs.title
+      description: Title
+      type: string
+    - contextPath: TheHive.Tasks._id
+      description: _id
+      type: string
+    - contextPath: TheHive.Tasks.id
+      description: ID
+      type: string
+    - contextPath: TheHive.Tasks.createdAt
+      description: Created at
+      type: number
+    - contextPath: TheHive.Tasks._type
+      description: Type
+      type: string
+    - contextPath: TheHive.Tasks.createdBy
+      description: Created by
+      type: string
+    - contextPath: TheHive.Tasks.group
+      description: Group
+      type: string
+    - contextPath: TheHive.Tasks.flag
+      description: Flag
+      type: boolean
+    - contextPath: TheHive.Tasks.order
+      description: Order
+      type: int
+    description: Create a new task
   - name: thehive-remove-case
     arguments:
     - name: id
@@ -1332,6 +1376,10 @@ script:
     - name: id
       description: Case ID
     description: List observables for a case.
+    outputs:
+    - contextPath: TheHive.Observables
+      description: _observable
+      type: string
   - name: thehive-create-observable
     arguments:
     - name: id
