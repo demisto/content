@@ -151,9 +151,11 @@ class AADClient(MicrosoftClient):
             filter_arguments.append(f"riskDetail eq '{risk_level}'")
         if user_principal_name:
             filter_arguments.append(f"userPrincipalName eq '{user_principal_name}'")
-        if updated_time is not None:
-            updated_time = arg_to_datetime(updated_time).strftime(DATE_FORMAT)
-            filter_arguments.append(f"riskLastUpdatedDateTime gt {updated_time}")  # '' wrap only required for strings
+
+        updated_time = arg_to_datetime(updated_time)  # None input to arg_to_datetime stays None
+        if updated_time:
+            filter_arguments.append(
+                f"riskLastUpdatedDateTime gt {updated_time.strftime(DATE_FORMAT)}")  # '' wrap only required for strings
 
         raw_response = self.query_list(
             url_suffix='RiskyUsers',
