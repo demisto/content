@@ -1023,7 +1023,5 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
 
 
- # TODO: no option to add task via demisto
- # no attachments in demisto or product itself, no option to add one even
  # the search user, cases command, does not have the option to filter, just return the whole list ...to delete filter
 #observables are not returned without specific case id
