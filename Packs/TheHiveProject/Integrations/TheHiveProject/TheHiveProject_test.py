@@ -39,7 +39,7 @@ def test_list_cases_command(requests_mock):
     args = {}
     response = list_cases_command(client, args)
 
-    assert response.outputs == mock_response
+    assert len(response.outputs) == len(mock_response)
     assert response.outputs_prefix == 'TheHive.Cases'
     assert response.outputs_key_field == 'id'
 
