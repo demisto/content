@@ -9,7 +9,7 @@ import json
 import urllib3
 import urllib.parse
 from dateutil.parser import parse
-from typing import Any
+from typing import Any, Tuple
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -100,7 +100,10 @@ class Client(BaseClient):
 
     def update_session(self):
         if self.api_token:
-            self.session = self.api_token
+            res = self._http_request('GET', 'api/v2/session/current', headers={'session': self.api_token},
+                                     ok_codes=(200,))
+            if res.get('data'):
+                self.session = self.api_token
         elif self.username and self.password:
             body = {
                 'username': self.username,
@@ -132,6 +135,31 @@ class Client(BaseClient):
 
 
 ''' GENERAL HELPER FUNCTIONS '''
+
+
+def format_context_data(context_to_format: Union[list, dict]) -> Union[list, dict]:
+    """ Format a context dictionary to the standard demisto format.
+        :type context_to_format: ``dict``
+        :param context_to_format:
+            The object to convert.
+
+        :return: the formatted dictionary
+        :rtype: ``dict``
+    """
+
+    def format_context_dict(context_dict: dict) -> dict:
+        # The API result keys are in camelCase and the context is expecting PascalCase
+        formatted_context = camelize(snakify(context_dict), '_')
+        cur_id = formatted_context.get('Id')
+        if cur_id:
+            formatted_context['ID'] = cur_id
+            del formatted_context['Id']
+        return formatted_context
+
+    if isinstance(context_to_format, list):
+        return [format_context_dict(item) for item in context_to_format]
+    else:
+        return format_context_dict(context_to_format)
 
 
 def convert_to_int(int_to_parse: Any) -> Optional[int]:
@@ -178,16 +206,32 @@ def filter_to_tanium_api_syntax(filter_str):
         raise ValueError('Invalid filter argument.')
 
 
-def get_file_name_and_content(entry_id: str):
+def get_file_name_and_content(entry_id: str) -> Tuple[str, str]:
+    """ Gets a file name and content from the file's entry ID.
+
+        :type entry_id: ``str``
+        :param entry_id:
+            the file's entry ID.
+
+        :return: file name and content
+        :rtype: ``tuple``
+
+    """
     file = demisto.getFilePath(entry_id)
-    file_path = file['path']
-    file_name = file['name']
+    file_path = file.get('path')
+    file_name = file.get('name')
     with open(file_path, 'r') as f:
         file_content = f.read()
     return file_name, file_content
 
 
 def init_commands_dict():
+    """ Initializes the commands dictionary
+
+        :return: the commands dictionary, command name as a key and command function as a value.
+        :rtype: ``dict``
+
+    """
     return {
         'test-module': test_module,
         'tanium-tr-get-intel-doc-by-id': get_intel_doc,
@@ -591,7 +635,17 @@ def get_snapshot_items(raw_snapshots, limit, offset, conn_name):
 ''' INTEL DOCS HELPER FUNCTIONS '''
 
 
-def get_intel_doc_item(intel_doc):
+def get_intel_doc_item(intel_doc: dict) -> dict:
+    """ Gets the relevant fields from a given intel doc.
+
+        :type intel_doc: ``dict``
+        :param intel_doc:
+            The intel doc obtained from api call
+
+        :return: a dictionary containing only the relevant fields.
+        :rtype: ``dict``
+
+    """
     return {
         'ID': intel_doc.get('id'),
         'Name': intel_doc.get('name'),
@@ -604,7 +658,17 @@ def get_intel_doc_item(intel_doc):
         'LabelIds': intel_doc.get('labelIds')}
 
 
-def get_intel_doc_label_item(intel_doc_label):
+def get_intel_doc_label_item(intel_doc_label: dict) -> dict:
+    """ Gets the relevant fields from a given intel doc label.
+
+        :type intel_doc_label: ``dict``
+        :param intel_doc_label:
+            The intel doc label obtained from api call
+
+        :return: a dictionary containing only the relevant fields.
+        :rtype: ``dict``
+
+    """
     return {
         'ID': intel_doc_label.get('id'),
         'Name': intel_doc_label.get('name'),
@@ -683,9 +747,11 @@ def state_params_suffix(alerts_states_to_retrieve):
 
 
 def test_module(client, data_args):
-    if client.do_request('GET', 'system_status'):
-        return demisto.results('ok')
-    raise ValueError('Test Tanium integration failed - please check your username and password')
+    try:
+        if client.login():
+            return demisto.results('ok')
+    except Exception as e:
+        raise ValueError(f'Test Tanium integration failed - please check your credentials and try again.\n{str(e)}')
 
 
 def fetch_incidents(client, alerts_states_to_retrieve):
@@ -733,21 +799,52 @@ def fetch_incidents(client, alerts_states_to_retrieve):
 ''' INTEL DOCS COMMANDS FUNCTIONS '''
 
 
-def get_intel_doc(client, data_args):
-    id_ = data_args.get('intel-doc-id')
-    raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/intels/{id_}')
-    intel_doc = get_intel_doc_item(raw_response)
+def get_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
+    """ Gets a single intel doc from a given id.
 
-    context = createContext(raw_response, removeNull=True)
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
+    id_ = data_args.get('intel-doc-id')
+    try:
+        raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/intels/{id_}')
+    # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
+    # with a "Not Found" message.
+    except requests.HTTPError as e:
+        if 'not found' in str(e):
+            raise DemistoException(f'Please check the intel doc ID and try again.\n({str(e)})')
+    intel_doc = get_intel_doc_item(raw_response)
+    # A more readable format for the human readble section.
+    if intel_doc:
+        intel_doc['LabelIds'] = str(intel_doc.get('LabelIds', [])).strip('[]')
+    context_data = format_context_data(raw_response)
+    context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
-    intel_doc['LabelIds'] = str(intel_doc['LabelIds']).strip('[]')
     human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=list(intel_doc.keys()),
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
 
-def get_intel_docs(client, data_args):
+def get_intel_docs(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
+    """ Gets a single intel doc from a given id.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
+    # data_args contains some fields which can filter the intel docs result.
     params = assign_params(name=data_args.get('name'), description=data_args.get('description'),
                            type=data_args.get('type'), limit=convert_to_int(data_args.get('limit')),
                            offset=convert_to_int(data_args.get('offset')), labelId=data_args.get('label_id'),
@@ -755,137 +852,259 @@ def get_intel_docs(client, data_args):
     raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/intels/', params=params)
 
     intel_docs = []
+    intel_doc = {}
     # append raw response to a list in case raw_response is a dictionary
     tmp_list = [raw_response] if type(raw_response) is dict else raw_response
     for item in tmp_list:
         intel_doc = get_intel_doc_item(item)
+        if intel_doc:
+            intel_doc['LabelIds'] = str(intel_doc.get('LabelIds', [])).strip('[]')
         intel_docs.append(intel_doc)
-
-    context = createContext(raw_response, removeNull=True)
+    context_data = format_context_data(raw_response)
+    context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
-
-    for item in intel_docs:
-        item['LabelIds'] = str(item['LabelIds']).strip('[]')
 
     human_readable = tableToMarkdown('Intel docs', intel_docs, headers=list(intel_doc.keys()),
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
 
-def get_intel_docs_labels_list(client, data_args):
+def get_intel_docs_labels_list(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
+    """ Gets the labels list of a given intel doc.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     id_ = data_args.get('intel-doc-id')
     try:
         raw_response = client.do_request('GET',
                                          f'/plugin/products/detect3/api/v1/intels/{id_}/labels')
     except requests.HTTPError as e:
-        raise DemistoException(f'API call error, please check the intel doc ID and try again.\n({str(e)})')
+        raise DemistoException(f'Please check the intel doc ID and try again.\n({str(e)})')
 
     intel_docs_labels = []
     intel_doc_label = {}
-    for item in raw_response:
+    # append raw response to a list in case raw_response is a dictionary
+    tmp_list = [raw_response] if type(raw_response) is dict else raw_response
+    for item in tmp_list:
         intel_doc_label = get_intel_doc_label_item(item)
         intel_docs_labels.append(intel_doc_label)
-
-    context = createContext({'intelDocId': id_, 'labelsList': raw_response}, removeNull=True)
-    outputs = {
-        f'Tanium.IntelDocLabel(val.intelDocId && val.intelDocId === obj.intelDocId)': context if raw_response else {}}
-    human_readable = tableToMarkdown('Intel docs labels', intel_docs_labels, headerTransform=pascalToSpace,
-                                     headers=list(intel_doc_label.keys()),
-                                     removeNull=True)
+    context_data = format_context_data(raw_response)
+    context = createContext({'IntelDocID': id_, 'LabelsList': context_data}, removeNull=True)
+    outputs = {'Tanium.IntelDocLabel(val.IntelDocID && val.IntelDocID === obj.IntelDocID)': context}
+    human_readable = tableToMarkdown(f'Intel doc ({id_}) labels', intel_docs_labels, headerTransform=pascalToSpace,
+                                     headers=list(intel_doc_label.keys()), removeNull=True)
     return human_readable, outputs, raw_response
 
 
-def add_intel_docs_label(client, data_args):
+def add_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
+    """ Creates a new label (given label ID) association for an identified intel document (given intel-doc ID).
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     intel_doc_id = data_args.get('intel-doc-id')
     label_id = data_args.get('label-id')
     params = assign_params(id=label_id)
+    raw_response = []
     try:
         raw_response = client.do_request('PUT',
                                          f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}/labels', data=params)
+    # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
+    # with a "Not Found" message.
     except requests.HTTPError as e:
-        raise DemistoException(f'API call error, please check the intel doc ID and try again.\n({str(e)})')
-    except Exception as e:
-        raise DemistoException(f'An error occurred, please check the given label ID.\n({str(e)})')
+        if 'not found' in str(e):
+            raise DemistoException(f'Please check the intel doc ID and try again.\n({str(e)})')
+    # If the user provided a label ID which does not exist, the do_request will throw a DemistoException
+    # with "internal server error" message.
+    except DemistoException as e:
+        if 'internal server error' in str(e):
+            raise DemistoException(f'Please check the given label ID.\n({str(e)})')
 
     intel_docs_labels = []
     intel_doc_label = {}
-    for item in raw_response:
+    tmp_list = [raw_response] if type(raw_response) is dict else raw_response
+    for item in tmp_list:
         intel_doc_label = get_intel_doc_label_item(item)
         intel_docs_labels.append(intel_doc_label)
-
-    context = createContext({'intelDocId': intel_doc_id, 'labelsList': raw_response}, removeNull=True)
-    outputs = {f'Tanium.IntelDocLabel(val.intelDocId && val.intelDocId === obj.intelDocId)': context}
+    context_data = format_context_data(raw_response)
+    context = createContext({'IntelDocID': intel_doc_id, 'LabelsList': context_data}, removeNull=True)
+    outputs = {'Tanium.IntelDocLabel(val.IntelDocID && val.IntelDocID === obj.IntelDocID)': context}
     human_readable = tableToMarkdown(
         f'Successfully created a new label ({label_id}) association for the identified intel document ({intel_doc_id}).',
         intel_docs_labels, headers=list(intel_doc_label.keys()), headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
 
-def remove_intel_docs_label(client, data_args):
+def remove_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
+    """ Removes a label (given label ID) association for an identified intel document (given intel-doc ID).
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
+
     intel_doc_id = data_args.get('intel-doc-id')
     label_id_to_delete = data_args.get('label-id')
+    raw_response = []
     try:
         raw_response = client.do_request('DELETE',
                                          f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}/labels/{label_id_to_delete}')
+    # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
+    # with a "Not Found" message.
     except requests.HTTPError as e:
-        raise DemistoException(f'API call error, please check the intel doc ID and try again.\n({str(e)})')
-    except Exception as e:
-        raise DemistoException(f'An error occurred, please check the given label ID.\n({str(e)})')
+        if 'not found' in str(e):
+            raise DemistoException(f'Please check the intel doc ID and try again.\n({str(e)})')
+    # If the user provided a label ID which does not exist, the do_request will throw a DemistoException
+    # with "internal server error" message.
+    except DemistoException as e:
+        if 'internal server error' in str(e):
+            raise DemistoException(f'Please check the given label ID.\n({str(e)})')
+
     intel_docs_labels = []
     intel_doc_label = {}
-    for item in raw_response:
+    tmp_list = [raw_response] if type(raw_response) is dict else raw_response
+    for item in tmp_list:
         intel_doc_label = get_intel_doc_label_item(item)
         intel_docs_labels.append(intel_doc_label)
 
-    context = createContext({'intelDocId': intel_doc_id, 'labelsList': raw_response}, removeNull=True)
-    outputs = {f'Tanium.IntelDocLabel(val.intelDocId && val.intelDocId === obj.intelDocId)': context}
+    # This API call returns the latest labels associated to the given intel-doc ID.
+    # This gives us the ability to update the context on deletion.
+    context_data = format_context_data(raw_response)
+    context = createContext({'IntelDocID': intel_doc_id, 'LabelsList': context_data}, removeNull=True)
+    outputs = {'Tanium.IntelDocLabel(val.IntelDocID && val.IntelDocID === obj.IntelDocID)': context}
     human_readable = tableToMarkdown(
         f'Successfully removed the label ({label_id_to_delete}) association for the identified intel document ({intel_doc_id}).',
         intel_docs_labels, headers=list(intel_doc_label.keys()), headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
 
+def create_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
+    """ Adds a new intel-doc to the system by providing its document contents with an appropriate content-type header.
 
-def create_intel_doc(client, data_args):
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     entry_id = data_args.get('entry-id')
     file_extension = data_args.get('file-extension')
-    file_name, file_content = get_file_name_and_content(entry_id)
-    raw_response = client.do_request('POST', '/plugin/products/detect3/api/v1/intels',
-                                     headers={'Content-Disposition': f'filename=file.{file_extension}',
-                                              'Content-Type': 'application/xml'}, body=file_content)
+    raw_response = {}
+    try:
+        file_name, file_content = get_file_name_and_content(str(entry_id))
+    except Exception as e:
+        raise DemistoException(f'Please check your file entry ID.\n{str(e)}')
+
+    try:
+        raw_response = client.do_request('POST', '/plugin/products/detect3/api/v1/intels',
+                                         headers={'Content-Disposition': f'filename=file.{file_extension}',
+                                                  'Content-Type': 'application/xml'}, body=file_content)
+    except requests.HTTPError as e:
+        if 'not found' in str(e):
+            raise DemistoException(f'Please check the intel doc ID and try again.\n({str(e)})')
+
     intel_doc = get_intel_doc_item(raw_response)
-    context = createContext(intel_doc, removeNull=True)
+    # A more readable format for the human readble section.
+    if intel_doc:
+        intel_doc['LabelIds'] = str(intel_doc.get('LabelIds', [])).strip('[]')
+
+    context_data = format_context_data(raw_response)
+    context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
-    intel_doc['LabelIds'] = str(intel_doc['LabelIds']).strip('[]')
     human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=list(intel_doc.keys()),
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
 
-def update_intel_doc(client, data_args):
+def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
+    """ Updates the contents of an existing intel document by providing the document contents with an appropriate
+        content-type header.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
+
     id_ = data_args.get('intel-doc-id')
     entry_id = data_args.get('entry-id')
     file_extension = data_args.get('file-extension')
-    file_name, file_content = get_file_name_and_content(entry_id)
-    raw_response = client.do_request('PUT', f'/plugin/products/detect3/api/v1/intels/{id_}',
-                                     headers={'Content-Disposition': f'filename=file.{file_extension}',
-                                              'Content-Type': 'application/xml'}, body=file_content)
+    raw_response = {}
+    try:
+        file_name, file_content = get_file_name_and_content(str(entry_id))
+    except Exception as e:
+        raise DemistoException(f'Please check your file entry ID.\n{str(e)}')
+
+    try:
+        raw_response = client.do_request('PUT', f'/plugin/products/detect3/api/v1/intels/{id_}',
+                                         headers={'Content-Disposition': f'filename=file.{file_extension}',
+                                                  'Content-Type': 'application/xml'}, body=file_content)
+    except requests.HTTPError as e:
+        if 'not found' in str(e):
+            raise DemistoException(f'Please check the intel doc ID and try again.\n({str(e)})')
+
     intel_doc = get_intel_doc_item(raw_response)
-    context = createContext(intel_doc, removeNull=True)
+    # A more readable format for the human readble section.
+    if intel_doc:
+        intel_doc['LabelIds'] = str(intel_doc.get('LabelIds', [])).strip('[]')
+
+    context_data = format_context_data(raw_response)
+    context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
-    intel_doc['LabelIds'] = str(intel_doc['LabelIds']).strip('[]')
     human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=list(intel_doc.keys()),
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
 
-def deploy_intel(client, data_args):
+def deploy_intel(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
+    """ Deploys intel using the service account context.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     raw_response = client.do_request('POST',
                                      '/plugin/products/threat-response/api/v1/intel/deploy')
-
     human_readable = ''
+
+    # The response is of the form:
+    # {
+    #     "data": {
+    #         "taskId": 779
+    #     }
+    # }
     if raw_response and raw_response.get('data'):
         human_readable = 'Successfully deployed intel.'
     else:
@@ -893,13 +1112,26 @@ def deploy_intel(client, data_args):
     return human_readable, {}, raw_response
 
 
-def get_deploy_status(client, data_args):
+def get_deploy_status(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
+    """ Displays status of last intel deployment.
+
+        :type client: ``Client``
+        :param client: client which connects to api.
+        :type data_args: ``dict``
+        :param data_args: request arguments.
+
+        :return: human readable format, context output and the original raw response.
+        :rtype: ``tuple``
+
+    """
     raw_response = client.do_request('GET',
                                      '/plugin/products/threat-response/api/v1/intel/status')
 
     status_data = raw_response.get('data', {})
     status = get_intel_doc_status(status_data)
-    context = createContext(raw_response, removeNull=True)
+    context_data = format_context_data(status_data)
+    context = createContext(context_data, removeNull=True)
+
     outputs = {'Tanium.IntelDeployStatus': context}
 
     human_readable = tableToMarkdown('Intel deploy status', status, headers=list(status.keys()),
