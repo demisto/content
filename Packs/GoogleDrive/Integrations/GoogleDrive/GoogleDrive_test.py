@@ -3,6 +3,8 @@ import pytest
 
 from unittest.mock import patch
 
+from CommonServerPython import *
+
 from GoogleDrive import MESSAGES, OUTPUT_PREFIX, HR_MESSAGES, GSuiteClient
 
 with open('test_data/service_account_json.txt') as f:
@@ -542,7 +544,7 @@ def test_drives_list_command_failure(mocker_http_request, gsuite_client):
     Then:
     - Ensure command's error response is as expected.
     """
-    mocker_http_request.side_effect = ValueError("SOME_ERROR")
+    mocker_http_request.side_effect = DemistoException("SOME_ERROR")
 
     from GoogleDrive import drives_list_command
 
@@ -550,7 +552,7 @@ def test_drives_list_command_failure(mocker_http_request, gsuite_client):
         'use_domain_admin_access': True
     }
 
-    with pytest.raises(ValueError, match="SOME_ERROR"):
+    with pytest.raises(DemistoException, match="SOME_ERROR"):
         drives_list_command(gsuite_client, args)
 
 
@@ -663,7 +665,7 @@ def test_files_list_command_failure(mocker_http_request, gsuite_client):
     Then:
     - Ensure command's error response is as expected.
     """
-    mocker_http_request.side_effect = ValueError("SOME_ERROR")
+    mocker_http_request.side_effect = DemistoException("SOME_ERROR")
 
     from GoogleDrive import files_list_command
 
@@ -671,7 +673,7 @@ def test_files_list_command_failure(mocker_http_request, gsuite_client):
         'use_domain_admin_access': True
     }
 
-    with pytest.raises(ValueError, match="SOME_ERROR"):
+    with pytest.raises(DemistoException, match="SOME_ERROR"):
         files_list_command(gsuite_client, args)
 
 
