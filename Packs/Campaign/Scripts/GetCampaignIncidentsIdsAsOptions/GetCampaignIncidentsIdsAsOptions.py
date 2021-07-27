@@ -18,7 +18,6 @@ def get_campaign_incidents():
     res = demisto.executeCommand('getContext', {'id': incident_id})
     if isError(res):
         return_error(f'Error occurred while trying to get the incident context: {get_error(res)}')
-
     low_similarity_context = demisto.get(res[0], 'Contents.context.EmailCampaign.LowerSimilarityIncidents')
     if not low_similarity_context:
         low_similarity_context = []

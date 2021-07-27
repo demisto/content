@@ -1,7 +1,6 @@
-from typing import Tuple
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from typing import Tuple
 
 BELOW_THRESHOLD_ITEMS_CONTEXT_PATH = 'LowerSimilarityIncidents'
 ABOVE_THE_THRESHOLD_ITEMS_CONTEXT_PATH = 'incidents'
