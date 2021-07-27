@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 if [ "$#" -lt "1" ]; then
   echo "Usage:
   $0 -ct <token>
@@ -124,3 +122,4 @@ else
   --request POST ${trigger_build_url} \
   --user "$_ci_token:"
 fi
+
