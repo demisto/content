@@ -943,7 +943,7 @@ def wildfire_file_command(args):
             })
         else:
             command_results = wildfire_get_file_report(element, args)[0]
-        command_results_list. append(command_results)
+        command_results_list.append(command_results)
 
     return command_results
 
