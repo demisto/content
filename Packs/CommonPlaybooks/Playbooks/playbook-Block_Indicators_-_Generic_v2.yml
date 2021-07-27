@@ -10,6 +10,8 @@ description: |+
   - Block Account - Generic
   - Block IP - Generic v2
   - Block File - Generic v2
+  - Block Email - Generic
+  - Block Domain - Generic
 
 starttaskid: "0"
 tasks:
@@ -32,7 +34,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 50
+          "y": 60
         }
       }
     note: false
@@ -103,7 +105,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": -190,
           "y": 340
         }
       }
@@ -134,7 +136,6 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      Tag: {}
       Username:
         complex:
           root: inputs.Username
@@ -147,7 +148,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 250,
           "y": 340
         }
       }
@@ -175,6 +176,7 @@ tasks:
       - "9"
       - "10"
       - "11"
+      - "12"
     separatecontext: false
     view: |-
       {
@@ -248,7 +250,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 690,
           "y": 340
         }
       }
@@ -277,7 +279,6 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      EventId: {}
       MD5:
         complex:
           root: inputs.MD5
@@ -293,7 +294,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1130,
           "y": 340
         }
       }
@@ -330,7 +331,56 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
+          "x": 1570,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: f94181cb-559a-455c-8ced-b2a41e486b5d
+    type: playbook
+    task:
+      id: f94181cb-559a-455c-8ced-b2a41e486b5d
+      version: -1
+      name: Block Domain - Generic
+      description: |-
+        This playbook blocks malicious Domains using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Zscaler
+        * Symantec Messaging Gateway
+        * FireEye EX
+        * Trend Micro Apex One
+        * Proofpoint Threat Response
+      playbookName: Block Domain - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.DomainToBlock
+      DomainBlackListID:
+        complex:
+          root: inputs.DomainBlackListID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2010,
           "y": 340
         }
       }
@@ -345,10 +395,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 530,
-        "width": 2110,
-        "x": 50,
-        "y": 50
+        "height": 520,
+        "width": 2580,
+        "x": -190,
+        "y": 60
       }
     }
   }
@@ -542,7 +592,19 @@ inputs:
 - key: EmailToBlock
   value: {}
   required: false
-  description: 'The email address that you wish to block.'
+  description: The email address that you wish to block.
+  playbookInputQuery:
+- key: DomainToBlock
+  value: {}
+  required: false
+  description: The domain that you wish to block.
+  playbookInputQuery:
+- key: DomainBlackListID
+  value: {}
+  required: false
+  description: |-
+    The Domain List ID to add the Domain to.
+    product: Proofpoint Threat Response
   playbookInputQuery:
 outputs:
 - contextPath: CheckpointFWRule.Domain

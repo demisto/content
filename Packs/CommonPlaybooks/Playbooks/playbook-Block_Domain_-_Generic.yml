@@ -279,13 +279,6 @@ inputs:
   required: false
   description: The Domain to block.
   playbookInputQuery:
-- key: EDLDomainListName
-  value: {}
-  required: false
-  description: |-
-    The EDL Domain List Name to add the Domain to.
-    product: PAN-OS
-  playbookInputQuery:
 - key: DomainBlackListID
   value: {}
   required: false

@@ -12,10 +12,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Block Domain - FireEye Email Security
-* Block Domain - Symantec Messaging Gateway 
-* Block Domain - Trend Micro Apex One
 * Block Domain - Proofpoint Threat Response
 * Block Domain - Zscaler
+* Block Domain - Symantec Messaging Gateway 
+* Block Domain - Trend Micro Apex One
 
 ### Integrations
 This playbook does not use any integrations.
@@ -32,7 +32,6 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Domain | The Domain to block. |  | Optional |
-| EDLDomainListName | The EDL Domain List Name to add the Domain to.<br/>product: PAN-OS |  | Optional |
 | DomainBlackListID | The Domain List ID to add the Domain to.<br/>product: Proofpoint Threat Response |  | Optional |
 
 ## Playbook Outputs
