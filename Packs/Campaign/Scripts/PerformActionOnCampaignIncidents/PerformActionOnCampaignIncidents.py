@@ -149,7 +149,7 @@ ACTIONS_MAPPER = {
     'reopen': perform_reopen,
     'link & close': perform_link_and_close,
     'unlink & reopen': perform_unlink_and_reopen,
-    'add to campaign': perform_add_to_campaign
+    'add to campaign': perform_add_to_campaign,
 }
 
 
