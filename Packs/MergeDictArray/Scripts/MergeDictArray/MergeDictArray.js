@@ -73,7 +73,7 @@ function merge_object_value(dst, src) {
     if (!is_object(src)) {
         throw 'Invalid object in source value: ' + JSON.stringify(src);
     }
-    out = Object.assign({}, dst);
+    let out = Object.assign({}, dst);
     for (const k in src) {
         if (k in dst) {
             for (const sval of Array.isArray(src[k]) ? src[k] : [src[k]]) {
