@@ -14,7 +14,8 @@ logging.basicConfig()
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 try:
-    resilient.co3.LOG.disable(logging.ERROR)
+    # disable 'warning' logs from 'resilient.co3'
+    logging.getLogger('resilient.co3').setLevel(logging.ERROR)
 except Exception:
     # client with no co3 instance should pass this exception
     pass
