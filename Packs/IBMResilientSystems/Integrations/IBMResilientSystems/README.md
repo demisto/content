@@ -209,7 +209,7 @@ Severity:Low</pre>
 </tr>
 <tr>
 <td style="width: 211px;">other-fields</td>
-<td style="width: 503px;">A json object of the form: {field_name: new_field_value} currently we support the following field types<br /><img src="../../doc_files/support_field_types.png" /></td>
+<td style="width: 503px;">A json object of the form: {field_name: new_field_value} currently we support the following field types<br /><img src="https://github.com/demisto/content/raw/3322c5933388f2ea9c52dc9fe31a5feb52bc1050/Packs/IBMResilientSystems/doc_files/support_field_types.png" /></td>
 </tr>
 </tbody>
 </table>

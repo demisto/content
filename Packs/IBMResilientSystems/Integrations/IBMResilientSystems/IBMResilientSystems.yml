@@ -300,7 +300,7 @@ script:
         {"description": {"textarea": {"format": "html", "content": "The new description"}},
         "name": {"text": "The new name"}}. Because of API limitations we currently
         support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea
-        as you can see in the README.
+        as you can see in the README.md file.
         In case of conflicts refer to ''other-fields''.'
       isArray: false
       name: other-fields
@@ -607,7 +607,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The id of the incident.
+      description: The ID of the incident.
       isArray: false
       name: incident-id
       required: true
