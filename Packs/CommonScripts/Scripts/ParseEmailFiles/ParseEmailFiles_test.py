@@ -408,8 +408,8 @@ def test_email_with_special_character(mocker):
         'This Test® passes'
     ),
     (
-        '=?utf-8?B?44CQ5qyh5pyf5Z+65bm544CRVUFUX+mAsuaNl+eiuuiqjeS8mu+8iOWklQ==?= =?utf-8?B?5Lya4pGg77yJ?=',
-        '\xe3\x80\x90\xe6\xac\xa1\xe6\x9c\x9f\xe5\x9f\xba\xe5\xb9\xb9\xe3\x80\x91UAT_\xe9\x80\xb2\xe6\x8d\x97\xe7\xa2\xba\xe8\xaa\x8d\xe4\xbc\x9a\xef\xbc\x88\xe5\xa4\x95\xe4\xbc\x9a\xe2\x91\xa0\xef\xbc\x89'  # noqa E501
+        '=?utf-8?B?44CQ?= =?utf-8?B?4pGg?=',    # test case: double utf-8 byte encoded
+        '\xe3\x80\x90\xe2\x91\xa0'              # 【①
     ),
 ])
 def test_utf_subject_convert(encoded_subject, decoded_subject):
