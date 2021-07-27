@@ -157,7 +157,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2295
         }
       }
     note: false
@@ -175,8 +175,8 @@ tasks:
       id: 86d7cddd-bbc0-4eae-834c-0bc53d720941
       version: -1
       name: Check If Fields Exists
-      description: Receives names of fields and map. Checks if this map contains these
-        fields.
+      description: Verify that a given object includes all the given fields. (Available
+        from Cortex XSOAR 6.0.0).
       scriptName: VerifyObjectFieldsList
       type: regular
       iscommand: false
@@ -185,10 +185,10 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      object:
-        simple: ${Indicators}
       fields_to_search:
         simple: ${serverConfig.response.sysConf.searchfield}
+      object:
+        simple: ${Indicators}
     separatecontext: false
     view: |-
       {
@@ -217,7 +217,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -268,7 +268,7 @@ tasks:
       AdditionalPollingCommandArgNames:
         simple: size
       AdditionalPollingCommandArgValues:
-        simple: "3"
+        simple: "1"
       Ids:
         simple: ${searchQuery}
       Interval:
@@ -278,9 +278,9 @@ tasks:
       PollingCommandName:
         simple: VerifyEnoughIndicators
       Timeout:
-        simple: "10"
+        simple: "5"
       dt:
-        simple: IndicatorsCheck(val.ConditionMet !== true).Query
+        simple: IndicatorsCheck(val.ConditionMet == false).Query
     separatecontext: true
     loop:
       iscommand: false
@@ -397,7 +397,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -434,7 +434,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
@@ -480,12 +480,68 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 289f574f-845e-4b73-857f-ff077eec31f4
+    type: playbook
+    task:
+      id: 289f574f-845e-4b73-857f-ff077eec31f4
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      Ids:
+        simple: ${serverConfig.response.sysConf.sourcebrand}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: integration_name
+      PollingCommandName:
+        simple: VerifyIntegrationHealth
+      Timeout:
+        simple: "10"
+      dt:
+        simple: IntegrationHealth(val.fetchDone==false).integrationName
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
+        "height": 2310,
         "width": 492.5,
         "x": 50,
         "y": 50
