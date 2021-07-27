@@ -1,5 +1,4 @@
 import pytest
-import json
 import io
 from CommonServerPython import *
 from CommonServerPython import DemistoException, Common
@@ -41,7 +40,7 @@ TEST_PREPARE_ARGS = [({'type': '1', 'to_ids': 0, 'from': '2', 'to': '3', 'event_
                      ({}, {'limit': '50', 'controller': 'attributes'})  # default value
                      ]
 
-TEST_EVENTS_INCLUDE_DETECTED_TAG = [("2", ['149', '144', '145']),  # 3 events include the detected tag
+TEST_EVENTS_INCLUDE_DETECTED_TAG = [("2", ['149', '145', '144']),  # 3 events include the detected tag
                                     ("278", ['145']),  # 1 event includes the detected attribute's tag
                                     (None, []),  # no tag was detected, no event returns
                                     ("104", ['149'])]  # 1 event includes the detected event's tag
@@ -72,7 +71,7 @@ def test_misp_convert_timestamp_to_date_string(mocker):
     """
     mock_misp(mocker)
     from MISPV3 import misp_convert_timestamp_to_date_string
-    assert misp_convert_timestamp_to_date_string(1546713469) == "2019-01-05 18:37:49"
+    assert misp_convert_timestamp_to_date_string(1546713469) == "2019-01-05T18:37:49Z"
 
 
 def test_build_list_from_dict(mocker):
@@ -507,7 +506,9 @@ def test_parse_response_reputation_command(mocker):
     reputation_expected = util_load_json("test_data/reputation_command_outputs.json")
     malicious_tag_ids = ['279', '131']
     suspicious_tag_ids = ['104']
-    outputs, _, _, _ = parse_response_reputation_command(reputation_response, malicious_tag_ids, suspicious_tag_ids)
+    attribute_limit = 3
+    outputs, _, _, _ = parse_response_reputation_command(reputation_response, malicious_tag_ids, suspicious_tag_ids,
+                                                         attribute_limit)
     assert outputs == reputation_expected
 
 
