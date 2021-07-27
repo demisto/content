@@ -4,6 +4,7 @@
     "feed": false,
     "id": "Guardicore classifier",
     "name": "Guardicore classifier",
+    "keyTypeMap": {},
     "propagationLabels": [
         "all"
     ],
