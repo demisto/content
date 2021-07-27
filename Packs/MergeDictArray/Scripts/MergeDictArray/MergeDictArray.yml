@@ -29,20 +29,13 @@ args:
 comment: Each of entry in an array is merged into the existing array if the keyed-value
   matches.
 commonfields:
-  id: 9ab01ba0-72ce-4e3d-8bfc-a11712372e14
+  id: MergeDictArray
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-    itemVersion: ""
-    packID: 1c437523-02a8-4bd8-8c33-7584e17c6cf2
-    propagationLabels:
-    - all
-    toServerVersion: ""
 enabled: true
-engineinfo: {}
 name: MergeDictArray
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -52,3 +45,6 @@ tags:
 - general
 - entirelist
 type: javascript
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

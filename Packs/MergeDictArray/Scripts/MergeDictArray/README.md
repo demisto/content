@@ -24,3 +24,149 @@ Each of entry in an array is merged into the existing array if the keyed-value m
 ## Outputs
 ---
 There are no outputs for this script.
+
+
+----
+## Examples
+---
+
+#### Example 1
+
+##### Context
+    {
+        "Shodan": {
+            "IP": {
+                "Address": "8.8.8.8", 
+                "ISP": "Google LLC", 
+                "Longitude": -122.0775, 
+                "Port": [
+                    53
+                ], 
+                "CountryName": "United States", 
+                "Latitude": 37.4056, 
+                "Org": "Google LLC", 
+                "ASN": "AS15169"
+            }
+        }, 
+        "DBotScore [
+            {
+                "Indicator": "8.8.8.8", 
+                "Score": 0, 
+                "Type": "ip"
+            },
+            {
+                "Address": "8.8.4.4", 
+                "Score": 0, 
+                "Type": "ip"
+            }
+        ]
+    }
+
+##### Parameters
+
+| **Argument Name** | **Value** |
+| --- | --- |
+| value | ${DBotScore} |
+| array_path |  |
+| merge_with | ${Shodan.IP} |
+| mapping | Address:Indicator |
+| out_key | |
+| out_path | |
+| appendable | true |
+
+
+##### Output
+    [
+        {
+            "Indicator": "8.8.8.8", 
+            "Score": 0, 
+            "Type": "ip",
+            "Address": "8.8.8.8", 
+            "ISP": "Google LLC", 
+            "Longitude": -122.0775, 
+            "Port": [
+                53
+            ], 
+            "CountryName": "United States", 
+            "Latitude": 37.4056, 
+            "Org": "Google LLC", 
+            "ASN": "AS15169"
+        },
+        {
+            "Address": "8.8.4.4", 
+            "Score": 0, 
+            "Type": "ip"
+        }
+    ]
+
+
+#### Example 2
+
+##### Context
+    {
+        "Shodan": {
+            "IP": {
+                "Address": "8.8.8.8", 
+                "ISP": "Google LLC", 
+                "Longitude": -122.0775, 
+                "Port": [
+                    53
+                ], 
+                "CountryName": "United States", 
+                "Latitude": 37.4056, 
+                "Org": "Google LLC", 
+                "ASN": "AS15169"
+            }
+        }, 
+        "DBotScore [
+            {
+                "Indicator": "8.8.8.8", 
+                "Score": 0, 
+                "Type": "ip"
+            },
+            {
+                "Address": "8.8.4.4", 
+                "Score": 0, 
+                "Type": "ip"
+            }
+        ]
+    }
+
+##### Parameters
+
+| **Argument Name** | **Value** |
+| --- | --- |
+| value | ${DBotScore} |
+| array_path |  |
+| merge_with | ${Shodan.IP} |
+| mapping | Address:Indicator |
+| out_key | Shodan |
+| out_path | |
+| appendable | true |
+
+
+##### Output
+    [
+        {
+            "Indicator": "8.8.8.8", 
+            "Score": 0, 
+            "Type": "ip",
+            "Shodan": {
+                "Address": "8.8.8.8", 
+                "ISP": "Google LLC", 
+                "Longitude": -122.0775, 
+                "Port": [
+                    53
+                ],
+                "CountryName": "United States", 
+                "Latitude": 37.4056, 
+                "Org": "Google LLC", 
+                "ASN": "AS15169"
+            }
+        },
+        {
+            "Address": "8.8.4.4", 
+            "Score": 0, 
+            "Type": "ip"
+        }
+    ]
