@@ -21,6 +21,20 @@ trigger-private-build:
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
 
+run-unittests-and-lint:
+  extends:
+    - .run-unittests-and-lint
+  rules:
+    - if: '$NIGHTLY'
+
+
+run-validations:
+  extends:
+    - .run-validations
+  rules:
+    - if: '$NIGHTLY'
+
+
 create-instances:
   extends:
     - .default-job-settings
@@ -106,6 +120,7 @@ create-instances:
     - !reference [.open-ssh-tunnel]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - |
       if [ -f ./Tests/failed_tests.txt ]; then
@@ -134,6 +149,24 @@ server_6_0:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
   variables:
     INSTANCE_ROLE: "Server 6.0"
+
+
+server_6_1:
+  extends: .test_content_on_server_instances_base
+  #  No need to trigger in case of release branch
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.1"
+
+
+server_6_2:
+  extends: .test_content_on_server_instances_base
+  #  No need to trigger in case of release branch
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.2"
 
 
 server_master:
