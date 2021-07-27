@@ -2,15 +2,15 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 import traceback
 
 
-def health_check(health_dict, integration_name: str) -> bool:
+def health_check(health_dict, integration_name: str) -> Tuple[bool, bool]:
     for _, integration in health_dict.items():
         if integration.get('brand') == integration_name:
-            return False if integration.get('lastError') else True
-    return True
+            return (False, True) if integration.get('lastError') else (True, True)
+    return True, False
 
 
 def health_check_command(args: Dict[str, Any]) -> CommandResults:
@@ -28,14 +28,16 @@ def health_check_command(args: Dict[str, Any]) -> CommandResults:
         })
     health_dict = raw_result[0]["Contents"]["response"]["health"]
 
-    is_health = health_check(health_dict, integration_name)
+    is_health, fetch_done = health_check(health_dict, integration_name)
 
     return CommandResults(
         outputs_prefix='IntegrationHealth',
         outputs_key_field='',
         outputs={
             'isHealth': is_health,
-            'healthDict': health_dict
+            'healthDict': health_dict,
+            'fetchDone': fetch_done,
+            'integrationName': integration_name
         },
     )
 

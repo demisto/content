@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 50
         }
       }
@@ -60,7 +60,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 895
         }
       }
@@ -94,7 +94,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 195
         }
       }
@@ -130,7 +130,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 370
         }
       }
@@ -156,8 +156,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2295
+          "x": 50,
+          "y": 2470
         }
       }
     note: false
@@ -193,7 +193,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1595
         }
       }
@@ -217,7 +217,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "23"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -230,7 +230,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1770
         }
       }
@@ -290,8 +290,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1070
+          "x": 162.5,
+          "y": 1080
         }
       }
     note: false
@@ -324,8 +324,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1945
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -361,8 +361,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2120
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
@@ -397,7 +397,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 545
         }
       }
@@ -433,7 +433,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1245
         }
       }
@@ -469,7 +469,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 720
         }
       }
@@ -493,7 +493,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "17"
+      - "23"
       "yes":
       - "8"
     separatecontext: false
@@ -508,8 +508,64 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 4b950e3f-635e-4660-87bb-d86d53cc419c
+    type: playbook
+    task:
+      id: 4b950e3f-635e-4660-87bb-d86d53cc419c
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      Ids:
+        simple: ${serverConfig.response.sysConf.sourcebrand}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: integration_name
+      PollingCommandName:
+        simple: VerifyIntegrationHealth
+      Timeout:
+        simple: "10"
+      dt:
+        simple: IntegrationHealth(val.fetchDone==false).integrationName
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
@@ -524,8 +580,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
-        "width": 605,
+        "height": 2485,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }
