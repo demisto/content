@@ -208,7 +208,7 @@ script:
       description: If email lock proposed.
       type: boolean
     - contextPath: MISP.Event.Timestamp
-      description: Timestamp of the event.
+      description: Last change event timestamp.
       type: string
     - contextPath: MISP.Event.Galaxy.Description
       description: Event's galaxy description.
@@ -298,7 +298,7 @@ script:
       description: Attribute first_seen timestamp.
       type: string
     - contextPath: MISP.Attribute.Timestamp
-      description: Attribute timestamp.
+      description: Attribute creation timestamp.
       type: string
     - contextPath: MISP.Attribute.ObjectID
       description: Attribute object id.
@@ -340,13 +340,13 @@ script:
       description: MISP event name.
       type: string
     - contextPath: MISP.Attribute.Event.Timestamp
-      description: Timestamp of the event.
+      description: Last change event timestamp.
       type: string
     - contextPath: MISP.Attribute.Event.Published
       description: Is the event published.
       type: boolean
     - contextPath: MISP.Attribute.Event.Date
-      description: Event Date.
+      description: Event creation Date.
       type: date
     - contextPath: MISP.Attribute.Event.ThreatLevelID
       description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
@@ -439,7 +439,7 @@ script:
       description: Attribute first_seen timestamp.
       type: string
     - contextPath: MISP.Attribute.Timestamp
-      description: Attribute timestamp.
+      description: Attribute creation timestamp.
       type: string
     - contextPath: MISP.Attribute.ObjectID
       description: Attribute object id.
@@ -481,13 +481,13 @@ script:
       description: MISP event name.
       type: string
     - contextPath: MISP.Attribute.Event.Timestamp
-      description: Timestamp of the event.
+      description: Last change event timestamp.
       type: string
     - contextPath: MISP.Attribute.Event.Published
       description: Is the event published.
       type: boolean
     - contextPath: MISP.Attribute.Event.Date
-      description: Event Date.
+      description: Event creation Date.
       type: date
     - contextPath: MISP.Attribute.Event.ThreatLevelID
       description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
@@ -586,7 +586,7 @@ script:
       description: Attribute first_seen timestamp.
       type: string
     - contextPath: MISP.Attribute.Timestamp
-      description: Attribute timestamp.
+      description: Attribute creation timestamp.
       type: string
     - contextPath: MISP.Attribute.ObjectID
       description: Attribute object id.
@@ -628,13 +628,13 @@ script:
       description: MISP event name.
       type: string
     - contextPath: MISP.Attribute.Event.Timestamp
-      description: Timestamp of the event.
+      description: Last change event timestamp.
       type: string
     - contextPath: MISP.Attribute.Event.Published
       description: Is the event published.
       type: boolean
     - contextPath: MISP.Attribute.Event.Date
-      description: Event Date.
+      description: Event creation Date.
       type: date
     - contextPath: MISP.Attribute.Event.ThreatLevelID
       description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
@@ -727,7 +727,7 @@ script:
       description: Attribute first_seen timestamp.
       type: string
     - contextPath: MISP.Attribute.Timestamp
-      description: Attribute timestamp.
+      description: Attribute creation timestamp.
       type: string
     - contextPath: MISP.Attribute.ObjectID
       description: Attribute object id.
@@ -769,13 +769,13 @@ script:
       description: MISP event name.
       type: string
     - contextPath: MISP.Attribute.Event.Timestamp
-      description: Timestamp of the event.
+      description: Last change event timestamp.
       type: string
     - contextPath: MISP.Attribute.Event.Published
       description: Is the event published.
       type: boolean
     - contextPath: MISP.Attribute.Event.Date
-      description: Event Date.
+      description: Event creation Date.
       type: date
     - contextPath: MISP.Attribute.Event.ThreatLevelID
       description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
@@ -868,7 +868,7 @@ script:
       description: Attribute first_seen timestamp.
       type: string
     - contextPath: MISP.Attribute.Timestamp
-      description: Attribute timestamp.
+      description: Attribute creation timestamp.
       type: string
     - contextPath: MISP.Attribute.ObjectID
       description: Attribute object id.
@@ -910,13 +910,13 @@ script:
       description: MISP event name.
       type: string
     - contextPath: MISP.Attribute.Event.Timestamp
-      description: Timestamp of the event.
+      description: Last change event timestamp.
       type: string
     - contextPath: MISP.Attribute.Event.Published
       description: Is the event published.
       type: boolean
     - contextPath: MISP.Attribute.Event.Date
-      description: Event Date.
+      description: Event creation Date.
       type: date
     - contextPath: MISP.Attribute.Event.ThreatLevelID
       description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined).
@@ -1121,7 +1121,7 @@ script:
       description: If email lock proposed.
       type: boolean
     - contextPath: MISP.Event.Timestamp
-      description: Timestamp of the event.
+      description: Last change event timestamp.
       type: string
     - contextPath: MISP.Event.Galaxy.Description
       description: Event's galaxy description.
@@ -1245,7 +1245,7 @@ script:
       description: Attribute first_seen timestamp.
       type: string
     - contextPath: MISP.Attribute.Timestamp
-      description: Attribute timestamp.
+      description: Attribute creation timestamp.
       type: string
     - contextPath: MISP.Attribute.Deleted
       description: Is the attribute deleted.
@@ -1379,7 +1379,7 @@ script:
       description: If email lock proposed.
       type: boolean
     - contextPath: MISP.Event.Timestamp
-      description: Timestamp of the event.
+      description: Last change event timestamp.
       type: string
     - contextPath: MISP.Event.Galaxy.Description
       description: Event's galaxy description.
@@ -1499,7 +1499,7 @@ script:
       description: If email lock proposed.
       type: boolean
     - contextPath: MISP.Event.Timestamp
-      description: Timestamp of the event.
+      description: Last change event timestamp.
       type: string
     - contextPath: MISP.Event.Galaxy.Description
       description: Event's galaxy description.
@@ -1577,7 +1577,7 @@ script:
       description: Attribute first_seen timestamp.
       type: string
     - contextPath: MISP.Attribute.Timestamp
-      description: Attribute timestamp.
+      description: Attribute creation timestamp.
       type: string
     - contextPath: MISP.Attribute.ObjectID
       description: Attribute object id.
@@ -1667,7 +1667,7 @@ script:
       description: Attribute first_seen timestamp.
       type: string
     - contextPath: MISP.Attribute.Timestamp
-      description: Attribute timestamp.
+      description: Attribute creation timestamp.
       type: string
     - contextPath: MISP.Attribute.ObjectID
       description: Attribute object id.
@@ -1838,7 +1838,7 @@ script:
       description: ID of the first event from which the object originated.
       type: Number
     - contextPath: MISP.Event.Object.Attribute.Timestamp
-      description: Timestamp when the object was created.
+      description: Attribute creation timestamp.
       type: Date
     - contextPath: MISP.Event.Object.Attribute.Deleted
       description: Whether the object was deleted.
@@ -1946,7 +1946,7 @@ script:
       description: ID of the first event from which the object originated.
       type: Number
     - contextPath: MISP.Event.Object.Attribute.Timestamp
-      description: Timestamp of object creation
+      description: Attribute creation timestamp.
       type: Date
     - contextPath: MISP.Event.Object.Attribute.Deleted
       description: Whether the object was deleted.
@@ -2060,7 +2060,7 @@ script:
       description: ID of the first event from which the object originated.
       type: Number
     - contextPath: MISP.Event.Object.Attribute.Timestamp
-      description: Timestamp when the object was created.
+      description: Attribute creation timestamp.
       type: Date
     - contextPath: MISP.Event.Object.Attribute.Deleted
       description: Whether the object was deleted.
@@ -2164,7 +2164,7 @@ script:
       description: ID of the first event from which the object originated.
       type: Number
     - contextPath: MISP.Event.Object.Attribute.Timestamp
-      description: Timestamp when the object was created.
+      description: Attribute creation timestamp.
       type: Date
     - contextPath: MISP.Event.Object.Attribute.Deleted
       description: Whether the object was deleted?
@@ -2316,7 +2316,7 @@ script:
       description: ID of the first event from which the object originated.
       type: Number
     - contextPath: MISP.Event.Object.Attribute.Timestamp
-      description: Timestamp when the object was created.
+      description: Attribute creation timestamp.
       type: Date
     - contextPath: MISP.Event.Object.Attribute.Deleted
       description: Whether the object was deleted.
@@ -2526,7 +2526,7 @@ script:
       description: Attribute event ID.
       type: string
     - contextPath: MISP.Attribute.Timestamp
-      description: Attribute timestamp.
+      description: Attribute creation timestamp.
       type: number
     - contextPath: MISP.Attribute.Deleted
       description: Is the attribute deleted.

@@ -367,7 +367,7 @@ def limit_tag_output_to_id_and_name(attribute_dict, is_event_level):
     return output, tag_set_ids
 
 
-def parse_response_reputation_command(misp_response, malicious_tag_ids, suspicious_tag_ids):
+def parse_response_reputation_command(misp_response, malicious_tag_ids, suspicious_tag_ids, attributes_limit):
     """
     After getting all the attributes which match the required indicator value, this function parses the response.
     This function goes over all the attributes that found and by sub-functions calculated the score of the indicator.
@@ -388,17 +388,18 @@ def parse_response_reputation_command(misp_response, malicious_tag_ids, suspicio
     attributes_list = response.get('Attribute')
     if not attributes_list:
         return None
-    found_related_events, attributes_tag_ids, event_tag_ids = prepare_attributes_array_to_context_data(response)
+    attributes_list = sorted(attributes_list, key=lambda attribute_item: attribute_item['event_id'], reverse=True)[
+                      :attributes_limit]
+    found_related_events, attributes_tag_ids, event_tag_ids = prepare_attributes_array_to_context_data(attributes_list)
     attribute_in_event_with_bad_threat_level = found_event_with_bad_threat_level_id(found_related_events)
     score, found_tag = get_score(attribute_tags_ids=attributes_tag_ids, event_tags_ids=event_tag_ids,
                                  malicious_tag_ids=malicious_tag_ids, suspicious_tag_ids=suspicious_tag_ids,
                                  is_attribute_in_event_with_bad_threat_level=attribute_in_event_with_bad_threat_level)
-    formatted_response = replace_keys_from_misp_to_context_data(response)  # this is the outputs (Attribute)
+    formatted_response = replace_keys_from_misp_to_context_data({'Attribute': attributes_list})
     return formatted_response, score, found_tag, found_related_events
 
 
-def prepare_attributes_array_to_context_data(response):
-    attributes_list = response.get('Attribute')
+def prepare_attributes_array_to_context_data(attributes_list):
     attributes_tag_ids, event_tag_ids = set(), set()
     found_related_events = {}
     if not attributes_list:
@@ -619,7 +620,8 @@ def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_id
     if is_indicator_found:
         outputs, score, found_tag, found_related_events = parse_response_reputation_command(misp_response,
                                                                                             malicious_tag_ids,
-                                                                                            suspicious_tag_ids)
+                                                                                            suspicious_tag_ids,
+                                                                                            attributes_limit)
         dbot = Common.DBotScore(indicator=value, indicator_type=indicator_type,
                                 score=score, reliability=reliability, malicious_description="Match found in MISP")
         indicator = get_dbot_indicator(dbot_type, dbot, value)
