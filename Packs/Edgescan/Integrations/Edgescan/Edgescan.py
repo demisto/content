@@ -211,12 +211,12 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
     request = {
         "risk_more_than": risk_more_than,
-        "cvss_score": cvss_score,
+        "cvss_score_greater_than": cvss_score,
         "date_opened_after": str(datetime.fromtimestamp(last_fetch).isoformat()) + ".000Z"  # type: ignore
     }
 
     if cvss_score == "" or cvss_score is None:
-        del request['cvss_score']
+        del request['cvss_score_greater_than']
 
     response = client.vulnerabilities_get_query_request(request=request, limit=max_results, o=offset)
     offset += max_results
