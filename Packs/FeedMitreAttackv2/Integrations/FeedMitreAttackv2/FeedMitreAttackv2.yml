@@ -138,5 +138,5 @@ script:
   subtype: python3
   type: python
 tests:
-- FeedMitreAttackv2_test
+- No tests
 fromversion: 5.5.0
