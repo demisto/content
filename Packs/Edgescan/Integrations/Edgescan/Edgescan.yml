@@ -24,12 +24,14 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: This has to be an exact value. No filter operator available.
+- additionalinfo: Fetch vulnerabilities with CVS score greater than. This can be a
+    decimal point number.
+  defaultvalue: '0'
   display: Fetch vulnerabilities with CVSS
   name: cvss_score
   required: false
   type: 0
-- defaultvalue: '3'
+- defaultvalue: '0'
   display: Fetch vulnerabilities with risk more than
   name: risk_more_than
   required: false
