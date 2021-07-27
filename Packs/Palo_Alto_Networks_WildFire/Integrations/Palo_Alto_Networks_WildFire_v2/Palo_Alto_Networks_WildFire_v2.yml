@@ -48,7 +48,7 @@ script:
       description: File hash to check.
       isArray: true
       name: file
-      required: false
+      required: true
       secret: false
     - default: false
       description: MD5 hash to check.
@@ -152,8 +152,8 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: Interval in seconds between each poll.
       isArray: false
@@ -162,7 +162,8 @@ script:
       secret: false
       defaultValue: '60'
     - default: false
-      description: Used for the inner polling flow, for uploading a file use the 'upload' argument instead
+      description: Used for the inner polling flow, for uploading a file use the 'upload'
+        argument instead
       isArray: true
       name: md5
       required: false
@@ -170,23 +171,25 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: Request a structured report (XML or PDF). Only relevant for when using polling=true.
+      description: Request a structured report (XML or PDF). Only relevant for when
+        using polling=true.
       isArray: false
       name: format
       predefined:
-        - xml
-        - pdf
+      - xml
+      - pdf
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Receive extended information from WildFire. Only relevant for when using polling=true.
+      description: Receive extended information from WildFire. Only relevant for when
+        using polling=true.
       isArray: false
       name: verbose
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -218,7 +221,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used for the inner polling flow, for uploading a url use the 'upload' argument instead.
+      description: Used for the inner polling flow, for uploading a url use the 'upload'
+        argument instead.
       isArray: false
       name: url
       required: false
@@ -229,8 +233,8 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: Interval in seconds between each poll.
       isArray: false
@@ -241,23 +245,25 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: Request a structured report (XML or PDF). Only relevant for when using polling=true.
+      description: Request a structured report (XML or PDF). Only relevant for when
+        using polling=true.
       isArray: false
       name: format
       predefined:
-        - xml
-        - pdf
+      - xml
+      - pdf
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Receive extended information from WildFire. Only relevant for when using polling=true.
+      description: Receive extended information from WildFire. Only relevant for when
+        using polling=true.
       isArray: false
       name: verbose
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -471,7 +477,8 @@ script:
       type: number
   - arguments:
     - default: false
-      description: EntryID of the text file that contains multiple hashes. Limit is 500 hashes.
+      description: EntryID of the text file that contains multiple hashes. Limit is
+        500 hashes.
       isArray: true
       name: EntryID
       required: false
@@ -483,7 +490,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a verdict regarding multiple hashes, stored in a TXT file or given as list.
+    description: Returns a verdict regarding multiple hashes, stored in a TXT file
+      or given as list.
     execution: false
     name: wildfire-get-verdicts
     outputs:
@@ -519,7 +527,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used for the inner polling flow, for uploading a url use the 'upload' argument instead.
+      description: Used for the inner polling flow, for uploading a url use the 'upload'
+        argument instead.
       isArray: true
       name: url
       required: false
@@ -530,8 +539,8 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: Interval in seconds between each poll.
       isArray: false
@@ -542,23 +551,25 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: Request a structured report (XML or PDF). Only relevant for when using polling=true.
+      description: Request a structured report (XML or PDF). Only relevant for when
+        using polling=true.
       isArray: false
       name: format
       predefined:
-        - xml
-        - pdf
+      - xml
+      - pdf
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Receive extended information from WildFire. Only relevant for when using polling=true.
+      description: Receive extended information from WildFire. Only relevant for when
+        using polling=true.
       isArray: false
       name: verbose
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -605,7 +616,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to download as screenshots or as downloadable files. if not specified, both will be downloaded.
+      description: Whether to download as screenshots or as downloadable files. if
+        not specified, both will be downloaded.
       isArray: false
       name: types
       required: false
@@ -614,7 +626,8 @@ script:
       - 'screenshot'
       secret: false
     deprecated: false
-    description: Get web artifacts for a URL webpage. An empty tgz will be returned, no matter what the verdict, or even if the URL is malformed.
+    description: Get web artifacts for a URL webpage. An empty tgz will be returned,
+      no matter what the verdict, or even if the URL is malformed.
     execution: false
     name: wildfire-get-url-webartifacts
     outputs:
@@ -636,7 +649,7 @@ script:
     - contextPath: InfoFile.Type
       description: The webartifacts file type.
       type: string
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
   longRunning: false

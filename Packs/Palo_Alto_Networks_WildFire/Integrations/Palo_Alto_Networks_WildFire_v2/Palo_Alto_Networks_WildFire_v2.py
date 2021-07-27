@@ -342,6 +342,7 @@ def wildfire_upload_file_command(args):
         command_results_list.append(command_results)
     return command_results_list
 
+
 @logger
 def wildfire_upload_file_url(upload):
     upload_file_url_uri = URL + URL_DICT["upload_file_url"]
@@ -368,8 +369,8 @@ Content-Disposition: form-data; name="url"
 
 
 def wildfire_upload_file_url_with_polling_command(args):
-    return run_polling_command(args, 'wildfire-upload-file-url', wildfire_upload_file_url_command, wildfire_get_report_command,
-                        'URL')
+    return run_polling_command(args, 'wildfire-upload-file-url', wildfire_upload_file_url_command,
+                               wildfire_get_report_command, 'URL')
 
 
 def wildfire_upload_file_url_command(args):
@@ -714,8 +715,8 @@ def parse_file_report(reports, file_info):
                     for domain in report["elf_info"]["Domains"]["entry"]:
                         feed_related_indicators.append({'value': domain, 'type': 'Domain'})
             if 'IP_Addresses' in report["elf_info"]:
-                if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in report["elf_info"][
-                    "IP_Addresses"]:
+                if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in\
+                        report["elf_info"]["IP_Addresses"]:
                     for ip in report["elf_info"]["IP_Addresses"]["entry"]:
                         feed_related_indicators.append({'value': ip, 'type': 'IP'})
             if 'suspicious' in report["elf_info"]:
@@ -853,9 +854,8 @@ def wildfire_get_url_report(url: str) -> Tuple:
         return command_results, entry_context['Status']
 
 
-
 @logger
-def wildfire_get_file_report(file_hash: str, args):
+def wildfire_get_file_report(file_hash: str, args: dict):
     get_report_uri = URL + URL_DICT["report"]
     params = {'apikey': TOKEN, 'format': 'xml', 'hash': file_hash}
 
@@ -931,8 +931,9 @@ def wildfire_get_report_command(args):
     return command_results_list, status
 
 
-def wildfire_file_command():
-    inputs = file_args_handler(demisto.args().get('file'), demisto.args().get('md5'), demisto.args().get('sha256'))
+def wildfire_file_command(args):
+    inputs = file_args_handler(args.get('file'), args.get('md5'), args.get('sha256'))
+    command_results_list = []
     for element in inputs:
         if sha1Regex.match(element):
             demisto.results({
@@ -941,9 +942,10 @@ def wildfire_file_command():
                 'ContentsFormat': formats['text']
             })
         else:
-            file_hash, report, file_info = wildfire_get_file_report(element)
-            if file_hash is not None:
-                create_file_report(file_hash, report, file_info, 'xml', False)
+            command_results = wildfire_get_file_report(element, args)[0]
+        command_results_list. append(command_results)
+
+    return command_results
 
 
 def wildfire_get_sample(file_hash):
@@ -1027,7 +1029,7 @@ def main():
             return_results(wildfire_get_report_command(args)[0])
 
         elif command == 'file':
-            wildfire_file_command()
+            return_results(wildfire_file_command(args))
 
         elif command == 'wildfire-get-sample':
             wildfire_get_sample_command()
