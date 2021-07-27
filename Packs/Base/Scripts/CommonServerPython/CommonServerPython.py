@@ -226,6 +226,7 @@ class DBotScoreType(object):
     DBotScoreType.ACCOUNT
     DBotScoreType.CRYPTOCURRENCY
     DBotScoreType.EMAIL
+    DBotScoreType.CUSTOM
 
     :return: None
     :rtype: ``None``
