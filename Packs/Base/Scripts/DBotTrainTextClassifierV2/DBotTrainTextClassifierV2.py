@@ -410,7 +410,6 @@ def main():
     test_index, train_index = get_train_and_test_sets_indices(X, y)
     X_train, X_test = [X[i] for i in train_index], [X[i] for i in test_index]
     y_train, y_test = [y[i] for i in train_index], [y[i] for i in test_index]
-    # sys.exit(0)
     phishing_model = demisto_ml.train_model_handler(X_train, y_train, algorithm=algorithm, compress=False)
     ft_test_predictions = phishing_model.predict(X_test)
     y_pred = [{y_tuple[0]: float(y_tuple[1])} for y_tuple in ft_test_predictions]
