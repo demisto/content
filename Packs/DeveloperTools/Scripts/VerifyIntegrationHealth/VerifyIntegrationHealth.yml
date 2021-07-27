@@ -15,6 +15,12 @@ outputs:
 - contextPath: IntegrationHealth.isHealth
   description: 'Checks if the given integration got errors.'
   type: Boolean
+- contextPath: IntegrationHealth.fetchDone
+  description: 'Checks if the given integration finished it fetch.'
+  type: Boolean
+- contextPath: IntegrationHealth.integrationName
+  description: 'Requested integration name.'
+  type: String
 script: '-'
 system: false
 tags:
