@@ -521,7 +521,7 @@ def test_dbot_score(pulse: dict, score: int):
 
 @pytest.fixture(autouse=True)
 def handle_calling_context(mocker):
-    mocker.patch.object(demisto, 'callingContext', {'IntegrationBrand': INTEGRATION_NAME})
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
 
 
 @pytest.mark.parametrize('raw_response_general,raw_response_analysis,expected', [
