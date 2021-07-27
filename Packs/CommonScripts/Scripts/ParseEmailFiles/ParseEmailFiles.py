@@ -3407,7 +3407,10 @@ def convert_to_unicode(s, is_msg_header=True):
             try:
                 word_mime_encoded = s and MIME_ENCODED_WORD.search(s)
                 if word_mime_encoded:
-                    return mime_decode(word_mime_encoded)
+                    word_mime_decoded = mime_decode(word_mime_encoded)
+                    if word_mime_decoded and not MIME_ENCODED_WORD.search(word_mime_decoded):
+                        # ensure decoding was yielded
+                        return word_mime_decoded
             except Exception as e:
                 # in case we failed to mine-decode, we continue and try to decode
                 demisto.debug('Failed decoding mime-encoded string: {}. Will try regular decoding.'.format(str(e)))
