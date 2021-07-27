@@ -18,7 +18,7 @@ def _get_incident_campaign(id: int):
     return demisto.executeCommand('GetByIncidentId', {'incident_id': id, 'get_key': 'partofcampaign'})
 
 
-def filter_by_threshold(context: list, threshold: float):
+def filter_by_threshold(context: list, threshold: float) -> Tuple[list, list]:
     low = []
     high = []
     for item in context:
