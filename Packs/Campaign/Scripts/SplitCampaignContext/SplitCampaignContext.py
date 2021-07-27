@@ -24,6 +24,7 @@ def _get_incident_campaign(id: int):
         return_error('Failed to get campaign data from incident {}. Error details:\n{}'.format(id, get_error(res)))
     return res
 
+
 def filter_by_threshold(context: list, threshold: float) -> Tuple[list, list]:
     low = []
     high = []
