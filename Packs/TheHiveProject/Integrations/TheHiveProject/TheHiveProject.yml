@@ -1335,6 +1335,10 @@ script:
     - name: id
       description: Case ID
     description: List observables for a case.
+    outputs:
+    - contextPath: TheHive.Observables
+      description: _observable
+      type: string
   - name: thehive-create-observable
     arguments:
     - name: id
