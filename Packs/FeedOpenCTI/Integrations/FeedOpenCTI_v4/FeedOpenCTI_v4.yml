@@ -201,5 +201,5 @@ script:
   subtype: python3
   type: python
 tests:
-- Fetch Test
+- No Tests
 fromversion: 5.5.0
