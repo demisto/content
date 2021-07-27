@@ -1,0 +1,54 @@
+args:
+- description: The input value
+  isArray: true
+  name: value
+  required: true
+- description: The relative path to the array from `value`.
+  name: array_path
+- description: An array to merge from
+  isArray: true
+  name: merge_with
+  required: true
+- description: A comma separated list of pairs [key of value.arrah_path]:[key of merge_with].
+    e.g. ip:dst_ip, hostname:dst_host
+  name: mapping
+  required: true
+- description: The key to the value where each of the destination value is to be set
+  name: out_key
+- description: The relative path to the destination array where the marged array is
+    set
+  name: out_path
+- auto: PREDEFINED
+  defaultValue: "true"
+  description: true if it allows to simply append source entries which doesn't match,
+    otherwise false
+  name: appendable
+  predefined:
+  - "true"
+  - "false"
+comment: Each of entry in an array is merged into the existing array if the keyed-value
+  matches.
+commonfields:
+  id: 9ab01ba0-72ce-4e3d-8bfc-a11712372e14
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 1c437523-02a8-4bd8-8c33-7584e17c6cf2
+    propagationLabels:
+    - all
+    toServerVersion: ""
+enabled: true
+engineinfo: {}
+name: MergeDictArray
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags:
+- transformer
+- general
+- entirelist
+type: javascript
