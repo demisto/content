@@ -391,8 +391,8 @@ def parse_response_reputation_command(misp_response, malicious_tag_ids, suspicio
     attributes_list = response.get('Attribute')
     if not attributes_list:
         return None
-    attributes_list = sorted(attributes_list, key=lambda attribute_item: attribute_item['event_id'], reverse=True)[
-                      :attributes_limit]
+    attributes_list = sorted(attributes_list,
+                             key=lambda attribute_item: attribute_item['event_id'], reverse=True)[:attributes_limit]
     found_related_events, attributes_tag_ids, event_tag_ids = prepare_attributes_array_to_context_data(attributes_list)
     attribute_in_event_with_bad_threat_level = found_event_with_bad_threat_level_id(found_related_events)
     score, found_tag = get_score(attribute_tags_ids=attributes_tag_ids, event_tags_ids=event_tag_ids,
