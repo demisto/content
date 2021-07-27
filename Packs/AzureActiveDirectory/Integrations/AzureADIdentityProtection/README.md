@@ -88,7 +88,9 @@ There is no context output for this command.
 ``` !azure-ad-auth-complete ```
 
 #### Human Readable Output
-
+```
+✅ Authorization completed successfully.
+```
 
 
 ### azure-ad-auth-reset
