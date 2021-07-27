@@ -144,7 +144,7 @@ script:
       description: ID of the entry containing the file to upload
       isArray: true
       name: upload
-      required: false # TODO: only for polling, check
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -162,9 +162,31 @@ script:
       secret: false
       defaultValue: '60'
     - default: false
-      description: MD5 hash to check # TODO: only for polling, check
+      description: Used for the inner polling flow, for uploading a file use the 'upload' argument instead
       isArray: true
       name: md5
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: pdf
+      description: Request a structured report (XML or PDF). Only relevant for when using polling=true.
+      isArray: false
+      name: format
+      predefined:
+        - xml
+        - pdf
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Receive extended information from WildFire. Only relevant for when using polling=true.
+      isArray: false
+      name: verbose
+      predefined:
+        - 'true'
+        - 'false'
       required: false
       secret: false
     deprecated: false
@@ -193,13 +215,13 @@ script:
       description: URL of the remote file to upload.
       isArray: false
       name: upload
-      required: false # TODO: fix
+      required: false
       secret: false
     - default: false
-      description: URL of the remote file to upload.
+      description: Used for the inner polling flow, for uploading a url use the 'upload' argument instead.
       isArray: false
       name: url
-      required: false # TODO: fix
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -216,6 +238,28 @@ script:
       required: false
       secret: false
       defaultValue: '60'
+    - auto: PREDEFINED
+      default: false
+      defaultValue: pdf
+      description: Request a structured report (XML or PDF). Only relevant for when using polling=true.
+      isArray: false
+      name: format
+      predefined:
+        - xml
+        - pdf
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Receive extended information from WildFire. Only relevant for when using polling=true.
+      isArray: false
+      name: verbose
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Uploads the URL of a remote file to WildFire for analysis.
     execution: false
@@ -472,10 +516,10 @@ script:
       description: URL to submit to WildFire.
       isArray: true
       name: upload
-      required: false # TODO: only for polling, check
+      required: false
       secret: false
     - default: false
-      description: URL to submit to WildFire. # TODO: only for polling, check
+      description: Used for the inner polling flow, for uploading a url use the 'upload' argument instead.
       isArray: true
       name: url
       required: false
@@ -495,6 +539,28 @@ script:
       required: false
       secret: false
       defaultValue: '60'
+    - auto: PREDEFINED
+      default: false
+      defaultValue: pdf
+      description: Request a structured report (XML or PDF). Only relevant for when using polling=true.
+      isArray: false
+      name: format
+      predefined:
+        - xml
+        - pdf
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Receive extended information from WildFire. Only relevant for when using polling=true.
+      isArray: false
+      name: verbose
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Uploads a URL of a webpage to WildFire for analysis.
     execution: false

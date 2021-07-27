@@ -15,7 +15,8 @@ FILE_TYPE_SUPPRESS_ERROR = PARAMS.get('suppress_file_type_error')
 RELIABILITY = PARAMS.get('integrationReliability', DBotScoreReliability.B) or DBotScoreReliability.B
 DEFAULT_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 MULTIPART_HEADERS = {'Content-Type': "multipart/form-data; boundary=upload_boundry"}
-
+WILDFIRE_REPORT_DT_FILE = "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 ||" \
+                          " val.URL && val.URL == obj.URL)"
 
 if URL and not URL.endswith('/publicapi'):
     if URL[-1] != '/':
@@ -247,24 +248,6 @@ def create_dbot_score_from_verdicts(pretty_verdicts):
     return dbot_score_arr
 
 
-def create_upload_entry(upload_body, title, result):
-    pretty_upload_body = prettify_upload(upload_body)
-    human_readable = tableToMarkdown(title, pretty_upload_body, removeNull=True)
-    entry_context = {
-        "WildFire.Report"
-        "(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)":
-            pretty_upload_body
-    }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'HumanReadable': human_readable,
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': entry_context
-    })
-
-
 def hash_args_handler(sha256=None, md5=None):
     # hash argument used in wildfire-report, wildfire-verdict commands
     inputs = argToList(sha256) if sha256 else argToList(md5)
@@ -346,14 +329,14 @@ def wildfire_upload_file_with_polling_command(args):
 
 
 def wildfire_upload_file_command(args):
+    assert_upload_argument(args)
     uploads = argToList(args.get('upload'))
     command_results_list = []
     for upload in uploads:
         result, upload_body = wildfire_upload_file(upload)
         pretty_upload_body = prettify_upload(upload_body)
         human_readable = tableToMarkdown('WildFire Upload File', pretty_upload_body, removeNull=True)
-        command_results = (CommandResults(outputs_prefix="WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val"
-                                                         ".MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)",
+        command_results = (CommandResults(outputs_prefix=WILDFIRE_REPORT_DT_FILE,
                                           outputs=pretty_upload_body, readable_output=human_readable,
                                           raw_response=result))
         command_results_list.append(command_results)
@@ -390,15 +373,15 @@ def wildfire_upload_file_url_with_polling_command(args):
 
 
 def wildfire_upload_file_url_command(args):
+    assert_upload_argument(args)
     command_results_list = []
     uploads = argToList(args.get('upload'))
     for upload in uploads:
         result, upload_body = wildfire_upload_file_url(upload)
         pretty_upload_body = prettify_upload(upload_body)
         human_readable = tableToMarkdown('WildFire Upload File URL', pretty_upload_body, removeNull=True)
-        command_results = CommandResults(outputs_prefix="WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val"
-                                                        ".MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)",
-                                         outputs=pretty_upload_body, readable_output=human_readable, raw_response=result)
+        command_results = CommandResults(outputs_prefix=WILDFIRE_REPORT_DT_FILE, outputs=pretty_upload_body,
+                                         readable_output=human_readable, raw_response=result)
         command_results_list.append(command_results)
     return command_results_list
 
@@ -429,14 +412,14 @@ Content-Disposition: form-data; name="link"
 
 
 def wildfire_upload_url_command(args):
+    assert_upload_argument(args)
     command_results_list = []
     uploads = argToList(args.get('upload'))
     for upload in uploads:
         result, upload_url_data = wildfire_upload_url(upload)
         pretty_upload_body = prettify_upload(upload_url_data)
         human_readable = tableToMarkdown('WildFire Upload URL', pretty_upload_body, removeNull=True)
-        command_results = CommandResults(outputs_prefix="WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 ||"
-                                         " val.MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)",
+        command_results = CommandResults(outputs_prefix=WILDFIRE_REPORT_DT_FILE,
                                          outputs=pretty_upload_body, readable_output=human_readable,
                                          raw_response=result)
         command_results_list.append(command_results)
@@ -447,32 +430,32 @@ def wildfire_upload_url_with_polling_command(args):
     return run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command,
                                wildfire_get_report_command, 'URL')
 
-# args for search function:
-# wildfire-upload-url: upload (the url)
-# wildfire-upload: upload (the file)
-# wildfire-upload-file-url: upload (the url of the file)
-# wildfire-get-report: url, sha256, md5
 
-
-def get_search_identifier(outputs, uploaded_item):
+def get_results_function_args(outputs, uploaded_item, args):
     """
-    This function is used for the polling flow. After calling a search command on a url\file, in order to check the
-    status of the call, we need to retrieve the suitable identifier to call the results command on. for searching a url,
+    This function is used for the polling flow. After calling a upload command on a url\file, in order to check the
+    status of the call, we need to retrieve the suitable identifier to call the results command on. for uploading a url,
      the identifier is the url itself, but for a file we need to extract the file hash from the results of the initial
-     search call. Therefore, this function extract that identifier from the data inserted to the context data by the
-      search command.
+     upload call. Therefore, this function extract that identifier from the data inserted to the context data by the
+      upload command. The function also adds the 'verbose' and 'format' arguments that were given priorly to the upload
+      command.
     Args:
         outputs: the context data from the search command
         uploaded_item: 'FILE' or 'URL'
+        args: the args initially inserted to the upload function that initiated the polling sequence
 
     Returns:
 
     """
+    results_function_args = {}
     if uploaded_item == 'FILE':
         identifier = {'md5': outputs.get('MD5')}
     else:
         identifier = {'url': outputs.get('URL')}
-    return identifier
+    results_function_args.update(identifier)
+
+    results_function_args.update({key: value for key, value in args.items() if key in ['verbose', 'format']})
+    return results_function_args
 
 
 def run_polling_command(args: dict, cmd: str, upload_function: Callable, results_function: Callable, uploaded_item):
@@ -505,12 +488,12 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
             # create new search
             command_results = upload_function(args)[0]
             outputs = command_results.outputs
-            identifier = get_search_identifier(outputs, uploaded_item)
+            results_function_args = get_results_function_args(outputs, uploaded_item, args)
             if outputs.get('Status') != 'Completed':
-                polling_args = {  # TODO: make sure we do not support format and verbose in the polling sequence OR add them as args for the search function
+                polling_args = {
                     'interval_in_seconds': interval_in_secs,
                     'polling': True,
-                    **identifier,
+                    **results_function_args,
                 }
                 scheduled_command = ScheduledCommand(
                     command=cmd,
@@ -521,7 +504,7 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
                 command_results_list.append(command_results)
             else:
                 # the search is complete, return the search results using the results function
-                command_results, status = results_function(identifier)
+                command_results, status = results_function(results_function_args)
                 command_results_list.append(command_results)
         return command_results_list
     # not a new search, get search status
@@ -815,7 +798,7 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
         result = fileResult(file_name, res_pdf.content,
                             file_type)  # will be saved under 'InfoFile' in the context.
         demisto.results(result)
-        human_readable = 'WildFire File Report - PDF Format ' ### why not add file_info?
+        human_readable = tableToMarkdown('WildFire File Report - PDF format', prettify_report_entry(file_info))
 
     else:
         human_readable = tableToMarkdown('WildFire File Report', prettify_report_entry(file_info))
@@ -872,7 +855,7 @@ def wildfire_get_url_report(url: str) -> Tuple:
 
 
 @logger
-def wildfire_get_file_report(file_hash: str):
+def wildfire_get_file_report(file_hash: str, args):
     get_report_uri = URL + URL_DICT["report"]
     params = {'apikey': TOKEN, 'format': 'xml', 'hash': file_hash}
 
@@ -886,8 +869,8 @@ def wildfire_get_file_report(file_hash: str):
         reports = json_res.get('wildfire', {}).get('task_info', {}).get('report')
         file_info = json_res.get('wildfire').get('file_info')
 
-        verbose = demisto.args().get('verbose', 'false').lower() == 'true'
-        format_ = demisto.args().get('format', 'xml')
+        verbose = args.get('verbose', 'false').lower() == 'true'
+        format_ = args.get('format', 'xml')
 
         if reports and file_info:
             human_readable, entry_context, indicator = create_file_report(file_hash,
@@ -912,8 +895,7 @@ def wildfire_get_file_report(file_hash: str):
         indicator = Common.File(dbot_score=dbot_score_object, md5=md5, sha256=sha256)
 
     finally:
-        command_results = CommandResults(outputs_prefix='WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256'
-                                                        ' || val.MD5 && val.MD5 == obj.MD5)',
+        command_results = CommandResults(outputs_prefix=WILDFIRE_REPORT_DT_FILE,
                                          outputs=remove_empty_elements(entry_context),
                                          readable_output=human_readable, indicator=indicator, raw_response=json_res)
         return command_results, entry_context['Status']
@@ -943,7 +925,7 @@ def wildfire_get_report_command(args):
     inputs = urls if urls else hash_args_handler(sha256, md5)
 
     for element in inputs:
-        command_results, status = wildfire_get_url_report(element) if urls else wildfire_get_file_report(element)
+        command_results, status = wildfire_get_url_report(element) if urls else wildfire_get_file_report(element, args)
         command_results_list.append(command_results)
 
     return command_results_list, status
@@ -1000,6 +982,15 @@ def wildfire_get_sample_command():
                 'Sample was not found. '
                 'Please note that grayware and benign samples are available for 14 days only. '
                 'For more info contact your WildFire representative.')
+
+
+def assert_upload_argument(args):
+    """
+    Assert the upload argument is inserted when running the command without the builtin polling flow.
+    The upload argument is only required when polling is false.
+    """
+    if not argToBoolean(args.get('polling', False)) and not args.get('upload'):
+        raise ValueError('Please specify the item you wish to upload using the \'upload\' argument.')
 
 
 def main():
