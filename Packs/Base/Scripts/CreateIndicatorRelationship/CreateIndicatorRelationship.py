@@ -140,12 +140,10 @@ def validate_arguments(args: dict) -> Dict[str, str]:
         raise Exception("Missing entity_b in the create relationships")
     if args.get('entity_b') and not args.get('entity_b_type'):
         raise Exception("Missing entity_b_type in the create relationships")
-    return args
 
-
-def handle_stix_types(args: dict):
     args['entity_a_type'] = FeedIndicatorType.indicator_type_by_server_version(args.get('entity_a_type'))
     args['entity_b_type'] = FeedIndicatorType.indicator_type_by_server_version(args.get('entity_b_type'))
+    return args
 
 
 def create_indicators(args: dict):
@@ -211,7 +209,6 @@ def create_relationships(args: dict) -> Tuple[List[EntityRelationship], str]:
 def main():
     try:
         args = validate_arguments(demisto.args())
-        handle_stix_types(args)
         if argToBoolean(args.get('create_indicator')):
             create_indicators(args)
         relationships, human_readable = create_relationships(args)
