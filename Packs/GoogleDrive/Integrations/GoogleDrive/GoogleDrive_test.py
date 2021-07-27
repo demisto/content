@@ -495,423 +495,426 @@ def test_flatten_comment_mentioned_user_keys_for_fetch_incident():
     assert mentioned_users == output
 
 
-@patch(MOCKER_HTTP_METHOD)
-def test_drives_list_command_success(mocker_http_request, gsuite_client):
-    """
-    Scenario: For google-drive-drives-list command successful run.
+class TestDriveMethods:
 
-    Given:
-    - Command args.
+    @patch(MOCKER_HTTP_METHOD)
+    def test_drives_list_command_success(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-drives-list command successful run.
 
-    When:
-    - Calling google-drive-drives-list command with the parameters provided.
+        Given:
+        - Command args.
 
-    Then:
-    - Ensure command's raw_response, outputs should be as expected.
-    """
-    from GoogleDrive import drives_list_command
+        When:
+        - Calling google-drive-drives-list command with the parameters provided.
 
-    with open('test_data/drives_list_response.json', encoding='utf-8') as data:
-        mock_response = json.load(data)
-    mocker_http_request.return_value = mock_response
+        Then:
+        - Ensure command's raw_response, outputs should be as expected.
+        """
+        from GoogleDrive import drives_list_command
 
-    args = {
-        'use_domain_admin_access': True
-    }
-    result = drives_list_command(gsuite_client, args)
+        with open('test_data/drives_list_response.json', encoding='utf-8') as data:
+            mock_response = json.load(data)
+        mocker_http_request.return_value = mock_response
 
-    assert 'GoogleDrive.Drive' in result.outputs
-    assert result.outputs.get('GoogleDrive.Drive').get('PageToken') == 'myNextPageToken'
-    assert len(result.outputs['GoogleDrive.Drive'].get('Drive')) == 4
+        args = {
+            'use_domain_admin_access': True
+        }
+        result = drives_list_command(gsuite_client, args)
 
-    assert result.raw_response == mock_response
+        assert 'GoogleDrive.Drive' in result.outputs
+        assert result.outputs.get('GoogleDrive.Drive').get('PageToken') == 'myNextPageToken'
+        assert len(result.outputs['GoogleDrive.Drive'].get('Drive')) == 4
 
-    assert result.readable_output.startswith("### Total Retrieved Drive(s): ")
-    assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Drive(s)', 4) in result.readable_output
+        assert result.raw_response == mock_response
 
+        assert result.readable_output.startswith("### Total Retrieved Drive(s): ")
+        assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Drive(s)', 4) in result.readable_output
 
-@patch(MOCKER_HTTP_METHOD)
-def test_drives_list_command_failure(mocker_http_request, gsuite_client):
-    """
-    Scenario: For google-drives-list command failure.
+    @patch(MOCKER_HTTP_METHOD)
+    def test_drives_list_command_failure(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drives-list command failure.
 
-    Given:
-    - Command args and a non-working google api integration.
+        Given:
+        - Command args and a non-working google api integration.
 
-    When:
-    - Calling google-drives-list command with the parameters provided.
+        When:
+        - Calling google-drives-list command with the parameters provided.
 
-    Then:
-    - Ensure command's error response is as expected.
-    """
-    mocker_http_request.side_effect = DemistoException("SOME_ERROR")
+        Then:
+        - Ensure command's error response is as expected.
+        """
+        mocker_http_request.side_effect = DemistoException("SOME_ERROR")
 
-    from GoogleDrive import drives_list_command
+        from GoogleDrive import drives_list_command
 
-    args = {
-        'use_domain_admin_access': True
-    }
+        args = {
+            'use_domain_admin_access': True
+        }
 
-    with pytest.raises(DemistoException, match="SOME_ERROR"):
-        drives_list_command(gsuite_client, args)
+        with pytest.raises(DemistoException, match="SOME_ERROR"):
+            drives_list_command(gsuite_client, args)
 
+    @patch(MOCKER_HTTP_METHOD)
+    def test_drive_get_command_success(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-drive-get command successful run.
 
-@patch(MOCKER_HTTP_METHOD)
-def test_drive_get_command_success(mocker_http_request, gsuite_client):
-    """
-    Scenario: For google-drive-drive-get command successful run.
+        Given:
+        - Command args.
 
-    Given:
-    - Command args.
+        When:
+        - Calling google-drive-drive-get command with the parameters provided.
 
-    When:
-    - Calling google-drive-drive-get command with the parameters provided.
+        Then:
+        - Ensure command's raw_response, outputs should be as expected.
+        """
+        from GoogleDrive import drive_get_command
 
-    Then:
-    - Ensure command's raw_response, outputs should be as expected.
-    """
-    from GoogleDrive import drive_get_command
+        with open('test_data/drive_get_response.json', encoding='utf-8') as data:
+            mock_response = json.load(data)
+        mocker_http_request.return_value = mock_response
 
-    with open('test_data/drive_get_response.json', encoding='utf-8') as data:
-        mock_response = json.load(data)
-    mocker_http_request.return_value = mock_response
+        args = {
+            'use_domain_admin_access': True
+        }
+        result = drive_get_command(gsuite_client, args)
 
-    args = {
-        'use_domain_admin_access': True
-    }
-    result = drive_get_command(gsuite_client, args)
+        assert 'GoogleDrive.Drive' in result.outputs
+        assert result.outputs.get('GoogleDrive.Drive').get('Drive').get('id') == '17'
 
-    assert 'GoogleDrive.Drive' in result.outputs
-    assert result.outputs.get('GoogleDrive.Drive').get('Drive').get('id') == '17'
+        assert result.raw_response == mock_response
 
-    assert result.raw_response == mock_response
+        assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Drive(s)', 1) in result.readable_output
+        assert '17' in result.readable_output
 
-    assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Drive(s)', 1) in result.readable_output
-    assert '17' in result.readable_output
+    @patch(MOCKER_HTTP_METHOD)
+    def test_drive_get_command_failure(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-get command failure.
 
+        Given:
+        - Command args and a non-working google api integration.
 
-@patch(MOCKER_HTTP_METHOD)
-def test_drive_get_command_failure(mocker_http_request, gsuite_client):
-    """
-    Scenario: For google-drive-get command failure.
+        When:
+        - Calling google-drive-get command with the parameters provided.
 
-    Given:
-    - Command args and a non-working google api integration.
+        Then:
+        - Ensure command's error response is as expected.
+        """
+        mocker_http_request.side_effect = ValueError("SOME_ERROR")
 
-    When:
-    - Calling google-drive-get command with the parameters provided.
+        from GoogleDrive import drive_get_command
 
-    Then:
-    - Ensure command's error response is as expected.
-    """
-    mocker_http_request.side_effect = ValueError("SOME_ERROR")
+        args = {
+            'use_domain_admin_access': True
+        }
 
-    from GoogleDrive import drive_get_command
+        with pytest.raises(ValueError, match="SOME_ERROR"):
+            drive_get_command(gsuite_client, args)
 
-    args = {
-        'use_domain_admin_access': True
-    }
 
-    with pytest.raises(ValueError, match="SOME_ERROR"):
-        drive_get_command(gsuite_client, args)
+class TestFileMethods:
 
+    @patch(MOCKER_HTTP_METHOD)
+    def test_files_list_command_success(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-files-list command successful run.
 
-@patch(MOCKER_HTTP_METHOD)
-def test_files_list_command_success(mocker_http_request, gsuite_client):
-    """
-    Scenario: For google-drive-files-list command successful run.
+        Given:
+        - Command args.
 
-    Given:
-    - Command args.
+        When:
+        - Calling google-drive-files-list command with the parameters provided.
 
-    When:
-    - Calling google-drive-files-list command with the parameters provided.
+        Then:
+        - Ensure command's raw_response, outputs should be as expected.
+        """
+        from GoogleDrive import files_list_command
 
-    Then:
-    - Ensure command's raw_response, outputs should be as expected.
-    """
-    from GoogleDrive import files_list_command
+        with open('test_data/files_list_response.json', encoding='utf-8') as data:
+            mock_response = json.load(data)
+        mocker_http_request.return_value = mock_response
 
-    with open('test_data/files_list_response.json', encoding='utf-8') as data:
-        mock_response = json.load(data)
-    mocker_http_request.return_value = mock_response
+        args = {
+            'use_domain_admin_access': True
+        }
+        result = files_list_command(gsuite_client, args)
 
-    args = {
-        'use_domain_admin_access': True
-    }
-    result = files_list_command(gsuite_client, args)
+        assert 'GoogleDrive.File' in result.outputs
+        assert result.outputs.get('GoogleDrive.File').get('PageToken') == 'myNextPageToken'
+        assert len(result.outputs['GoogleDrive.File'].get('File')) == 2
 
-    assert 'GoogleDrive.File' in result.outputs
-    assert result.outputs.get('GoogleDrive.File').get('PageToken') == 'myNextPageToken'
-    assert len(result.outputs['GoogleDrive.File'].get('File')) == 2
+        assert result.raw_response == mock_response
 
-    assert result.raw_response == mock_response
+        assert result.readable_output.startswith("### Total Retrieved File(s): ")
+        assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('File(s)', 2) in result.readable_output
 
-    assert result.readable_output.startswith("### Total Retrieved File(s): ")
-    assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('File(s)', 2) in result.readable_output
 
+    @patch(MOCKER_HTTP_METHOD)
+    def test_files_list_command_failure(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-files-list command failure.
 
-@patch(MOCKER_HTTP_METHOD)
-def test_files_list_command_failure(mocker_http_request, gsuite_client):
-    """
-    Scenario: For google-files-list command failure.
+        Given:
+        - Command args and a non-working google api integration.
 
-    Given:
-    - Command args and a non-working google api integration.
+        When:
+        - Calling google-files-list command with the parameters provided.
 
-    When:
-    - Calling google-files-list command with the parameters provided.
+        Then:
+        - Ensure command's error response is as expected.
+        """
+        mocker_http_request.side_effect = DemistoException("SOME_ERROR")
 
-    Then:
-    - Ensure command's error response is as expected.
-    """
-    mocker_http_request.side_effect = DemistoException("SOME_ERROR")
+        from GoogleDrive import files_list_command
 
-    from GoogleDrive import files_list_command
+        args = {
+            'use_domain_admin_access': True
+        }
 
-    args = {
-        'use_domain_admin_access': True
-    }
+        with pytest.raises(DemistoException, match="SOME_ERROR"):
+            files_list_command(gsuite_client, args)
 
-    with pytest.raises(DemistoException, match="SOME_ERROR"):
-        files_list_command(gsuite_client, args)
 
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_get_command_success(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-file-get command successful run.
 
-@patch(MOCKER_HTTP_METHOD)
-def test_file_get_command_success(mocker_http_request, gsuite_client):
-    """
-    Scenario: For google-drive-file-get command successful run.
+        Given:
+        - Command args.
 
-    Given:
-    - Command args.
+        When:
+        - Calling google-drive-file-get command with the parameters provided.
 
-    When:
-    - Calling google-drive-file-get command with the parameters provided.
+        Then:
+        - Ensure command's raw_response, outputs should be as expected.
+        """
+        from GoogleDrive import file_get_command
 
-    Then:
-    - Ensure command's raw_response, outputs should be as expected.
-    """
-    from GoogleDrive import file_get_command
+        with open('test_data/file_get_response.json', encoding='utf-8') as data:
+            mock_response = json.load(data)
+        mocker_http_request.return_value = mock_response
 
-    with open('test_data/file_get_response.json', encoding='utf-8') as data:
-        mock_response = json.load(data)
-    mocker_http_request.return_value = mock_response
+        args = {
+            'use_domain_admin_access': True
+        }
+        result = file_get_command(gsuite_client, args)
 
-    args = {
-        'use_domain_admin_access': True
-    }
-    result = file_get_command(gsuite_client, args)
+        assert 'GoogleDrive.File' in result.outputs
+        assert result.outputs.get('GoogleDrive.File').get('File').get('id') == '17'
 
-    assert 'GoogleDrive.File' in result.outputs
-    assert result.outputs.get('GoogleDrive.File').get('File').get('id') == '17'
+        assert result.raw_response == mock_response
 
-    assert result.raw_response == mock_response
+        assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('File(s)', 1) in result.readable_output
+        assert '17' in result.readable_output
 
-    assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('File(s)', 1) in result.readable_output
-    assert '17' in result.readable_output
 
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_get_command_failure(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-file-get command failure.
 
-@patch(MOCKER_HTTP_METHOD)
-def test_file_get_command_failure(mocker_http_request, gsuite_client):
-    """
-    Scenario: For google-file-get command failure.
+        Given:
+        - Command args and a non-working google api integration.
 
-    Given:
-    - Command args and a non-working google api integration.
+        When:
+        - Calling google-file-get command with the parameters provided.
 
-    When:
-    - Calling google-file-get command with the parameters provided.
+        Then:
+        - Ensure command's error response is as expected.
+        """
+        mocker_http_request.side_effect = ValueError("SOME_ERROR")
 
-    Then:
-    - Ensure command's error response is as expected.
-    """
-    mocker_http_request.side_effect = ValueError("SOME_ERROR")
+        from GoogleDrive import file_get_command
 
-    from GoogleDrive import file_get_command
+        args = {
+            'use_domain_admin_access': True
+        }
 
-    args = {
-        'use_domain_admin_access': True
-    }
+        with pytest.raises(ValueError, match="SOME_ERROR"):
+            file_get_command(gsuite_client, args)
 
-    with pytest.raises(ValueError, match="SOME_ERROR"):
-        file_get_command(gsuite_client, args)
 
+class TestFilePermissionMethods:
 
-@patch(MOCKER_HTTP_METHOD)
-def test_file_permission_list_command_success(mocker_http_request, gsuite_client):
-    """
-    Scenario: For google-drive-file-permission-list command successful run.
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_permission_list_command_success(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-file-permission-list command successful run.
 
-    Given:
-    - Command args.
+        Given:
+        - Command args.
 
-    When:
-    - Calling google-drive-file-permission-list command with the parameters provided.
+        When:
+        - Calling google-drive-file-permission-list command with the parameters provided.
 
-    Then:
-    - Ensure command's raw_response, outputs should be as expected.
-    """
-    from GoogleDrive import file_permission_list_command
+        Then:
+        - Ensure command's raw_response, outputs should be as expected.
+        """
+        from GoogleDrive import file_permission_list_command
 
-    with open('test_data/file_permission_list_response.json', encoding='utf-8') as data:
-        mock_response = json.load(data)
-    mocker_http_request.return_value = mock_response
+        with open('test_data/file_permission_list_response.json', encoding='utf-8') as data:
+            mock_response = json.load(data)
+        mocker_http_request.return_value = mock_response
 
-    args = {
-        'use_domain_admin_access': True
-    }
-    result = file_permission_list_command(gsuite_client, args)
+        args = {
+            'use_domain_admin_access': True
+        }
+        result = file_permission_list_command(gsuite_client, args)
 
-    assert 'GoogleDrive.FilePermission' in result.outputs
-    assert len(result.outputs['GoogleDrive.FilePermission']) == 1
+        assert 'GoogleDrive.FilePermission' in result.outputs
+        assert len(result.outputs['GoogleDrive.FilePermission']) == 1
 
-    assert result.raw_response == mock_response
+        assert result.raw_response == mock_response
 
-    assert result.readable_output.startswith("### Total")
-    assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1) in result.readable_output
+        assert result.readable_output.startswith("### Total")
+        assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1) in result.readable_output
 
 
-@patch(MOCKER_HTTP_METHOD)
-def test_file_permission_list_command_failure(mocker_http_request, gsuite_client):
-    """
-    Scenario: For google-file-permission-list command failure.
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_permission_list_command_failure(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-file-permission-list command failure.
 
-    Given:
-    - Command args and a non-working google api integration.
+        Given:
+        - Command args and a non-working google api integration.
 
-    When:
-    - Calling google-file-permission-list command with the parameters provided.
+        When:
+        - Calling google-file-permission-list command with the parameters provided.
 
-    Then:
-    - Ensure command's error response is as expected.
-    """
-    mocker_http_request.side_effect = ValueError("SOME_ERROR")
+        Then:
+        - Ensure command's error response is as expected.
+        """
+        mocker_http_request.side_effect = ValueError("SOME_ERROR")
 
-    from GoogleDrive import file_permission_list_command
+        from GoogleDrive import file_permission_list_command
 
-    args = {
-        'use_domain_admin_access': True
-    }
+        args = {
+            'use_domain_admin_access': True
+        }
 
-    with pytest.raises(ValueError, match="SOME_ERROR"):
-        file_permission_list_command(gsuite_client, args)
+        with pytest.raises(ValueError, match="SOME_ERROR"):
+            file_permission_list_command(gsuite_client, args)
 
 
-@patch(MOCKER_HTTP_METHOD)
-def test_file_permission_create_command_success(mocker_http_request, gsuite_client):
-    """
-    Scenario: For google-drive-file-permission-create command successful run.
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_permission_create_command_success(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-file-permission-create command successful run.
 
-    Given:
-    - Command args.
+        Given:
+        - Command args.
 
-    When:
-    - Calling google-drive-file-permission-create command with the parameters provided.
+        When:
+        - Calling google-drive-file-permission-create command with the parameters provided.
 
-    Then:
-    - Ensure command's raw_response, outputs should be as expected.
-    """
-    from GoogleDrive import file_permission_create_command
+        Then:
+        - Ensure command's raw_response, outputs should be as expected.
+        """
+        from GoogleDrive import file_permission_create_command
 
-    with open('test_data/file_permission_create_response.json', encoding='utf-8') as data:
-        mock_response = json.load(data)
-    mocker_http_request.return_value = mock_response
+        with open('test_data/file_permission_create_response.json', encoding='utf-8') as data:
+            mock_response = json.load(data)
+        mocker_http_request.return_value = mock_response
 
-    args = {
-        'use_domain_admin_access': True
-    }
-    result = file_permission_create_command(gsuite_client, args)
+        args = {
+            'use_domain_admin_access': True
+        }
+        result = file_permission_create_command(gsuite_client, args)
 
-    assert 'GoogleDrive.FilePermission' in result.outputs
-    assert result.outputs.get('GoogleDrive.FilePermission').get('FilePermission').get('id') == '17'
+        assert 'GoogleDrive.FilePermission' in result.outputs
+        assert result.outputs.get('GoogleDrive.FilePermission').get('FilePermission').get('id') == '17'
 
-    assert result.raw_response == mock_response
+        assert result.raw_response == mock_response
 
-    assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1) in result.readable_output
-    assert '17' in result.readable_output
+        assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1) in result.readable_output
+        assert '17' in result.readable_output
 
 
-@patch(MOCKER_HTTP_METHOD)
-def test_file_permission_create_command_failure(mocker_http_request, gsuite_client):
-    """
-    Scenario: For google-file-permission-create command failure.
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_permission_create_command_failure(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-file-permission-create command failure.
 
-    Given:
-    - Command args and a non-working google api integration.
+        Given:
+        - Command args and a non-working google api integration.
 
-    When:
-    - Calling google-file-permission-create command with the parameters provided.
+        When:
+        - Calling google-file-permission-create command with the parameters provided.
 
-    Then:
-    - Ensure command's error response is as expected.
-    """
-    mocker_http_request.side_effect = ValueError("SOME_ERROR")
+        Then:
+        - Ensure command's error response is as expected.
+        """
+        mocker_http_request.side_effect = ValueError("SOME_ERROR")
 
-    from GoogleDrive import file_permission_create_command
+        from GoogleDrive import file_permission_create_command
 
-    args = {
-        'use_domain_admin_access': True
-    }
+        args = {
+            'use_domain_admin_access': True
+        }
 
-    with pytest.raises(ValueError, match="SOME_ERROR"):
-        file_permission_create_command(gsuite_client, args)
+        with pytest.raises(ValueError, match="SOME_ERROR"):
+            file_permission_create_command(gsuite_client, args)
 
 
-@patch(MOCKER_HTTP_METHOD)
-def test_file_permission_update_command_success(mocker_http_request, gsuite_client):
-    """
-    Scenario: For google-drive-file-permission-update command successful run.
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_permission_update_command_success(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-file-permission-update command successful run.
 
-    Given:
-    - Command args.
+        Given:
+        - Command args.
 
-    When:
-    - Calling google-drive-file-permission-update command with the parameters provided.
+        When:
+        - Calling google-drive-file-permission-update command with the parameters provided.
 
-    Then:
-    - Ensure command's raw_response, outputs should be as expected.
-    """
-    from GoogleDrive import file_permission_update_command
+        Then:
+        - Ensure command's raw_response, outputs should be as expected.
+        """
+        from GoogleDrive import file_permission_update_command
 
-    with open('test_data/file_permission_create_response.json', encoding='utf-8') as data:
-        mock_response = json.load(data)
-    mocker_http_request.return_value = mock_response
+        with open('test_data/file_permission_create_response.json', encoding='utf-8') as data:
+            mock_response = json.load(data)
+        mocker_http_request.return_value = mock_response
 
-    args = {
-        'use_domain_admin_access': True
-    }
-    result = file_permission_update_command(gsuite_client, args)
+        args = {
+            'use_domain_admin_access': True
+        }
+        result = file_permission_update_command(gsuite_client, args)
 
-    assert 'GoogleDrive.FilePermission' in result.outputs
-    assert result.outputs.get('GoogleDrive.FilePermission').get('FilePermission').get('id') == '17'
+        assert 'GoogleDrive.FilePermission' in result.outputs
+        assert result.outputs.get('GoogleDrive.FilePermission').get('FilePermission').get('id') == '17'
 
-    assert result.raw_response == mock_response
+        assert result.raw_response == mock_response
 
-    assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1) in result.readable_output
-    assert '17' in result.readable_output
+        assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1) in result.readable_output
+        assert '17' in result.readable_output
 
 
-@patch(MOCKER_HTTP_METHOD)
-def test_file_permission_update_command_failure(mocker_http_request, gsuite_client):
-    """
-    Scenario: For google-file-permission-update command failure.
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_permission_update_command_failure(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-file-permission-update command failure.
 
-    Given:
-    - Command args and a non-working google api integration.
+        Given:
+        - Command args and a non-working google api integration.
 
-    When:
-    - Calling google-file-permission-update command with the parameters provided.
+        When:
+        - Calling google-file-permission-update command with the parameters provided.
 
-    Then:
-    - Ensure command's error response is as expected.
-    """
-    mocker_http_request.side_effect = ValueError("SOME_ERROR")
+        Then:
+        - Ensure command's error response is as expected.
+        """
+        mocker_http_request.side_effect = ValueError("SOME_ERROR")
 
-    from GoogleDrive import file_permission_update_command
+        from GoogleDrive import file_permission_update_command
 
-    args = {
-        'use_domain_admin_access': True
-    }
+        args = {
+            'use_domain_admin_access': True
+        }
 
-    with pytest.raises(ValueError, match="SOME_ERROR"):
-        file_permission_update_command(gsuite_client, args)
+        with pytest.raises(ValueError, match="SOME_ERROR"):
+            file_permission_update_command(gsuite_client, args)
