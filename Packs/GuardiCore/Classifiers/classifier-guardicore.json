@@ -1,8 +1,8 @@
 {
+    "description": "The Guardicore v2 classifier.",
     "defaultIncidentType": "Guardicore Incident",
-    "description": "",
     "feed": false,
-    "id": "c937165c-ee3b-40c8-8af3-846b803b115a",
+    "id": "Guardicore classifier",
     "name": "Guardicore classifier",
     "propagationLabels": [
         "all"
@@ -12,5 +12,6 @@
         "simple": ""
     },
     "type": "classification",
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.0.0"
 }
