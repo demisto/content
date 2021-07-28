@@ -1,14 +1,14 @@
-
+from CommonServerPython import *
 from SecurityScorecard import \
     SecurityScorecardClient, \
-    DATE_FORMAT, \
     SECURITYSCORECARD_DATE_FORMAT, \
     incidents_to_import, \
-    get_last_run
+    get_last_run, \
+    portfolios_list_command
 
 import json
 import io
-import datetime
+import datetime  # type: ignore
 import pytest
 
 """ Helper Functions Test Data"""
@@ -24,9 +24,9 @@ test_data = load_json("./test_data/data.json")
 # test_get_last_run
 FREEZE_DATE = '2021-07-27'
 DAYS_AGO = 3
-DAYS_BEFORE_FREEZE_TIMESTAMP = int(datetime.datetime(2021, 7, 24).timestamp())
-freeze_date = datetime.datetime(2021, 7, 27)
-date_days_ago_timestamp = (freeze_date - datetime.timedelta(days=DAYS_AGO)).timestamp()
+DAYS_BEFORE_FREEZE_TIMESTAMP = int(datetime.datetime(2021, 7, 24).timestamp())  # type: ignore
+freeze_date = datetime.datetime(2021, 7, 27)  # type: ignore
+date_days_ago_timestamp = (freeze_date - datetime.timedelta(days=DAYS_AGO)).timestamp()  # type: ignore
 
 get_last_run_test_inputs = [
     (date_days_ago_timestamp, f"{DAYS_AGO} days"),
@@ -45,7 +45,15 @@ incidents_to_import_test_inputs = [
     (alerts_mock, 4),
 ]
 
-portfolios_mock = load_json("./test_data/portfolios/portfolios.json")
+# test_portfolios_list
+portfolios_mock = test_data.get("portfolios")
+portfolios_list_test_inputs = [
+    (None),
+    (1),
+    (2)
+]
+
+
 companies_mock = load_json("./test_data/portfolios/companies.json")
 portfolio_not_found = load_json("./test_data/portfolios/portfolio_not_found.json")
 score_mock = load_json("./test_data/companies/score.json")
@@ -115,7 +123,7 @@ def test_incidents_to_import(alerts: list, days_ago: int):
     if not alerts:
         assert len(alerts) == len(incidents)
     else:
-        filtered_alerts = [alert for alert in alerts if datetime.datetime.strptime(
+        filtered_alerts = [alert for alert in alerts if datetime.datetime.strptime(  # type: ignore
             alert["created_at"], SECURITYSCORECARD_DATE_FORMAT).timestamp() > date_days_ago_timestamp
         ]
 
@@ -173,13 +181,33 @@ client = SecurityScorecardClient(
 )
 
 
-def test_portfolios_list(mocker):
+@pytest.mark.parametrize("limit", portfolios_list_test_inputs)
+def test_portfolios_list(mocker, limit):
+
+    """
+    Given:
+        - A limit
+
+    When:
+        - Case A: limit undefined
+        - Case B: limit defined as 1
+        - Case C: limit defined as 2
+
+    Then:
+        - Case A: All (3) portfolios are returned
+        - Case B: 1 portfolio returned
+        - Case C: 2 portfolios returned
+    """
 
     mocker.patch.object(client, "get_portfolios", return_value=portfolios_mock)
 
-    response = client.get_portfolios()
+    portfolios_cmd_res: CommandResults = portfolios_list_command(client=client, limit=limit)
+    portfolios = portfolios_cmd_res.outputs
 
-    assert response == portfolios_mock
+    if not limit:
+        assert len(portfolios) == portfolios_mock.get("total")
+    else:
+        assert len(portfolios) == limit
 
 
 def test_portfolio_list_companies(mocker):
