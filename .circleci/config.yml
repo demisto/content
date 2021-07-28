@@ -8,7 +8,6 @@ commands:
       instance_created:
         type: string
         default: ""
-
     steps:
       - run:
           name: Set INSTANCE_ROLE env variable
@@ -408,7 +407,7 @@ references:
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
           demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120
         else
-          demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
+          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120
         fi
 
   infrastructure_testing: &infrastructure_testing
