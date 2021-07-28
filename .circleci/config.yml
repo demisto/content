@@ -8,6 +8,7 @@ commands:
       instance_created:
         type: string
         default: ""
+
     steps:
       - run:
           name: Set INSTANCE_ROLE env variable
