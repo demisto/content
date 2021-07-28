@@ -1,107 +1,804 @@
 {
- "description": "",
- "feed": false,
- "id": "User Profile - Salesforce (Outgoing)",
- "mapping": {
-  "User Profile": {
-   "dontMapEventToLabels": true,
-   "internalMapping": {
-    "username": {
-     "complex": null,
-     "simple": "username"
-    },
-    "name": {
-     "complex": null,
-     "simple": "displayname"
-    },
-    "city": {
-     "complex": null,
-     "simple": "city"
-    },
-    "country": {
-     "complex": null,
-     "simple": "countryname"
-    },
-    "email": {
-     "complex": null,
-     "simple": "email"
-    },
-    "firstname": {
-     "complex": null,
-     "simple": "givenname"
-    },
-    "lastname": {
-     "complex": null,
-     "simple": "surname"
-    },
-    "mobilephone": {
-     "complex": null,
-     "simple": "mobilephone"
-    },
-    "state": {
-     "complex": null,
-     "simple": "state"
-    },
-    "street address": {
-     "complex": null,
-     "simple": "streetaddress"
-    },
-    "title": {
-     "complex": null,
-     "simple": "title"
-    },
-    "postalcode": {
-     "complex": null,
-     "simple": "zipcode"
-    },
-    "profileid": {
-     "complex": null,
-     "simple": "profileid"
-    },
-    "timezonesidkey": {
-     "complex": null,
-     "simple": "timezonesidkey"
-    },
-    "localesidkey": {
-     "complex": null,
-     "simple": "localesidkey"
-    },
-    "alias": {
-     "complex": {
-      "accessor": "",
-      "filters": [
-
-      ],
-      "root": "email",
-      "transformers": [
-       {
-        "args": {
-         "from": {
-          "isContext": false,
-          "value": {
-           "complex": null,
-           "simple": "0"
-          }
-         },
-         "to": {
-          "isContext": false,
-          "value": {
-           "complex": null,
-           "simple": "8"
-          }
-         }
-        },
-        "operator": "substring"
+    "description": "",
+    "feed": false,
+    "id": "User Profile - Salesforce (Outgoing)",
+    "mapping": {
+       "User Profile - Create": {
+           "dontMapEventToLabels": false,
+           "internalMapping": {
+               "Alias": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "email",
+                       "transformers": [
+                           {
+                               "args": {
+                                   "delimiter": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "@"
+                                       }
+                                   }
+                               },
+                               "operator": "split"
+                           },
+                           {
+                               "args": {},
+                               "operator": "FirstArrayElement"
+                           },
+                           {
+                               "args": {
+                                   "from": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "0"
+                                       }
+                                   },
+                                   "to": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "8"
+                                       }
+                                   }
+                               },
+                               "operator": "substring"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "Area__c": {
+                   "complex": null,
+                   "simple": "\"None\""
+               },
+               "CallCenterId": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "salesforceattributes",
+                       "transformers": [
+                           {
+                               "args": {},
+                               "operator": "ParseJSON"
+                           },
+                           {
+                               "args": {
+                                   "field": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "CallCenterId"
+                                       }
+                                   }
+                               },
+                               "operator": "getField"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "City": {
+                   "complex": null,
+                   "simple": "city"
+               },
+               "CompanyName": {
+                   "complex": null,
+                   "simple": "\"Palo Alto Networks\""
+               },
+               "Country": {
+                   "complex": null,
+                   "simple": "countryname"
+               },
+               "Department": {
+                   "complex": null,
+                   "simple": "department"
+               },
+               "Email": {
+                   "complex": null,
+                   "simple": "email"
+               },
+               "EmailEncodingKey": {
+                   "complex": null,
+                   "simple": "\"ISO-8859-1\""
+               },
+               "EmployeeNumber": {
+                   "complex": null,
+                   "simple": "employeeid"
+               },
+               "FirstName": {
+                   "complex": null,
+                   "simple": "givenname"
+               },
+               "LanguageLocaleKey": {
+                   "complex": null,
+                   "simple": "\"en_US\""
+               },
+               "LastName": {
+                   "complex": null,
+                   "simple": "surname"
+               },
+               "LocaleSidKey": {
+                   "complex": null,
+                   "simple": "\"en_US\""
+               },
+               "ManagerId": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "salesforceattributes",
+                       "transformers": [
+                           {
+                               "args": {},
+                               "operator": "ParseJSON"
+                           },
+                           {
+                               "args": {
+                                   "field": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "ManagerId"
+                                       }
+                                   }
+                               },
+                               "operator": "getField"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "My_Sales_Level__c": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "salesforceattributes",
+                       "transformers": [
+                           {
+                               "args": {},
+                               "operator": "ParseJSON"
+                           },
+                           {
+                               "args": {
+                                   "field": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "My_Sales_Level__c"
+                                       }
+                                   }
+                               },
+                               "operator": "getField"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "Name": {
+                   "complex": null,
+                   "simple": "displayname"
+               },
+               "PAN_Internal_User__c": {
+                   "complex": null,
+                   "simple": "\"Yes\""
+               },
+               "ProfileId": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "salesforceattributes",
+                       "transformers": [
+                           {
+                               "args": {},
+                               "operator": "ParseJSON"
+                           },
+                           {
+                               "args": {
+                                   "field": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "ProfileId"
+                                       }
+                                   }
+                               },
+                               "operator": "getField"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "SOX_Notes__c": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "active",
+                       "transformers": [
+                           {
+                               "args": {
+                                   "condition": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "else": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "Disabled by XSOAR: "
+                                       }
+                                   },
+                                   "equals": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "true"
+                                       }
+                                   },
+                                   "lhs": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "options": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "rhs": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "then": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "Created/Updated by XSOAR: "
+                                       }
+                                   }
+                               },
+                               "operator": "If-Then-Else"
+                           },
+                           {
+                               "args": {
+                                   "prefix": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "suffix": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "${.=new Date().toISOString()}"
+                                       }
+                                   }
+                               },
+                               "operator": "concat"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "Segment__c": {
+                   "complex": null,
+                   "simple": "\"None\""
+               },
+               "State": {
+                   "complex": null,
+                   "simple": "state"
+               },
+               "Street": {
+                   "complex": null,
+                   "simple": "streetaddress"
+               },
+               "Support_Engineer_Location__c": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "salesforceattributes",
+                       "transformers": [
+                           {
+                               "args": {},
+                               "operator": "ParseJSON"
+                           },
+                           {
+                               "args": {
+                                   "field": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "Support_Engineer_Location__c"
+                                       }
+                                   }
+                               },
+                               "operator": "getField"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "Terminate_Date__c": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "active",
+                       "transformers": [
+                           {
+                               "args": {
+                                   "condition": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "else": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "equals": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "false"
+                                       }
+                                   },
+                                   "lhs": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "options": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "rhs": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "then": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "${.=new Date().toISOString()}"
+                                       }
+                                   }
+                               },
+                               "operator": "If-Then-Else"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "Theatre__c": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "salesforceattributes",
+                       "transformers": [
+                           {
+                               "args": {},
+                               "operator": "ParseJSON"
+                           },
+                           {
+                               "args": {
+                                   "field": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "Theatre__c"
+                                       }
+                                   }
+                               },
+                               "operator": "getField"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "TimeZoneSidKey": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "salesforceattributes",
+                       "transformers": [
+                           {
+                               "args": {},
+                               "operator": "ParseJSON"
+                           },
+                           {
+                               "args": {
+                                   "field": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "TimeZoneSidKey"
+                                       }
+                                   }
+                               },
+                               "operator": "getField"
+                           },
+                           {
+                               "args": {
+                                   "applyIfEmpty": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "defaultValue": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "America/Los_Angeles"
+                                       }
+                                   }
+                               },
+                               "operator": "SetIfEmpty"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "Title": {
+                   "complex": null,
+                   "simple": "title"
+               },
+               "UserPermissionsMarketingUser": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "salesforceattributes",
+                       "transformers": [
+                           {
+                               "args": {},
+                               "operator": "ParseJSON"
+                           },
+                           {
+                               "args": {
+                                   "field": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "UserPermissionsMarketingUser"
+                                       }
+                                   }
+                               },
+                               "operator": "getField"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "UserPermissionsMobileUser": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "salesforceattributes",
+                       "transformers": [
+                           {
+                               "args": {},
+                               "operator": "ParseJSON"
+                           },
+                           {
+                               "args": {
+                                   "field": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "UserPermissionsMobileUser"
+                                       }
+                                   }
+                               },
+                               "operator": "getField"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "UserPermissionsSFContentUser": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "salesforceattributes",
+                       "transformers": [
+                           {
+                               "args": {},
+                               "operator": "ParseJSON"
+                           },
+                           {
+                               "args": {
+                                   "field": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "UserPermissionsSFContentUser"
+                                       }
+                                   }
+                               },
+                               "operator": "getField"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "UserPermissionsSupportUser": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "salesforceattributes",
+                       "transformers": [
+                           {
+                               "args": {},
+                               "operator": "ParseJSON"
+                           },
+                           {
+                               "args": {
+                                   "field": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "UserPermissionsSupportUser"
+                                       }
+                                   }
+                               },
+                               "operator": "getField"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "UserRoleId": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "salesforceattributes",
+                       "transformers": [
+                           {
+                               "args": {},
+                               "operator": "ParseJSON"
+                           },
+                           {
+                               "args": {
+                                   "field": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "UserRoleId"
+                                       }
+                                   }
+                               },
+                               "operator": "getField"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "Username": {
+                   "complex": null,
+                   "simple": "email"
+               }
+           }
+       },
+       "User Profile - Update": {
+           "dontMapEventToLabels": false,
+           "internalMapping": {
+               "City": {
+                   "complex": null,
+                   "simple": "city"
+               },
+               "Country": {
+                   "complex": null,
+                   "simple": "countryname"
+               },
+               "Department": {
+                   "complex": null,
+                   "simple": "department"
+               },
+               "Email": {
+                   "complex": null,
+                   "simple": "email"
+               },
+               "EmployeeNumber": {
+                   "complex": null,
+                   "simple": "employeeid"
+               },
+               "FirstName": {
+                   "complex": null,
+                   "simple": "givenname"
+               },
+               "LastName": {
+                   "complex": null,
+                   "simple": "surname"
+               },
+               "ManagerId": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "salesforceattributes",
+                       "transformers": [
+                           {
+                               "args": {},
+                               "operator": "ParseJSON"
+                           },
+                           {
+                               "args": {
+                                   "field": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "ManagerId"
+                                       }
+                                   }
+                               },
+                               "operator": "getField"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "Name": {
+                   "complex": null,
+                   "simple": "displayname"
+               },
+               "SOX_Notes__c": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "active",
+                       "transformers": [
+                           {
+                               "args": {
+                                   "condition": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "else": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "Disabled by XSOAR: "
+                                       }
+                                   },
+                                   "equals": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "true"
+                                       }
+                                   },
+                                   "lhs": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "options": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "rhs": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "then": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "Created/Updated by XSOAR: "
+                                       }
+                                   }
+                               },
+                               "operator": "If-Then-Else"
+                           },
+                           {
+                               "args": {
+                                   "prefix": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "suffix": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "${.=new Date().toISOString()}"
+                                       }
+                                   }
+                               },
+                               "operator": "concat"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "State": {
+                   "complex": null,
+                   "simple": "state"
+               },
+               "Street": {
+                   "complex": null,
+                   "simple": "streetaddress"
+               },
+               "Terminate_Date__c": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "active",
+                       "transformers": [
+                           {
+                               "args": {
+                                   "condition": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "else": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "equals": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "false"
+                                       }
+                                   },
+                                   "lhs": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "options": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "rhs": {
+                                       "isContext": false,
+                                       "value": null
+                                   },
+                                   "then": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "${.=new Date().toISOString()}"
+                                       }
+                                   }
+                               },
+                               "operator": "If-Then-Else"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "Title": {
+                   "complex": null,
+                   "simple": "title"
+               },
+               "UserPermissionsSFContentUser": {
+                   "complex": {
+                       "accessor": "",
+                       "filters": [],
+                       "root": "salesforceattributes",
+                       "transformers": [
+                           {
+                               "args": {},
+                               "operator": "ParseJSON"
+                           },
+                           {
+                               "args": {
+                                   "field": {
+                                       "isContext": false,
+                                       "value": {
+                                           "complex": null,
+                                           "simple": "UserPermissionsSFContentUser"
+                                       }
+                                   }
+                               },
+                               "operator": "getField"
+                           }
+                       ]
+                   },
+                   "simple": ""
+               },
+               "Username": {
+                   "complex": null,
+                   "simple": "email"
+               }
+           }
        }
-      ]
-     },
-     "simple": ""
-    }
+    },
+    "name": "User Profile - Salesforce (Outgoing)",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.0.0"
    }
-  }
- },
- "name": "User Profile - Salesforce (Outgoing)",
- "type": "mapping-outgoing",
- "version": -1,
- "fromVersion": "6.0.0"
-}

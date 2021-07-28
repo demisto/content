@@ -8,7 +8,6 @@ requests.packages.urllib3.disable_warnings()
 DEFAULT_OUTGOING_MAPPER = "User Profile - Salesforce (Outgoing)"
 DEFAULT_INCOMING_MAPPER = "User Profile - Salesforce (Incoming)"
 URI_PREFIX = '/services/data/v44.0/'
-GENERATE_TOKEN_URL = 'https://login.salesforce.com/services/oauth2/token'
 
 # setting defaults for mandatory fields
 DEFAULT_FIELDS = [
@@ -45,7 +44,7 @@ class Client(BaseClient):
         }
         res = self._http_request(
             method='POST',
-            full_url=GENERATE_TOKEN_URL,
+            url_suffix='/services/oauth2/token',
             params=params
         )
         token = res.get('access_token')
@@ -79,12 +78,10 @@ class Client(BaseClient):
             params=params
         )
 
-    def get_user_id_and_activity_by_mail(self, email):
-        # check for errors, what id no user is found?
+    def get_user_id_and_activity(self, attribute, term):
         user_id = ""
         active = ""
-        user_where = f"Email='{email}'"
-        res = self.search_user_profile(email, user_where)
+        res = self.search_user_profile(attribute, term)
 
         search_records = res.get('searchRecords')
         if len(search_records) > 0:
@@ -258,7 +255,7 @@ def test_module(client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    client.get_user_id_and_activity_by_mail("test@test.com")
+    client.get_user_id_and_activity('test@test.com', 'Email=\'test@test.com\'')
     return 'ok'
 
 
@@ -267,8 +264,12 @@ def get_user_command(client, args, mapper_in):
         user_profile = args.get("user-profile")
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
 
-        email = iam_user_profile.get_attribute('email')
-        user_id, _ = client.get_user_id_and_activity_by_mail(email)
+        user_term = iam_user_profile.get_attribute('username')
+        term = f"Username='{user_term}'"
+        if not user_term:
+            user_term = iam_user_profile.get_attribute('email')
+            term = f"Email='{user_term}'"
+        user_id, _ = client.get_user_id_and_activity(user_term, term)
 
         if not user_id:
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
@@ -278,16 +279,16 @@ def get_user_command(client, args, mapper_in):
                                         action=IAMActions.GET_USER)
         else:
             # unlike query with email, getting a user by id will bring back all the attributes
-            github_user = client.get_user(user_id)
-            iam_user_profile.update_with_app_data(github_user, mapper_in)
+            salesforce_user = client.get_user(user_id)
+            iam_user_profile.update_with_app_data(salesforce_user, mapper_in)
 
             iam_user_profile.set_result(success=True,
-                                        iden=github_user.get('Id'),
-                                        email=github_user.get('Email'),
-                                        username=github_user.get('Username'),
+                                        iden=salesforce_user.get('Id'),
+                                        email=salesforce_user.get('Email'),
+                                        username=salesforce_user.get('Username'),
                                         action=IAMActions.GET_USER,
-                                        details=github_user,
-                                        active=True if github_user.get('IsActive') == "true" else False)
+                                        details=salesforce_user,
+                                        active=True if salesforce_user.get('IsActive') == "true" else False)
 
         return iam_user_profile
 
@@ -313,7 +314,8 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
 
         else:
             email = iam_user_profile.get_attribute('email')
-            user_id, _ = client.get_user_id_and_activity_by_mail(email)
+            term = f"Email='{email}'"
+            user_id, _ = client.get_user_id_and_activity(email, term)
 
             if user_id:
                 create_if_not_exists = False
@@ -325,7 +327,6 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
                                                               incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
                 # Removing empty elements from salesforce_user
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
-                salesforce_user = check_and_set_manndatory_fields(salesforce_user, client.demisto_params)
                 res = client.create_user(salesforce_user)
                 iam_user_profile.set_result(success=True,
                                             iden=res.get('id'),
@@ -359,7 +360,8 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
                                         skip_reason='Command is disabled.')
         else:
             email = iam_user_profile.get_attribute('email')
-            user_id, active = client.get_user_id_and_activity_by_mail(email)
+            term = f"Email='{email}'"
+            user_id, active = client.get_user_id_and_activity(email, term)
 
             if not user_id:
                 # user doesn't exists
@@ -383,7 +385,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
 
                 iam_user_profile.set_result(success=True,
                                             iden=user_id,
-                                            active=True,
+                                            active=active,
                                             action=IAMActions.UPDATE_USER,
                                             details=res
                                             )
@@ -412,7 +414,8 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
 
         else:
             email = iam_user_profile.get_attribute('email')
-            user_id, _ = client.get_user_id_and_activity_by_mail(email)
+            term = f"Email='{email}'"
+            user_id, _ = client.get_user_id_and_activity(email, term)
 
             if not user_id:
                 error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
@@ -444,15 +447,6 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
                                     action=IAMActions.DISABLE_USER
                                     )
         return iam_user_profile
-
-
-def check_and_set_manndatory_fields(salesforce_user, demisto_params):
-
-    for field in DEFAULT_FIELDS:
-        if not salesforce_user.get(field):
-            salesforce_user[field] = demisto_params.get(field)
-
-    return salesforce_user
 
 
 def get_all_user_attributes(client):
