@@ -1,0 +1,759 @@
+id: DBot Build Phishing Classifier Test - Multiple Algorithms
+version: -1
+name: DBot Build Phishing Classifier Test - Multiple Algorithms
+description: DBot Build Phishing Classifier Test - Multiple Algorithms
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 82d85e4c-953b-4977-84bf-b74b8e6c3c01
+    type: start
+    task:
+      id: 82d85e4c-953b-4977-84bf-b74b8e6c3c01
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b69dfd36-72c2-45d5-89e8-ec352f19da0b
+    type: regular
+    task:
+      id: b69dfd36-72c2-45d5-89e8-ec352f19da0b
+      version: -1
+      name: Create incidents
+      scriptName: TestCreateIncidentsForPhishingClassifier
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+      - "25"
+    scriptarguments:
+      historicListName:
+        simple: test_phishing_historic_data
+      numberOfIncidents:
+        simple: "100"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 75b10e3d-b0c1-4989-8ca7-8e2cbd818ffe
+    type: regular
+    task:
+      id: 75b10e3d-b0c1-4989-8ca7-8e2cbd818ffe
+      version: -1
+      name: Predict Tag1 (from_scratch)
+      description: Predict text label using a pre-trained machine learning phishing
+        model, and get the most important words used in the classification decision.
+      scriptName: DBotPredictPhishingWords
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      emailSubject:
+        simple: closed church squeamish squeamish moaning closed closed closed church
+          squeamish squeamish moaning closed closed closed church squeamish squeamish
+          moaning closed closed
+      labelProbabilityThreshold:
+        simple: "0"
+      minTextLength:
+        simple: "0"
+      modelName:
+        simple: model_from_scratch
+      modelStoreType:
+        simple: mlModel
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 75ba6523-3818-4c88-8736-83af433ed54c
+    type: title
+    task:
+      id: 75ba6523-3818-4c88-8736-83af433ed54c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a9d12700-5f2e-452e-874a-ef39a923524d
+    type: regular
+    task:
+      id: a9d12700-5f2e-452e-874a-ef39a923524d
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 6fa502b9-80f1-495e-81c7-fb9e62a39f64
+    type: regular
+    task:
+      id: 6fa502b9-80f1-495e-81c7-fb9e62a39f64
+      version: -1
+      name: clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      key:
+        simple: DBotPredictPhishingWords
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 46cb2799-57bf-45f1-8a3b-171b79820a9b
+    type: condition
+    task:
+      id: 46cb2799-57bf-45f1-8a3b-171b79820a9b
+      version: -1
+      name: Model evaluation exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: DBotPhishingClassifier.EvaluationScores.Precision.All
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: d241bfcd-fb25-42d0-82b7-946ef5fa6ff0
+    type: condition
+    task:
+      id: d241bfcd-fb25-42d0-82b7-946ef5fa6ff0
+      version: -1
+      name: 'Check the prediction label: Tag1'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Label
+            iscontext: true
+          right:
+            value:
+              simple: Tag1
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: fb13748f-e9aa-4b26-87d0-5d53bd31d9c6
+    type: condition
+    task:
+      id: fb13748f-e9aa-4b26-87d0-5d53bd31d9c6
+      version: -1
+      name: 'Check the prediction label: Tag2'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Label
+            iscontext: true
+          right:
+            value:
+              simple: Tag2
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 41c1ca4f-4edf-4172-8fa9-8623b9a37b75
+    type: regular
+    task:
+      id: 41c1ca4f-4edf-4172-8fa9-8623b9a37b75
+      version: -1
+      name: Predict Tag2 (from_scratch)
+      description: Predict text label using a pre-trained machine learning phishing
+        model, and get the most important words used in the classification decision.
+      scriptName: DBotPredictPhishingWords
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      emailSubject:
+        simple: ntidy boy substance faulty waves type boat argument ntidy boy substance
+          faulty waves type boat argument ntidy boy substance faulty waves type boat
+          argument
+      labelProbabilityThreshold:
+        simple: "0"
+      minTextLength:
+        simple: "0"
+      modelName:
+        simple: model_from_scratch
+      modelStoreType:
+        simple: mlModel
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 8db801e1-caf7-4707-810e-3288cc79d971
+    type: regular
+    task:
+      id: 8db801e1-caf7-4707-810e-3288cc79d971
+      version: -1
+      name: clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      key:
+        simple: DBotPredictPhishingWords
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 9b09235c-838c-47d7-82dd-116a162ee0a3
+    type: regular
+    task:
+      id: 9b09235c-838c-47d7-82dd-116a162ee0a3
+      version: -1
+      name: Wait for docker download
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: c52d9f00-08f4-440f-89ce-7a3e3fc678c2
+    type: regular
+    task:
+      id: c52d9f00-08f4-440f-89ce-7a3e3fc678c2
+      version: -1
+      name: Load Preprocessing Docker
+      description: Pre-process text data for the machine learning text classifier.
+      scriptName: DBotPreProcessTextData
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      input:
+        simple: dummy input
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: c77d62d9-5c5e-4270-8151-64a068137b8d
+    type: regular
+    task:
+      id: c77d62d9-5c5e-4270-8151-64a068137b8d
+      version: -1
+      name: build phishing classifier from_scratch
+      description: Create a phishing classifier using machine learning technique,
+        based on email content.
+      scriptName: DBotBuildPhishingClassifier
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      dedupThreshold:
+        simple: "0"
+      emailbody:
+        simple: ${EmailBodyKey}
+      emailsubject:
+        simple: ${EmailSujbectKey}
+      incidentTypes:
+        simple: Simulation
+      modelName:
+        simple: model_from_scratch
+      query:
+        simple: ${IncidentsQuery}
+      removeShortTextThreshold:
+        simple: "0"
+      tagField:
+        simple: ${EmailTagKey}
+      trainingAlgorithm:
+        simple: from_scratch
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 207ac741-ed5c-4dda-8746-1cea0049e047
+    type: regular
+    task:
+      id: 207ac741-ed5c-4dda-8746-1cea0049e047
+      version: -1
+      name: build phishing classifier fine_tuning
+      description: Create a phishing classifier using machine learning technique,
+        based on email content.
+      scriptName: DBotBuildPhishingClassifier
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      dedupThreshold:
+        simple: "0"
+      emailbody:
+        simple: ${EmailBodyKey}
+      emailsubject:
+        simple: ${EmailSujbectKey}
+      incidentTypes:
+        simple: Simulation
+      modelName:
+        simple: model_fine_tune
+      phishingLabels:
+        simple: Tag1:Malicious,Tag2:Non-Malicious
+      query:
+        simple: ${IncidentsQuery}
+      removeShortTextThreshold:
+        simple: "0"
+      tagField:
+        simple: ${EmailTagKey}
+      trainingAlgorithm:
+        simple: fine_tune
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: d12ea91f-62e1-4500-8439-0307689af82a
+    type: condition
+    task:
+      id: d12ea91f-62e1-4500-8439-0307689af82a
+      version: -1
+      name: 'Check the prediction label: Tag1'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Label
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 057a7310-07d6-4813-8756-0e8d0c1318e6
+    type: regular
+    task:
+      id: 057a7310-07d6-4813-8756-0e8d0c1318e6
+      version: -1
+      name: clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: DBotPredictPhishingWords
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 315a17d4-d262-400a-8eaf-f21033a4566c
+    type: regular
+    task:
+      id: 315a17d4-d262-400a-8eaf-f21033a4566c
+      version: -1
+      name: Predict Tag2 (fine_tune)
+      description: Predict text label using a pre-trained machine learning phishing
+        model, and get the most important words used in the classification decision.
+      scriptName: DBotPredictPhishingWords
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      emailSubject:
+        simple: ntidy boy substance faulty waves type boat argument ntidy boy substance
+          faulty waves type boat argument ntidy boy substance faulty waves type boat
+          argument
+      labelProbabilityThreshold:
+        simple: "0"
+      minTextLength:
+        simple: "0"
+      modelName:
+        simple: model_fine_tune
+      modelStoreType:
+        simple: mlModel
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 35e9ea5c-30ed-4fe4-83b1-7499a7a04833
+    type: condition
+    task:
+      id: 35e9ea5c-30ed-4fe4-83b1-7499a7a04833
+      version: -1
+      name: 'Check the prediction label: Tag2'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Label
+            iscontext: true
+          right:
+            value:
+              simple: Non-Malicious
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 8727184b-1ed3-432d-85da-2082b4d2383d
+    type: regular
+    task:
+      id: 8727184b-1ed3-432d-85da-2082b4d2383d
+      version: -1
+      name: Predict Tag1 (fine_tune)
+      description: Predict text label using a pre-trained machine learning phishing
+        model, and get the most important words used in the classification decision.
+      scriptName: DBotPredictPhishingWords
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      emailSubject:
+        simple: closed church squeamish squeamish moaning closed closed closed church
+          squeamish squeamish moaning closed closed closed church squeamish squeamish
+          moaning closed closed
+      labelProbabilityThreshold:
+        simple: "0"
+      minTextLength:
+        simple: "0"
+      modelName:
+        simple: model_fine_tune
+      modelStoreType:
+        simple: mlModel
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3185,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: Create Phishing Classifier V2 ML Test
+fromversion: 6.1.0
