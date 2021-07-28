@@ -1,7 +1,7 @@
-id: Fetch Test
+id: Fetch Indicators Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: Fetch Test
+name: Fetch Indicators Test
 starttaskid: "0"
 tasks:
   "0":
@@ -61,7 +61,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -120,7 +120,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "21"
     scriptarguments:
       extend-context:
         simple: serverConfig=
@@ -157,7 +157,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2470
         }
       }
     note: false
@@ -194,7 +194,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -231,7 +231,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -291,7 +291,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -327,7 +327,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -357,13 +357,13 @@ tasks:
       query:
         simple: ${searchQuery}
       size:
-        simple: "3"
+        simple: "1"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -397,7 +397,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
@@ -434,7 +434,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2295
         }
       }
     note: false
@@ -464,13 +464,13 @@ tasks:
       key:
         simple: searchQuery
       value:
-        simple: sourceBrands:"${serverConfig.response.sysConf.sourcebrand}"
+        simple: sourceInstances:${Instances.instanceName}*
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -526,7 +526,41 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: acde9ab8-4073-4214-8c3c-67f4b2535317
+    type: regular
+    task:
+      id: acde9ab8-4073-4214-8c3c-67f4b2535317
+      version: -1
+      name: GetInstanceName
+      description: Check integration instance name.
+      scriptName: GetInstanceName
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      integration_name:
+        simple: ${serverConfig.response.sysConf.sourcebrand}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -541,7 +575,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 2485,
         "width": 492.5,
         "x": 50,
         "y": 50
