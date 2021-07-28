@@ -10,17 +10,17 @@ This integration was integrated and tested with version 1.0 of SOCRadarIncidents
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | API Key | The API Key to use for connection to SOCRadar. | True |
-    | proxy | Whether to use XSOAR’s system proxy settings to connect to the API. | False |
-    | insecure | Trust any certificate (not secure). | False |
-    | isFetch | Enable fetch incidents. | False |
-    | first_fetch | Date or relative timestamp to start fetching incidents from. | False |
-    | socradar_company_id | Company ID in SOCRadar to fetch incidents. | True |
-    | severity | Severity level\(s\) of incidents to fetch. Leave blank to fetch all. | False |
-    | max_fetch | Maximum number of incidents to fetch in each integration execution interval. (Limited to max 50) | False |
-    | resolution_status | Resolution Status of Incidents to Fetch. (All, Resolved, Not Resolved) | False |
-    | fp_status | False Positive Status of Incidents to Fetch. (All, FP, Not FP) | False |
-    | incident_main_type | Main Type of Incidents to Fetch. | False |
-    | incident_sub_type | Sub Type of Incidents to Fetch. | False |
+    | Fetch incidents | Enable fetch incidents. | False |
+    | insecure | Trust any certificate (not secure) | False |
+    | Use system proxy settings | Whether to use XSOAR’s system proxy settings to connect to the API. | False |
+    | First Fetch Time | Date or relative timestamp to start fetching incidents from. | False |
+    | Company ID | Company ID in SOCRadar to fetch incidents. | True |
+    | Severity Level | Select severity level\(s\) of incidents to fetch. Leave blank to fetch all. | False |
+    | Maximum number of incidents to fetch | Maximum number of incidents to fetch in each integration execution interval. | False |
+    | Resolution Status | Fetch Incidents by resolution status (All, Resolved, Not Resolved) | False |
+    | FP Status | Fetch Incidents by false positive status (All, FP, Not FP) | False |
+    | Incident Main Type | Fetch incidents which belong to this particular main type. | False |
+    | Incident Sub Type | Fetch incidents which belong to this particular sub type. | False |
 
 4. Click **Test** to validate API key and connection to SOCRadar.
 
@@ -40,9 +40,6 @@ For further information about the SOCRadar API keys please see [SOCRadar API](ht
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
-1. socradar-mark-incident-fp
-2. socradar-mark-incident-resolved
 ### socradar-mark-incident-fp
 ***
 Marks incident as false positive in SOCRadar platform.
@@ -64,21 +61,11 @@ Marks incident as false positive in SOCRadar platform.
 There is no context output for this command.
 
 #### Command Example
-```!socradar-mark-incident-fp socradar_incident_id="29051453" comments="Example comment on FP action." ```
-
-#### Context Example
-```
-{
-    "data": null,
-    "is_success": true,
-    "message": "False positive action has been successfully taken. Affected incident IDs: 29051453",
-    "response_code": 200
-}
-```
+```!socradar-mark-incident-fp socradar_incident_id=29051453 comments="This incident is FP."```
 
 #### Human Readable Output
 
-SOCRadar API Response: False positive action has been successfully taken. Affected incident IDs: 29051453
+>SOCRadar API Response: False positive action has been successfully taken. Affected incident IDs: 29051453
 
 ### socradar-mark-incident-resolved
 ***
@@ -101,21 +88,8 @@ Marks incident as resolved in SOCRadar platform.
 There is no context output for this command.
 
 #### Command Example
-```!socradar-mark-incident-resolved socradar_incident_id="29051453" comments="Example comment on resolve action." ```
-
-#### Context Example
-```
-{
-    "data": null,
-    "is_success": true,
-    "message": "Incident has been successfully resolved. Affected incident IDs: 29051453",
-    "response_code": 200
-}
-```
+```!socradar-mark-incident-resolved socradar_incident_id=29051453 comments="Incident has been resolved."```
 
 #### Human Readable Output
 
-SOCRadar API Response: Incident has been successfully resolved. Affected incident IDs: 29051453
-
-
-
+>SOCRadar API Response: Incident has been successfully resolved. Affected incident IDs: 29051453

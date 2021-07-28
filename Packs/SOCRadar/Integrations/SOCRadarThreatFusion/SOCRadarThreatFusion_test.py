@@ -67,7 +67,7 @@ def test_score_ip(requests_mock):
     """Tests the score_ip_command function.
 
  Configures requests_mock instance to generate the appropriate
- SOCRadar threat analysis API response, loaded from a local JSON file. Checks
+ SOCRadar ThreatFusion API response, loaded from a local JSON file. Checks
  the output of the command function with the expected output.
  """
     from SOCRadarThreatFusion import Client, score_ip_command
@@ -127,7 +127,7 @@ def test_score_domain(requests_mock):
     """Tests the score_domain_command function.
 
  Configures requests_mock instance to generate the appropriate
- SOCRadar threat analysis API response, loaded from a local JSON file. Checks
+ SOCRadar ThreatFusion API response, loaded from a local JSON file. Checks
  the output of the command function with the expected output.
  """
     from SOCRadarThreatFusion import Client, score_domain_command
@@ -186,7 +186,7 @@ def test_score_hash(requests_mock):
     """Tests the score_hash_command function.
 
  Configures requests_mock instance to generate the appropriate
- SOCRadar threat analysis API response, loaded from a local JSON file. Checks
+ SOCRadar ThreatFusion API response, loaded from a local JSON file. Checks
  the output of the command function with the expected output.
  """
     from SOCRadarThreatFusion import Client, score_hash_command

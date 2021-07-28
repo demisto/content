@@ -91,6 +91,8 @@ configuration:
   required: false
   type: 13
 defaultclassifier: SOCRadar Incident Classifier
+defaultmapperin: SOCRadar Incident Mapper
+defaultmapperout: 'null'
 description: Fetches SOCRadar incidents with desired parameters so that relevant actions
   over the incidents can be taken by using Cortex XSOAR.
 display: SOCRadar Incidents
