@@ -110,9 +110,8 @@
             "timeout": 1000
         },
         {
-            "integrations": "SecurityIntelligenceServicesFeed",
-            "playbookID": "SecurityIntelligenceServicesFeed - Test",
-            "fromversion": "5.5.0"
+            "integrations": "RSS Feed",
+            "fromversion": "6.2.0"
         },
         {
             "integrations": "EwsExtension",
