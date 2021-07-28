@@ -762,8 +762,32 @@ def parse_file_report(reports, file_info):
         if len(evidence_text) > 0:
             outputs["Evidence"]["Text"] = evidence_text
 
+    feed_related_indicators = create_feed_related_indicators_object(feed_related_indicators)
+    behavior = create_behaviors_object(behavior)
     return outputs, feed_related_indicators, behavior
 
+
+def create_feed_related_indicators_object(feed_related_indicators):
+    """
+    This function is used while enhancing the integration, enabling the use of Common.FeedRelatedIndicators object
+
+    """
+    feed_related_indicators_objects_list = []
+    for item in feed_related_indicators:
+        feed_related_indicators_objects_list.append(Common.FeedRelatedIndicators(value=item['value'],
+                                                                                 indicator_type=item['type']))
+    return feed_related_indicators_objects_list
+
+
+def create_behaviors_object(behaviors):
+    """
+    This function is used while enhancing the integration, enabling the use of Common.Behaviors object
+
+    """
+    behaviors_objects_list = []
+    for item in behaviors:
+        behaviors.append(Common.Behaviors(details=item['details'], action=item['action']))
+    return behaviors
 
 def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml', verbose: bool = False):
 
@@ -942,9 +966,8 @@ def wildfire_file_command(args):
             })
         else:
             command_results = wildfire_get_file_report(element, args)[0]
-        command_results_list.append(command_results)
-
-    return command_results
+            command_results_list.append(command_results)
+            return command_results
 
 
 def wildfire_get_sample(file_hash):
