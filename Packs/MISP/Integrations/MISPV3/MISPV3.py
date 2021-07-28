@@ -43,8 +43,8 @@ warnings.warn = warn
 params = demisto.params()
 if not params.get('credentials') or not (MISP_API_KEY := params.get('credentials', {}).get('password')):
     raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
-MISP_URL = demisto.params().get('url')
-VERIFY = not demisto.params().get('insecure')
+MISP_URL = params.get('url')
+VERIFY = not params.get('insecure')
 PROXIES = handle_proxy()  # type: ignore
 try:
     PYMISP = ExpandedPyMISP(url=MISP_URL, key=MISP_API_KEY, ssl=VERIFY, proxies=PROXIES)
