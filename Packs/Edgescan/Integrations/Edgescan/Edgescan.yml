@@ -35,7 +35,8 @@ configuration:
   name: risk_more_than
   required: false
   type: 0
-- additionalinfo: How many days to fetch back on first run.
+- additionalinfo: 'How many days to fetch back on first run. It can be: 360 days,
+    12 months, 1 year, etc.'
   defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
