@@ -210,7 +210,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='XSOAR json', limit=38)
+            request_args = ei.RequestArguments(query='', out_format='XSOAR json', limit=39)
             ei_vals = ei.refresh_outbound_context(request_args)
             assert isinstance(ei_vals, str)
             ei_vals = json.loads(ei_vals)
@@ -292,47 +292,14 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             limit = 30
-            mocker.patch.object(ei, 'find_indicators_with_limit_loop', return_value=(iocs_json, 1))
-            ei_vals = ei.find_indicators_with_limit(indicator_query='', limit=limit, offset=0)
+            indicator_searcher_res = [{'iocs': iocs_json[:limit]}, {'iocs': []}]
+            indicator_searcher = ei.IndicatorsSearcher(
+                limit=limit
+            )
+            mocker.patch.object(indicator_searcher, 'search_indicators_by_version', side_effect=indicator_searcher_res)
+            # mocker.patch.object(ei, 'find_indicators_with_limit_loop', return_value=(iocs_json, 1))
+            ei_vals = ei.find_indicators_with_limit(indicator_searcher)
             assert len(ei_vals) == limit
-
-    @pytest.mark.find_indicators_with_limit
-    def test_find_indicators_with_limit_and_offset_1(self, mocker):
-        """Test find indicators limit and offset"""
-        import ExportIndicators as ei
-        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.loads(iocs_json_f.read())
-            limit = 30
-            offset = 1
-            mocker.patch.object(ei, 'find_indicators_with_limit_loop', return_value=(iocs_json, 1))
-            ei_vals = ei.find_indicators_with_limit(indicator_query='', limit=limit, offset=offset)
-            assert len(ei_vals) == limit
-            # check that the first value is the second on the list
-            assert ei_vals[0].get('value') == '212.115.110.19'
-
-    @pytest.mark.find_indicators_with_limit_loop
-    def test_find_indicators_with_limit_loop_1(self, mocker):
-        """Test find indicators stops when reached last page"""
-        import ExportIndicators as ei
-        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
-            limit = 50
-            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
-            ei_vals, nxt_pg = ei.find_indicators_with_limit_loop(indicator_query='', limit=limit)
-            assert nxt_pg == 1  # assert entered into loop
-
-    @pytest.mark.find_indicators_with_limit_loop
-    def test_find_indicators_with_limit_loop_2(self, mocker):
-        """Test find indicators stops when reached limit"""
-        import ExportIndicators as ei
-        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
-            limit = 30
-            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
-            ei.PAGE_SIZE = IOC_RES_LEN
-            ei_vals, nxt_pg = ei.find_indicators_with_limit_loop(indicator_query='', limit=limit,
-                                                                 last_found_len=IOC_RES_LEN)
-            assert nxt_pg == 1  # assert entered into loop
 
     @pytest.mark.create_values_for_returned_dict
     def test_create_values_for_returned_dict_1(self):
