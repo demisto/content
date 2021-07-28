@@ -266,7 +266,7 @@ def get_last_run(last_run: str, first_fetch: str):
 
     """
     Helper function to return the last incident fetch runtime as
-    a UNIX timestamp
+    a UNIX timestamp.
 
     Args:
         ``last_run`` (``str``): The last runtime, ``demisto.getLastRun().get("last_run")``

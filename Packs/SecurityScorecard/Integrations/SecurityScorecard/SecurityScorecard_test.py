@@ -1,11 +1,15 @@
+
 from SecurityScorecard import \
     SecurityScorecardClient, \
     DATE_FORMAT, \
-    incidents_to_import
+    SECURITYSCORECARD_DATE_FORMAT, \
+    incidents_to_import, \
+    get_last_run
 
 import json
 import io
 import datetime
+import pytest
 
 """ Helper Functions Test Data"""
 
@@ -15,10 +19,32 @@ def load_json(path):
         return json.loads(f.read())
 
 
-domain_test_data = [("google.com", True), ("sometestdomain", False)]
-date_test_data = [("2021-12-31", True), ("2021-13-31", False), ("202-12-31", False)]
-email_test_data = [("username@domain.com", True), ("username.com", False), ("username@", False)]
-alerts_mock = load_json("./test_data/alerts/alerts.json")
+test_data = load_json("./test_data/data.json")
+
+# test_get_last_run
+FREEZE_DATE = '2021-07-27'
+DAYS_AGO = 3
+DAYS_BEFORE_FREEZE_TIMESTAMP = int(datetime.datetime(2021, 7, 24).timestamp())
+freeze_date = datetime.datetime(2021, 7, 27)
+date_days_ago_timestamp = (freeze_date - datetime.timedelta(days=DAYS_AGO)).timestamp()
+
+get_last_run_test_inputs = [
+    (date_days_ago_timestamp, f"{DAYS_AGO} days"),
+    (date_days_ago_timestamp, None)
+]
+
+# test_incidents_to_import
+alerts_mock = test_data.get("alerts")
+incidents_to_import_test_inputs = [
+    ([], None),
+    ([], 1),
+    (alerts_mock, 0),
+    (alerts_mock, 1),
+    (alerts_mock, 2),
+    (alerts_mock, 3),
+    (alerts_mock, 4),
+]
+
 portfolios_mock = load_json("./test_data/portfolios/portfolios.json")
 companies_mock = load_json("./test_data/portfolios/companies.json")
 portfolio_not_found = load_json("./test_data/portfolios/portfolio_not_found.json")
@@ -33,34 +59,68 @@ services_mock = load_json("./test_data/companies/services.json")
 """ Helper Functions Unit Tests"""
 
 
-def test_incidents_to_import(mocker):
+@pytest.mark.freeze_time(FREEZE_DATE)
+@pytest.mark.parametrize('last_run, first_fetch', get_last_run_test_inputs)
+def test_get_last_run(last_run: str, first_fetch: str):
 
-    mocker.patch.object(client, "get_alerts_last_week", return_value=alerts_mock)
+    """
+    Given:
+        - Last fetch run timestamp
+        - First fetch parameter
 
-    response = client.get_alerts_last_week(email="some@email.com")
+    When:
+        - Case A: last fetch timestamp is 24/07/2021, first fetch is 3 days ago
+        - Case B: last fetch timestamp is 24/07/2021, first fetch is not suppplied
 
-    assert response.get('entries')
+    Then:
+        - Case A and B: Last runtime timestamp is 2021-07-24 00:00:00
+    """
 
-    entries = response.get('entries')
+    time_result = get_last_run(last_run=last_run, first_fetch=first_fetch)
+    print(time_result, DAYS_BEFORE_FREEZE_TIMESTAMP)
+    assert time_result == DAYS_BEFORE_FREEZE_TIMESTAMP
 
-    assert len(entries) == 2
 
-    # 3 day in seconds
-    seconds_ago = 3 * 86400
+@pytest.mark.freeze_time(FREEZE_DATE)
+@pytest.mark.parametrize('alerts, days_ago', incidents_to_import_test_inputs)
+def test_incidents_to_import(alerts: list, days_ago: int):
 
-    # Set runtime
-    now = int(datetime.datetime(2021, 7, 12).timestamp()) - seconds_ago
+    """
+    Given:
+        - List of alerts
+        - Days ago
 
-    incidents = incidents_to_import(entries)
+    When:
+        - Case A: No alerts supplied, no days ago specified.
+        - Case B: No alerts supplied, 1 day ago.
+        - Case C: 3 alerts supplied, 0 days ago.
+        - Case D: 3 alerts supplied, 1 day ago.
+        - Case E: 3 alerts supplied, 2 days ago.
+        - Case F: 3 alerts supplied, 3 days ago.
+        - Case G: 3 alerts supplied, 4 days ago.
 
-    assert len(incidents) == 0
+    Then:
+        - Case A : No alerts imported.
+        - Case B: No alerts imported.
+        - Case C: 0 alerts imported.
+        - Case D: 1 alerts imported.
+        - Case E: 2 alerts imported.
+        - Case F: 3 alerts imported.
+        - Case G: 4 alerts imported.
 
-    # Iterate over each incident and ensure they
-    # were supposed to be imported
-    for incident in incidents:
-        incident_time = incident["occurred"]
-        incident_timestamp = int(datetime.datetime.strptime(incident_time, DATE_FORMAT).timestamp())
-        assert incident_timestamp > now
+    """
+    days_ago_str = f"{days_ago} days"
+
+    incidents = incidents_to_import(alerts=alerts, last_run=date_days_ago_timestamp, first_fetch=days_ago_str)
+    if not alerts:
+        assert len(alerts) == len(incidents)
+    else:
+        filtered_alerts = [alert for alert in alerts if datetime.datetime.strptime(
+            alert["created_at"], SECURITYSCORECARD_DATE_FORMAT).timestamp() > date_days_ago_timestamp
+        ]
+
+        assert len(incidents) == len(filtered_alerts)
+        print(f"len(filtered_alerts): {len(filtered_alerts)}, len(incidents): {len(incidents)}", days_ago_str)
 
 
 """ TEST CONSTANTS """
