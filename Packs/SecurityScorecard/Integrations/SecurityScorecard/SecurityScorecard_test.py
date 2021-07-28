@@ -4,12 +4,48 @@ from SecurityScorecard import \
     SECURITYSCORECARD_DATE_FORMAT, \
     incidents_to_import, \
     get_last_run, \
-    portfolios_list_command
+    portfolios_list_command, \
+    portfolio_list_companies_command
 
 import json
 import io
 import datetime  # type: ignore
 import pytest
+
+
+""" TEST CONSTANTS """
+
+
+USERNAME = "user@domain.com"
+PORTFOLIO_ID = "1"
+PORTFOLIO_ID_NE = "2"
+DOMAIN = "domain1.com"
+DOMAIN_NE = "domain2.com"
+ALERT_ID = "1"
+ALERT_ID_NE = "2"
+
+""" Endpoints """
+
+PORTFOLIO_ROOT_EP = "/portfolios"
+PORTFOLIO_FOUND_EP = f"{PORTFOLIO_ROOT_EP}/1/companies"
+PORTFOLIO_FOUND_EP = f"{PORTFOLIO_ROOT_EP}/2/companies"
+
+COMPANIES_ROOT_EP = "/companies"
+COMPANIES_SCORE_EP = f"{COMPANIES_ROOT_EP}/{DOMAIN}"
+COMPANIES_FACTOR_SCORE_EP = f"{COMPANIES_ROOT_EP}/{DOMAIN}/factors"
+COMPANIES_HISTORY_SCORE_EP = f"{COMPANIES_ROOT_EP}/{DOMAIN}/history/score"
+COMPANIES_HISTORY_FACTOR_SCORE_EP = f"{COMPANIES_ROOT_EP}/{DOMAIN}/history/factor/score"
+COMPANIES_SERVICES_EP = f"{COMPANIES_ROOT_EP}/{DOMAIN}/services"
+
+ALERTS_ROOT_EP = f"/users/by-username/{USERNAME}/alerts"
+ALERTS_TYPE_SCORE = "score"
+ALERTS_TYPE_GRADE = "grade"
+ALERTS_GRADE_EP = f"{ALERTS_ROOT_EP}/grade"
+ALERTS_SCORE_EP = f"{ALERTS_ROOT_EP}/score"
+ALERTS_DELETE_SCORE_EP = f"{ALERTS_ROOT_EP}/{ALERTS_TYPE_SCORE}/{ALERT_ID}"
+ALERTS_DELETE_GRADE_EP = f"{ALERTS_ROOT_EP}/{ALERTS_TYPE_GRADE}/{ALERT_ID}"
+NOTIFICATIONS_ROOT_EP = f"/users/by-username/{USERNAME}/notifications/recent"
+
 
 """ Helper Functions Test Data"""
 
@@ -53,9 +89,18 @@ portfolios_list_test_inputs = [
     (2)
 ]
 
+# test_portfolio_list_companies
+companies_mock = test_data.get("companies")
+companies_list_test_inputs = [
+    (PORTFOLIO_ID)
+]
 
-companies_mock = load_json("./test_data/portfolios/companies.json")
-portfolio_not_found = load_json("./test_data/portfolios/portfolio_not_found.json")
+# test_portfolio_list_companies_not_exist
+portfolio_not_found = test_data.get("portfolio_not_exist")
+companies_list_not_exist_test_inputs = [
+    (PORTFOLIO_ID_NE)
+]
+
 score_mock = load_json("./test_data/companies/score.json")
 factor_score_mock = load_json("./test_data/companies/factor_score.json")
 historical_score_mock = load_json("./test_data/companies/historical_score.json")
@@ -129,40 +174,6 @@ def test_incidents_to_import(alerts: list, days_ago: int):
         assert len(incidents) == len(filtered_alerts)
 
 
-""" TEST CONSTANTS """
-
-
-USERNAME = "user@domain.com"
-PORTFOLIO_ID = "1"
-PORTFOLIO_ID_NE = "2"
-DOMAIN = "domain1.com"
-DOMAIN_NE = "domain2.com"
-ALERT_ID = "1"
-ALERT_ID_NE = "2"
-
-""" Endpoints """
-
-PORTFOLIO_ROOT_EP = "/portfolios"
-PORTFOLIO_FOUND_EP = f"{PORTFOLIO_ROOT_EP}/1/companies"
-PORTFOLIO_FOUND_EP = f"{PORTFOLIO_ROOT_EP}/2/companies"
-
-COMPANIES_ROOT_EP = "/companies"
-COMPANIES_SCORE_EP = f"{COMPANIES_ROOT_EP}/{DOMAIN}"
-COMPANIES_FACTOR_SCORE_EP = f"{COMPANIES_ROOT_EP}/{DOMAIN}/factors"
-COMPANIES_HISTORY_SCORE_EP = f"{COMPANIES_ROOT_EP}/{DOMAIN}/history/score"
-COMPANIES_HISTORY_FACTOR_SCORE_EP = f"{COMPANIES_ROOT_EP}/{DOMAIN}/history/factor/score"
-COMPANIES_SERVICES_EP = f"{COMPANIES_ROOT_EP}/{DOMAIN}/services"
-
-ALERTS_ROOT_EP = f"/users/by-username/{USERNAME}/alerts"
-ALERTS_TYPE_SCORE = "score"
-ALERTS_TYPE_GRADE = "grade"
-ALERTS_GRADE_EP = f"{ALERTS_ROOT_EP}/grade"
-ALERTS_SCORE_EP = f"{ALERTS_ROOT_EP}/score"
-ALERTS_DELETE_SCORE_EP = f"{ALERTS_ROOT_EP}/{ALERTS_TYPE_SCORE}/{ALERT_ID}"
-ALERTS_DELETE_GRADE_EP = f"{ALERTS_ROOT_EP}/{ALERTS_TYPE_GRADE}/{ALERT_ID}"
-NOTIFICATIONS_ROOT_EP = f"/users/by-username/{USERNAME}/notifications/recent"
-
-
 """ Client Unit Tests """
 
 
@@ -208,27 +219,35 @@ def test_portfolios_list(mocker, limit):
         assert len(portfolios) == limit
 
 
-def test_portfolio_list_companies(mocker):
+@pytest.mark.parametrize("portfolio_id", companies_list_test_inputs)
+def test_portfolio_list_companies(mocker, portfolio_id):
 
     """
-        Checks cases where the portfolio exists and doesn't exist
+    Given:
+        - A portfolio ID
+
+    When:
+        - Portfolio exists
+
+    Then:
+        - 10 companies retrieved
     """
 
-    # 1. Exiting Portfolio
     mocker.patch.object(client, "get_companies_in_portfolio", return_value=companies_mock)
-    response_portfolio = client.get_companies_in_portfolio(PORTFOLIO_ID)
 
-    assert response_portfolio.get("entries")
+    companies_cmd_res: CommandResults = portfolio_list_companies_command(
+        client=client,
+        portfolio_id=portfolio_id,
+        grade=None,
+        industry_arg=None,
+        vulnerability=None,
+        issue_type=None,
+        had_breach_within_last_days=None
+    )
 
-    companies = response_portfolio.get("entries")
+    companies = companies_cmd_res.outputs
 
-    assert len(companies) == 3
-
-    # 2. Portfolio doesn't exist
-    mocker.patch.object(client, "get_companies_in_portfolio", return_value=portfolio_not_found)
-    portfolio_not_exist_response = client.get_companies_in_portfolio(PORTFOLIO_ID_NE)
-
-    assert portfolio_not_exist_response["error"]["message"] == "portfolio not found"
+    assert len(companies) == companies_mock.get("total")
 
 
 def test_get_company_score(mocker):

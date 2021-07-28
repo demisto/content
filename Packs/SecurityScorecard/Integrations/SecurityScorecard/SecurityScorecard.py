@@ -460,31 +460,36 @@ def portfolios_list_command(client: SecurityScorecardClient, limit: Optional[str
     return results
 
 
-def portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
+def portfolio_list_companies_command(
+    client: SecurityScorecardClient,
+    portfolio_id: str,
+    grade: Optional[str],
+    industry_arg: Optional[str],
+    vulnerability: Optional[str],
+    issue_type: Optional[str],
+    had_breach_within_last_days: Optional[str]
+) -> CommandResults:
     """Retrieve all companies in portfolio.
 
     https://securityscorecard.readme.io/reference#get_portfolios-portfolio-id-companies
 
     Args:
-        client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): Dictionary of arguments specified in the command
-
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+        ``portfolio_id`` (``str``): The portfolio ID for which to retrieve the companies
+        ``grade`` (``str``): Grade filter
+        ``industry`` (``str``): Industry filter
+        ``vulnerability`` (``str``): vulnerability filter
+        ``issue_type`` (``str``): Issue type filter
+        ``had_breach_within_last_days`` (``Optional[str])``): Filter breach days back
     Returns:
         CommandResults: The results of the command.
     """
 
-    portfolio_id = args.get('portfolio_id')
-    grade = args.get('grade')
-
     # We need to capitalize the industry to conform to API
-    industry_arg = args.get('industry')
-    industry = str.upper(industry_arg) if args.get("industry") else None  # type: ignore
+    industry = str.upper(industry_arg) if industry_arg else None  # type: ignore
 
-    vulnerability = args.get('vulnerability')
-    issue_type = args.get('issue_type')
-
-    had_breach_within_last_days = arg_to_number(
-        arg=args.get('had_breach_within_last_days'),
+    had_breach_within_last_days = arg_to_number(  # type: ignore
+        arg=had_breach_within_last_days,
         arg_name='had_breach_within_last_days',
         required=False
     )
@@ -495,7 +500,7 @@ def portfolio_list_companies_command(client: SecurityScorecardClient, args: Dict
         industry=industry,
         vulnerability=vulnerability,
         issue_type=issue_type,
-        had_breach_within_last_days=had_breach_within_last_days
+        had_breach_within_last_days=had_breach_within_last_days  # type: ignore
     )
 
     # Check if the portfolio has more than 1 company
@@ -1044,7 +1049,15 @@ def main() -> None:
         elif demisto.command() == 'securityscorecard-portfolios-list':
             return_results(portfolios_list_command(client, args.get("limit")))
         elif demisto.command() == 'securityscorecard-portfolio-list-companies':
-            return_results(portfolio_list_companies_command(client, args))
+            return_results(portfolio_list_companies_command(
+                client=client,
+                portfolio_id=args.get("portfolio_id"),  # type: ignore
+                grade=args.get("grade"),
+                industry_arg=args.get("industry"),
+                vulnerability=args.get("vulnerability"),
+                issue_type=args.get("issue_type"),
+                had_breach_within_last_days=args.get("had_breach_within_last_days")
+            ))
         elif demisto.command() == 'securityscorecard-company-score-get':
             return_results(company_score_get_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-company-factor-score-get':

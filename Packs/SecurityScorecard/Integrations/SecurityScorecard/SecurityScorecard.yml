@@ -90,12 +90,12 @@ script:
     description: Lists all companies in Portfolio.
     arguments:
     - name: portfolio_id
-      description: Portfolio ID. A comma-separated list of Portfolio IDs can be retrieved using the
+      description: Portfolio ID. The Portfolio ID can be retrieved using the
         'securityscorecard-portfolios-list' command.
       required: true
       default: false
     - name: grade
-      description: Grade filter.
+      description: Grade filter. To filter multiple grades, comma-separate them, e.g. A,B.
       required: false
       default: false
       auto: PREDEFINED
@@ -107,7 +107,7 @@ script:
       - "E"
       - "F"
     - name: industry
-      description: Industry filter.
+      description: Industry filter. To filter multiple industries, comma-separate them, e.g. education,financial_services
       required: false
       default: false
       auto: PREDEFINED
