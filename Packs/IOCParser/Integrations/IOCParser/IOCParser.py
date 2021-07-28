@@ -135,7 +135,7 @@ def remove_unwanted_keys(response_data: Dict[str, List], keys: List[str]) -> Non
 
     keys_list = list(response_data.keys())
     for ioc_type in keys_list:
-        if ioc_type not in keys:
+        if ioc_type not in keys or not response_data[ioc_type]:
             del response_data[ioc_type]
 
 
@@ -176,7 +176,7 @@ def process_response(response: Dict[str, Any], keys: List[str], limit: int) -> D
     try:
         response_data = response.get('data')
     except Exception as e:
-        raise Exception('The response from the API is empty') from e
+        raise Exception('The response from the API is empty.') from e
 
     remove_unwanted_keys(response_data, keys)
     if limit is not None:
@@ -195,7 +195,7 @@ def unite_all_tweets_into_dict(twitter_response: Dict[str, Any]) -> None:
     try:
         response_data = twitter_response.get('data')
     except Exception:
-        raise Exception('The response from the API is empty')
+        raise ValueError('The response from the API is empty')
 
     united_data = {}
     for tweet in response_data:
@@ -222,10 +222,10 @@ def test_module(client: Client) -> str:
     Returns:
         'ok' if test passed, anything else will fail the test
     """
-
-    response = client.ioc_from_url('https://pastebin.com/iMzrRXbJ')
-    if response.get('status') in ['fail', 'error', None]:
-        return 'Failed to connect with the API'
+    try:
+        client.ioc_from_url('https://pastebin.com/iMzrRXbJ')
+    except DemistoException as e:
+        return f'Failed to connect with the API. Error: {str(e)}'
     return 'ok'
 
 
@@ -244,11 +244,14 @@ def ioc_from_url_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
     url = args.get('url')
     keys = list_to_upper_case(argToList(args.get('keys'))) or KEYS
     limit = arg_to_number(args.get('limit'))
-
-    response = client.ioc_from_url(url)
+    try:
+        response = client.ioc_from_url(url)
+    except DemistoException as e:
+        raise ValueError(str(e))
 
     response_data = process_response(response, keys, limit)
-
+    if not response_data:
+        raise ValueError('There is no information about the requested keys')
     command_results = []
     outputs = {'url': url, 'Results': []}
     for ioc_type, iocs in response_data.items():
@@ -287,10 +290,13 @@ def ioc_from_json_text_command(client: Client, args: Dict[str, Any]) -> List[Com
     keys = list_to_upper_case(argToList(args.get('keys'))) or KEYS
     limit = arg_to_number(args.get('limit'))
 
-    response = client.ioc_from_json_text(data)
-
+    try:
+        response = client.ioc_from_json_text(data)
+    except DemistoException as e:
+        raise ValueError(str(e))
     response_data = process_response(response, keys, limit)
-
+    if not response_data:
+        raise ValueError('There is no information about the requested keys')
     command_results = []
     outputs = {'data': data, 'Results': []}
     for ioc_type, iocs in response_data.items():
@@ -344,10 +350,13 @@ def ioc_from_raw_text_command(client: Client, args: Dict[str, Any]) -> List[Comm
         raise ValueError('Neither data nor entry id specified.')
     keys = list_to_upper_case(argToList(args.get('keys'))) or KEYS
     limit = arg_to_number(args.get('limit'))
-    response = client.ioc_from_raw_text(data)
-
+    try:
+        response = client.ioc_from_raw_text(data)
+    except DemistoException as e:
+        raise ValueError(str(e))
     response_data = process_response(response, keys, limit)
-
+    if not response_data:
+        raise ValueError('There is no information about the requested keys')
     command_results = []
     outputs = {'data': data, 'Results': []}
     for ioc_type, iocs in response_data.items():
@@ -381,11 +390,14 @@ def ioc_from_twitter_command(client: Client, args: Dict[str, Any]) -> List[Comma
     twitter_account = args.get('data')
     keys = list_to_upper_case(argToList(args.get('keys'))) or KEYS
     limit = arg_to_number(args.get('limit'))
-
-    twitter_response = client.ioc_from_twitter(twitter_account)
+    try:
+        twitter_response = client.ioc_from_twitter(twitter_account)
+    except DemistoException as e:
+        raise ValueError('Could not find this twitter account') from e
     unite_all_tweets_into_dict(twitter_response)
     response_data = process_response(twitter_response, keys, limit)
-
+    if not response_data:
+        raise ValueError('There is no information about the requested keys')
     command_results = []
     outputs = {'data': twitter_account, 'Results': []}
     for ioc_type, iocs in response_data.items():

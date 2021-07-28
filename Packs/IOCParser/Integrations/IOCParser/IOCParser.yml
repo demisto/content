@@ -26,7 +26,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: IOC Types to return
+      description: IOC Types to return. The supported types are 'ASN', 'BITCOIN_ADDRESS',
+        'CVE', 'DOMAIN', 'EMAIL', 'FILE_HASH_MD5', 'FILE_HASH_SHA1', 'FILE_HASH_SHA256',
+        'IPV4', 'IPV6', 'MAC_ADDRESS', 'MITRE_ATT&CK', 'URL', 'YARA_RULE'.
       isArray: false
       name: keys
       required: false
@@ -53,7 +55,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: IOC Types to return
+      description: IOC Types to return. The supported types are 'ASN', 'BITCOIN_ADDRESS',
+        'CVE', 'DOMAIN', 'EMAIL', 'FILE_HASH_MD5', 'FILE_HASH_SHA1', 'FILE_HASH_SHA256',
+        'IPV4', 'IPV6', 'MAC_ADDRESS', 'MITRE_ATT&CK', 'URL', 'YARA_RULE'.
       isArray: false
       name: keys
       required: false
@@ -81,7 +85,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: IOC Types to return
+      description: IOC Types to return. The supported types are 'ASN', 'BITCOIN_ADDRESS',
+        'CVE', 'DOMAIN', 'EMAIL', 'FILE_HASH_MD5', 'FILE_HASH_SHA1', 'FILE_HASH_SHA256',
+        'IPV4', 'IPV6', 'MAC_ADDRESS', 'MITRE_ATT&CK', 'URL', 'YARA_RULE'.
       isArray: false
       name: keys
       required: false
@@ -115,7 +121,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: IOC Types to return
+      description: IOC Types to return. The supported types are 'ASN', 'BITCOIN_ADDRESS',
+        'CVE', 'DOMAIN', 'EMAIL', 'FILE_HASH_MD5', 'FILE_HASH_SHA1', 'FILE_HASH_SHA256',
+        'IPV4', 'IPV6', 'MAC_ADDRESS', 'MITRE_ATT&CK', 'URL', 'YARA_RULE'.
       isArray: false
       name: keys
       required: false
