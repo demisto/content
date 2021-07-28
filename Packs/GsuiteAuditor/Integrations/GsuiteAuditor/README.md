@@ -1,6 +1,59 @@
 G Suite Auditor is an integration to receive Audit logs from  G Suite different applications - admin,drive,calender and more.
 This integration was integrated and tested with version xx of GsuiteAuditor
 
+## Configure Service Account for G Suite Auditor
+
+1. Go to [https://console.developers.google.com](https://console.developers.google.com).
+
+2. Select or create a project:
+
+    ![Setup Account](./../../doc_files/create-project-1.png)
+
+
+3. Enable the Admin SDK API:
+    
+    1. Under the main menu, select **APIs & Services > Libary**:
+        ![Setup Account](./../../doc_files/google-api-menu.png)
+    
+    2. Enable *Admin SDK*:
+        ![Setup Account](./../../doc_files/enable-api.jpg)
+    
+    3. Select the project and click **OPEN**:
+        ![Setup Account](./../../doc_files/enable-gke-api-enable-2.png)    
+
+4. Create a service account with the correct restricted permissions:
+
+    1. Under the main menu, select **IAM & Admin > Service Accounts**:
+        ![Setup Account](./../../doc_files/service-acount-menu.png)
+    
+    2. In the top bar, select **CREATE SERVICE ACCOUNT**:
+        ![Setup Account](./../../doc_files/service-account-create-1.png)
+    
+    3. Under the main menu, select **IAM & Admin > Service Accounts** and open the account you just created.
+    
+    4. Generate new credentials:
+        1. On the Service account details page, under Keys, click **ADD KEY** and select **Create new key**:
+            ![Setup Account](./../../doc_files/service-account-create-3.png)
+        
+        2. Under Key type, select **JSON**, and click **CREATE**. Save the credentials in a secure location. You will need the generated ``credentials.json`` file when you configure the instance in Cortex XSOAR:
+            ![Setup Account](./../../doc_files/service-account-create-4.png)   
+
+
+## Add Scopes in G Suite Admin
+
+1. Go to [https://admin.google.com](https://admin.google.com)
+
+2. Click **Menu** and select **Security > API Controls**:
+    ![Setup Account](./../../doc_files/add-scope-admin-1.png)
+
+3. Under the **Domain wide delegation** tab, click **MANAGE DOMAIN WIDE DELEGATION**:
+    ![Setup Account](./../../doc_files/add-scope-admin-2.png)
+
+4. Click  **Add new** and enter the Client ID from your *credentials.json* file and required scopes from the integration tips.
+    ![Setup Account](./../../doc_files/add-scope-admin-3.png)           
+
+5. Click **AUTHORIZE**.
+
 ## Configure GsuiteAuditor on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

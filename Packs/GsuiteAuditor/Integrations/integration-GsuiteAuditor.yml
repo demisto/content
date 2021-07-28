@@ -1,0 +1,909 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: GsuiteAuditor
+  version: -1
+configuration:
+- name: user_service_account_json
+  display: User's Service Account JSON
+  required: true
+  defaultvalue:
+  type: 4
+  additionalinfo:
+- name: admin_email
+  display: Admin Email
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo:
+- name: application
+  display: Fetch Application Names
+  required: false
+  defaultvalue: admin
+  type: 15
+  additionalinfo: ""
+  options:
+  - access_transparency
+  - admin
+  - calendar
+  - chat
+  - drive
+  - gcp
+  - gplus
+  - groups
+  - groups_enterprise
+  - jamboard
+  - login
+  - meet
+  - mobile
+  - rules
+  - saml
+  - token
+  - user_accounts
+  - context_aware_access
+  - chrome
+  - data_studio
+  - keep
+- name: fetch_limit
+  display: Number of incidents for each fetch.
+  required: false
+  defaultvalue: "10"
+  type: 0
+  additionalinfo: ""
+- name: first_fetch
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  required: false
+  defaultvalue: 12 hours
+  type: 0
+  additionalinfo: ""
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  defaultvalue: "true"
+  type: 8
+  additionalinfo:
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  defaultvalue: "true"
+  type: 8
+  additionalinfo:
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: G Suite Auditor is an integration to receive Audit logs from  G Suite different applications - admin,drive,calender and more.
+display: G Suite Auditor
+name: GsuiteAuditor
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Profile ID or the user email for which the data should be filtered. Can be 'all' for all information, or 'userKey' for a user's unique Google Workspace profile ID or their primary email address.
+      isArray: false
+      name: user_key
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Application name for which the events are to be retrieved.
+      isArray: false
+      name: application_name
+      predefined:
+      - access_transparency
+      - admin
+      - calendar
+      - chat
+      - drive
+      - gcp
+      - gplus
+      - groups
+      - groups_enterprise
+      - jamboard
+      - login
+      - meet
+      - mobile
+      - rules
+      - saml
+      - token
+      - user_accounts
+      - context_aware_access
+      - chrome
+      - data_studio
+      - keep
+      required: true
+      secret: false
+    - default: false
+      description: The name of the event being queried
+      isArray: false
+      name: event_name
+      required: false
+      secret: false
+    - default: false
+      description: a comma-separated list composed of event parameters and relational operators
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
+      description: ID of the organizational unit to report on
+      isArray: false
+      name: org_unit_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated group ids on which user activities are filtered
+      isArray: false
+      name: group_id
+      required: false
+      secret: false
+    - default: false
+      description: IP Address of host where the event was performed.
+      isArray: false
+      name: actor_ip_address
+      required: false
+      secret: false
+    - name: start_time
+      description: Sets the beginning of the range of time shown in the report. example - 2010-10-28T10:26:35.000Z
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: end_time
+      description: Sets the end of the range of time shown in the report. example - 2010-10-28T10:26:35.000Z
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - default: false
+      defaultValue: "1000"
+      description: "Maximum number of results to return. "
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - default: false
+      description: The token to specify next page.
+      isArray: false
+      name: page_token
+      required: false
+      secret: false
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of activities for a specific customer's account and application
+    execution: false
+    name: gsuite-activity-search
+    outputs:
+    - contextPath: GSuite.ActivitySearch.kind
+      description: The type of the API resource.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.kind
+      description: The type of API resource.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.id.time
+      description: Time of occurrence of the activity
+      type: Date
+    - contextPath: GSuite.ActivitySearch.items.id.uniqueQualifier
+      description: Unique qualifier if multiple events have the same time.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.id.applicationName
+      description: Application name to which the event belongs
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.id.customerId
+      description: The unique identifier for a Google Workspace account.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.actor.callerType
+      description: The type of actor.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.actor.key
+      description: Can be the consumer_key of the requestor for OAuth 2LO API requests or an identifier for robot accounts.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.events.type
+      description: Type of event.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.events.name
+      description: Name of the event
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.events.parameters.name
+      description: The name of the parameter.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.events.parameters.value
+      description: String value of the parameter.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.actor.email
+      description: The primary email address of the actor.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.actor.profileId
+      description: The unique Google Workspace profile ID of the actor.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.ipAddress
+      description: IP address of the user doing the action.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.events.parameters.boolValue
+      description: Boolean value of the parameter.
+      type: Boolean
+    - contextPath: GSuite.ActivitySearch.items.events.parameters.multiValue
+      description: String values of the parameter.
+      type: String
+    - contextPath: GSuite.PageToken.ActivitySearch.nextPageToken
+      description: Token to specify the next page in the list.
+      type: String
+  dockerimage: demisto/googleapi-python3:1.0.0.22098
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: >
+    # 
+
+    from hashlib import new
+
+
+
+
+    ''' IMPORTS '''
+
+
+    import requests
+
+    from typing import List, Dict, Any
+
+
+    # Disable insecure warnings
+
+    requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+
+
+    ADMIN_EMAIL = None
+
+
+    ''' CONSTANTS '''
+
+
+    MESSAGES: Dict[str, str] = {
+        'TEST_FAILED_ERROR': 'Test connectivity failed. Check the configuration parameters provided.',
+        'BOOLEAN_ERROR': 'The argument {} must be either true or false.',
+        'INTEGER_ERROR': 'The argument {} must be a positive integer.',
+        'REQUIRED_ARGS_CUSTOM_SCHEMA': 'Argument field_raw_json or field_json_entry_id is required.',
+        'CUSTOM_SCHEMA_UPDATE_REQUIRED_ARGS': 'Argument schema_id or schema_name is required.',
+        'UNEXPECTED_ERROR': 'An unexpected error occurred.',
+        'DATATRANSFER_MISSING_ARGUMENT': 'The argument application_id or applications_raw_json'
+                                         ' or application_raw_json_entry_id is required.',
+        'DATATRANSFER_TRANSFER_PARAM_FORMAT_ERROR': 'application_transfer_params argument not in expected format. Please '
+                                                    'provide a comma separated string of format "key1:val;key2:val1,val2"',
+        'INVALID_ADMIN_EMAIL': 'Invalid value of argument/parameter Admin Email.'
+    }
+
+
+    OUTPUT_PREFIX: Dict[str, str] = {
+        'ACTIVITY_LIST': 'GSuite.ActivitySearch',
+        'ACTIVITY_LIST_PAGE_TOKEN': 'GSuite.PageToken.ActivitySearch',
+    }
+
+
+    URL_SUFFIX = 'admin/reports/v1/activity/users/{}/applications/{}'
+
+    SCOPE = ['https://www.googleapis.com/auth/admin.reports.audit.readonly']
+
+
+    HR_MESSAGES: Dict[str, str] = {
+        'MOBILE_UPDATE_SUCCESS': 'Mobile device with resource id - {} updated.',
+        'MOBILE_DELETE_SUCCESS': 'Mobile device with resource id - {} deleted.',
+        'USER_CREATE': 'User Details',
+        'LIST_COMMAND_SUCCESS': 'Total Retrieved {}: {}',
+        'ALIAS_ADD_SUCCESS': 'Added alias "{}" to user key "{}".',
+        'GROUP_CREATE_SUCCESS': 'A new group named "{}" created.',
+        'ROLE_ASSIGNMENT_CREATE': 'Role Assignment Details',
+        'ROLE_CREATE_PRIVILEGES_INCORRECT_FORMAT': 'role_privileges argument missing or not in expected format. Please '
+                                                   'provide a comma separated string of form "PrivilegeName1:ServiceId1,'
+                                                   'PrivilegeName2:ServiceId2".',
+        'ROLE_CREATE_SUCCESS': 'A new role created.',
+        'TOKEN_REVOKE_SUCCESS': 'All access tokens deleted for {}.',
+        'NO_RECORDS': 'No {} found for the given argument(s).',
+        'CUSTOM_USER_SCHEMA_CREATE': 'Custom User Schema Details',
+        'CUSTOM_USER_SCHEMA_FIELD_DETAILS': 'Field Details',
+        'CUSTOM_USER_SCHEMA_UPDATE': 'Updated Custom User Schema Details',
+        'DATATRANSFER_REQUEST_CREATE_SUCCESS': 'Data Transfer Details',
+        'NOT_FOUND': 'No {} found.',
+        'USER_DELETE': 'User with user key {} deleted successfully.',
+        'USER_UPDATE': 'Updated User Details'
+    }
+
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+
+    def is_email_valid(email: str) -> bool:
+        """
+        Validates provided email is valid or not.
+
+        :param email: email string.
+        :return:  True if email is in valid format.
+        """
+
+        return True if re.match(emailRegex, email) else False
+
+
+    def prepare_args_for_activities_list(args: Dict[str, str]) -> Dict[str, str]:
+        """
+        Prepares arguments for gsuite-activity-search command.
+
+        :param args: Command arguments.
+
+        :return: Prepared arguments.
+        """
+
+        return GSuiteClient.remove_empty_entities({
+            'eventName': args.get('event_name'),
+            'filters': args.get('filters'),
+            'orgUnitId': args.get('org_unit_id'),
+            'groupIdFilter': args.get('group_id'),
+            'actorIpAddress': args.get('actor_ip_address'),
+            'startTime': args.get('start_time'),
+            'endTime': args.get('end_time'),
+            'maxResults': GSuiteClient.validate_get_int(args.get('max_results'),
+                                                        MESSAGES['INTEGER_ERROR'].format('max_results')),
+            'pageToken': args.get('page_token')
+        })
+
+
+    def prepare_readable_items(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        readable_items = [
+            {
+                'time': item.get('id', {}).get('time'),
+                'applicationName': item.get('id', {}).get('applicationName'),
+                'email': item.get('actor', {}).get('email'),
+                'profileId': item.get('actor', {}).get('profileId'),
+                'ipAddress': item.get('ipAddress', ''),
+                'events': item['events']
+            } for item in items
+        ]
+
+        return GSuiteClient.remove_empty_entities(readable_items)
+
+
+    def prepare_output_for_activities_list(response: Dict[str, Any]) -> Dict[str, Any]:
+        """
+            prepares context output for gsuite-activity-search.
+
+            :param response: API response.
+
+            :return: output dictionary.
+            """
+        output_items = [{'id': item['id'],
+                         'actor': item['actor'],
+                         'ipAddress': item.get('ipAddress', []),
+                         'events': item['events']} for item in response.get('items', [])]
+
+        return {
+            'GSuite.ActivitySearch': GSuiteClient.remove_empty_entities(output_items),
+            'GSuite.PageToken.ActivitySearch': {
+                'nextPageToken': response['nextPageToken']
+            } if response.get('nextPageToken', '') else {}
+        }
+
+
+    def create_end_time(start_time: str, added_time: str) -> str:
+        time_list = added_time.split(' ')
+
+        if len(time_list) < 2:
+            raise DemistoException("Invalid time parameter")
+
+        timedelta_param = ''
+        time_param = int(time_list[0])
+        if time_list[1] == 'minutes':
+            timedelta_param = timedelta(minutes=time_param)
+        elif time_list[1] == 'hours':
+            timedelta_param = timedelta(hours=time_param)
+        elif time_list[1] == 'days':
+            timedelta_param = timedelta(days=time_param)
+
+        end_time = dateparser.parse(start_time) + timedelta_param
+
+        return end_time.strftime(DATE_FORMAT)
+
+
+    @logger
+
+    def test_module(client) -> str:
+        """
+        Performs test connectivity by valid http response
+
+        :param client: client object which is used to get response from api.
+
+        :return: raise ValueError if any error occurred during connection
+        :raises DemistoException: If there is any other issues while making the http call.
+        """
+        with GSuiteClient.http_exception_handler():
+            if ADMIN_EMAIL:
+                suffix = URL_SUFFIX.format('all', 'admin')
+                client.http_request(url_suffix=suffix, method='GET', params={'max_results': '1'})
+            else:
+                return_results("Please insert Admin Email parameter for the test to run")
+        return 'ok'
+
+
+    ''' COMMAND FUNCTIONS '''
+
+
+
+    def activities_list_command(client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Prints all activities in the G Suite instance.
+
+        :param client: client object which is used to get response from api
+        :param args: command arguments.
+
+        :return: CommandResults object with context and human-readable.
+        """
+        arguments = prepare_args_for_activities_list(args)
+        response = client.http_request(
+            url_suffix=URL_SUFFIX.format(args.get('user_key', 'all'), args.get('application_name')),
+            params=arguments)
+
+        # Readable Output
+        readable_items = prepare_readable_items(response.get('items', []))
+
+        readable_output = f'### Next Page Token: {response["nextPageToken"]}\n' if response.get("nextPageToken") else ''
+        readable_output += tableToMarkdown(
+            'Total Retrieved {}: {}'.format('Activities', len(response.get('items', []))),
+            readable_items,
+            ['time', 'applicationName', 'email', 'profileId', 'ipAddress', 'events']) if response.get(
+            'items') else 'No activities found for the given ' \
+                          'argument(s). '
+        # Context
+        context_outputs = prepare_output_for_activities_list(response)
+
+        return CommandResults(
+            outputs=context_outputs,
+            readable_output=readable_output,
+            raw_response=response
+        )
+
+
+    @logger
+
+    def fetch_incidents(client, first_fetch_time: str, fetch_limit: int, application: str) -> List[Dict]:
+        incidents = []
+        last_run_dict = demisto.getLastRun()
+        last_run = last_run_dict.get('last_run')
+        last_ids = last_run_dict.get('last_ids', [])
+
+        if not last_run:  # this is the first run
+            last_run = dateparser.parse(first_fetch_time).strftime(DATE_FORMAT)
+
+        end_time = create_end_time(last_run, '2 days')
+
+        response = client.http_request(
+            url_suffix=URL_SUFFIX.format('all', application),
+            params={'startTime': last_run,
+                    'endTime': end_time})
+
+        items = response.get('items', [])
+        sorted_items = sorted(items, key=lambda k: k['id']['time'])  # sort the data from earlist to last.
+        counter = 0
+
+        for item in sorted_items:
+            if counter == fetch_limit:
+                break
+
+            if item['id']['uniqueQualifier'] in last_ids:
+                continue
+
+            counter += 1
+            incident = {
+                'name': f"GSuite Auditor event {item['id']['applicationName']} {item['id']['uniqueQualifier']}",
+                'occurred': item['id']['time'],
+                'rawJSON': json.dumps(item)
+            }
+            incidents.append(incident)
+
+        if len(incidents) > 0:
+            new_last_run = incidents[-1]['occurred']
+        elif end_time < time.ctime():
+            new_last_run = end_time
+        else:
+            new_last_run = last_run
+
+        new_last_ids = []
+        for incident in incidents:
+            if incident['occurred'] == new_last_run:
+                item = json.loads(incident["rawJSON"])
+                new_last_ids.append(item['id']['uniqueQualifier'])
+
+        demisto.setLastRun({'last_run': new_last_run, 'last_ids': new_last_ids})
+        return incidents
+
+
+    ''' MAIN FUNCTION '''
+
+
+
+    def main() -> None:
+        """main function, parses params and runs command functions
+
+        :return:
+        :rtype:
+        """
+
+        command = demisto.command()
+        demisto.info(f'Command being called is {command}')
+
+        try:
+            global ADMIN_EMAIL
+            params = demisto.params()
+            service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json'))
+            verify_certificate = not params.get('insecure', False)
+            proxy = params.get('proxy', False)
+
+            headers = {
+                'Content-Type': 'application/json'
+            }
+
+            # prepare client class object
+            gsuite_client = GSuiteClient(service_account_dict,
+                                         base_url='https://admin.googleapis.com/', verify=verify_certificate, proxy=proxy,
+                                         headers=headers)
+
+            # Trim the arguments
+            args = GSuiteClient.strip_dict(demisto.args())
+            first_fetch_time = demisto.params().get('first_fetch', '12 hours').strip()
+            fetch_limit = demisto.params().get('fetch_limit', '10')
+            fetch_app = params.get('application', 'admin')
+
+            ADMIN_EMAIL = args.get('admin_email') if args.get('admin_email') else params.get('admin_email')
+            # Validation of ADMIN_EMAIL
+            if ADMIN_EMAIL and not is_email_valid(ADMIN_EMAIL):
+                raise ValueError(MESSAGES['INVALID_ADMIN_EMAIL'])
+
+            gsuite_client.set_authorized_http(scopes=SCOPE, subject=ADMIN_EMAIL)
+            # This is the call made when pressing the integration Test button.
+            if command == 'test-module':
+                result = test_module(gsuite_client)
+                return_results(result)
+
+            elif command == 'gsuite-activity-search':
+                return_results(activities_list_command(gsuite_client, args))
+
+            elif command == 'fetch-incidents':
+                fetch_limit = arg_to_number(fetch_limit)
+                incidents = fetch_incidents(gsuite_client, first_fetch_time, fetch_limit, fetch_app)
+                demisto.incidents(incidents)
+
+            # Log exceptions
+        except Exception as e:
+            demisto.error(traceback.format_exc())
+            return_error(f'Error: {str(e)}')
+
+
+
+    ### GENERATED CODE ###
+
+    # This code was inserted in place of an API module.
+
+
+    ''' IMPORTS '''
+
+
+    import urllib.parse
+
+    import httplib2
+
+    from google.auth import exceptions
+
+    from contextlib import contextmanager
+
+    from google.oauth2 import service_account
+
+    from google_auth_httplib2 import AuthorizedHttp
+
+    from typing import List, Dict, Any, Tuple, Optional
+
+
+    ''' CONSTANTS '''
+
+
+    COMMON_MESSAGES: Dict[str, str] = {
+        'TIMEOUT_ERROR': 'Connection Timeout Error - potential reasons might be that the Server URL parameter'
+                         ' is incorrect or that the Server is not accessible from your host. Reason: {}',
+        'HTTP_ERROR': 'HTTP Connection error occurred. Status: {}. Reason: {}',
+        'TRANSPORT_ERROR': 'Transport error occurred. Reason: {}',
+        'AUTHENTICATION_ERROR': 'Unauthenticated. Check the configured Service Account JSON. Reason: {}',
+        'BAD_REQUEST_ERROR': 'An error occurred while fetching/submitting the data. Reason: {}',
+        'TOO_MANY_REQUESTS_ERROR': 'Too many requests please try after sometime. Reason: {}',
+        'INTERNAL_SERVER_ERROR': 'The server encountered an internal error. Reason: {}',
+        'AUTHORIZATION_ERROR': 'Request has insufficient privileges. Reason: {}',
+        'JSON_PARSE_ERROR': 'Unable to parse JSON string. Please verify the JSON is valid.',
+        'NOT_FOUND_ERROR': 'Not found. Reason: {}',
+        'UNKNOWN_ERROR': 'An error occurred. Status: {}. Reason: {}',
+        'PROXY_ERROR': 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is'
+                       ' selected, try clearing the checkbox.',
+        'REFRESH_ERROR': 'Failed to generate/refresh token. Subject email or service account credentials'
+                         ' are invalid. Reason: {}',
+        'BOOLEAN_ERROR': 'The argument {} must be either true or false.',
+        'INTEGER_ERROR': 'The argument {} must be a positive integer.',
+        'UNEXPECTED_ERROR': 'An unexpected error occurred.',
+    }
+
+
+
+    class GSuiteClient:
+        """
+        Client to use in integration with powerful http_request.
+        """
+
+        def __init__(self, service_account_dict: Dict[str, str], proxy: bool, verify: bool,
+                     base_url: str = '', headers: Optional[Dict[str, str]] = None):
+            self.headers = headers
+            self.credentials = service_account.Credentials.from_service_account_info(info=service_account_dict)
+            self.proxy = proxy
+            self.verify = verify
+            self.authorized_http: Any = None
+            self.base_url = base_url
+
+        def set_authorized_http(self, scopes: List[str], subject: Optional[str] = None, timeout: int = 60) -> None:
+            """
+            Set the http client from given subject and scopes.
+
+            :param scopes: List of scopes needed to make request.
+            :param subject: To link subject with credentials.
+            :param timeout: Timeout value for request.
+
+            :return: None.
+            """
+            self.credentials = self.credentials.with_scopes(scopes)
+            if subject:
+                self.credentials = self.credentials.with_subject(subject)
+            authorized_http = AuthorizedHttp(credentials=self.credentials,
+                                             http=GSuiteClient.get_http_client(self.proxy, self.verify, timeout=timeout))
+            self.authorized_http = authorized_http
+
+        def http_request(self, url_suffix: str = None, params: Optional[Dict[str, Any]] = None,
+                         method: str = 'GET',
+                         body: Optional[Dict[str, Any]] = None, full_url: Optional[str] = None) -> Dict[str, Any]:
+            """
+            Makes an API call to URL using authorized HTTP.
+
+            :param url_suffix: url_suffix of url.
+            :param params: Parameters to pass in request url.
+            :param method: Method to use while making http request.
+            :param body: Request body.
+            :param full_url: URL to consider for request when given url_suffix will be ignored.
+
+            :return: response json.
+            :raises DemistoException: If there is issues while making the http call.
+            """
+            encoded_params = f'?{urllib.parse.urlencode(params)}' if params else ''
+
+            url = full_url
+
+            if url_suffix:
+                url = urljoin(self.base_url, url_suffix)
+
+            url = f'{url}{encoded_params}'
+
+            body = json.dumps(body) if body else None
+
+            with GSuiteClient.http_exception_handler():
+                response = self.authorized_http.request(headers=self.headers, method=method, uri=url, body=body)
+                return GSuiteClient.validate_and_extract_response(response)
+
+        @staticmethod
+        def handle_http_error(error: httplib2.socks.HTTPError) -> None:
+            """
+            Handle and raise DemistoException with respective message.
+
+            :param error: HTTPError object.
+
+            :return: None
+            :raises DemistoException: raise DemistoException with respective error message.
+            """
+            if error.args and isinstance(error.args[0], tuple):
+                error_status, error_msg = error.args[0][0], error.args[0][1].decode()
+                if error_status == 407:  # Proxy Error
+                    raise DemistoException(COMMON_MESSAGES['PROXY_ERROR'])
+                raise DemistoException(COMMON_MESSAGES['HTTP_ERROR'].format(error_status, error_msg))
+            raise DemistoException(error)
+
+        @staticmethod
+        @contextmanager
+        def http_exception_handler():
+            """
+            Exception handler for handling different exceptions while making http calls.
+
+            :return: None
+            :raises DemistoException: If there is any other issues while making the http call.
+            """
+            try:
+                yield
+            except httplib2.socks.HTTPError as error:
+                GSuiteClient.handle_http_error(error)
+            except exceptions.TransportError as error:
+                if 'proxyerror' in str(error).lower():
+                    raise DemistoException(COMMON_MESSAGES['PROXY_ERROR'])
+                raise DemistoException(COMMON_MESSAGES['TRANSPORT_ERROR'].format(error))
+            except exceptions.RefreshError as error:
+                if error.args:
+                    raise DemistoException(COMMON_MESSAGES['REFRESH_ERROR'].format(error.args[0]))
+                raise DemistoException(error)
+            except TimeoutError as error:
+                raise DemistoException(COMMON_MESSAGES['TIMEOUT_ERROR'].format(error))
+            except Exception as error:
+                raise DemistoException(error)
+
+        @staticmethod
+        def get_http_client(proxy: bool, verify: bool, timeout: int = 60) -> httplib2.Http:
+            """
+            Validate proxy and prepares Http object.
+
+            :param proxy: Boolean indicates whether to use proxy or not.
+            :param verify: Boolean indicates whether to use ssl certification.
+            :param timeout: Timeout value for request.
+
+            :return: ProxyInfo object.
+            :raises DemistoException: If there is any other issues while preparing proxy.
+            """
+            proxy_info = {}
+            proxies = handle_proxy()
+            if proxy:
+                https_proxy = proxies['https']
+                if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
+                    https_proxy = 'https://' + https_proxy
+                parsed_proxy = urllib.parse.urlparse(https_proxy)
+                proxy_info = httplib2.ProxyInfo(
+                    proxy_type=httplib2.socks.PROXY_TYPE_HTTP,
+                    proxy_host=parsed_proxy.hostname,
+                    proxy_port=parsed_proxy.port,
+                    proxy_user=parsed_proxy.username,
+                    proxy_pass=parsed_proxy.password)
+
+            return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=not verify, timeout=timeout)
+
+        @staticmethod
+        def validate_and_extract_response(response: Tuple[httplib2.Response, Any]) -> Dict[str, Any]:
+            """
+            Prepares an error message based on status code and extract a response.
+
+            :param response: Tuple containing httplib2.Response and content.
+
+            :return: response extracted json.
+            :raises DemistoException: If there is any other issues parsing response.
+            """
+            if response[0].status == 200 or response[0].status == 204:
+                return GSuiteClient.safe_load_non_strict_json(response[1])
+
+            status_code_message_map = {
+                400: COMMON_MESSAGES['BAD_REQUEST_ERROR'],
+                401: COMMON_MESSAGES['AUTHENTICATION_ERROR'],
+                403: COMMON_MESSAGES['AUTHORIZATION_ERROR'],
+                404: COMMON_MESSAGES['NOT_FOUND_ERROR'],
+                429: COMMON_MESSAGES['TOO_MANY_REQUESTS_ERROR'],
+                500: COMMON_MESSAGES['INTERNAL_SERVER_ERROR']
+            }
+
+            try:
+                # Depth details of error.
+                demisto.debug(response[1].decode() if type(response[1]) is bytes else response[1])
+                message = GSuiteClient.safe_load_non_strict_json(response[1]).get('error', {}).get('message', '')
+            except ValueError:
+                message = COMMON_MESSAGES['UNEXPECTED_ERROR']
+
+            if response[0].status in status_code_message_map:
+                raise DemistoException(status_code_message_map[response[0].status].format(message))
+            else:
+                raise DemistoException(COMMON_MESSAGES['UNKNOWN_ERROR'].format(response[0].status, message))
+
+        @staticmethod
+        def safe_load_non_strict_json(json_string: str) -> Dict[str, Any]:
+            """
+            Loads the JSON with non-strict mode.
+
+            :param json_string: json string to parse.
+
+            :return: Parsed dictionary.
+            :raises ValueError: If there is any other issues while parsing json.
+            """
+            try:
+                if json_string:
+                    return json.loads(json_string, strict=False)
+                return {}
+            except ValueError:
+                raise ValueError(COMMON_MESSAGES['JSON_PARSE_ERROR'])
+
+        @staticmethod
+        def validate_set_boolean_arg(args: Dict[str, Any], arg: str, arg_name: Optional[str] = None) -> None:
+            """
+            Set and validate boolean arguments.
+
+            :param args: dictionary containing arguments.
+            :param arg: key containing boolean arg.
+            :param arg_name: In case of arg name is different in command to set in exception.
+
+            :return: None
+            :raises ValueError: if boolean arg value is invalid.
+            """
+            if arg in args:
+                try:
+                    args[arg] = argToBoolean(args[arg])
+                except ValueError:
+                    raise ValueError(COMMON_MESSAGES['BOOLEAN_ERROR'].format(arg_name if arg_name else arg))
+
+        @staticmethod
+        def remove_empty_entities(d):
+            """
+            Recursively remove empty lists, empty dicts, or None elements from a dictionary.
+
+            :param d: Input dictionary.
+            :return: Dictionary with all empty lists, and empty dictionaries removed.
+            """
+
+            def empty(x):
+                return x is None or x == {} or x == [] or x == ''
+
+            if not isinstance(d, (dict, list)):
+                return d
+            elif isinstance(d, list):
+                return [value for value in (GSuiteClient.remove_empty_entities(value) for value in d) if not empty(value)]
+            else:
+                return {key: value for key, value in ((key, GSuiteClient.remove_empty_entities(value))
+                                                      for key, value in d.items()) if not empty(value)}
+
+        @staticmethod
+        def validate_get_int(max_results: Optional[str], message: str, limit: int = 0) -> Optional[int]:
+            """
+            Validate and convert string max_results to integer.
+
+            :param max_results: max results in string.
+            :param message: Message to display when exception raised.
+            :param limit: If max_results > limit raise the exception.
+
+            :return: int max_results
+            :raises ValueError: if max_results is not a integer and < 0.
+            """
+            if max_results:
+                try:
+                    max_results_int = int(max_results)
+                    if max_results_int <= 0:
+                        raise ValueError
+                    if limit and max_results_int > limit:
+                        raise ValueError
+                    return max_results_int
+                except ValueError:
+                    raise ValueError(message)
+            return None
+
+        @staticmethod
+        def strip_dict(args: Dict[str, str]) -> Dict[str, str]:
+            """
+            Remove leading and trailing white spaces from dictionary values and remove empty entries.
+
+            :param args: Arguments dict.
+            :return: Dictionary with whitespaces and empty entries removed.
+            """
+            return {key: value.strip() for (key, value) in args.items() if value and value.strip()}
+
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
+image: data:image/png;base64,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
+detaileddescription: "## Configure an API account on G Suite Admin\n\nIn order to get the sufficient permissions for the integration to run properly, follow these steps -\n\n1. **Configure a Service Account and retrieve its key in JSON format.** \n  follow the steps mentioned here: https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount\n   or in the integration README. \n\n\n2. **Allow access  to the relevant scopes.**\n  how to here: https://developers.google.com/identity/protocols/oauth2/service-account#delegatingauthority\n  scope for this integration - https://www.googleapis.com/auth/admin.reports.audit.readonly\n\n\n3. **Provide an admin email**\n  To execute the command you must provide an admin email.\n   \n  You can provide the admin email in the integration configuration,\n  or pass it as the value of the *admin_email* argument in the command.\n   \n   \n  - you can provide the admin role to the created service account’s email by performing the following steps:\n      \n  1. You must be signed in as a super administrator for this task.\n  2. Open your Google Admin console (at https://admin.google.com).\n  3. Go to Admin roles.\n  4. Click the role you want to assign (the appropriate role).\n  5. Click on Assign Admin.\n  6. On the opened page, click Assign users.\n  7. Append the email ID of the service account created and click ASSIGN ROLE to save.\n    \nPrecedence of this will be admin_email in command argument > Admin Email in integration configuration > admin role provided to the service account.\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/gsuite-auditor)"
