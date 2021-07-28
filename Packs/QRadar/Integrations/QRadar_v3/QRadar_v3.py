@@ -2658,8 +2658,9 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
                                                          filter_=f'create_time >= {offense_close_time}')
         # In QRadar UI, when you close a reason, a note is added with the reason and more details. Try to get note
         # if exists, else fallback to closing reason only, as closing QRadar through an API call does not create a note.
-        close_reason_with_note = next((note.get('text') for note in closed_offense_notes if
-                                       note.get('name').startswith('This offense was closed with reason:')), None)
+        close_reason_with_note = next((note.get('note_text') for note in closed_offense_notes if
+                                       note.get('note_text').startswith('This offense was closed with reason:')),
+                                      closing_reason)
         if not close_reason_with_note:
             print_debug_msg(f'Could not find closing reason or closing note for offense with offense id {offense_id}')
             close_reason_with_note = 'Unknown closing reason from QRadar'
