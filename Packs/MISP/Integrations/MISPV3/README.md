@@ -3732,7 +3732,6 @@ Please see the new commands(ip, file, url...) context output.
 * *misp-download-sample* - this command was removed as download sample is not supported by the new PYMISP version.
 * *misp-upload-sample* - this command was removed as upload sample is not supported by the new PYMISP version.
 
-
 ### Arguments
 #### The following arguments were removed in this version:
 
