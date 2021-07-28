@@ -490,26 +490,22 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
             command_results = upload_function(args)[0]
             outputs = command_results.outputs
             results_function_args = get_results_function_args(outputs, uploaded_item, args)
-            if outputs.get('Status') != 'Completed':
-                polling_args = {
-                    'interval_in_seconds': interval_in_secs,
-                    'polling': True,
-                    **results_function_args,
-                }
-                scheduled_command = ScheduledCommand(
-                    command=cmd,
-                    next_run_in_seconds=interval_in_secs,
-                    args=polling_args,
-                    timeout_in_seconds=6000)
-                command_results.scheduled_command = scheduled_command
-                command_results_list.append(command_results)
-            else:
-                # the search is complete, return the search results using the results function
-                command_results, status = results_function(results_function_args)
-                command_results_list.append(command_results)
+            # schedule next poll
+            polling_args = {
+                'interval_in_seconds': interval_in_secs,
+                'polling': True,
+                **results_function_args,
+            }
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_secs,
+                args=polling_args,
+                timeout_in_seconds=6000)
+            command_results.scheduled_command = scheduled_command
+            command_results_list.append(command_results)
         return command_results_list
     # not a new search, get search status
-    command_results, status = results_function(args)
+    command_results_list, status = results_function(args)
     if status != 'Success':
         # schedule next poll
         polling_args = {
@@ -523,8 +519,8 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
             args=polling_args,
             timeout_in_seconds=600)
 
-        command_results = CommandResults(scheduled_command=scheduled_command)
-    return command_results
+        command_results_list = [CommandResults(scheduled_command=scheduled_command)]
+    return command_results_list
 
 
 @logger
@@ -828,9 +824,8 @@ def wildfire_get_url_report(url: str) -> Tuple:
     entry_context = {'URL': url}
 
     try:
-        response = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, resp_type='json').get(
-            'result')
-        report = response.get('report')
+        response = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, resp_type='json')
+        report = response.get('result').get('report')
 
         if not report:
             entry_context['Status'] = 'Pending'
@@ -838,7 +833,7 @@ def wildfire_get_url_report(url: str) -> Tuple:
 
         else:
             entry_context['Status'] = 'Success'
-            report = json.loads(report)
+            report = json.loads(report) if type(report) is not dict else report
             report.update(entry_context)
             human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=report,
                                              headers=['sha256', 'type', 'verdict', 'iocs'], removeNull=True)
@@ -846,6 +841,10 @@ def wildfire_get_url_report(url: str) -> Tuple:
     except NotFoundError:
         entry_context['Status'] = 'NotFound'
         human_readable = 'Report not found.'
+        report = ''
+    except Exception as e:
+        entry_context['Status'] = ''
+        human_readable = f'Error while requesting the report: {e}.'
         report = ''
 
     finally:

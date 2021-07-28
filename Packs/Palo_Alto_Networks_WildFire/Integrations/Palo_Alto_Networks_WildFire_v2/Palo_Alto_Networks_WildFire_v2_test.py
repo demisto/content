@@ -6,7 +6,7 @@ import demistomock as demisto
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
     create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
     file_args_handler, wildfire_get_sample_command, wildfire_get_report_command, run_polling_command, \
-    wildfire_upload_file_command, wildfire_upload_file_url_command, wildfire_upload_url_command
+    wildfire_upload_file_command, wildfire_upload_file_url_command, wildfire_upload_url_command, http_request
 
 
 
@@ -185,30 +185,78 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_running_polling_command_upload_command_success(mocker):
+def test_running_polling_command_success(mocker):
     """
     Given:
-        An upload request of an url or a file using the polling flow.
+        An upload request of a url or a file using the polling flow, that was already initiated priorly and is now
+         complete.
     When:
-        When initiating an upload using the builtin polling command, and there is no need for polling since the request
-        is complete.
+        When, while in the polling flow, we are checking the status of on an upload that was initiated earlier and is
+         already complete.
     Then:
         Return a command results object, without scheduling a new command.
     """
-    args = {'url': 'MOCK_URL'}
-    response = util_load_json('./tests_data/upload_url_response.json')
+    args = {'url': 'www.google.com'}
+    response_upload = util_load_json('./tests_data/upload_url_response.json')
     upload_url_data = {'url': 'https://www.demisto.com', 'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb', 'md5': '67632f32e6af123aa8ffd1fe8765a783'}
-    mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response, upload_url_data))
+    mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
+    response_report = util_load_json('./tests_data/report_url_response_success.json')
+    mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', return_value=response_report)
+    expected_outputs = util_load_json('./tests_data/expected_outputs_upload_url_success.json')
+    command_results = run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command,
+                                          wildfire_get_report_command, 'URL')
+    assert command_results[0].outputs.get('detection_reasons') == expected_outputs.get('detection_reasons')
+    assert command_results[0].scheduled_command is None
 
-    command_results = run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command, wildfire_get_report_command, 'URL')
-    pass
+
+def test_running_polling_command_pending(mocker):
+    """
+    Given:
+         An upload request of a url or a file using the polling flow, that was already initiated priorly and is not
+          completed yet.
+    When:
+         When, while in the polling flow, we are checking the status of on an upload that was initiated earlier and is
+         not complete yet.
+    Then:
+        Return a command results object, with scheduling a new command.
+    """
+    args = {'url': 'wwwdom'}
+    response_upload = util_load_json('./tests_data/upload_url_response.json')
+    upload_url_data = {'url': 'https://www.demisto.com', 'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb', 'md5': '67632f32e6af123aa8ffd1fe8765a783'}
+    mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
+    response_report = util_load_json('./tests_data/report_url_response_pending.json')
+    mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', return_value=response_report)
+    command_results = run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command,
+                                          wildfire_get_report_command, 'URL')
+    assert command_results[0].outputs is None
+    assert command_results[0].scheduled_command is not None
 
 
-def test_running_polling_command_upload_command_pending(mocker):
-    pass
-def test_running_polling_command_results_command_success(mocker):
-    pass
-def test_running_polling_command_results_command_pending(mocker):
-    pass
+def test_running_polling_command_new_search(mocker):
+    """
+    Given:
+         An upload request of a url or a file using the polling flow, that was already initiated priorly and is not
+          completed yet.
+    When:
+         When, while in the polling flow, we are checking the status of on an upload that was initiated earlier and is
+         not complete yet.
+    Then:
+        Return a command results object, with scheduling a new command.
+    """
+    args = {'upload': 'https://www.demisto.com'}
+    response_upload = util_load_json('./tests_data/upload_url_response.json')
+    upload_url_data = {'url': 'https://www.demisto.com',
+                       'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
+                       'md5': '67632f32e6af123aa8ffd1fe8765a783'}
+    mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
+    response_report = util_load_json('./tests_data/report_url_response_pending.json')
+    mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', return_value=response_report)
+    command_results = run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command,
+                                          wildfire_get_report_command, 'URL')
+    expected_outputs = {'MD5': '67632f32e6af123aa8ffd1fe8765a783',
+                        'SHA256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
+                        'Status': 'Pending', 'URL': 'https://www.demisto.com'}
+    assert command_results[0].outputs == expected_outputs
+    assert command_results[0].scheduled_command is not None
 
 
