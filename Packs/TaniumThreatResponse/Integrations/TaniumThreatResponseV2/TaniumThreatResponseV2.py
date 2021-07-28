@@ -51,7 +51,7 @@ class Client(BaseClient):
         super(Client, self).__init__(base_url, **kwargs)
 
     def do_request(self, method: str, url_suffix: str, data: dict = None, params: dict = None, resp_type: str = 'json',
-                   headers: dict = None, body: dict = None):
+                   headers: dict = None, body: Any = None):
         if headers is None:
             headers = {}
         if not self.session:
