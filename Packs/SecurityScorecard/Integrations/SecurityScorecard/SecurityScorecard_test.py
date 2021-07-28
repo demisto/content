@@ -5,7 +5,8 @@ from SecurityScorecard import \
     incidents_to_import, \
     get_last_run, \
     portfolios_list_command, \
-    portfolio_list_companies_command
+    portfolio_list_companies_command, \
+    company_score_get_command
 
 import json
 import io
@@ -101,7 +102,9 @@ companies_list_not_exist_test_inputs = [
     (PORTFOLIO_ID_NE)
 ]
 
-score_mock = load_json("./test_data/companies/score.json")
+# test_get_company_score
+score_mock = test_data.get("score")
+
 factor_score_mock = load_json("./test_data/companies/factor_score.json")
 historical_score_mock = load_json("./test_data/companies/historical_score.json")
 historical_factor_score_mock = load_json("./test_data/companies/historical_factor_score.json")
@@ -252,14 +255,25 @@ def test_portfolio_list_companies(mocker, portfolio_id):
 
 def test_get_company_score(mocker):
 
+    """
+    Given:
+        - A domain
+
+    When:
+        - Domain exists
+
+    Then:
+        - Domain score retrieved
+    """
+
     mocker.patch.object(client, "get_company_score", return_value=score_mock)
 
-    response_score = client.get_company_score(domain=DOMAIN)
+    response_cmd_res: CommandResults = company_score_get_command(client, domain=DOMAIN)
 
-    assert response_score == score_mock
-    assert response_score["domain"] == DOMAIN
-    assert isinstance(response_score["score"], int)
-    assert isinstance(response_score["last30day_score_change"], int)
+    score = response_cmd_res.outputs
+
+    assert score == score_mock
+
 
 
 def test_get_company_factor_score(mocker):

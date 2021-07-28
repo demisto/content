@@ -532,31 +532,25 @@ def portfolio_list_companies_command(
     return results
 
 
-def company_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def company_score_get_command(client: SecurityScorecardClient, domain: str) -> CommandResults:
     """Retrieve company overall score.
 
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-factors
 
     Args:
-        client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): Dictionary of arguments specified in the command
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+        ``domain`` (``str``): The domain to get the score for
 
     Returns:
         CommandResults: The results of the command.
     """
 
-    domain = args.get('domain')
-
     score = client.get_company_score(domain=domain)  # type: ignore
-    score["domain"] = domain
-
-    industry = score.get("industry").title().replace("_", " ")  # type: ignore
-    score["industry"] = industry
 
     markdown = tableToMarkdown(
         f"Domain {domain} Scorecard",
         score,
-        headers=['name', 'domain', 'grade', 'score', 'industry', 'last30day_score_change', 'size']
+        headers=['name', 'grade', 'score', 'industry', 'last30day_score_change', 'size']
     )
 
     results = CommandResults(
@@ -1059,7 +1053,7 @@ def main() -> None:
                 had_breach_within_last_days=args.get("had_breach_within_last_days")
             ))
         elif demisto.command() == 'securityscorecard-company-score-get':
-            return_results(company_score_get_command(client, demisto.args()))
+            return_results(company_score_get_command(client, args.get("domain")))
         elif demisto.command() == 'securityscorecard-company-factor-score-get':
             return_results(company_factor_score_get_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-company-history-score-get':
