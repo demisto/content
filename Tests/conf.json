@@ -110,10 +110,6 @@
             "timeout": 1000
         },
         {
-            "integrations": "RSS Feed",
-            "fromversion": "6.2.0"
-        },
-        {
             "integrations": "EwsExtension",
             "playbookID": "O365 - EWS - Extension - Test",
             "fromversion": "6.0.0",
