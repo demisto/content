@@ -651,7 +651,6 @@ class TestFileMethods:
         assert result.readable_output.startswith("### Total Retrieved File(s): ")
         assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('File(s)', 2) in result.readable_output
 
-
     @patch(MOCKER_HTTP_METHOD)
     def test_files_list_command_failure(self, mocker_http_request, gsuite_client):
         """
@@ -676,7 +675,6 @@ class TestFileMethods:
 
         with pytest.raises(DemistoException, match="SOME_ERROR"):
             files_list_command(gsuite_client, args)
-
 
     @patch(MOCKER_HTTP_METHOD)
     def test_file_get_command_success(self, mocker_http_request, gsuite_client):
@@ -710,7 +708,6 @@ class TestFileMethods:
 
         assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('File(s)', 1) in result.readable_output
         assert '17' in result.readable_output
-
 
     @patch(MOCKER_HTTP_METHOD)
     def test_file_get_command_failure(self, mocker_http_request, gsuite_client):
@@ -773,7 +770,6 @@ class TestFilePermissionMethods:
         assert result.readable_output.startswith("### Total")
         assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1) in result.readable_output
 
-
     @patch(MOCKER_HTTP_METHOD)
     def test_file_permission_list_command_failure(self, mocker_http_request, gsuite_client):
         """
@@ -798,7 +794,6 @@ class TestFilePermissionMethods:
 
         with pytest.raises(ValueError, match="SOME_ERROR"):
             file_permission_list_command(gsuite_client, args)
-
 
     @patch(MOCKER_HTTP_METHOD)
     def test_file_permission_create_command_success(self, mocker_http_request, gsuite_client):
@@ -833,7 +828,6 @@ class TestFilePermissionMethods:
         assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1) in result.readable_output
         assert '17' in result.readable_output
 
-
     @patch(MOCKER_HTTP_METHOD)
     def test_file_permission_create_command_failure(self, mocker_http_request, gsuite_client):
         """
@@ -858,7 +852,6 @@ class TestFilePermissionMethods:
 
         with pytest.raises(ValueError, match="SOME_ERROR"):
             file_permission_create_command(gsuite_client, args)
-
 
     @patch(MOCKER_HTTP_METHOD)
     def test_file_permission_update_command_success(self, mocker_http_request, gsuite_client):
@@ -892,7 +885,6 @@ class TestFilePermissionMethods:
 
         assert HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('Permission(s)', 1) in result.readable_output
         assert '17' in result.readable_output
-
 
     @patch(MOCKER_HTTP_METHOD)
     def test_file_permission_update_command_failure(self, mocker_http_request, gsuite_client):
