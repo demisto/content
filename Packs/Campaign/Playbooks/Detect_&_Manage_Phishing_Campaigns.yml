@@ -27,8 +27,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 460,
+          "y": -50
         }
       }
     note: false
@@ -38,10 +38,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 6d2ebaba-b617-4839-8590-e7c400538d6c
+    taskid: e9f8368f-3e17-4a51-82c4-06c0fdb69590
     type: regular
     task:
-      id: 6d2ebaba-b617-4839-8590-e7c400538d6c
+      id: e9f8368f-3e17-4a51-82c4-06c0fdb69590
       version: -1
       name: Detect email campaign
       description: Find a campaign of emails based on their textual similarity.
@@ -104,8 +104,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 210
+          "x": 460,
+          "y": 90
         }
       }
     note: false
@@ -143,8 +143,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 390
+          "x": 460,
+          "y": 260
         }
       }
     note: false
@@ -182,8 +182,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 770
+          "x": 460,
+          "y": 670
         }
       }
     note: false
@@ -219,7 +219,7 @@ tasks:
       {
         "position": {
           "x": 720,
-          "y": 1160
+          "y": 1020
         }
       }
     note: false
@@ -267,7 +267,7 @@ tasks:
       {
         "position": {
           "x": 720,
-          "y": 1500
+          "y": 1360
         }
       }
     note: false
@@ -306,8 +306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 950
+          "x": 460,
+          "y": 820
         }
       }
     note: false
@@ -335,7 +335,7 @@ tasks:
       {
         "position": {
           "x": 1200,
-          "y": 620
+          "y": 530
         }
       }
     note: false
@@ -387,7 +387,7 @@ tasks:
       {
         "position": {
           "x": 190,
-          "y": 1160
+          "y": 1020
         }
       }
     note: false
@@ -422,7 +422,7 @@ tasks:
       {
         "position": {
           "x": 720,
-          "y": 1320
+          "y": 1180
         }
       }
     note: false
@@ -432,10 +432,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 41991cde-7db4-4958-8c17-62101038e8c3
+    taskid: 4dcd3711-f256-4756-860a-0a580ba2790c
     type: regular
     task:
-      id: 41991cde-7db4-4958-8c17-62101038e8c3
+      id: 4dcd3711-f256-4756-860a-0a580ba2790c
       version: -1
       name: Link the phishing incidents to the campaign incident
       description: Links the phishing incidents that were found in the campaign, to
@@ -446,7 +446,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "16"
+      - "23"
     scriptarguments:
       action: {}
       incidentId:
@@ -459,6 +459,7 @@ tasks:
                   simple: ExistingCampaignID
                 iscontext: true
           transformers:
+          - operator: FirstArrayElement
           - operator: SetIfEmpty
             args:
               applyIfEmpty: {}
@@ -478,7 +479,7 @@ tasks:
       {
         "position": {
           "x": 120,
-          "y": 2040
+          "y": 1900
         }
       }
     note: false
@@ -502,7 +503,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "16"
+      - "23"
       "yes":
       - "12"
     separatecontext: false
@@ -523,7 +524,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1850
+          "y": 1710
         }
       }
     note: false
@@ -548,67 +549,7 @@ tasks:
       {
         "position": {
           "x": 1200,
-          "y": 2770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: 704af79f-67cf-49a5-89dd-759bb20e968d
-    type: regular
-    task:
-      id: 704af79f-67cf-49a5-89dd-759bb20e968d
-      version: -1
-      name: Mark incidents as part of the campaign
-      description: |-
-        Sets a key in the context with the name of "PartOfCampaign", and a value of the campaign incident ID.
-        This is used by a dynamic-section in the layout of Phishing incidents which links the Phishing incident to the Phishing Campaign incident.
-      scriptName: SetByIncidentId
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      append: {}
-      errorUnfinished: {}
-      id:
-        complex:
-          root: EmailCampaign.incidents
-          accessor: id
-          transformers:
-          - operator: uniq
-      key:
-        simple: PartOfCampaign
-      value:
-        complex:
-          root: ExistingCampaignID
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: ExistingCampaignID
-                iscontext: true
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: CreatedIncidentID
-                iscontext: true
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2220
+          "y": 2690
         }
       }
     note: false
@@ -635,8 +576,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 620
+          "x": 460,
+          "y": 530
         }
       }
     note: false
@@ -646,10 +587,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 7845ca14-197d-4adb-86e8-b9a06a123ee0
+    taskid: 44990df1-aed9-4373-81cf-110eb8876e8c
     type: regular
     task:
-      id: 7845ca14-197d-4adb-86e8-b9a06a123ee0
+      id: 44990df1-aed9-4373-81cf-110eb8876e8c
       version: -1
       name: Update the existing campaign with incident data
       description: Updates the EmailCampaignSummary, EmailCampaignMutualIndicators
@@ -688,13 +629,13 @@ tasks:
                   simple: ExistingCampaignID
                 iscontext: true
           transformers:
-          - operator: uniq
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 190,
-          "y": 1320
+          "y": 1180
         }
       }
     note: false
@@ -746,7 +687,7 @@ tasks:
       {
         "position": {
           "x": 720,
-          "y": 1670
+          "y": 1530
         }
       }
     note: false
@@ -791,7 +732,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2390
+          "y": 2260
         }
       }
     note: false
@@ -835,7 +776,62 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2600
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 99b6a61f-0d65-4a7f-898c-5248ea680c56
+    type: regular
+    task:
+      id: 99b6a61f-0d65-4a7f-898c-5248ea680c56
+      version: -1
+      name: Mark incidents as part of the campaign
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      id:
+        complex:
+          root: EmailCampaign.incidents
+          accessor: id
+          transformers:
+          - operator: uniq
+      partofcampaign:
+        complex:
+          root: ExistingCampaignID
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ExistingCampaignID
+                iscontext: true
+          transformers:
+          - operator: FirstArrayElement
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: CreatedIncidentID
+                iscontext: true
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2090
         }
       }
     note: false
@@ -847,16 +843,16 @@ view: |-
   {
     "linkLabelsPosition": {
       "13_12_yes": 0.46,
-      "13_16_#default#": 0.44,
+      "20_15_#default#": 0.53,
       "2_17_yes": 0.55,
       "2_8_#default#": 0.44
     },
     "paper": {
       "dimensions": {
-        "height": 2785,
+        "height": 2805,
         "width": 1460,
         "x": 120,
-        "y": 50
+        "y": -50
       }
     }
   }
@@ -885,7 +881,7 @@ inputs:
   playbookInputQuery:
 - key: existingIncidentsLookback
   value:
-    simple: 14 days ago
+    simple: 7 days ago
   required: false
   description: 'The date from which to search for similar incidents. Date format is
     the same as in the incidents query page. For example: "3 days ago", "2019-01-01T00:00:00
@@ -962,7 +958,7 @@ inputs:
   playbookInputQuery:
 - key: fieldsToDisplay
   value:
-    simple: id,name,emailfrom,recipients,severity,status,occurred
+    simple: id,name,similarity,emailfrom,recipients,severity,status,occurred
   required: false
   description: |-
     A comma-seperated list of fields to display. An example is "emailclassification,closereason". If a list of fields is provided, and a campaign is detected, these incidents fields will be displayed.
