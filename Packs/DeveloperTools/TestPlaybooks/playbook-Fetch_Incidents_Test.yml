@@ -120,7 +120,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "24"
     scriptarguments:
       extend-context:
         simple: serverConfig=
@@ -278,9 +278,9 @@ tasks:
       PollingCommandName:
         simple: VerifyEnoughIncidents
       Timeout:
-        simple: "5"
+        simple: "10"
       dt:
-        simple: IncidentsCheck(val.ConditionMet !== true).Query
+        simple: IncidentsCheck(val.ConditionMet==false).Query
     separatecontext: true
     loop:
       iscommand: false
@@ -392,7 +392,7 @@ tasks:
       key:
         simple: searchQuery
       value:
-        simple: sourceBrand:"${serverConfig.response.sysConf.sourcebrand}"
+        simple: sourceInstances:${Instances.instanceName}*
     separatecontext: false
     view: |-
       {
@@ -575,14 +575,48 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 2540385f-49bf-4cb3-8f83-7a82da8d0d3d
+    type: regular
+    task:
+      id: 2540385f-49bf-4cb3-8f83-7a82da8d0d3d
+      version: -1
+      name: GetInstanceName
+      description: Check integration instance name.
+      scriptName: GetInstanceName
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      integration_name:
+        simple: ${serverConfig.response.sysConf.sourcebrand}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 2485,
-        "width": 492.5,
-        "x": 50,
+        "width": 972.5,
+        "x": -430,
         "y": 50
       }
     }
