@@ -25,7 +25,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Fetch vulnerabilities with CVS score greater than. This can be a
-    decimal point number. Disabled if empty
+    decimal point number. Disabled if empty. Mutually exclusive with cvss_score
   display: Fetch vulnerabilities with CVSS greater than
   name: cvss_score_greater_than
   required: false
@@ -51,7 +51,7 @@ configuration:
   required: false
   type: 13
 - additionalinfo: Fetch vulnerabilities with CVS score that exactly equals the provided
-    value. This can be a decimal point number. Disabled if empty.
+    value. This can be a decimal point number. Disabled if empty. Mutually exclusive with cvss_score_greater_than
   display: Fetch vulnerabilities with CVSS with exact value
   hidden: false
   name: cvss_score
