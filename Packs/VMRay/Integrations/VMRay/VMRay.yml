@@ -201,8 +201,7 @@ script:
       description: Sample ID in the analysis.
       type: Number
     - contextPath: VMRay.Analysis.Verdict
-      description: Verdict for the sample (Malicious, Suspicious, Clean,
-        Not Available).
+      description: Verdict for the sample (Malicious, Suspicious, Clean, Not Available).
       type: String
     - contextPath: VMRay.Analysis.VerdictReason
       description: Description of the Verdict Reason.
@@ -306,8 +305,7 @@ script:
       description: ssdeep hash of the sample in the submission.
       type: String
     - contextPath: VMRay.Submission.Verdict
-      description: Verdict for the sample (Malicious, Suspicious, Clean,
-        Not Available).
+      description: Verdict for the sample (Malicious, Suspicious, Clean, Not Available).
       type: String
     - contextPath: VMRay.Submission.VerdictReason
       description: Description of the Verdict Reason.
@@ -353,8 +351,7 @@ script:
       description: ssdeep hash of the sample.
       type: String
     - contextPath: VMRay.Sample.Verdict
-      description: Verdict for the sample (Malicious, Suspicious, Clean,
-          Not Available).
+      description: Verdict for the sample (Malicious, Suspicious, Clean, Not Available).
       type: String
     - contextPath: VMRay.Sample.VerdictReason
       description: Description of the Verdict Reason.
@@ -412,8 +409,7 @@ script:
       description: ssdeep hash of the sample.
       type: String
     - contextPath: VMRay.Sample.Verdict
-      description: Verdict for the sample (Malicious, Suspicious, Clean,
-          Not Available).
+      description: Verdict for the sample (Malicious, Suspicious, Clean, Not Available).
       type: String
     - contextPath: VMRay.Sample.VerdictReason
       description: Description of the Verdict Reason.
@@ -522,7 +518,8 @@ script:
       auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether all artifacts should be returned or only Indicators of Compromise.
+      description: Whether all artifacts should be returned or only Indicators of
+        Compromise.
       isArray: false
       predefined:
       - 'true'
@@ -620,8 +617,7 @@ script:
       description: Type of domain.
       type: String
     - contextPath: VMRay.Sample.IOC.Domain.Verdict
-      description: Verdict for the artifact (Malicious, Suspicious, Clean,
-        Not Available).
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
       type: String
     - contextPath: VMRay.Sample.IOC.Domain.VerdictReason
       description: Description of the Verdict Reason.
@@ -658,8 +654,7 @@ script:
       description: Type of email address.
       type: String
     - contextPath: VMRay.Sample.IOC.EmailAddress.Verdict
-      description: Verdict for the artifact (Malicious, Suspicious, Clean,
-        Not Available).
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
       type: String
     - contextPath: VMRay.Sample.IOC.EmailAddress.VerdictReason
       description: Description of the Verdict Reason.
@@ -714,8 +709,7 @@ script:
       description: Type of email.
       type: String
     - contextPath: VMRay.Sample.IOC.Email.Verdict
-      description: Verdict for the artifact (Malicious, Suspicious, Clean,
-        Not Available).
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
       type: String
     - contextPath: VMRay.Sample.IOC.Email.VerdictReason
       description: Description of the Verdict Reason.
@@ -740,7 +734,8 @@ script:
       description: Type of IOC.
       type: String
     - contextPath: VMRay.Sample.IOC.Filename.Operations
-      description: The filename operations that were performed, e.g., access, create, read, write, and delete.
+      description: The filename operations that were performed, e.g., access, create,
+        read, write, and delete.
       type: String
     - contextPath: VMRay.Sample.IOC.Filename.ThreatNames
       description: The threat names of the filename.
@@ -749,8 +744,7 @@ script:
       description: Type of filename.
       type: String
     - contextPath: VMRay.Sample.IOC.Filename.Verdict
-      description: Verdict for the artifact (Malicious, Suspicious, Clean,
-        Not Available).
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
       type: String
     - contextPath: VMRay.Sample.IOC.Filename.VerdictReason
       description: Description of the Verdict Reason.
@@ -766,7 +760,7 @@ script:
       description: The classifications of the file.
       type: String
     - contextPath: VMRay.Sample.IOC.File.FileSize
-      description: The original size of the file in bytes. 
+      description: The original size of the file in bytes.
       type: Number
     - contextPath: VMRay.Sample.IOC.File.Filename
       description: Name of the file.
@@ -808,7 +802,8 @@ script:
       description: Same as Operations, left in for backwards compatibility.
       type: String
     - contextPath: VMRay.Sample.IOC.File.Operations
-      description: The file operations which were performed, e.g., access, create, read, write, and delete.
+      description: The file operations which were performed, e.g., access, create,
+        read, write, and delete.
       type: String
     - contextPath: VMRay.Sample.IOC.File.ParentFiles
       description: Files where this file was contained in.
@@ -829,8 +824,7 @@ script:
       description: Type of file.
       type: String
     - contextPath: VMRay.Sample.IOC.File.Verdict
-      description: Verdict for the artifact (Malicious, Suspicious, Clean,
-        Not Available).
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
       type: String
     - contextPath: VMRay.Sample.IOC.File.VerdictReason
       description: Description of the Verdict Reason.
@@ -879,8 +873,7 @@ script:
       description: Type of IP address.
       type: String
     - contextPath: VMRay.Sample.IOC.IP.Verdict
-      description: Verdict for the artifact (Malicious, Suspicious, Clean,
-        Not Available).
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
       type: String
     - contextPath: VMRay.Sample.IOC.IP.VerdictReason
       description: Description of the Verdict Reason.
@@ -908,7 +901,8 @@ script:
       description: Same as Operations, left in for backwards compatibility.
       type: String
     - contextPath: VMRay.Sample.IOC.Mutex.Operation
-      description: The mutex operations that were performed, e.g., access, create, read, write, and delete.
+      description: The mutex operations that were performed, e.g., access, create,
+        read, write, and delete.
       type: String
     - contextPath: VMRay.Sample.IOC.Mutex.ParentProcesses
       description: Full commandline of processes where the mutex was used.
@@ -922,8 +916,7 @@ script:
       description: Type of mutex.
       type: String
     - contextPath: VMRay.Sample.IOC.Mutex.Verdict
-      description: Verdict for the artifact (Malicious, Suspicious, Clean,
-        Not Available).
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
       type: String
     - contextPath: VMRay.Sample.IOC.Mutex.VerdictReason
       description: Description of the Verdict Reason.
@@ -963,8 +956,7 @@ script:
       description: Type of process.
       type: String
     - contextPath: VMRay.Sample.IOC.Process.Verdict
-      description: Verdict for the artifact (Malicious, Suspicious, Clean,
-        Not Available).
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
       type: String
     - contextPath: VMRay.Sample.IOC.Process.VerdictReason
       description: Description of the Verdict Reason.
@@ -992,7 +984,8 @@ script:
       description: Same as Operations, left in for backwards compatibility.
       type: String
     - contextPath: VMRay.Sample.IOC.Registry.Operation
-      description: The registry operations that were performed, e.g., access, create, read, write, and delete.
+      description: The registry operations that were performed, e.g., access, create,
+        read, write, and delete.
       type: String
     - contextPath: VMRay.Sample.IOC.Registry.ParentProcesses
       description: Full commandline of processes where the registry key was referenced.
@@ -1010,8 +1003,7 @@ script:
       description: The registry key value type.
       type: String
     - contextPath: VMRay.Sample.IOC.Registry.Verdict
-      description: Verdict for the artifact (Malicious, Suspicious, Clean,
-        Not Available).
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
       type: String
     - contextPath: VMRay.Sample.IOC.Registry.VerdictReason
       description: Description of the Verdict Reason.
@@ -1072,8 +1064,7 @@ script:
       description: User agents used to connect to this URL.
       type: String
     - contextPath: VMRay.Sample.IOC.URL.Verdict
-      description: Verdict for the artifact (Malicious, Suspicious, Clean,
-        Not Available).
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
       type: String
     - contextPath: VMRay.Sample.IOC.URL.VerdictReason
       description: Description of the Verdict Reason.
@@ -1124,7 +1115,8 @@ script:
     description: Retrieves the Summary JSON v2 for a specific analysis.
     arguments:
     - default: false
-      description: ID of the analysis from which to retrieve the Summary JSON v2 from (analysis ID is returned e.g. from vmray-get-analysis-by-sample).
+      description: ID of the analysis from which to retrieve the Summary JSON v2 from
+        (analysis ID is returned e.g. from vmray-get-analysis-by-sample).
       isArray: false
       name: analysis_id
       required: true

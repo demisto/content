@@ -940,19 +940,19 @@ def get_iocs_command():
     indicator_types = {
         # mapping of
         # VMRay artifact type -> XSOAR score type,      Indicator class, Main value key, Headers
-        'Domain':               (DBotScoreType.DOMAIN,  Common.Domain,  'Domain',       ['OriginalDomains', 'Countries']),  # noqa: E241, E501
-        'EmailAddress':         (DBotScoreType.EMAIL,   Common.EMAIL,   'EmailAddress', ['IsRecipient', 'IsSender', 'Subjects']),  # noqa: E241, E501
-        'Email':                (None,                  None,           'Subject',      ['Subject', 'Sender', 'Recipients',  # noqa: E241, E501
+        'Domain': (DBotScoreType.DOMAIN, Common.Domain, 'Domain', ['OriginalDomains', 'Countries']),  # noqa: E241, E501
+        'EmailAddress': (DBotScoreType.EMAIL, Common.EMAIL, 'EmailAddress', ['IsRecipient', 'IsSender', 'Subjects']),  # noqa: E241, E501
+        'Email': (None, None, 'Subject', ['Subject', 'Sender', 'Recipients',  # noqa: E241, E501
                                                                                          'NrAttachments', 'NrLinks']),
-        'Filename':             (None,                  None,           'Filename',     ['Operations']),  # noqa: E241
-        'File':                 (DBotScoreType.FILE,    None,           'Filename',     ['Filenames', 'MD5', 'SHA1', 'SHA256',  # noqa: E241, E501
+        'Filename': (None, None, 'Filename', ['Operations']),  # noqa: E241
+        'File': (DBotScoreType.FILE, None, 'Filename', ['Filenames', 'MD5', 'SHA1', 'SHA256',  # noqa: E241, E501
                                                                                          'Operations']),
-        'IP':                   (DBotScoreType.IP,      Common.IP,      'IP',           ['Domains', 'Countries', 'Protocols']),  # noqa: E241, E501
-        'Mutex':                (None,                  None,           'Name',         ['Operations', 'ParentProcessesNames']),  # noqa: E241, E501
-        'Process':              (None,                  None,           'ProcessNames', ['CmdLine']),  # noqa: E241
-        'Registry':             (None,                  None,           'Name',         ['ValueTypes', 'Operations',  # noqa: E241, E501
+        'IP': (DBotScoreType.IP, Common.IP, 'IP', ['Domains', 'Countries', 'Protocols']),  # noqa: E241, E501
+        'Mutex': (None, None, 'Name', ['Operations', 'ParentProcessesNames']),  # noqa: E241, E501
+        'Process': (None, None, 'ProcessNames', ['CmdLine']),  # noqa: E241
+        'Registry': (None, None, 'Name', ['ValueTypes', 'Operations',  # noqa: E241, E501
                                                                                          'ParentProcessesNames']),
-        'URL':                  (DBotScoreType.URL,     Common.URL,     'URL',          ['OriginalURLs', 'Categories',  # noqa: E241, E501
+        'URL': (DBotScoreType.URL, Common.URL, 'URL', ['OriginalURLs', 'Categories',  # noqa: E241, E501
                                                                                          'Countries', 'Methods', 'IPAddresses',
                                                                                          'ParentProcessesNames']),
     }
