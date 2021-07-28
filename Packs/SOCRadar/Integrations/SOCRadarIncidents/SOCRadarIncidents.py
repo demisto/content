@@ -451,8 +451,8 @@ def main() -> None:
     :rtype:
     """
 
-    api_key = demisto.params().get('apikey') or '7a90a17f871e40078407f2822481d3a2'
-    socradar_company_id = demisto.params().get('socradar_company_id') or '330'
+    api_key = demisto.params().get('apikey')
+    socradar_company_id = demisto.params().get('socradar_company_id')
 
     base_url = SOCRADAR_API_ENDPOINT
     first_fetch_time = arg_to_datetime(
