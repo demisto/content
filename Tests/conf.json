@@ -3542,7 +3542,7 @@
         "test playbook - QRadarCorrelations": "Issue 38639",
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
         "O365 - EWS - Extension - Test": "Issue 39008",
-        "Majestic Million Test Playbook": "Issue 30931",
+        "Majestic Million Test Playbook": "Issue 30931"
     },
     "skipped_integrations": {
         
