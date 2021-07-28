@@ -46,7 +46,7 @@ def main():
     title = merged_pr.title
     if '## Contributor' not in merged_pr.body:
         merged_pr_author = merged_pr.user.login
-        body += f'## Contributor\r\n{merged_pr_author}\r\n\r\n'
+        body += f'## Contributor\r\n@{merged_pr_author}\r\n\r\n'
     body += merged_pr.body
     base_branch = 'master'
     head_branch = merged_pr.base.ref
