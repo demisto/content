@@ -275,9 +275,7 @@ def circleci_trigger_workflow_command(client: Client, args: Dict[str, Any]) -> C
     except ValueError:
         raise DemistoException("Failed to parse parameters argument")
 
-    # response = client.trigger_workflow(vc_type, organization,project, parameters)
-    response_json = '{"number" : 102812,"state" : "pending","id" : "21afca11-345c-4958-92aa-ff6e0adb5d28","created_at" : "2021-07-26T15:16:51.066Z"}'
-
+    response_json = client.trigger_workflow(vc_type, organization,project, parameters)
     response = json.loads(response_json)
 
     return CommandResults(
