@@ -95,17 +95,17 @@ SEVERITY_CODE_DICT = {
 }
 
 RESOLUTION_DICT = {
-    53: 'Unresolved',
-    54: 'Duplicate',
-    55: 'Not an Issue',
-    56: 'Resolved'
+    7: 'Unresolved',
+    8: 'Duplicate',
+    9: 'Not an Issue',
+    10: 'Resolved'
 }
 
 RESOLUTION_TO_ID_DICT = {
-    'Unresolved': 53,
-    'Duplicate': 54,
-    'Not an Issue': 55,
-    'Resolved': 56
+    'Unresolved': 7,
+    'Duplicate': 8,
+    'Not an Issue': 9,
+    'Resolved': 10
 }
 
 EXP_TYPE_ID_DICT = {
@@ -489,11 +489,11 @@ def update_incident_command(client, args):
     }
     response = update_incident(client, incident_id, data)
     if response.status_code == 200:
-        return 'Incident ' + args['incident-id'] + ' was updated successfully.'
+        return 'Incident ' + str(args['incident-id']) + ' was updated successfully.'
 
 
 def update_incident(client, incident_id, data):
-    response = client.patch('/incidents/' + incident_id, data)
+    response = client.patch('/incidents/' + str(incident_id), data)
     return response
 
 
@@ -520,7 +520,7 @@ def get_incident_command(client, incident_id):
         for vector in hr_incident[0].get('NistAttackVectors', []):
             nist_vectors_str += vector + '\n'
         hr_incident[0]['NistAttackVectors'] = nist_vectors_str
-    title = 'IBM Resilient Systems incident ID ' + incident_id
+    title = 'IBM Resilient Systems incident ID ' + str(incident_id)
     entry = {
         'Type': entryTypes['note'],
         'Contents': incident,
@@ -538,7 +538,7 @@ def get_incident_command(client, incident_id):
 
 
 def get_incident(client, incident_id, content_format=False):
-    url = '/incidents/' + incident_id
+    url = '/incidents/' + str(incident_id)
     if content_format:
         url += '?text_content_output_format=objects_convert_html'
     response = client.get(url)
@@ -751,7 +751,7 @@ def create_incident_command(client, args):
     }
     ec = {
         'Resilient.Incidents(val.Id && val.Id === obj.Id)': {
-            'Id': response['id'],
+            'Id': str(response['id']),
             'Name': incident_name
         }
     }
@@ -999,6 +999,11 @@ def add_artifact_command(client, incident_id, artifact_type, artifact_value, art
     return entry
 
 
+def delete_incident_command(client, incident_id):
+    response = client.delete('/incidents/' + str(incident_id))
+    return response
+
+
 def fetch_incidents(client):
     last_run = demisto.getLastRun() and demisto.getLastRun().get('time')
     if not last_run:
@@ -1132,6 +1137,8 @@ def main():
         elif demisto.command() == 'rs-add-artifact':
             demisto.results(add_artifact_command(client, args['incident-id'], args['artifact-type'],
                                                  args['artifact-value'], args.get('artifact-description')))
+        elif demisto.command() == 'rs-delete-incident':
+            demisto.results(delete_incident_command(client, args['incident-id']))
     except Exception as e:
         LOG(e.message)
         LOG.print_log()

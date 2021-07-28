@@ -434,6 +434,13 @@ script:
     description: Creates an incident
     execution: false
     name: rs-create-incident
+    outputs:
+    - contextPath: Resilient.Incidents.Id
+      description: Incident ID
+      type: string
+    - contextPath: Resilient.Incidents.Name
+      description: Incident name
+      type: string
   - arguments:
     - default: false
       description: Incident ID to get artifacts of
@@ -903,6 +910,17 @@ script:
       - contextPath: Resilient.incidentArtifact.ip.destination
         description: The IP address is a destination.
         type: Boolean
+  - arguments:
+    - default: false
+      description: The ID of the incident.
+      isArray: false
+      name: incident-id
+      required: true
+      secret: false
+    deprecated: false
+    description: delete an incident.
+    execution: false
+    name: rs-delete-incident
   dockerimage: demisto/resilient:1.0.0.23135
   feed: false
   isfetch: true
