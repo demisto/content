@@ -1,0 +1,224 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "SecurityScorecard Alert Mapper",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "SecurityScorecard Alert Mapper",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 3,
+	"mapping": {
+		"SecurityScorecard Alert": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert ID": {
+					"complex": null,
+					"simple": "id"
+				},
+				"Alert Name": {
+					"complex": null,
+					"simple": "change_type"
+				},
+				"Company Name": {
+					"complex": null,
+					"simple": "company_name"
+				},
+				"Domain": {
+					"complex": null,
+					"simple": "domain"
+				},
+				"Factor": {
+					"complex": null,
+					"simple": "change_data.[0].factor"
+				},
+				"Grade": {
+					"complex": null,
+					"simple": "change_data.[0].grade_letter"
+				},
+				"Score": {
+					"complex": null,
+					"simple": "change_data.[0].score"
+				},
+				"Score Impact": {
+					"complex": null,
+					"simple": "change_data.[0].score_impact"
+				},
+				"SecurityScorecard Company Name": {
+					"complex": null,
+					"simple": "company_name"
+				},
+				"SecurityScorecard Domain": {
+					"complex": null,
+					"simple": "domain"
+				},
+				"SecurityScorecard Factor": {
+					"complex": null,
+					"simple": "change_data.[0].factor"
+				},
+				"SecurityScorecard Grade": {
+					"complex": null,
+					"simple": "change_data.[0].grade_letter"
+				},
+				"SecurityScorecard Score": {
+					"complex": null,
+					"simple": "change_data.[0].score"
+				},
+				"SecurityScorecard Score Impact": {
+					"complex": null,
+					"simple": "change_data.[0].score_impact"
+				},
+				"SecurityScorecard Username": {
+					"complex": null,
+					"simple": "username"
+				},
+				"Username": {
+					"complex": null,
+					"simple": "username"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Alert ID": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "id",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Alert Name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "change_type",
+						"transformers": [
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": " "
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "_"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"SecurityScorecard Company Name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "company_name",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"SecurityScorecard Domain": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "domain",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"SecurityScorecard Factor": {
+					"complex": {
+						"accessor": "factor",
+						"filters": [],
+						"root": "change_data",
+						"transformers": [
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": " "
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "_"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"SecurityScorecard Grade": {
+					"complex": {
+						"accessor": "grade_letter",
+						"filters": [],
+						"root": "change_data",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"SecurityScorecard Score": {
+					"complex": {
+						"accessor": "score",
+						"filters": [],
+						"root": "change_data",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"SecurityScorecard Score Impact": {
+					"complex": {
+						"accessor": "score_impact",
+						"filters": [],
+						"root": "change_data",
+						"transformers": []
+					},
+					"simple": ""
+				}
+			}
+		}
+	},
+	"name": "SecurityScorecard Alert Mapper",
+	"nameRaw": "SecurityScorecard Alert Mapper",
+	"packID": "",
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
