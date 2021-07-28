@@ -63,7 +63,7 @@ Scan ID: **856ec9887a4ffccbb8f5f4b559e6cb10751c9c411bd96464a47b50bc9c387b9c-1627
 Scan date: **2021-07-27 14:58:43**
 Detections / Total: **0/89**
 Resource: https://github.com/topics/spacevim
-VT Link: [https://www.virustotal.com/gui/url/856ec9887a4ffccbb8f5f4b559e6cb10751c9c411bd96464a47b50bc9c387b9c/detection/u-856ec9887a4ffccbb8f5f4b559e6cb10751c9c411bd96464a47b50bc9c387b9c-1627397923](https://www.virustotal.com/gui/url/856ec9887a4ffccbb8f5f4b559e6cb10751c9c411bd96464a47b50bc9c387b9c/detection/u-856ec9887a4ffccbb8f5f4b559e6cb10751c9c411bd96464a47b50bc9c387b9c-1627397923)
+VT Link: [https://www.virustotal.com/gui/url/truncated](https://www.virustotal.com/gui/url/truncated)
 Response content SHA-256: 0e1a3027e45f3971d9611b88be2b556a166b8e7dcbdbfd4b2de257fc22a86079
 ### Scans
 |Details|Detected|Result|Source|Update|
