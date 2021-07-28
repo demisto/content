@@ -6,14 +6,14 @@ from typing import Dict, Any, Tuple
 import traceback
 
 
-def health_check(health_dict, integration_name: str) -> Tuple[bool, bool]:
-    for _, integration in health_dict.items():
+def instance_check(instances, integration_name: str) -> Tuple[bool, Any]:
+    for integration in instances:
         if integration.get('brand') == integration_name:
-            return (False, True) if integration.get('lastError') else (True, True)
-    return True, False
+            return bool(integration.get('name')), integration.get('name')
+    return False, None
 
 
-def health_check_command(args: Dict[str, Any]) -> CommandResults:
+def get_instance_name_command(args: Dict[str, Any]) -> CommandResults:
 
     integration_name = args.get('integration_name', '')
 
@@ -26,25 +26,26 @@ def health_check_command(args: Dict[str, Any]) -> CommandResults:
                 "query": "name:" + integration_name
             },
         })
-    health_dict = raw_result[0]["Contents"]["response"]["health"]
+    instances = raw_result[0]["Contents"]["response"]["instances"]
 
-    is_health, fetch_done = health_check(health_dict, integration_name)
+    found, instance_name = instance_check(instances, integration_name)
+
+    if not found:
+        raise DemistoException(f'No instance for integration {integration_name}.')
 
     return CommandResults(
-        outputs_prefix='IntegrationHealth',
-        outputs_key_field='integrationName',
+        outputs_prefix='Instances',
+        outputs_key_field='',
         outputs={
-            'isHealth': is_health,
-            'healthDict': health_dict,
-            'fetchDone': fetch_done,
-            'integrationName': integration_name
+            'integrationName': integration_name,
+            'instanceName': instance_name
         },
     )
 
 
 def main():
     try:
-        return_results(health_check_command(demisto.args()))
+        return_results(get_instance_name_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute Script. Error: {str(ex)}')
