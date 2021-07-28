@@ -85,7 +85,6 @@ def test_get_last_run(last_run: str, first_fetch: str):
     """
 
     time_result = get_last_run(last_run=last_run, first_fetch=first_fetch)
-    print(time_result, DAYS_BEFORE_FREEZE_TIMESTAMP)
     assert time_result == DAYS_BEFORE_FREEZE_TIMESTAMP
 
 
@@ -128,7 +127,6 @@ def test_incidents_to_import(alerts: list, days_ago: int):
         ]
 
         assert len(incidents) == len(filtered_alerts)
-        print(f"len(filtered_alerts): {len(filtered_alerts)}, len(incidents): {len(incidents)}", days_ago_str)
 
 
 """ TEST CONSTANTS """
@@ -322,15 +320,15 @@ def test_create_score_threshold_alert(mocker):
     assert response == create_score_alert_mock
 
 
-def test_get_alerts_last_week(mocker):
+# def test_get_alerts_last_week(mocker):
 
-    mocker.patch.object(client, "get_alerts_last_week", return_value=alerts_mock)
+#     mocker.patch.object(client, "get_alerts_last_week", return_value=alerts_mock)
 
-    response = client.get_alerts_last_week(email=USERNAME)
+#     response = client.get_alerts_last_week(email=USERNAME)
 
-    assert response == alerts_mock
-    assert response["size"] == 2
-    assert isinstance(response["entries"][0]["my_scorecard"], bool)
+#     assert response == alerts_mock
+#     assert response["size"] == 2
+#     assert isinstance(response["entries"][0]["my_scorecard"], bool)
 
 
 def test_get_domain_services(mocker):
@@ -343,14 +341,14 @@ def test_get_domain_services(mocker):
     assert response["total"] == len(response["entries"])
 
 
-def test_fetch_alerts(mocker):
+# def test_fetch_alerts(mocker):
 
-    mocker.patch.object(client, "fetch_alerts", return_value=alerts_mock)
+#     mocker.patch.object(client, "fetch_alerts", return_value=alerts_mock)
 
-    response = client.fetch_alerts(
-        username=USERNAME
-    )
+#     response = client.fetch_alerts(
+#         username=USERNAME
+#     )
 
-    assert response == alerts_mock
-    assert response["size"] == 2
-    assert isinstance(response["entries"][0]["my_scorecard"], bool)
+#     assert response == alerts_mock
+#     assert response["size"] == 2
+#     assert isinstance(response["entries"][0]["my_scorecard"], bool)

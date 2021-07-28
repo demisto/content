@@ -14,30 +14,6 @@
                     "complex": null,
                     "simple": "change_type"
                 },
-                "Company Name": {
-                    "complex": null,
-                    "simple": "company_name"
-                },
-                "Domain": {
-                    "complex": null,
-                    "simple": "domain"
-                },
-                "Factor": {
-                    "complex": null,
-                    "simple": "change_data.[0].factor"
-                },
-                "Grade": {
-                    "complex": null,
-                    "simple": "change_data.[0].grade_letter"
-                },
-                "Score": {
-                    "complex": null,
-                    "simple": "change_data.[0].score"
-                },
-                "Score Impact": {
-                    "complex": null,
-                    "simple": "change_data.[0].score_impact"
-                },
                 "SecurityScorecard Company Name": {
                     "complex": null,
                     "simple": "company_name"
