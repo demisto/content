@@ -407,6 +407,10 @@ def test_email_with_special_character(mocker):
         'This =?UTF-8?B?VGVzdMKu?= passes',
         'This Test® passes'
     ),
+    (
+        '=?utf-8?B?44CQ?= =?utf-8?B?4pGg?=',    # test case: double utf-8 byte encoded
+        '\xe3\x80\x90\xe2\x91\xa0'              # 【①
+    ),
 ])
 def test_utf_subject_convert(encoded_subject, decoded_subject):
     decoded = convert_to_unicode(encoded_subject)
