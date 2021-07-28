@@ -572,7 +572,9 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
 
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
-        ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
+        # we use the outgoing mapper to get all the AD attributes which will be later passed to search_with_paging()
+        ad_user = iam_user_profile.map_object(mapper_name=mapper_out,
+                                              incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
 
         value = ad_user.get(default_attribute)
 
@@ -813,7 +815,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
         user_profile = args.get("user-profile")
         user_profile_delta = args.get('user-profile-delta')
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
-        ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
+        ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
 
         sam_account_name = ad_user.get("samaccountname")
 
@@ -868,7 +870,8 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
 
 def get_old_samaccountname(old_user_data, mapper_out):
     iam_old_user_profile = IAMUserProfile(user_profile=old_user_data)
-    ad_old_user = iam_old_user_profile.map_object(mapper_name=mapper_out)
+    ad_old_user = iam_old_user_profile.map_object(mapper_name=mapper_out,
+                                                  incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     return ad_old_user.get("samaccountname")
 
 
@@ -891,7 +894,7 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
         user_profile_delta = args.get('user-profile-delta')
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
-        ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
+        ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
         # check it user exists and if it doesn't, create it
         sam_account_name = ad_user.get("samaccountname")
@@ -1259,7 +1262,7 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
         user_profile = args.get("user-profile")
         user_profile_delta = args.get('user-profile-delta')
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
-        ad_user = iam_user_profile.map_object(mapper_name=mapper_out)
+        ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
         sam_account_name = ad_user.get("samaccountname")
         if not sam_account_name:
@@ -1451,7 +1454,7 @@ def get_mapping_fields_command(search_base):
     # add keys that are not attributes but can be used in mapping
     ad_attributes.extend(("dn", "samaccountname", "manageremail"))
 
-    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
 
     for field in ad_attributes:
         incident_type_scheme.add_field(field, "Field")

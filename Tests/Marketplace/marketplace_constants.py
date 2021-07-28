@@ -54,6 +54,7 @@ class GCPConfig(object):
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
+    BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/content/packs'
 
     with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
         CORE_PACKS_LIST = json.load(core_packs_list_file)
@@ -80,6 +81,9 @@ class Metadata(object):
     SERVER_DEFAULT_MIN_VERSION = "6.0.0"
     CERTIFIED = "certified"
     EULA_URL = "https://github.com/demisto/content/blob/master/LICENSE"  # disable-secrets-detection
+    CURRENT_VERSION = 'currentVersion'
+    SERVER_MIN_VERSION = 'serverMinVersion'
+    HIDDEN = 'hidden'
 
 
 class PackFolders(enum.Enum):
@@ -167,3 +171,14 @@ class PackStatus(enum.Enum):
     FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
     FAILED_DECRYPT_PACK = "Failed to decrypt pack: a premium pack," \
                           " which should be encrypted, seems not to be encrypted."
+    FAILED_METADATA_REFORMATING = "Failed to reparse and create metadata.json when missing dependencies"
+
+
+class Changelog(object):
+    """
+    A class that represents all the keys that are present in a Changelog entry.
+    """
+
+    RELEASE_NOTES = 'releaseNotes'
+    DISPLAY_NAME = 'displayName'
+    RELEASED = 'released'
