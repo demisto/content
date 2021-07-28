@@ -185,7 +185,7 @@ def host_get_hosts_command(client, args):
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                     first_fetch_time: Optional[int], cvss_score: Optional[float],
-                    risk_more_than: Optional[str]
+                    risk_more_than: Optional[str], cvss_score_greater_than: Optional[float]
                     ) -> Tuple[Dict[str, int], List[dict]]:
 
     # Get the last fetch time, if exists
@@ -211,12 +211,19 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
     request = {
         "risk_more_than": risk_more_than,
-        "cvss_score_greater_than": cvss_score,
+        "cvss_score_greater_than": cvss_score_greater_than,
+        "cvss_score": cvss_score,
         "date_opened_after": str(datetime.fromtimestamp(last_fetch).isoformat()) + ".000Z"  # type: ignore
     }
 
     if cvss_score == "" or cvss_score is None:
+        del request['cvss_score']
+
+    if cvss_score_greater_than == "" or cvss_score_greater_than is None:
         del request['cvss_score_greater_than']
+
+    if risk_more_than == "" or risk_more_than is None:
+        del request['risk_more_than']
 
     response = client.vulnerabilities_get_query_request(request=request, limit=max_results, o=offset)
     offset += max_results
@@ -732,6 +739,7 @@ def main():
         elif command == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
             cvss_score = demisto.params().get('cvss_score', None)
+            cvss_score_greater_than = demisto.params().get('cvss_score_greater_than', None)
             risk_more_than = demisto.params().get('risk_more_than', None)
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
@@ -749,7 +757,8 @@ def main():
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
                 first_fetch_time=first_fetch_timestamp,
                 cvss_score=cvss_score,
-                risk_more_than=risk_more_than
+                risk_more_than=risk_more_than,
+                cvss_score_greater_than=cvss_score_greater_than
             )
 
             demisto.setLastRun(next_run)

@@ -25,13 +25,12 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Fetch vulnerabilities with CVS score greater than. This can be a
-    decimal point number.
-  defaultvalue: '0'
-  display: Fetch vulnerabilities with CVSS
-  name: cvss_score
+    decimal point number. Disabled if empty
+  display: Fetch vulnerabilities with CVSS greater than
+  name: cvss_score_greater_than
   required: false
   type: 0
-- defaultvalue: '0'
+- additionalinfo: Disabled if empty
   display: Fetch vulnerabilities with risk more than
   name: risk_more_than
   required: false
@@ -50,6 +49,13 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- additionalinfo: Fetch vulnerabilities with CVS score that exactly equals the provided
+    value. This can be a decimal point number. Disabled if empty.
+  display: Fetch vulnerabilities with CVSS with exact value
+  hidden: false
+  name: cvss_score
+  required: false
+  type: 0
 description: Cloud-based continuous vulnerability management and penetration testing
   solution.
 display: Edgescan
