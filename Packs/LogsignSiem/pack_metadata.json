@@ -1,6 +1,6 @@
 {
     "name": "Logsign SIEM",
-    "description": "Logsign SIEM provides comprehensive visibility and control of your data lake by allowing security analysts to collect and store unlimited data, investigate and detect threats, and respond automatically.",
+    "description": "Logsign SIEM provides to collect and store unlimited data, investigate and detect threats, and respond automatically.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Logsign",
