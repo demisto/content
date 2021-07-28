@@ -3357,7 +3357,6 @@ Adds any other object to MISP.
 }
 ```
 
-
 #### Human Readable Output
 
 >Object has been added to MISP event ID 1386
