@@ -268,14 +268,14 @@ def circleci_workflow_last_runs_command(client: Client, args: Dict[str, Any]) ->
 
 def circleci_trigger_workflow_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     vc_type, organization, project, _ = get_common_arguments(client, args)
-    parameters_json: str = args.get('parameters')
+    parameters_json: str = args.get('parameters', '')
 
     try:
         parameters = json.loads(parameters_json)
     except ValueError:
         raise DemistoException("Failed to parse parameters argument")
 
-    response_json = client.trigger_workflow(vc_type, organization,project, parameters)
+    response_json = client.trigger_workflow(vc_type, organization, project, parameters)
     response = json.loads(response_json)
 
     return CommandResults(
