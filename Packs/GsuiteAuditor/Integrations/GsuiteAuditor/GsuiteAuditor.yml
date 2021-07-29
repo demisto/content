@@ -3,25 +3,97 @@ commonfields:
   id: GsuiteAuditor
   version: -1
 configuration:
-  - name: user_service_account_json
-    display: User's Service Account JSON
-    required: true
-    defaultvalue: null
-    type: 4
-    additionalinfo: ""
-  - name: admin_email
-    display: Admin Email
-    required: false
-    defaultvalue: null
-    type: 0
-    additionalinfo: ""
-  - name: application
-    display: Fetch Application Names
-    required: false
-    defaultvalue: admin
-    type: 15
-    additionalinfo: ""
-    options:
+- name: user_service_account_json
+  display: User's Service Account JSON
+  required: true
+  defaultvalue:
+  type: 4
+  additionalinfo: ""
+- name: admin_email
+  display: Admin Email
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo: ""
+- name: application
+  display: Fetch Application Names
+  required: false
+  defaultvalue: admin
+  type: 15
+  additionalinfo: ""
+  options:
+  - access_transparency
+  - admin
+  - calendar
+  - chat
+  - drive
+  - gcp
+  - gplus
+  - groups
+  - groups_enterprise
+  - jamboard
+  - login
+  - meet
+  - mobile
+  - rules
+  - saml
+  - token
+  - user_accounts
+  - context_aware_access
+  - chrome
+  - data_studio
+  - keep
+- name: max_fetch
+  display: Number of incidents for each fetch.
+  required: false
+  defaultvalue: "10"
+  type: 0
+  additionalinfo: ""
+- name: first_fetch
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  required: false
+  defaultvalue: 12 hours
+  type: 0
+  additionalinfo: ""
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  additionalinfo: ""
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  type: 8
+  additionalinfo: ""
+description: G Suite Auditor is an integration to receive Audit logs from  G Suite
+  different applications - admin,drive,calender and more.
+display: G Suite Auditor
+name: GsuiteAuditor
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Profile ID or the user email for which the data should be filtered.
+        Can be 'all' for all information, or 'userKey' for a user's unique Google
+        Workspace profile ID or their primary email address.
+      isArray: false
+      name: user_key
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Application name for which the events are to be retrieved.
+      isArray: false
+      name: application_name
+      predefined:
       - access_transparency
       - admin
       - calendar
@@ -43,202 +115,130 @@ configuration:
       - chrome
       - data_studio
       - keep
-  - name: max_fetch
-    display: Number of incidents for each fetch.
-    required: false
-    defaultvalue: "10"
-    type: 0
-    additionalinfo: ""
-  - name: first_fetch
-    display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-    required: false
-    defaultvalue: 12 hours
-    type: 0
-    additionalinfo: ""
-  - name: insecure
-    display: Trust any certificate (not secure)
-    required: false
-    defaultvalue: "true"
-    type: 8
-    additionalinfo: ""
-  - name: proxy
-    display: Use system proxy settings
-    required: false
-    defaultvalue: "true"
-    type: 8
-    additionalinfo: ""
-  - name: incidentType
-    display: Incident type
-    required: false
-    defaultvalue: null
-    type: 13
-    additionalinfo: ""
-description: G Suite Auditor is an integration to receive Audit logs from  G
-  Suite different applications - admin,drive,calender and more.
-display: G Suite Auditor
-name: GsuiteAuditor
-script:
-  commands:
-    - arguments:
-        - default: false
-          description: Profile ID or the user email for which the data should be filtered.
-            Can be 'all' for all information, or 'userKey' for a user's unique
-            Google Workspace profile ID or their primary email address.
-          isArray: false
-          name: user_key
-          required: false
-          secret: false
-        - auto: PREDEFINED
-          default: false
-          description: Application name for which the events are to be retrieved.
-          isArray: false
-          name: application_name
-          predefined:
-            - access_transparency
-            - admin
-            - calendar
-            - chat
-            - drive
-            - gcp
-            - gplus
-            - groups
-            - groups_enterprise
-            - jamboard
-            - login
-            - meet
-            - mobile
-            - rules
-            - saml
-            - token
-            - user_accounts
-            - context_aware_access
-            - chrome
-            - data_studio
-            - keep
-          required: true
-          secret: false
-        - default: false
-          description: The name of the event being queried
-          isArray: false
-          name: event_name
-          required: false
-          secret: false
-        - default: false
-          description: a comma-separated list composed of event parameters and relational
-            operators
-          isArray: false
-          name: filters
-          required: false
-          secret: false
-        - default: false
-          description: ID of the organizational unit to report on
-          isArray: false
-          name: org_unit_id
-          required: false
-          secret: false
-        - default: false
-          description: Comma separated group ids on which user activities are filtered
-          isArray: false
-          name: group_id
-          required: false
-          secret: false
-        - default: false
-          description: IP Address of host where the event was performed.
-          isArray: false
-          name: actor_ip_address
-          required: false
-          secret: false
-        - name: start_time
-          description: Sets the beginning of the range of time shown in the report.
-            example - 2010-10-28T10:26:35.000Z
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: end_time
-          description: Sets the end of the range of time shown in the report. example -
-            2010-10-28T10:26:35.000Z
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - default: false
-          defaultValue: "1000"
-          description: "Maximum number of results to return. "
-          isArray: false
-          name: max_results
-          required: false
-          secret: false
-        - default: false
-          description: The token to specify next page.
-          isArray: false
-          name: page_token
-          required: false
-          secret: false
-        - default: false
-          description: Email ID of the G Suite domain admin acts on behalf of an end-user.
-          isArray: false
-          name: admin_email
-          required: false
-          secret: false
-      deprecated: false
-      description: Retrieves a list of activities for a specific customer's account
-        and application
-      execution: false
-      name: gsuite-activity-search
-      outputs:
-        - contextPath: GSuite.ActivitySearch.items.id.time
-          description: Time of occurrence of the activity
-          type: Date
-        - contextPath: GSuite.ActivitySearch.items.id.uniqueQualifier
-          description: Unique qualifier if multiple events have the same time.
-          type: String
-        - contextPath: GSuite.ActivitySearch.items.id.applicationName
-          description: Application name to which the event belongs
-          type: String
-        - contextPath: GSuite.ActivitySearch.items.id.customerId
-          description: The unique identifier for a Google Workspace account.
-          type: String
-        - contextPath: GSuite.ActivitySearch.items.actor.callerType
-          description: The type of actor.
-          type: String
-        - contextPath: GSuite.ActivitySearch.items.actor.key
-          description: Can be the consumer_key of the requestor for OAuth 2LO API requests
-            or an identifier for robot accounts.
-          type: String
-        - contextPath: GSuite.ActivitySearch.items.events.type
-          description: Type of event.
-          type: String
-        - contextPath: GSuite.ActivitySearch.items.events.name
-          description: Name of the event
-          type: String
-        - contextPath: GSuite.ActivitySearch.items.events.parameters.name
-          description: The name of the parameter.
-          type: String
-        - contextPath: GSuite.ActivitySearch.items.events.parameters.value
-          description: String value of the parameter.
-          type: String
-        - contextPath: GSuite.ActivitySearch.items.actor.email
-          description: The primary email address of the actor.
-          type: String
-        - contextPath: GSuite.ActivitySearch.items.actor.profileId
-          description: The unique Google Workspace profile ID of the actor.
-          type: String
-        - contextPath: GSuite.ActivitySearch.items.ipAddress
-          description: IP address of the user doing the action.
-          type: String
-        - contextPath: GSuite.ActivitySearch.items.events.parameters.boolValue
-          description: Boolean value of the parameter.
-          type: Boolean
-        - contextPath: GSuite.ActivitySearch.items.events.parameters.multiValue
-          description: String values of the parameter.
-          type: String
-        - contextPath: GSuite.PageToken.ActivitySearch.nextPageToken
-          description: Token to specify the next page in the list.
-          type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.22098
+      required: true
+      secret: false
+    - default: false
+      description: The name of the event being queried
+      isArray: false
+      name: event_name
+      required: false
+      secret: false
+    - default: false
+      description: a comma-separated list composed of event parameters and relational
+        operators
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
+      description: ID of the organizational unit to report on
+      isArray: false
+      name: org_unit_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated group ids on which user activities are filtered
+      isArray: false
+      name: group_id
+      required: false
+      secret: false
+    - default: false
+      description: IP Address of host where the event was performed.
+      isArray: false
+      name: actor_ip_address
+      required: false
+      secret: false
+    - name: start_time
+      description: Sets the beginning of the range of time shown in the report. example
+        - 2010-10-28T10:26:35.000Z
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: end_time
+      description: Sets the end of the range of time shown in the report. example
+        - 2010-10-28T10:26:35.000Z
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - default: false
+      defaultValue: "1000"
+      description: "Maximum number of results to return. "
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - default: false
+      description: The token to specify next page.
+      isArray: false
+      name: page_token
+      required: false
+      secret: false
+    - default: false
+      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
+      isArray: false
+      name: admin_email
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of activities for a specific customer's account
+      and application
+    execution: false
+    name: gsuite-activity-search
+    outputs:
+    - contextPath: GSuite.ActivitySearch.items.id.time
+      description: Time of occurrence of the activity
+      type: Date
+    - contextPath: GSuite.ActivitySearch.items.id.uniqueQualifier
+      description: Unique qualifier if multiple events have the same time.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.id.applicationName
+      description: Application name to which the event belongs
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.id.customerId
+      description: The unique identifier for a Google Workspace account.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.actor.callerType
+      description: The type of actor.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.actor.key
+      description: Can be the consumer_key of the requestor for OAuth 2LO API requests
+        or an identifier for robot accounts.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.events.type
+      description: Type of event.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.events.name
+      description: Name of the event
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.events.parameters.name
+      description: The name of the parameter.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.events.parameters.value
+      description: String value of the parameter.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.actor.email
+      description: The primary email address of the actor.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.actor.profileId
+      description: The unique Google Workspace profile ID of the actor.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.ipAddress
+      description: IP address of the user doing the action.
+      type: String
+    - contextPath: GSuite.ActivitySearch.items.events.parameters.boolValue
+      description: Boolean value of the parameter.
+      type: Boolean
+    - contextPath: GSuite.ActivitySearch.items.events.parameters.multiValue
+      description: String values of the parameter.
+      type: String
+    - contextPath: GSuite.PageToken.ActivitySearch.nextPageToken
+      description: Token to specify the next page in the list.
+      type: String
+  dockerimage: demisto/googleapi-python3:1.0.0.23531
   feed: false
   isfetch: true
   longRunning: false
@@ -248,5 +248,5 @@ script:
   subtype: python3
   type: python
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
 fromversion: 5.5.0

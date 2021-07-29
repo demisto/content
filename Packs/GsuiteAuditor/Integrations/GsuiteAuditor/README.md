@@ -1,5 +1,5 @@
 G Suite Auditor is an integration to receive Audit logs from  G Suite different applications - admin,drive,calender and more.
-This integration was integrated and tested with version xx of GsuiteAuditor
+This integration was integrated and tested with version of GsuiteAuditor
 
 ## Configure Service Account for G Suite Auditor
 
@@ -187,7 +187,7 @@ Retrieves a list of activities for a specific customer's account and application
                     "time": "2021-07-27T01:47:40.585Z",
                     "uniqueQualifier": "-4797090398870165525"
                 },
-                "ipAddress": "54.212.209.210"
+                "ipAddress": " "
             }
         ],
         "PageToken": {
@@ -206,5 +206,5 @@ Retrieves a list of activities for a specific customer's account and application
 >|time|applicationName|email|profileId|ipAddress|events|
 >|---|---|---|---|---|---|
 >| 2021-07-27T02:47:20.894Z | admin |  |  |  | {'type': 'LICENSES_SETTINGS', 'name': 'USER_LICENSE_REVOKE', 'parameters': [{'name': 'USER_EMAIL', 'value': 'xsoar11@demistodev.com'}, {'name': 'PRODUCT_NAME', 'value': 'Google Workspace'}, {'name': 'OLD_VALUE', 'value': 'G Suite Business'}]} |
->| 2021-07-27T01:47:40.585Z | admin | admin@demistodev.com | 103020731686044834269 | 54.212.209.210 | {'type': 'USER_SETTINGS', 'name': 'DELETE_USER', 'parameters': [{'name': 'USER_EMAIL', 'value': 'xsoar11@demistodev.com'}]} |
+>| 2021-07-27T01:47:40.585Z | admin | admin@demistodev.com | 103020731686044834269 | - | {'type': 'USER_SETTINGS', 'name': 'DELETE_USER', 'parameters': [{'name': 'USER_EMAIL', 'value': 'xsoar11@demistodev.com'}]} |
 

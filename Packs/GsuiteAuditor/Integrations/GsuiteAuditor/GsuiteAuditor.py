@@ -5,11 +5,11 @@ from GSuiteApiModule import *  # noqa: E402
 
 ''' IMPORTS '''
 
-import requests
+import urllib3
 from typing import List, Dict, Any
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 ADMIN_EMAIL = None
 
@@ -140,6 +140,7 @@ def create_end_time(start_time: str, added_time: str) -> str:
     if len(time_list) < 2:
         raise DemistoException("Invalid time parameter")
 
+    timedelta_param = timedelta()
     time_param = int(time_list[0])
     if time_list[1] == 'minutes':
         timedelta_param = timedelta(minutes=time_param)
@@ -219,7 +220,7 @@ def fetch_incidents(client: GSuiteClient, first_fetch_time: str, fetch_limit: in
     if not last_run:  # this is the first run
         last_run = dateparser.parse(first_fetch_time).strftime(DATE_FORMAT)
 
-    end_time = create_end_time(last_run, '2 days')
+    end_time = create_end_time(last_run, '1 hour')
 
     response = client.http_request(
         url_suffix=URL_SUFFIX.format('all', application),
@@ -320,6 +321,7 @@ def main() -> None:
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Error: {str(e)}')
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
