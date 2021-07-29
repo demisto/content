@@ -247,12 +247,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-    - contextPath: WildFire.Report.Status
-      description: The status of the submissiom.
-      type: string
-    - contextPath: WildFire.Report.SHA256
-      description: SHA256 hash of the submission.
-      type: string
     - contextPath: InfoFile.EntryID
       description: The EntryID of the report file.
       type: string
@@ -421,12 +415,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-    - contextPath: WildFire.Report.Status
-      description: The status of the submissiom.
-      type: string
-    - contextPath: WildFire.Report.SHA256
-      description: SHA256 hash of the submission.
-      type: string
     - contextPath: InfoFile.EntryID
       description: The EntryID of the report file.
       type: string
@@ -830,11 +818,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-    - contextPath: WildFire.Report.Status
-      description: The status of the submissiom.
-      type: string
-    - contextPath: WildFire.Report.SHA256
-      description: SHA256 hash of the submission.
       type: string
     - contextPath: InfoFile.EntryID
       description: The EntryID of the report file.

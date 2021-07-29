@@ -479,10 +479,10 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
     ScheduledCommand.raise_error_if_not_supported()
     command_results_list = []
     interval_in_secs = int(args.get('interval_in_seconds', 60))
-    # distinguish between the initial run, which is the upload run, and the results run -
-    # the 'upload' argument will only be present in the upload command args
-    is_new_search = 'upload' in args
+    # distinguish between the initial run, which is the upload run, and the results run
+    is_new_search = 'url' not in args and 'md5' not in args and 'sha256' not in args and 'hash' not in args
     if is_new_search:
+        assert_upload_argument(args)
         for upload in argToList(args['upload']):
             # narrow the args to the current single url or file
             args['upload'] = upload
@@ -1013,7 +1013,7 @@ def assert_upload_argument(args):
     Assert the upload argument is inserted when running the command without the builtin polling flow.
     The upload argument is only required when polling is false.
     """
-    if not argToBoolean(args.get('polling', False)) and not args.get('upload'):
+    if not args.get('upload'):
         raise ValueError('Please specify the item you wish to upload using the \'upload\' argument.')
 
 
