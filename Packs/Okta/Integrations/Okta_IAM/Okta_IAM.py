@@ -156,9 +156,6 @@ class Client(BaseClient):
             resp_type='response',
         )
         paged_results = response.json()
-        demisto.log("##")
-        demisto.log(str(response))
-        demisto.log(str(paged_results))
         if response.status_code != 200:
             raise Exception(
                 f'Error occurred while calling Okta API: {response.request.url}. Response: {response.json()}')
