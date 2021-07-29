@@ -134,13 +134,15 @@ script:
       description: If a limit is set, sets the page to be returned. For example, page 3, limit
         100 will return records 201->300.
       isArray: false
+      defaultValue: '1'
       name: page
       required: false
       secret: false
     - default: false
-      description: Limit the number of events returned. Default is 50 events.
+      description: Limit the number of events returned.
       isArray: false
       name: limit
+      defaultValue: '50'
       required: false
       secret: false
     deprecated: false
@@ -2469,8 +2471,9 @@ script:
       secret: false
     - default: false
       description: If a limit is set, sets the page to be returned. For example, page 3, limit
-        100 will return records 201->300.
+        100 will return records 201->300. Default is 1.
       isArray: false
+      defaultValue: '1'
       name: page
       required: false
       secret: false
@@ -2479,6 +2482,7 @@ script:
       isArray: false
       name: limit
       required: false
+      defaultValue: '50'
       secret: false
     - auto: PREDEFINED
       default: false

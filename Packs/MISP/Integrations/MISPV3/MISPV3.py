@@ -918,10 +918,8 @@ def search_attributes(demisto_args: dict) -> CommandResults:
     args = prepare_args_to_search('attributes')
     outputs_should_include_only_values = argToBoolean(demisto_args.get('compact', False))
     include_correlations = argToBoolean(demisto_args.get('include_correlations', False))
+    page = arg_to_number(demisto_args.get('page', 1), "page", required=True)
     limit = arg_to_number(demisto_args.get('limit', 50), "limit", required=True)
-    page = demisto_args.get('page')
-    if page:
-        page = arg_to_number(page, "page")
     pagination_args_validation(page, limit)
 
     response = PYMISP.search(**args)
@@ -934,10 +932,15 @@ def search_attributes(demisto_args: dict) -> CommandResults:
         else:
             response_for_context = build_attributes_search_response(response, include_correlations)
             attribute_highlights = attribute_response_to_markdown_table(response_for_context)
-            md = tableToMarkdown(f"MISP search-attributes returned {len(response_for_context)} attributes",
-                                 attribute_highlights, removeNull=True)
-        if page:
-            md += f"Current page number: {page}\n Page size: {limit}"
+
+            pagination_message = f"Current page size: {limit}\n"
+            if len(response_for_context) == limit:
+                pagination_message += f"Showing page {page} out others that may exist"
+            else:
+                pagination_message += f"Showing page {page}"
+            md = tableToMarkdown(
+                f"MISP search-attributes returned {len(response_for_context)} attributes\n {pagination_message}",
+                attribute_highlights, removeNull=True)
 
         return CommandResults(
             raw_response=response,
@@ -1018,9 +1021,7 @@ def search_events(demisto_args) -> CommandResults:
     Execute a MISP search using the 'event' controller.
     """
     args = prepare_args_to_search('events')
-    page = demisto_args.get('page')
-    if page:
-        page = arg_to_number(page, "page")
+    page = arg_to_number(demisto_args.get('page', 1), "page", required=True)
     limit = arg_to_number(demisto_args.get('limit', 50), "limit", required=True)
     pagination_args_validation(page, limit)
 
@@ -1028,10 +1029,15 @@ def search_events(demisto_args) -> CommandResults:
     if response:
         response_for_context = build_events_search_response(response)
         event_outputs_to_human_readable = event_to_human_readable(response_for_context)
-        md = tableToMarkdown(f"MISP search-events returned {len(response_for_context)} events",
-                             event_outputs_to_human_readable, removeNull=True)
-        if page:
-            md += f"Current page number: {page}\n Page size: {limit} "
+
+        pagination_message = f"Current page size: {limit}\n"
+        if len(response_for_context) == limit:
+            pagination_message += f"Showing page {page} out others that may exist"
+        else:
+            pagination_message += f"Showing page {page}"
+        md = tableToMarkdown(
+            f"MISP search-events returned {len(response_for_context)} events.\n {pagination_message}",
+            event_outputs_to_human_readable, removeNull=True)
 
         return CommandResults(
             raw_response=response,
