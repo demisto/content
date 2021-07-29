@@ -1,8 +1,8 @@
 [
   {
     "ID": "143",
-    "OwnerOrganisation.ID": "7",
-    "OrganisationID": "1",
+    "OwnerOrganization.ID": "7",
+    "OrganizationID": "1",
     "Date": "2020-12-09",
     "ThreatLevelID": "3",
     "Info": "Recent Qakbot",
@@ -17,13 +17,13 @@
     "PublishTimestamp": "1623745862",
     "SharingGroupID": "0",
     "DisableCorrelation": false,
-    "Organisation": {
+    "Organization": {
       "ID": "1",
       "Name": "ORGNAME",
       "UUID": "5ce29ac4-3b54-459e-a6ee-00acac110002",
       "local": true
     },
-    "OwnerOrganisation": {
+    "OwnerOrganization": {
       "ID": "7",
       "Name": "CUDESO",
       "UUID": "56c42374-fdb8-4544-a218-41ffc0a8ab16",
@@ -51,8 +51,8 @@
   },
   {
     "ID": "149",
-    "OwnerOrganisation.ID": "8",
-    "OrganisationID": "1",
+    "OwnerOrganization.ID": "8",
+    "OrganizationID": "1",
     "Date": "2020-03-13",
     "ThreatLevelID": "1",
     "Info": "Capitalizing on Coronavirus Panic, Threat Actors Target Victims Worldwide",
@@ -67,13 +67,13 @@
     "PublishTimestamp": "1623832501",
     "SharingGroupID": "0",
     "DisableCorrelation": false,
-    "Organisation": {
+    "Organization": {
       "ID": "1",
       "Name": "ORGNAME",
       "UUID": "5ce29ac4-3b54-459e-a6ee-00acac110002",
       "local": true
     },
-    "OwnerOrganisation": {
+    "OwnerOrganization": {
       "ID": "8",
       "Name": "CERT.be",
       "UUID": "5cf66e53-b5f8-43e7-be9a-49880a3b4631",

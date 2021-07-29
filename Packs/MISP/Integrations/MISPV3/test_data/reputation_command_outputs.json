@@ -13,14 +13,14 @@
         "ID": "149",
         "Info": "Capitalizing on Coronavirus Panic, Threat Actors Target Victims Worldwide",
         "LastChanged": "2021-06-28T15:24:09Z",
-        "OrganisationID": "1",
-        "OwnerOrganisation": {
+        "OrganizationID": "1",
+        "OwnerOrganization": {
           "ID": "8",
           "Name": "CERT.be",
           "UUID": "5cf66e53-b5f8-43e7-be9a-49880a3b4631",
           "local": false
         },
-        "OwnerOrganisation.ID": "8",
+        "OwnerOrganization.ID": "8",
         "PublishTimestamp": "2021-06-16T08:35:01Z",
         "Published": false,
         "SharingGroupID": "0",
@@ -92,12 +92,12 @@
         {
           "EventID": "149",
           "ID": "406",
-          "Organisation": {
+          "Organization": {
             "ID": "1",
             "Name": "ORGNAME",
             "UUID": "5ce29ac4-3b54-459e-a6ee-00acac110002"
           },
-          "OrganisationID": "1",
+          "OrganizationID": "1",
           "Type": "0",
           "UUID": "5efbf8b2-88de-40a5-8b47-bdd6ffd4cb43",
           "attribute_id": "70942",
@@ -188,14 +188,14 @@
         "ID": "145",
         "Info": "DDOS.TF = (new) ELF & Win32 DDoS service ",
         "LastChanged": "2021-06-28T07:33:03Z",
-        "OrganisationID": "1",
-        "OwnerOrganisation": {
+        "OrganizationID": "1",
+        "OwnerOrganization": {
           "ID": "7",
           "Name": "CUDESO",
           "UUID": "56c42374-fdb8-4544-a218-41ffc0a8ab16",
           "local": false
         },
-        "OwnerOrganisation.ID": "7",
+        "OwnerOrganization.ID": "7",
         "PublishTimestamp": "2021-06-24T12:31:10Z",
         "Published": false,
         "SharingGroupID": "0",
@@ -250,14 +250,14 @@
         "ID": "144",
         "Info": "Snake: Coming soon in Mac OS X flavour",
         "LastChanged": "2021-06-28T07:33:39Z",
-        "OrganisationID": "1",
-        "OwnerOrganisation": {
+        "OrganizationID": "1",
+        "OwnerOrganization": {
           "ID": "7",
           "Name": "CUDESO",
           "UUID": "56c42374-fdb8-4544-a218-41ffc0a8ab16",
           "local": false
         },
-        "OwnerOrganisation.ID": "7",
+        "OwnerOrganization.ID": "7",
         "PublishTimestamp": "2021-06-15T08:31:04Z",
         "Published": false,
         "SharingGroupID": "0",

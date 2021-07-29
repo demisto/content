@@ -819,7 +819,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: MISP.Event.OrganisationID
+              simple: MISP.Event.OrganizationID
             iscontext: true
           right:
             value:
@@ -827,7 +827,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: MISP.Event.Organisation.ID
+              simple: MISP.Event.Organization.ID
             iscontext: true
           right:
             value:
@@ -835,7 +835,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: MISP.Event.Organisation.Name
+              simple: MISP.Event.Organization.Name
             iscontext: true
           right:
             value:
@@ -843,12 +843,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: MISP.Event.Organisation.UUID
+              simple: MISP.Event.Organization.UUID
             iscontext: true
       - - operator: isEqualString
           left:
             value:
-              simple: MISP.Event.OwnerOrganisation.ID
+              simple: MISP.Event.OwnerOrganization.ID
             iscontext: true
           right:
             value:
@@ -856,7 +856,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: MISP.Event.OwnerOrganisation.Name
+              simple: MISP.Event.OwnerOrganization.Name
             iscontext: true
           right:
             value:
@@ -864,7 +864,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: MISP.Event.OwnerOrganisation.UUID
+              simple: MISP.Event.OwnerOrganization.UUID
             iscontext: true
       - - operator: isNotEmpty
           left:

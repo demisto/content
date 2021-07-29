@@ -26,7 +26,7 @@ CASE_OF_BAD_THREAT_LEVEL_ID = (['1'], ['2'], ['3'], ['4'], Common.DBotScore.BAD,
 TEST_TAG_SCORES = [CASE_OF_MALICIOUS_ATTRIBUTE, CASE_OF_SUSPICIOUS_ATTRIBUTE, CASE_OF_MALICIOUS_EVENT,
                    CASE_OF_SUSPICIOUS_EVENT, CASE_OF_UNKNOWN, CASE_OF_BAD_THREAT_LEVEL_ID]
 
-VALID_DISTRIBUTION_LIST = [(0, 0), ("1", 1), ("Your_organisation_only", 0)]
+VALID_DISTRIBUTION_LIST = [(0, 0), ("1", 1), ("Your_organization_only", 0)]
 INVALID_DISTRIBUTION_LIST = ["invalid_distribution", 1.5, "53.5"]
 
 TEST_PREPARE_ARGS = [({'type': '1', 'to_ids': 0, 'from': '2', 'to': '3', 'event_id': '4', 'last': '5',
@@ -460,7 +460,7 @@ def test_attribute_response_to_markdown_table(mocker):
     assert md['Attribute Tags'] == ["Tag1", "misp-galaxy:tag2", "misp-galaxy:tag3"]
     assert md['To IDs'] is True
     assert md['Event Info'] == 'Test'
-    assert md['Event Organisation ID'] == '1'
+    assert md['Event Organization ID'] == '1'
     assert md['Event Distribution'] == '0'
     assert md['Event UUID'] == '5e6b322a-9f80-4e2f-9f2a-3cab0a123456'
 

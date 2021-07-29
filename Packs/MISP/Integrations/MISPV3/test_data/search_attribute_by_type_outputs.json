@@ -18,11 +18,11 @@
     "last_seen": null,
     "Value": "71a868cdcc6b79b7d274e3b558cd4596",
     "Event": {
-      "OrganisationID": "1",
+      "OrganizationID": "1",
       "Distribution": "1",
       "ID": "145",
       "Info": "DDOS.TF = (new) ELF & Win32 DDoS service with ASP + PHP/MySQL MOF webshells - MMD-0048-2016",
-      "OwnerOrganisation.ID": "7",
+      "OwnerOrganization.ID": "7",
       "UUID": "56d76936-0d34-44ff-a8c5-5280c0a8ab16"
     }
   },
@@ -45,11 +45,11 @@
     "last_seen": null,
     "Value": "3e0d96cd1e0a97e61d96b7863f39a1d4",
     "Event": {
-      "OrganisationID": "1",
+      "OrganizationID": "1",
       "Distribution": "1",
       "ID": "145",
       "Info": "DDOS.TF = (new) ELF & Win32 DDoS service with ASP + PHP/MySQL MOF webshells - MMD-0048-2016",
-      "OwnerOrganisation.ID": "7",
+      "OwnerOrganization.ID": "7",
       "UUID": "56d76936-0d34-44ff-a8c5-5280c0a8ab16"
     }
   }

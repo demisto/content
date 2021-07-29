@@ -3,8 +3,8 @@
     "ID": "1",
     "PublishTimestamp": "2021-06-16 08:35:01",
     "Info": "Test",
-    "OrganisationID": "1",
-    "OwnerOrganisation.ID": "8",
+    "OrganizationID": "1",
+    "OwnerOrganization.ID": "8",
     "Distribution": "0",
     "UUID": "5e6b322a-9f80-4e2f-9f2a-3cab0a123456",
     "Tag": [

@@ -29,7 +29,7 @@
           "source": "",
           "type": "0",
           "attribute_uuid": "5e6b336e-5224-445f-b1b3-457dd7dd9f6d",
-          "Organisation": {
+          "Organization": {
             "id": "1",
             "uuid": "5ce29ac4-3b54-459e-a6ee-00acac110002",
             "name": "ORGNAME"

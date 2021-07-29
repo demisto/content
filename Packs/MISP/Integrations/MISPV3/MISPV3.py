@@ -96,12 +96,12 @@ MISP_ENTITIES_TO_CONTEXT_DATA = {
     'analysis': 'Analysis',
     'threat_level_id': 'ThreatLevelID',
     'old_id': 'OldID',
-    'org_id': 'OrganisationID',
-    'Org': 'Organisation',
-    'Orgc': 'OwnerOrganisation',
-    'orgc_uuid': 'OwnerOrganisation.UUID',
-    'orgc_id': 'OwnerOrganisation.ID',
-    'orgc_name': 'OwnerOrganisation.Name',
+    'org_id': 'OrganizationID',
+    'Org': 'Organization',
+    'Orgc': 'OwnerOrganization',
+    'orgc_uuid': 'OwnerOrganization.UUID',
+    'orgc_id': 'OwnerOrganization.ID',
+    'orgc_name': 'OwnerOrganization.Name',
     'event_uuid': 'EventUUID',
     'proposal_to_delete': 'ProposalToDelete',
     'description': 'Description',
@@ -124,7 +124,7 @@ MISP_ANALYSIS_TO_IDS = {
 }
 
 MISP_DISTRIBUTION_TO_IDS = {
-    'Your_organisation_only': 0,
+    'Your_Organization_only': 0,
     'This_community_only': 1,
     'Connected_communities': 2,
     'All_communities': 3,
@@ -906,7 +906,7 @@ def attribute_response_to_markdown_table(response: dict):
             'To IDs': attribute.get('ToIDs'),
             'Timestamp': attribute.get('Timestamp'),
             'Event Info': event.get('Info'),
-            'Event Organisation ID': event.get('OrganisationID'),
+            'Event Organization ID': event.get('OrganizationID'),
             'Event Distribution': event.get('Distribution'),
             'Event UUID': event.get('UUID')
         })
@@ -1005,8 +1005,8 @@ def event_to_human_readable(response: dict):
             'Event Objects': event_objects,
             'Publish Timestamp': event.get('PublishTimestamp'),
             'Event Info': event.get('Info'),
-            'Event Org ID': event.get('OrganisationID'),
-            'Event Orgc ID': event.get('OwnerOrganisation.ID'),
+            'Event Org ID': event.get('OrganizationID'),
+            'Event Orgc ID': event.get('OwnerOrganization.ID'),
             'Event Distribution': event.get('Distribution'),
             'Event UUID': event.get('UUID'),
         })
