@@ -24,3 +24,7 @@ For more details on permissions specific to commands visit the TOPdesk integrati
 
 ### Troubleshooting
 Make sure the application password is not expired by logging in TOPdesk and viewing it as described in step 3 of the **Setup TOPdesk's application password** procedure. 
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/to-pdesk)
