@@ -6,7 +6,9 @@ from SecurityScorecard import \
     get_last_run, \
     portfolios_list_command, \
     portfolio_list_companies_command, \
-    company_score_get_command
+    company_score_get_command, \
+    company_factor_score_get_command, \
+    company_history_score_get_command
 
 import json
 import io
@@ -105,7 +107,9 @@ companies_list_not_exist_test_inputs = [
 # test_get_company_score
 score_mock = test_data.get("score")
 
-factor_score_mock = load_json("./test_data/companies/factor_score.json")
+# test_get_company_factor_score
+factor_score_mock = test_data.get("factor_score")
+
 historical_score_mock = load_json("./test_data/companies/historical_score.json")
 historical_factor_score_mock = load_json("./test_data/companies/historical_factor_score.json")
 create_grade_alert_mock = load_json("./test_data/alerts/create_grade_alert.json")
@@ -253,6 +257,33 @@ def test_portfolio_list_companies(mocker, portfolio_id):
     assert len(companies) == companies_mock.get("total")
 
 
+def test_portfolio_list_companies_portfolio_not_found(mocker):
+
+    """
+    Given:
+        - A portfolio ID
+
+    When:
+        - Portfolio ID doesn't exist
+
+    Then:
+        - Throw 404, 'portfolio not found'
+    """
+
+    mocker.patch.object(client, "get_companies_in_portfolio", return_value=portfolio_not_found)
+
+    with pytest.raises(Exception):
+        portfolio_list_companies_command(
+            client=client,
+            portfolio_id=PORTFOLIO_ID_NE,
+            grade=None,
+            industry_arg=None,
+            vulnerability=None,
+            issue_type=None,
+            had_breach_within_last_days=None
+        )
+
+
 def test_get_company_score(mocker):
 
     """
@@ -275,20 +306,28 @@ def test_get_company_score(mocker):
     assert score == score_mock
 
 
-
 def test_get_company_factor_score(mocker):
+
+    """
+    Given:
+        - A domain
+
+    When:
+        - Domain is valid
+
+    Then:
+        - Results in domain 10 factor scores
+    """
 
     mocker.patch.object(client, "get_company_factor_score", return_value=factor_score_mock)
 
-    response_factor_score = client.get_company_factor_score(domain=DOMAIN)
+    response: CommandResults = company_factor_score_get_command(
+        client=client,
+        domain=DOMAIN,
+        severity=None
+    )
 
-    assert response_factor_score == factor_score_mock
-
-    assert response_factor_score["total"] == len(response_factor_score["entries"])
-
-    sample_factor = response_factor_score["entries"][0]
-
-    assert isinstance(sample_factor["score"], int)
+    assert len(response.outputs) == factor_score_mock.get("total")
 
 
 def test_get_company_historical_scores(mocker):

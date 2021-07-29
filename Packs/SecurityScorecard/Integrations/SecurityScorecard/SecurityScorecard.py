@@ -564,31 +564,32 @@ def company_score_get_command(client: SecurityScorecardClient, domain: str) -> C
     return results
 
 
-def company_factor_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def company_factor_score_get_command(
+    client: SecurityScorecardClient,
+    domain: str,
+    severity: Optional[List[str]]
+) -> CommandResults:
     """Retrieve company factor score and scores
 
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-factors
 
     Args:
-        client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): Dictionary of arguments specified in the command
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+        ``domain`` (``str``): The domain to retrieve the factor score for
+        ``severity`` (``Optional[List[str]])``): A severity filter
 
     Returns:
         CommandResults: The results of the command.
     """
 
-    domain = args.get('domain')
-
-    severity_in = args.get('severity')
-
-    response = client.get_company_factor_score(domain, severity_in)  # type: ignore
+    response = client.get_company_factor_score(domain=domain, severity_in=severity)  # type: ignore
 
     entries = response['entries']
 
     factor_scores = []
     for entry in entries:
         score = {
-            "name": entry.get("name").title().replace("_", " "),
+            "name": entry.get("name"),
             "grade": entry.get("grade"),
             "score": entry.get("score"),
             "issues": len(entry.get("issue_summary")),
@@ -600,7 +601,7 @@ def company_factor_score_get_command(client: SecurityScorecardClient, args: Dict
     markdown = tableToMarkdown(
         f"Domain {domain} Scorecard",
         factor_scores,
-        headers=['Name', 'Grade', 'Score', 'Issues']
+        headers=['name', 'grade', 'score', 'issues']
     )
 
     results = CommandResults(
@@ -614,7 +615,13 @@ def company_factor_score_get_command(client: SecurityScorecardClient, args: Dict
     return results
 
 
-def company_history_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def company_history_score_get_command(
+    client: SecurityScorecardClient,
+    domain: str,
+    _from: Optional[str],
+    to: Optional[str],
+    timing: Optional[str]
+) -> CommandResults:
 
     """Retrieve company historical scores
 
@@ -627,12 +634,6 @@ def company_history_score_get_command(client: SecurityScorecardClient, args: Dic
     Returns:
         CommandResults: The results of the command.
     """
-
-    domain = args.get('domain')
-
-    _from = args.get('from')
-    to = args.get('to')
-    timing = args.get('timing')
 
     response = client.get_company_historical_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
 
@@ -1041,7 +1042,7 @@ def main() -> None:
         elif demisto.command() == "fetch-incidents":
             fetch_alerts(client)
         elif demisto.command() == 'securityscorecard-portfolios-list':
-            return_results(portfolios_list_command(client, args.get("limit")))
+            return_results(portfolios_list_command(client=client, limit=args.get("limit")))
         elif demisto.command() == 'securityscorecard-portfolio-list-companies':
             return_results(portfolio_list_companies_command(
                 client=client,
@@ -1053,11 +1054,15 @@ def main() -> None:
                 had_breach_within_last_days=args.get("had_breach_within_last_days")
             ))
         elif demisto.command() == 'securityscorecard-company-score-get':
-            return_results(company_score_get_command(client, args.get("domain")))
+            return_results(company_score_get_command(client=client, domain=args.get("domain")))  # type: ignore
         elif demisto.command() == 'securityscorecard-company-factor-score-get':
-            return_results(company_factor_score_get_command(client, demisto.args()))
+            return_results(company_factor_score_get_command(
+                client=client,
+                domain=args.get("domain"),
+                severity=args.get("severity")
+            ))
         elif demisto.command() == 'securityscorecard-company-history-score-get':
-            return_results(company_history_score_get_command(client, demisto.args()))
+            return_results(company_history_score_get_command(client, args.get()))
         elif demisto.command() == 'securityscorecard-company-history-factor-score-get':
             return_results(company_history_factor_score_get_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-alert-grade-change-create':
