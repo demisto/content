@@ -2053,12 +2053,15 @@ def parse_incident_from_item(item):
                     if attachment.item.headers:
                         attached_email_headers = []
                         for h, v in attached_email.items():
-                            if isinstance(v, str):
-                                v = ' '.join(map(str.strip, v.split('\r\n')))
-                            else:
-                                v = str(v)
-                            attached_email_headers.append((h, v))
+                            if not isinstance(v, str):
+                                try:
+                                    v = str(v)
+                                except:  # noqa: E722
+                                    demisto.debug('cannot parse the header "{}"'.format(h))
+                                    continue
 
+                            v = ' '.join(map(str.strip, v.split('\r\n')))
+                            attached_email_headers.append((h, v))
                         for header in attachment.item.headers:
                             if (
                                     (header.name, header.value)
