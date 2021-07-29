@@ -124,7 +124,7 @@ MISP_ANALYSIS_TO_IDS = {
 }
 
 MISP_DISTRIBUTION_TO_IDS = {
-    'Your_Organization_only': 0,
+    'Your_organization_only': 0,
     'This_community_only': 1,
     'Connected_communities': 2,
     'All_communities': 3,
