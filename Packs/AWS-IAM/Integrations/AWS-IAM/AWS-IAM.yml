@@ -2240,7 +2240,7 @@ script:
     - contextPath: AWS.IAM.Roles.RoleName.Policies
       description: A list of policy names.
       type: Unknown
-  dockerimage: demisto/boto3:2.0.0.20513
+  dockerimage: demisto/boto3:2.0.0.23135
   feed: false
   isfetch: false
   longRunning: false

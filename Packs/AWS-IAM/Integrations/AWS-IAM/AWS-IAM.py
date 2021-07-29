@@ -951,8 +951,7 @@ def list_role_policies(args, aws_client):
     response = json.loads(response)
     outputs = {
         'AWS.IAM.Roles(val.RoleName && val.RoleName === obj.RoleName).Policies':
-            response.get(
-            'PolicyNames')}
+            response.get('PolicyNames')}
     del response['ResponseMetadata']
     table_header = 'AWS IAM Role Policies for {}'.format(args.get('roleName'))
     human_readable = aws_table_to_markdown(response, table_header)

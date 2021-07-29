@@ -1497,3 +1497,25 @@ Create/update password policy
 There is no context output for this command.
 
 
+### aws-iam-list-role-policies
+***
+Lists the names of the inline policies that are embedded in the specified IAM role.
+
+
+#### Base Command
+
+`aws-iam-list-role-policies`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| roleName | The name of the role to list policies for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Roles.RoleName.Policies | Unknown | A list of policy names. | 
+
+#### Command Example
+``` !aws-iam-list-role-policies roleName=test-RoleARN```
