@@ -25,8 +25,7 @@ display: VMRay
 name: vmray
 script:
   commands:
-  - name: vmray-upload-sample
-    arguments:
+  - arguments:
     - default: false
       description: Entry ID of the file to submit.
       isArray: false
@@ -74,9 +73,22 @@ script:
       name: tags
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Deprecated. Analyze even if analyses already exist. To control
+        analysis caching, use the API Key settings instead, which are available via
+        the Analysis Settings page, in the VMRay Web Interface.
+      isArray: false
+      name: reanalyze
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Submits a sample to VMRay for analysis.
     execution: false
+    name: vmray-upload-sample
     outputs:
     - contextPath: VMRay.Job.JobID
       description: ID of a new job
@@ -108,8 +120,7 @@ script:
     - contextPath: VMRay.Submission.SubmissionURL
       description: URL to submission page.
       type: String
-  - name: vmray-upload-url
-    arguments:
+  - arguments:
     - default: false
       description: ' The URL to analyze. For example: https://demisto.com. '
       isArray: false
@@ -142,6 +153,7 @@ script:
     deprecated: false
     description: Submits a URL for analysis.
     execution: false
+    name: vmray-upload-url
     outputs:
     - contextPath: VMRay.Job.JobID
       description: ID of a new job
@@ -173,8 +185,7 @@ script:
     - contextPath: VMRay.Submission.SubmissionURL
       description: URL to submission page.
       type: String
-  - name: vmray-get-analysis-by-sample
-    arguments:
+  - arguments:
     - default: false
       description: Sample ID.
       isArray: false
@@ -190,6 +201,7 @@ script:
     deprecated: false
     description: Retrieves all analysis details for a specified sample.
     execution: false
+    name: vmray-get-analysis-by-sample
     outputs:
     - contextPath: VMRay.Analysis.AnalysisID
       description: Analysis ID.
@@ -225,8 +237,7 @@ script:
     - contextPath: VMRay.Analysis.SSDeep
       description: ssdeep hash of the sample.
       type: String
-  - name: vmray-get-job-by-sample
-    arguments:
+  - arguments:
     - default: false
       description: Sample ID.
       isArray: false
@@ -236,6 +247,7 @@ script:
     deprecated: false
     description: Retrieves details for all jobs  for a specified sample.
     execution: false
+    name: vmray-get-job-by-sample
     outputs:
     - contextPath: VMRay.Job.JobID
       description: ID of the job.
@@ -267,8 +279,7 @@ script:
     - contextPath: VMRay.Job.Status
       description: 'Status of the job. '
       type: String
-  - name: vmray-get-submission
-    arguments:
+  - arguments:
     - default: false
       description: ID of the submission. Can be obtained by running the 'vmray-upload-sample'
         or 'vmray-upload-url' command.
@@ -279,6 +290,7 @@ script:
     deprecated: false
     description: Retrieves the results of a submission.
     execution: false
+    name: vmray-get-submission
     outputs:
     - contextPath: VMRay.Submission.IsFinished
       description: Whether the submission is finished (true or false).
@@ -317,8 +329,7 @@ script:
     - contextPath: VMRay.Submission.SampleID
       description: ID of the sample in the submission.
       type: Number
-  - name: vmray-get-sample
-    arguments:
+  - arguments:
     - default: false
       description: ID of the sample.
       isArray: false
@@ -328,6 +339,7 @@ script:
     deprecated: false
     description: Retrieves a sample using the sample ID.
     execution: false
+    name: vmray-get-sample
     outputs:
     - contextPath: VMRay.Sample.SampleID
       description: ID of the sample.
@@ -375,17 +387,17 @@ script:
     - contextPath: VMRay.Sample.ParentSampleIDs
       description: List of parent sample IDs.
       type: Number
-  - name: vmray-get-sample-by-hash
-    description: Retrieves sample information by hash.
-    deprecated: false
-    execution: false
-    arguments:
+  - arguments:
     - default: false
       description: MD5, SHA1 or SHA256 hash of the sample.
       isArray: false
       name: hash
       required: true
       secret: false
+    deprecated: false
+    description: Retrieves sample information by hash.
+    execution: false
+    name: vmray-get-sample-by-hash
     outputs:
     - contextPath: VMRay.Sample.SampleID
       description: ID of the sample.
@@ -433,8 +445,7 @@ script:
     - contextPath: VMRay.Sample.ParentSampleIDs
       description: List of parent sample IDs.
       type: Number
-  - name: vmray-get-threat-indicators
-    arguments:
+  - arguments:
     - default: false
       description: ID of the sample. Can be obtained from the 'VMRay.Sample.ID' output.
       isArray: false
@@ -444,6 +455,7 @@ script:
     deprecated: false
     description: Retrieves threat indicators (VTI).
     execution: false
+    name: vmray-get-threat-indicators
     outputs:
     - contextPath: VMRay.ThreatIndicator.AnalysisID
       description: List of connected analysis IDs.
@@ -460,8 +472,7 @@ script:
     - contextPath: VMRay.ThreatIndicator.Operation
       description: Operation the indicators caused.
       type: String
-  - name: vmray-add-tag
-    arguments:
+  - arguments:
     - default: false
       description: ID of the submission to which to add tags.
       isArray: false
@@ -483,8 +494,8 @@ script:
     deprecated: false
     description: Adds a tag to an analysis and/or a submission.
     execution: false
-  - name: vmray-delete-tag
-    arguments:
+    name: vmray-add-tag
+  - arguments:
     - default: false
       description: ID of the analysis from which to delete a tag.
       isArray: false
@@ -506,21 +517,21 @@ script:
     deprecated: false
     description: Deletes tags from an analysis and/or a submission.
     execution: false
-  - name: vmray-get-iocs
-    arguments:
+    name: vmray-delete-tag
+  - arguments:
     - default: false
       description: ID of the sample.
       isArray: false
       name: sample_id
       required: true
       secret: false
-    - name: all_artifacts
-      auto: PREDEFINED
+    - auto: PREDEFINED
       default: false
       defaultValue: 'false'
       description: Whether all artifacts should be returned or only Indicators of
         Compromise.
       isArray: false
+      name: all_artifacts
       predefined:
       - 'true'
       - 'false'
@@ -529,8 +540,8 @@ script:
     deprecated: false
     description: Retrieves Indicators of Compromise for a specified sample.
     execution: false
+    name: vmray-get-iocs
     outputs:
-    # DBotScore outputs
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -543,8 +554,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-
-    # Standard context outputs
     - contextPath: Domain.Name
       description: The domain name
       type: String
@@ -572,8 +581,6 @@ script:
     - contextPath: File.SSDeep
       description: The SSDeep hash of the file.
       type: String
-
-    # VMRay context outputs
     - contextPath: VMRay.Sample.IOC.Domain.AnalysisID
       description: IDs of other analyses that contain the domain.
       type: Number
@@ -622,7 +629,6 @@ script:
     - contextPath: VMRay.Sample.IOC.Domain.VerdictReason
       description: Description of the Verdict Reason.
       type: String
-
     - contextPath: VMRay.Sample.IOC.EmailAddress.AnalysisID
       description: IDs of other analyses that contain the email address.
       type: Number
@@ -659,7 +665,6 @@ script:
     - contextPath: VMRay.Sample.IOC.EmailAddress.VerdictReason
       description: Description of the Verdict Reason.
       type: String
-
     - contextPath: VMRay.Sample.IOC.Email.AnalysisID
       description: IDs of other analyses that contain the email.
       type: Number
@@ -714,7 +719,6 @@ script:
     - contextPath: VMRay.Sample.IOC.Email.VerdictReason
       description: Description of the Verdict Reason.
       type: String
-
     - contextPath: VMRay.Sample.IOC.Filename.AnalysisID
       description: IDs of other analyses that contain the filename.
       type: Number
@@ -749,7 +753,6 @@ script:
     - contextPath: VMRay.Sample.IOC.Filename.VerdictReason
       description: Description of the Verdict Reason.
       type: String
-
     - contextPath: VMRay.Sample.IOC.File.AnalysisID
       description: IDs of other analyses that contain the file.
       type: Number
@@ -829,7 +832,6 @@ script:
     - contextPath: VMRay.Sample.IOC.File.VerdictReason
       description: Description of the Verdict Reason.
       type: String
-
     - contextPath: VMRay.Sample.IOC.IP.AnalysisID
       description: IDs of other analyses that contain the IP address.
       type: Number
@@ -878,7 +880,6 @@ script:
     - contextPath: VMRay.Sample.IOC.IP.VerdictReason
       description: Description of the Verdict Reason.
       type: String
-
     - contextPath: VMRay.Sample.IOC.Mutex.AnalysisID
       description: IDs of other analyses that contain the mutex.
       type: Number
@@ -909,6 +910,7 @@ script:
       type: String
     - contextPath: VMRay.Sample.IOC.Mutex.ParentProcessesNames
       description: Names of processes where the mutex was used.
+      type: Unknown
     - contextPath: VMRay.Sample.IOC.Mutex.ThreatNames
       description: The threat names of the mutex.
       type: String
@@ -921,7 +923,6 @@ script:
     - contextPath: VMRay.Sample.IOC.Mutex.VerdictReason
       description: Description of the Verdict Reason.
       type: String
-
     - contextPath: VMRay.Sample.IOC.Process.AnalysisID
       description: IDs of other analyses that contain the process.
       type: Number
@@ -961,7 +962,6 @@ script:
     - contextPath: VMRay.Sample.IOC.Process.VerdictReason
       description: Description of the Verdict Reason.
       type: String
-
     - contextPath: VMRay.Sample.IOC.Registry.AnalysisID
       description: IDs of other analyses that contain the registry key.
       type: Number
@@ -1008,7 +1008,6 @@ script:
     - contextPath: VMRay.Sample.IOC.Registry.VerdictReason
       description: Description of the Verdict Reason.
       type: String
-
     - contextPath: VMRay.Sample.IOC.URL.AnalysisID
       description: IDs of other analyses that contain the given URL.
       type: Number
@@ -1069,8 +1068,7 @@ script:
     - contextPath: VMRay.Sample.IOC.URL.VerdictReason
       description: Description of the Verdict Reason.
       type: String
-  - name: vmray-get-job-by-id
-    arguments:
+  - arguments:
     - default: false
       description: ID of a job.
       isArray: false
@@ -1080,6 +1078,7 @@ script:
     deprecated: false
     description: Retrieves a job by job ID.
     execution: false
+    name: vmray-get-job-by-id
     outputs:
     - contextPath: VMRay.Job.JobID
       description: ID of the job.
@@ -1111,9 +1110,7 @@ script:
     - contextPath: VMRay.Job.Status
       description: Status of the job.
       type: String
-  - name: vmray-get-summary
-    description: Retrieves the Summary JSON v2 for a specific analysis.
-    arguments:
+  - arguments:
     - default: false
       description: ID of the analysis from which to retrieve the Summary JSON v2 from
         (analysis ID is returned e.g. from vmray-get-analysis-by-sample).
@@ -1121,6 +1118,10 @@ script:
       name: analysis_id
       required: true
       secret: false
+    deprecated: false
+    description: Retrieves the Summary JSON v2 for a specific analysis.
+    execution: false
+    name: vmray-get-summary
     outputs:
     - contextPath: InfoFile.Name
       description: Filename
@@ -1134,11 +1135,7 @@ script:
     - contextPath: InfoFile.Info
       description: MIME type of the Summary JSON v2
       type: string
-    deprecated: false
-    execution: false
-  # deprecated commands
-  - name: get_job_sample
-    arguments:
+  - arguments:
     - default: false
       description: Sample ID.
       isArray: false
@@ -1149,6 +1146,7 @@ script:
     description: This command performs a function similiar to the 'vmray-get-job-by-sample'
       command.
     execution: false
+    name: get_job_sample
   - arguments:
     - default: false
       description: ID of the sample.
@@ -1165,11 +1163,14 @@ script:
     execution: false
     name: upload_sample
   dockerimage: demisto/python:2.7.18.22912
+  feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
-  type: python
+  script: '-'
   subtype: python2
-fromversion: 5.0.0
+  type: python
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0

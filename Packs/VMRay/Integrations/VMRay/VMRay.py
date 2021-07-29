@@ -941,24 +941,26 @@ def get_iocs_command():
         # mapping of
         # VMRay artifact type -> XSOAR score type,      Indicator class, Main value key, Headers
         'Domain': (DBotScoreType.DOMAIN, Common.Domain, 'Domain', ['OriginalDomains', 'Countries']),  # noqa: E241, E501
-        'EmailAddress': (DBotScoreType.EMAIL, Common.EMAIL, 'EmailAddress', ['IsRecipient', 'IsSender', 'Subjects']),  # noqa: E241, E501
+        'EmailAddress': (DBotScoreType.EMAIL, Common.EMAIL, 'EmailAddress', ['IsRecipient', 'IsSender', 'Subjects']),
+        # noqa: E241, E501
         'Email': (None, None, 'Subject', ['Subject', 'Sender', 'Recipients',  # noqa: E241, E501
-                                                                                         'NrAttachments', 'NrLinks']),
+                                          'NrAttachments', 'NrLinks']),
         'Filename': (None, None, 'Filename', ['Operations']),  # noqa: E241
         'File': (DBotScoreType.FILE, None, 'Filename', ['Filenames', 'MD5', 'SHA1', 'SHA256',  # noqa: E241, E501
-                                                                                         'Operations']),
+                                                        'Operations']),
         'IP': (DBotScoreType.IP, Common.IP, 'IP', ['Domains', 'Countries', 'Protocols']),  # noqa: E241, E501
         'Mutex': (None, None, 'Name', ['Operations', 'ParentProcessesNames']),  # noqa: E241, E501
         'Process': (None, None, 'ProcessNames', ['CmdLine']),  # noqa: E241
         'Registry': (None, None, 'Name', ['ValueTypes', 'Operations',  # noqa: E241, E501
-                                                                                         'ParentProcessesNames']),
+                                          'ParentProcessesNames']),
         'URL': (DBotScoreType.URL, Common.URL, 'URL', ['OriginalURLs', 'Categories',  # noqa: E241, E501
-                                                                                         'Countries', 'Methods', 'IPAddresses',
-                                                                                         'ParentProcessesNames']),
+                                                       'Countries', 'Methods', 'IPAddresses',
+                                                       'ParentProcessesNames']),
     }
 
     # this will be extended with every call to generate_results
-    # we need to keep the state and always add new items to it, so that new results don't replace information from older ones
+    # we need to keep the state and always add new items to it, so that new results don't replace information from
+    # older ones
     context_output = {
         'SampleID': sample_id,
         'IOC': {}
