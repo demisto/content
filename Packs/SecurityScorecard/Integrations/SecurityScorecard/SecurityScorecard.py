@@ -1058,11 +1058,17 @@ def main() -> None:
         elif demisto.command() == 'securityscorecard-company-factor-score-get':
             return_results(company_factor_score_get_command(
                 client=client,
-                domain=args.get("domain"),
-                severity=args.get("severity")
+                domain=args.get("domain"),  # type: ignore
+                severity=args.get("severity")  # type: ignore
             ))
         elif demisto.command() == 'securityscorecard-company-history-score-get':
-            return_results(company_history_score_get_command(client, args.get()))
+            return_results(company_history_score_get_command(
+                client=client,
+                domain=args.get("domain"),  # type: ignore
+                _from=args.get("from"),
+                to=args.get("to"),
+                timing=args.get("timing")
+            ))
         elif demisto.command() == 'securityscorecard-company-history-factor-score-get':
             return_results(company_history_factor_score_get_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-alert-grade-change-create':

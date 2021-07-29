@@ -110,7 +110,11 @@ score_mock = test_data.get("score")
 # test_get_company_factor_score
 factor_score_mock = test_data.get("factor_score")
 
-historical_score_mock = load_json("./test_data/companies/historical_score.json")
+
+# test_get_company_historical_scores
+historical_score_mock = test_data.get("historical_score")
+
+
 historical_factor_score_mock = load_json("./test_data/companies/historical_factor_score.json")
 create_grade_alert_mock = load_json("./test_data/alerts/create_grade_alert.json")
 create_score_alert_mock = load_json("./test_data/alerts/create_score_alert.json")
@@ -332,18 +336,32 @@ def test_get_company_factor_score(mocker):
 
 def test_get_company_historical_scores(mocker):
 
+    """
+    Given:
+        - A domain
+        - Date range
+        - Timing
+    When:
+        - Domain is valid
+        - From 2021-07-01 to 2021-07-08
+        - Daily basis
+    Then:
+        - Daily company score for domain between set range
+    """
+
     mocker.patch.object(client, "get_company_historical_scores", return_value=historical_score_mock)
 
-    response_historical_score = client.get_company_historical_scores(
+    response: CommandResults = company_history_score_get_command(
+        client=client,
         domain=DOMAIN,
         _from="2021-07-01",
         to="2021-07-08",
         timing="daily"
     )
 
-    assert response_historical_score == historical_score_mock
-    assert len(response_historical_score["entries"]) == 8
-    assert isinstance(response_historical_score["entries"][0]["score"], int)
+    cmd_output = response.outputs
+
+    assert cmd_output == historical_score_mock.get("entries")
 
 
 def test_get_company_historical_factor_scores(mocker):
