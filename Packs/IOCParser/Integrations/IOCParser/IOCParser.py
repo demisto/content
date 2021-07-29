@@ -173,11 +173,9 @@ def process_response(response: Dict[str, Any], keys: List[str], limit: int) -> D
 
     """
 
-    try:
-        response_data = response.get('data')
-    except Exception as e:
-        raise Exception('The response from the API is empty.') from e
-
+    if not response:
+        raise ValueError('The response from the API is empty.')
+    response_data = response.get('data')
     remove_unwanted_keys(response_data, keys)
     if limit is not None:
         response_data = limit_response(response_data, limit)
@@ -224,7 +222,7 @@ def test_module(client: Client) -> str:
     """
     try:
         client.ioc_from_url('https://pastebin.com/iMzrRXbJ')
-    except DemistoException as e:
+    except Exception as e:
         return f'Failed to connect with the API. Error: {str(e)}'
     return 'ok'
 
