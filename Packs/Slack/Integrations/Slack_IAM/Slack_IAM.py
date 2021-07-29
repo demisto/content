@@ -351,11 +351,8 @@ def get_group_command(client, args):
     if not (group_id or group_name):
         return_error("You must supply either 'id' or 'displayName' in the scim data")
     if not group_id:
-        demisto.log(f'group_name is {group_name}')
         res = client.search_group(group_name)
-
         res_json = res.json()
-        demisto.log(f'res is {res_json}')
 
         if res.status_code == 200:
             if res_json.get('totalResults') < 1:
@@ -375,7 +372,6 @@ def get_group_command(client, args):
                 )
             else:
                 group_id = res_json['Resources'][0].get('id')
-                demisto.log(f'Group id is -> {group_id}')
         else:
             generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
                                                 errorCode=res_json['Errors']['code'],
@@ -394,7 +390,6 @@ def get_group_command(client, args):
             )
     res = client.get_group_by_id(group_id)
     res_json = res.json()
-    demisto.log(f'res is {res_json}')
 
     if res.status_code == 200:
         include_members = args.get('includeMembers')

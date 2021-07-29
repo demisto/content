@@ -756,7 +756,6 @@ def verify_and_load_scim_data(scim):
 
 def get_group_command(client, args):
     scim = verify_and_load_scim_data(args.get('scim'))
-    demisto.log(f'scim is -> {(scim)}')
     group_id = scim.get('id')
     group_name = scim.get('displayName')
 
