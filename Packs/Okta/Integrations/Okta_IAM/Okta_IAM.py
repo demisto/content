@@ -800,7 +800,7 @@ def get_group_command(client, args):
             outputs=generic_iam_context_data_list,
             readable_output=tableToMarkdown('Okta Get Group:', generic_iam_context_data_list, removeNull=True)
         )
-    elif not group_id:
+    elif not group_id and isinstance(group_search_result, list):
         group_id = group_search_result[0].get('id')
 
     res = client.get_group_by_id(group_id)
