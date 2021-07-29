@@ -1,0 +1,15 @@
+{
+    "name": "Smartsheet",
+    "description": "Smartsheet offers collaboration and work management by assigning tasks, tracking project progress, managing calendars, sharing documents and managing other work.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Identity and Access Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

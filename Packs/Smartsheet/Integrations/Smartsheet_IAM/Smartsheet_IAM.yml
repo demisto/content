@@ -1,0 +1,298 @@
+category: Identity and Access Management
+image: data:image/png;base64,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
+commonfields:
+  id: Smartsheet IAM
+  version: -1
+configuration:
+  - name: url
+    display: Base URL
+    required: true
+    defaultvalue: null
+    type: 0
+    additionalinfo: null
+  - name: credentials
+    display: null
+    required: true
+    defaultvalue: null
+    type: 9
+    additionalinfo: null
+    displaypassword: Access Token
+    hiddenusername: true
+  - name: insecure
+    display: Trust any certificate (not secure)
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: proxy
+    display: Use system proxy settings
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: create_user_enabled
+    display: Allow creating users
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: update_user_enabled
+    display: Allow updating users
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: enable_user_enabled
+    display: Allow enabling users
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: remove_from_sharing
+    display: Remove from sharing
+    required: false
+    defaultvalue: null
+    type: 0
+    additionalinfo: If checked, deleting a user from Smartsheet removes the user
+      from sharing for all sheets/workspaces in the organization.
+  - name: create_if_not_exists
+    display: Automatically create user if not found in update command
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: mapper_in
+    display: Incoming Mapper
+    required: true
+    defaultvalue: User Profile - Smartsheet (Incoming)
+    type: 0
+    additionalinfo: null
+  - name: mapper_out
+    display: Outgoing Mapper
+    required: true
+    defaultvalue: User Profile - Smartsheet (Outgoing)
+    type: 0
+    additionalinfo: null
+description: An Identity and Access Management integration template.
+display: Smartsheet IAM
+name: Smartsheet IAM
+script:
+  commands:
+    - arguments:
+        - default: false
+          description: User Profile indicator details.
+          isArray: false
+          name: user-profile
+          required: true
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: "true"
+          description: When set to true, after the command execution the status of the
+            user in the 3rd-party integration will be active.
+          isArray: false
+          name: allow-enable
+          predefined:
+            - "true"
+            - "false"
+          required: false
+          secret: false
+      deprecated: false
+      description: Creates a user.
+      execution: true
+      name: iam-create-user
+      outputs:
+        - contextPath: IAM.Vendor.active
+          description: When true, indicates that the employee's status is active in the
+            3rd-party integration.
+          type: Boolean
+        - contextPath: IAM.Vendor.brand
+          description: Name of the integration.
+          type: String
+        - contextPath: IAM.Vendor.details
+          description: Provides the raw data from the 3rd-party integration.
+          type: string
+        - contextPath: IAM.Vendor.email
+          description: The employee's email address.
+          type: String
+        - contextPath: IAM.Vendor.errorCode
+          description: HTTP error response code.
+          type: Number
+        - contextPath: IAM.Vendor.errorMessage
+          description: Reason why the API failed.
+          type: String
+        - contextPath: IAM.Vendor.id
+          description: The employee's user ID in the app.
+          type: String
+        - contextPath: IAM.Vendor.instanceName
+          description: Name of the integration instance.
+          type: string
+        - contextPath: IAM.Vendor.success
+          description: When true, indicates that the command was executed successfully.
+          type: Boolean
+        - contextPath: IAM.Vendor.username
+          description: The employee's username in the app.
+          type: String
+    - arguments:
+        - default: false
+          description: A User Profile indicator.
+          isArray: false
+          name: user-profile
+          required: true
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: "true"
+          description: When set to true, after the command execution the status of the
+            user in the 3rd-party integration will be active.
+          isArray: false
+          name: allow-enable
+          predefined:
+            - "true"
+            - "false"
+          required: false
+          secret: false
+      deprecated: false
+      description: Updates an existing user with the data passed in the user-profile
+        argument.
+      execution: true
+      name: iam-update-user
+      outputs:
+        - contextPath: IAM.Vendor.active
+          description: When true, indicates that the employee's status is active in the
+            3rd-party integration.
+          type: Boolean
+        - contextPath: IAM.Vendor.brand
+          description: Name of the integration.
+          type: String
+        - contextPath: IAM.Vendor.details
+          description: Provides the raw data from the 3rd-party integration.
+          type: string
+        - contextPath: IAM.Vendor.email
+          description: The employee's email address.
+          type: String
+        - contextPath: IAM.Vendor.errorCode
+          description: HTTP error response code.
+          type: Number
+        - contextPath: IAM.Vendor.errorMessage
+          description: Reason why the API failed.
+          type: String
+        - contextPath: IAM.Vendor.id
+          description: The employee's user ID in the app.
+          type: String
+        - contextPath: IAM.Vendor.instanceName
+          description: Name of the integration instance.
+          type: string
+        - contextPath: IAM.Vendor.success
+          description: When true, indicates that the command was executed successfully.
+          type: Boolean
+        - contextPath: IAM.Vendor.username
+          description: The employee's username in the app.
+          type: String
+    - arguments:
+        - default: false
+          description: A User Profile indicator.
+          isArray: false
+          name: user-profile
+          required: true
+          secret: false
+      deprecated: false
+      description: Retrieves a single user resource.
+      execution: false
+      name: iam-get-user
+      outputs:
+        - contextPath: IAM.Vendor.active
+          description: When true, indicates that the employee's status is active in the
+            3rd-party integration.
+          type: Boolean
+        - contextPath: IAM.Vendor.brand
+          description: Name of the integration.
+          type: String
+        - contextPath: IAM.Vendor.details
+          description: Provides the raw data from the 3rd-party integration.
+          type: string
+        - contextPath: IAM.Vendor.email
+          description: The employee's email address.
+          type: String
+        - contextPath: IAM.Vendor.errorCode
+          description: HTTP error response code.
+          type: Number
+        - contextPath: IAM.Vendor.errorMessage
+          description: Reason why the API failed.
+          type: String
+        - contextPath: IAM.Vendor.id
+          description: The employee's user ID in the app.
+          type: String
+        - contextPath: IAM.Vendor.instanceName
+          description: Name of the integration instance.
+          type: string
+        - contextPath: IAM.Vendor.success
+          description: When true, indicates that the command was executed successfully.
+          type: Boolean
+        - contextPath: IAM.Vendor.username
+          description: The employee's username in the app.
+          type: String
+    - arguments:
+        - default: false
+          description: A User Profile indicator.
+          isArray: false
+          name: user-profile
+          required: true
+          secret: false
+      deprecated: false
+      description: Disable an active user.
+      execution: true
+      name: iam-disable-user
+      outputs:
+        - contextPath: IAM.Vendor.active
+          description: When true, indicates that the employee's status is active in the
+            3rd-party integration.
+          type: Boolean
+        - contextPath: IAM.Vendor.brand
+          description: Name of the integration.
+          type: String
+        - contextPath: IAM.Vendor.details
+          description: Provides the raw data from the 3rd-party integration.
+          type: string
+        - contextPath: IAM.Vendor.email
+          description: The employee's email address.
+          type: String
+        - contextPath: IAM.Vendor.errorCode
+          description: HTTP error response code.
+          type: Number
+        - contextPath: IAM.Vendor.errorMessage
+          description: Reason why the API failed.
+          type: String
+        - contextPath: IAM.Vendor.id
+          description: The employee's user ID in the app.
+          type: String
+        - contextPath: IAM.Vendor.instanceName
+          description: Name of the integration instance.
+          type: string
+        - contextPath: IAM.Vendor.success
+          description: When true, indicates that the command was executed successfully.
+          type: Boolean
+        - contextPath: IAM.Vendor.username
+          description: The employee's username in the app.
+          type: String
+    - deprecated: false
+      description: Retrieves a User Profile schema, which holds all of the user fields
+        within the application. Used for outgoing-mapping through the Get Schema
+        option.
+      execution: false
+      name: get-mapping-fields
+      arguments: []
+      outputs: []
+  dockerimage: demisto/python3:3.9.5.21272
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: "-"
+  subtype: python3
+  type: python
+  ismappable: true
+  isremotesyncout: true
+tests:
+  - No tests
+fromversion: 6.0.0
