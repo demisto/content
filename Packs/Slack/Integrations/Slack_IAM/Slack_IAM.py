@@ -355,17 +355,12 @@ def get_group_command(client, args):
             if res_json.get('totalResults') < 1:
                 generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=404,
                                                     errorMessage="Group Not Found", details=res_json)
-                generic_iam_context_dt = f'{generic_iam_context.command}' \
-                                         '(val.id == obj.id && val.instanceName == obj.instanceName)'
-                outputs = {
-                    generic_iam_context_dt: generic_iam_context.data
-                }
-
-                readable_output = tableToMarkdown('Slack Get Group:', generic_iam_context.data, removeNull=True)
-                return (
-                    readable_output,
-                    outputs,
-                    generic_iam_context.data
+                return CommandResults(
+                    raw_response=generic_iam_context.data,
+                    outputs_prefix=generic_iam_context.command,
+                    outputs_key_field='id',
+                    outputs=generic_iam_context.data,
+                    readable_output=tableToMarkdown('Slack Get Group:', generic_iam_context.data, removeNull=True)
                 )
             else:
                 group_id = res_json['Resources'][0].get('id')
@@ -373,17 +368,12 @@ def get_group_command(client, args):
             generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
                                                 errorCode=res_json['Errors']['code'],
                                                 errorMessage=res_json['Errors']['description'], details=res_json)
-            generic_iam_context_dt = f'{generic_iam_context.command}' \
-                                     f'(val.id == obj.id && val.instanceName == obj.instanceName)'
-            outputs = {
-                generic_iam_context_dt: generic_iam_context.data
-            }
-
-            readable_output = tableToMarkdown('Slack Get Group:', generic_iam_context.data, removeNull=True)
-            return (
-                readable_output,
-                outputs,
-                generic_iam_context.data
+            return CommandResults(
+                raw_response=generic_iam_context.data,
+                outputs_prefix=generic_iam_context.command,
+                outputs_key_field='id',
+                outputs=generic_iam_context.data,
+                readable_output=tableToMarkdown('Slack Get Group:', generic_iam_context.data, removeNull=True)
             )
     res = client.get_group_by_id(group_id)
     res_json = res.json()
@@ -403,16 +393,12 @@ def get_group_command(client, args):
                                             errorCode=res_json['Errors']['code'],
                                             errorMessage=res_json['Errors']['description'], details=res_json)
 
-    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
-    outputs = {
-        generic_iam_context_dt: generic_iam_context.data
-    }
-
-    readable_output = tableToMarkdown('Slack Get Group:', generic_iam_context.data, removeNull=True)
-    return (
-        readable_output,
-        outputs,
-        generic_iam_context.data
+    return CommandResults(
+        raw_response=generic_iam_context.data,
+        outputs_prefix=generic_iam_context.command,
+        outputs_key_field='id',
+        outputs=generic_iam_context.data,
+        readable_output=tableToMarkdown('Slack Get Group:', generic_iam_context.data, removeNull=True)
     )
 
 
@@ -421,7 +407,7 @@ def delete_group_command(client, args):
     group_id = scim.get('id')
     group_name = scim.get('displayName')
 
-    if not (group_id):
+    if not group_id:
         return_error("You must supply 'id' in the scim data")
 
     res = client.delete_group(group_id)
@@ -436,17 +422,12 @@ def delete_group_command(client, args):
         generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
                                             errorCode=res_json['Errors']['code'],
                                             errorMessage=res_json['Errors']['description'], details=res_json)
-
-    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
-    outputs = {
-        generic_iam_context_dt: generic_iam_context.data
-    }
-
-    readable_output = tableToMarkdown('Slack Delete Group:', generic_iam_context.data, removeNull=True)
-    return (
-        readable_output,
-        outputs,
-        generic_iam_context.data
+    return CommandResults(
+        raw_response=generic_iam_context.data,
+        outputs_prefix=generic_iam_context.command,
+        outputs_key_field='id',
+        outputs=generic_iam_context.data,
+        readable_output=tableToMarkdown('Slack Delete Group:', generic_iam_context.data, removeNull=True)
     )
 
 
@@ -454,12 +435,10 @@ def create_group_command(client, args):
     scim = verify_and_load_scim_data(args.get('scim'))
     group_name = scim.get('displayName')
 
-    if not (group_name):
+    if not group_name:
         return_error("You must supply 'displayName' of the group in the scim data")
 
-    group_data = {}
-    group_data['schemas'] = [SLACK_SCIM_CORE_SCHEMA_KEY]
-    group_data['displayName'] = group_name
+    group_data = {'schemas': [SLACK_SCIM_CORE_SCHEMA_KEY], 'displayName': group_name}
     res = client.create_group(group_data)
     res_json = res.json()
 
@@ -472,16 +451,12 @@ def create_group_command(client, args):
                                             errorCode=res_json['Errors']['code'],
                                             errorMessage=res_json['Errors']['description'], details=res_json)
 
-    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
-    outputs = {
-        generic_iam_context_dt: generic_iam_context.data
-    }
-
-    readable_output = tableToMarkdown('Slack Create Group:', generic_iam_context.data, removeNull=True)
-    return (
-        readable_output,
-        outputs,
-        generic_iam_context.data
+    return CommandResults(
+        raw_response=generic_iam_context.data,
+        outputs_prefix=generic_iam_context.command,
+        outputs_key_field='id',
+        outputs=generic_iam_context.data,
+        readable_output=tableToMarkdown('Slack Create Group:', generic_iam_context.data, removeNull=True)
     )
 
 
@@ -491,7 +466,7 @@ def update_group_command(client, args):
     group_id = scim.get('id')
     group_name = scim.get('displayName')
 
-    if not (group_id):
+    if not group_id:
         return_error("You must supply 'id' in the scim data")
 
     member_ids_to_add = args.get('memberIdsToAdd')
@@ -532,17 +507,12 @@ def update_group_command(client, args):
         generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
                                             errorCode=res_json['Errors']['code'],
                                             errorMessage=res_json['Errors']['description'], details=res_json)
-
-    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
-    outputs = {
-        generic_iam_context_dt: generic_iam_context.data
-    }
-
-    readable_output = tableToMarkdown('Slack Update Group:', generic_iam_context.data, removeNull=True)
-    return (
-        readable_output,
-        outputs,
-        generic_iam_context.data
+    return CommandResults(
+        raw_response=generic_iam_context.data,
+        outputs_prefix=generic_iam_context.command,
+        outputs_key_field='id',
+        outputs=generic_iam_context.data,
+        readable_output=tableToMarkdown('Slack Update Group:', generic_iam_context.data, removeNull=True)
     )
 
 
@@ -622,20 +592,16 @@ def main():
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
 
     if command == 'iam-get-group':
-        human_readable, outputs, raw_response = get_group_command(group_client, args)
-        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+        return_results(get_group_command(group_client, args))
 
     elif command == 'iam-create-group':
-        human_readable, outputs, raw_response = create_group_command(group_client, args)
-        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+        return_results(create_group_command(group_client, args))
 
     elif command == 'iam-update-group':
-        human_readable, outputs, raw_response = update_group_command(group_client, args)
-        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+        return_results(update_group_command(group_client, args))
 
     elif command == 'iam-delete-group':
-        human_readable, outputs, raw_response = delete_group_command(group_client, args)
-        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+        return_results(delete_group_command(group_client, args))
 
 
 from IAMApiModule import *  # noqa: E402

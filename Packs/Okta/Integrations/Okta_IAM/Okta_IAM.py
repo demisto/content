@@ -771,18 +771,6 @@ def get_group_command(client, args):
             if len(res_json) < 1:
                 generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=404,
                                                     errorMessage="Group Not Found", details=res_json)
-                generic_iam_context_dt = f'{generic_iam_context.command}' \
-                                         '(val.id == obj.id && val.instanceName == obj.instanceName)'
-                outputs = {
-                    generic_iam_context_dt: generic_iam_context.data
-                }
-
-                readable_output = tableToMarkdown('Okta Get Group:', generic_iam_context.data, removeNull=True)
-                return (
-                    readable_output,
-                    outputs,
-                    generic_iam_context.data
-                )
             else:
                 group_search_result = res_json
         else:
@@ -790,17 +778,14 @@ def get_group_command(client, args):
                                                 errorCode=res_json.get('errorCode'),
                                                 errorMessage=res_json.get('errorSummary'),
                                                 details=res_json)
-            generic_iam_context_dt = f'{generic_iam_context.command}' \
-                                     f'(val.id == obj.id && val.instanceName == obj.instanceName)'
-            outputs = {
-                generic_iam_context_dt: generic_iam_context.data
-            }
 
-            readable_output = tableToMarkdown('Okta Get Group:', generic_iam_context.data, removeNull=True)
-            return (
-                readable_output,
-                outputs,
-                generic_iam_context.data
+        if not group_search_result:
+            return CommandResults(
+                raw_response=generic_iam_context.data,
+                outputs_prefix=generic_iam_context.command,
+                outputs_key_field='id',
+                outputs=generic_iam_context.data,
+                readable_output=tableToMarkdown('Okta Get Group:', generic_iam_context.data, removeNull=True)
             )
 
     if group_search_result and len(group_search_result) > 1:
@@ -811,15 +796,12 @@ def get_group_command(client, args):
             generic_iam_context = OutputContext(success=True, id=group.get('id'), displayName=group_name)
             generic_iam_context_data_list.append(generic_iam_context.data)
 
-        generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
-        outputs = {
-            generic_iam_context_dt: generic_iam_context_data_list
-        }
-        readable_output = tableToMarkdown('Okta Get Group:', generic_iam_context_data_list, removeNull=True)
-        return (
-            readable_output,
-            outputs,
-            generic_iam_context_data_list
+        return CommandResults(
+            raw_response=generic_iam_context_data_list,
+            outputs_prefix=generic_iam_context.command,
+            outputs_key_field='id',
+            outputs=generic_iam_context_data_list,
+            readable_output=tableToMarkdown('Okta Get Group:', generic_iam_context_data_list, removeNull=True)
         )
     elif not group_id:
         group_id = group_search_result[0].get('id')
@@ -851,16 +833,12 @@ def get_group_command(client, args):
                                             errorMessage=res_json.get('errorSummary'),
                                             details=res_json)
 
-    generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
-    outputs = {
-        generic_iam_context_dt: generic_iam_context.data
-    }
-
-    readable_output = tableToMarkdown('Okta Get Group:', generic_iam_context.data, removeNull=True)
-    return (
-        readable_output,
-        outputs,
-        generic_iam_context.data
+    return CommandResults(
+        raw_response=generic_iam_context.data,
+        outputs_prefix=generic_iam_context.command,
+        outputs_key_field='id',
+        outputs=generic_iam_context.data,
+        readable_output=tableToMarkdown('Okta Get Group:', generic_iam_context.data, removeNull=True)
     )
 
 
@@ -870,14 +848,12 @@ def get_logs_command(client, args):
     until = args.get('until')
     log_events = client.get_logs_for_groups(filter=filter, from_date=since, to_date=until)
 
-    readable_output = tableToMarkdown('Okta Log Events:', log_events)
-    outputs = {
-        'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': log_events
-    }
-    return (
-        readable_output,
-        outputs,
-        log_events
+    return CommandResults(
+        raw_response=log_events,
+        outputs_prefix='Okta.Logs.Events',
+        outputs_key_field='uuid',
+        outputs=log_events,
+        readable_output=tableToMarkdown('Okta Log Events:', log_events)
     )
 
 
@@ -963,12 +939,10 @@ def main():
             demisto.setIntegrationContext(context)
 
         elif command == 'iam-get-group':
-            human_readable, outputs, raw_response = get_group_command(client, args)
-            return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+            return_results(get_group_command(client, args))
 
         elif command == 'okta-get-logs':
-            human_readable, outputs, raw_response = get_logs_command(client, args)
-            return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+            return_results(get_logs_command(client, args))
 
         elif command == 'fetch-incidents':
             last_run = demisto.getLastRun()
