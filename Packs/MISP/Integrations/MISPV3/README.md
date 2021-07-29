@@ -1,7 +1,7 @@
 Malware information sharing platform and threat sharing.
 
 Some changes have been made that might affect your existing content.
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-misp-v3).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---misp-v3).
 
 ## Configure MISP V3 on Cortex XSOAR
 
@@ -3721,47 +3721,46 @@ Search for attributes in MISP.
 
 
 ## Breaking changes from the previous version of this integration - MISP v3
-%%Reputation commands%%
-The main change in this version is that searching indicators (reputation commands) implemented with search-attributes (and not with search-events as in previous version).
-Please see the new commands(ip, file, url...) context output.
+### Reputation commands
+
+The main change in this version is that searching indicators (reputation commands) is implemented with search-attributes (and not with search-events as in previous version).
+Please see the new commands (ip, file, url...) context output for details.
 
 ### Commands
 #### The following commands were removed in this version:
-* *misp-add-tag* - this command was replaced by both *misp-add-tag-to-event* and *misp-add-tag-to-attribute*.
-* *misp-add-email-object* - this command was replaced by *misp-add-file-object* as Email object is not supported by the new PYMISP version.
-* *misp-download-sample* - this command was removed as download sample is not supported by the new PYMISP version.
-* *misp-upload-sample* - this command was removed as upload sample is not supported by the new PYMISP version.
+* ***misp-add-tag*** - replaced by both *misp-add-tag-to-event* and *misp-add-tag-to-attribute*.
+* ***misp-add-email-object*** - replaced by *misp-add-file-object* as and email object is not supported by the new PYMISP version.
+* ***misp-download-sample*** - removed as download sample is not supported by the new PYMISP version.
+* ***misp-upload-sample*** - removed as upload sample is not supported by the new PYMISP version.
 
 ### Arguments
 #### The following arguments were removed in this version:
 
-In the *misp-create-event* command:
-* *id* - this argument was replaced by *event_id*.
-In the *misp-add-domain-object* command:
-* *dns* - this argument was replaced by *ip*.
+- In the ***misp-create-event*** command, the *id* argument was replaced by *event_id*.
+
+- In the ***misp-add-domain-object*** command, the *dns* argument was replaced by *ip*.
 
 #### The behavior of the following arguments was changed:
 
-In the *misp-add-events-from-feed* command:
-* *feed* - is now required.
-* *limit* - this argument default value was replaced from '0' to be '2'.
-In the *misp-create-event* command:
-* *to_ids* - this argument default value was replaced from 'false' to be 'true'.
-In the *misp-create-event* command:
-* *to_ids* - this argument default value was replaced from 'false' to be 'true'.
+- In the *misp-add-events-from-feed* command:
+   * *feed* - is now required.
+   * *limit* - the default value was changed from '0' to '2'.
+
+- In the *misp-create-event* command, the default value of the *to_ids* argument was changed from 'false' to 'true'.
+
 
 
 ## Additional Considerations for this version
-%%Indicator Scoring%%
-* In MISP V3, indicator scoring calculated depending on **MISP's tags**. In case no tags were found, the score
-is calculated by the event's threat level id.
-* Indicators of attributes and Events that have tags which configured as malicious will be scored 3 (i.e malicious).
-* Indicators of attributes and Events that have tags which configured as suspicious will be scored 2 (i.e suspicious).
-* Indicators of attributes and Events that don't have any tags configured as suspicious nor malicious will be scored by their events' threat level id.
-* Threat level id with value 1, 2 or 3 will be scored 3 (i.e malicious).
-* Threat level id with value 4 will be scored 0 (i.e unknown).
+### Indicator Scoring
+In MISP V3, indicator scoring is calculated depending on **MISP's tags**. In case no tags were found, the score
+is calculated by the event's threat level ID.
+* Indicators of attributes and events that have tags that are configured as malicious will be scored 3 (i.e., malicious).
+* Indicators of attributes and events that have tags that are configured as suspicious will be scored 2 (i.e., suspicious).
+* Indicators of attributes and events that don't have any tags that are configured as suspicious nor malicious will be scored by their events' threat level ID.
+* Threat level ID with a value of 1, 2, or 3 will be scored 3 (i.e., malicious).
+* Threat level ID with a value of 4 will be scored 0 (i.e., unknown).
 
-When configure an instance you should set:
-1. Malicious tag IDs with tag IDs that would be calculated as malicious.
-2. Suspicious tag IDs with tag IDs that would be calculated as suspicious.
+When configuring an instance, you should set: 
+- Malicious tag IDs with tag IDs that would be calculated as malicious.
+- Suspicious tag IDs with tag IDs that would be calculated as suspicious.
 
