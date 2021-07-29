@@ -51,7 +51,7 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "AzureAD",
+            "integrations": "Azure Active Directory Identity Protection",
             "playbookID": "AzureADTest",
             "fromversion": "6.0.0"
         },
