@@ -7862,7 +7862,7 @@ class IndicatorsSearcher:
         if fetched_len == 0:
             raise StopIteration
         if self.limit:
-            self.limit -= fetched_len
+            self._next_limit -= fetched_len
         self._search_is_done = self._is_search_done()
         return res
 
@@ -7880,7 +7880,7 @@ class IndicatorsSearcher:
 
     @limit.setter
     def limit(self, value):
-        self._next_limit = value
+        self._next_limit = self._original_limit = value
 
     def _is_search_done(self):
         """

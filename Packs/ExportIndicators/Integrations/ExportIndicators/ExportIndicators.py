@@ -188,7 +188,7 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
         size=PAGE_SIZE
     )
     while True:
-        indicator_searcher.limit = limit
+        indicator_searcher.limit = limit + 100  # fetch more indicators to reduce chances of search after truncation
         iocs = find_indicators_with_limit(indicator_searcher)[request_args.offset:limit]
         iocs = sort_iocs(request_args, iocs)
         # reformat the output
@@ -199,7 +199,7 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
             # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
             break
         # advance search window with gap size
-        limit += len(iocs) - actual_indicator_amount
+        limit += (limit - actual_indicator_amount)
 
     if request_args.out_format == FORMAT_JSON:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_JSON
