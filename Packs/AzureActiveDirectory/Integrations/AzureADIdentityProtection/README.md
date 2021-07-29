@@ -1,4 +1,4 @@
-Get information from Azure Active Directory Identity Protection service.
+Gets information from the Azure Active Directory Identity Protection service.
 This integration was integrated and tested with the beta version of Azure Active Directory Identity Protection API.
 
 ## Configure Azure Active Directory Identity Protection on Cortex XSOAR
@@ -11,13 +11,13 @@ This integration was integrated and tested with the beta version of Azure Active
     | --- | --- | --- |
     | Application ID |  | True |
     | Subscription ID |  | True |
-    | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | True |
+    | Azure Active Directory endpoint | Azure Active Directory endpoint associated with a national cloud. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
 4. Call the **!azure-ad-auth-test** command to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR command line interface, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-ad-auth-test
 ***
@@ -70,7 +70,7 @@ There is no context output for this command.
 
 ### azure-ad-auth-complete
 ***
-Run this command to complete the authorization process. Should be used after running the azure-ad-auth-start command.
+Run this command to complete the authorization process. This should be used after running the azure-ad-auth-start command.
 
 
 #### Base Command
@@ -131,10 +131,10 @@ Retrieve the properties of a collection of riskDetection objects.
 | id | Unique ID of the risk detection. | Optional | 
 | user_id | Unique ID of the user. | Optional | 
 | user_principal_name | The user principal name (UPN) of the user. | Optional | 
-| country | Country or region of the activity. for example, `US` or `UK`. For futher details, see https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-beta. | Optional | 
-| filter_expression | A custom query by the the OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters. | Optional | 
-| limit | Number of results to provide. Default is 50. | Optional | 
-| next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all other arguments. | Optional | 
+| country | Country or region of the activity. For example, `US` or `UK`. For futher details, see https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-beta. | Optional | 
+| filter_expression | A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters. | Optional | 
+| limit | Number of results to provide. | Optional | 
+| next_link | A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments. | Optional | 
 
 
 #### Context Output
@@ -145,13 +145,13 @@ Retrieve the properties of a collection of riskDetection objects.
 | AADIdentityProtection.Risks.requestId | string | Request ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in. | 
 | AADIdentityProtection.Risks.correlationId | string | Correlation ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in. | 
 | AADIdentityProtection.Risks.riskEventType | string | The type of risk event detected. The possible values are unlikelyTravel, anonymizedIPAddress, maliciousIPAddress, unfamiliarFeatures, malwareInfectedIPAddress, suspiciousIPAddress, leakedCredentials, investigationsThreatIntelligence, generic,adminConfirmedUserCompromised, mcasImpossibleTravel, mcasSuspiciousInboxManipulationRules, investigationsThreatIntelligenceSigninLinked, maliciousIPAddressValidCredentialsBlockedIP, and unknownFutureValue. | 
-| AADIdentityProtection.Risks.riskType | string | List of risk event types. Note that this property is deprecated. Use riskEventType instead. | 
-| AADIdentityProtection.Risks.riskLevel | string | Level of the detected risky user. The possible values are low, medium, high, hidden, none, unknownFutureValue. | 
-| AADIdentityProtection.Risks.riskState | string | State of the user's risk. Possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, unknownFutureValue. | 
-| AADIdentityProtection.Risks.riskDetail | string | The possible values are none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue. | 
+| AADIdentityProtection.Risks.riskType | string | Deprecated. Use riskEventType instead. List of risk event types. | 
+| AADIdentityProtection.Risks.riskLevel | string | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue. | 
+| AADIdentityProtection.Risks.riskState | string | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and  unknownFutureValue. | 
+| AADIdentityProtection.Risks.riskDetail | string | Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | 
 | AADIdentityProtection.Risks.source | string | Source of the risk detection. For example, activeDirectory. | 
-| AADIdentityProtection.Risks.detectionTimingType | string | Timing of the detected risk \(real-time/offline\). The possible values are notDefined, realtime, nearRealtime, offline, unknownFutureValue. | 
-| AADIdentityProtection.Risks.activity | string | Indicates the activity type the detected risk is linked to. The possible values are signin, user, unknownFutureValue. | 
+| AADIdentityProtection.Risks.detectionTimingType | string | Timing of the detected risk \(real-time/offline\). The possible values are notDefined, realtime, nearRealtime, offline, and unknownFutureValue. | 
+| AADIdentityProtection.Risks.activity | string | Indicates the activity type the detected risk is linked to. The possible values are signin, user, and unknownFutureValue. | 
 | AADIdentityProtection.Risks.tokenIssuerType | string | Indicates the type of token issuer for the detected sign-in risk. The possible values are AzureAD, ADFederationServices, and unknownFutureValue. | 
 | AADIdentityProtection.Risks.ipAddress | string | Provides the IP address of the client from where the risk occurred. | 
 | AADIdentityProtection.Risks.location.city | string | City of the sign-in. | 
@@ -159,9 +159,9 @@ Retrieve the properties of a collection of riskDetection objects.
 | AADIdentityProtection.Risks.location.geoCoordinates.latitude | string | Latitude of the sign-in. | 
 | AADIdentityProtection.Risks.location.geoCoordinates.longitude | string | Longitude of the sign-in. | 
 | AADIdentityProtection.Risks.location.state | string | State of the sign-in. | 
-| AADIdentityProtection.Risks.activityDateTime | string | Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. | 
-| AADIdentityProtection.Risks.detectedDateTime | string | Date and time that the risk was detected. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. | 
-| AADIdentityProtection.Risks.lastUpdatedDateTime | string | Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. | 
+| AADIdentityProtection.Risks.activityDateTime | string | Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
+| AADIdentityProtection.Risks.detectedDateTime | string | Date and time that the risk was detected. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
+| AADIdentityProtection.Risks.lastUpdatedDateTime | string | Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
 | AADIdentityProtection.Risks.userId | string | Unique ID of the user. | 
 | AADIdentityProtection.Risks.userDisplayName | string | Risky user display name. | 
 | AADIdentityProtection.Risks.userPrincipalName | string | Risky user principal name. | 
@@ -246,7 +246,7 @@ Retrieve the properties of a collection of riskDetection objects.
 #### Human Readable Output
 
 >### Risks (6 results)
->|User Id|User Principal Name|User Display Name|Ip Address|Detected Date Time|Activity|Activity Date Time|Additional Info|Correlation Id|Detection Timing Type|Id|Last Updated Date Time|Location|Request Id|Risk Detail|Risk Event Type|Risk Level|Risk State|Risk Type|Source|Token Issuer Type|
+>|User ID|User Principal Name|User Display Name|IP Address|Detected Date Time|Activity|Activity Date Time|Additional Info|Correlation ID|Detection Timing Type|ID|Last Updated Date Time|Location|Request ID|Risk Detail|Risk Event Type|Risk Level|Risk State|Risk Type|Source|Token Issuer Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2 | jdoe@example.com | John Doe | 1.1.1.1 | 2021-04-25T09:00:40.7780969Z | signin | 2021-04-25T09:00:40.7780969Z | [{"Key":"userAgent","Value":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36"}] | 271ac223-695b-418e-85b3-7809070ee33e | realtime | 86a45315157fb75c3a6e0936ef854c139df99bdfbde4bd7e7f1bc685c3638908 | 2021-05-23T08:20:41.9161522Z | city: San Jose<br/>state: California<br/>countryOrRegion: US<br/>geoCoordinates: {"latitude": 37.33053, "longitude": -121.8382} | 86b6e4a1-25cb-40c7-af2b-9e79c6106000 | userPerformedSecuredPasswordChange | unfamiliarFeatures | low | remediated | unfamiliarFeatures | IdentityProtection | AzureAD |
 >| 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2 | jdoe@example.com | John Doe | 2.2.2.2 | 2021-04-28T11:40:11.333738Z | signin | 2021-04-28T11:40:11.333738Z | [{"Key":"userAgent","Value":"python-requests/2.18.4"}] | 6f74b0f4-dabc-49af-aa87-3aaba042baba | realtime | c0e94938cddbb849ef64dbb6a98189ab3d93cdec4c4f95923ac935a91486def2 | 2021-05-23T08:20:29.027631Z | city: Frankfurt Am Main<br/>state: Hessen<br/>countryOrRegion: DE<br/>geoCoordinates: {"latitude": 50.1109, "longitude": 8.6821} | 64b01b65-25fa-4811-b4cd-411c9accc000 | userPerformedSecuredPasswordChange | unfamiliarFeatures | low | remediated | unfamiliarFeatures | IdentityProtection | AzureAD |
@@ -258,7 +258,7 @@ Retrieve the properties of a collection of riskDetection objects.
 
 ### azure-ad-identity-protection-risky-user-list
 ***
-Retrieve the properties of a collection of riskDetection objects.
+Retrieves the properties of a collection of riskDetection objects.
 
 
 #### Base Command
@@ -269,12 +269,12 @@ Retrieve the properties of a collection of riskDetection objects.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | updated_time | The time elapsed since the risky user was last updated, formatted as `<number> <time unit>`, e.g., `12 hours` or `7 days`. | Optional | 
-| risk_level | Level of the detected risky user. Possible values are: low, medium, high, hidden, none, unknownFeatureValue. | Optional | 
-| risk_state | State of the user's risk. Possible values are: none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, unknownFutureValue. | Optional | 
-| risk_detail | Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue. | Optional | 
-| filter_expression | A custom query by the the OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters. | Optional | 
-| limit | Number of results to provide. Default is 50. Default is 50. | Optional | 
-| next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all other arguments. | Optional | 
+| risk_level | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFeatureValue. | Optional | 
+| risk_state | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | Optional | 
+| risk_detail | Details of the detected risk. The possible values are none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | Optional | 
+| filter_expression | A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters. | Optional | 
+| limit | Number of results to provide. | Optional | 
+| next_link | A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments. | Optional | 
 | user_name | Risky user principal name. | Optional | 
 
 
@@ -282,13 +282,13 @@ Retrieve the properties of a collection of riskDetection objects.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AADIdentityProtection.RiskyUsers.id | string | Unique ID of the user at risk. | 
+| AADIdentityProtection.RiskyUsers.id | string | Unique ID of the risky user. | 
 | AADIdentityProtection.RiskyUsers.isDeleted | Boolean | Indicates whether the user is deleted. | 
 | AADIdentityProtection.RiskyUsers.isProcessing | Boolean | Indicates whether a user's risky state is being processed by the backend. | 
-| AADIdentityProtection.RiskyUsers.riskLastUpdatedDateTime | DateTime | The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. | 
-| AADIdentityProtection.RiskyUsers.riskLevel | string | Level of the detected risky user. The possible values are low, medium, high, hidden, none, unknownFutureValue. | 
-| AADIdentityProtection.RiskyUsers.riskState | string | State of the user's risk. Possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, unknownFutureValue. | 
-| AADIdentityProtection.RiskyUsers.riskDetail | string | The possible values are none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue. | 
+| AADIdentityProtection.RiskyUsers.riskLastUpdatedDateTime | DateTime | The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
+| AADIdentityProtection.RiskyUsers.riskLevel | string | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue. | 
+| AADIdentityProtection.RiskyUsers.riskState | string | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | 
+| AADIdentityProtection.RiskyUsers.riskDetail | string | Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | 
 | AADIdentityProtection.RiskyUsers.userDisplayName | string | Risky user display name. | 
 | AADIdentityProtection.RiskyUsers.userPrincipalName | string | Risky user principal name. | 
 
@@ -320,14 +320,14 @@ Retrieve the properties of a collection of riskDetection objects.
 #### Human Readable Output
 
 >### Risky Users (1 result)
->|User Principal Name|User Display Name|Id|Is Deleted|Is Processing|Risk Detail|Risk Last Updated Date Time|Risk Level|Risk State|
+>|User Principal Name|User Display Name|ID|Is Deleted|Is Processing|Risk Detail|Risk Last Updated Date Time|Risk Level|Risk State|
 >|---|---|---|---|---|---|---|---|---|
 >| jdoe@example.com | John Doe | 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2 | false | false | none | 2021-07-21T17:56:28.958147Z | medium | atRisk |
 
 
 ### azure-ad-identity-protection-risky-user-history-list
 ***
-Get the risk history of a riskyUser resource.
+Gets the risk history of a riskyUser resource.
 
 
 #### Base Command
@@ -338,22 +338,22 @@ Get the risk history of a riskyUser resource.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | Unique ID of the user. | Required | 
-| limit | Number of results to provide. Default is 50. Default is 50. | Optional | 
-| filter_expression | A custom query by the the OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters. | Optional | 
-| next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all other arguments. | Optional | 
+| limit | Number of results to provide. | Optional | 
+| filter_expression | A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters. | Optional | 
+| next_link | A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AADIdentityProtection.RiskyUserHistory.id | string | Unique ID of the user at risk. | 
+| AADIdentityProtection.RiskyUserHistory.id | string | Unique ID of the risky user. | 
 | AADIdentityProtection.RiskyUserHistory.isDeleted | Boolean | Indicates whether the user is deleted | 
 | AADIdentityProtection.RiskyUserHistory.isProcessing | Boolean | Indicates whether a user's risky state is being processed by the backend. | 
-| AADIdentityProtection.RiskyUserHistory.riskLastUpdatedDateTime | DateTime | The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using ISO 8601 format and is always in UTC time. | 
-| AADIdentityProtection.RiskyUserHistory.riskLevel | string | Level of the detected risky user. The possible values are low, medium, high, hidden, none, unknownFutureValue. | 
-| AADIdentityProtection.RiskyUserHistory.riskState | string | State of the user's risk. Possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, unknownFutureValue. | 
-| AADIdentityProtection.RiskyUserHistory.riskDetail | string | The possible values are none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue. | 
+| AADIdentityProtection.RiskyUserHistory.riskLastUpdatedDateTime | DateTime | The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
+| AADIdentityProtection.RiskyUserHistory.riskLevel | string | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue. | 
+| AADIdentityProtection.RiskyUserHistory.riskState | string | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | 
+| AADIdentityProtection.RiskyUserHistory.riskDetail | string | Reason why the user is considered a risky user. The  possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | 
 | AADIdentityProtection.RiskyUserHistory.userDisplayName | string | Risky user display name. | 
 | AADIdentityProtection.RiskyUserHistory.userPrincipalName | string | Risky user principal name. | 
 
@@ -396,7 +396,7 @@ Get the risk history of a riskyUser resource.
 #### Human Readable Output
 
 >### Risky User History For 3Fa9F28B-Eb0E-463A-Ba7B-8089Fe9991E2 (12 results)
->|User Id|User Principal Name|User Display Name|Activity|Id|Initiated By|Is Deleted|Is Processing|Risk Detail|Risk Last Updated Date Time|Risk Level|Risk State|
+>|User ID|User Principal Name|User Display Name|Activity|ID|Initiated By|Is Deleted|Is Processing|Risk Detail|Risk Last Updated Date Time|Risk Level|Risk State|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2 | jdoe@example.com | John Doe | eventTypes: unfamiliarFeatures<br/>riskEventTypes: unfamiliarFeatures<br/>detail: null | 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2637571860258849619 |  | false | false | none | 2021-05-21T09:27:05.8849619Z | high | atRisk |
 >| 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2 | jdoe@example.com | John Doe | eventTypes: unfamiliarFeatures<br/>riskEventTypes: unfamiliarFeatures<br/>detail: null | 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2637579558855706894 |  | false | false | none | 2021-05-30T07:18:05.5706894Z | low | atRisk |
@@ -414,7 +414,7 @@ Get the risk history of a riskyUser resource.
 
 ### azure-ad-identity-protection-risky-user-confirm-compromised
 ***
-Confirm one or more riskyUser objects as compromised. This action sets the targeted user's risk level to high.
+Confirms one or more riskyUser objects as compromised. This action sets the targeted user's risk level to high.
 
 
 #### Base Command
@@ -440,7 +440,7 @@ There is no context output for this command.
 
 ### azure-ad-identity-protection-risky-user-dismiss
 ***
-Dismiss the risk of one or more riskyUser objects. This action sets the targeted user's risk level to none.
+Dismisses the risk of one or more riskyUser objects. This action sets the targeted user's risk level to none.
 
 
 #### Base Command
