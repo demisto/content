@@ -1505,12 +1505,10 @@ def long_running_execution_command(client: Client, params: Dict):
 
             evented_mirrored_offenses = context_data.get('mirrored_offenses', [])
             if len(evented_mirrored_offenses) > 0 and mirror_options == MIRROR_OFFENSE_AND_EVENTS:
-                updated_mirrored_offenses = update_mirrored_events_from_long_running(
-                                                client=client,
-                                                offenses=evented_mirrored_offenses,
-                                                events_columns=events_columns,
-                                                events_limit=events_limit
-                                            )
+                updated_mirrored_offenses = update_mirrored_events_from_long_running(client=client,
+                                                                                     offenses=evented_mirrored_offenses,
+                                                                                     events_columns=events_columns,
+                                                                                     events_limit=events_limit)
 
             # Reset was called during execution, skip creating incidents.
             if not incidents and not new_highest_id:
@@ -2704,12 +2702,14 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
 
     offenses_with_updated_events = context_data.get('updated_mirrored_offenses', [])
     evented_offense = [evented_offense for evented_offense in offenses_with_updated_events
-                       if evented_offense.get('id') == remote_args.remote_incident_id][0]
+                       if evented_offense.get('id') == remote_args.remote_incident_id]
 
-    if evented_offense and evented_offense.get('events'):
-        offense['events'] = evented_offense.get('events')
+    if evented_offense:
+        if evented_offense[0].get('events'):
+            offense['events'] = evented_offense[0].get('events')
 
-    offenses_with_updated_events.remove(evented_offense)
+        offenses_with_updated_events.remove(evented_offense)
+
     set_integration_context({'updated_mirrored_offenses': offenses_with_updated_events})
 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
