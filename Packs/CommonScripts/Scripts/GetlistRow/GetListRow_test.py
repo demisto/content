@@ -82,6 +82,14 @@ def test_parse_list(mocker, parse_all, header, value, list_name, list_separator,
     ]
 )
 def test_custom_list_separator(mocker, data, parse_all, header, value, list_name, list_separator, expected):
+    """
+    Given:
+        - Data that should be split by the custom separator ';'.
+    When:
+        - Running the script with a custom separator arg
+    Then:
+        - Ensure the parsed sata was split correctly
+    """
     from GetListRow import parse_list
     mocker.patch.object(demisto, "executeCommand", return_value=data)
     res = parse_list(parse_all, header, value, list_name, list_separator)
@@ -97,6 +105,14 @@ def test_custom_list_separator(mocker, data, parse_all, header, value, list_name
     ]
 )
 def test_custom_list_new_line_sep(mocker, data, parse_all, header, value, list_name, list_separator, expected):
+    """
+    Given:
+        - Data that should be split by the custom separator '\n'.
+    When:
+        - Running the script with a custom separator arg
+    Then:
+        - Ensure the parsed sata was split correctly
+    """
     from GetListRow import parse_list
     mocker.patch.object(demisto, "executeCommand", return_value=data)
     res = parse_list(parse_all, header, value, list_name, list_separator)

@@ -17,7 +17,7 @@ def validate_header_exists(headers, header):
         return_error("Error: The supplied header name was not found.")
 
 
-def list_to_headers_and_lines(list_data, list_separator):
+def list_to_headers_and_lines(list_data, list_separator: str):
     lines_and_headers = [line.split(list_separator) for line in list_data.split('\n')]
     headers = lines_and_headers[0]
     return headers, lines_and_headers[1:]
@@ -54,7 +54,7 @@ def parse_relevant_rows(headers, lines, header, value, context, parse_all=False)
     )
 
 
-def parse_list(parse_all, header, value, list_name, list_separator):
+def parse_list(parse_all, header, value, list_name, list_separator: str):
     validate_args(parse_all, header, value)
     list_data = demisto.executeCommand("getList", {'listName': list_name})[0]['Contents']
     context = {
@@ -79,7 +79,7 @@ def main():
     parse_all = args['parse_all']
     header = args.get('header', '')
     value = args.get('value', '')
-    list_separator = args.get('list_separator', ',')
+    list_separator = args.get('list_separator', ',') or ','
 
     return_results(parse_list(parse_all, header, value, list_name, list_separator))
 

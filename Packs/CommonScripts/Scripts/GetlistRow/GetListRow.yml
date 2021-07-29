@@ -33,7 +33,7 @@ args:
   secret: false
 - default: false
   defaultValue: ','
-  description: Seperator for splitting the list by
+  description: Separator to split the list by.
   isArray: false
   name: list_separator
   required: false
