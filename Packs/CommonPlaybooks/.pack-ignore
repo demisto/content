@@ -34,7 +34,7 @@ ignore=BA101
 [file:playbook-Search_And_Delete_Emails_-_Generic.yml]
 ignore=BA101
 
-[file:playbook-Search_And_Delete_Emails_-_Generic_5_5.yml]
+[file:playbook-Search_And_Delete_Emails_-_Generic_-_v2.yml]
 ignore=BA101
 
 [file:playbook-Send_Investigation_Summary_Reports_Job.yml]
