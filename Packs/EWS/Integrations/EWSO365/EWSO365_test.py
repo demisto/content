@@ -497,7 +497,7 @@ def test_parse_incident_from_item_with_attachments():
         to_recipients=[],
         attachments=[
             ItemAttachment(
-                item=Item(mime_content=content, headers=True),
+                item=Item(mime_content=content, headers=[]),
                 attachment_id=AttachmentId(),
                 last_modified_time=EWSDate(year=2021, month=1, day=25),
             ),
