@@ -295,25 +295,6 @@ class Client(BaseClient):
 
         return logs_batch, next_page
 
-    # for testing
-    def test_create_group(self):
-        res = self._http_request(
-            method='POST',
-            url_suffix='groups',
-            resp_type='response'
-        )
-        demisto.log(str("here1"))
-        demisto.log(str(res.json()))
-
-    def test_list_group(self):
-        res = self._http_request(
-            method='GET',
-            url_suffix='groups',
-            resp_type='response',
-            params={'limit': 5})
-        demisto.log(str("here2"))
-        demisto.log(str(res.json()))
-
 
 '''HELPER FUNCTIONS'''
 
