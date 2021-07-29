@@ -818,7 +818,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-      type: string
     - contextPath: InfoFile.EntryID
       description: The EntryID of the report file.
       type: string
