@@ -1,4 +1,4 @@
-name: RSA encryption Tools
+name: RSA Encryption Tools
 category: Utilities
 display: RSA Encryption Tools
 configuration:
@@ -12,7 +12,7 @@ configuration:
   display: Private Key
   required: false
   defaultvalue:
-  type: 4
+  type: 14
   additionalinfo: ""
 description: RSA Encryption Tools - Encrypt and decrypt text and files using RSA encryption.
 script:
@@ -108,7 +108,7 @@ script:
   subtype: python3
   type: python
 commonfields:
-  id: RSA encryption Tools
+  id: RSA Encryption Tools
   version: -1
 fromversion: 6.0.0
 tests:

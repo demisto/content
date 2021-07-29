@@ -1,7 +1,7 @@
-id: playbook-test-rsa-encryption-decryption
+id: test-rsa-encryption-decryption
 version: -1
-name: playbook-test-rsa-encryption-decryption
-description: Test playbook for Encryption Tools pack.
+name: test-rsa-encryption-decryption
+description: Test playbook for RSA Encryption Tools pack.
 starttaskid: "0"
 tasks:
   "0":

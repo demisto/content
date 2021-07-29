@@ -3440,8 +3440,8 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "RSA encryption Tools",
-            "playbookID": "playbook-test-rsa-encryption-decryption"
+            "integrations": "RSA Encryption Tools",
+            "playbookID": "test-rsa-encryption-decryption"
         }
     ],
     "skipped_tests": {

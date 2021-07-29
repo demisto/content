@@ -47,12 +47,7 @@ def get_private_key() -> rsa.PrivateKey:
     params_private_key = params.get('private_key')
 
     if params_private_key:
-        base64value = params_private_key.replace(PREFIX, '').replace(SUFFIX, '')
-        base64value = base64value.replace(' ', '\n')
-
-        private_key = f'{PREFIX}\n{base64value}\n{SUFFIX}'
-
-        return rsa.PrivateKey.load_pkcs1(private_key.encode('utf-8'))
+        return rsa.PrivateKey.load_pkcs1(params_private_key.encode('utf-8'))
 
     raise DemistoException('Private key is not defined.')
 
