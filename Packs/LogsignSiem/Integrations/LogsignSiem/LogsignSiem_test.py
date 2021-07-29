@@ -24,22 +24,16 @@ def test_check_args():
         check_arg('unknown', mock_data)
 
 
-def test_client_value_error():
-    client = get_client(api_key='123123123')
-    with pytest.raises(ValueError):
-        client.http_request('GET', '/url_suffix')
-
-
 def test_client_general_exc():
     client = get_client(url="Logsign")
     with pytest.raises(Exception):
-        client.http_request('GET', '/url_suffix', params={"args": 1})
+        client._http_request('GET', '/url_suffix', params={"args": 1})
 
 
 def test_client_type_error():
     client = get_client(url="Logsign")
     with pytest.raises(TypeError):
-        client.http_request()
+        client._http_request()
 
 
 def test_get_generic_data():
@@ -169,9 +163,7 @@ def test_get_incidents(requests_mock):
     requests_mock.get(f'{TEST_URL}/get_incidents?api_key=apikey&last_run={last_run}', json=MOCK_INCIDENTS)
     client = get_client()
     response = client.get_incidents('GET', last_run, '')
-    assert response.status_code == 200
-    assert response.json() == MOCK_INCIDENTS
-    assert response.text == json.dumps(MOCK_INCIDENTS)
+    assert response == MOCK_INCIDENTS
 
 
 def test_fetch_incidents(requests_mock):
@@ -180,9 +172,8 @@ def test_fetch_incidents(requests_mock):
     requests_mock.get(f"{TEST_URL}/get_incidents?api_key=apikey&last_run={last_run}", json=MOCK_INC)
     client = get_client()
     resp = client.get_incidents('GET', last_run, '')
-    data = resp.json()
     demistomock.setLastRun({'last_fetch': last_run})
     fetch_incidents(client, last_run, '1 hour', 50, '')
-    assert len(data['incidents']) == 2
-    assert data['incidents'] == MOCK_INC['incidents']
-    assert next_run['last_fetch'] == data['last_fetch']
+    assert len(resp['incidents']) == 2
+    assert resp['incidents'] == MOCK_INC['incidents']
+    assert next_run['last_fetch'] == resp['last_fetch']

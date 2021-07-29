@@ -1,6 +1,4 @@
-import json
-import traceback
-from typing import Any, Dict, List, Tuple
+from typing import Dict, List, Tuple
 
 import requests
 
@@ -50,49 +48,6 @@ class Client(BaseClient):
         self._proxies = proxy
         super().__init__(base_url=url, verify=verify, proxy=self._proxies)
 
-    def http_request(self, method: str, url_suffix: str, headers: Dict = None, params: Dict = None) -> Any:
-        """
-            Generic request to LogsignSiem
-            Override http_request method from BaseClient class. This method will print an error based on status code
-            and exceptions.
-
-            :type method: ``str``
-            :param method: The HTTP method, for example: GET, POST, and so on.
-
-            :type url_suffix: ``str``
-            :param url_suffix: The API endpoint.
-
-            :type headers: ``dict``
-            :param headers: Headers to send in the request. If None, will use self._headers.
-
-            :type params: ``dict``
-            :param params: URL parameters to specify the query.
-
-            :return: Depends on the resp_type parameter
-            :rtype: ``dict`` or ``str`` or ``requests.Response``
-        """
-        full_url = urljoin(self._base_url, url_suffix)
-
-        if not params:
-            raise ValueError('params not specified!')
-
-        if not headers:
-            headers = {'Content-Type': CONTENT_TYPE_JSON}
-        try:
-            response = requests.request(
-                method=method,
-                url=full_url,
-                params=params,
-                headers=headers,
-                verify=self._verify,
-                proxies=self._proxies
-            )
-            response.raise_for_status()
-            return response
-
-        except Exception as exception:
-            raise Exception(str(exception))
-
     def get_incidents(self, method: str, last_run: str, query: str) -> Any:
         """
             Get-Incidents Service
@@ -109,7 +64,7 @@ class Client(BaseClient):
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``requests.Response``
         """
-        return self.http_request(
+        return self._http_request(
             method=method,
             url_suffix=URL_SUFFIX['FETCH_INCIDENTS'],
             params={
@@ -145,7 +100,7 @@ class Client(BaseClient):
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``requests.Response``
         """
-        return self.http_request(
+        return self._http_request(
             method=method,
             url_suffix=url_suffix,
             params={
@@ -170,7 +125,7 @@ class Client(BaseClient):
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``requests.Response``
         """
-        return self.http_request(method=method, url_suffix=url_suffix, params={'api_key': self._api_key})
+        return self._http_request(method=method, url_suffix=url_suffix, params={'api_key': self._api_key})
 
 
 def get_datetime_now(first_fetch_time):
@@ -282,7 +237,7 @@ def fetch_incidents(client: Client, api_last_run: str, first_fetch: str,
     data = client.get_incidents(method='GET', last_run=api_last_run, query=query)
 
     incidents: List[Dict[str, Any]] = []
-    for incident in data.json()['incidents']:
+    for incident in data['incidents']:
         # convert the date to ISO8601
         created_at_str = f"{datetime.strptime(incident['Time']['Generated'], LOGSIGN_INC_DATE_FORMAT).isoformat()}Z"
         created_at_dt = datetime.strptime(created_at_str, DATE_FORMAT)
@@ -327,12 +282,11 @@ def get_query_command(client: Client, url_suffix: str, args: Dict[str, Any]) -> 
     time_frame = check_arg('time_frame', args)
 
     response = client.get_query('GET', query, url_suffix, grouped_column, criteria, time_frame)
-    data = response.json()
 
     if url_suffix == URL_SUFFIX['GET_COUNT']:
-        result = get_generic_data(data, 'count', 'LogsignSiem.Count')
+        result = get_generic_data(response, 'count', 'LogsignSiem.Count')
     elif url_suffix == URL_SUFFIX['GET_COLUMN']:
-        result = get_generic_data(data, 'columns', 'LogsignSiem.Columns')
+        result = get_generic_data(response, 'columns', 'LogsignSiem.Columns')
     return result
 
 
