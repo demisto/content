@@ -48,7 +48,7 @@ class Client(BaseClient):
         self._proxies = proxy
         super().__init__(base_url=url, verify=verify, proxy=self._proxies)
 
-    def get_incidents(self, method: str, last_run: str, query: str) -> Any:
+    def get_incidents(self, method: str, last_run: Any, query: str) -> Any:
         """
             Get-Incidents Service
 
@@ -64,6 +64,10 @@ class Client(BaseClient):
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``requests.Response``
         """
+        try:
+            last_run = datetime.strftime(last_run, DATE_FORMAT)
+        except Exception:
+            raise ValueError('last_run type is not datetime format')
         return self._http_request(
             method=method,
             url_suffix=URL_SUFFIX['FETCH_INCIDENTS'],
@@ -200,16 +204,12 @@ def get_generic_data(data: Dict[str, Any], key: str, output_prefix: str) -> Comm
     )
 
 
-def fetch_incidents(client: Client, api_last_run: str, first_fetch: str,
-                    max_fetch: int, query: str) -> Tuple[Dict[str, str], List[dict]]:
+def fetch_incidents(client: Client, first_fetch: str, max_fetch: int, query: str) -> Tuple[Dict[str, str], List[dict]]:
     """
         This function is called for fetching incidents.
 
         :type client: ``Client``
         :param Client: Client object
-
-        :type api_last_run: ``str``
-        :param api_last_run: The greatest incident created_time we fetched from last fetch
 
         :type first_fetch: ``str``
         :param first_fetch: Example: "1 hour"
@@ -234,7 +234,7 @@ def fetch_incidents(client: Client, api_last_run: str, first_fetch: str,
 
     latest_created_time = last_fetch
 
-    data = client.get_incidents(method='GET', last_run=api_last_run, query=query)
+    data = client.get_incidents(method='GET', last_run=last_fetch, query=query)
 
     incidents: List[Dict[str, Any]] = []
     for incident in data['incidents']:
@@ -311,8 +311,7 @@ def main() -> None:
         first_fetch_time = DEFAULT_FIRST_FETCH if not first_fetch else first_fetch
 
         api_key = params.get('apikey')
-        api_last_run = params.get('last_run', None)
-        api_last_run_time = get_datetime_now(first_fetch_time) if api_last_run is None else api_last_run
+        last_run = params.get('last_run', None)
 
         query = params.get('query', '')
 
@@ -324,7 +323,7 @@ def main() -> None:
         args = demisto.args()
 
         if command == 'logsign-fetch-incidents' or command == 'fetch-incidents':
-            last_run, incidents = fetch_incidents(client, api_last_run_time, first_fetch_time, max_fetch, query)
+            last_run, incidents = fetch_incidents(client, first_fetch_time, max_fetch, query)
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)
         elif command == 'logsign-get-columns-query':

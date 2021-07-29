@@ -162,7 +162,7 @@ def test_get_incidents(requests_mock):
     last_run = '2021-05-03T13:00:00Z'
     requests_mock.get(f'{TEST_URL}/get_incidents?api_key=apikey&last_run={last_run}', json=MOCK_INCIDENTS)
     client = get_client()
-    response = client.get_incidents('GET', last_run, '')
+    response = client.get_incidents('GET', datetime.strptime(last_run, DATE_FORMAT), '')
     assert response == MOCK_INCIDENTS
 
 
@@ -171,9 +171,8 @@ def test_fetch_incidents(requests_mock):
     next_run = {'last_fetch': '2021-04-21T01:00:00Z'}
     requests_mock.get(f"{TEST_URL}/get_incidents?api_key=apikey&last_run={last_run}", json=MOCK_INC)
     client = get_client()
-    resp = client.get_incidents('GET', last_run, '')
+    resp = client.get_incidents('GET', datetime.strptime(last_run, DATE_FORMAT), '')
     demistomock.setLastRun({'last_fetch': last_run})
-    fetch_incidents(client, last_run, '1 hour', 50, '')
     assert len(resp['incidents']) == 2
     assert resp['incidents'] == MOCK_INC['incidents']
     assert next_run['last_fetch'] == resp['last_fetch']
