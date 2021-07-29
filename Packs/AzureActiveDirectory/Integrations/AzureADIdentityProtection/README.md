@@ -133,7 +133,7 @@ Retrieve the properties of a collection of riskDetection objects.
 | user_principal_name | The user principal name (UPN) of the user. | Optional | 
 | country | Country or region of the activity. For example, `US` or `UK`. For futher details, see https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-beta. | Optional | 
 | filter_expression | A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters. | Optional | 
-| limit | Number of results to provide. | Optional | 
+| limit | Number of results to provide. Default is 50. | Optional | 
 | next_link | A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments. | Optional | 
 
 
@@ -273,7 +273,7 @@ Retrieves the properties of a collection of riskDetection objects.
 | risk_state | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | Optional | 
 | risk_detail | Details of the detected risk. The possible values are none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | Optional | 
 | filter_expression | A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters. | Optional | 
-| limit | Number of results to provide. | Optional | 
+| limit | Number of results to provide. Default is 50. | Optional | 
 | next_link | A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments. | Optional | 
 | user_name | Risky user principal name. | Optional | 
 
@@ -338,7 +338,7 @@ Gets the risk history of a riskyUser resource.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | Unique ID of the user. | Required | 
-| limit | Number of results to provide. | Optional | 
+| limit | Number of results to provide. Default is 50. | Optional | 
 | filter_expression | A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters. | Optional | 
 | next_link | A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments. | Optional | 
 
