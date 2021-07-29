@@ -169,6 +169,8 @@ def test_mark_incident_as_fp(requests_mock):
     suffix = f'company/{mock_socradar_company_id}/incidents/fp?key={mock_socradar_api_key}'
     requests_mock.post(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
+    mock_args = {'socradar_incident_id': mock_incident_id, 'comments': mock_comment}
+
     client = Client(
         base_url=SOCRADAR_API_ENDPOINT,
         api_key=mock_socradar_api_key,
@@ -179,8 +181,7 @@ def test_mark_incident_as_fp(requests_mock):
 
     response = mark_incident_as_fp_command(
         client=client,
-        incident_id=mock_incident_id,
-        comments=mock_comment
+        args=mock_args
     )
 
     expected_output = util_load_json('test_data/mark_incident_fp_expected_output.json')
@@ -206,6 +207,8 @@ def test_mark_incident_as_fp_handles_error(requests_mock):
     suffix = f'company/{mock_socradar_company_id}/incidents/fp?key={mock_socradar_api_key}'
     requests_mock.post(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
+    mock_args = {'socradar_incident_id': mock_incident_id, 'comments': mock_comment}
+
     client = Client(
         base_url=SOCRADAR_API_ENDPOINT,
         api_key=mock_socradar_api_key,
@@ -217,8 +220,7 @@ def test_mark_incident_as_fp_handles_error(requests_mock):
     with pytest.raises(DemistoException):
         mark_incident_as_fp_command(
             client=client,
-            incident_id=mock_incident_id,
-            comments=mock_comment
+            args=mock_args
         )
 
 
@@ -239,6 +241,8 @@ def test_mark_incident_as_resolved(requests_mock):
     suffix = f'company/{mock_socradar_company_id}/incidents/resolve?key={mock_socradar_api_key}'
     requests_mock.post(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
+    mock_args = {'socradar_incident_id': mock_incident_id, 'comments': mock_comment}
+
     client = Client(
         base_url=SOCRADAR_API_ENDPOINT,
         api_key=mock_socradar_api_key,
@@ -249,8 +253,7 @@ def test_mark_incident_as_resolved(requests_mock):
 
     response = mark_incident_as_resolved_command(
         client=client,
-        incident_id=mock_incident_id,
-        comments=mock_comment
+        args=mock_args
     )
 
     expected_output = util_load_json('test_data/mark_incident_resolved_expected_output.json')
@@ -272,6 +275,8 @@ def test_mark_incident_as_resolved_handles_error(requests_mock):
     suffix = f'company/{mock_socradar_company_id}/incidents/resolve?key={mock_socradar_api_key}'
     requests_mock.post(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
+    mock_args = {'socradar_incident_id': mock_incident_id, 'comments': mock_comment}
+
     client = Client(
         base_url=SOCRADAR_API_ENDPOINT,
         api_key=mock_socradar_api_key,
@@ -283,8 +288,7 @@ def test_mark_incident_as_resolved_handles_error(requests_mock):
     with pytest.raises(DemistoException):
         mark_incident_as_resolved_command(
             client=client,
-            incident_id=mock_incident_id,
-            comments=mock_comment
+            args=mock_args
         )
 
 
