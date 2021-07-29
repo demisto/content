@@ -542,10 +542,10 @@ tasks:
     task:
       id: 8d14541c-c937-475f-87dd-9ba980d197f9
       version: -1
-      name: Search And Delete Emails - Generic
+      name: Search And Delete Emails - Generic v2
       description: This playbook searches and delete emails with similar attributes
         of a malicious email.
-      playbookName: Search And Delete Emails - Generic
+      playbookName: Search And Delete Emails - Generic v2
       type: playbook
       iscommand: false
       brand: ""
