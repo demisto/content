@@ -9,6 +9,8 @@ import re
 import requests
 from requests.exceptions import ConnectionError, MissingSchema
 
+from typing import Tuple
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -1038,7 +1040,7 @@ def prepare_whitelist_human_and_context(entry_context, human_readable_data, obje
 
 
 # Added by Prerak.Mittal
-def get_whitelist_helper(raw_response: dict) -> tuple[list, list]:
+def get_whitelist_helper(raw_response: dict) -> Tuple[list, list]:
     """
         Prepares the data for human readable format and context data
 
@@ -1055,18 +1057,18 @@ def get_whitelist_helper(raw_response: dict) -> tuple[list, list]:
 
     if raw_response:
         # Extract the meta information
-        base_meta: dict = raw_response.get("meta")
+        base_meta: dict = raw_response.get("meta", {})
 
-        limit: int = base_meta.get("limit")
+        limit: int = base_meta.get("limit", 0)
 
         # "next" returns the endpoint as /api/v1/orgwhitelist/?username=devops
         # For calling http_request, we need to remove /api/
-        next_endpoint: str = base_meta.get("next")
+        next_endpoint: str = base_meta.get("next", "")
         next_endpoint = re.sub("^/api/", "", next_endpoint)
 
-        previous_endpoint: str = base_meta.get("previous")
-        offset: int = base_meta.get("offset")
-        total_count: int = base_meta.get("total_count")
+        previous_endpoint: str = base_meta.get("previous", "")
+        offset: int = base_meta.get("offset", 0)
+        total_count: int = base_meta.get("total_count", 0)
 
         total_count_more_than_limit: bool = total_count > limit
 
@@ -1082,7 +1084,7 @@ def get_whitelist_helper(raw_response: dict) -> tuple[list, list]:
                 # Since, the API returns the next endpoint to hit, no need to call build_params() function.
                 raw_response = http_request("GET", next_endpoint, headers=HEADERS)
 
-                next_endpoint = raw_response.get("meta").get("next")
+                next_endpoint = raw_response.get("meta", {}).get("next")
 
                 if next_endpoint:
                     next_endpoint = re.sub("^/api/", "", next_endpoint)
@@ -1125,10 +1127,10 @@ def get_whitelist_command():
     raw_response: dict = http_request("GET", "v1/orgwhitelist/", params=params, headers=HEADERS)
 
     if not raw_response:
-        demisto.results(F"No Whitelist data found.")
+        demisto.results("No Whitelist data found.")
         sys.exit()
 
-    title = F"Whitelists found!"
+    title = "Whitelists found!"
 
     context_data, human_readable_data = get_whitelist_helper(raw_response)
 
@@ -1198,12 +1200,11 @@ def modify_whitelist_entry_note_command(entry_id: str, notes: str):
 
     raw_response: dict = http_request(
         "PATCH", f"v1/orgwhitelist/{entry_id}/", params=CREDENTIALS, data=data, headers=HEADERS, text_response=True)
-    # print(raw_response)
+   
     human_readable = F"Notes for ID: {entry_id} modified."
 
     if raw_response:
         demisto.results(F"Could not find any whitelist to modify for ID: {entry_id}")
-        #return_outputs(human_readable, {}, raw_response)
         sys.exit()
 
     return_outputs(human_readable, {}, raw_response)
@@ -1282,7 +1283,7 @@ def main():
         elif command == 'threatstream-add-tag-to-model':
             add_tag_to_model(**args)
         elif command == 'threatstream-get-whitelist':
-            get_whitelist_command(**args)
+            get_whitelist_command()
         elif command == 'threatstream-add-new-whitelist-entry':
             add_new_whitelist_entry_command(**args)
         elif command == 'threatstream-modify-whitelist-entry-note':
