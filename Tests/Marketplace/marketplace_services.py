@@ -69,6 +69,7 @@ class Pack(object):
         self._description = None  # initialized in load_user_metadata function
         self._display_name = None  # initialized in load_user_metadata function
         self._user_metadata = None  # initialized in load_user_metadata function
+        self.eula_link = None   # initialized in load_user_metadata function
         self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
         self._bucket_url = None  # URL of where the pack was uploaded.
@@ -575,7 +576,7 @@ class Pack(object):
             'legacy': self._legacy,
             'support': self._support_type,
             'supportDetails': self._support_details,
-            'eulaLink': Metadata.EULA_URL,
+            'eulaLink': self.eula_link,
             'author': self._author,
             'authorImage': self._author_image,
             'certification': self._certification,
@@ -1645,6 +1646,8 @@ class Pack(object):
             self.description = user_metadata.get('description', False)
             self.display_name = user_metadata.get('name', '')
             self._user_metadata = user_metadata
+            self.eula_link = user_metadata.get('eulaLink', Metadata.EULA_URL)
+
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
         except Exception:
