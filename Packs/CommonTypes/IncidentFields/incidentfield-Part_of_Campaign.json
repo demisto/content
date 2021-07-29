@@ -4,7 +4,7 @@
     "modified": "2021-07-20T15:37:39.246156744Z",
     "name": "Part of Campaign",
     "ownerOnly": false,
-    "description": "The ID of the Phishing Campaign incident of which the current incident is part of.",
+    "description": "The ID of the campaign incident of which the current incident is part of.",
     "cliName": "partofcampaign",
     "type": "shortText",
     "closeForm": false,
