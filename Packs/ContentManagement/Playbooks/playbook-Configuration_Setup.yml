@@ -308,6 +308,8 @@ tasks:
     scriptarguments:
       pack_id:
         simple: ${ConfigurationSetup.CustomPacks.packid}
+      retry-count:
+        simple: "3"
     separatecontext: false
     view: |-
       {
