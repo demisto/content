@@ -55,9 +55,9 @@ def test_calculate_fetch_start_time(last_fetch, first_fetch, output):
 def test_calculate_fetch_start_time_dynamic():
     from GuardiCoreV2 import calculate_fetch_start_time
     out = int(parse('3 days').replace(tzinfo=utc).timestamp()) * 1000
-    assert calculate_fetch_start_time(None, None) == out
+    assert calculate_fetch_start_time(None, None) - out < 1000
     out = int(parse('4 days').replace(tzinfo=utc).timestamp()) * 1000
-    assert calculate_fetch_start_time(None, '4 days') == out
+    assert calculate_fetch_start_time(None, '4 days') - out < 1000
 
 
 def test_authenticate(requests_mock):
