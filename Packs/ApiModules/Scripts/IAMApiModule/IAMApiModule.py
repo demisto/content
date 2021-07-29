@@ -139,6 +139,12 @@ class IAMUserProfile:
     def get_attribute(self, item):
         return self._user_profile.get(item)
 
+    def get_old_user_attribute(self, item):
+        return self._user_profile.get('olduserdata', {}).get(item)
+
+    def was_email_changed(self):
+        return self.get_attribute('oldemail') is not None
+
     def to_entry(self):
         """ Generates a XSOAR IAM entry from the data in _vendor_action_results.
         Note: Currently we are using only the first element of the list, in the future we will support multiple results.
@@ -444,7 +450,11 @@ class IAMCommand:
                                     skip_reason='Command is disabled.')
         else:
             try:
-                identifier = user_profile.get_attribute(self.attr)
+                if user_profile.was_email_changed():
+                    identifier = user_profile.get_old_user_attribute(self.attr)
+                else:
+                    identifier = user_profile.get_attribute(self.attr)
+                
                 user_app_data = client.get_user(identifier)
                 if user_app_data:
                     app_profile = user_profile.map_object(self.mapper_out, IAMUserProfile.UPDATE_INCIDENT_TYPE)
