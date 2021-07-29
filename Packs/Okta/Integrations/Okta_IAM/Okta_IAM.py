@@ -748,10 +748,7 @@ class OutputContext:
 
 
 def verify_and_load_scim_data(scim):
-    try:
-        scim = json.loads(scim)
-    except:
-        pass
+    scim = json.loads(scim)
     if type(scim) != dict:
         raise Exception("SCIM data is not a valid JSON")
     return scim
@@ -775,12 +772,13 @@ def get_group_command(client, args):
             if len(res_json) < 1:
                 generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=404,
                                                     errorMessage="Group Not Found", details=res_json)
-                generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
+                generic_iam_context_dt = f'{generic_iam_context.command}' \
+                                         '(val.id == obj.id && val.instanceName == obj.instanceName)'
                 outputs = {
                     generic_iam_context_dt: generic_iam_context.data
                 }
 
-                readable_output = tableToMarkdown(f'Okta Get Group:', generic_iam_context.data, removeNull=True)
+                readable_output = tableToMarkdown('Okta Get Group:', generic_iam_context.data, removeNull=True)
                 return (
                     readable_output,
                     outputs,
@@ -793,12 +791,13 @@ def get_group_command(client, args):
                                                 errorCode=res_json.get('errorCode'),
                                                 errorMessage=res_json.get('errorSummary'),
                                                 details=res_json)
-            generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
+            generic_iam_context_dt = f'{generic_iam_context.command}' \
+                                     f'(val.id == obj.id && val.instanceName == obj.instanceName)'
             outputs = {
                 generic_iam_context_dt: generic_iam_context.data
             }
 
-            readable_output = tableToMarkdown(f'Okta Get Group:', generic_iam_context.data, removeNull=True)
+            readable_output = tableToMarkdown('Okta Get Group:', generic_iam_context.data, removeNull=True)
             return (
                 readable_output,
                 outputs,
@@ -817,7 +816,7 @@ def get_group_command(client, args):
         outputs = {
             generic_iam_context_dt: generic_iam_context_data_list
         }
-        readable_output = tableToMarkdown(f'Okta Get Group:', generic_iam_context_data_list, removeNull=True)
+        readable_output = tableToMarkdown('Okta Get Group:', generic_iam_context_data_list, removeNull=True)
         return (
             readable_output,
             outputs,
@@ -858,7 +857,7 @@ def get_group_command(client, args):
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown(f'Okta Get Group:', generic_iam_context.data, removeNull=True)
+    readable_output = tableToMarkdown('Okta Get Group:', generic_iam_context.data, removeNull=True)
     return (
         readable_output,
         outputs,

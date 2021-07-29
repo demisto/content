@@ -246,7 +246,7 @@ class OutputContext:
                  errorMessage=None, details=None, displayName=None, members=None):
         self.instanceName = demisto.callingContext['context']['IntegrationInstance']
         self.brand = demisto.callingContext['context']['IntegrationBrand']
-        self.command = demisto.command().replace('-', '_').title().replace('_','')
+        self.command = demisto.command().replace('-', '_').title().replace('_', '')
         self.success = success
         self.active = active
         self.id = id
@@ -280,14 +280,11 @@ class OutputContext:
 
 
 def map_scim(clientData):
-    try:
-        clientData = json.loads(clientData)
-    except:
-        pass
+    clientData = json.loads(clientData)
     if type(clientData) != dict:
         raise Exception('Provided client data is not JSON compatible')
 
-    scim_extension = INPUT_SCIM_EXTENSION_KEY.replace('.','\.')
+    scim_extension = INPUT_SCIM_EXTENSION_KEY.replace('.', '\.')
     mapping = {
         "active": "active",
         "addressCountry": "addresses(val.primary && val.primary==true).[0].country",
@@ -299,7 +296,6 @@ def map_scim(clientData):
         "addressType": "addresses(val.primary && val.primary==true).[0].type",
         "costCenter": scim_extension + ".costCenter",
         "department": scim_extension + ".department",
-        #"displayName": "displayName",
         "division": scim_extension + ".division",
         "email": "emails(val.primary && val.primary==true).[0].value",
         "emailType": "emails(val.primary && val.primary==true).[0].type",
@@ -328,10 +324,10 @@ def map_scim(clientData):
         "userType": "userType",
     }
     ret = dict()
-    for k,v in mapping.items():
+    for k, v in mapping.items():
         try:
             ret[k] = demisto.dt(clientData, v)
-        except Exception as err:
+        except Exception:
             ret[k] = None
     return ret
 
@@ -365,12 +361,13 @@ def get_group_command(client, args):
             if res_json.get('totalResults') < 1:
                 generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=404,
                                                     errorMessage="Group Not Found", details=res_json)
-                generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
+                generic_iam_context_dt = f'{generic_iam_context.command}' \
+                                         '(val.id == obj.id && val.instanceName == obj.instanceName)'
                 outputs = {
                     generic_iam_context_dt: generic_iam_context.data
                 }
 
-                readable_output = tableToMarkdown(f'Slack Get Group:', generic_iam_context.data, removeNull=True)
+                readable_output = tableToMarkdown('Slack Get Group:', generic_iam_context.data, removeNull=True)
                 return (
                     readable_output,
                     outputs,
@@ -383,12 +380,13 @@ def get_group_command(client, args):
             generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
                                                 errorCode=res_json['Errors']['code'],
                                                 errorMessage=res_json['Errors']['description'], details=res_json)
-            generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
+            generic_iam_context_dt = f'{generic_iam_context.command}' \
+                                     f'(val.id == obj.id && val.instanceName == obj.instanceName)'
             outputs = {
                 generic_iam_context_dt: generic_iam_context.data
             }
 
-            readable_output = tableToMarkdown(f'Slack Get Group:', generic_iam_context.data, removeNull=True)
+            readable_output = tableToMarkdown('Slack Get Group:', generic_iam_context.data, removeNull=True)
             return (
                 readable_output,
                 outputs,
@@ -409,7 +407,8 @@ def get_group_command(client, args):
         generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id, errorCode=404,
                                             errorMessage="Group Not Found", details=res_json)
     else:
-        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id, errorCode=res_json['Errors']['code'],
+        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
+                                            errorCode=res_json['Errors']['code'],
                                             errorMessage=res_json['Errors']['description'], details=res_json)
 
     generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
@@ -417,7 +416,7 @@ def get_group_command(client, args):
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown(f'Slack Get Group:', generic_iam_context.data, removeNull=True)
+    readable_output = tableToMarkdown('Slack Get Group:', generic_iam_context.data, removeNull=True)
     return (
         readable_output,
         outputs,
@@ -451,7 +450,7 @@ def delete_group_command(client, args):
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown(f'Slack Delete Group:', generic_iam_context.data, removeNull=True)
+    readable_output = tableToMarkdown('Slack Delete Group:', generic_iam_context.data, removeNull=True)
     return (
         readable_output,
         outputs,
@@ -486,7 +485,7 @@ def create_group_command(client, args):
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown(f'Slack Create Group:', generic_iam_context.data, removeNull=True)
+    readable_output = tableToMarkdown('Slack Create Group:', generic_iam_context.data, removeNull=True)
     return (
         readable_output,
         outputs,
@@ -538,7 +537,8 @@ def update_group_command(client, args):
                                             errorMessage="Group Not Found", details=res.json())
     else:
         res_json = res.json()
-        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id, errorCode=res_json['Errors']['code'],
+        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
+                                            errorCode=res_json['Errors']['code'],
                                             errorMessage=res_json['Errors']['description'], details=res_json)
 
     generic_iam_context_dt = f'{generic_iam_context.command}(val.id == obj.id && val.instanceName == obj.instanceName)'
@@ -546,7 +546,7 @@ def update_group_command(client, args):
         generic_iam_context_dt: generic_iam_context.data
     }
 
-    readable_output = tableToMarkdown(f'Slack Update Group:', generic_iam_context.data, removeNull=True)
+    readable_output = tableToMarkdown('Slack Update Group:', generic_iam_context.data, removeNull=True)
     return (
         readable_output,
         outputs,
