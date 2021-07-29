@@ -229,15 +229,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                     first_fetch_time: Optional[int], resolution_status: Optional[str], fp_status: Optional[str],
                     severity: List[str], incident_main_type: Optional[str], incident_sub_type: Optional[str]
                     ) -> Tuple[Dict[str, int], List[dict]]:
-    """This function retrieves new incidents every interval (default is 1 minute).
-
-    This function has to implement the logic of making sure that incidents are
-    fetched only onces and no incidents are missed. By default it's invoked by
-    XSOAR every minute. It will use last_run to save the timestamp of the last
-    incident it processed. If last_run is not provided, it should use the
-    integration parameter first_fetch_time to determine when to start fetching
-    the first time.
-
+    """
     :type client: ``Client``
     :param client: SOCRadar client to use
 
@@ -377,22 +369,21 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     return next_run, incidents
 
 
-def mark_incident_as_fp_command(client: Client, incident_id: int, comments: Optional[str]) -> CommandResults:
+def mark_incident_as_fp_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Sends a request that marks incident as false positive in SOCRadar platform.
 
     :type client: ``Client``
     :param client: client to use
 
-    :type incident_id: ``int``
-    :param incident_id: SOCRadar incident ID of particular incident to that will be used to mark it as false positive.
-
-    :type comments: ``Optional[str]``
-    :param comments: Possible comments of the mark as false positive action which will be sent to SOCRadar.
+    :type args: Dict[str, Any]
+    :param args: contains all arguments for mark_incident_as_fp_command
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``
     :rtype: ``CommandResults``
     """
+    incident_id = args.get('socradar_incident_id')
+    comments = args.get('comments')
     raw_response = client.mark_incident_as_false_positive(
         incident_id=incident_id,
         comments=comments
@@ -409,22 +400,21 @@ def mark_incident_as_fp_command(client: Client, incident_id: int, comments: Opti
     )
 
 
-def mark_incident_as_resolved_command(client: Client, incident_id: int, comments: Optional[str]) -> CommandResults:
+def mark_incident_as_resolved_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Sends a request that marks incident as resolved in SOCRadar platform.
 
     :param client: client to use
     :type client: ``Client``
 
-    :param incident_id: SOCRadar incident ID of particular incident to that will be used to mark it as resolved.
-    :type incident_id: ``int``
-
-    :param comments: Possible comments of the mark as resolved action which will be sent to SOCRadar.
-    :type comments: ``Optional[str]``
+    :type args: Dict[str, Any]
+    :param args: contains all arguments for mark_incident_as_resolved_command
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``
     :rtype: ``CommandResults``
     """
+    incident_id = args.get('socradar_incident_id')
+    comments = args.get('comments')
     raw_response = client.mark_incident_as_resolved(
         incident_id=incident_id,
         comments=comments
@@ -511,23 +501,17 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif command == 'socradar-mark-incident-fp':
-            incident_id = demisto.args().get('socradar_incident_id')
-            comments = demisto.args().get('comments')
             return_results(
                 mark_incident_as_fp_command(
                     client=client,
-                    incident_id=incident_id,
-                    comments=comments
+                    args=demisto.args()
                 )
             )
         elif command == 'socradar-mark-incident-resolved':
-            incident_id = demisto.args().get('socradar_incident_id')
-            comments = demisto.args().get('comments')
             return_results(
                 mark_incident_as_resolved_command(
                     client=client,
-                    incident_id=incident_id,
-                    comments=comments
+                    args=demisto.args()
                 )
             )
 
