@@ -136,19 +136,19 @@ class Client(BaseClient):
                                       error_handler=self.handle_error_response)
         return response
 
-    def mark_incident_as_false_positive(self, incident_id: int, comments: Optional[str]):
+    def mark_incident_as_false_positive(self, incident_id: str, comments: Optional[str]):
         """Sends a request that marks incident as false positive in SOCRadar platform
         using '/company/{company_id}/incidents/fp'. All the parameters are passed directly to the API as
         HTTP GET parameters in the request
 
-        :type incident_id: ``int``
+        :type incident_id: ``str``
         :param incident_id: SOCRadar incident ID of particular incident to that will be used to mark it as false positive.
 
         :type comments: ``Optional[str]``
         :param comments: Possible comments of the mark as false positive action which will be sent to SOCRadar.
         """
 
-        api_params: Dict[str, Any] = {'key': self.api_key}
+        api_params: Dict[str, str] = {'key': self.api_key}
         json_data = {'alarm_ids': [incident_id], 'comments': comments}
 
         suffix = f'/company/{self.socradar_company_id}/incidents/fp'
@@ -156,19 +156,19 @@ class Client(BaseClient):
                                       timeout=60, error_handler=self.handle_error_response)
         return response
 
-    def mark_incident_as_resolved(self, incident_id: int, comments: Optional[str]):
+    def mark_incident_as_resolved(self, incident_id: str, comments: Optional[str]):
         """Sends a request that marks incident as resolved in SOCRadar platform
         using '/company/{company_id}/incidents/resolve'. All the parameters are passed directly to the API as
         HTTP GET parameters in the request
 
-        :type incident_id: ``int``
+        :type incident_id: ``str``
         :param incident_id: SOCRadar incident ID of particular incident to that will be used to mark it as resolved.
 
         :type comments: ``Optional[str]``
         :param comments: Possible comments of the mark as resolved action which will be sent to SOCRadar.
         """
 
-        api_params: Dict[str, Any] = {'key': self.api_key}
+        api_params: Dict[str, str] = {'key': self.api_key}
         json_data: Dict[str, Any] = {'alarm_ids': [incident_id], 'comments': comments}
 
         suffix = f'/company/{self.socradar_company_id}/incidents/resolve'
@@ -369,21 +369,21 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     return next_run, incidents
 
 
-def mark_incident_as_fp_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def mark_incident_as_fp_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """Sends a request that marks incident as false positive in SOCRadar platform.
 
     :type client: ``Client``
     :param client: client to use
 
-    :type args: Dict[str, Any]
+    :type args: Dict[str, str]
     :param args: contains all arguments for mark_incident_as_fp_command
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``
     :rtype: ``CommandResults``
     """
-    incident_id = args.get('socradar_incident_id')
-    comments = args.get('comments')
+    incident_id = args.get('socradar_incident_id', '')
+    comments = args.get('comments', '')
     raw_response = client.mark_incident_as_false_positive(
         incident_id=incident_id,
         comments=comments
@@ -400,21 +400,21 @@ def mark_incident_as_fp_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def mark_incident_as_resolved_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def mark_incident_as_resolved_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """Sends a request that marks incident as resolved in SOCRadar platform.
 
     :param client: client to use
     :type client: ``Client``
 
-    :type args: Dict[str, Any]
+    :type args: Dict[str, str]
     :param args: contains all arguments for mark_incident_as_resolved_command
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``
     :rtype: ``CommandResults``
     """
-    incident_id = args.get('socradar_incident_id')
-    comments = args.get('comments')
+    incident_id = args.get('socradar_incident_id', '')
+    comments = args.get('comments', '')
     raw_response = client.mark_incident_as_resolved(
         incident_id=incident_id,
         comments=comments
