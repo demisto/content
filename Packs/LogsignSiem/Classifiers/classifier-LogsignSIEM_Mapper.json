@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "LogsignSIEM_Mapper",
+    "id": "LogsignSIEM Mapper",
     "mapping": {
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": true,
@@ -189,7 +189,7 @@
             }
         }
     },
-    "name": "LogsignSIEM_Mapper",
+    "name": "LogsignSIEM Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

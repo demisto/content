@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "ed9ae5bd-4a10-463e-8435-462eef59a896",
+    "id": "LogsignSIEM Classifier",
     "keyTypeMap": {
         "Discovery": "Reconnaissance",
         "File": "Access",

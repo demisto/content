@@ -49,7 +49,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: LogsignSiem Descriptions [x]
+description: Logsign SIEM provides to collect and store unlimited data, investigate and detect threats, and respond automatically.
 display: LogsignSiem
 name: LogsignSiem
 script:
@@ -60,9 +60,6 @@ script:
       isArray: false
       name: last_run
       predefined:
-      - ''
-      required: false
-      secret: false
     - default: false
       description: Query
       isArray: false
@@ -70,7 +67,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Fetch Incidents Command Description [x]
+    description: Automatically pulls incidents from LogsignSiem. If FirstFetch value is not given, it will start pulling incidents 1 hour before.
     execution: false
     name: logsign-fetch-incidents
   - arguments:
@@ -93,7 +90,7 @@ script:
       name: criteria
       predefined:
       - unique
-      - ' value'
+      - value
       required: true
       secret: false
     - default: false
@@ -130,11 +127,11 @@ script:
       name: criteria
       predefined:
       - unique
-      - ' value'
+      - value
       required: true
       secret: false
     - default: false
-      description: Time Frame
+      description: Time Frame (e.g 1 day)
       isArray: false
       name: time_frame
       required: true
@@ -158,4 +155,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
+fromversion: 6.0.0
