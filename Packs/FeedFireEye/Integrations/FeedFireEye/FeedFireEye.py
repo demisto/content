@@ -480,8 +480,9 @@ class Client(BaseClient):
 
         demisto.debug('Starting raw indicators fetching')
         round_count = 0
-        while round_count != 50:
+        while round_count != 3:
             # For fetching 50K objects each time
+            demisto.debug(f'### {INTEGRATION_NAME} info - round count: {round_count}')
             headers['Authorization'] = f'Bearer {self.get_access_token()}'
 
             response = self._http_request(
