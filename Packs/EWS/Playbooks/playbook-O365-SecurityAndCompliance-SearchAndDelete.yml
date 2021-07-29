@@ -1,4 +1,4 @@
-name: O365 - Security And Compliance - Search And Delete
+name: O365 - Security And Compliance - Search And Delete - test
 description: |-
   This playbook performs the following steps:
   1. Creates a compliance search.
@@ -676,6 +676,63 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 60a9527a-9a63-4b2d-852e-030aeb25cb29
+    type: condition
+    task:
+      id: 60a9527a-9a63-4b2d-852e-030aeb25cb29
+      version: -1
+      name: Is O365 Security And Compliance enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Determines if the O365 Search and Compliance integration is enabled.
+    nexttasks:
+      '#default#':
+        - "4"
+      "yes":
+        - "16"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: modules
+                    filters:
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: modules.brand
+                            iscontext: true
+                          right:
+                            value:
+                              simple: SecurityAndCompliance
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: modules.state
+                            iscontext: true
+                          right:
+                            value:
+                              simple: active
+                    accessor: brand
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 25
+        }
+      }
+    note: false
+    timertriggers: [ ]
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
