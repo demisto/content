@@ -26,6 +26,18 @@ args:
   predefined:
   - "true"
   - "false"
+comment: Each of entry in an array is merged into the existing array if the keyed-value
+  matches.
+commonfields:
+  id: MergeDictArray
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+enabled: true
+name: MergeDictArray
+runas: DBotWeakRole
+runonce: false
 script: >-
   function is_object(o) {
       return o instanceof Object && !(o instanceof Array);
@@ -168,20 +180,6 @@ script: >-
       }
   }
   return dst_value;
-  
-comment: Each of entry in an array is merged into the existing array if the keyed-value
-  matches.
-commonfields:
-  id: MergeDictArray
-  version: -1
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-enabled: true
-name: MergeDictArray
-runas: DBotWeakRole
-runonce: false
-script: ''
 scripttarget: 0
 tags:
 - transformer
