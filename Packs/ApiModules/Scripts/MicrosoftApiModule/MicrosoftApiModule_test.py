@@ -238,7 +238,8 @@ def test_oproxy_request(mocker, requests_mock, client, enc_content, tokens, res)
         'app_name': APP_NAME,
         'registration_id': AUTH_ID,
         'encrypted_token': enc_content + ENC_KEY,
-        'scope': None
+        'scope': None,
+        'resource': ''
     }
     mocker.patch.object(client, '_add_info_headers')
     mocker.patch.object(client, 'get_encrypted', side_effect=get_encrypted)
