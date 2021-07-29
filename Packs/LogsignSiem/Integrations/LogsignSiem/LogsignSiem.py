@@ -311,8 +311,6 @@ def main() -> None:
         first_fetch_time = DEFAULT_FIRST_FETCH if not first_fetch else first_fetch
 
         api_key = params.get('apikey')
-        last_run = params.get('last_run', None)
-
         query = params.get('query', '')
 
         max_fetch = params.get('max_fetch')
