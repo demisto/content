@@ -333,10 +333,7 @@ def map_scim(clientData):
 
 
 def verify_and_load_scim_data(scim):
-    try:
-        scim = json.loads(scim)
-    except:
-        pass
+    scim = json.loads(scim)
     if type(scim) != dict:
         raise Exception('SCIM data is not a valid JSON')
     return scim

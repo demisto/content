@@ -870,7 +870,7 @@ def get_logs_command(client, args):
     until = args.get('until')
     log_events = client.get_logs_for_groups(filter=filter, from_date=since, to_date=until)
 
-    readable_output = tableToMarkdown(f"Okta Log Events:", log_events)
+    readable_output = tableToMarkdown('Okta Log Events:', log_events)
     outputs = {
         'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': log_events
     }
