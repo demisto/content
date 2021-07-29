@@ -1172,10 +1172,10 @@ def add_new_whitelist_entry_command(value_type: str, value: str, notes: str):
     raw_response: dict = http_request("POST", "v1/orgwhitelist/bulk/", params=CREDENTIALS, data=data, headers=HEADERS)
 
     if not raw_response:
-        demisto.results(F"Could not create a whitelist")
+        demisto.results("Could not create a whitelist")
         sys.exit()
 
-    human_readable = F"Whitelist entry with Value: {value} and Type: {value_type} added."
+    human_readable = f"Whitelist entry with Value: {value} and Type: {value_type} added."
 
     return_outputs(human_readable, {}, {})
 
@@ -1200,7 +1200,7 @@ def modify_whitelist_entry_note_command(entry_id: str, notes: str):
 
     raw_response: dict = http_request(
         "PATCH", f"v1/orgwhitelist/{entry_id}/", params=CREDENTIALS, data=data, headers=HEADERS, text_response=True)
-   
+
     human_readable = F"Notes for ID: {entry_id} modified."
 
     if raw_response:
