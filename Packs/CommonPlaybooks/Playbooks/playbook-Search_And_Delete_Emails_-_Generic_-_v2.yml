@@ -1,8 +1,8 @@
-id: search_and_delete_emails_-_generic
+id: Search And Delete Emails - Generic v2
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Search And Delete Emails - Generic
+name: Search And Delete Emails - Generic v2
 description: This playbook searches and delete emails with similar attributes of a
   malicious email using EWS or Office 365.
 starttaskid: "0"
