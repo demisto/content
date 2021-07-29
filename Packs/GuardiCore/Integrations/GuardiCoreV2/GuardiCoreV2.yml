@@ -1268,4 +1268,4 @@ script:
   subtype: python3
   type: python
 tests:
-- GuardiCoreV2-Test.yml
+- GuardiCoreV2-Test
