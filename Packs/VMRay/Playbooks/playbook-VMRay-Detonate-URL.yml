@@ -1,20 +1,19 @@
-id: 79b5d8a6-2636-480c-8e1c-a3ab2e58ffb5
+id: Detonate URL - VMRay
 version: -1
-name: Detonate File - VMRay
-description: Detonates a file with VMRay.
+name: Detonate URL - VMRay
+description: Detonates a URL using the VMRay sandbox integration.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c1de2f2b-64cb-4df5-8490-07c49e7255b6
     type: start
     task:
-      id: c1de2f2b-64cb-4df5-8490-07c49e7255b6
       version: -1
       name: ""
       description: start
       iscommand: false
       brand: ""
+      id: 60d14579-f27c-4014-b49a-4df09938a69e
     nexttasks:
       '#none#':
       - "15"
@@ -29,12 +28,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    taskid: 60d14579-f27c-4014-b49a-4df09938a69e
   "1":
     id: "1"
-    taskid: 7421a2fc-d22a-41f9-8876-e7735d25ea6b
     type: playbook
     task:
-      id: 7421a2fc-d22a-41f9-8876-e7735d25ea6b
       version: -1
       name: GenericPolling
       description: |-
@@ -49,6 +47,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      id: 628e8784-3064-4afb-8b31-3db10b925a01
     nexttasks:
       '#none#':
       - "8"
@@ -82,18 +81,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    taskid: 628e8784-3064-4afb-8b31-3db10b925a01
   "4":
     id: "4"
-    taskid: 087ea815-c0b4-4604-8b43-099927639fa9
     type: condition
     task:
-      id: 087ea815-c0b4-4604-8b43-099927639fa9
       version: -1
-      name: Is there any file to detonate?
-      description: Check if file exist
+      name: Is there a URL to detonate?
+      description: Checks if there is a URL in the playbook’s input.
       type: condition
       iscommand: false
       brand: ""
+      id: 0d7a60e2-d686-4f14-b43b-0576d74bf00d
     nexttasks:
       '#default#':
       - "7"
@@ -106,7 +105,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: inputs.File
+              simple: inputs.URL
             iscontext: true
     view: |-
       {
@@ -118,33 +117,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    taskid: 0d7a60e2-d686-4f14-b43b-0576d74bf00d
   "6":
     id: "6"
-    taskid: 46c971ef-9691-4b18-888b-a8fccf7b8c7c
     type: regular
     task:
-      id: 46c971ef-9691-4b18-888b-a8fccf7b8c7c
       version: -1
-      name: Send file to VMRay
-      description: Submit sample to VMRay
-      script: '|||vmray-upload-sample'
+      name: VMRay Upload URL
+      description: Submit URL for analysis.
+      script: '|||vmray-upload-url'
       type: regular
       iscommand: true
       brand: ""
+      id: 936c15f7-7d0f-4c41-b6f3-cf05881f4969
     nexttasks:
       '#none#':
       - "10"
     scriptarguments:
-      archive_password: {}
-      document_password: {}
-      entry_id:
-        simple: ${inputs.File.EntryID}
-      file_id:
-        simple: ${File.EntryID}
-      max_jobs: {}
-      sample_type: {}
-      shareable: {}
-      tags: {}
+      url:
+        complex:
+          root: inputs.URL
     separatecontext: false
     view: |-
       {
@@ -156,35 +148,34 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    taskid: 936c15f7-7d0f-4c41-b6f3-cf05881f4969
   "7":
     id: "7"
-    taskid: b5eb756b-903d-4f8e-8b09-f8bcad28627c
     type: title
     task:
-      id: b5eb756b-903d-4f8e-8b09-f8bcad28627c
       version: -1
       name: Done
       description: Done
       type: title
       iscommand: false
       brand: ""
+      id: dca7b75c-681b-4ed9-a9b8-94198974c0db
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 1990
+          "x": 162.5,
+          "y": 1980
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    taskid: dca7b75c-681b-4ed9-a9b8-94198974c0db
   "8":
     id: "8"
-    taskid: 2a0709fc-42f1-4ac8-80ef-aa53b3b65576
     type: regular
     task:
-      id: 2a0709fc-42f1-4ac8-80ef-aa53b3b65576
       version: -1
       name: Get sample
       description: get sample by sample id
@@ -192,6 +183,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      id: e04293bd-c0a1-4f96-8abc-444ea5d42cee
     nexttasks:
       '#none#':
       - "11"
@@ -213,12 +205,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    taskid: e04293bd-c0a1-4f96-8abc-444ea5d42cee
   "10":
     id: "10"
-    taskid: ca3caa5c-0828-41e1-8b12-77771fdaf140
     type: regular
     task:
-      id: ca3caa5c-0828-41e1-8b12-77771fdaf140
       version: -1
       name: Get submission
       description: Gets a submission result
@@ -226,6 +217,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      id: a7dcb1e4-dbfc-4e16-a586-f5ba0c9fbb7d
     nexttasks:
       '#none#':
       - "1"
@@ -247,12 +239,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    taskid: a7dcb1e4-dbfc-4e16-a586-f5ba0c9fbb7d
   "11":
     id: "11"
-    taskid: 1735cc5d-e223-47ea-8905-51616bed94f1
     type: regular
     task:
-      id: 1735cc5d-e223-47ea-8905-51616bed94f1
       version: -1
       name: Get analysis
       description: Retrieves all analysis details for a specified sample.
@@ -260,6 +251,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      id: c3457fa4-7b07-41cb-b9e5-f0b523141429
     nexttasks:
       '#none#':
       - "12"
@@ -282,18 +274,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    taskid: c3457fa4-7b07-41cb-b9e5-f0b523141429
   "12":
     id: "12"
-    taskid: d9177a3a-b705-45af-8b42-7ee487c17eda
     type: condition
     task:
-      id: d9177a3a-b705-45af-8b42-7ee487c17eda
       description: check term
       version: -1
       name: Is analysis suspicious or malicious?
       type: condition
       iscommand: false
       brand: ""
+      id: 74eb49b0-5fca-48a6-865a-3bd4ca6e727a
     nexttasks:
       '#default#':
       - "7"
@@ -345,19 +337,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    taskid: 74eb49b0-5fca-48a6-865a-3bd4ca6e727a
   "13":
     id: "13"
-    taskid: c935d709-7974-4075-85a5-13e24aa25cdd
     type: regular
     task:
-      id: c935d709-7974-4075-85a5-13e24aa25cdd
       version: -1
       name: Get IOCs
-      description: Retrieves Indicators of Compromise for a specified sample.
+      description: Retrieves indicators of compromise for a specified sample.
       script: '|||vmray-get-iocs'
       type: regular
       iscommand: true
       brand: ""
+      id: 399942d7-ccfe-491e-87c0-dc9534f491ae
     nexttasks:
       '#none#':
       - "14"
@@ -373,19 +365,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 542.5,
-          "y": 1595
+          "x": 600,
+          "y": 1610
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    taskid: 399942d7-ccfe-491e-87c0-dc9534f491ae
   "14":
     id: "14"
-    taskid: ba1da627-1586-48db-8717-1c98e46a6178
     type: regular
     task:
-      id: ba1da627-1586-48db-8717-1c98e46a6178
       version: -1
       name: Get Thread Indicators
       description: Retrieves threat indicators (VTI).
@@ -393,6 +384,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      id: 4a576c94-a14a-4b4c-ad71-837742cfd371
     nexttasks:
       '#none#':
       - "7"
@@ -407,19 +399,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 542.5,
-          "y": 1760
+          "x": 600,
+          "y": 1775
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    taskid: 4a576c94-a14a-4b4c-ad71-837742cfd371
   "15":
     id: "15"
-    taskid: e01bcec4-aae2-4845-823c-82ef27b884d7
+    taskid: bbcdb264-06cf-43f6-88c4-c816ee1c29dd
     type: condition
     task:
-      id: e01bcec4-aae2-4845-823c-82ef27b884d7
+      id: bbcdb264-06cf-43f6-88c4-c816ee1c29dd
       version: -1
       name: Is there an active VMRay instance?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -456,53 +449,31 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2005,
-        "width": 872.5,
+        "height": 1995,
+        "width": 930,
         "x": 50,
         "y": 50
       }
     }
   }
 inputs:
-- key: File
+- key: URL
   value:
-    simple: ${File}
+    complex:
+      root: URL
+      accessor: Data
   required: false
-  description: The file to detonate.
+  description: The URL to detonate.
 - key: interval
   value:
     simple: "1"
   required: false
-  description: The frequency in which to poll for results (minutes).
+  description: How often to poll for results (minutes).
 - key: timeout
   value:
     simple: "10"
   required: false
-  description: The amount of time to wait before giving up waiting for results (minutes).
-- key: document_password
-  value: {}
-  required: false
-  description: The password if the file is a password-protected document.
-- key: archive_password
-  value: {}
-  required: false
-  description: The password if the file is a password-protected archive.
-- key: sample_type
-  value: {}
-  required: false
-  description: The sample type.
-- key: shareable
-  value: {}
-  required: false
-  description: Whether to make the file shareable.
-- key: max_jobs
-  value: {}
-  required: false
-  description: The  maximum jobs to create in VMRay.
-- key: tags
-  value: {}
-  required: false
-  description: The tags of the file (comma-separated).
+  description: How long to wait before giving up waiting for results (minutes).
 outputs:
 - contextPath: VMRay.Job.JobID
   description: The ID of a new job.
@@ -657,6 +628,6 @@ outputs:
   description: The ID of the threat indicator.
 - contextPath: VMRay.ThreatIndicator.Operation
   description: The operation that caused the indicators.
-fromversion: 5.0.0
+fromversion: 5.5.0
 tests:
-- VMRay-Test-File
+- VMRay-Test-URL
