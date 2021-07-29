@@ -3674,7 +3674,7 @@ Search for attributes in MISP.
                 "ToIDs": true,
                 "Type": "ip-dst",
                 "UUID": "de95a690-97b9-491c-bd94-1ab7ee885622",
-                "Value": "13.239.26.132",
+                "Value": "1.2.4.4",
                 "first_seen": null,
                 "last_seen": null
             }
@@ -3691,7 +3691,7 @@ Search for attributes in MISP.
 >|Attribute Category|Attribute ID|Attribute Tags|Attribute Type|Attribute Value|Event Distribution|Event ID|Event Info|Event Organization ID|Event UUID|To IDs|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| Payload delivery | 71703 | COVID-19,<br/>misp-galaxy:financial-fraud="Cash Recovery Scam" | sha256 | c8466c386261facf38ce62e75a8c6414affbfaed439e91fa00e515e079702fe0 | 3 | 149 | Capitalizing on Coronavirus Panic, Threat Actors Target Victims Worldwide | 1 | 5e6b322a-9f80-4e2f-9f2a-3cab0a3b4631 | true |
->| Network activity | 71740 | COVID-19,<br/>misp-galaxy:financial-fraud="Compromised Personally Identifiable Information (PII)" | ip-dst | 13.239.26.132 | 1 | 143 | Recent Qakbot (Qbot) activity | 1 | 5fd0c599-ab6c-4ba1-a69a-df9ec0a8ab16 | true |
+>| Network activity | 71740 | COVID-19,<br/>misp-galaxy:financial-fraud="Compromised Personally Identifiable Information (PII)" | ip-dst | 1.2.4.4 | 1 | 143 | Recent Qakbot (Qbot) activity | 1 | 5fd0c599-ab6c-4ba1-a69a-df9ec0a8ab16 | true |
 
 
 ## Breaking changes from the previous version of this integration - MISP v3
