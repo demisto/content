@@ -11,7 +11,8 @@
 		"IAM - Update User",
 		"User Profile",
 		"IAM - Sync User",
-		"IAM - Rehire User"
+		"IAM - Rehire User",
+		"Carbon Black EDR"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

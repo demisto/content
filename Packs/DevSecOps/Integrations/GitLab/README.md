@@ -1,5 +1,5 @@
-An Integration with GitLab
-This integration was integrated and tested with version v4.0 of GitLab API
+An integration with GitLab.
+This integration was integrated and tested with version v4.0 of GitLab API.
 ## Configure GitLab Integration on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,7 +8,7 @@ This integration was integrated and tested with version v4.0 of GitLab API
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://gitlab.com/api/v4\) | True |
+| url | Server URL (e.g. `https://gitlab.com/api/v4`) | True |
 | api_key | API Key | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
@@ -19,7 +19,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### gitlab-get-projects
 ***
-Get a list of all visible projects across GitLab for the authenticated user. When accessed without authentication, only public projects with “simple” fields are returned.
+Get a list of all visible projects across GitLab for the authenticated user. When accessed without authentication, only public projects with simple fields are returned.
 
 
 #### Base Command
@@ -29,27 +29,27 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| repository_storage | Limit results to projects stored on repository_storage. Available for admins only. | Optional | 
-| last_activity_before | Limit results to projects with last_activity before specified time. | Optional | 
-| min_access_level | Limit by current user minimal access level. | Optional | 
-| simple | Return only limited fields for each project. This is a no-op without authentication as then only simple fields are returned. | Optional | 
-| sort | Return projects sorted in asc or desc order. | Optional | 
-| membership | Limit by projects that the current user is a member of. | Optional | 
-| search_namespaces | Include ancestor namespaces when matching search criteria. | Optional | 
-| archived | Limit by archived status . | Optional | 
-| search | Return list of projects matching the search criteria . | Optional | 
-| id_before | Limit results to projects with IDs less than the specified ID . | Optional | 
-| last_activity_after | Limit results to projects with last_activity after specified time | Optional | 
-| starred | Limit by projects starred by the current user . | Optional | 
-| id_after | Limit results to projects with IDs greater than the specified ID. | Optional | 
-| owned | Limit by projects explicitly owned by the current user. | Optional | 
-| order_by | Return projects ordered by id, name, path, created_at, updated_at, or last_activity_at fields. repository_size, storage_size, or wiki_size fields are only allowed for admins. Default is created_at. | Optional | 
-| statistics | Include project statistics . | Optional | 
-| visibility | Limit by visibility public, internal, or private . | Optional | 
-| with_custom_attributes | Include custom attributes in response (admins only). | Optional | 
-| with_issues_enabled | Limit by enabled issues feature . | Optional | 
-| with_merge_requests_enabled | Limit by enabled merge requests feature. | Optional | 
-| with_programming_language | Limit by projects which use the given programming language. | Optional | 
+| repository_storage | Limits the results to projects stored on repository_storage. Available for administrators only. | Optional | 
+| last_activity_before | Limits the results to projects with last_activity before a specified time. | Optional | 
+| min_access_level | Limits by the minimal access level of the current user. | Optional | 
+| simple | Returns only limited fields for each project. This is a no operation without authentication as only simple fields are returned. | Optional | 
+| sort | Returns projects sorted in ascending or descending order. | Optional | 
+| membership | Limits by the projects that the current user is a member of. | Optional | 
+| search_namespaces | Includes ancestor namespaces when matching search criteria. | Optional | 
+| archived | Limits by archived status. | Optional | 
+| search | Returns a list of projects that match the search criteria. | Optional | 
+| id_before | Limits the results to projects with IDs that are less than the specified ID. | Optional | 
+| last_activity_after | Limits the results to projects with last_activity after a specified time. | Optional | 
+| starred | Limits by the projects starred by the current user. | Optional | 
+| id_after | Limits the results to projects with IDs greater than the specified ID. | Optional | 
+| owned | Limits by the projects explicitly owned by the current user. | Optional | 
+| order_by | Returns projects ordered by id, name, path, created_at, updated_at, or last_activity_at fields. Repository_size, storage_size, and wiki_size fields are only allowed for administrators. The default is created_at. | Optional | 
+| statistics | Includes the project statistics. | Optional | 
+| visibility | Limits by visibility; public, internal, or private. | Optional | 
+| with_custom_attributes | Includes the custom attributes in the response (administrators only). | Optional | 
+| with_issues_enabled | Limits by the enabled issues feature. | Optional | 
+| with_merge_requests_enabled | Limits by the enabled merge requests feature. | Optional | 
+| with_programming_language | Limits by the projects that use the given programming language. | Optional | 
 
 
 #### Context Output
@@ -357,7 +357,7 @@ Gets a list of access requests viewable by the authenticated user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
+| id | The ID or URL encoded path of the project owned by the authenticated user. | Required | 
 
 
 #### Context Output
@@ -400,7 +400,7 @@ Gets a list of access requests viewable by the authenticated user.
 
 ### gitlab-projects-request-access
 ***
-Requests access for the authenticated user to a group or project.
+Requests the authenticated user access to a group or project.
 
 
 #### Base Command
@@ -410,7 +410,7 @@ Requests access for the authenticated user to a group or project.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
+| id | The ID or URL encoded path of the project owned by the authenticated user. | Required | 
 
 
 #### Context Output
@@ -463,9 +463,9 @@ Approves an access request for the given user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
-| user_id | The user ID of the access requester . | Required | 
-| access_level | A valid access level (defaults: 30, developer access level)  | Optional | 
+| id | The ID or URL encoded path of the project owned by the authenticated user. | Required | 
+| user_id | The user ID of the access requester. | Required | 
+| access_level | A valid access level (defaults: 30, developer access level).  | Optional | 
 
 
 #### Context Output
@@ -497,8 +497,8 @@ Denies an access request for the given user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
-| user_id | The user ID of the access requester . | Required | 
+| id | The ID or URL encoded path of the project owned by the authenticated user. | Required | 
+| user_id | The user ID of the access requester. | Required | 
 
 
 #### Context Output
@@ -534,7 +534,7 @@ Denies an access request for the given user.
 
 ### gitlab-projects-get-repository-branches
 ***
-Get a list of repository  branches from a project, sorted by name alphabetically.
+Gets a list of repository branches from a project, sorted by name alphabetically.
 
 
 #### Base Command
@@ -544,8 +544,8 @@ Get a list of repository  branches from a project, sorted by name alphabetically
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
-| search | Return list of  anches containing the search string. You can use ^term and term$ to find  anches that begin and end with term respectively. | Optional | 
+| id | The ID or URL encoded path of the project owned by the authenticated user. | Required | 
+| search | Returns a list of branches containing the search string. You can use ^term and term$ to find branches that begin and end with term, respectively. | Optional | 
 
 
 #### Context Output
@@ -709,7 +709,7 @@ Get a list of repository  branches from a project, sorted by name alphabetically
 
 ### gitlab-projects-create-repository-branch
 ***
-Create a new Branch in the repository.
+Create a new branch in the repository.
 
 
 #### Base Command
@@ -719,9 +719,9 @@ Create a new Branch in the repository.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
-| branch | Name of the  anch.  | Required | 
-| ref | Branch name or commit SHA to create  anch from.  | Required | 
+| id | The ID or URL encoded path of the project owned by the authenticated user. | Required | 
+| branch | Name of the branch.  | Required | 
+| ref | Branch name, or commit SHA to create branch from.  | Required | 
 
 
 #### Context Output
@@ -781,7 +781,7 @@ Create a new Branch in the repository.
 
 ### gitlab-projects-delete-repository-branch
 ***
-Delete a Branch from the repository.
+Delete a branch from the repository.
 
 
 #### Base Command
@@ -791,8 +791,8 @@ Delete a Branch from the repository.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
-| branch | Name of the  anch.  | Required | 
+| id | The ID or URL encoded path of the project owned by the authenticated user. | Required | 
+| branch | The name of the branch.  | Required | 
 
 
 #### Context Output
@@ -823,7 +823,7 @@ There is no context output for this command.
 
 ### gitlab-projects-delete-repository-merged-branches
 ***
-Will delete all branches that are merged into the project’s default  anch.
+Deletes all branches that are merged into the project’s default branch.
 
 
 #### Base Command
@@ -833,7 +833,7 @@ Will delete all branches that are merged into the project’s default  anch.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
+| id | The ID or URL encoded path of the project owned by the authenticated user. | Required | 
 
 
 #### Context Output
@@ -862,7 +862,7 @@ There is no context output for this command.
 
 ### gitlab-get-version
 ***
-Retrieve version information for this GitLab instance. Responds 200 OK for authenticated users.
+Retrieves version information for the GitLab instance, and responds 200 OK for authenticated users.
 
 
 #### Base Command
@@ -899,4 +899,304 @@ There are no input arguments for this command.
 >|revision|version|
 >|---|---|
 >| 18e3d7de8d5 | 13.6.0-pre |
+
+
+
+### gitlab-pipelines-schedules-list
+***
+Gets the details of the pipeline schedules.
+
+
+#### Base Command
+
+`gitlab-pipelines-schedules-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID from which to retrieve pipeline schedules. | Required | 
+| pipeline_schedule_id | ID of specific pipeline schedule from which to retrieve its details. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.PipelineSchedule.id | Number | Pipeline schedule ID. | 
+| GitLab.PipelineSchedule.description | String | Pipeline schedule description. | 
+| GitLab.PipelineSchedule.ref | String | Pipeline schedule reference. | 
+| GitLab.PipelineSchedule.next_run_at | Date | Pipeline schedule next run scheduled time. | 
+| GitLab.PipelineSchedule.active | Boolean | Whether pipeline schedule is active. | 
+| GitLab.PipelineSchedule.created_at | Date | When pipeline schedule was created. | 
+| GitLab.PipelineSchedule.updated_at | Date | When pipeline schedule was last updated. | 
+| GitLab.PipelineSchedule.last_pipeline.id | Number | ID of the last pipeline that was run by the scheduled pipeline. Relevant only the pipeline schedule ID is given. | 
+| GitLab.PipelineSchedule.last_pipeline.sha | String | SHA of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given. | 
+| GitLab.PipelineSchedule.last_pipeline.ref | String | Reference of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given. | 
+| GitLab.PipelineSchedule.last_pipeline.status | String | Status of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given. | 
+
+
+#### Command Example
+```!gitlab-pipelines-schedules-list project_id=123```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "PipelineSchedule": [
+            {
+                "active": true,
+                "created_at": "2021-05-23T14:00:34.105Z",
+                "description": "Run the nightly build",
+                "id": 336,
+                "next_run_at": "2021-06-16T00:05:00.000Z",
+                "ref": "master",
+                "updated_at": "2021-06-15T00:05:06.617Z"
+            },
+            {
+                "active": false,
+                "created_at": "2021-05-12T11:57:47.436Z",
+                "description": "Upload",
+                "id": 331,
+                "next_run_at": "2021-05-24T02:05:00.000Z",
+                "ref": "upload_flow",
+                "updated_at": "2021-05-23T08:28:39.885Z"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GitLab Pipeline Schedules
+>|active|created_at|description|id|next_run_at|ref|updated_at|
+>|---|---|---|---|---|---|---|
+>| true | 2021-05-23T14:00:34.105Z | Run the nightly build | 336 | 2021-06-16T00:05:00.000Z | master | 2021-06-15T00:05:06.617Z |
+>| false | 2021-05-12T11:57:47.436Z | Upload | 331 | 2021-05-24T02:05:00.000Z | upload_flow | 2021-05-23T08:28:39.885Z |
+>| true | 2021-05-12T09:42:42.788Z | bucket_upload | 330 | 2021-06-15T21:05:00.000Z | master | 2021-06-15T09:05:05.711Z |
+>| true | 2021-05-10T13:58:35.217Z | Instance testing trigger | 329 | 2021-06-16T02:05:00.000Z | master | 2021-06-15T02:05:03.368Z |
+>| true | 2021-05-09T09:52:47.379Z | Nightly build | 328 | 2021-06-16T00:05:00.000Z | master | 2021-06-15T00:05:06.234Z |
+
+
+### gitlab-pipelines-list
+***
+Gets the details of the pipelines.
+
+
+#### Base Command
+
+`gitlab-pipelines-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID from which to retrieve pipelines. | Required | 
+| pipeline_id | ID of specific pipeline from which to retrieve its details. | Optional | 
+| ref | Reference name of the pipelines, e.g., 'master'. | Optional |
+| status | Retrieves pipelines of which status matches the given status. Possible values are: waiting_for_resource, preparing, pending, running, success, failed, canceled, skipped, manual, and scheduled. | Optional |
+
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Pipeline.id | Number | Pipeline ID. | 
+| GitLab.Pipeline.project_id | Number | Project ID the pipeline belongs to. | 
+| GitLab.Pipeline.status | String | Status of the pipeline. | 
+| GitLab.Pipeline.ref | String | Reference of the pipeline. | 
+| GitLab.Pipeline.sha | String | SHA of the pipeline. | 
+| GitLab.Pipeline.created_at | Date | Time when the pipeline was created. | 
+| GitLab.Pipeline.updated_at | Date | Time when the pipeline was last updated. | 
+| GitLab.Pipeline.started_at | Date | Time when the pipeline was started. | 
+| GitLab.Pipeline.finished_at | Date | Time when the pipeline was finished. | 
+| GitLab.Pipeline.duration | Number | Duration of the pipeline. | 
+| GitLab.Pipeline.web_url | String | Web URL of the pipeline. | 
+| GitLab.Pipeline.user.name | String | Name of the user who triggered the pipeline. | 
+| GitLab.Pipeline.user.username | String | Username that triggered the pipeline. | 
+| GitLab.Pipeline.user.id | String | ID of the user who triggered the pipeline. | 
+| GitLab.Pipeline.user.state | String | State of the user who triggered the pipeline. | 
+| GitLab.Pipeline.user.avatar_url | String | Avatar URL of the user who trigerred the pipeline. | 
+| GitLab.Pipeline.user.web_url | String | Web URL of the user who triggered the pipeline. | 
+
+
+#### Command Example
+```!gitlab-pipelines-list project_id=123 pipeline_id=1254426```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "Pipeline": {
+            "created_at": "2021-06-15T00:05:09.041Z",
+            "duration": 5945,
+            "finished_at": "2021-06-15T01:44:17.788Z",
+            "id": 1254426,
+            "project_id": 123,
+            "ref": "master",
+            "sha": "asas4kj124kjasdas5hn125hakjs5h15jh2jas5kljas5",
+            "started_at": "2021-06-15T00:05:11.131Z",
+            "status": "failed",
+            "updated_at": "2021-06-15T01:44:17.793Z",
+            "web_url": "https://server_url/-/pipelines/1254426"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GitLab Pipelines
+>|created_at|duration|finished_at|id|project_id|ref|sha|started_at|status|updated_at|web_url|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 2021-06-15T00:05:09.041Z | 5945 | 2021-06-15T01:44:17.788Z | 1254426 | 123 | master | asas4kj124kjasdas5hn125hakjs5h15jh2jas5kljas5 | 2021-06-15T00:05:11.131Z | failed | 2021-06-15T01:44:17.793Z | https://server_url/-/pipelines/1254426 |
+
+
+### gitlab-jobs-list
+***
+Gets details of jobs.
+
+
+#### Base Command
+
+`gitlab-jobs-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID from which to retrieve jobs details. | Required | 
+| pipeline_id | ID of the pipeline from which to retrieve its jobs. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Job.created_at | Date | Time the job was created. | 
+| GitLab.Job.started_at | Date | Time the job was started. | 
+| GitLab.Job.finished_at | Date | Time the job was finished. | 
+| GitLab.Job.duration | Number | Duration of the job. | 
+| GitLab.Job.id | Number | ID of the job. | 
+| GitLab.Job.name | String | Name of the job. | 
+| GitLab.Job.pipeline.id | Number | Pipeline the job belongs to. | 
+| GitLab.Job.pipeline.project_id | Number | Project ID the job belongs to. | 
+| GitLab.Job.pipeline.ref | String | Reference of the pipeline the job belongs to. | 
+| GitLab.Job.pipeline.sha | String | SHA of the pipeline the job belongs to. | 
+| GitLab.Job.pipeline.status | String | Status of the pipeline the job belongs to. | 
+| GitLab.Job.ref | String | Reference name of the job. | 
+| GitLab.Job.stage | String | Stage of the job. | 
+| GitLab.Job.web_url | String | Web URL of the job. | 
+
+
+#### Command Example
+```!gitlab-jobs-list project_id=123 pipeline_id=1254426```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "Job": [
+            {
+                "created_at": "2021-06-15T00:05:09.139Z",
+                "duration": 4104.433651,
+                "finished_at": "2021-06-15T01:44:16.559Z",
+                "id": 6054873,
+                "name": "server_master",
+                "pipeline": {
+                    "created_at": "2021-06-15T00:05:09.041Z",
+                    "id": 1254426,
+                    "project_id": 123,
+                    "ref": "master",
+                    "sha": "asas4kj124kjasdas5hn125hakjs5h15jh2jas5kljas5",
+                    "status": "failed",
+                    "updated_at": "2021-06-15T01:44:17.793Z",
+                    "web_url": "https://server_url/-/pipelines/1254426"
+                },
+                "ref": "master",
+                "stage": "run-instances",
+                "started_at": "2021-06-15T00:35:52.125Z",
+                "web_url": "https://server_url/-/jobs/6054873"
+            },
+            {
+                "created_at": "2021-06-15T00:05:09.078Z",
+                "duration": 1841.130269,
+                "finished_at": "2021-06-15T00:35:51.306Z",
+                "id": 6054872,
+                "name": "create-instances",
+                "pipeline": {
+                    "created_at": "2021-06-15T00:05:09.041Z",
+                    "id": 1254426,
+                    "project_id": 123,
+                    "ref": "master",
+                    "sha": "asas4kj124kjasdas5hn125hakjs5h15jh2jas5kljas5",
+                    "status": "failed",
+                    "updated_at": "2021-06-15T01:44:17.793Z",
+                    "web_url": "https://server_url/-/pipelines/1254426"
+                },
+                "ref": "master",
+                "stage": "create-instances",
+                "started_at": "2021-06-15T00:05:10.176Z",
+                "web_url": "https://server_url/-/jobs/6054872"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GitLab Jobs
+>|created_at|duration|finished_at|id|name|pipeline|ref|stage|started_at|web_url|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 2021-06-15T00:05:09.139Z | 4104.433651 | 2021-06-15T01:44:16.559Z | 6054873 | server_master | id: 1254426<br/>project_id: 123<br/>sha: asas4kj124kjasdas5hn125hakjs5h15jh2jas5kljas5<br/>ref: master<br/>status: failed<br/>created_at: 2021-06-15T00:05:09.041Z<br/>updated_at: 2021-06-15T01:44:17.793Z<br/>web_url: https://server_url/-/pipelines/1254426 | master | run-instances | 2021-06-15T00:35:52.125Z | https://server_url/-/jobs/6054873 |
+>| 2021-06-15T00:05:09.078Z | 1841.130269 | 2021-06-15T00:35:51.306Z | 6054872 | create-instances | id: 1254426<br/>project_id: 123<br/>sha: asas4kj124kjasdas5hn125hakjs5h15jh2jas5kljas5<br/>ref: master<br/>status: failed<br/>created_at: 2021-06-15T00:05:09.041Z<br/>updated_at: 2021-06-15T01:44:17.793Z<br/>web_url: https://server_url/-/pipelines/1254426 | master | create-instances | 2021-06-15T00:05:10.176Z | https://server_url/-/jobs/6054872 |
+
+
+### gitlab-artifact-get
+***
+Gets an artifact from a given artifact path, corresponding to a given job ID.
+
+
+#### Base Command
+
+`gitlab-artifact-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID from which to retrieve artifact. | Required | 
+| job_id | ID of specific job from which to retrieve its artifact. | Required | 
+| artifact_path_suffix | Suffix to the path of an artifact from which to retrieve its data. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Artifact.job_id | String | Job ID from which the artifact was taken. | 
+| GitLab.Artifact.artifact_path_suffix | String | Suffix of the given artifact path. | 
+| GitLab.Artifact.artifact_data | String | Data of the artifact requested. | 
+
+
+#### Command Example
+```!gitlab-artifact-get project_id=123 job_id=6063195 artifact_path_suffix=artifacts/failed_tests.txt```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "Artifact": {
+            "artifact_data": "Carbon Black Response Test",
+            "artifact_path_suffix": "artifacts/failed_tests.txt",
+            "job_id": "6063195"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|artifact_data|artifact_path_suffix|job_id|
+>|---|---|---|
+>| Carbon Black Response Test | artifacts/failed_tests.txt | 6063195 |
 

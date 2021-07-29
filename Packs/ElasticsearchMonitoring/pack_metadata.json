@@ -1,0 +1,21 @@
+{
+    "name": "Elasticsearch Monitoring",
+    "description": "Elasticsearch and OpenSearch monitoring dashboard and widgets tracking statistics and cluster status.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "serverMinVersion": "6.1.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [],
+    "tags": [
+        "Elasticsearch"
+    ],
+    "useCases": [
+        "Health Check"
+    ],
+    "keywords": [
+        "Elasticsearch",
+        "OpenSearch"
+    ]
+}

@@ -71,8 +71,7 @@ def http_request(method, url_suffix, params={}, data=None):
         return_error('Error in API call to FortiGate [%d] - %s' % (res.status_code, res.reason))
     if method.upper() != 'GET':
         return res.status_code
-    demisto.info("status_code: " + str(res.status_code))
-    demisto.info("full res: " + res.content)
+
     return res.json()
 
 

@@ -1,0 +1,22 @@
+!gibtia-get-available-collections
+!gibtia-get-compromised-account-info id=253b9a136f0d574149fc43691eaf7ae27aff141a
+!gibtia-get-compromised-card-info id=ecda6f4dc85596f447314ce01e2152db9c9d3cbc
+!gibtia-get-compromised-breached-info id=277c4112d348c91f6dabe9467f0d18ba
+!gibtia-get-phishing-kit-info id=044f3f2cb599228c1882884eb77eb073f68a25f2
+!gibtia-get-phishing-info id=fce7f92d0b64946cf890842d083953649b259952
+!gibtia-get-osi-git-leak-info id=ead0d8ae9f2347789941ebacde88ad2e3b1ef691
+!gibtia-get-osi-public-leak-info id=a09f2354e52d5fa0a8697c8df0b4ed99cc956273
+!gibtia-get-malware-targeted-malware-info id=5bbd38acf0b9e4f04123af494d485f6c49221e98
+!gibtia-get-compromised-mule-info id=50a3b4abbfca5dcbec9c8b3a110598f61ba90a99
+!gibtia-get-compromised-imei-info id=0c1426048474df19ada9d0089ef8b3efce906556
+!gibtia-get-attacks-ddos-info id=26a05baa4025edff367b058b13c6b43e820538a5
+!gibtia-get-attacks-deface-info id=6009637a1135cd001ef46e21
+!gibtia-get-threat-info id=1b09d389d016121afbffe481a14b30ea995876e4 isAPT=true
+!gibtia-get-suspicious-ip-tor-node-info id=109.70.100.46
+!gibtia-get-suspicious-ip-open-proxy-info id=cc6a2856da2806b03839f81aa214f22dbcfd7369
+!gibtia-get-suspicious-ip-socks-proxy-info id=02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e
+!gibtia-get-malware-cnc-info id=aeed277396e27e375d030a91533aa232444d0089
+!gibtia-get-osi-vulnerability-info id=CVE-2021-27152
+!gibtia-get-threat-actor-info id=0d4496592ac3a0f5511cd62ef29887f48d9cb545 isAPT=true
+!gibtia-global-search query=100.100.100.100
+!gibtia-local-search collection_name=attacks/phishing query=100.100.100.100

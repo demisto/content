@@ -1,0 +1,26 @@
+{
+  "data": {
+    "closeIncident": {
+      "id": "5",
+      "status": "Closed",
+      "feedback": {
+        "userId": "user1",
+        "newStatus": "NonActionable",
+        "timeGiven": "1594074571368",
+        "newSelectedOptions": [
+          {
+            "id": "4",
+            "key": "unmonitoredAssets",
+            "value": "true"
+          },
+          {
+            "id": "19",
+            "key": "scopedCorrectly",
+            "value": "No"
+          }
+        ],
+        "optionalText": "new text"
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": 1,
+  "name": "new123",
+  "entity_name": "Device",
+  "data_type": "Boolean",
+  "mandatory": false,
+  "allow_multiple": false,
+  "_links": {
+    "self": {
+      "href": "https://example:57345/api/attribute/1"
+    }
+  }
+}

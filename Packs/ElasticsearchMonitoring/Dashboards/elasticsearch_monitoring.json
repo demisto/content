@@ -1,0 +1,803 @@
+{
+    "id": "Elasticsearch Monitoring",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 7,
+        "field": ""
+    },
+    "name": "Elasticsearch Monitoring",
+    "layout": [
+        {
+            "id": "c7709860-541a-11eb-923d-8542cb044fcc",
+            "forceRange": false,
+            "x": 0,
+            "y": 1,
+            "i": "c7709860-541a-11eb-923d-8542cb044fcc",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "es-cpu-current",
+                "version": -1,
+                "modified": "2021-01-10T13:24:20.812878Z",
+                "name": "Elasticsearch CPU Current Usage",
+                "dataType": "system",
+                "widgetType": "number",
+                "query": "es-cpu.usedPercent",
+                "isPredefined": true,
+                "description": "Elasticsearch CPU Current Usage %",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": -1
+                            },
+                            "#FAC100": {
+                                "value": 50
+                            },
+                            "#FF1B15": {
+                                "value": 80
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "%",
+                    "signAlignment": "right"
+                }
+            }
+        },
+        {
+            "id": "c82d7fc0-541a-11eb-923d-8542cb044fcc",
+            "forceRange": false,
+            "x": 2,
+            "y": 3,
+            "i": "c82d7fc0-541a-11eb-923d-8542cb044fcc",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "es-disk-current",
+                "version": -1,
+                "modified": "2021-01-10T13:24:20.812147Z",
+                "name": "Elasticsearch Disk Current Usage",
+                "dataType": "system",
+                "widgetType": "number",
+                "query": "es-disk.usedPercent",
+                "isPredefined": true,
+                "description": "Elasticsearch Disk Current Usage %",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": -1
+                            },
+                            "#FAC100": {
+                                "value": 60
+                            },
+                            "#FF1B15": {
+                                "value": 80
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "%",
+                    "signAlignment": "right"
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "c8cf8c20-541a-11eb-923d-8542cb044fcc",
+            "forceRange": false,
+            "x": 2,
+            "y": 1,
+            "i": "c8cf8c20-541a-11eb-923d-8542cb044fcc",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "es-jvm-memory-current",
+                "version": -1,
+                "modified": "2021-01-10T13:24:20.812147Z",
+                "name": "Elasticsearch JVM Memory Current Usage",
+                "dataType": "system",
+                "widgetType": "number",
+                "query": "es-jvm-memory.usedPercent",
+                "isPredefined": true,
+                "description": "Elasticsearch JVM Memory Current Usage %",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": -1
+                            },
+                            "#FAC100": {
+                                "value": 70
+                            },
+                            "#FF1B15": {
+                                "value": 90
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "%",
+                    "signAlignment": "right"
+                }
+            }
+        },
+        {
+            "id": "e4529410-54ab-11eb-95e1-496e9a731f32",
+            "forceRange": false,
+            "x": 8,
+            "y": 4,
+            "i": "e4529410-54ab-11eb-95e1-496e9a731f32",
+            "w": 4,
+            "h": 1,
+            "widget": {
+                "id": "es-active-shards-percentage",
+                "version": -1,
+                "modified": "2021-01-10T13:24:20.812147Z",
+                "name": "Elasticsearch Shards Current Usage",
+                "dataType": "system",
+                "widgetType": "number",
+                "query": "es-shard.usedPercent",
+                "isPredefined": true,
+                "description": "Elasticsearch Shards Current Usage %",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": 100
+                            },
+                            "#FAC100": {
+                                "value": 50
+                            },
+                            "#FF1B15": {
+                                "value": -1
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "%",
+                    "signAlignment": "right"
+                }
+            }
+        },
+        {
+            "id": "e9d233a0-54ab-11eb-95e1-496e9a731f32",
+            "forceRange": false,
+            "x": 8,
+            "y": 5,
+            "i": "e9d233a0-54ab-11eb-95e1-496e9a731f32",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "es-active-shards",
+                "version": -1,
+                "fromVersion": "6.1.0",
+                "modified": "2021-01-12T07:58:09.265012Z",
+                "name": "Active Shards",
+                "dataType": "system",
+                "widgetType": "number",
+                "query": "es-shard.used",
+                "isPredefined": true,
+                "description": "Elasticsearch total shards (including replicas) currently active",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": 2
+                            },
+                            "#FF1B15": {
+                                "value": -1
+                            }
+                        },
+                        "type": "above"
+                    }
+                }
+            }
+        },
+        {
+            "id": "4d29df70-54ac-11eb-95e1-496e9a731f32",
+            "forceRange": false,
+            "x": 10,
+            "y": 5,
+            "i": "4d29df70-54ac-11eb-95e1-496e9a731f32",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "es-failed-shards",
+                "modified": "2021-01-12T08:00:56.215781Z",
+                "fromServerVersion": "6.1.0",
+                "name": "Unassigned / Failing Shards",
+                "dataType": "system",
+                "widgetType": "number",
+                "query": "es-shard.failed",
+                "isPredefined": true,
+                "description": "Elasticsearch total shards (including Replicas) that are currently unassigned or failed",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#FF1B15": {
+                                "value": 0
+                            }
+                        },
+                        "type": "above"
+                    }
+                }
+            }
+        },
+        {
+            "id": "783cad90-54ad-11eb-95e1-496e9a731f32",
+            "forceRange": false,
+            "x": 4,
+            "y": 1,
+            "i": "783cad90-54ad-11eb-95e1-496e9a731f32",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "es-failed-nodes",
+                "version": 1,
+                "sequenceNumber": 138607,
+                "primaryTerm": 2,
+                "modified": "2021-01-12T08:09:18.164305Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "Widget imported",
+                "shouldCommit": true,
+                "name": "Elasticsearch Failing Nodes",
+                "prevName": "Elasticsearch Failing Nodes",
+                "dataType": "system",
+                "widgetType": "number",
+                "query": "es-node.failed",
+                "sort": null,
+                "isPredefined": false,
+                "description": "Elasticsearch total number of nodes that are currently failed",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#FF1B15": {
+                                "value": 0
+                            }
+                        },
+                        "type": "above"
+                    }
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "daba4d10-54ad-11eb-95e1-496e9a731f32",
+            "forceRange": false,
+            "x": 6,
+            "y": 1,
+            "i": "daba4d10-54ad-11eb-95e1-496e9a731f32",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "es-active-node",
+                "version": -1,
+                "fromVersion": "6.1.0",
+                "modified": "2021-01-12T08:12:03.271407Z",
+                "name": "Elasticsearch Active Nodes",
+                "dataType": "system",
+                "widgetType": "number",
+                "query": "es-node.used",
+                "isPredefined": true,
+                "description": "Elasticsearch total nodes currently in use",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": 2
+                            },
+                            "#FAC100": {
+                                "value": 0
+                            }
+                        },
+                        "type": "above"
+                    }
+                }
+            }
+        },
+        {
+            "id": "70db3930-54ae-11eb-95e1-496e9a731f32",
+            "forceRange": false,
+            "x": 4,
+            "y": 2,
+            "i": "70db3930-54ae-11eb-95e1-496e9a731f32",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "es-docs-total",
+                "version": -1,
+                "fromVersion": "6.1.0",
+                "modified": "2021-01-12T08:16:15.255813Z",
+                "name": "Elasticsearch Current Total Documents",
+                "dataType": "system",
+                "widgetType": "number",
+                "query": "es-doc.total",
+                "isPredefined": true,
+                "description": "Elasticsearch total amount of documents in XSOAR indices",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                }
+            }
+        },
+        {
+            "id": "ae000920-54af-11eb-95e1-496e9a731f32",
+            "forceRange": true,
+            "x": 4,
+            "y": 3,
+            "i": "ae000920-54af-11eb-95e1-496e9a731f32",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "es-docs-trend-line",
+                "version": -1,
+                "fromVersion": "6.1.0",
+                "modified": "2021-01-12T08:25:06.626374Z",
+                "name": "Elasticsearch Total Documents Over time",
+                "dataType": "system",
+                "widgetType": "line",
+                "query": "es-doc.total",
+                "isPredefined": true,
+                "description": "Elasticsearch total amount of documents in XSOAR indices over time in minutes",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "minutes",
+                        "toValue": null,
+                        "fromValue": 60,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "valuesFormat": "abbreviated",
+                    "timeFrame": "minutes"
+                },
+                "size": 60
+            }
+        },
+        {
+            "id": "58b0e6e0-5646-11eb-becc-c7e0b6cc3dc7",
+            "forceRange": false,
+            "x": 0,
+            "y": 2,
+            "i": "58b0e6e0-5646-11eb-becc-c7e0b6cc3dc7",
+            "w": 4,
+            "h": 1,
+            "widget": {
+                "id": "es-memory-total",
+                "version": 1,
+                "sequenceNumber": 211145,
+                "primaryTerm": 7,
+                "modified": "2021-01-14T08:17:30.93578Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "Widget imported",
+                "shouldCommit": true,
+                "name": "Elasticsearch Total Memory",
+                "prevName": "Elasticsearch Total Memory",
+                "dataType": "system",
+                "widgetType": "number",
+                "query": "es-memory.total",
+                "sort": null,
+                "isPredefined": false,
+                "description": "Elasticsearch Total memory in Giga-bytes",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": 15
+                            },
+                            "#FAC100": {
+                                "value": 7
+                            },
+                            "#FF1B15": {
+                                "value": -1
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "GB",
+                    "signAlignment": "right"
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "85f5e730-565b-11eb-9836-3f1e5864f778",
+            "forceRange": false,
+            "x": 0,
+            "y": 3,
+            "i": "85f5e730-565b-11eb-9836-3f1e5864f778",
+            "w": 2,
+            "h": 3,
+            "widget": {
+                "id": "es-disk-total",
+                "version": -1,
+                "fromVersion": "6.1.0",
+                "modified": "2021-01-14T11:27:43.592865Z",
+                "name": "Elasticsearch Total Disk Size",
+                "dataType": "system",
+                "widgetType": "number",
+                "query": "es-disk.total",
+                "isPredefined": true,
+                "description": "Elasticsearch Total disk in Giga-bytes",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": 250
+                            },
+                            "#FAC100": {
+                                "value": 100
+                            },
+                            "#FF1B15": {
+                                "value": 10
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "GB",
+                    "signAlignment": "right"
+                }
+            }
+        },
+        {
+            "id": "89e549d0-565b-11eb-9836-3f1e5864f778",
+            "forceRange": false,
+            "x": 2,
+            "y": 4,
+            "i": "89e549d0-565b-11eb-9836-3f1e5864f778",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "es-disk-used",
+                "version": -1,
+                "fromVersion": "6.1.0",
+                "modified": "2021-01-14T11:27:50.585456Z",
+                "name": "Elasticsearch Used Disk",
+                "dataType": "system",
+                "widgetType": "number",
+                "query": "es-disk.used",
+                "isPredefined": true,
+                "description": "Elasticsearch used disk in Giga-bytes",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "currencySign": "GB",
+                    "signAlignment": "right"
+                }
+            }
+        },
+        {
+            "id": "c299e3d0-565b-11eb-9836-3f1e5864f778",
+            "forceRange": false,
+            "x": 2,
+            "y": 5,
+            "i": "c299e3d0-565b-11eb-9836-3f1e5864f778",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "es-disk-free",
+                "version": -1,
+                "fromVersion": "6.1.0",
+                "modified": "2021-01-14T11:29:26.452007Z",
+                "name": "Elasticsearch Free Disk",
+                "dataType": "system",
+                "widgetType": "number",
+                "query": "es-disk.free",
+                "isPredefined": true,
+                "description": "Elasticsearch free disk in Giga-bytes",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": 10000
+                            },
+                            "#FAC100": {
+                                "value": 50
+                            },
+                            "#FF1B15": {
+                                "value": 10
+                            }
+                        },
+                        "type": "below"
+                    },
+                    "currencySign": "GB",
+                    "signAlignment": "right"
+                }
+            }
+        },
+        {
+            "id": "41b20da0-565c-11eb-b790-231b535620d9",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "41b20da0-565c-11eb-b790-231b535620d9",
+            "w": 4,
+            "h": 1,
+            "widget": {
+                "id": "es-status",
+                "version": -1,
+                "fromVersion": "6.1.0",
+                "modified": "2021-01-14T11:32:59.575043Z",
+                "name": "Elasticsearch Details",
+                "dataType": "system",
+                "widgetType": "text",
+                "isPredefined": true,
+                "description": "Elasticsearch cluster details",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "text": "### Cluster \"**{es.cluster_name}**\"\nStatus: {es.status}"
+                }
+            }
+        },
+        {
+            "id": "d8e88870-565c-11eb-b790-231b535620d9",
+            "forceRange": false,
+            "x": 6,
+            "y": 2,
+            "i": "d8e88870-565c-11eb-b790-231b535620d9",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "es-indices-total",
+                "version": -1,
+                "fromVersion": "6.1.0",
+                "modified": "2021-01-12T08:20:59.592323Z",
+                "name": "Elasticsearch Current Total Indexes",
+                "dataType": "system",
+                "widgetType": "number",
+                "query": "es-index.total",
+                "isPredefined": true,
+                "description": "Elasticsearch total amount of indexes",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                }
+            }
+        },
+        {
+            "id": "05d84960-565d-11eb-b790-231b535620d9",
+            "forceRange": false,
+            "x": 4,
+            "y": 0,
+            "i": "05d84960-565d-11eb-b790-231b535620d9",
+            "w": 4,
+            "h": 1,
+            "widget": {
+                "id": "es-active-nodes-percentage",
+                "version": -1,
+                "fromVersion": "6.1.0",
+                "modified": "2021-01-14T11:38:28.271829Z",
+                "name": "Elasticsearch Nodes Current Usage",
+                "dataType": "system",
+                "widgetType": "number",
+                "query": "es-node.usedPercent",
+                "isPredefined": true,
+                "description": "Elasticsearch Node Current Usage %",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": 99
+                            },
+                            "#FAC100": {
+                                "value": 50
+                            },
+                            "#FF1B15": {
+                                "value": -1
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "%",
+                    "signAlignment": "right"
+                }
+            }
+        },
+        {
+            "id": "80d80be0-5bdb-11eb-98dd-41f5b9574bef",
+            "forceRange": false,
+            "x": 8,
+            "y": 0,
+            "i": "80d80be0-5bdb-11eb-98dd-41f5b9574bef",
+            "w": 4,
+            "h": 4,
+            "widget": {
+                "id": "es-index-shards-distribution",
+                "version": -1,
+                "fromVersion": "6.1.0",
+                "modified": "2021-01-21T11:24:19.474349Z",
+                "name": "Elasticsearch Shards Status by Index",
+                "dataType": "system",
+                "widgetType": "bar",
+                "query": "es-node.usedPercent",
+                "isPredefined": true,
+                "description": "Elasticsearch active indices distributed by allocated shards and replicas",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "indices"
+                    ]
+                }
+            }
+        }
+    ],
+    "fromVersion": "6.1.0",
+    "description": "",
+    "isPredefined": true
+}

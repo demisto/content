@@ -14,9 +14,13 @@ from numpy import dot
 from numpy.linalg import norm
 from email.utils import parseaddr
 import tldextract
+import pytz
+
 
 no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
+utc = pytz.UTC
 
+SELF_IN_CONTEXT = False
 EMAIL_BODY_FIELD = 'emailbody'
 EMAIL_SUBJECT_FIELD = 'emailsubject'
 EMAIL_HTML_FIELD = 'emailbodyhtml'
@@ -144,12 +148,18 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
             return_warning(INVALID_KEY_WARNING.format(fields=invalid_context_keys))
 
         incident_df = incidents_df[context_keys]  # lgtm [py/hash-unhashable-value]
-        incident_df = incident_df[incident_df['id'] != incident_id]
+        if not SELF_IN_CONTEXT:
+            incident_df = incident_df[incident_df['id'] != incident_id]
+
         incident_df.rename({FROM_DOMAIN_FIELD: 'emailfromdomain'}, axis=1, inplace=True)
         incidents_context = incident_df.fillna(1).to_dict(orient='records')
+        datetimes: pd.DataFrame = incidents_df['created_dt'].dropna()
+        min_datetime = min(datetimes).isoformat()
         return {
             'isCampaignFound': campaign_found,
             'involvedIncidentsCount': len(incidents_df) if incidents_df is not None else 0,
+            'firstIncidentDate': min_datetime,
+            'fieldsToDisplay': additional_context_fields,
             INCIDENTS_CONTEXT_TD: incidents_context
         }
 
@@ -346,16 +356,14 @@ def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keyw
 
 
 def create_email_summary_hr(incidents_df, fields_to_display):
-    hr_email_summary = ''
     clean_email_subject = incidents_df.iloc[0][PREPROCESSED_EMAIL_SUBJECT]
-    email_summary = 'Subject: ' + clean_email_subject.replace('\n', '')
+    email_summary = '*Subject*: ' + clean_email_subject.replace('\n', '') + ' |'
     clean_email_body = incidents_df.iloc[0][PREPROCESSED_EMAIL_BODY]
-    email_summary += '\n' + summarize_email_body(clean_email_body, clean_email_subject)
+    email_summary += '\n*Body*: \n' + summarize_email_body(clean_email_body, clean_email_subject) + ' |'
     for word in KEYWORDS:
         for cased_word in [word.lower(), word.title(), word.upper()]:
             email_summary = re.sub(r'(?<!\w)({})(?!\w)'.format(cased_word), '**{}**'.format(cased_word), email_summary)
-    hr_email_summary += '\n\n' + '### Current Incident\'s Email Snippets'
-    hr_email_summary += '\n ##### ' + email_summary
+    hr_email_summary = '\n' + email_summary
     context = add_context_key(
         create_context_for_campaign_details(
             campaign_found=True,
@@ -393,13 +401,13 @@ def return_campaign_details_entry(incidents_df, fields_to_display):
 
     vertical_hr_campaign_details = horizontal_to_vertical_md_table(hr_campaign_details)
     demisto.executeCommand('setIncident',
-                           {'emailcampaignsummary': f"{vertical_hr_campaign_details}\n{hr_email_summary}"})
+                           {'emailcampaignsummary': f"{vertical_hr_campaign_details}",
+                            "emailcampaignsnippets": hr_email_summary})
     return return_outputs_custom(hr, context, tag='campaign_details')
 
 
 def return_no_mututal_indicators_found_entry():
-    hr = '### Mutual Indicators' + '\n'
-    hr += 'No mutual indicators were found.'
+    hr = 'No mutual indicators were found.'
 
     demisto.executeCommand('setIncident', {'emailcampaignmutualindicators': hr})
     return_outputs_custom(hr, add_context_key(create_context_for_indicators()), tag='indicators')
@@ -504,7 +512,7 @@ def draw_canvas(incidents, indicators):
         if not is_error(res):
             res[-1]['Tags'] = ['canvas']
         try:
-            demisto.executeCommand('setIncident', {'emailcampaigncanvas': res[-1].get('HumanReadable')})
+            demisto.executeCommand('setIncident', {'emailcampaigncanvas': res[-1].get('HumanReadable', '').strip("#")})
         except Exception:
             pass
         demisto.results(res)
@@ -521,13 +529,15 @@ def analyze_incidents_campaign(incidents, fields_to_display):
 
 
 def main():
-    global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD
+    global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, SELF_IN_CONTEXT
     input_args = demisto.args()
     EMAIL_BODY_FIELD = input_args.get('emailBody', EMAIL_BODY_FIELD)
     EMAIL_SUBJECT_FIELD = input_args.get('emailSubject', EMAIL_SUBJECT_FIELD)
     EMAIL_HTML_FIELD = input_args.get('emailBodyHTML', EMAIL_HTML_FIELD)
     FROM_FIELD = input_args.get('emailFrom', FROM_FIELD)
     fields_to_display = input_args.get('fieldsToDisplay')
+    SELF_IN_CONTEXT = argToBoolean(input_args.get('includeSelf', 'false'))
+
     if fields_to_display is not None:
         input_args['populateFields'] = fields_to_display
         fields_to_display = get_comma_sep_list(fields_to_display)
@@ -538,6 +548,7 @@ def main():
         return_error(get_error(res))
     res = res[-1]
     incidents = json.loads(res['Contents'])
+
     if is_number_of_incidents_too_low(res, incidents):
         return
     if is_number_of_unique_recipients_is_too_low(incidents):

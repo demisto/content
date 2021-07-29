@@ -1,0 +1,23 @@
+{
+    "id": "es-failed-shards",
+    "version": -1,
+    "fromVersion": "6.1.0",
+    "modified": "2021-01-12T08:00:56.215781Z",
+    "name": "Elasticsearch Unassigned / Failing Shards",
+    "dataType": "system",
+    "widgetType": "number",
+    "query": "es-shard.failed",
+    "isPredefined": true,
+    "description": "Elasticsearch total shards (including Replicas) that are currently unassigned or failed",
+    "params": {
+        "colors": {
+            "isEnabled": true,
+            "items": {
+                "#FF1B15": {
+                    "value": 0
+                }
+            },
+            "type": "above"
+        }
+    }
+}

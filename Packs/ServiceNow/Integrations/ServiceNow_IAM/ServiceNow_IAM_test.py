@@ -137,7 +137,8 @@ def test_create_user_command__success(mocker):
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=SERVICENOW_USER_OUTPUT)
 
-    user_profile = create_user_command(client, args, 'mapper_out', is_command_enabled=True)
+    user_profile = create_user_command(client, args, 'mapper_out', is_command_enabled=True,
+                                       is_update_enabled=False, is_enable_enabled=False)
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.CREATE_USER
@@ -167,7 +168,8 @@ def test_create_user_command__user_already_exists(mocker):
     mocker.patch.object(client, 'get_user', return_value=SERVICENOW_DISABLED_USER_OUTPUT)
     mocker.patch.object(client, 'update_user', return_value=SERVICENOW_DISABLED_USER_OUTPUT)
 
-    user_profile = create_user_command(client, args, 'mapper_out', is_command_enabled=True)
+    user_profile = create_user_command(client, args, 'mapper_out', is_command_enabled=True,
+                                       is_update_enabled=True, is_enable_enabled=True)
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.UPDATE_USER
@@ -200,7 +202,7 @@ def test_update_user_command__non_existing_user(mocker):
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=SERVICENOW_USER_OUTPUT)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True,
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True, is_enable_enabled=False,
                                        is_create_user_enabled=True, create_if_not_exists=True)
     outputs = get_outputs_from_user_profile(user_profile)
 
@@ -231,7 +233,7 @@ def test_update_user_command__command_is_disabled(mocker):
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'update_user', return_value=SERVICENOW_USER_OUTPUT)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=False,
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=False, is_enable_enabled=False,
                                        is_create_user_enabled=False, create_if_not_exists=False)
     outputs = get_outputs_from_user_profile(user_profile)
 
@@ -261,7 +263,7 @@ def test_update_user_command__allow_enable(mocker):
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'update_user', return_value=SERVICENOW_USER_OUTPUT)
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True,
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True, is_enable_enabled=True,
                                        is_create_user_enabled=False, create_if_not_exists=False)
     outputs = get_outputs_from_user_profile(user_profile)
 
@@ -316,5 +318,5 @@ def test_get_mapping_fields_command(mocker):
     mapping_response = get_mapping_fields_command(client)
     mapping = mapping_response.extract_mapping()
 
-    assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field1') == 'desc1'
-    assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field2') == 'desc2'
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field1') == 'desc1'
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field2') == 'desc2'

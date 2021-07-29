@@ -2142,7 +2142,7 @@ script:
     - contextPath: Endpoint.OSVersion
       description: The endpoint's operation system version.
       type: String
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: true
   longRunning: false

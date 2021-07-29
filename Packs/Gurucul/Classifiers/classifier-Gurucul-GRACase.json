@@ -9,13 +9,9 @@
     "transformer": {
         "complex": {
             "accessor": "",
-            "filters": [
-
-            ],
+            "filters": [],
             "root": "incidentType",
-            "transformers": [
-
-            ]
+            "transformers": []
         },
         "simple": ""
     },

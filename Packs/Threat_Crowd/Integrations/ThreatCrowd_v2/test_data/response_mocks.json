@@ -1,5 +1,8 @@
 {
-  "ip_response": {
+  "empty_ip_response": {
+    "response_code": "0"
+  },
+  "ip_response_1": {
     "response_code": "1",
     "resolutions": [
       {
@@ -16,6 +19,14 @@
       "00bbeeab92b10c2ab038671da99e9b47",
       "00bffa26618ee214fac1adc89d39bb6a"
     ],
+    "references": ["http://example1.txt", "https://example2/"],
+    "votes": -1,
+    "permalink": "https://www.threatcrowd.org/ip.php?ip=0.0.0.0"
+  },
+  "ip_response_2": {
+    "response_code": "1",
+    "resolutions": [],
+    "hashes": [],
     "references": [],
     "votes": -1,
     "permalink": "https://www.threatcrowd.org/ip.php?ip=0.0.0.0"

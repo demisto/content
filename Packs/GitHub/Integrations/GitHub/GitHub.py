@@ -1,13 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-import json
 import copy
-import requests
-from typing import Union, Any
+import json
 from datetime import datetime
+from typing import Any, Union
+
+import requests
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -21,8 +21,10 @@ INSTALLATION_ID: str
 REPOSITORY: str
 USE_SSL: bool
 FETCH_TIME: str
+MAX_FETCH_PAGE_RESULTS: int
 USER_SUFFIX: str
 ISSUE_SUFFIX: str
+PROJECT_SUFFIX: str
 RELEASE_SUFFIX: str
 PULLS_SUFFIX: str
 FILE_SUFFIX: str
@@ -33,10 +35,12 @@ BASE_URL = 'https://api.github.com'
 RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
 ISSUE_HEADERS = ['ID', 'Repository', 'Organization', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at',
                  'Closed_by', 'Assignees', 'Labels']
+PROJECT_HEADERS = ['Name', 'ID', 'Number', 'Columns']
 FILE_HEADERS = ['Name', 'Path', 'Type', 'Size', 'SHA', 'DownloadUrl']
 
 # Headers to be sent in requests
 MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+json"
+PROJECTS_PREVIEW = 'application/vnd.github.inertia-preview+json'
 
 ''' HELPER FUNCTIONS '''
 
@@ -112,36 +116,37 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, is_ra
     if res.status_code >= 400:
         try:
             json_res = res.json()
-
+            # add message from GitHub if available
+            err_msg = json_res.get('message', '')
+            if err_msg and 'documentation_url' in json_res:
+                err_msg += f' see: {json_res["documentation_url"]}'
             if json_res.get('errors') is None:
-                return_error('Error in API call to the GitHub Integration [%d] - %s' % (res.status_code, res.reason))
-
+                err_msg = f'Error in API call to the GitHub Integration [{res.status_code}] {res.reason}. {err_msg}'
             else:
                 error_code = json_res.get('errors')[0].get('code')
                 if error_code == 'missing_field':
-                    return_error(
-                        'Error: the field: "{}" requires a value'.format(json_res.get('errors')[0].get('field')))
-
+                    err_msg = f'Error: the field: "{json_res.get("errors")[0].get("field")}" requires a value. ' \
+                              f'{err_msg}'
                 elif error_code == 'invalid':
                     field = json_res.get('errors')[0].get('field')
                     if field == 'q':
-                        return_error('Error: invalid query - {}'.format(json_res.get('errors')[0].get('message')))
-
+                        err_msg = f'Error: invalid query - {json_res.get("errors")[0].get("message")}. {err_msg}'
                     else:
-                        return_error('Error: the field: "{}" has an invalid value'.format(field))
+                        err_msg = f'Error: the field: "{field}" has an invalid value. {err_msg}'
 
                 elif error_code == 'missing':
-                    return_error('Error: {} does not exist'.format(json_res.get('errors')[0].get('resource')))
+                    err_msg = f"Error: {json_res.get('errors')[0].get('resource')} does not exist. {err_msg}"
 
                 elif error_code == 'already_exists':
-                    return_error('Error: the field {} must be unique'.format(json_res.get('errors')[0].get('field')))
+                    err_msg = f"Error: the field {json_res.get('errors')[0].get('field')} must be unique. {err_msg}"
 
                 else:
-                    return_error(
-                        'Error in API call to the GitHub Integration [%d] - %s' % (res.status_code, res.reason))
+                    err_msg = f'Error in API call to the GitHub Integration [{res.status_code}] - {res.reason}. ' \
+                              f'{err_msg}'
+            raise DemistoException(err_msg)
 
         except ValueError:
-            return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
+            raise DemistoException(f'Error in API call to GitHub Integration [{res.status_code}] - {res.reason}')
 
     try:
         if res.status_code == 204:
@@ -238,7 +243,8 @@ def issue_format(issue):
         'Created_at': issue.get('created_at'),
         'Updated_at': issue.get('updated_at'),
         'Closed_at': issue.get('closed_at'),
-        'Closed_by': closed_by
+        'Closed_by': closed_by,
+        'Unique_ID': issue.get('id'),
     }
     return form
 
@@ -1160,12 +1166,133 @@ def update_command():
     context_create_issue(response, issue)
 
 
-def list_all_issue(state):
-    params = {'state': state}
+def list_all_issue(state, page=1):
+    params = {'state': state, 'page': page, 'per_page': MAX_FETCH_PAGE_RESULTS, }
     response = http_request(method='GET',
                             url_suffix=ISSUE_SUFFIX,
                             params=params)
-    return response
+    if len(response) == MAX_FETCH_PAGE_RESULTS:
+        return response + list_all_issue(state=state, page=page + 1)
+    else:
+        return response
+
+
+def get_cards(url, header, page=1):
+    resp = requests.get(url=url,
+                        headers=header,
+                        verify=USE_SSL,
+                        params={'page': page, 'per_page': MAX_FETCH_PAGE_RESULTS}
+                        )
+    cards = resp.json()
+    column_issues = []
+    for card in cards:
+        if "content_url" in card:
+            column_issues.append({"CardID": card["id"], "ContentNumber": int(card["content_url"].rsplit('/', 1)[1])})
+    if len(cards) == MAX_FETCH_PAGE_RESULTS:
+        return column_issues + get_cards(url=url, header=header, page=page + 1)
+    else:
+        return column_issues
+
+
+def get_project_details(project, header):
+    resp_column = requests.get(url=project["columns_url"],
+                               headers=header,
+                               verify=USE_SSL)
+
+    json_column = resp_column.json()
+    columns_data = {}
+    all_project_issues = []
+
+    for column in json_column:
+        cards = get_cards(url=column["cards_url"], header=header)
+        columns_data[column["name"]] = {'Name': column["name"],
+                                        'ColumnID': column["id"],
+                                        'Cards': cards}
+        for card in cards:
+            all_project_issues.append(card["ContentNumber"])
+
+    return {'Name': project["name"],
+            'ID': project["id"],
+            'Number': project["number"],
+            'Columns': columns_data,
+            'Issues': all_project_issues,
+            }
+
+
+def list_all_projects_command():
+
+    project_f = demisto.args().get('project_filter', [])
+    limit = demisto.args().get('limit', MAX_FETCH_PAGE_RESULTS)
+
+    if int(limit) > MAX_FETCH_PAGE_RESULTS or project_f:
+        limit = MAX_FETCH_PAGE_RESULTS
+
+    if project_f:
+        project_f = project_f.split(",")
+
+    header = HEADERS
+    header.update({'Accept': PROJECTS_PREVIEW})
+    params = {'per_page': limit}
+    resp_projects = requests.get(url=BASE_URL + PROJECT_SUFFIX,
+                                 headers=header,
+                                 verify=USE_SSL,
+                                 params=params
+                                 )
+    projects = resp_projects.json()
+    projects_obj = []
+    for proj in projects:
+        if project_f:
+            if str(proj["number"]) in project_f:
+                projects_obj.append(get_project_details(project=proj, header=header))
+        else:
+            projects_obj.append(get_project_details(project=proj, header=header))
+
+    human_readable_projects = [{'Name': proj['Name'], 'ID': proj['ID'], 'Number': proj['Number'], 'Columns':
+                                [column for column in proj['Columns']]} for proj in projects_obj]
+
+    if projects_obj:
+        human_readable = tableToMarkdown('Projects:', t=human_readable_projects, headers=PROJECT_HEADERS,
+                                         removeNull=True)
+    else:
+        human_readable = f'Not found projects with number - {",".join(project_f)}.'
+
+    command_results = CommandResults(
+        outputs_prefix='GitHub.Project',
+        outputs_key_field='Name',
+        outputs=projects_obj,
+        readable_output=human_readable
+    )
+    return_results(command_results)
+
+
+def add_issue_to_project_board_command():
+    content_type = "Issue"
+
+    args = demisto.args()
+    column_id = args.get('column_id')
+    content_id = int(args.get('issue_unique_id'))
+    if "content_type" in demisto.args():
+        content_type = args.get('content_type')
+
+    header = HEADERS
+    header.update({'Accept': PROJECTS_PREVIEW})
+
+    post_url = "%s/projects/columns/%s/cards" % (BASE_URL, column_id)
+    post_data = {"content_id": content_id,
+                 "content_type": content_type,
+                 }
+    response = requests.post(url=post_url,
+                             headers=header,
+                             verify=USE_SSL,
+                             data=json.dumps(post_data)
+                             )
+
+    if response.status_code >= 400:
+        message = response.json().get('message', f'Failed to add the issue with ID {content_id} to column with ID '
+                                                 f'{column_id}')
+        return_error(f"Post result {response}\nMessage: {message}")
+
+    return_results(f"The issue was successfully added to column ID {column_id}.")
 
 
 def list_all_command():
@@ -1278,19 +1405,25 @@ def search_code_command():
     return_results(results)
 
 
-def search_issue(query, limit):
+def search_issue(query, limit, page=1):
+
+    params = {'q': query, 'page': page, 'per_page': MAX_FETCH_PAGE_RESULTS, }
     response = http_request(method='GET',
                             url_suffix='/search/issues',
-                            params={'q': query, 'per_page': limit})
-    return response
+                            params=params)
+    if len(response["items"]) == MAX_FETCH_PAGE_RESULTS:
+        next_res = search_issue(query=query, limit=limit, page=page + 1)
+        response["items"] = response["items"] + next_res["items"]
+        return response
+    else:
+        return response
 
 
 def search_command():
     q = demisto.args().get('query')
     limit = int(demisto.args().get('limit'))
-    if limit > 100:
-        limit = 100  # per GitHub limitation.
-
+    if limit > 1000:
+        limit = 1000  # per GitHub limitation.
     response = search_issue(q, limit)
     create_issue_table(response['items'], response, limit)
 
@@ -1611,15 +1744,37 @@ def get_github_get_check_run():
     return_results(command_results)
 
 
-def fetch_incidents_command():
-    last_run = demisto.getLastRun()
-    if last_run and 'start_time' in last_run:
-        start_time = datetime.strptime(last_run.get('start_time'), '%Y-%m-%dT%H:%M:%SZ')
+def create_release_command():
+    args = demisto.args()
+    tag_name = args.get('tag_name')
+    data = {
+        'tag_name': tag_name,
+        'name': args.get('name'),
+        'body': args.get('body'),
+        'draft': argToBoolean(args.get('draft')),
+    }
+    response = http_request('POST', url_suffix=RELEASE_SUFFIX, data=data)
+    release_url = response.get('html_url')
 
-    else:
-        start_time = datetime.now() - timedelta(days=int(FETCH_TIME))
+    return_results(CommandResults(
+        outputs_prefix='GitHub.Release',
+        outputs=response,
+        outputs_key_field='id',
+        readable_output=f'Release {tag_name} created successfully for repo {REPOSITORY}: {release_url}',
+        raw_response=response
+    ))
 
-    last_time = start_time
+
+def get_issue_events_command():
+    args = demisto.args()
+    issue_number = args.get('issue_number')
+    res = http_request(method='GET', url_suffix=f'{ISSUE_SUFFIX}/{issue_number}/events')
+    return_results(CommandResults(outputs_prefix='GitHub.IssueEvent', outputs_key_field='id', outputs=res,
+                                  readable_output=tableToMarkdown(f'GitHub Issue Events For Issue {issue_number}',
+                                                                  res)))
+
+
+def fetch_incidents_command_rec(start_time, last_time, page=1):
     incidents = []
 
     if demisto.params().get('fetch_object') == "Pull_requests":
@@ -1628,7 +1783,8 @@ def fetch_incidents_command():
                                params={
                                    'state': 'open',
                                    'sort': 'created',
-                                   'page': 1
+                                   'page': page,
+                                   'per_page': MAX_FETCH_PAGE_RESULTS,
                                })
         for pr in pr_list:
             updated_at_str = pr.get('created_at')
@@ -1642,10 +1798,19 @@ def fetch_incidents_command():
                 incidents.append(inc)
                 if updated_at > last_time:
                     last_time = updated_at
+
+        if len(pr_list) == MAX_FETCH_PAGE_RESULTS:
+            rec_prs, rec_last_time = fetch_incidents_command_rec(start_time=start_time, last_time=last_time,
+                                                                 page=page + 1)
+            incidents = incidents + rec_prs
+            if rec_last_time > last_time:
+                last_time = rec_last_time
     else:
+        params = {'page': page, 'per_page': MAX_FETCH_PAGE_RESULTS, 'state': 'all'}
+        # params.update({'labels': 'DevOps'})
         issue_list = http_request(method='GET',
                                   url_suffix=ISSUE_SUFFIX,
-                                  params={'state': 'all'})
+                                  params=params)
 
         for issue in issue_list:
             updated_at_str = issue.get('created_at')
@@ -1660,6 +1825,25 @@ def fetch_incidents_command():
                 if updated_at > last_time:
                     last_time = updated_at
 
+        if len(issue_list) == MAX_FETCH_PAGE_RESULTS:
+            rec_incidents, rec_last_time = fetch_incidents_command_rec(start_time=start_time, last_time=last_time,
+                                                                       page=page + 1)
+            incidents = incidents + rec_incidents
+            if rec_last_time > last_time:
+                last_time = rec_last_time
+    return incidents, last_time
+
+
+def fetch_incidents_command():
+    last_run = demisto.getLastRun()
+    if last_run and 'start_time' in last_run:
+        start_time = datetime.strptime(last_run.get('start_time'), '%Y-%m-%dT%H:%M:%SZ')
+
+    else:
+        start_time = datetime.now() - timedelta(days=int(FETCH_TIME))
+
+    incidents, last_time = fetch_incidents_command_rec(start_time=start_time, last_time=start_time)
+
     demisto.setLastRun({'start_time': datetime.strftime(last_time, '%Y-%m-%dT%H:%M:%SZ')})
     demisto.incidents(incidents)
 
@@ -1673,6 +1857,7 @@ COMMANDS = {
     'GitHub-close-issue': close_command,
     'GitHub-update-issue': update_command,
     'GitHub-list-all-issues': list_all_command,
+    'GitHub-list-all-projects': list_all_projects_command,
     'GitHub-search-issues': search_command,
     'GitHub-get-download-count': get_download_count,
     'GitHub-get-stale-prs': get_stale_prs_command,
@@ -1701,6 +1886,9 @@ COMMANDS = {
     'GitHub-list-branch-pull-requests': list_branch_pull_requests_command,
     'Github-get-check-run': get_github_get_check_run,
     'Github-commit-file': commit_file_command,
+    'GitHub-create-release': create_release_command,
+    'Github-list-issue-events': get_issue_events_command,
+    'GitHub-add-issue-to-project-board': add_issue_to_project_board_command,
 }
 
 
@@ -1713,8 +1901,10 @@ def main():
     global REPOSITORY
     global USE_SSL
     global FETCH_TIME
+    global MAX_FETCH_PAGE_RESULTS
     global USER_SUFFIX
     global ISSUE_SUFFIX
+    global PROJECT_SUFFIX
     global RELEASE_SUFFIX
     global PULLS_SUFFIX
     global FILE_SUFFIX
@@ -1730,8 +1920,10 @@ def main():
     REPOSITORY = params.get('repository')
     USE_SSL = not params.get('insecure', False)
     FETCH_TIME = params.get('fetch_time', '3')
+    MAX_FETCH_PAGE_RESULTS = 100
 
     USER_SUFFIX = '/repos/{}/{}'.format(USER, REPOSITORY)
+    PROJECT_SUFFIX = USER_SUFFIX + '/projects'
     ISSUE_SUFFIX = USER_SUFFIX + '/issues'
     RELEASE_SUFFIX = USER_SUFFIX + '/releases'
     PULLS_SUFFIX = USER_SUFFIX + '/pulls'

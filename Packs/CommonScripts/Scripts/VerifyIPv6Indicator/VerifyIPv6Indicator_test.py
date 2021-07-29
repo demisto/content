@@ -1,5 +1,7 @@
-from VerifyIPv6Indicator import is_valid_ipv6_address
 import pytest
+
+import demistomock as demisto
+from VerifyIPv6Indicator import is_valid_ipv6_address, main
 
 
 @pytest.mark.parametrize(
@@ -18,3 +20,18 @@ import pytest
 def test_set_limit(address, expected):
     ipv6_address = is_valid_ipv6_address(address)
     assert ipv6_address == expected
+
+
+def test_main(mocker):
+    """
+    Given:
+        - MAC Address as input
+    When:
+        - Running the script
+    Then:
+        - Ensure the MAC address is caught as invalid IPv6 and returns empty string
+    """
+    mocker.patch.object(demisto, 'args', return_value={'input': '00:16:45:00:46:91'})
+    mocker.patch.object(demisto, 'results')
+    main()
+    demisto.results.assert_called_with('')

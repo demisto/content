@@ -77,6 +77,8 @@ args:
   - greater or equal
   - greater than
   - if-then-else
+  - in
+  - in caseless
   - in caseless list
   - in list
   - in range
@@ -102,6 +104,8 @@ args:
   - matches caseless
   - matches conditions of
   - matches expressions of
+  - not in
+  - not in caseless
   - not in caseless list
   - not in list
   - 'regex: contains'
@@ -187,7 +191,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.4.19537
+dockerimage: demisto/python3:3.9.5.21272
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

@@ -27,3 +27,11 @@ ignore=RM106
 
 [file:playbook-TIM_-_QRadar_Add_Bad_Hash_Indicators_README.md]
 ignore=RM106
+
+[file:classifier-mapper-incoming-QRadar.json]
+ignore=BA101
+[file:incidentfield-Number_Of_Events_In_Offense.json]
+ignore=IF100
+
+[file:incidentfield-Number_Of_Fetched_Events.json]
+ignore=IF100
