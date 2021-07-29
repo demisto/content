@@ -89,6 +89,7 @@ configuration:
   options:
   - No Mirroring
   - Mirror Offense
+  - Mirror Offense and Events
   required: false
   type: 15
   additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done, available
