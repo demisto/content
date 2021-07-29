@@ -67,6 +67,7 @@ class Client:
 
     @property
     def _headers(self):
+        # the header should be calculated at most 5 min before the request fired 
         return get_headers(self._params)
 
 
