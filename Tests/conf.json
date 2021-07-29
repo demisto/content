@@ -3454,6 +3454,10 @@
             "fromversion": "6.1.0",
             "instance_names": "ml_dummy_prod",
             "integrations": "AzureWAF"
+        },
+        {
+            "integrations": "RSA Encryption Tools",
+            "playbookID": "test-rsa-encryption-decryption"
         }
     ],
     "skipped_tests": {
