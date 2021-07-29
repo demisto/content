@@ -145,6 +145,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
-toversion: 5.4.9
 tests:
 - No test
