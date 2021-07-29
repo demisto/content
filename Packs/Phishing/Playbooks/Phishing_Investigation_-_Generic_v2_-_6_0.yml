@@ -1904,7 +1904,7 @@ tasks:
           left:
             value:
               complex:
-                root: PartOfCampaign
+                root: incident.partofcampaign
             iscontext: true
     view: |-
       {
