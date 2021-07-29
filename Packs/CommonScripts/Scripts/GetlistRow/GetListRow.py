@@ -46,7 +46,7 @@ def parse_relevant_rows(headers, lines, header, value, context, parse_all=False)
             readable_output="No results found"
         )
     context["Results"] = lines_context
-    human_readable = tableToMarkdown('List Result', lines_context, headers=headers)
+    human_readable = tableToMarkdown('List Result', lines_context, headers=headers, removeNull=True)
     return CommandResults(
         outputs_prefix=output_condition,
         outputs=context,
