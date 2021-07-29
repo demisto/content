@@ -1,0 +1,17 @@
+{
+    "name": "FortiAuthenticator",
+    "description": "This integration allows you to manage the user configuration on FortiAutenticator.\n\nSupported user types:\n- Local Users\n- LDAP Users\n\nIn this version, you can get/update user by entering user's email as identifier: \n- Get user's information (id, username, email, active status)\n- Update user's active status (disable/enable) ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Jason Lo",
+    "url": "",
+    "email": "",
+    "created": "2021-07-29T15:11:11Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "jasonlo82"
+    ]
+}

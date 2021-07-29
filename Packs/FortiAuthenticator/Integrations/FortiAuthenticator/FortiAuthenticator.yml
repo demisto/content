@@ -1,0 +1,70 @@
+category: Utilities
+commonfields:
+  id: FortiAuthenticator
+  version: -1
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  required: true
+  type: 0
+- display: Username
+  displaypassword: Password Token
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 78f94192-42ed-4a31-8a51-d2c3cc8825b9
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Manage user configuration on FortiAutenticator.
+display: FortiAuthenticator
+name: FortiAuthenticator
+script:
+  commands:
+  - arguments:
+    - name: email
+    - auto: PREDEFINED
+      defaultValue: localusers
+      name: user_type
+      predefined:
+      - localusers
+      - ldapusers
+      required: true
+    name: FortiAuthenticator-get-user
+  - arguments:
+    - name: email
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "true"
+      name: active
+      predefined:
+      - "true"
+      - "false"
+      required: true
+    - auto: PREDEFINED
+      defaultValue: localusers
+      name: user_type
+      predefined:
+      - localusers
+      - ldapusers
+      required: true
+    name: FortiAuthenticator-update-user
+  dockerimage: demisto/python3:3.9.5.20958
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+sourcemoduleid: FortiGate
