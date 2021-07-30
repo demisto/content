@@ -357,8 +357,16 @@ class Client(BaseClient):
                 json_data=query
             )
         else:
-            res = self._http_request('POST', 'case/artifact/_search', ok_codes=[200])
-            res[:] = [x for x in res if x['_parent'] == case_id] if case_id else res
+            query = {
+                "_parent": {
+                    "_type": "case",
+                    "_query": {
+                        "_id": case_id}
+                },
+                "range": "all"
+            }
+            res = self._http_request('POST', 'case/artifact/_search', ok_codes=[200], json_data=query)
+            res = [x for x in res if x["_parent"] == case_id]
         return res
 
     def create_observable(self, case_id: str = None, data: dict = None):
