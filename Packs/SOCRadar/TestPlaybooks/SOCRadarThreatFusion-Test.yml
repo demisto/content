@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '3f6cc550-664c-4096-886a-53d0f9ee1cbb'
+    taskid: '01410de9-7989-47e1-85b6-b53260be076c'
     type: start
     task:
-      id: '3f6cc550-664c-4096-886a-53d0f9ee1cbb'
+      id: '01410de9-7989-47e1-85b6-b53260be076c'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '3e6e430d-2072-4cc7-81a4-738515aa9f12'
+    taskid: '102ac2a9-9ade-4a54-a791-aa591cd892dd'
     type: regular
     task:
-      id: '3e6e430d-2072-4cc7-81a4-738515aa9f12'
+      id: '102ac2a9-9ade-4a54-a791-aa591cd892dd'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,14 +50,14 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: 'ce20bfa0-21a3-425c-b92c-8ea4041ebe74'
+    taskid: '8ea41ad5-219c-41b5-9272-56062622a4a0'
     type: regular
     task:
-      id: 'ce20bfa0-21a3-425c-b92c-8ea4041ebe74'
+      id: '8ea41ad5-219c-41b5-9272-56062622a4a0'
       version: -1
-      name: socradar-score-ip
+      name: ip
       description: ''
-      script: '|||socradar-score-ip'
+      script: '|||ip'
       type: regular
       iscommand: true
       brand: ''
@@ -72,23 +72,224 @@ tasks:
     ignoreworker: false
     skipunavailable: false
   '3':
-    id: 3
-    taskid: '5196da24-611a-4662-907a-90f6189524ca'
-    type: regular
+    id: '3'
+    taskid: '5f19cf41-c5c0-43c2-a27d-4ffd25fa1d1a'
+    type: condition
     task:
-      id: '5196da24-611a-4662-907a-90f6189524ca'
+      id: '5f19cf41-c5c0-43c2-a27d-4ffd25fa1d1a'
       version: -1
-      name: socradar-score-domain
+      name: Verify Outputs
+      type: condition
+      iscommand: false
       description: ''
-      script: '|||socradar-score-domain'
-      type: regular
-      iscommand: true
       brand: ''
     nexttasks:
-      '#none#':
+      yes:
       - '4'
-    scriptarguments: {}
     separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Risk Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Score Details
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Total Encounters
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.IP
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn_cidr
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn_country_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn_description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.asn_registry
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.cidr
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.city
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.emails
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.handle
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.postal_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.range
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.nets.updated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.nir
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.query
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.raw_referral
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Whois Details.referral
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.DNS Details
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Geo Location.ASN
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Geo Location.AsnCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Geo Location.AsnName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Geo Location.Cidr
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Geo Location.CityName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Geo Location.CountryCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Geo Location.CountryName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Geo Location.Latitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Geo Location.Longitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Geo Location.RegionName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Geo Location.Timezone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Geo Location.ZipCode
+            iscontext: true
     view: '{"position": {"x": 50, "y": 600}}'
     note: false
     timertriggers: []
@@ -96,14 +297,14 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: '1eefed29-95c3-4e0e-b85a-2ee4541fab62'
+    taskid: '178eeb36-af74-4492-a11f-aa47bf8564bc'
     type: regular
     task:
-      id: '1eefed29-95c3-4e0e-b85a-2ee4541fab62'
+      id: '178eeb36-af74-4492-a11f-aa47bf8564bc'
       version: -1
-      name: socradar-score-hash
+      name: domain
       description: ''
-      script: '|||socradar-score-hash'
+      script: '|||domain'
       type: regular
       iscommand: true
       brand: ''
@@ -119,10 +320,216 @@ tasks:
     skipunavailable: false
   '5':
     id: '5'
-    taskid: '79bce05e-8192-477d-9a91-4aaa006b97d7'
+    taskid: '204894b9-49fb-45be-8201-14d5cc4acb03'
+    type: condition
+    task:
+      id: '204894b9-49fb-45be-8201-14d5cc4acb03'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Risk Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.IP.Score Details
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Total Encounters
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.org
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.city
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.dnssec
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.emails
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.zipcode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.registrar
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.domain_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.name_servers
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.referral_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.updated_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.whois_server
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.creation_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.Whois Details.expiration_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Domain.DNS Details
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: 'a6d45eed-1bf2-46a9-b16f-befab1aeca99'
+    type: regular
+    task:
+      id: 'a6d45eed-1bf2-46a9-b16f-befab1aeca99'
+      version: -1
+      name: file
+      description: ''
+      script: '|||file'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7ad43b51-0011-41e5-93fd-e1e2f1a25856'
+    type: condition
+    task:
+      id: '7ad43b51-0011-41e5-93fd-e1e2f1a25856'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Hash.Risk Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Hash.Score Details
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Hash.Total Encounters
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SOCRadarThreatFusion.Reputation.Hash.File
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: '8'
+    taskid: '3c2275db-c785-4dde-886e-c4f0d9a1fea6'
     type: title
     task:
-      id: '79bce05e-8192-477d-9a91-4aaa006b97d7'
+      id: '3c2275db-c785-4dde-886e-c4f0d9a1fea6'
       version: -1
       name: Test Done
       type: title
@@ -130,7 +537,7 @@ tasks:
       brand: ''
       description: ''
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 1000}}'
+    view: '{"position": {"x": 50, "y": 1600}}'
     note: false
     timertriggers: []
     ignoreworker: false

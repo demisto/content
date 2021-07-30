@@ -20,6 +20,7 @@ MESSAGES: Dict[str, str] = {
     'AUTHORIZATION_ERROR': 'Authorization Error: make sure API Key is correctly set.',
     'RATE_LIMIT_EXCEED_ERROR': 'Rate limit has been exceeded. Please make sure your your API key\'s rate limit is adequate.',
 }
+INTEGRATION_NAME = 'SOCRadar ThreatFusion'
 
 ''' CLIENT CLASS '''
 
@@ -186,11 +187,11 @@ class Validator:
             raise ValueError(f'Hash "{file_hash}" is not of type SHA-1 or MD5')
 
 
-def verify_entity_type(entity_to_control: str, entity_type: str):
+def verify_entity_type(entity_to_control_list: list, entity_type: str):
     """Verify intended entity type. Raise exception if the provided entity type is not expected.
 
-    :type entity_to_control: ``str``
-    :param entity_to_control: Intended entity to be verified.
+    :type entity_to_control_list: ``list``
+    :param entity_to_control_list: Intended entity list to be verified.
 
     :type entity_type: ``str``
     :param entity_type: Intended entity type to be verified.
@@ -200,7 +201,8 @@ def verify_entity_type(entity_to_control: str, entity_type: str):
         'domain': Validator.raise_if_domain_not_valid,
         'hash': Validator.raise_if_hash_not_valid,
     }
-    control_dict[entity_type](entity_to_control)
+    for entity_to_control in entity_to_control_list:
+        control_dict[entity_type](entity_to_control)
 
 
 def map_indicator_type(socradar_indicator_type: str) -> Optional[str]:
@@ -222,7 +224,7 @@ def map_indicator_type(socradar_indicator_type: str) -> Optional[str]:
     return indicator_map.get(socradar_indicator_type)
 
 
-def build_entry_context(results: Union[Dict, List], indicator_type: str) -> Union[Dict, List]:
+def build_entry_context(results: Union[Dict, List], indicator_type: str):
     """Formatting results from SOCRadar API to Demisto Context
 
     :type results: ``Union[Dict, List]``
@@ -230,9 +232,6 @@ def build_entry_context(results: Union[Dict, List], indicator_type: str) -> Unio
 
     :type indicator_type: ``str``
     :param results: Type of indicator to be used in context creation.
-
-    :return: Formatted results for Demisto Context.
-    :rtype: ``Union[Dict, List]``
     """
 
     if isinstance(results, list):
@@ -258,6 +257,15 @@ def build_entry_context(results: Union[Dict, List], indicator_type: str) -> Unio
         if result_data.get('geo_location', []):
             geo_location = result_data['geo_location'][0]
             geo_location_dict = {key: value for key, value in geo_location.items() if key.lower() != 'ip'}
+
+        asn_code = result_data.get('whois', {}).get('asn', '')
+        if not asn_code:
+            asn_code = geo_location_dict.get('AsnCode', '')
+        asn_description = result_data.get('whois', {}).get('asn_description', '')
+        if not asn_description:
+            asn_description = geo_location_dict.get('AsnName', '')
+        asn = f"[{asn_code}] {asn_description}"
+        geo_location_dict['ASN'] = asn
         return_context['Geo Location'] = geo_location_dict
 
     return return_context
@@ -283,134 +291,210 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def score_ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Returns SOCRadar reputation details for the given IP entity.
+def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    """Returns SOCRadar reputation details for the given IP entities.
 
     :type client: ``Client``
     :param client: client to use
 
     :type args: Dict[str, Any]
-    :param args: contains all arguments for list-detections command
+    :param args: contains all arguments for ip_command
 
     :return:
-        A ``CommandResults`` object that is then passed to ``return_results``
-    :rtype: ``CommandResults``
+        List of ``CommandResults`` objects that is then passed to ``return_results``
+    :rtype: ``List[CommandResults]``
     """
-    ip_to_score = args.get('ip', '')
-    verify_entity_type(ip_to_score, 'ip')
 
-    raw_response = client.get_entity_score(ip_to_score)
-    if raw_response.get('is_success'):
-        if raw_response.get('data', {}).get('is_whitelisted'):
-            score = 1
-        elif (score := raw_response.get('data', {}).get('score', 0)) is not None:
-            score = calculate_dbot_score(score)
-        title = f'SOCRadar - Analysis results for IP: {ip_to_score}'
-        context_entry = build_entry_context(raw_response, 'ip')
-        dbot_entry = build_dbot_entry(f"{ip_to_score}", DBotScoreType.IP, 'SOCRadar ThreatFusion', score)
-        context = {
-            'SOCRadarThreatFusion.Reputation.IP(val.IP && val.IP === obj.IP)': context_entry
-        }
-        context.update(dbot_entry)
-        human_readable = tableToMarkdown(title, context_entry)
-    else:
-        message = f"Error while getting API response. SOCRadar API Response: {raw_response.get('message', '')}"
-        raise DemistoException(message=message)
+    ip_addresses = args.get('ip', '')
+    ip_list: list = argToList(ip_addresses)
+    verify_entity_type(ip_list, 'ip')
 
-    return CommandResults(
-        outputs_prefix="SOCRadarThreatFusion.Reputation.IP",
-        outputs_key_field="IP",
-        readable_output=human_readable,
-        raw_response=raw_response,
-        outputs=context
-    )
+    command_results_list: List[CommandResults] = []
+
+    for ip_to_score in ip_list:
+        raw_response = client.get_entity_score(ip_to_score)
+
+        if raw_response.get('is_success'):
+            if raw_response.get('data', {}).get('is_whitelisted'):
+                score = 1
+            elif (score := raw_response.get('data', {}).get('score', 0)) is not None:
+                score = calculate_dbot_score(score)
+            title = f'SOCRadar - Analysis results for IP: {ip_to_score}'
+
+            context_entry = build_entry_context(raw_response, 'ip')
+            dbot_entry = build_dbot_entry(ip_to_score, DBotScoreType.IP, 'SOCRadar ThreatFusion', score)
+            context = {
+                'SOCRadarThreatFusion.Reputation.IP(val.IP && val.IP === obj.IP)': context_entry
+            }
+            context.update(dbot_entry)
+            human_readable = tableToMarkdown(title, context_entry)
+
+            dbot_score = Common.DBotScore(indicator=ip_to_score,
+                                          indicator_type=DBotScoreType.IP,
+                                          integration_name=INTEGRATION_NAME,
+                                          score=score)
+
+            ip_object = Common.IP(ip=ip_to_score,
+                                  dbot_score=dbot_score,
+                                  asn=context_entry['Geo Location'].get('asn'),
+                                  geo_country=context_entry['Geo Location'].get('CountryCode'),
+                                  geo_latitude=context_entry['Geo Location'].get('Latitude'),
+                                  geo_longitude=context_entry['Geo Location'].get('Longitude'),
+                                  region=context_entry['Geo Location'].get('RegionName'))
+
+            command_results_list.append(CommandResults(
+                outputs_prefix="SOCRadarThreatFusion.Reputation.IP",
+                outputs_key_field="IP",
+                readable_output=human_readable,
+                raw_response=raw_response,
+                outputs=context,
+                indicator=ip_object
+            ))
+        else:
+            message = f"Error at scoring IP {ip_to_score} while getting API response. " \
+                      f"SOCRadar ThreatFusion API Response: {raw_response.get('message', '')}"
+            command_results_list.append(CommandResults(readable_output=message))
+    if not command_results_list:
+        command_results_list = [
+            CommandResults('SOCRadar ThreatFusion could not find any results for the given IP address(es).')
+        ]
+    return command_results_list
 
 
-def score_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Returns SOCRadar reputation details for the given domain entity.
+def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    """Returns SOCRadar reputation details for the given domain entities.
 
     :type client: ``Client``
     :param client: client to use
 
     :type args: Dict[str, Any]
-    :param args: contains all arguments for list-detections command
+    :param args: contains all arguments for domain_command
 
     :return:
-        A ``CommandResults`` object that is then passed to ``return_results``
-    :rtype: ``CommandResults``
+        List of ``CommandResults`` objects that is then passed to ``return_results``
+    :rtype: ``List[CommandResults]``
     """
-    domain_to_score = args.get('domain', '')
-    verify_entity_type(domain_to_score, 'domain')
+    domains = args.get('domain', '')
+    domains_list: list = argToList(domains)
+    verify_entity_type(domains_list, 'domain')
 
-    raw_response = client.get_entity_score(domain_to_score)
-    if raw_response.get('is_success'):
-        if raw_response.get('data', {}).get('is_whitelisted'):
-            score = 1
-        elif (score := raw_response.get('data', {}).get('score', 0)) is not None:
-            score = calculate_dbot_score(score)
-        title = f'SOCRadar - Analysis results for domain: {domain_to_score}'
-        context_entry = build_entry_context(raw_response, 'domain')
-        dbot_entry = build_dbot_entry(f"{domain_to_score}", DBotScoreType.DOMAIN, 'SOCRadar ThreatFusion', score)
-        context = {
-            'SOCRadarThreatFusion.Reputation.Domain(val.Domain && val.Domain === obj.Domain)': context_entry
-        }
-        context.update(dbot_entry)
-        human_readable = tableToMarkdown(title, context_entry)
-    else:
-        message = f"Error while getting API response. SOCRadar API Response: {raw_response.get('message', '')}"
-        raise DemistoException(message=message)
+    command_results_list: List[CommandResults] = []
 
-    return CommandResults(
-        outputs_prefix="SOCRadarThreatFusion.Reputation.Domain",
-        outputs_key_field="Domain",
-        readable_output=human_readable,
-        raw_response=raw_response,
-        outputs=context
-    )
+    for domain_to_score in domains_list:
+        raw_response = client.get_entity_score(domain_to_score)
+
+        if raw_response.get('is_success'):
+            if raw_response.get('data', {}).get('is_whitelisted'):
+                score = 1
+            elif (score := raw_response.get('data', {}).get('score', 0)) is not None:
+                score = calculate_dbot_score(score)
+            title = f'SOCRadar - Analysis results for domain: {domain_to_score}'
+
+            context_entry = build_entry_context(raw_response, 'domain')
+            dbot_entry = build_dbot_entry(domain_to_score, DBotScoreType.DOMAIN, 'SOCRadar ThreatFusion', score)
+            context = {
+                'SOCRadarThreatFusion.Reputation.Domain(val.Domain && val.Domain === obj.Domain)': context_entry
+            }
+            context.update(dbot_entry)
+            human_readable = tableToMarkdown(title, context_entry)
+
+            dbot_score = Common.DBotScore(indicator=domain_to_score,
+                                          indicator_type=DBotScoreType.DOMAIN,
+                                          integration_name=INTEGRATION_NAME,
+                                          score=score)
+
+            domain_object = Common.Domain(domain=domain_to_score,
+                                          dbot_score=dbot_score)
+
+            command_results_list.append(CommandResults(
+                outputs_prefix="SOCRadarThreatFusion.Reputation.Domain",
+                outputs_key_field="Domain",
+                readable_output=human_readable,
+                raw_response=raw_response,
+                outputs=context,
+                indicator=domain_object
+            ))
+        else:
+            message = f"Error at scoring domain {domain_to_score} while getting API response. " \
+                      f"SOCRadar ThreatFusion API Response: {raw_response.get('message', '')}"
+            command_results_list.append(CommandResults(readable_output=message))
+    if not command_results_list:
+        command_results_list = [
+            CommandResults('SOCRadar ThreatFusion could not find any results for the given domain(s).')
+        ]
+
+    return command_results_list
 
 
-def score_hash_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Returns SOCRadar reputation details for the given hash entity.
+def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    """Returns SOCRadar reputation details for the given hash entities.
 
     :type client: ``Client``
     :param client: client to use
 
     :type args: Dict[str, Any]
-    :param args: contains all arguments for list-detections command
+    :param args: contains all arguments for hash_command
 
     :return:
-        A ``CommandResults`` object that is then passed to ``return_results``
-    :rtype: ``CommandResults``
+        List of ``CommandResults`` objects that is then passed to ``return_results``
+    :rtype: ``List[CommandResults]``
     """
-    hash_to_score = args.get('hash', '')
-    verify_entity_type(hash_to_score, 'hash')
-    hash_type = get_hash_type(hash_to_score)
+    file_hashes = args.get('file', '')
+    file_hash_list: list = argToList(file_hashes)
+    verify_entity_type(file_hash_list, 'hash')
 
-    raw_response = client.get_entity_score(hash_to_score)
-    if raw_response.get('is_success'):
-        if raw_response.get('data', {}).get('is_whitelisted'):
-            score = 1
-        elif (score := raw_response.get('data', {}).get('score', 0)) is not None:
-            score = calculate_dbot_score(score)
-        title = f'SOCRadar - Analysis results for hash: {hash_to_score}'
-        context_entry = build_entry_context(raw_response, 'hash')
-        dbot_entry = build_dbot_entry(f"{hash_to_score}", hash_type, 'SOCRadar ThreatFusion', score)
-        context = {
-            'SOCRadarThreatFusion.Reputation.Hash(val.File && val.File === obj.File)': context_entry
-        }
-        context.update(dbot_entry)
-        human_readable = tableToMarkdown(title, context_entry)
-    else:
-        message = f"Error while getting API response. SOCRadar API Response: {raw_response.get('message', '')}"
-        raise DemistoException(message=message)
+    command_results_list: List[CommandResults] = []
 
-    return CommandResults(
-        outputs_prefix="SOCRadarThreatFusion.Reputation.Hash",
-        outputs_key_field="File",
-        readable_output=human_readable,
-        raw_response=raw_response,
-        outputs=context
-    )
+    for hash_to_score in file_hash_list:
+        hash_type = get_hash_type(hash_to_score)
+
+        raw_response = client.get_entity_score(hash_to_score)
+
+        if raw_response.get('is_success'):
+            if raw_response.get('data', {}).get('is_whitelisted'):
+                score = 1
+            elif (score := raw_response.get('data', {}).get('score', 0)) is not None:
+                score = calculate_dbot_score(score)
+            title = f'SOCRadar - Analysis results for hash: {hash_to_score}'
+
+            context_entry = build_entry_context(raw_response, 'hash')
+            dbot_entry = build_dbot_entry(f"{hash_to_score}", hash_type, 'SOCRadar ThreatFusion', score)
+            context = {
+                'SOCRadarThreatFusion.Reputation.Hash(val.File && val.File === obj.File)': context_entry
+            }
+            context.update(dbot_entry)
+            human_readable = tableToMarkdown(title, context_entry)
+
+            dbot_score = Common.DBotScore(indicator=hash_to_score,
+                                          indicator_type=DBotScoreType.FILE,
+                                          integration_name=INTEGRATION_NAME,
+                                          score=score)
+
+            file_object = Common.File(dbot_score=dbot_score)
+            # hash_type can either be 'sha-1' or 'md5' at this point.
+            if hash_type == 'sha-1':
+                file_object.sha1 = hash_to_score
+            else:
+                file_object.md5 = hash_to_score
+
+            command_results_list.append(CommandResults(
+                outputs_prefix="SOCRadarThreatFusion.Reputation.Hash",
+                outputs_key_field="File",
+                readable_output=human_readable,
+                raw_response=raw_response,
+                outputs=context,
+                indicator=file_object
+            ))
+        else:
+            message = f"Error at scoring file hash {hash_to_score} while getting API response. " \
+                      f"SOCRadar ThreatFusion API Response: {raw_response.get('message', '')}"
+            command_results_list.append(CommandResults(readable_output=message))
+    if not command_results_list:
+        command_results_list = [
+            CommandResults('SOCRadar ThreatFusion could not find any results for the given file hash(es).')
+        ]
+
+    return command_results_list
 
 
 ''' MAIN FUNCTION '''
@@ -439,9 +523,9 @@ def main() -> None:
         command = demisto.command()
 
         commands = {
-            'socradar-score-ip': score_ip_command,
-            'socradar-score-domain': score_domain_command,
-            'socradar-score-hash': score_hash_command,
+            'ip': ip_command,
+            'domain': domain_command,
+            'file': file_command
         }
         if command == 'test-module':
             return_results(test_module(client))

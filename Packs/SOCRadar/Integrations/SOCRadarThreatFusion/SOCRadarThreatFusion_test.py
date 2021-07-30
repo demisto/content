@@ -2,7 +2,7 @@ import json
 import io
 import pytest
 
-from CommonServerPython import DemistoException, FeedIndicatorType, CommandResults
+from CommonServerPython import DemistoException, FeedIndicatorType
 
 
 def util_load_json(path):
@@ -63,14 +63,14 @@ def test_test_module_handles_authorization_error(requests_mock):
         test_module(client)
 
 
-def test_score_ip(requests_mock):
-    """Tests the score_ip_command function.
+def test_ip_command(requests_mock):
+    """Tests the ip_command function.
 
  Configures requests_mock instance to generate the appropriate
  SOCRadar ThreatFusion API response, loaded from a local JSON file. Checks
  the output of the command function with the expected output.
  """
-    from SOCRadarThreatFusion import Client, score_ip_command
+    from SOCRadarThreatFusion import Client, ip_command
 
     mock_socradar_api_key = "APIKey"
     mock_response = util_load_json('test_data/score_ip_response.json')
@@ -86,7 +86,7 @@ def test_score_ip(requests_mock):
         proxy=False
     )
 
-    result = score_ip_command(
+    result = ip_command(
         client=client,
         args=mock_args,
     )
@@ -94,17 +94,18 @@ def test_score_ip(requests_mock):
     expected_output = util_load_json('test_data/score_ip_expected_output.json')
     expected_context = util_load_json('test_data/score_ip_expected_context.json')
 
-    assert isinstance(result, CommandResults)
-    assert '### SOCRadar - Analysis results for IP: 1.1.1.1' in result.readable_output
+    assert isinstance(result, list)
+    assert result != []
+    assert '### SOCRadar - Analysis results for IP: 1.1.1.1' in result[0].readable_output
     output_key = 'SOCRadarThreatFusion.Reputation.IP(val.IP && val.IP === obj.IP)'
-    assert result.outputs[output_key] == expected_context
-    assert result.raw_response == expected_output
+    assert result[0].outputs[output_key] == expected_context
+    assert result[0].raw_response == expected_output
 
 
-def test_score_ip_handles_incorrect_entity_type():
-    """Tests the score_ip_command function incorrect entity type error.
+def test_ip_command_handles_incorrect_entity_type():
+    """Tests the ip_command function incorrect entity type error.
     """
-    from SOCRadarThreatFusion import Client, score_ip_command
+    from SOCRadarThreatFusion import Client, ip_command
 
     mock_socradar_api_key = "APIKey"
     mock_args = {'ip': 'INCORRECT IP ADDRESS'}
@@ -117,20 +118,20 @@ def test_score_ip_handles_incorrect_entity_type():
     )
 
     with pytest.raises(ValueError):
-        score_ip_command(
+        ip_command(
             client=client,
             args=mock_args,
         )
 
 
-def test_score_domain(requests_mock):
-    """Tests the score_domain_command function.
+def test_domain_command(requests_mock):
+    """Tests the domain_command function.
 
  Configures requests_mock instance to generate the appropriate
  SOCRadar ThreatFusion API response, loaded from a local JSON file. Checks
  the output of the command function with the expected output.
  """
-    from SOCRadarThreatFusion import Client, score_domain_command
+    from SOCRadarThreatFusion import Client, domain_command
 
     mock_socradar_api_key = "APIKey"
     mock_response = util_load_json('test_data/score_domain_response.json')
@@ -146,24 +147,25 @@ def test_score_domain(requests_mock):
         proxy=False
     )
 
-    result = score_domain_command(
+    result = domain_command(
         client=client,
         args=mock_args,
     )
 
     expected_output = util_load_json('test_data/score_domain_expected_output.json')
     expected_context = util_load_json('test_data/score_domain_expected_context.json')
-    assert isinstance(result, CommandResults)
-    assert '### SOCRadar - Analysis results for domain: paloaltonetworks.com' in result.readable_output
+    assert isinstance(result, list)
+    assert result != []
+    assert '### SOCRadar - Analysis results for domain: paloaltonetworks.com' in result[0].readable_output
     output_key = 'SOCRadarThreatFusion.Reputation.Domain(val.Domain && val.Domain === obj.Domain)'
-    assert result.outputs[output_key] == expected_context
-    assert result.raw_response == expected_output
+    assert result[0].outputs[output_key] == expected_context
+    assert result[0].raw_response == expected_output
 
 
-def test_score_domain_handles_incorrect_entity_type():
-    """Tests the score_domain_command function incorrect entity type error.
+def test_domain_command_handles_incorrect_entity_type():
+    """Tests the domain_command function incorrect entity type error.
     """
-    from SOCRadarThreatFusion import Client, score_domain_command
+    from SOCRadarThreatFusion import Client, domain_command
 
     mock_socradar_api_key = "APIKey"
     mock_args = {'domain': 'INCORRECT DOMAIN'}
@@ -176,27 +178,27 @@ def test_score_domain_handles_incorrect_entity_type():
     )
 
     with pytest.raises(ValueError):
-        score_domain_command(
+        domain_command(
             client=client,
             args=mock_args,
         )
 
 
-def test_score_hash(requests_mock):
-    """Tests the score_hash_command function.
+def test_file_command(requests_mock):
+    """Tests the file_command function.
 
  Configures requests_mock instance to generate the appropriate
  SOCRadar ThreatFusion API response, loaded from a local JSON file. Checks
  the output of the command function with the expected output.
  """
-    from SOCRadarThreatFusion import Client, score_hash_command
+    from SOCRadarThreatFusion import Client, file_command
 
     mock_socradar_api_key = "APIKey"
     mock_response = util_load_json('test_data/score_hash_response.json')
     suffix = 'threat/analysis'
     requests_mock.get(f'{SOCRADAR_API_ENDPOINT}/{suffix}', json=mock_response)
 
-    mock_args = {'hash': '3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792'}
+    mock_args = {'file': '3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792'}
 
     client = Client(
         base_url=SOCRADAR_API_ENDPOINT,
@@ -205,7 +207,7 @@ def test_score_hash(requests_mock):
         proxy=False
     )
 
-    result = score_hash_command(
+    result = file_command(
         client=client,
         args=mock_args,
     )
@@ -213,21 +215,22 @@ def test_score_hash(requests_mock):
     expected_output = util_load_json('test_data/score_hash_expected_output.json')
     expected_context = util_load_json('test_data/score_hash_expected_context.json')
 
-    assert isinstance(result, CommandResults)
+    assert isinstance(result, list)
+    assert result != []
     assert '### SOCRadar - Analysis results for hash: 3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792' \
-           in result.readable_output
+           in result[0].readable_output
     output_key = 'SOCRadarThreatFusion.Reputation.Hash(val.File && val.File === obj.File)'
-    assert result.outputs[output_key] == expected_context
-    assert result.raw_response == expected_output
+    assert result[0].outputs[output_key] == expected_context
+    assert result[0].raw_response == expected_output
 
 
-def test_score_hash_handles_incorrect_entity_type():
-    """Tests the score_hash_command function incorrect entity type error.
+def test_file_command_handles_incorrect_entity_type():
+    """Tests the file_command function incorrect entity type error.
     """
-    from SOCRadarThreatFusion import Client, score_hash_command
+    from SOCRadarThreatFusion import Client, file_command
 
     mock_socradar_api_key = "APIKey"
-    mock_args = {'hash': 'INCORRECT HASH'}
+    mock_args = {'file': 'INCORRECT HASH'}
 
     client = Client(
         base_url=SOCRADAR_API_ENDPOINT,
@@ -237,7 +240,7 @@ def test_score_hash_handles_incorrect_entity_type():
     )
 
     with pytest.raises(ValueError):
-        score_hash_command(
+        file_command(
             client=client,
             args=mock_args,
         )

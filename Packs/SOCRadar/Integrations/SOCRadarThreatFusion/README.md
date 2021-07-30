@@ -25,19 +25,19 @@ To obtain your SOCRadar ThreatFusion API key please contact with the SOCRadar op
 After obtaining the SOCRadar ThreatFusion API key insert it into **API Key** field and start using the SOCRadar ThreatFusion integration by creating the instance.
 
 
-### socradar-score-ip
+### ip
 ***
-Scores provided IP entity's reputation in SOCRadar ThreatFusion.
+Scores provided IP entities' reputation in SOCRadar ThreatFusion.
 
 
 #### Base Command
 
-`socradar-score-ip`
+`ip`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP entity to score. (IPv4 or IPv6). | Required | 
+| ip | IP entities to score. (IPv4 or IPv6). | Required | 
 
 
 #### Context Output
@@ -72,6 +72,7 @@ Scores provided IP entity's reputation in SOCRadar ThreatFusion.
 | SOCRadarThreatFusion.Reputation.IP.Whois Details.raw_referral | String | Raw referral field Whois information of queried IP address. | 
 | SOCRadarThreatFusion.Reputation.IP.Whois Details.referral | String | Referral field Whois information of queried IP address. | 
 | SOCRadarThreatFusion.Reputation.IP.DNS Details | JSON | DNS information of queried IP address. | 
+| SOCRadarThreatFusion.Reputation.IP.Geo Location.ASN | Number | ASN field Geographical location information of queried IP address. | 
 | SOCRadarThreatFusion.Reputation.IP.Geo Location.AsnCode | Number | ASN code field Geographical location information of queried IP address. | 
 | SOCRadarThreatFusion.Reputation.IP.Geo Location.AsnName | String | ASN name field Geographical location information of queried IP address. | 
 | SOCRadarThreatFusion.Reputation.IP.Geo Location.Cidr | String | CIDR field Geographical location information of queried IP address. | 
@@ -86,11 +87,25 @@ Scores provided IP entity's reputation in SOCRadar ThreatFusion.
 
 
 #### Command Example
-```!socradar-score-ip ip="1.1.1.1"```
+```!ip ip="1.1.1.1"```
 
 #### Context Example
 ```json
 {
+    "DBotScore": {
+        "Indicator": "1.1.1.1",
+        "Score": 1,
+        "Type": "ip",
+        "Vendor": "SOCRadar ThreatFusion"
+    },
+    "IP": {
+        "Address": "1.1.1.1",
+        "Geo": {
+            "Country": "US",
+            "Location": "0.0:0.0"
+        },
+        "Region": "California"
+    },
     "SOCRadarThreatFusion": {
         "Reputation": {
             "IP": {
@@ -107,6 +122,7 @@ Scores provided IP entity's reputation in SOCRadar ThreatFusion.
                         ]
                     },
                     "Geo Location": {
+                        "ASN": "[13335] CLOUDFLARENET, US",
                         "AsnCode": 13335,
                         "AsnName": "CloudFlare Inc",
                         "Cidr": "1.1.1.0/24",
@@ -181,22 +197,22 @@ Scores provided IP entity's reputation in SOCRadar ThreatFusion.
 >### SOCRadar - Analysis results for IP: 1.1.1.1
 >|DNS Details|Geo Location|IP|Risk Score (Out of 1000)|Score Details|Total Encounters|Whois Details|
 >|---|---|---|---|---|---|---|
->| PTR: one.one.one.one | AsnCode: 13335<br/>AsnName: CloudFlare Inc<br/>Cidr: 1.1.1.0/24<br/>CityName: Los Angeles<br/>CountryCode: US<br/>CountryName: United States of America<br/>Latitude: 0.0<br/>Longitude: 0.0<br/>RegionName: California<br/>Timezone: -07:00<br/>ZipCode: 90001 | 1.1.1.1 | 0 |  | 0 | asn: 13335<br/>asn_cidr: 1.1.1.0/24<br/>asn_country_code: AU<br/>asn_date: 2011-08-11<br/>asn_description: CLOUDFLARENET, US<br/>asn_registry: apnic<br/>nets: {'address': 'PO Box 3646\nSouth Brisbane, QLD 4101\nAustralia', 'cidr': '1.1.1.0/24', 'city': None, 'country': 'AU', 'created': None, 'description': 'APNIC and Cloudflare DNS Resolver project\nRouted globally by AS13335/Cloudflare\nResearch prefix for APNIC Labs', 'emails': ['resolver-abuse@cloudflare.com'], 'handle': 'AA1412-AP', 'name': 'APNIC-LABS', 'postal_code': None, 'range': '1.1.1.0 - 1.1.1.255', 'state': None, 'updated': None},<br/>{'address': None, 'cidr': '1.1.1.0/24', 'city': None, 'country': None, 'created': None, 'description': 'APNIC Research and Development\n                6 Cordelia St', 'emails': None, 'handle': None, 'name': None, 'postal_code': None, 'range': '1.1.1.0 - 1.1.1.255', 'state': None, 'updated': None}<br/>nir: null<br/>query: 1.1.1.1<br/>raw_referral: null<br/>referral: null |
+>| PTR: one.one.one.one | Cidr: 1.1.1.0/24<br/>AsnCode: 13335<br/>AsnName: CloudFlare Inc<br/>ZipCode: 90001<br/>CityName: Los Angeles<br/>Latitude: 0.0<br/>Timezone: -07:00<br/>Longitude: 0.0<br/>RegionName: California<br/>CountryCode: US<br/>CountryName: United States of America<br/>ASN: [13335] CLOUDFLARENET, US | 1.1.1.1 | 0 |  | 0 | asn: 13335<br/>nir: null<br/>nets: {'cidr': '1.1.1.0/24', 'city': None, 'name': 'APNIC-LABS', 'range': '1.1.1.0 - 1.1.1.255', 'state': None, 'emails': ['resolver-abuse@cloudflare.com'], 'handle': 'AA1412-AP', 'address': 'PO Box 3646\nSouth Brisbane, QLD 4101\nAustralia', 'country': 'AU', 'created': None, 'updated': None, 'description': 'APNIC and Cloudflare DNS Resolver project\nRouted globally by AS13335/Cloudflare\nResearch prefix for APNIC Labs', 'postal_code': None},<br/>{'cidr': '1.1.1.0/24', 'city': None, 'name': None, 'range': '1.1.1.0 - 1.1.1.255', 'state': None, 'emails': None, 'handle': None, 'address': None, 'country': None, 'created': None, 'updated': None, 'description': 'APNIC Research and Development\n                6 Cordelia St', 'postal_code': None}<br/>query: 1.1.1.1<br/>asn_cidr: 1.1.1.0/24<br/>asn_date: 2011-08-11<br/>referral: null<br/>asn_registry: apnic<br/>raw_referral: null<br/>asn_description: CLOUDFLARENET, US<br/>asn_country_code: AU |
 
 
-### socradar-score-domain
+### domain
 ***
-Scores provided domain entity's reputation in SOCRadar ThreatFusion.
+Scores provided domain entities' reputation in SOCRadar ThreatFusion.
 
 
 #### Base Command
 
-`socradar-score-domain`
+`domain`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Domain entity to score. | Required | 
+| domain | Domain entities to score. | Required | 
 
 
 #### Context Output
@@ -229,11 +245,20 @@ Scores provided domain entity's reputation in SOCRadar ThreatFusion.
 
 
 #### Command Example
-```!socradar-score-domain domain="paloaltonetworks.com"```
+```!domain domain="paloaltonetworks.com"```
 
 #### Context Example
 ```json
 {
+    "DBotScore": {
+        "Indicator": "paloaltonetworks.com",
+        "Score": 1,
+        "Type": "domain",
+        "Vendor": "SOCRadar ThreatFusion"
+    },
+    "Domain": {
+        "Name": "paloaltonetworks.com"
+    },
     "SOCRadarThreatFusion": {
         "Reputation": {
             "Domain": {
@@ -328,19 +353,19 @@ Scores provided domain entity's reputation in SOCRadar ThreatFusion.
 >| A: 34.107.151.202<br/>MX: mx record<br/>NS: ns record<br/>SOA: domains.paloaltonetworks.com. 1627343953 3600 600 604800 3600<br/>TXT: txt record | paloaltonetworks.com | 0 |  |  | 0 | address: null<br/>city: null<br/>country: US<br/>creation_date: Mon, 21 Feb 2005 02:42:10 GMT,<br/>Mon, 21 Feb 2005 02:42:10 GMT<br/>dnssec: signedDelegation<br/>domain_name: PALOALTONETWORKS.COM<br/>emails: whoisrequest@markmonitor.com,<br/>abusecomplaints@markmonitor.com<br/>expiration_date: Wed, 21 Feb 2024 02:42:10 GMT,<br/>Wed, 21 Feb 2024 02:42:10 GMT<br/>name: null<br/>name_servers: ns4.p23.dynect.net,<br/>ns1.p23.dynect.net,<br/>ns3.p23.dynect.net,<br/>ns6.dnsmadeeasy.com,<br/>ns2.p23.dynect.net,<br/>ns5.dnsmadeeasy.com,<br/>ns7.dnsmadeeasy.com<br/>org: Palo Alto Networks, Inc.<br/>referral_url: null<br/>registrar: MarkMonitor Inc.,<br/>MarkMonitor, Inc.<br/>state: CA<br/>status: clientTransferProhibited https:<span>//</span>icann.org/epp#clientTransferProhibited,<br/>clientUpdateProhibited (https:<span>//</span>www.icann.org/epp#clientUpdateProhibited),<br/>clientTransferProhibited (https:<span>//</span>www.icann.org/epp#clientTransferProhibited),<br/>clientDeleteProhibited https:<span>//</span>icann.org/epp#clientDeleteProhibited,<br/>clientDeleteProhibited (https:<span>//</span>www.icann.org/epp#clientDeleteProhibited),<br/>clientUpdateProhibited https:<span>//</span>icann.org/epp#clientUpdateProhibited<br/>updated_date: Thu, 01 Jul 2021 00:32:38 GMT,<br/>Thu, 01 Jul 2021 00:32:38 GMT<br/>whois_server: whois.markmonitor.com<br/>zipcode: null |
 
 
-### socradar-score-hash
+### file
 ***
-Scores provided hash entity's reputation in SOCRadar ThreatFusion.
+Scores provided hash entities' reputation in SOCRadar ThreatFusion.
 
 
 #### Base Command
 
-`socradar-score-hash`
+`file`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | Hash entity to score. (MD5 or SHA1). | Required | 
+| file | Hash entities to score. (MD5 or SHA1). | Required | 
 
 
 #### Context Output
@@ -354,11 +379,20 @@ Scores provided hash entity's reputation in SOCRadar ThreatFusion.
 
 
 #### Command Example
-```!socradar-score-hash hash="3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792"```
+```!file file="3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792"```
 
 #### Context Example
 ```json
 {
+    "DBotScore": {
+        "Indicator": "3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792",
+        "Score": 1,
+        "Type": "file",
+        "Vendor": "SOCRadar ThreatFusion"
+    },
+    "File": {
+        "MD5": "3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792"
+    },
     "SOCRadarThreatFusion": {
         "Reputation": {
             "Hash": {

@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '3b16f3c3-a81e-4c23-9398-8c33ca44b324'
+    taskid: '03875d26-eb38-44e6-aefb-982964f554ef'
     type: start
     task:
-      id: '3b16f3c3-a81e-4c23-9398-8c33ca44b324'
+      id: '03875d26-eb38-44e6-aefb-982964f554ef'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '5d56280f-ff4b-453c-8b0b-bd392bac416d'
+    taskid: '0b8c8635-682f-431a-81bb-5f8cc360dc63'
     type: regular
     task:
-      id: '5d56280f-ff4b-453c-8b0b-bd392bac416d'
+      id: '0b8c8635-682f-431a-81bb-5f8cc360dc63'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '0b64d7d0-8450-4c95-944a-cda4668d15d5'
+    taskid: '13114331-b9f9-4dba-910b-4cadc861916a'
     type: regular
     task:
-      id: '0b64d7d0-8450-4c95-944a-cda4668d15d5'
+      id: '13114331-b9f9-4dba-910b-4cadc861916a'
       version: -1
       name: socradar-mark-incident-fp
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: 3
-    taskid: '4dd274d8-66e1-4966-837e-3d2e39810b39'
+    taskid: 'aac78c89-0204-4c3c-a6c7-29f10ef3f2f9'
     type: regular
     task:
-      id: '4dd274d8-66e1-4966-837e-3d2e39810b39'
+      id: 'aac78c89-0204-4c3c-a6c7-29f10ef3f2f9'
       version: -1
       name: socradar-mark-incident-resolved
       description: ''
@@ -96,10 +96,10 @@ tasks:
     skipunavailable: false
   '4':
     id: '4'
-    taskid: 'fcbbac85-e415-4008-8a7d-408d812c0b2f'
+    taskid: '8df7a0cb-bf9c-45af-b9c9-d21351440f52'
     type: title
     task:
-      id: 'fcbbac85-e415-4008-8a7d-408d812c0b2f'
+      id: '8df7a0cb-bf9c-45af-b9c9-d21351440f52'
       version: -1
       name: Test Done
       type: title
