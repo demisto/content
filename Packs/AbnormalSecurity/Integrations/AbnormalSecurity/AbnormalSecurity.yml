@@ -79,6 +79,59 @@ script:
       description: The description of the status
       type: String
   - arguments:
+    - description: Filter the results based on a filter key. Value must be of the
+        format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`.
+        Supported keys - [`receivedTime`]
+      isArray: false
+      name: filter
+      required: false
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
+    - description: Filters threats based on the source of detection.
+      isArray: false
+      name: source
+      required: false
+    description: Download data from Threat Log in .csv format
+    name: abnormalsecurity-download-data-from-threat-log-in-csv-format
+  - arguments:
+      - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ
+          lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently
+          the only the key `lastReportedTime` is supported for `/abusecampaigns`. At
+          least one of `gte`/`lte` must be specified, with a datetime string following
+          the `YYYY-MM-DDTHH:MM:SSZ` format. Do note that provided filter time is in
+          UTC.
+        isArray: false
+        name: filter
+        required: false
+      - description: Number of abuse campaigns shown on each page. Each page of data
+          will have at most pageSize abuse campaign IDs.
+        isArray: false
+        name: pageSize
+        required: false
+      - description: 1-indexed page number to get a particular page of threats. Has
+          no effect if filter is not specified.
+        isArray: false
+        name: pageNumber
+        required: false
+      - description: Returns test data if set to `True`
+        isArray: false
+        name: mock-data
+        required: false
+    description: Get a list of campaigns submitted to Abuse Mailbox
+    name: abnormalsecurity-get-a-list-of-campaigns-submitted-to-abuse-mailbox
+    outputs:
+      - contextPath: AbnormalSecurity.inline_response_200_3.campaigns.campaignID
+        description: An id which maps to an abuse campaign.
+        type: String
+      - contextPath: AbnormalSecurity.inline_response_200_3.pageNumber
+        description: The current page number.
+        type: Number
+      - contextPath: AbnormalSecurity.inline_response_200_3.nextPageNumber
+        description: The next page number.
+        type: Number
+  - arguments:
     - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ
         lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently
         the only key that is supported for `/cases` is `lastModifiedTime`. At least
@@ -276,6 +329,119 @@ script:
     - contextPath: AbnormalSecurity.AbnormalCaseDetails.firstObserved
       description: First time suspicious behavior was observed.
       type: String
+  - arguments:
+    - description: A UUID representing the abuse campaign id
+      isArray: false
+      name: campaignId
+      required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
+    description: Get details of an Abuse Mailbox campaign
+    name: abnormalsecurity-get-details-of-an-abuse-mailbox-campaign
+    outputs:
+      - contextPath: AbnormalSecurity.AbuseCampaignDetails.campaignId
+        description: An id which maps to an abuse campaign.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaignDetails.firstReported
+        description: Date abuse campaign was first reported.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaignDetails.lastReported
+        description: Date abuse campaign was last reported.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaignDetails.messageId
+        description: A unique identifier for the first message in the abuse campaign.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaignDetails.subject
+        description: Subject of the first email in the abuse campaign.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaignDetails.fromName
+        description: The display name of the sender.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaignDetails.fromAddress
+        description: The email address of the sender.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaignDetails.recipientName
+        description: The email address of the recipient.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaignDetails.recipientAddress
+        description: The email address of the recipient.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaignDetails.judgementStatus
+        description: Judgement status of message.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaignDetails.overallStatus
+        description: Overall status of message.
+        type: String
+      - contextPath: AbnormalSecurity.AbuseCampaignDetails.attackType
+        description: The type of threat the message represents.
+        type: String
+  - arguments:
+    - description: Email address of the employee you want to retrieve data for
+      isArray: false
+      name: emailAddress
+      required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
+    description: Get employee identity analysis (Genome) data
+    name: abnormalsecurity-get-employee-identity-analysis-genome-data
+    outputs:
+      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.data.key
+        description: Genome key name
+        type: String
+      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.data.name
+        description: Genome title
+        type: String
+      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.data.description
+        description: Description of genome object
+        type: String
+      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.data.values.value
+        description: Category value
+        type: String
+      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.data.values.percentage
+        description: Ratio of this category relative to others
+        type: Number
+      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.data.values.total_count
+        description: Number of occurences for this category
+        type: Number
+  - arguments:
+    - description: Email address of the employee you want to retrieve data for
+      isArray: false
+      name: emailAddress
+      required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
+    description: Get employee information
+    name: abnormalsecurity-get-employee-information
+    outputs:
+    - contextPath: AbnormalSecurity.EmployeeDetails.name
+      description: Name of the employee.
+      type: String
+    - contextPath: AbnormalSecurity.EmployeeDetails.email
+      description: Email of the employee.
+      type: String
+    - contextPath: AbnormalSecurity.EmployeeDetails.title
+      description: Job title of the employee.
+      type: String
+    - contextPath: AbnormalSecurity.EmployeeDetails.manager
+      description: Email address of the employee's manager
+      type: String
+  - arguments:
+    - description: Email address of the employee you want to retrieve data for
+      isArray: false
+      name: emailAddress
+      required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
+    description: Get employee login information for last 30 days in csv format
+    name: abnormalsecurity-get-employee-login-information-for-last-30-days-in-csv-format
   - arguments:
     - description: Returns test data if set to `True`
       isArray: false
