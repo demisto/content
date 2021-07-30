@@ -1,0 +1,11 @@
+[file:incident_f5silverlinealertgeneratedtimestamp.json]
+ignore=IF100
+
+[file:incident_f5silverlinealerttype.json]
+ignore=IF100
+
+[file:incident_f5silverlineipintelligenceevent.json]
+ignore=IF100
+
+[file:classifier-F5Silverline_mapper.json]
+ignore=BA101

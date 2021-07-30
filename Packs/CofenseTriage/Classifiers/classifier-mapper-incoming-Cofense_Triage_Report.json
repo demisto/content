@@ -1,0 +1,121 @@
+{
+    "description": "Incoming mapper for Cofense Triage Report",
+    "feed": false,
+    "id": "Cofense Triage Report - Incoming Mapper",
+    "mapping": {
+        "Cofense Triage Report": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Cofense Triage Report Categorization Tags": {
+                    "complex": null,
+                    "simple": "attributes.categorization_tags"
+                },
+                "Cofense Triage Report Category ID": {
+                    "complex": null,
+                    "simple": "relationships.category.data.id"
+                },
+                "Cofense Triage Report Created At": {
+                    "complex": null,
+                    "simple": "attributes.created_at"
+                },
+                "Cofense Triage Report From Address": {
+                    "complex": null,
+                    "simple": "attributes.from_address"
+                },
+                "Cofense Triage Report ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Cofense Triage Report Location": {
+                    "complex": null,
+                    "simple": "attributes.location"
+                },
+                "Cofense Triage Report MD5": {
+                    "complex": null,
+                    "simple": "attributes.md5"
+                },
+                "Cofense Triage Report Match Priority": {
+                    "complex": null,
+                    "simple": "attributes.match_priority"
+                },
+                "Cofense Triage Report Processed At": {
+                    "complex": null,
+                    "simple": "attributes.processed_at"
+                },
+                "Cofense Triage Report Received At": {
+                    "complex": null,
+                    "simple": "attributes.received_at"
+                },
+                "Cofense Triage Report Reported At": {
+                    "complex": null,
+                    "simple": "attributes.reported_at"
+                },
+                "Cofense Triage Report Risk Score": {
+                    "complex": null,
+                    "simple": "attributes.risk_score"
+                },
+                "Cofense Triage Report SHA256": {
+                    "complex": null,
+                    "simple": "attributes.sha256"
+                },
+                "Cofense Triage Report Subject": {
+                    "complex": null,
+                    "simple": "attributes.subject"
+                },
+                "Cofense Triage Report Tags": {
+                    "complex": null,
+                    "simple": "attributes.tags"
+                },
+                "Cofense Triage Report Updated At": {
+                    "complex": null,
+                    "simple": "attributes.updated_at"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "dbotMirrorDirection": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "mirror_direction",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "dbotMirrorInstance": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "mirror_instance",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "created_at",
+                        "filters": [],
+                        "root": "attributes",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "Cofense Triage Report - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
