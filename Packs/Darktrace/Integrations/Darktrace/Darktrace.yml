@@ -478,6 +478,34 @@ script:
         keys. It is recommended to run the command once to check the relevant outputs
         in context.
       type: Unknown
+  - name: darktrace-get-breach-details
+    arguments:
+    - name: pbid
+      required: true
+    - name: endtime
+    - name: count
+      defaultValue: "100"
+    - name: offset
+      defaultValue: "0"
+    description: 'Custom call to retrieve additional details on a breach'
+  - name: darktrace-add-comment
+      arguments:
+      - name: pbid
+        required: true
+      - name: comment
+        required: true
+      description: Adds a comment to a modelbreach
+  - name: darktrace-get-model
+      arguments:
+      - name: uuid
+        required: true
+      description: Gets the model details given an UUID
+  - name: darktrace-get-component
+      arguments:
+      - name: cid
+        required: true
+        description: ComponentsID
+      description: Gets a components given a CID
   dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: true

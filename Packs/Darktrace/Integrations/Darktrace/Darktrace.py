@@ -67,6 +67,48 @@ class Client(BaseClient):
             headers=http_headers
         )
 
+    def get_modelbreach_details(self, pbid, endtime, count, offset):
+
+        request = f"/details?endTime={endtime}&order=desc&includetotalbytes=true&offset={offset}&count={count}&pbid={pbid}"
+        http_headers = get_headers(self._auth, request)
+        return self._http_request(
+            method='GET',
+            url_suffix=request,
+            headers=http_headers
+        )
+
+    def add_comment(self, pbid, comment):
+
+        request = "/modelbreaches/" + pbid + "/comments"
+        http_headers = get_headers(self._auth, request)
+        body={"message":str(comment)}
+        return self._http_request(
+            method='POST',
+            url_suffix=request,
+            headers=http_headers,
+            data=body
+        )
+
+    def get_model(self, uuid):
+
+        request = "/models?uuid=" + uuid
+        http_headers = get_headers(self._auth, request)
+        return self._http_request(
+            method='GET',
+            url_suffix=request,
+            headers=http_headers
+        )
+
+    def get_component(self, cid):
+
+        request = "/components/" + cid
+        http_headers = get_headers(self._auth, request)
+        return self._http_request(
+            method='GET',
+            url_suffix=request,
+            headers=http_headers
+        )
+
     def get_modelbreach_comments(self, pbid):
         """Searches for comments on a modelbreach using '/modelbreaches/<pbid>/comments'
         :type pbid: ``str``
@@ -642,6 +684,84 @@ def get_breach_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs=formatted_output
     )
 
+def get_breach_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+        pbid = str(args.get('pbid', None))
+        if not pbid:
+            raise ValueError('Darktrace Model Breach ID not specified')
+
+        endtime = str(args.get('endtime', None))
+        count = str(args.get('count', None))
+        offset = str(args.get('offset', None))
+
+        model_breach = client.get_modelbreach_details(pbid=pbid,endtime=endtime,count=count,offset=offset)
+
+        if 'time' in model_breach:
+            created_time = int(model_breach.get('time', '0'))
+            model_breach['time'] = timestamp_to_datestring(created_time)
+
+        headers = []
+        for event in model_breach:
+            for head in event.keys():
+                headers.append(head)
+
+        headers = list(set(headers))
+        headers = sorted(headers)
+
+        readable_output = tableToMarkdown(f'Darktrace Model Breach {pbid} Details', model_breach, headers=headers, removeNull=True)
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Darktrace.ModelBreach',
+            outputs_key_field='breach_details',
+            outputs=readable_output
+        )
+
+def add_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+    pbid = str(args.get('pbid', None))
+    if not pbid:
+        raise ValueError('Darktrace Model Breach ID not specified')
+
+    comment = str(args.get('comment', None))
+    if not comment:
+        raise ValueError('Darktrace comment needed')
+
+    res = client.add_comment(pbid=pbid,comment=comment)
+
+    return CommandResults(
+        readable_output=res,
+        outputs_prefix='Darktrace.Comments',
+        outputs=res
+    )
+
+def get_model_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    uuid = str(args.get('uuid', None))
+    if not uuid:
+        raise ValueError('Darktrace Model UUID not specified')
+
+    res = client.get_model(uuid=uuid)
+    readable_output = tableToMarkdown(f'Darktrace Model {uuid}', res)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Darktrace.Model',
+        outputs=res
+    )
+
+def get_component_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    cid = str(args.get('cid', None))
+    if not cid:
+        raise ValueError('Darktrace Component CID not specified')
+
+    res = client.get_component(cid=cid)
+    readable_output = tableToMarkdown(f'Darktrace Component {cid}', res)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Darktrace.Component',
+        outputs=res
+    )
 
 def get_comments_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """darktrace-get-comments command: Returns the comments on the model breach
@@ -1075,6 +1195,18 @@ def main() -> None:
 
         elif demisto.command() == 'darktrace-get-breach':
             return_results(get_breach_command(client, demisto.args()))
+
+        elif demisto.command() == 'darktrace-get-breach-details':
+            return_results(get_breach_details_command(client, demisto.args()))
+
+        elif demisto.command() == 'darktrace-add-comment':
+            return_results(add_comment_command(client, demisto.args()))
+
+        elif demisto.command() == 'darktrace-get-model':
+            return_results(get_model_command(client, demisto.args()))
+
+        elif demisto.command() == 'darktrace-get-component':
+            return_results(get_component_command(client, demisto.args()))
 
         elif demisto.command() == 'darktrace-get-comments':
             return_results(get_comments_command(client, demisto.args()))
