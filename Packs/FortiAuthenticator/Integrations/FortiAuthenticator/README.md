@@ -70,9 +70,9 @@ After you successfully execute a command, a DBot message appears in the War Room
     "FortiAuthenticator": {
         "user": {
             "active": "true",
-            "email": "jasonlo@jasonlo.net",
+            "email": "test_user@example.com",
             "id": "7",
-            "username: "jasonlo"
+            "username: "test_user"
         }
     }
 }
@@ -83,7 +83,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### FortiAuthenticator User Info
 |id|username|email|active|
 |---|---|---|---|
-| 7 | jasonlo | jasonlo@jasonlo.net | true |
+| 7 | test_user | test_user@example.com | true |
 
 
 
@@ -96,9 +96,9 @@ After you successfully execute a command, a DBot message appears in the War Room
     "FortiAuthenticator": {
         "user": {
             "active": "false",
-            "email": "jasonlo@jasonlo.net",
+            "email": "test_user@example.com",
             "id": "7",
-            "username: "jasonlo"
+            "username: "test_user"
         }
     }
 }
@@ -109,7 +109,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### FortiAuthenticator User Info
 |id|username|email|active|
 |---|---|---|---|
-| 7 | jasonlo | jasonlo@jasonlo.net | false |
+| 7 | test_user | test_user@example.com | false |
 
 
 
