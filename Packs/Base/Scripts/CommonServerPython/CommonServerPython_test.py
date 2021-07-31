@@ -2150,7 +2150,18 @@ class TestBaseClient:
             }
             assert m.called is True
 
-    def test_http_request_proxy_true_without_http_prefix(self):
+    def test_http_request_proxy_without_http_prefix(self):
+        """
+            Given
+                - proxy param is set to true
+                - proxy configs are without http/https prefix
+
+            When
+            - run an http get request
+
+            Then
+            -  the request will run and will use proxy configs that will include http:// prefix.
+        """
         from CommonServerPython import BaseClient
         import requests_mock
 
