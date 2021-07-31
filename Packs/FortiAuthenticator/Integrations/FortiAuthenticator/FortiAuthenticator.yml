@@ -21,14 +21,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: "5.5.0"
-    itemVersion: ""
-    packID: 78f94192-42ed-4a31-8a51-d2c3cc8825b9
-    propagationLabels:
-    - all
-    toServerVersion: "6.2.0"
 description: Manage user configuration on FortiAutenticator.
 detaileddescription: "### Steps to get the ***Access Key*** for the API authentication\n\n####
   On the FortiAuthenticator WebUI, create a new user for API or edit an existing one.
@@ -39,7 +31,6 @@ detaileddescription: "### Steps to get the ***Access Key*** for the API authenti
   to authenticate to the API is emailed to the user.\n\n#### Note\nEnsure email routing
   is working (i.e. the FortiAuthenticator is able to send mail) beforehand as the
   API Key will be delivered by email.\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/fortiauthenticator)\n"
-
 display: FortiAuthenticator
 name: FortiAuthenticator
 script:
@@ -81,6 +72,8 @@ script:
     description: Update the active status for specific user by email
   dockerimage: demisto/python3:3.9.5.20958
   runonce: false
-  script: ''
   subtype: python3
   type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
