@@ -587,7 +587,7 @@ def auto_detect_indicator_type(indicator_value):
     demisto.debug('Failed to detect indicator type. Indicator value: {}'.format(indicator_value))
     return None
 
-def add_http_prefix_to_proxy(address=''):
+def add_http_prefix_if_missing(address=''):
     """
         This function adds `http://` prefix to the proxy address in case it is missing.
 
@@ -629,8 +629,8 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
     proxies = {}  # type: dict
     if demisto.params().get(proxy_param_name, checkbox_default_value):
         proxies = {
-            'http': add_http_prefix_to_proxy(os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', '')),
-            'https': add_http_prefix_to_proxy(os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy', ''))
+            'http': add_http_prefix_if_missing(os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', '')),
+            'https': add_http_prefix_if_missing(os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy', ''))
         }
     else:
         skip_proxy()
@@ -657,6 +657,20 @@ def skip_proxy():
     for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
         if k in os.environ:
             del os.environ[k]
+
+def ensure_proxy_has_http_pefix():
+    """
+    The function checks if proxy environment vars are missing http/https prefixes, and adds http if so.
+
+    :return: None
+    :rtype: ``None``
+    """
+    for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
+        if k in os.environ:
+            proxy_env_var = os.getenv(k)
+            if proxy_env_var:
+                os.environ[k] = add_http_prefix_if_missing(os.environ[k])
+
 
 
 def skip_cert_verification():
@@ -6827,7 +6841,9 @@ if 'requests' in sys.modules:
             self._headers = headers
             self._auth = auth
             self._session = requests.Session()
-            if not proxy:
+            if proxy:
+                ensure_proxy_has_http_pefix()
+            else:
                 skip_proxy()
 
             if not verify:
