@@ -2909,6 +2909,42 @@ def test_handle_proxy(mocker):
     assert os.getenv('REQUESTS_CA_BUNDLE') is None
 
 
+def test_handle_proxy_without_http_prefix():
+    """
+        Given
+            proxy is configured in environment vars without http/https prefixes
+
+        When
+            run handle_proxy()
+
+        Then
+            the function will return proxies with http:// prefix
+    """
+    os.environ['HTTP_PROXY'] = 'testproxy:8899'
+    os.environ['HTTPS_PROXY'] = 'testproxy:8899'
+    proxies = handle_proxy(checkbox_default_value=True)
+    assert proxies['http'] == 'http://testproxy:8899'
+    assert proxies['https'] == 'http://testproxy:8899'
+
+
+def test_handle_proxy_with_http_prefix():
+    """
+        Given
+            proxy is configured in environment vars with http/https prefixes
+
+        When
+            run handle_proxy()
+
+        Then
+            the function will return proxies unchanged
+    """
+    os.environ['HTTP_PROXY'] = 'http://testproxy:8899'
+    os.environ['HTTPS_PROXY'] = 'https://testproxy:8899'
+    proxies = handle_proxy(checkbox_default_value=True)
+    assert proxies['http'] == 'http://testproxy:8899'
+    assert proxies['https'] == 'https://testproxy:8899'
+
+
 @pytest.mark.parametrize(argnames="dict_obj, keys, expected, default_return_value",
                          argvalues=[
                              ({'a': '1'}, ['a'], '1', None),
