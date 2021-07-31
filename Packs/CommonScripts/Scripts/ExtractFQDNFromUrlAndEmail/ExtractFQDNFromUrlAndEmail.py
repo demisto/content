@@ -96,8 +96,6 @@ def extract_fqdn(the_input):
 
     # convert None to empty string if needed
     fqdn = '' if not fqdn else fqdn
-    if type(fqdn) == unicode:
-        fqdn = fqdn.encode('utf-8', errors='ignore')
     return fqdn
 
 

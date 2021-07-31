@@ -82,8 +82,6 @@ def extract_domain(the_input):
 
     # convert None to empty string if needed
     domain = '' if not domain else domain
-    if type(domain) == unicode:
-        domain = domain.encode('utf-8', errors='ignore')
     return domain
 
 
