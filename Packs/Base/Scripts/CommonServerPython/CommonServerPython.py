@@ -587,6 +587,19 @@ def auto_detect_indicator_type(indicator_value):
     demisto.debug('Failed to detect indicator type. Indicator value: {}'.format(indicator_value))
     return None
 
+def add_http_prefix_to_proxy(address=''):
+    """
+        This function adds `http://` prefix to the proxy address in case it is missing.
+
+        :type address: ``string``
+        :param address: Proxy address.
+
+        :rtype: ``string``
+        :return: proxy address after the 'http://' prefix was added, if needed.
+    """
+    if address and not (address.startswith('http://') or address.startswith('https://')):
+        return 'http://' + address
+    return address
 
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
                  insecure_param_name=None):
@@ -616,8 +629,8 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
     proxies = {}  # type: dict
     if demisto.params().get(proxy_param_name, checkbox_default_value):
         proxies = {
-            'http': os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', ''),
-            'https': os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy', '')
+            'http': add_http_prefix_to_proxy(os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', '')),
+            'https': add_http_prefix_to_proxy(os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy', ''))
         }
     else:
         skip_proxy()
