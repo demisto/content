@@ -30,14 +30,25 @@ contentitemexportablefields:
     - all
     toServerVersion: ""
 description: Manage user configuration on FortiAutenticator.
+detaileddescription: "Steps to get the \"Access Key\" for the API authentication:
+  \n\nOn the FortiAuthenticator WebUI, create a new user for API or edit an existing
+  one. \nUnder the Authentication > User Management, edit the user. \n- Under User
+  Role, select Administrator.\n- Enable Web service access.\n- Under User Information,
+  please ensure there's  a valid email address.\n- Click OK to save the details.\n-
+  The Web Service Access Secret Key used to authenticate to the API is emailed to
+  the user.\n\nNote- Ensure email routing is working (i.e. the FortiAuthenticator
+  is able to send mail) beforehand as the API Key will be delivered by email.\n"
+
 display: FortiAuthenticator
 name: FortiAuthenticator
 script:
   commands:
   - arguments:
     - name: email
+    - description: The user's email that defined in the User Information on FortiAuthenticator.
     - auto: PREDEFINED
       defaultValue: localusers
+      description: 'The user type:  localusers (Local Users), ldapuser (Remote Users)'
       name: user_type
       predefined:
       - localusers
@@ -46,9 +57,11 @@ script:
     name: FortiAuthenticator-get-user
   - arguments:
     - name: email
+      description: The user's email that defined in the User Information on FortiAuthenticator.
       required: true
     - auto: PREDEFINED
       defaultValue: "true"
+      description: 'Define user''s active status:  false = Disabled, true = enabled'
       name: active
       predefined:
       - "true"
@@ -56,6 +69,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: localusers
+      description: 'The user type:  localusers (Local Users), ldapuser (Remote Users)'
       name: user_type
       predefined:
       - localusers
@@ -67,4 +81,4 @@ script:
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: FortiGate
+sourcemoduleid: FortiAuthenticator
