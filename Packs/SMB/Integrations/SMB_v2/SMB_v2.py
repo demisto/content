@@ -14,6 +14,7 @@ from smbclient import (
     rmdir,
 )
 
+
 def get_file_name(path):
     delimiter = '/' if '/' in path else '\\'
     return path.split(delimiter)[-1]
