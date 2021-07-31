@@ -14,8 +14,8 @@ Under the **Authentication** > **User Management**, edit the user:
 #### Note
 Ensure email routing is working (i.e. the FortiAuthenticator is able to send mail) beforehand as the API Key will be delivered by email.
 
-![Setup Account](./fauth_enable_api_access.png)
-![Setup Account](./fauth_access_key_email.png)
+![Setup Account](./fauthenableapiaccess.png)
+![Setup Account](./fauthaccesskeyemail.png)
 
 
 
