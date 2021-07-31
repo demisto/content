@@ -23,12 +23,12 @@ configuration:
   type: 8
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: "5.5"
+    fromServerVersion: "5.5.0"
     itemVersion: ""
     packID: 78f94192-42ed-4a31-8a51-d2c3cc8825b9
     propagationLabels:
     - all
-    toServerVersion: "6.2"
+    toServerVersion: "6.2.0"
 description: Manage user configuration on FortiAutenticator.
 detaileddescription: "### Steps to get the ***Access Key*** for the API authentication\n\n####
   On the FortiAuthenticator WebUI, create a new user for API or edit an existing one.
