@@ -81,7 +81,7 @@ class Client(BaseClient):
 
         request = "/modelbreaches/" + pbid + "/comments"
         http_headers = get_headers(self._auth, request)
-        body={"message":str(comment)}
+        body = {"message": str(comment)}
         return self._http_request(
             method='POST',
             url_suffix=request,
@@ -684,6 +684,7 @@ def get_breach_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs=formatted_output
     )
 
+
 def get_breach_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
         pbid = str(args.get('pbid', None))
@@ -694,7 +695,7 @@ def get_breach_details_command(client: Client, args: Dict[str, Any]) -> CommandR
         count = str(args.get('count', None))
         offset = str(args.get('offset', None))
 
-        model_breach = client.get_modelbreach_details(pbid=pbid,endtime=endtime,count=count,offset=offset)
+        model_breach = client.get_modelbreach_details(pbid=pbid, endtime=endtime, count=count, offset=offset)
 
         if 'time' in model_breach:
             created_time = int(model_breach.get('time', '0'))
@@ -708,7 +709,8 @@ def get_breach_details_command(client: Client, args: Dict[str, Any]) -> CommandR
         headers = list(set(headers))
         headers = sorted(headers)
 
-        readable_output = tableToMarkdown(f'Darktrace Model Breach {pbid} Details', model_breach, headers=headers, removeNull=True)
+        readable_output = tableToMarkdown(f'Darktrace Model Breach {pbid} Details', model_breach, headers=headers, 
+                                          removeNull=True)
 
         return CommandResults(
             readable_output=readable_output,
@@ -716,6 +718,7 @@ def get_breach_details_command(client: Client, args: Dict[str, Any]) -> CommandR
             outputs_key_field='breach_details',
             outputs=readable_output
         )
+
 
 def add_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
@@ -727,13 +730,14 @@ def add_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if not comment:
         raise ValueError('Darktrace comment needed')
 
-    res = client.add_comment(pbid=pbid,comment=comment)
+    res = client.add_comment(pbid=pbid, comment=comment)
 
     return CommandResults(
         readable_output=res,
         outputs_prefix='Darktrace.Comments',
         outputs=res
     )
+
 
 def get_model_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     uuid = str(args.get('uuid', None))
@@ -749,6 +753,7 @@ def get_model_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs=res
     )
 
+
 def get_component_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     cid = str(args.get('cid', None))
     if not cid:
@@ -762,6 +767,7 @@ def get_component_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_prefix='Darktrace.Component',
         outputs=res
     )
+
 
 def get_comments_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """darktrace-get-comments command: Returns the comments on the model breach
