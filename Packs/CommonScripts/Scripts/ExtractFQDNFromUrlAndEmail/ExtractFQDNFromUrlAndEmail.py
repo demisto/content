@@ -61,7 +61,7 @@ def get_fqdn(the_input):
         # get the subdomain using tld.subdomain
         subdomain = domain.subdomain
         if (subdomain):
-            fqdn = "{}.{}".format(subdomain, str(domain))
+            fqdn = "{}.{}".format(subdomain, domain.fld)
 
     return fqdn
 
