@@ -70,7 +70,7 @@ script:
       required: true
     name: FortiAuthenticator-update-user
     description: Update the active status for specific user by email
-  dockerimage: demisto/python3:3.9.5.20958
+  dockerimage: demisto/python3:3.9.6.22912
   runonce: false
   script: ''
   subtype: python3
