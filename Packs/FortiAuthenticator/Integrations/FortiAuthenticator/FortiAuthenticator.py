@@ -44,8 +44,6 @@ def test_module():
 
 @logger
 def get_user_command():
-    contents = []
-    context = {}
     user_context = []
     email = demisto.args().get('email')
     userType = demisto.args().get('user_type')
@@ -92,8 +90,6 @@ def get_addresses_request(email, userType):
 
 @logger
 def update_user_command():
-    contents = []
-    context = {}
     user_context = []
     email = demisto.args().get('email')
     active = demisto.args().get('active')
