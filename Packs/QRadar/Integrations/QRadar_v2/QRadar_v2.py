@@ -19,7 +19,7 @@ from CommonServerUserPython import *
 urllib3.disable_warnings()
 
 """ ADVANCED GLOBAL PARAMETERS """
-REQUEST_TIMEOUT = 20                # number of seconds to wait for a request result
+REQUEST_TIMEOUT = 30                # number of seconds to wait for a request result
 SAMPLE_SIZE = 2                     # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 15           # interval between events polling
 EVENTS_FAILURE_LIMIT = 3            # amount of consecutive failures events fetch will tolerate
