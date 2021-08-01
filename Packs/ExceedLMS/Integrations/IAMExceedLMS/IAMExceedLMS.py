@@ -42,7 +42,8 @@ class Client(BaseClient):
         manager_email = user_data.get('manager_email')
         if manager_email:
             res = self.get_user(manager_email)
-            manager_id = res.id
+            if res is not None:
+                manager_id = res.id
         return manager_id
 
     def get_user(self, email: str) -> Optional[IAMUserAppData]:
@@ -90,7 +91,6 @@ class Client(BaseClient):
             user_data['manager_id'] = manager_id
             if 'manager_email' in user_data:
                 del user_data['manager_email']
-        return_warning(str(user_data))
         user_app_data = self._http_request(
             method='POST',
             url_suffix=uri,
@@ -122,8 +122,7 @@ class Client(BaseClient):
             user_data['manager_id'] = manager_id
             if 'manager_email' in user_data:
                 del user_data['manager_email']
-        return_warning(str(user_data))
-        res = self._http_request(
+        self._http_request(
             method='PATCH',
             url_suffix=uri,
             json_data=user_data,
