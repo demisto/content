@@ -79,7 +79,7 @@ def initialize_server(host, port, secure_connection, unsecure):
     """
 
     if secure_connection == "TLS":
-        demisto.debug("initializing sever with TLS (unsecure: {}). port: {}". format(unsecure, port or 'default(636)'))
+        demisto.debug(f"initializing sever with TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
         tls = Tls(validate=ssl.CERT_NONE)
         if port:
             return Server(host, port=port, use_ssl=unsecure, tls=tls)
@@ -88,7 +88,7 @@ def initialize_server(host, port, secure_connection, unsecure):
     if secure_connection == "SSL":
         # intialize server with ssl
         # port is configured by default as 389 or as 636 for LDAPS if not specified in configuration
-        demisto.debug("initializing sever with ssl (unsecure: {}). port: {}". format(unsecure, port or 'default(636)'))
+        demisto.debug(f"initializing sever with SSL (unsecure: {unsecure}). port: {port or 'default(636)'}")
         if not unsecure:
             demisto.debug("will require server certificate.")
             tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'))
@@ -98,7 +98,7 @@ def initialize_server(host, port, secure_connection, unsecure):
         if port:
             return Server(host, port=port, use_ssl=True)
         return Server(host, use_ssl=True)
-    demisto.debug("initializing server without secure connection. port: {}". format(port or 'default(389)'))
+    demisto.debug(f"initializing server without secure connection. port: {port or 'default(389)'}")
     if port:
         return Server(host, port=port)
     return Server(host)
@@ -165,12 +165,12 @@ def endpoint_entry(computer_object, custom_attributes):
 
 
 def group_entry(group_object, custom_attributes):
-    # create an endpoint entry from a group object
+    # create an group entry from a group object
     group = {
         'Type': 'AD',
         'ID': group_object.get('dn'),
         'Name': group_object.get('name'),
-        'Groups': group_object.get('memberOf')
+        'Groups': group_object.get('memberOf'),
     }
 
     lower_cased_person_object_keys = {
@@ -728,12 +728,12 @@ def search_group_members(default_base_dn, page_size):
 
     custom_attributes: List[str] = []
 
-    if member_type == 'person':
-        default_attributes = DEFAULT_PERSON_ATTRIBUTES
-    elif member_type == 'computer':
-        default_attributes = DEFAULT_COMPUTER_ATTRIBUTES
-    else:
-        default_attributes = DEFAULT_GROUP_ATTRIBUTES
+    default_attribute_mapping = {
+        'person': DEFAULT_PERSON_ATTRIBUTES,
+        'group': DEFAULT_GROUP_ATTRIBUTES,
+        'computer': DEFAULT_COMPUTER_ATTRIBUTES,
+    }
+    default_attributes = default_attribute_mapping.get(member_type, DEFAULT_COMPUTER_ATTRIBUTES)
 
     if args.get('attributes'):
         custom_attributes = args['attributes'].split(",")
