@@ -37,7 +37,7 @@ script:
       - localusers
       - ldapusers
       required: true
-    name: FortiAuthenticator-get-user
+    name: fortiauthenticator-get-user
     description: Get the user details for specific user by email.
   - arguments:
     - name: email
@@ -59,7 +59,7 @@ script:
       - localusers
       - ldapusers
       required: true
-    name: FortiAuthenticator-update-user
+    name: fortiauthenticator-update-user
     description: Update the active status for specific user by email
   dockerimage: demisto/python3:3.9.6.22912
   runonce: false
