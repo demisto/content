@@ -292,3 +292,18 @@ def test_unseccsseful_create_user_iam_missing_samaccountname(mocker):
     assert outputs.get('success') is False
     assert outputs.get('email') == 'test@paloaltonetworks.com'
     assert 'User must have a sAMAccountName' in outputs.get('errorMessage')
+
+
+def test_group_entry():
+    """
+    Given:
+         Custom attributes to filter the group object entry.
+    When:
+        The function filters the group object according to the custom attributes.
+    Then:
+        The function will return all the group object entry because custom attributes contain '*'.
+
+    """
+    from Active_Directory_Query import group_entry
+    custom_attributes_with_asterisk = group_entry({'dn': 'dn', 'name': 'name', 'memberOf': 'memberOf'}, ['*'])
+    assert custom_attributes_with_asterisk == {'Groups': 'memberOf', 'ID': 'dn', 'Name': 'name', 'Type': 'AD'}
