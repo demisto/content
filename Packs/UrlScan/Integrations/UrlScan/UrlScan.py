@@ -384,7 +384,7 @@ def format_results(client, uuid):
             dbot_score['Indicator'] = demisto.args().get('url')
             dbot_score['Score'] = 0
             dbot_score['Type'] = 'url'
-            human_readable['Malicious'] = 'Benign'
+            human_readable['Malicious'] = 'Unknown'
         dbot_score['Reliability'] = client.reliability
     if 'urlscan' in scan_verdicts and 'tags' in scan_verdicts['urlscan']:
         url_cont['Tags'] = scan_verdicts['urlscan']['tags']
