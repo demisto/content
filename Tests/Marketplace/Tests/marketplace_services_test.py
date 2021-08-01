@@ -1,22 +1,24 @@
-import shutil
-import pytest
+import glob
 import json
 import os
 import random
-import glob
-from unittest.mock import mock_open
-from mock_open import MockOpen
-from google.cloud.storage.blob import Blob
-from typing import List
-from freezegun import freeze_time
+import shutil
 from datetime import datetime, timedelta
 from distutils.version import LooseVersion
+from typing import List, Dict, Any
+from unittest.mock import mock_open
+
+import pytest
+from freezegun import freeze_time
+from google.cloud.storage.blob import Blob
+from mock_open import MockOpen
+
+from Tests.Marketplace.marketplace_constants import PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
+    PACKS_FOLDER, PackTags
 from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_valid_bool, convert_price, \
     get_updated_server_version, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
     is_the_only_rn_in_block
-from Tests.Marketplace.marketplace_constants import PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
-    PACKS_FOLDER, PackTags
 
 CHANGELOG_DATA_INITIAL_VERSION = {
     "1.0.0": {
@@ -2105,7 +2107,22 @@ class TestImageClassification:
         assert dummy_pack.changelog_entry_contains_bc_version(predecessor_version, rn_version) == expected
 
     def test_update_changelog_with_bc(self, dummy_pack):
-        changelog = {
+        """
+           Given:
+           - changelog: Changelog file data represented as a dictionary.
+
+            When:
+            - Updating 'breakingChanges' entry for each changelog dict entry.
+
+           Then:
+            - Validate changelog 'breakingChanges' field for each entries are updated as expected. This test includes
+              all four types of possible changes:
+              a) Entry without breaking changes, changes to entry with breaking changes.
+              b) Entry without breaking changes, does not change.
+              c) Entry with breaking changes, changes to entry without breaking changes.
+              d) Entry with breaking changes, does not change.
+       """
+        changelog: Dict[str, Any] = {
             '1.12.20': {
                 'releaseNotes': 'RN of 1.12.20',
                 'displayName': '1.12.18 - 392682',
@@ -2130,7 +2147,7 @@ class TestImageClassification:
             }
         }
         dummy_pack.breaking_changes_versions = [LooseVersion('1.12.22'), LooseVersion('1.12.20')]
-        expected_changelog = {
+        expected_changelog: Dict[str, Any] = {
             '1.12.20': {
                 'releaseNotes': 'RN of 1.12.20',
                 'displayName': '1.12.18 - 392682',
@@ -2158,3 +2175,18 @@ class TestImageClassification:
         }
         dummy_pack.update_changelog_with_bc(changelog)
         assert changelog == expected_changelog
+
+    def test_update_changelog_with_bc_empty(self, dummy_pack):
+        """
+           Given:
+           - Empty changelog file
+
+            When:
+            - Updating 'breakingChanges' entry for each changelog dict entry.
+
+           Then:
+            - Ensure empty changelog is returned as expected.
+       """
+        changelog: Dict[str, Any] = dict()
+        dummy_pack.update_changelog_with_bc(changelog)
+        assert changelog == dict()

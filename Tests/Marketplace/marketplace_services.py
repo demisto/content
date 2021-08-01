@@ -1,30 +1,30 @@
+import base64
+import fnmatch
+import glob
 import json
+import logging
 import os
+import re
+import shutil
 import stat
 import subprocess
-import fnmatch
-import re
-import glob
-import git
-import sys
-import shutil
-import yaml
-import google.auth
-from google.cloud import storage
-import base64
 import urllib.parse
-import logging
 import warnings
+from datetime import datetime, timedelta
 from distutils.util import strtobool
 from distutils.version import LooseVersion
-from datetime import datetime, timedelta
-from zipfile import ZipFile, ZIP_DEFLATED
 from typing import Tuple, Any, Union, Dict, List
+from zipfile import ZipFile, ZIP_DEFLATED
 
+import git
+import google.auth
+import sys
+import yaml
+from google.cloud import storage
+
+import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PackTags, PackIgnored, Changelog
-import Tests.Marketplace.marketplace_statistics as mp_statistics
-
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 
 
@@ -105,8 +105,8 @@ class Pack(object):
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # a flag that specifies if pack is missing dependencies
+        self.breaking_changes_versions: List[LooseVersion] = []  # List of BC versions in the given pack
 
-        self.breaking_changes_versions: List[LooseVersion] = []
     @property
     def name(self):
         """ str: pack root folder name.
@@ -1335,8 +1335,6 @@ class Pack(object):
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
                         release_notes_dir, new_release_notes_versions, changelog, rn_files_names)
 
-                    self.update_changelog_with_bc(changelog)
-
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
                         logging.error(f"Version mismatch detected between current version: {self._current_version} "
@@ -1406,6 +1404,9 @@ class Pack(object):
                 logging.error(f"No release notes found for: {self._pack_name}")
                 task_status = False
                 return task_status, not_updated_build
+
+            # Update change log entries with BC flag.
+            self.update_changelog_with_bc(changelog)
 
             # write back changelog with changes to pack folder
             with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as pack_changelog:
@@ -1630,6 +1631,7 @@ class Pack(object):
 
         """
         task_status = False
+        user_metadata = {}
 
         try:
             user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
@@ -2374,6 +2376,13 @@ class Pack(object):
         Receives changelog, checks if there exists a BC version in each changelog entry (as changelog entry might be
         zipped into few RN versions, check if at least one of the versions is BC). If such version exists, adds a
         true value to 'breakingChanges' field.
+        This function iterates every entry in changelog because it takes into consideration four scenarios:
+          a) Entry without breaking changes, changes to entry with breaking changes (because at least one of the
+             versions in the entry was marked as breaking changes).
+          b) Entry without breaking changes, does not change.
+          c) Entry with breaking changes, changes to entry without breaking changes (because all the BC versions
+             corresponding to the changelog entry were re-marked as not BC).
+          d) Entry with breaking changes, does not change.
         Args:
             changelog (Dict[str, Any]): Changelog data represented as a dict.
 
