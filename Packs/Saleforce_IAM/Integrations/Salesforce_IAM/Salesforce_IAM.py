@@ -11,6 +11,9 @@ ERROR_CODES_TO_SKIP = [
     404
 ]
 
+''' GLOBAL VARIABLES '''
+URI_PREFIX = '/services/data/v51.0/'
+
 '''CLIENT CLASS'''
 
 
@@ -20,7 +23,7 @@ class Client(BaseClient):
     def test(self):
         """ Tests connectivity with the application. """
 
-        uri = '/test'                                 # TODO: replace to a valid test API endpoint
+        uri = URI_PREFIX + 'sobjects/User/testid'
         self._http_request(method='GET', url_suffix=uri)
 
     def get_user(self, email: str) -> Optional[IAMUserAppData]:
@@ -33,13 +36,13 @@ class Client(BaseClient):
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        uri = '/users'                               # TODO: replace to the correct GET User API endpoint
-        query_params = {'email': email}              # TODO: make sure you pass the correct query parameters
+        uri = URI_PREFIX + f'sobjects/Work_Email__c/{encode_string_results(user_id)}'
+        # query_params = {'email': email}              # TODO: make sure you pass the correct query parameters
 
         res = self._http_request(
             method='GET',
             url_suffix=uri,
-            params=query_params
+            # params=query_params
         )
 
         if res and len(res.get('result', [])) == 1:  # TODO: make sure you verify a single result was retrieved
@@ -61,7 +64,7 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the created user in the application.
         :rtype: ``IAMUserAppData``
         """
-        uri = '/users'                              # TODO: replace to the correct CREATE User API endpoint
+        uri = URI_PREFIX + 'sobjects/FF__Key_Contact__c'
         res = self._http_request(
             method='POST',
             url_suffix=uri,
@@ -86,7 +89,8 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the updated user in the application.
         :rtype: ``IAMUserAppData``
         """
-        uri = f'/users/{user_id}'                   # TODO: replace to the correct UPDATE User API endpoint
+        uri = URI_PREFIX + f'sobjects/FF__Key_Contact__c/{encode_string_results(user_id)}'
+        # params = {"_HttpMethod": "PATCH"}
         res = self._http_request(
             method='PATCH',
             url_suffix=uri,
