@@ -289,7 +289,7 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
     if not overwrite:
         new_table = pd.concat([new_table, old_table])
 
-    # Sort by column name if specified
+    # Sort by column name if specified, support multi columns sort
     if sort_by and set(sort_by) <= set(new_table.columns):
         new_table.sort_values(by=sort_by, inplace=True)
 
