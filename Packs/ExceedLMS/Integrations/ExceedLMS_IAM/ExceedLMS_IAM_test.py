@@ -1,5 +1,5 @@
 from requests import Response, Session
-from HelloIAMWorld import Client, get_mapping_fields
+from ExceedLMS_IAM import Client, get_mapping_fields
 from IAMApiModule import *
 
 APP_USER_OUTPUT = {
@@ -11,7 +11,18 @@ APP_USER_OUTPUT = {
     "email": "testdemisto2@paloaltonetworks.com"
 }
 
+APP_USER_MANAGER_OUTPUT = {
+    "user_id": "12345",
+    "user_name": "mock_manager_name",
+    "first_name": "mock_first_name",
+    "last_name": "mock_last_name",
+    "active": "true",
+    "email": "testdemistomanager@paloaltonetworks.com"
+}
+
 USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=True, app_data=APP_USER_OUTPUT)
+USER_MANAGER_APP_DATA = IAMUserAppData("12345", "mock_user_name", is_active=True, app_data=APP_USER_MANAGER_OUTPUT)
+
 
 APP_DISABLED_USER_OUTPUT = {
     "user_id": "mock_id",
@@ -26,7 +37,10 @@ DISABLED_USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=F
 
 
 def mock_client():
-    client = Client(base_url='https://test.com')
+    client = Client(base_url='https://test.com',
+                    api_key='test123',
+                    verify=False,
+                    headers={})
     return client
 
 
@@ -34,6 +48,23 @@ def get_outputs_from_user_profile(user_profile):
     entry_context = user_profile.to_entry()
     outputs = entry_context.get('Contents')
     return outputs
+
+
+def test_get_manager_id(mocker):
+    """
+    Given:
+        - An app client object
+        - A user-profile argument that contains an email of a user's manager
+    When:
+        - Calling function get_manager_id
+    Then:
+        - Ensure the currect manager ID is returned
+    """
+    client = mock_client()
+    user_data = {'manager_email': 'testdemistomanager@paloaltonetworks.com'}
+    mocker.patch.object(client, 'get_user', return_value=USER_MANAGER_APP_DATA)
+    id = client.get_manager_id(user_data)
+    assert id == '12345'
 
 
 def test_get_user_command__existing_user(mocker):
@@ -119,7 +150,7 @@ def test_get_user_command__bad_response(mocker):
     assert outputs.get('action') == IAMActions.GET_USER
     assert outputs.get('success') is False
     assert outputs.get('errorCode') == 500
-    assert outputs.get('errorMessage') == 'message: details'
+    assert outputs.get('errorMessage') == "{'detail': 'details', 'message': 'message'}"
 
 
 def test_create_user_command__success(mocker):

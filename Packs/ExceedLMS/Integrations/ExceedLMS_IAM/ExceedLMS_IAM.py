@@ -16,9 +16,9 @@ ERROR_CODES_TO_SKIP = [
 
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
-    def __init__(self, base_url, verify, proxy, headers, ok_codes, api_key):
-        self.api_key = api_key
+    def __init__(self, base_url, api_key, headers, proxy=False, verify=True, ok_codes=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
+        self.api_key = api_key
 
     def test(self):
         """ Tests connectivity with the application. """
@@ -27,6 +27,23 @@ class Client(BaseClient):
         params = {'api_key': self.api_key,
                   'user[login]': 123}
         self._http_request(method='GET', url_suffix=uri, params=params)
+
+    def get_manager_id(self, user_data: dict) -> str:
+        """ Gets the user's manager ID from manager email.
+        :type user_data: ``dict``
+        :param user_data: user data dictionary
+
+        :return: The user's manager ID
+        :rtype: ``str``
+        """
+
+        # Get manager ID.
+        manager_id = ''
+        manager_email = user_data.get('manager_email')
+        if manager_email:
+            res = self.get_user(manager_email)
+            manager_id = res.id
+        return manager_id
 
     def get_user(self, email: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
@@ -50,7 +67,6 @@ class Client(BaseClient):
             res = [res]
         if res and len(res) == 1:
             user_app_data = res[0]
-
             user_id = user_app_data.get('id')
             is_active = user_app_data.get('is_active')
             username = user_app_data.get('login')
@@ -69,6 +85,11 @@ class Client(BaseClient):
         """
         uri = '/api/v2/users.json'
         params = {'api_key': self.api_key}
+        manager_id = self.get_manager_id(user_data)
+        if manager_id:
+            user_data['manager_id'] = manager_id
+            if 'manager_email' in user_data:
+                del user_data['manager_email']
         return_warning(str(user_data))
         user_app_data = self._http_request(
             method='POST',
@@ -96,6 +117,11 @@ class Client(BaseClient):
         demisto.results(str(user_id))
         uri = f'/api/v2/users/{user_id}'
         params = {'api_key': self.api_key}
+        manager_id = self.get_manager_id(user_data)
+        if manager_id:
+            user_data['manager_id'] = manager_id
+            if 'manager_email' in user_data:
+                del user_data['manager_email']
         return_warning(str(user_data))
         res = self._http_request(
             method='PATCH',
@@ -122,7 +148,7 @@ class Client(BaseClient):
         # In this example, we use the same endpoint as in update_user() method,
         # But other APIs might have a unique endpoint for this request.
         user_data = {
-            'user[is_active]': 'true'
+            'is_active': 'true'
         }
         return self.update_user(user_id, user_data)
 
@@ -140,7 +166,7 @@ class Client(BaseClient):
         # But other APIs might have a unique endpoint for this request.
 
         user_data = {
-            'user[is_active]': 'false'
+            'is_active': 'false'
         }
         return self.update_user(user_id, user_data)
 
