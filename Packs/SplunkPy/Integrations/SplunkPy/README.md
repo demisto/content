@@ -126,7 +126,7 @@ Users who wish to enrich or mirror fetched notables and have already used the in
 2. Will need to change the *Fetch events query* integration parameter to the following query (or a fetch query of their own that uses the \`notable\` macro): 
 
 ```
-search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
+search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain) | expandtoken
 ```
 
 ### Mapping fetched incidents using Select Schema

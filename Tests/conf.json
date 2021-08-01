@@ -110,11 +110,6 @@
             "timeout": 1000
         },
         {
-            "integrations": "SecurityIntelligenceServicesFeed",
-            "playbookID": "SecurityIntelligenceServicesFeed - Test",
-            "fromversion": "5.5.0"
-        },
-        {
             "integrations": "EwsExtension",
             "playbookID": "O365 - EWS - Extension - Test",
             "fromversion": "6.0.0",
@@ -552,7 +547,9 @@
         {
             "playbookID": "Create Phishing Classifier V2 ML Test",
             "timeout": 60000,
-            "fromversion": "4.5.0"
+            "fromversion": "6.1.0",
+            "instance_names": "ml_dummy_prod",
+            "integrations": "AzureWAF"
         },
         {
             "integrations": "ZeroFox",
@@ -798,6 +795,11 @@
         {
             "integrations": "MISP V2",
             "playbookID": "MISP V2 Test",
+            "timeout": 300
+        },
+        {
+            "integrations": "MISP V3",
+            "playbookID": "MISP V3 Test",
             "timeout": 300
         },
         {
@@ -3065,7 +3067,9 @@
         {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout": 60000,
-            "fromversion": "4.5.0"
+            "fromversion": "6.1.0",
+            "instance_names": "ml_dummy_prod",
+            "integrations": "AzureWAF"
         },
         {
             "integrations": "IBM Resilient Systems",
@@ -3090,7 +3094,7 @@
         },
         {
             "playbookID": "EvaluateMLModllAtProduction-Test",
-            "fromversion": "4.5.0"
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "GCP Whitelist Feed",
@@ -3443,6 +3447,13 @@
             "integrations": "jamf v2",
             "playbookID": "Jamf_v2_test",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "DBot Build Phishing Classifier Test - Multiple Algorithms",
+            "timeout": 60000,
+            "fromversion": "6.1.0",
+            "instance_names": "ml_dummy_prod",
+            "integrations": "AzureWAF"
         }
     ],
     "skipped_tests": {
@@ -3452,7 +3463,6 @@
         "Workday - Test": "No credentials Issue 29595",
         "Tidy - Test": "Will run it manually.",
         "Protectwise-Test": "Issue 28168",
-        "Phishing Classifier V2 ML Test": "Issue 26066",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "CreateIndicatorFromSTIXTest": "Issue 24345",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
@@ -3472,8 +3482,6 @@
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "Create Phishing Classifier V2 ML Test": "Issue 26341",
-        "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
@@ -3738,6 +3746,7 @@
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
         "MISP V2": "Cleanup process isn't performed as expected.",
+        "MISP V3": "Cleanup process isn't performed as expected.",
         "Azure Network Security Groups": "Has a command that sends parameters in the path",
         "GitHub": "Cannot use proxy",
         "LogRhythm": "Cannot use proxy",
