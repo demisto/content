@@ -33,20 +33,13 @@ Under the **Authentication** > **User Management**, edit the user:
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### FortiAuthenticator-get-user
-#### Input
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| email | The user's email that defined in the User Information on FortiAuthenticator | Required | 
-| user_type | The user type:  localusers (Local Users), ldapuser (Remote Users) | Required | 
+### fortiauthenticator-get-user
 
-### FortiAuthenticator-update-user
 #### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | email | The user's email that defined in the User Information on FortiAuthenticator | Required | 
 | user_type | The user type:  localusers (Local Users), ldapuser (Remote Users) | Required | 
-| active | Define user's active status:  false = Disabled, true = enabled | Required | 
 
 #### Context Output
 | **Path** | **Type** | **Description** |
@@ -57,9 +50,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 | FortiAuthenticator.user.id | Unknown | The user's id on FortiAuthenticator | 
 | FortiAuthenticator.user.username | Unknown | The user's username | 
 
-
 #### Command Example
-```!FortiAuthenticator-get-user user_type=localusers email=jasonlo@jasonlo.net```
+```!fortiauthenticator-get-user user_type=localusers email=jasonlo@jasonlo.net```
 
 #### Context Example
 ```json
@@ -82,10 +74,25 @@ After you successfully execute a command, a DBot message appears in the War Room
 |---|---|---|---|
 | 7 | test_user | test_user@example.com | true |
 
+### fortiauthenticator-update-user
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email | The user's email that defined in the User Information on FortiAuthenticator | Required | 
+| user_type | The user type:  localusers (Local Users), ldapuser (Remote Users) | Required | 
+| active | Define user's active status:  false = Disabled, true = enabled | Required | 
 
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiAuthenticator.user | Unknown | The user information | 
+| FortiAuthenticator.user.active | Unknown | The user's active status (true = enabled, false = disabled) | 
+| FortiAuthenticator.user.email | Unknown | The user's email address | 
+| FortiAuthenticator.user.id | Unknown | The user's id on FortiAuthenticator | 
+| FortiAuthenticator.user.username | Unknown | The user's username | 
 
 #### Command Example
-```!FortiAuthenticator-update-user active=false user_type=localusers email=jasonlo@jasonlo.net```
+```!fortiauthenticator-update-user active=false user_type=localusers email=jasonlo@jasonlo.net```
 
 #### Context Example
 ```json
