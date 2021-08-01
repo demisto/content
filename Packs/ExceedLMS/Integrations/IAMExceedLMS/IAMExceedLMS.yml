@@ -1,7 +1,7 @@
 beta: false
 category: Identity and Access Management
 commonfields:
-  id: IAM_ExceedLMS
+  id: IAMExceedLMS
   version: -1
 configuration:
 - display: Base URL
@@ -56,8 +56,8 @@ configuration:
   required: true
   type: 0
 description: An Identity and Access Management integration template.
-display: IAM_ExceedLMS
-name: IAM_ExceedLMS
+display: IAMExceedLMS
+name: IAMExceedLMS
 script:
   commands:
   - arguments:
@@ -262,7 +262,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
   ismappable: true
