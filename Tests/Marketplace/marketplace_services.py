@@ -69,7 +69,7 @@ class Pack(object):
         self._description = None  # initialized in load_user_metadata function
         self._display_name = None  # initialized in load_user_metadata function
         self._user_metadata = None  # initialized in load_user_metadata function
-        self.eula_link = None   # initialized in load_user_metadata function
+        self.eula_link = None  # initialized in load_user_metadata function
         self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
         self._bucket_url = None  # URL of where the pack was uploaded.
@@ -363,6 +363,7 @@ class Pack(object):
             list: list of sorted integration images
 
         """
+
         def sort_by_name(integration_image: dict):
             return integration_image.get('name', '')
 
@@ -651,7 +652,8 @@ class Pack(object):
 
         return dependencies_data_result, self._is_missing_dependencies
 
-    def _get_updated_changelog_entry(self, changelog: dict, version: str, release_notes: str = None,
+    @staticmethod
+    def _get_updated_changelog_entry(changelog: dict, version: str, release_notes: str = None,
                                      version_display_name: str = None, build_number_with_prefix: str = None,
                                      released_time: str = None):
         """
@@ -670,9 +672,11 @@ class Pack(object):
         version_display_name = \
             version_display_name if version_display_name else changelog_entry[Changelog.DISPLAY_NAME].split('-')[0]
         build_number_with_prefix = \
-            build_number_with_prefix if build_number_with_prefix else changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
+            build_number_with_prefix if build_number_with_prefix else \
+            changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
 
-        changelog_entry[Changelog.RELEASE_NOTES] = release_notes if release_notes else changelog_entry[Changelog.RELEASE_NOTES]
+        changelog_entry[Changelog.RELEASE_NOTES] = release_notes if release_notes else changelog_entry[
+            Changelog.RELEASE_NOTES]
         changelog_entry[Changelog.DISPLAY_NAME] = f'{version_display_name} - {build_number_with_prefix}'
         changelog_entry[Changelog.RELEASED] = released_time if released_time else changelog_entry[Changelog.RELEASED]
 
@@ -785,7 +789,7 @@ class Pack(object):
             pack_name (str): The name of the pack that should be encrypted.
             encryption_key (str): The key which we can decrypt the pack with.
             extract_destination_path (str): The path in which the pack resides.
-            private_artifacts_dir (str): The chosen name for the private artifacts diriectory.
+            private_artifacts_dir (str): The chosen name for the private artifacts directory.
             secondary_encryption_key (str) : A second key which we can decrypt the pack with.
         """
         try:
@@ -1015,7 +1019,8 @@ class Pack(object):
                     blob.upload_from_file(pack_zip)
 
                 print(
-                    f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/packs/{self._pack_name}.zip")
+                    f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/"
+                    f"packs/{self._pack_name}.zip")
                 shutil.copy(secondary_encryption_key_artifacts_path,
                             f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
 
@@ -1237,7 +1242,7 @@ class Pack(object):
         if len(pack_versions_dict) > 1:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
-            aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]"\
+            aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]" \
                               f" => {latest_release_notes_version_str}"
             logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
@@ -2540,7 +2545,7 @@ def init_storage_client(service_account=None):
     """Initialize google cloud storage client.
 
     In case of local dev usage the client will be initialized with user default credentials.
-    Otherwise, client will be initialized from service account json that is stored in CirlceCI.
+    Otherwise, client will be initialized from service account json that is stored in CircleCI.
 
     Args:
         service_account (str): full path to service account json.
