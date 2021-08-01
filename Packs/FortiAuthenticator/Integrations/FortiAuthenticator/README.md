@@ -1,7 +1,7 @@
 
 FortiAuthenticator provides centralized authentication services. 
 Seamless secure two-factor/OTP authentication across the organization in conjunction with FortiToken.
-Tested FortiAuthenticator version: 4.0 - 6.3.0.
+- Tested FortiAuthenticator version: 4.0 - 6.3.0.
 
 ## Enable API Access for admin user on FortiAuthenticator
 ### Steps to get the ***Access Key*** for the API authentication
@@ -14,6 +14,10 @@ Under the **Authentication** > **User Management**, edit the user:
 4. Click **OK** to save the details.
 5. The **Web Service Access Secret Key** used to authenticate to the API is emailed to the user.
 
+
+## Supported user types:
+- Local Users
+- LDAP Users
 
 
 
