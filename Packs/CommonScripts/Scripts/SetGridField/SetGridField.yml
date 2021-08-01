@@ -36,8 +36,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: Column name by which to sort the rows.
-  isArray: false
+  description: Columns names by which to sort the rows.
+  isArray: true
   name: sort_by
   required: false
   secret: false
