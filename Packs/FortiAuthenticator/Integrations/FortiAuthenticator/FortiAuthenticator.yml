@@ -22,15 +22,6 @@ configuration:
   required: false
   type: 8
 description: Manage user configuration on FortiAutenticator.
-detaileddescription: "### Steps to get the ***Access Key*** for the API authentication\n\n####
-  On the FortiAuthenticator WebUI, create a new user for API or edit an existing one.
-  \nUnder the **Authentication** > **User Management**, edit the user: \n1. Under
-  **User Role**, select **Administrator**.\n2. Enable **Web service access**.\n3.
-  Under **User Information**, please ensure there's  a valid **email** address.\n4.
-  Click **OK** to save the details.\n5. The **Web Service Access Secret Key** used
-  to authenticate to the API is emailed to the user.\n\n#### Note\nEnsure email routing
-  is working (i.e. the FortiAuthenticator is able to send mail) beforehand as the
-  API Key will be delivered by email.\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/fortiauthenticator)\n"
 display: FortiAuthenticator
 name: FortiAuthenticator
 script:
