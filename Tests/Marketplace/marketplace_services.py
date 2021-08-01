@@ -105,7 +105,7 @@ class Pack(object):
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # a flag that specifies if pack is missing dependencies
-        self.breaking_changes_versions: List[LooseVersion] = []  # List of BC versions in the given pack. Initialized in load_user_metadata function
+        self.breaking_changes_versions: List[LooseVersion] = []  # Initialized in load_user_metadata function
 
     @property
     def name(self):
