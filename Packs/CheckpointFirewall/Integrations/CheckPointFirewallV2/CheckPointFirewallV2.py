@@ -1802,6 +1802,7 @@ def test_module(base_url: str, sid: str, verify_certificate) -> str:
         else:
             raise e
 
+
 def main():
     """
         Client is created with a session id. if a session id was given as argument
