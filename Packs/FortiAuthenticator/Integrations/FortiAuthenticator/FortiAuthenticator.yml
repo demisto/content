@@ -21,7 +21,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Manage user configuration on FortiAutenticator.
+description: This integration allows you to manage the user configuration on FortiAuthenticator.
 display: FortiAuthenticator
 name: FortiAuthenticator
 script:
