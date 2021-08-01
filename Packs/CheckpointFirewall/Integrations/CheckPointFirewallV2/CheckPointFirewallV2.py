@@ -1787,19 +1787,20 @@ def test_module(base_url: str, sid: str, verify_certificate) -> str:
                  f"Full response: {response.json()}")),
                 res=response)
 
+        response.raise_for_status()  # raises error on non-OK codes
+        return "ok"
+
+    except requests.HTTPError as e:
+        if response.status_code == 500:
+            return 'Server Error: Make sure Server URL and Server Port are correctly set'
+        raise e
+
     except JSONDecodeError as e:
-        demisto.info(str(e))
+        demisto.info("Could not parse JSON content. Exception body: " + str(e))
         if isinstance(response, requests.Response):  # set to None on function head as default
             raise DemistoException(f"Could not parse JSON content of response.text: {response.text}")
         else:
             raise e
-    except Exception as e:
-        if '500' in str(e):  # for status code 500
-            return 'Server Error: make sure Server URL and Server Port are correctly set'
-        else:
-            raise e
-    return 'ok'
-
 
 def main():
     """
