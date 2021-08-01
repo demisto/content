@@ -184,7 +184,7 @@ UPDATE_STATUS_PAYLOAD = """mutation {{
       placeholders
       reason
     }}
-  }}  
+  }}
 }}
 """
 
@@ -446,7 +446,7 @@ def test_module(client: Client, params: dict) -> str:
     """
     first_fetch_time = params.get('first_fetch')
     try:
-        fetch_limit = int(params.get('max_fetch'))
+        fetch_limit = int(params.get('max_fetch'))  # type: ignore
     except ValueError:
         return 'Fetch Limit should be set as an integer'
 
@@ -454,11 +454,13 @@ def test_module(client: Client, params: dict) -> str:
         _, incidents = fetch_incidents(
             client=client,
             last_run=demisto.getLastRun(),
-            first_fetch_time=first_fetch_time,
+            first_fetch_time=first_fetch_time,  # type: ignore
             max_fetch=fetch_limit)
 
         if incidents:
             return 'ok'
+        else:
+            return 'no data in the system, but connection looks ok'
     except Exception as e:
         if 'Unauthorized' in str(e):
             return 'Authorization Error: make sure API Key was set correctly'
@@ -495,7 +497,7 @@ def phisher_message_list_command(client: Client, args: dict) -> CommandResults:
     if not query:
         query = "\\\"\\\""
     else:
-        query = "\\\"" + args.get('query') + "\\\""
+        query = "\\\"" + str(args.get('query')) + "\\\""  # type: ignore
     # handle in case ID is given
     if message_id:
         query = "\\\"id:" + message_id + "\\\""
@@ -751,11 +753,11 @@ def fetch_incidents_command(client: Client, params: dict):
     calling the fetch incidents and writing all incidents to demisto.incidents.
     """
     first_fetch_time = params.get('first_fetch')
-    fetch_limit = int(params.get('max_fetch'))
+    fetch_limit = int(params.get('max_fetch'))  # type: ignore
     next_run, incidents = fetch_incidents(
         client=client,
         last_run=demisto.getLastRun(),
-        first_fetch_time=first_fetch_time,
+        first_fetch_time=first_fetch_time,  # type: ignore
         max_fetch=fetch_limit)
     demisto.setLastRun(next_run)
     demisto.incidents(incidents)

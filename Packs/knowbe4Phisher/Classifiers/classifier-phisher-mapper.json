@@ -2,7 +2,7 @@
     "defaultIncidentType": "",
     "description": "",
     "feed": false,
-    "id": "70a0e8ce-6954-4bde-8a05-e290fcf35fb4",
+    "id": "phisher-mapper",
     "mapping": {
         "Phisher": {
             "dontMapEventToLabels": false,

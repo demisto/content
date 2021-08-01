@@ -38,6 +38,11 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+- display: Incident type
+  defaultvalue: Phisher
+  name: incidentType
+  required: false
+  type: 13
 description: KnowBE4 PhishER integration allows to pull events from PhishER system
   and do mutations
 display: PhishER
@@ -74,7 +79,8 @@ script:
       - 'False'
       - 'True'
       required: false
-      description: false - will not write all event information to context. true - will write all events to context.
+      description: false - will not write all event information to context. true -
+        will write all events to context.
       secret: false
     deprecated: false
     description: Command to get messages from PhishER
@@ -202,7 +208,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Message Tags to assign for given ID. Tags should be seperated by a comma
+      description: Message Tags to assign for given ID. Tags should be seperated by
+        a comma
       isArray: false
       name: tags
       required: true
@@ -219,7 +226,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Message Tags to delete for given ID. Tags should be seperated by a comma
+      description: Message Tags to delete for given ID. Tags should be seperated by
+        a comma
       isArray: false
       name: tags
       required: true
