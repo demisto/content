@@ -328,7 +328,7 @@ def wildfire_upload_file_with_polling_command(args):
                                wildfire_get_report_command, 'FILE')
 
 
-def wildfire_upload_file_command(args):
+def wildfire_upload_file_command(args) -> list:
     assert_upload_argument(args)
     uploads = argToList(args.get('upload'))
     command_results_list = []
@@ -368,12 +368,12 @@ Content-Disposition: form-data; name="url"
     return result, upload_file_url_data
 
 
-def wildfire_upload_file_url_with_polling_command(args):
+def wildfire_upload_file_url_with_polling_command(args) -> list:
     return run_polling_command(args, 'wildfire-upload-file-url', wildfire_upload_file_url_command,
                                wildfire_get_report_command, 'URL')
 
 
-def wildfire_upload_file_url_command(args):
+def wildfire_upload_file_url_command(args) -> list:
     assert_upload_argument(args)
     command_results_list = []
     uploads = argToList(args.get('upload'))
@@ -412,7 +412,7 @@ Content-Disposition: form-data; name="link"
     return result, upload_url_data
 
 
-def wildfire_upload_url_command(args):
+def wildfire_upload_url_command(args) -> list:
     assert_upload_argument(args)
     command_results_list = []
     uploads = argToList(args.get('upload'))
@@ -786,8 +786,9 @@ def create_behaviors_object(behaviors):
     """
     behaviors_objects_list = []
     for item in behaviors:
-        behaviors.append(Common.Behaviors(details=item['details'], action=item['action']))
-    return behaviors
+        behaviors_objects_list.append(Common.Behaviors(details=item['details'], action=item['action']))
+    return behaviors_objects_list
+
 
 def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml', verbose: bool = False):
 
@@ -964,10 +965,11 @@ def wildfire_file_command(args):
                 'Contents': 'WildFire file hash reputation supports only MD5, SHA256 hashes',
                 'ContentsFormat': formats['text']
             })
+            return
         else:
             command_results = wildfire_get_file_report(element, args)[0]
             command_results_list.append(command_results)
-            return command_results
+        return command_results
 
 
 def wildfire_get_sample(file_hash):

@@ -1,4 +1,5 @@
-import json, io
+import json
+import io
 
 from requests import Response
 
@@ -6,8 +7,7 @@ import demistomock as demisto
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
     create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
     file_args_handler, wildfire_get_sample_command, wildfire_get_report_command, run_polling_command, \
-    wildfire_upload_file_command, wildfire_upload_file_url_command, wildfire_upload_url_command, http_request
-from CommonServerPython import ScheduledCommand
+    wildfire_upload_url_command
 
 
 def test_will_return_ok():
@@ -169,8 +169,9 @@ def test_report_chunked_response(mocker):
                         return_value={'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
                                       'format': 'xml'})
     mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "https://wildfire.paloaltonetworks.com/publicapi")
-    command_results, status = wildfire_get_report_command({'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
-                                      'format': 'xml'})
+    command_results, status = wildfire_get_report_command(
+        {'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+         'format': 'xml'})
     hr = '### WildFire File Report\n|FileType|MD5|SHA256|Size|Status|\n|---|---|---|---|---|\n|' \
          ' PDF | 4b41a3475132bd861b30a878e30aa56a | 8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51 |' \
          ' 3028 | Completed |\n'
@@ -198,7 +199,9 @@ def test_running_polling_command_success(mocker):
     """
     args = {'url': 'www.google.com'}
     response_upload = util_load_json('./tests_data/upload_url_response.json')
-    upload_url_data = {'url': 'https://www.demisto.com', 'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb', 'md5': '67632f32e6af123aa8ffd1fe8765a783'}
+    upload_url_data = {'url': 'https://www.demisto.com',
+                       'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
+                       'md5': '67632f32e6af123aa8ffd1fe8765a783'}
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
     response_report = util_load_json('./tests_data/report_url_response_success.json')
@@ -223,7 +226,9 @@ def test_running_polling_command_pending(mocker):
     """
     args = {'url': 'wwwdom'}
     response_upload = util_load_json('./tests_data/upload_url_response.json')
-    upload_url_data = {'url': 'https://www.demisto.com', 'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb', 'md5': '67632f32e6af123aa8ffd1fe8765a783'}
+    upload_url_data = {'url': 'https://www.demisto.com',
+                       'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
+                       'md5': '67632f32e6af123aa8ffd1fe8765a783'}
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
     response_report = util_load_json('./tests_data/report_url_response_pending.json')
@@ -261,5 +266,3 @@ def test_running_polling_command_new_search(mocker):
                         'Status': 'Pending', 'URL': 'https://www.demisto.com'}
     assert command_results[0].outputs == expected_outputs
     assert command_results[0].scheduled_command is not None
-
-
