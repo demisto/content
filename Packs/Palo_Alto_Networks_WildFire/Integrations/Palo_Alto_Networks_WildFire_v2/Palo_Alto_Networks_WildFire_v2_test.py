@@ -7,7 +7,7 @@ from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entr
     create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
     file_args_handler, wildfire_get_sample_command, wildfire_get_report_command, run_polling_command, \
     wildfire_upload_file_command, wildfire_upload_file_url_command, wildfire_upload_url_command, http_request
-
+from CommonServerPython import ScheduledCommand
 
 
 def test_will_return_ok():
@@ -199,6 +199,7 @@ def test_running_polling_command_success(mocker):
     args = {'url': 'www.google.com'}
     response_upload = util_load_json('./tests_data/upload_url_response.json')
     upload_url_data = {'url': 'https://www.demisto.com', 'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb', 'md5': '67632f32e6af123aa8ffd1fe8765a783'}
+    mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
     response_report = util_load_json('./tests_data/report_url_response_success.json')
     mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', return_value=response_report)
@@ -223,6 +224,7 @@ def test_running_polling_command_pending(mocker):
     args = {'url': 'wwwdom'}
     response_upload = util_load_json('./tests_data/upload_url_response.json')
     upload_url_data = {'url': 'https://www.demisto.com', 'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb', 'md5': '67632f32e6af123aa8ffd1fe8765a783'}
+    mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
     response_report = util_load_json('./tests_data/report_url_response_pending.json')
     mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', return_value=response_report)
@@ -244,6 +246,7 @@ def test_running_polling_command_new_search(mocker):
         Return a command results object, with scheduling a new command.
     """
     args = {'upload': 'https://www.demisto.com'}
+    mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     response_upload = util_load_json('./tests_data/upload_url_response.json')
     upload_url_data = {'url': 'https://www.demisto.com',
                        'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
