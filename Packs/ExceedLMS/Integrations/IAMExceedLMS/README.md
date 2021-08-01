@@ -1,10 +1,10 @@
 An Identity and Access Management integration template.
-This integration was integrated and tested with version v2 of ExceedLMS_IAM
+This integration was integrated and tested with version v2 of ExceedLMS
 
-## Configure ExceedLMS_IAM on Cortex XSOAR
+## Configure IAMExceedLMS on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ExceedLMS_IAM.
+2. Search for IAMExceedLMS.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
@@ -196,7 +196,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
-```!get-mapping-fields using="ExceedLMS_IAM"```
+```!get-mapping-fields using="IAMExceedLMS"```
 
 #### Human Readable Output
 
