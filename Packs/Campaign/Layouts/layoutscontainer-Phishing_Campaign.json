@@ -656,7 +656,7 @@
                 "type": "warRoom"
             },
             {
-                "hidden": true,
+                "hidden": false,
                 "id": "workPlan",
                 "name": "Work Plan",
                 "type": "workPlan"
