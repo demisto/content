@@ -18,10 +18,10 @@ def compare_ssdeep(anchor_hash: str, hashes_to_compare: list, output_key: str) -
             })
 
         except ssdeep.InternalError as e:
-            demisto.error(DemistoException(f'Could not compare hashes due to internal error: {str(e)}'))
+            demisto.error(f'Could not compare hashes due to internal error: {str(e)}')
             continue
         except TypeError as e:
-            demisto.error(DemistoException(f'Hashes must be of type String, Unicode or Bytes: {str(e)}'))
+            demisto.error(f'Hashes must be of type String, Unicode or Bytes: {str(e)}')
             continue
 
     return CommandResults(
