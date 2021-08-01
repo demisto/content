@@ -2393,8 +2393,12 @@ class Pack(object):
         predecessor_version: LooseVersion = LooseVersion('0.0.0')
         for rn_version in sorted(changelog.keys(), key=LooseVersion):
             rn_loose_version: LooseVersion = LooseVersion(rn_version)
-            changelog[rn_version]['breakingChanges'] = self.changelog_entry_contains_bc_version(predecessor_version,
-                                                                                                rn_loose_version)
+            if self.changelog_entry_contains_bc_version(predecessor_version, rn_loose_version):
+                # Mark version as BC. Version might have already been BC, but this covers both cases.
+                changelog[rn_version]['breakingChanges'] = True
+            elif 'breakingChanges' in changelog[rn_version]:
+                # If version was BC but now is not anymore, delete its entry
+                del changelog[rn_version]['breakingChanges']
             predecessor_version = rn_loose_version
 
     def changelog_entry_contains_bc_version(self, predecessor_version: LooseVersion, rn_version: LooseVersion) -> bool:

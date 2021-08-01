@@ -2157,14 +2157,12 @@ class TestImageClassification:
             '1.12.17': {
                 'releaseNotes': 'RN of 1.12.17',
                 'displayName': '1.12.17 - 392184',
-                'released': '2021-07-02T23:15:52Z',
-                'breakingChanges': False
+                'released': '2021-07-02T23:15:52Z'
             },
             '1.12.16': {
                 'releaseNotes': 'RN of 1.12.16',
                 'displayName': '1.12.16 - 391562',
-                'released': '2021-06-30T23:32:59Z',
-                'breakingChanges': False
+                'released': '2021-06-30T23:32:59Z'
             },
             '1.12.23': {
                 'releaseNotes': 'RN of 1.12.23',
