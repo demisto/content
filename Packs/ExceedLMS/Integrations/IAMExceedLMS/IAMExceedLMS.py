@@ -258,7 +258,6 @@ def get_error_details(res: Dict[str, Any]) -> str:
     return str(res)
 
 
-
 '''COMMAND FUNCTIONS'''
 
 
