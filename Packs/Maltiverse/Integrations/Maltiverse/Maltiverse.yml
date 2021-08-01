@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Maltiverse-t
+  id: Maltiverse
   version: -1
 configuration:
 - defaultvalue: https://api.maltiverse.com
@@ -37,8 +37,8 @@ configuration:
   type: 8
 description: Use the Maltiverse integration to analyze suspicious hashes, URLs, domains
   and IP addresses.
-display: Maltiverse-t
-name: Maltiverse-t
+display: Maltiverse
+name: Maltiverse
 script:
   commands:
   - arguments:

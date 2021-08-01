@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Cisco Umbrella Investigate-t
+  id: Cisco Umbrella Investigate
   version: -1
 configuration:
 - display: Cisco Umbrella API token
@@ -40,8 +40,8 @@ configuration:
   required: false
   type: 0
 description: Cisco Umbrella Investigate
-display: Cisco Umbrella Investigate-t
-name: Cisco Umbrella Investigate-t
+display: Cisco Umbrella Investigate
+name: Cisco Umbrella Investigate
 script:
   commands:
   - arguments:
@@ -1560,7 +1560,7 @@ script:
     - contextPath: Umbrella.Timeline.Data.Timestamp
       description: The time when the attribution for this URL changed.
       type: date
-  dockerimage: demisto/python:2.7.18.20958
+  dockerimage: demisto/python:2.7.18.22912
   feed: false
   isfetch: false
   longRunning: false

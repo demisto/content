@@ -204,7 +204,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/python:2.7.18.20958
+  dockerimage: demisto/python:2.7.18.22912
   feed: false
   isfetch: false
   longRunning: false

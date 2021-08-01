@@ -1167,7 +1167,7 @@ script:
     - contextPath: CofenseIntelligence.URL.Threats.threatType
       description: If malware, will have value ‘malware’, otherwise it is empty.
       type: String
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
   longRunning: false

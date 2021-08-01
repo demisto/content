@@ -82,7 +82,7 @@ script:
     - contextPath: Alexa.Domain.Rank
       description: Alexa rank as determined by Amazon
       type: string
-  dockerimage: demisto/python:2.7.18.20958
+  dockerimage: demisto/python:2.7.18.22912
   feed: false
   isfetch: false
   longRunning: false
