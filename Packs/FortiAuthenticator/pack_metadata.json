@@ -7,7 +7,9 @@
     "url": "",
     "email": "",
     "created": "2021-07-29T15:11:11Z",
-    "categories": [],
+    "categories": [
+        "Authentication"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
