@@ -2,12 +2,13 @@ from requests import Response, Session
 from ExceedLMS_IAM import Client, get_mapping_fields
 from IAMApiModule import *
 
-APP_USER_OUTPUT = {
-    "user_id": "mock_id",
-    "user_name": "mock_user_name",
+
+API_GET_USER_RESPONSE = {
+    "id": "mock_id",
+    "login": "mock_user_name",
     "first_name": "mock_first_name",
     "last_name": "mock_last_name",
-    "active": "true",
+    "is_active": True,
     "email": "testdemisto2@paloaltonetworks.com"
 }
 
@@ -20,7 +21,7 @@ APP_USER_MANAGER_OUTPUT = {
     "email": "testdemistomanager@paloaltonetworks.com"
 }
 
-USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=True, app_data=APP_USER_OUTPUT)
+USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=True, app_data=API_GET_USER_RESPONSE)
 USER_MANAGER_APP_DATA = IAMUserAppData("12345", "mock_user_name", is_active=True, app_data=APP_USER_MANAGER_OUTPUT)
 
 
@@ -67,7 +68,7 @@ def test_get_manager_id(mocker):
     assert id == '12345'
 
 
-def test_get_user_command__existing_user(mocker):
+def test_get_user_command__existing_user(mocker, requests_mock):
     """
     Given:
         - An app client object
@@ -81,9 +82,8 @@ def test_get_user_command__existing_user(mocker):
     client = mock_client()
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
-    mocker.patch.object(client, 'get_user', return_value=USER_APP_DATA)
+    mocker.patch.object(client, '_http_request', return_value=API_GET_USER_RESPONSE)
     mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
-
     user_profile = IAMCommand().get_user(client, args)
     outputs = get_outputs_from_user_profile(user_profile)
 
@@ -110,7 +110,7 @@ def test_get_user_command__non_existing_user(mocker):
     client = mock_client()
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
-    mocker.patch.object(client, 'get_user', return_value=None)
+    mocker.patch.object(client, '_http_request', return_value=None)
 
     user_profile = IAMCommand().get_user(client, args)
     outputs = get_outputs_from_user_profile(user_profile)
@@ -168,7 +168,7 @@ def test_create_user_command__success(mocker):
 
     mocker.patch.object(client, 'get_user', return_value=None)
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
-    mocker.patch.object(client, 'create_user', return_value=USER_APP_DATA)
+    mocker.patch.object(client, '_http_request', return_value=API_GET_USER_RESPONSE)
 
     user_profile = IAMCommand().create_user(client, args)
     outputs = get_outputs_from_user_profile(user_profile)
