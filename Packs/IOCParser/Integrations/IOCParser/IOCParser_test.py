@@ -196,11 +196,11 @@ def util_load_json(path):
 def test_ioc_from_url_command_valid_response(mocker, args, response_file_name, expected_tables, expected_outputs):
     """
     Given:
-        -
+        - Valid url and keys
     When:
-        -
+        - When the user wants to parse IOCs from url
     Then:
-        - Verify
+        - Verify that the warroom entry is in the right format
     """
     client = create_client()
     response_json = util_load_json(response_file_name)
@@ -215,12 +215,12 @@ def test_ioc_from_url_command_valid_response(mocker, args, response_file_name, e
                                                       './test_data/ioc_from_url_invalid_url_response.json')])
 def test_ioc_from_url_command_invalid_url(mocker, args, response_file_name):
     """
-   Given:
-        -
+    Given:
+        - Invalid url
     When:
-        -
+        - When the user wants to parse IOCs from url
     Then:
-        - Verify
+        - Verify that ValueError is raised
     """
     client = create_client()
     mocker.patch.object(client, 'ioc_from_url', side_effect=DemistoException("some error message"))
@@ -233,12 +233,12 @@ def test_ioc_from_url_command_invalid_url(mocker, args, response_file_name):
 @pytest.mark.parametrize('args', [({'url': MOCK_URL})])
 def test_ioc_from_url_command_empty_response(mocker, args):
     """
-   Given:
-        -
+    Given:
+        - A url that does not contain IOCs
     When:
-        -
+        - When the user wants to parse IOCs from url
     Then:
-        - Verify
+        - Verify that ValueError is raised
     """
     client = create_client()
     mocker.patch.object(client, 'ioc_from_url', return_value="")
@@ -252,11 +252,11 @@ def test_ioc_from_url_command_empty_response(mocker, args):
 def test_ioc_from_json_text_command_valid_response(mocker, args, response_file_name, expected_tables, expected_outputs):
     """
     Given:
-        -
+        - Valid JSON text and keys
     When:
-        -
+        - When the user wants to parse IOCs from JSON text
     Then:
-        - Verify
+        - Verify that the warroom entry is in the right format
     """
     client = create_client()
     response_json = util_load_json(response_file_name)
@@ -271,11 +271,11 @@ def test_ioc_from_json_text_command_valid_response(mocker, args, response_file_n
 def test_ioc_from_raw_text_command_valid_response_for_data_field(mocker, args, response_file_name, expected_tables, expected_outputs):
     """
     Given:
-        -
+        - Valid raw text in the data argument and keys
     When:
-        -
+        - When the user wants to parse IOCs from raw text
     Then:
-        - Verify
+        - Verify that the warroom entry is in the right format
     """
     client = create_client()
     response_json = util_load_json(response_file_name)
@@ -313,11 +313,11 @@ def test_ioc_from_raw_text_command_valid_response_for_data_field(mocker, args, r
 def test_ioc_from_raw_text_command_invalid_command_arguments(mocker, args):
     """
     Given:
-        -
+        - Both data and entry id arguments
     When:
-        -
+        - When the user wants to parse IOCs from raw text
     Then:
-        - Verify
+        - Verify that ValueError is raised
     """
     client = create_client()
     with pytest.raises(ValueError) as e:
@@ -327,14 +327,14 @@ def test_ioc_from_raw_text_command_invalid_command_arguments(mocker, args):
 
 
 @pytest.mark.parametrize('args', [{'entry_id': "@212"}])
-def test_ioc_from_raw_text_command_invalid_command_arguments(mocker, args):
+def test_ioc_from_raw_text_command_invalid_entry_id(mocker, args):
     """
     Given:
-        -
+        - Invalid entry id
     When:
-        -
+        - When the user wants to parse IOCs from raw text
     Then:
-        - Verify
+        - Verify that an ValueError is raised
     """
     client = create_client()
     mocker.patch.object(demisto, 'getFilePath', return_value=None)
@@ -348,11 +348,11 @@ def test_ioc_from_raw_text_command_invalid_command_arguments(mocker, args):
 def test_ioc_from_json_text_command_invalid_json_format(mocker, args):
     """
     Given:
-        -
+        - Invalid JSON text
     When:
-        -
+        - When the user wants to parse IOCs from JSON text
     Then:
-        - Verify
+        - Verify that an ValueError is raised
     """
     client = create_client()
     with pytest.raises(ValueError) as e:
@@ -365,11 +365,11 @@ def test_ioc_from_json_text_command_invalid_json_format(mocker, args):
 def test_ioc_from_twitter_command_valid_response(mocker, args, response_file_name, expected_tables, expected_outputs):
     """
     Given:
-        -
+        - Valid twitter account and keys
     When:
-        -
+        - When the user wants to parse IOCs from twitter account
     Then:
-        - Verify
+        - Verify that the warroom entry is in the right format
     """
     client = create_client()
     response_json = util_load_json(response_file_name)
@@ -384,11 +384,11 @@ def test_ioc_from_twitter_command_valid_response(mocker, args, response_file_nam
 def test_ioc_from_twitter_command_invalid_username(mocker, args):
     """
     Given:
-        -
+        - Invalid twitter account
     When:
-        -
+        - When the user wants to parse IOCs from twitter account
     Then:
-        - Verify
+        - Verify that an ValueError is raised
     """
     client = create_client()
     mocker.patch.object(client, 'ioc_from_twitter', side_effect=DemistoException("some error message"))
