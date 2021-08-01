@@ -138,11 +138,9 @@ tasks:
         complex:
           root: |
             inputs.O365AllowNotFoundExchangeLocations
-      case: {}
       delete_type:
         complex:
           root: inputs.O365DeleteType
-      description: {}
       exchange_location:
         complex:
           root: ExchangeLocation
@@ -156,7 +154,6 @@ tasks:
           root: inputs.O365KQL
       preview:
         simple: "true"
-      search_name: {}
     separatecontext: true
     loop:
       iscommand: false
@@ -177,10 +174,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: dff2957e-59a7-4323-8886-4fd02a5ebdb6
+    taskid: 7bd41719-2141-444c-8b14-0aaf9511e718
     type: condition
     task:
-      id: dff2957e-59a7-4323-8886-4fd02a5ebdb6
+      id: 7bd41719-2141-444c-8b14-0aaf9511e718
       version: -1
       name: In what integration should emails be searched and deleted?
       description: Checks which integration and playbook should be used to run the
@@ -190,24 +187,14 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "2"
       EWS:
       - "1"
       O365:
       - "5"
     separatecontext: false
     conditions:
-    - label: EWS
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.SearchAndDeleteIntegration
-            iscontext: true
-          right:
-            value:
-              simple: EWS
-          ignorecase: true
     - label: O365
       condition:
       - - operator: isEqualString
@@ -220,6 +207,68 @@ tasks:
             value:
               simple: O365
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SecurityAndCompliance
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
+    - label: EWS
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.SearchAndDeleteIntegration
+            iscontext: true
+          right:
+            value:
+              simple: EWS
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: EWS
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
     view: |-
       {
         "position": {
@@ -339,10 +388,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      append: {}
       key:
         simple: ExchangeLocation
-      stringify: {}
       value:
         simple: All
     separatecontext: false
@@ -375,10 +422,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      append: {}
       key:
         simple: ExchangeLocation
-      stringify: {}
       value:
         complex:
           root: inputs.To
@@ -399,7 +444,8 @@ system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "4_1_EWS": 0.18
+      "4_1_EWS": 0.18,
+      "4_2_#default#": 0.19
     },
     "paper": {
       "dimensions": {
@@ -501,6 +547,6 @@ inputs:
     using O365.
   playbookInputQuery:
 outputs: []
-fromversion: 5.5.0
 tests:
 - No test
+fromversion: 5.5.0
