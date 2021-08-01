@@ -1,7 +1,8 @@
 
 FortiAuthenticator provides centralized authentication services. 
 Seamless secure two-factor/OTP authentication across the organization in conjunction with FortiToken.
-- Tested FortiAuthenticator version: 4.0 - 6.3.0.
+
+This integration was integrated and tested with versions 4.0 - 6.3.0 of FortiAuthenticator.
 
 ## Enable API Access for admin user on FortiAuthenticator
 ### Steps to get the ***Access Key*** for the API authentication
