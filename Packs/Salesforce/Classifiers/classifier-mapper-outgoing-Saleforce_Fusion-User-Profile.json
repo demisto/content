@@ -1,0 +1,125 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a User Profile data to an Salesforce_Fusion user data.",
+	"id": "User Profile - Salesforce_Fusion (Outgoing)",
+	"mapping": {
+		"User Profile - Create": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Facility_Location__c": {
+					"complex": null,
+					"simple": "city"
+				},
+				"country": {
+					"complex": null,
+					"simple": "country"
+				},
+				"name": {
+					"complex": null,
+					"simple": "displayname"
+				},
+				"Work_Email__c": {
+					"complex": null,
+					"simple": "email"
+				},
+				"FF__First_Name__c": {
+					"complex": null,
+					"simple": "firstname"
+				},
+				"FF__Last_Name__c": {
+					"complex": null,
+					"simple": "lastname"
+				},
+				"FF__Mobile_Phone__c": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"State": {
+					"complex": null,
+					"simple": "state"
+				},
+				"street": {
+					"complex": null,
+					"simple": "streetaddress"
+				},
+				"FF__Title__c": {
+					"complex": null,
+					"simple": "title"
+				},
+				"userName": {
+					"complex": null,
+					"simple": "username"
+				},
+				"Work_Mobile_SMS__c": {
+					"complex": null,
+					"simple": "workphone"
+				},
+				"zip": {
+					"complex": null,
+					"simple": "zipcode"
+				}
+			}
+		},
+		"User Profile - Update": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Facility_Location__c": {
+					"complex": null,
+					"simple": "city"
+				},
+				"country": {
+					"complex": null,
+					"simple": "country"
+				},
+				"name": {
+					"complex": null,
+					"simple": "displayname"
+				},
+				"Work_Email__c": {
+					"complex": null,
+					"simple": "email"
+				},
+				"FF__First_Name__c": {
+					"complex": null,
+					"simple": "firstname"
+				},
+				"FF__Last_Name__c": {
+					"complex": null,
+					"simple": "lastname"
+				},
+				"FF__Mobile_Phone__c": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"State": {
+					"complex": null,
+					"simple": "state"
+				},
+				"street": {
+					"complex": null,
+					"simple": "streetaddress"
+				},
+				"FF__Title__c": {
+					"complex": null,
+					"simple": "title"
+				},
+				"userName": {
+					"complex": null,
+					"simple": "username"
+				},
+				"Work_Mobile_SMS__c": {
+					"complex": null,
+					"simple": "workphone"
+				},
+				"zip": {
+					"complex": null,
+					"simple": "zipcode"
+				}
+			}
+		}
+	},
+	"name": "User Profile - Salesforce_Fusion (outgoing)",
+	"type": "mapping-outgoing",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

@@ -157,7 +157,7 @@ class Client(BaseClient):
 
         uri = URI_PREFIX + f'sobjects/FF__Key_Contact__c/{user_id}'
 
-        res = self.http_request(
+        res = self._http_request(
             method='DELETE',
             url_suffix=uri
         )
@@ -245,8 +245,8 @@ def get_error_details(res: Dict[str, Any]) -> str:
     :return: The parsed error details.
     :rtype: ``str``
     """
-    message = res.get('error', {}).get('message')   # TODO: make sure you parse the error details correctly
-    details = res.get('error', {}).get('detail')
+    message = res.get('message')
+    details = res
     return f'{message}: {details}'
 
 

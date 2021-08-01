@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: Salesforce IAM
+  id: Salesforce Fusion IAM
   version: -1
 configuration:
 - display: Base URL
@@ -55,8 +55,8 @@ configuration:
   required: true
   type: 0
 description: An Identity and Access Management integration template.
-display: Salesforce IAM
-name: Salesforce IAM
+display: Salesforce Fusion IAM
+name: Salesforce Fusion IAM
 script:
   commands:
   - arguments:
