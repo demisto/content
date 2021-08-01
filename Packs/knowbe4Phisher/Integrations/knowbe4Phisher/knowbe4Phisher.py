@@ -7,7 +7,6 @@ import urllib3
 import dateparser
 import traceback
 import pytz
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -15,6 +14,295 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+
+ALL_EVENTS_PAYLOAD = """query {{
+  phisherMessages(all: false, page: 1, per: {}, query: ) {{
+    nodes {{
+      actionStatus
+      attachments(status: UNKNOWN) {{
+        actualContentType
+        filename
+        md5
+        reportedContentType
+        s3Key
+        sha1
+        sha256
+        size
+        ssdeep
+        virustotal {{
+          permalink
+          positives
+          scanned
+          sha256
+        }}
+      }}
+      category
+      comments {{
+        body
+        createdAt
+      }}
+      events {{
+        causer
+        createdAt
+        eventType
+        events {{
+          ...on PhisherEventEmails {{
+            emails {{
+              actionEmailId
+              email
+              status
+              to
+            }}
+          }}
+          ...on PhisherEventFieldChanges {{
+            changes {{
+              from
+              name
+              to
+            }}
+          }}
+          ...on PhisherEventPhishFlipTemplateStatus {{
+            kmsatTemplate
+          }}
+          ...on PhisherEventPhishML {{
+            clean
+            spam
+            threat
+          }}
+          ...on PhisherEventPhishRipCompleted {{
+            end
+            quarantine
+            read
+            results
+            start
+            users
+          }}
+          ...on PhisherEventPhishRipStarted {{
+            end
+            quarantine
+            start
+          }}
+          ...on PhisherEventReplayComplete {{
+            complete
+          }}
+          ...on PhisherEventReplayTriggered {{
+            runActions
+          }}
+          ...on PhisherEventSyslog {{
+            name
+          }}
+          ...on PhisherEventTag {{
+            added
+            removed
+          }}
+          ...on PhisherEventVirusTotalResult {{
+            identifier
+            permalink
+            positives
+            scanDate
+            scanned
+            type
+          }}
+          ...on PhisherEventVirusTotalRun {{
+            identifierNonNull: identifier
+            type
+          }}
+          ...on PhisherEventWebhook {{
+            name
+          }}
+        }}
+        id
+        triggerer
+      }}
+      from
+      id
+      links(status: UNKNOWN) {{
+        dispositions
+        firstSeen
+        id
+        lastSeen
+        scheme
+        target
+        url
+        virustotal {{
+          permalink
+          positives
+          scanned
+          sha256
+        }}
+      }}
+      phishmlReport {{
+        confidenceClean
+        confidenceSpam
+        confidenceThreat
+      }}
+      pipelineStatus
+      rawUrl
+      reportedBy
+      rules {{
+        createdAt
+        description
+        id
+        matchedCount
+        name
+        tags
+      }}
+      severity
+      subject
+      tags {{
+        name
+        type
+      }}
+    }}
+    pagination {{
+      page
+      pages
+      per
+      totalCount
+    }}
+  }}
+}}"""
+
+CREATE_COMMENT_PAYLOAD = """mutation {{
+  phisherCommentCreate(comment: \\"{}\\", id: \\"{}\\") {{
+    errors {{
+      field
+      placeholders
+      reason
+    }}
+    node {{
+      body
+      createdAt
+    }}
+  }}
+}}"""
+
+UPDATE_STATUS_PAYLOAD = """mutation {{
+  phisherMessageUpdate(id: \\"{}\\", payload: {}) {{
+    errors {{
+      field
+      placeholders
+      reason
+    }}
+  }}  
+}}
+"""
+
+CREATE_TAGS_PAYLOAD = """mutation {{
+  phisherTagsCreate(id: \\"{}\\", tags: [{}]) {{
+    errors {{
+      field
+      placeholders
+      reason
+    }}
+  }}
+}}
+"""
+
+DELETE_TAGS_PAYLOAD = """mutation {{
+   phisherTagsDelete(id: \\"{}\\", tags: [{}]) {{
+    errors {{
+      field
+      placeholders
+      reason
+    }}
+  }}
+}}
+"""
+
+NUMBER_OF_MESSAGES = """query {
+  phisherMessages(all: false, page: 1, per: 25, query: ) {
+    pagination {
+      page
+      pages
+      per
+      totalCount
+    }
+  }
+}
+"""
+
+FETCH_WITHOUT_EVENTS = """query {{
+  phisherMessages(all: false, page: 1, per: {}, query: ) {{
+    nodes {{
+      actionStatus
+      attachments(status: UNKNOWN) {{
+        actualContentType
+        filename
+        md5
+        reportedContentType
+        s3Key
+        sha1
+        sha256
+        size
+        ssdeep
+        virustotal {{
+          permalink
+          positives
+          scanned
+          sha256
+        }}
+      }}
+      category
+      comments {{
+        body
+        createdAt
+      }}
+      events {{
+        causer
+        createdAt
+        eventType
+        id
+        triggerer
+      }}
+      from
+      id
+      links(status: UNKNOWN) {{
+        dispositions
+        firstSeen
+        id
+        lastSeen
+        scheme
+        target
+        url
+        virustotal {{
+          permalink
+          positives
+          scanned
+          sha256
+        }}
+      }}
+      phishmlReport {{
+        confidenceClean
+        confidenceSpam
+        confidenceThreat
+      }}
+      pipelineStatus
+      rawUrl
+      reportedBy
+      rules {{
+        createdAt
+        description
+        id
+        matchedCount
+        name
+        tags
+      }}
+      severity
+      subject
+      tags {{
+        name
+        type
+      }}
+    }}
+    pagination {{
+      page
+      pages
+      per
+      totalCount
+    }}
+  }}
+}}"""
 
 ''' CLIENT CLASS '''
 
@@ -29,55 +317,43 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def phisher_message_list_request(self, limit: str, query: str):
-        payload = "{\"query\":\"query {\\n  phisherMessages(all: false, page: 1, per: " + limit + ", query: " + query + ") {\\n    nodes {\\n      actionStatus\\n      attachments(status: UNKNOWN) {\\n        actualContentType\\n        filename\\n        md5\\n        reportedContentType\\n        s3Key\\n        sha1\\n        sha256\\n        size\\n        ssdeep\\n        virustotal {\\n          permalink\\n          positives\\n          scanned\\n          sha256\\n        }\\n      }\\n      category\\n      comments {\\n        body\\n        createdAt\\n      }\\n      events {\\n        causer\\n        createdAt\\n        eventType\\n        id\\n        triggerer\\n      }\\n      from\\n      id\\n      links(status: UNKNOWN) {\\n        dispositions\\n        firstSeen\\n        id\\n        lastSeen\\n        scheme\\n        target\\n        url\\n        virustotal {\\n          permalink\\n          positives\\n          scanned\\n          sha256\\n        }\\n      }\\n      phishmlReport {\\n        confidenceClean\\n        confidenceSpam\\n        confidenceThreat\\n      }\\n      pipelineStatus\\n      rawUrl\\n      reportedBy\\n      rules {\\n        createdAt\\n        description\\n        id\\n        matchedCount\\n        name\\n        tags\\n      }\\n      severity\\n      subject\\n      tags {\\n        name\\n        type\\n      }\\n    }\\n    pagination {\\n      page\\n      pages\\n      per\\n      totalCount\\n    }\\n  }\\n}\\n\",\"variables\":{}}"
+    def phisher_message_list_request(self, payload: str):
         return self._http_request(
             method='POST',
             data=payload
         )
 
-    def phisher_get_number_of_messages_requst(self, query: str):
-        payload = "{\"query\":\"query {\\n  phisherMessages(all: false, page: 1, per: 25, query:" + query + \
-                  ") {\\n    pagination {\\n      page\\n      pages\\n      per\\n      totalCount\\n    }\\n  }\\n}\\n\",\"variables\":{}}"
+    def phisher_get_number_of_messages_request(self, payload: str):
         return self._http_request(
             method='POST',
             data=payload
         )
 
-    def phisher_message_list_all_events_requst(self, limit: str, query: str):
-        payload = "{\"query\":\"query {\\n  phisherMessages(all: false, page: 1, per: " + limit + ", query: " + query + ") {\\n    nodes {\\n      actionStatus\\n      attachments(status: UNKNOWN) {\\n        actualContentType\\n        filename\\n        md5\\n        reportedContentType\\n        s3Key\\n        sha1\\n        sha256\\n        size\\n        ssdeep\\n        virustotal {\\n          permalink\\n          positives\\n          scanned\\n          sha256\\n        }\\n      }\\n      category\\n      comments {\\n        body\\n        createdAt\\n      }\\n      events {\\n        causer\\n        createdAt\\n        eventType\\n        events {\\n          ...on PhisherEventEmails {\\n            emails {\\n              actionEmailId\\n              email\\n              status\\n              to\\n            }\\n          }\\n          ...on PhisherEventFieldChanges {\\n            changes {\\n              from\\n              name\\n              to\\n            }\\n          }\\n          ...on PhisherEventPhishFlipTemplateStatus {\\n            kmsatTemplate\\n          }\\n          ...on PhisherEventPhishML {\\n            clean\\n            spam\\n            threat\\n          }\\n          ...on PhisherEventPhishRipCompleted {\\n            end\\n            quarantine\\n            read\\n            results\\n            start\\n            users\\n          }\\n          ...on PhisherEventPhishRipStarted {\\n            end\\n            quarantine\\n            start\\n          }\\n          ...on PhisherEventReplayComplete {\\n            complete\\n          }\\n          ...on PhisherEventReplayTriggered {\\n            runActions\\n          }\\n          ...on PhisherEventSyslog {\\n            name\\n          }\\n          ...on PhisherEventTag {\\n            added\\n            removed\\n          }\\n          ...on PhisherEventVirusTotalResult {\\n            identifier\\n            permalink\\n            positives\\n            scanDate\\n            scanned\\n            type\\n          }\\n          ...on PhisherEventVirusTotalRun {\\n            identifierNonNull: identifier\\n            type\\n          }\\n          ...on PhisherEventWebhook {\\n            name\\n          }\\n        }\\n        id\\n        triggerer\\n      }\\n      from\\n      id\\n      links(status: UNKNOWN) {\\n        dispositions\\n        firstSeen\\n        id\\n        lastSeen\\n        scheme\\n        target\\n        url\\n        virustotal {\\n          permalink\\n          positives\\n          scanned\\n          sha256\\n        }\\n      }\\n      phishmlReport {\\n        confidenceClean\\n        confidenceSpam\\n        confidenceThreat\\n      }\\n      pipelineStatus\\n      rawUrl\\n      reportedBy\\n      rules {\\n        createdAt\\n        description\\n        id\\n        matchedCount\\n        name\\n        tags\\n      }\\n      severity\\n      subject\\n      tags {\\n        name\\n        type\\n      }\\n    }\\n    pagination {\\n      page\\n      pages\\n      per\\n      totalCount\\n    }\\n  }\\n}\\n\",\"variables\":{}}"
+    def phisher_message_list_all_events_request(self, payload: str):
         return self._http_request(
             method='POST',
             data=payload
         )
 
-    def phisher_create_comment_request(self, id: str, comment: str):
-        payload = "{\"query\":\"mutation {\\n  phisherCommentCreate(comment: \\\"" + comment + "\\\", id: \\\"" + id + \
-                  "\\\") {\\n    errors {\\n      field\\n      placeholders\\n      reason\\n    }\\n    node {\\n      body\\n      createdAt\\n    }\\n  }\\n}\\n\",\"variables\":{}}"
+    def phisher_create_comment_request(self, payload: str):
         return self._http_request(
             method='POST',
             data=payload
         )
 
-    def phisher_update_message_status_request(self, id: str, attributes: str):
-        payload = "{\"query\":\"mutation {\\n  phisherMessageUpdate(id: \\\"" + id + "\\\", payload: " + attributes + \
-                  ") {\\n    errors {\\n      field\\n      placeholders\\n      reason\\n    }\\n  }  \\n}\\n\",\"variables\":{}}"
+    def phisher_update_message_status_request(self, payload: str):
         return self._http_request(
             method='POST',
             data=payload
         )
 
-    def phisher_create_tags_request(self, id: str, tags: str):
-        payload = "{\"query\":\"mutation {\\n  phisherTagsCreate(id: \\\"" + id + "\\\", tags: [" + tags + \
-                  "]) {\\n    errors {\\n      field\\n      placeholders\\n      reason\\n    }\\n  }\\n}\\n\",\"variables\":{}}"
+    def phisher_create_tags_request(self, payload: str):
         return self._http_request(
             method='POST',
             data=payload
         )
 
-    def phisher_delete_tags_request(self, id: str, tags: str):
-        payload = "{\"query\":\"mutation {\\n  phisherTagsDelete(id: \\\"" + id + "\\\", tags: [" + tags + \
-                  "]) {\\n    errors {\\n      field\\n      placeholders\\n      reason\\n    }\\n  }\\n}\\n\",\"variables\":{}}"
+    def phisher_delete_tags_request(self, payload: str):
         return self._http_request(
             method='POST',
             data=payload
@@ -86,60 +362,153 @@ class Client(BaseClient):
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+def create_request(st: str):
+    """ Function that creates a valid request to use in http_request.
+
+    argument: a multiline string with a request in a human readable format
+
+    return: a final string that is formatted to suit the http_request function
+    """
+    format_desc = st.splitlines()
+    final = ""
+    for i in format_desc:
+        final = final + i + '\\n'
+    final = final[:-2]
+    return final
+
+
+def create_gql_query(payload: str, query: str):
+    """
+    for gql query - the query argument inside the request should be with double quotes.
+    this function is inserting the query parameter to the request body and adds the needed parameters,
+    for gql query - wrapping the query in a dictionary representation
+
+    arguments: payload, the body part of a request. query, the query parameter from phisherMessages arguments
+
+    output: a string with dict representation of gql query.
+    """
+    st = "query:"
+    j = len(st)
+    i = payload.find(st)
+    temp = payload[:i + j] + query + payload[i + j:]
+    return "{\"query\": \"" + temp + "\",\"variables\": {}}"
+
+
+def get_last_fetch_time(last_run: dict, first_fetch_time: str):
+    """
+    this helper function will get the demisto.getLastRun() and first_fetch_time parameter
+    and will return:
+    last_time - timestamp of last message fetched
+    query - the query parameter with the timestamp to match the Phisher filter
+    """
+    # Get the last fetch time, if exists
+    utc = pytz.UTC
+    last_fetch = last_run.get('last_fetch')
+    # Handle first time fetch
+    if last_fetch is None:
+        last_fetch = dateparser.parse(first_fetch_time)
+        time_param = last_fetch.strftime(DATE_FORMAT)
+        query = "\\\" reported_at:[" + time_param + " TO *]\\\""
+    else:
+        last_fetch = dateparser.parse(last_fetch)
+        time_param = last_fetch.strftime(DATE_FORMAT)
+        query = "\\\" reported_at:[" + time_param + " TO *]\\\""
+    last_time = last_fetch.replace(tzinfo=utc)
+    return last_time, query
+
+
+def calculate_number_of_events(client: Client, query: str):
+    """
+    function gets the formatted query with the relevant timestamp
+    and returns number of events to fetch
+    """
+    # get number of new events
+    payload = create_gql_query(NUMBER_OF_MESSAGES, query)
+    req = create_request(payload)
+    limit_req = client.phisher_get_number_of_messages_request(req)
+    return str(limit_req.get('data', {}).get('phisherMessages', {}).get('pagination', {}).get('totalCount'))
+
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
+def test_module(client: Client, params: dict) -> str:
+    """Tests API connectivity, authentication and parameters for fetch incidents
 
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
 
-    :type client: ``Client``
-    :param Client: client to use
+    param Client: client to use
 
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    return: 'ok' if test passed, specific error if with a suggestion of how to fix.
     """
-    return_all = "false"
-    page = "1"
-    per_page = "25"
-    query = "\\\"\\\""
-    message: str = ''
+    first_fetch_time = params.get('first_fetch')
     try:
-        client.phisher_get_all_messages_request(return_all, page, per_page, query)
-        message = 'ok'
-    except DemistoException as e:
-        if 'Unauthorized' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
+        fetch_limit = int(params.get('max_fetch'))
+    except ValueError:
+        return 'Fetch Limit should be set as an integer'
+
+    try:
+        _, incidents = fetch_incidents(
+            client=client,
+            last_run=demisto.getLastRun(),
+            first_fetch_time=first_fetch_time,
+            max_fetch=fetch_limit)
+
+        if incidents:
+            return 'ok'
+    except Exception as e:
+        if 'Unauthorized' in str(e):
+            return 'Authorization Error: make sure API Key was set correctly'
+        elif 'NoneType' in str(e):
+            return 'Check the format of First Fetch Time'
+        elif 'Failed to parse json' in str(e):
+            return 'Please check the specified URL'
         else:
-            message = 'Please check the specified URL'
-    return message
+            return 'Unknown error, please check your configuration'
 
 
-def phisher_message_list_command(client: Client) -> CommandResults:
-    args = demisto.args()
+def phisher_message_list_command(client: Client, args: dict) -> CommandResults:
+    """
+    this function implements the message-list-command.
+    arguments of command:
+    limit - maximum number of messages to retrieve. default - 200
+    query - a lucene query for entered by a user to filter results. default - empty
+    message_id - id of specific message to retrieve, once it's entered the query parameter is ignored.
+    all_events - if set to false message will be retrieved without associated events. on true all events will be
+    retrieved to the XSOAR context. default is false.
+
+    arguments of function:
+    client and arguments
+
+    return: all relevant messages returned in the commandResults structure to war room and context of XSOAR
+
+    """
+    # get parameters
     limit = args.get('limit')
-    # limit = '200'
     query = args.get('query')
     message_id = args.get('id')
     all_events = args.get('include_events')
-    # all_events = False
+    # handle query
     if not query:
         query = "\\\"\\\""
     else:
         query = "\\\"" + args.get('query') + "\\\""
-
+    # handle in case ID is given
     if message_id:
         query = "\\\"id:" + message_id + "\\\""
-
+    # create request body
     query = query.lower()
-    result = client.phisher_message_list_all_events_requst(limit, query)
+    payload_init = ALL_EVENTS_PAYLOAD.format(limit)
+    payload = create_gql_query(payload_init, query)
+    req = create_request(payload)
+    # call the API
+    result = client.phisher_message_list_all_events_request(req)
     messages = result.get('data', {}).get('phisherMessages', {}).get('nodes', [])
     readable = []
+    # creata data for XSOAR
     for item in messages:
         # find creation time and create a key with this value
         events = item.get('events', {})
@@ -167,10 +536,30 @@ def phisher_message_list_command(client: Client) -> CommandResults:
     return res
 
 
-def phisher_create_comment_command(client: Client) -> str:
-    id = demisto.args().get('id')
-    comment = demisto.args().get('comment')
-    result = client.phisher_create_comment_request(id, comment)
+def phisher_create_comment_command(client: Client, args: dict) -> str:
+    """
+    this function implements the create-comment command
+    command used in XSOAR to create a comment for a specific gived ID of a message.
+    arguments of command:
+    id - message id, required.
+    comment - comment to be added, required.
+
+    arguments of function:
+    client - Base client
+    args - dict with command arguments
+
+    output - indication to war room if the operation was successful or not
+
+    """
+    id = args.get('id')
+    comment = args.get('comment')
+
+    # create the request body
+    payload = CREATE_COMMENT_PAYLOAD.format(comment, id)
+    final = "{\"query\": \"" + payload + "\",\"variables\": {}}"
+    final_req = create_request(final)
+    # call request
+    result = client.phisher_create_comment_request(final_req)
     res = result.get('data', {}).get('phisherCommentCreate', {}).get('errors', "")
 
     if not res:
@@ -179,11 +568,30 @@ def phisher_create_comment_command(client: Client) -> str:
         return "The comment wasn't added - Verify ID is correct"
 
 
-def phisher_update_message_status_command(client: Client) -> str:
-    id = demisto.args().get('id')
-    category = demisto.args().get('category')
-    status = demisto.args().get('status')
-    severity = demisto.args().get('severity')
+def phisher_update_message_status_command(client: Client, args: dict) -> str:
+    """
+    this function implements the update-message-status command
+    this function will receive the veluas to be updated and ID of a specific message and will update
+    the status of this message
+
+    command arguments:
+    id - message id, required.
+    category - category of message, possible values: Unknown, Clean, Spam, Threat
+    severity - severity of message, possible values: Unknown, Low, Medium, High, Critical
+    status - status of message, possible values: Received, In_Review, Resolved
+
+    function arguments:
+    client and command arguments.
+
+    function returns indication if the update was successful.
+    at least one of the arguments should be given in order for the function to work.
+    """
+    # get arguments
+    id = args.get('id')
+    category = args.get('category')
+    status = args.get('status')
+    severity = args.get('severity')
+    # create the attributes dict for arguments to update
     attributes = {}
     if category:
         attributes["category"] = category
@@ -196,7 +604,12 @@ def phisher_update_message_status_command(client: Client) -> str:
     attr_str = json.dumps(attributes)
     attr_str = attr_str.replace('\"', '')
     attr_str = attr_str.replace(' ', '')
-    result = client.phisher_update_message_status_request(id, attr_str)
+    # create the request body
+    payload = UPDATE_STATUS_PAYLOAD.format(id, attr_str)
+    final = "{\"query\":\"" + payload + "\",\"variables\": {}}"
+    final_req = create_request(final)
+    # call request
+    result = client.phisher_update_message_status_request(final_req)
     res = result.get('data', {}).get('phisherCommentCreate', {}).get('errors', "")
 
     if not res:
@@ -205,9 +618,23 @@ def phisher_update_message_status_command(client: Client) -> str:
         return "The message wasn't updated - check if ID is correct and the parameters are without syntax errors"
 
 
-def phisher_create_tags_command(client: Client) -> str:
-    id = demisto.args().get('id')
-    tags = demisto.args().get('tags')
+def phisher_create_tags_command(client: Client, args: dict) -> str:
+    """
+    this function implements the create-tags-command
+    adding the specified tags to the given message ID
+
+    command arguments:
+    id - message ID, required.
+    tags - message tags, required. should be given in double quotes seperated by comma
+
+    function arguments:
+    client and arguments
+
+    function returns and indication if the tag was added successfully or not.
+    """
+    # get arguments
+    id = args.get('id')
+    tags = args.get('tags')
     # create the format for tags that expected by Phisher
     arg_tags = argToList(tags)
     parsed_tags = ""
@@ -216,8 +643,12 @@ def phisher_create_tags_command(client: Client) -> str:
             parsed_tags = "\\\"" + tag + "\\\""
         else:
             parsed_tags = parsed_tags + ", \\\"" + tag + "\\\""
-
-    result = client.phisher_create_tags_request(id, parsed_tags)
+    # create the request body
+    payload = CREATE_TAGS_PAYLOAD.format(id, parsed_tags)
+    final = "{\"query\":\"" + payload + "\",\"variables\": {}}"
+    final_req = create_request(final)
+    # call request
+    result = client.phisher_create_tags_request(final_req)
     res = result.get('data', {}).get('phisherTagsCreate', {}).get('errors', "")
 
     if not res:
@@ -226,9 +657,26 @@ def phisher_create_tags_command(client: Client) -> str:
         return "The tags weren't added - check the ID"
 
 
-def phisher_delete_tags_command(client: Client) -> str:
-    id = demisto.args().get('id')
-    tags = demisto.args().get('tags')
+def phisher_delete_tags_command(client: Client, args: dict) -> str:
+    """
+    this function implements the delete-tags-command
+    deleting the specified tags to the given message ID
+
+    command arguments:
+    id - message ID, required.
+    tags - message tags, required. should be given in double quotes seperated by comma
+
+    function arguments:
+    client and arguments
+
+    function returns and indication if the tag was added successfully or not.
+    the indication is only checking if the provided ID exist in the system.
+    the API gives same response if user tries to delete an existing or not existing tags
+    so there is no way to differentiate between deleting existing tag or not existing tag.
+    """
+    # get arguments
+    id = args.get('id')
+    tags = args.get('tags')
     # create the format for tags that expected by Phisher
     arg_tags = argToList(tags)
     parsed_tags = ""
@@ -237,7 +685,11 @@ def phisher_delete_tags_command(client: Client) -> str:
             parsed_tags = "\\\"" + tag + "\\\""
         else:
             parsed_tags = parsed_tags + ", \\\"" + tag + "\\\""
-    result = client.phisher_delete_tags_request(id, parsed_tags)
+    # create the request body
+    payload = DELETE_TAGS_PAYLOAD.format(id, parsed_tags)
+    final = "{\"query\":\"" + payload + "\",\"variables\": {}}"
+    final_req = create_request(final)
+    result = client.phisher_delete_tags_request(final_req)
     res = result.get('data', {}).get('phisherTagsCreate', {}).get('errors', "")
 
     if not res:
@@ -246,28 +698,27 @@ def phisher_delete_tags_command(client: Client) -> str:
         return "The tags weren't deleted - check the ID"
 
 
-def fetch_incidents(client: Client, last_run, first_fetch_time):
-    # Get the last fetch time, if exists
-    utc = pytz.UTC
-    last_fetch = last_run.get('last_fetch')
-    # Handle first time fetch
-    if last_fetch is None:
-        last_fetch = dateparser.parse(first_fetch_time)
-        time_param = last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ')
-        query = "\\\" reported_at:[" + time_param + " TO *]\\\""
-    else:
-        last_fetch = dateparser.parse(last_fetch)
-        time_param = last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ')
-        query = "\\\" reported_at:[" + time_param + " TO *]\\\""
+def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_fetch: int):
+    """
+    fetch_incidents is being called from the fetch_incidents_command function.
+    it checks the last message fetch, checking number of new events, and getting all messages
+    going through all messages to and saving them to incidents list.
 
-    last_time = last_fetch.replace(tzinfo=utc)
+    returning incidents list and the time the las message was retrieved - so that next run will
+    automatically continue from the same place.
+    """
+    last_time, query = get_last_fetch_time(last_run, first_fetch_time)
+    limit = calculate_number_of_events(client, query)
     incidents = []
-    # get number of new events
-    limit_req = client.phisher_get_number_of_messages_requst(query)
-    limit = str(limit_req.get('data', {}).get('phisherMessages', {}).get('pagination', {}).get('totalCount'))
-
-    messages = client.phisher_message_list_request(limit, query)
+    # create request
+    payload_init = FETCH_WITHOUT_EVENTS.format(limit)
+    payload = create_gql_query(payload_init, query)
+    req = create_request(payload)
+    # get all messages
+    messages = client.phisher_message_list_request(req)
     items = messages.get('data', {}).get('phisherMessages', {}).get('nodes', [])
+    # check if they need to be fetched
+    message_index = 0
     for item in reversed(items):
         events = item.get('events', {})
         for event in events:
@@ -275,11 +726,11 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
                 creation_time = (event['createdAt'])
                 break
         incident_created_time = dateparser.parse(creation_time)
-        item["created at"] = incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+        item["created at"] = incident_created_time.strftime(DATE_FORMAT)
         item.pop("events")
         incident = {
             'name': item['subject'],
-            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'occurred': incident_created_time.strftime(DATE_FORMAT),
             'rawJSON': json.dumps(item)
         }
 
@@ -287,21 +738,38 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
         if incident_created_time > last_time:
             last_time = incident_created_time
             incidents.append(incident)
+        message_index += 1
+        if message_index == max_fetch:
+            break
 
     next_run = {'last_fetch': last_time.strftime('%Y-%m-%dT%H:%M:%SZ')}
     return next_run, incidents
 
 
+def fetch_incidents_command(client: Client, params: dict):
+    """
+    calling the fetch incidents and writing all incidents to demisto.incidents.
+    """
+    first_fetch_time = params.get('first_fetch')
+    fetch_limit = int(params.get('max_fetch'))
+    next_run, incidents = fetch_incidents(
+        client=client,
+        last_run=demisto.getLastRun(),
+        first_fetch_time=first_fetch_time,
+        max_fetch=fetch_limit)
+    demisto.setLastRun(next_run)
+    demisto.incidents(incidents)
+
+
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
-    command = demisto.command()
+def main(params: dict, args: dict, command: str) -> None:
     # get the service API url
-    url = demisto.params().get('url', 'https://eu.knowbe4.com/graphql')
-    key = demisto.params().get('apikey', {}).get('password')
-    first_fetch_time = demisto.params().get('first_fetch')
-    insecure = not demisto.params().get('insecure', False)
+    url = params.get('url')
+    key = params.get('apikey', {}).get('password')
+    insecure = not params.get('insecure', False)
+
     headers = {
         'Authorization': 'Bearer ' + key,
         'Content-Type': 'application/json'
@@ -309,7 +777,6 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {command}')
     try:
-
         client = Client(
             base_url=url,
             verify=insecure,
@@ -317,24 +784,19 @@ def main() -> None:
         )
 
         if command == 'test-module':
-            return_results(test_module(client))
+            return_results(test_module(client, params))
         elif command == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(
-                client=client,
-                last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time)
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
+            fetch_incidents_command(client, params)
         elif command == 'phisher-message-list':
-            return_results(phisher_message_list_command(client))
+            return_results(phisher_message_list_command(client, args))
         elif command == 'phisher-create-comment':
-            return_results(phisher_create_comment_command(client))
+            return_results(phisher_create_comment_command(client, args))
         elif command == 'phisher-update-message-status':
-            return_results(phisher_update_message_status_command(client))
+            return_results(phisher_update_message_status_command(client, args))
         elif command == 'phisher-create-tags':
-            return_results(phisher_create_tags_command(client))
+            return_results(phisher_create_tags_command(client, args))
         elif command == 'phisher-delete-tags':
-            return_results(phisher_delete_tags_command(client))
+            return_results(phisher_delete_tags_command(client, args))
 
     # Log exceptions and return errors
     except Exception as e:
@@ -345,4 +807,4 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main()
+    main(demisto.params(), demisto.args(), demisto.command())

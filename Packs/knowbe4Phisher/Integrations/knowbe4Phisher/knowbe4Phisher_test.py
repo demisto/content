@@ -1,33 +1,21 @@
-
-
+from CommonServerPython import *
 import json
 import io
 import knowbe4Phisher as ph
+import pytest
 
+client = ph.Client(base_url='dummy_url', verify=False, headers='some header')
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
+fetch_parameters = [
+    ({'first_fetch':'7 days','max_fetch':'50'})
+    #({'first_fetch':'3 days','max_fetch':'10'})
+]
 
+@pytest.mark.parametrize("test_input,expected", [("3+5", 8), ("2+4", 6), ("6*9", 54)])
+def test_eval(test_input, expected):
+    assert eval(test_input) == expected
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
-
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
-
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
-
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+@pytest.mark.parametrize("params", fetch_parameters)
+def test(params):
+    assert params['first_fetch'] == '7 days'
+    assert params['max_fetch'] == '50'

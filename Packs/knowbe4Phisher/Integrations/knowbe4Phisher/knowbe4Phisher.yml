@@ -32,10 +32,12 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-- display: Incident type
-  name: incidentType
+- additionalinfo: Maximum number of alerts per fetch. Default is 50, maximum is 100.
+  defaultvalue: '50'
+  display: Fetch Limit
+  name: max_fetch
   required: false
-  type: 13
+  type: 0
 description: KnowBE4 PhishER integration allows to pull events from PhishER system
   and do mutations
 display: PhishER
