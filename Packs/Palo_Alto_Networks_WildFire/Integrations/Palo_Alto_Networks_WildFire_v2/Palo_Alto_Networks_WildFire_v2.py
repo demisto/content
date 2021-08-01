@@ -500,7 +500,7 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
                 command=cmd,
                 next_run_in_seconds=interval_in_secs,
                 args=polling_args,
-                timeout_in_seconds=6000)
+                timeout_in_seconds=600)
             command_results.scheduled_command = scheduled_command
             command_results_list.append(command_results)
         return command_results_list
