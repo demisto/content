@@ -19,7 +19,7 @@ from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime, timedelta
 from zipfile import ZipFile, ZIP_DEFLATED
-from typing import Tuple, Any, Union
+from typing import Tuple, Any, Union, Dict, List
 
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PackTags, PackIgnored, Changelog
@@ -106,6 +106,7 @@ class Pack(object):
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # a flag that specifies if pack is missing dependencies
 
+        self.breaking_changes_versions: List[LooseVersion] = []
     @property
     def name(self):
         """ str: pack root folder name.
@@ -1334,6 +1335,8 @@ class Pack(object):
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
                         release_notes_dir, new_release_notes_versions, changelog, rn_files_names)
 
+                    self.update_changelog_with_bc(changelog)
+
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
                         logging.error(f"Version mismatch detected between current version: {self._current_version} "
@@ -1627,7 +1630,6 @@ class Pack(object):
 
         """
         task_status = False
-        user_metadata = {}
 
         try:
             user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
@@ -1647,6 +1649,8 @@ class Pack(object):
             self.display_name = user_metadata.get('name', '')
             self._user_metadata = user_metadata
             self.eula_link = user_metadata.get('eulaLink', Metadata.EULA_URL)
+            self.breaking_changes_versions = [LooseVersion(bc_version) for bc_version in
+                                              user_metadata.get('breakingChangesVersions', [])]
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -2364,6 +2368,37 @@ class Pack(object):
             os.path.basename(file_path).startswith('integration'),
             os.path.basename(file_path).endswith('.yml')
         ])
+
+    def update_changelog_with_bc(self, changelog: Dict[str, Any]) -> None:
+        """
+        Receives changelog, checks if there exists a BC version in each changelog entry (as changelog entry might be
+        zipped into few RN versions, check if at least one of the versions is BC). If such version exists, adds a
+        true value to 'breakingChanges' field.
+        Args:
+            changelog (Dict[str, Any]): Changelog data represented as a dict.
+
+        Returns:
+            (None): Modifies changelog, adds bool value to 'breakingChanges' field to every changelog entry, according
+                    to the logic described above.
+        """
+        predecessor_version: LooseVersion = LooseVersion('0.0.0')
+        for rn_version in sorted(changelog.keys(), key=LooseVersion):
+            rn_loose_version: LooseVersion = LooseVersion(rn_version)
+            changelog[rn_version]['breakingChanges'] = self.changelog_entry_contains_bc_version(predecessor_version,
+                                                                                                rn_loose_version)
+            predecessor_version = rn_loose_version
+
+    def changelog_entry_contains_bc_version(self, predecessor_version: LooseVersion, rn_version: LooseVersion) -> bool:
+        """
+        Checks whether BC version exists such that predecessor_version < BC version <= rn_version.
+        Args:
+            predecessor_version (LooseVersion): Predecessor version in numeric version order.
+            rn_version (LooseVersion): RN version of current processed changelog entry.
+
+        Returns:
+            (bool): Whether condition above exists.
+        """
+        return any(predecessor_version < bc_version <= rn_version for bc_version in self.breaking_changes_versions)
 
 
 # HELPER FUNCTIONS

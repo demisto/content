@@ -7,10 +7,10 @@ import glob
 from unittest.mock import mock_open
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
-from distutils.version import LooseVersion
+from typing import List
 from freezegun import freeze_time
 from datetime import datetime, timedelta
-
+from distutils.version import LooseVersion
 from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_valid_bool, convert_price, \
     get_updated_server_version, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
@@ -2055,3 +2055,106 @@ class TestImageClassification:
                - Validate that the answer is False
        """
         assert dummy_pack.is_author_image(file_path) is result
+
+    CHANGELOG_ENTRY_CONTAINS_BC_VERSION_INPUTS = [(LooseVersion('0.0.0'), LooseVersion('1.0.0'), [], False),
+                                                  (
+                                                      LooseVersion('0.0.0'), LooseVersion('1.0.0'),
+                                                      [LooseVersion('1.0.1')],
+                                                      False),
+                                                  (
+                                                      LooseVersion('0.0.0'), LooseVersion('1.0.0'),
+                                                      [LooseVersion('1.0.0')],
+                                                      True),
+                                                  (
+                                                      LooseVersion('2.3.1'), LooseVersion('2.4.0'),
+                                                      [LooseVersion('2.3.1')],
+                                                      False),
+                                                  (LooseVersion('2.3.1'), LooseVersion('2.4.0'),
+                                                   [LooseVersion('2.3.1'), LooseVersion('2.3.2')], True)]
+
+    @pytest.mark.parametrize('predecessor_version, rn_version, bc_versions_list, expected',
+                             CHANGELOG_ENTRY_CONTAINS_BC_VERSION_INPUTS)
+    def test_changelog_entry_contains_bc_version(self, dummy_pack, predecessor_version: LooseVersion,
+                                                 rn_version: LooseVersion, bc_versions_list: List[LooseVersion],
+                                                 expected):
+        """
+           Given:
+           - predecessor_version: Predecessor version of the changelog entry.
+           - rn_version: RN version of the current processed changelog entry
+            When:
+            - Checking whether current 'rn_version' contains a BC version.
+            Case a: Pack does not contain any BC versions.
+            Case b: Pack contains BC versions, but not between 'predecessor_version' to 'rn_version' range.
+            Case c: Pack contains BC versions, and it is the exact 'rn_version'.
+            Case d: Pack contains BC versions, and it is the exact 'predecessor_version'.
+            Case e: Pack contains BC versions, and it is the between 'predecessor_version' to 'rn_version' range.
+           Then:
+           Validate expected bool is returned.
+           Case a: Validate false is returned.
+           Case b: Validate false is returned.
+           Case c: Validate true is returned, because there is a BC version that matches the
+                   rule 'predecessor_version' < bc_version <= 'rn_version' (equals to 'rn_version').
+           Case d: Validate false is returned, because there is no BC version that matches the
+                   rule 'predecessor_version' < bc_version <= 'rn_version' (equals to 'predecessor_version' which is
+                   outside range).
+           Case e: Validate true is returned, because there is a BC version that matches the
+                   rule 'predecessor_version' < bc_version <= 'rn_version' (above 'predecessor_version',
+                   below 'rn_version').
+       """
+        dummy_pack.breaking_changes_versions = bc_versions_list
+        assert dummy_pack.changelog_entry_contains_bc_version(predecessor_version, rn_version) == expected
+
+    def test_update_changelog_with_bc(self, dummy_pack):
+        changelog = {
+            '1.12.20': {
+                'releaseNotes': 'RN of 1.12.20',
+                'displayName': '1.12.18 - 392682',
+                'released': '2021-07-05T02:00:02Z',
+                'breakingChanges': True
+            },
+            '1.12.17': {
+                'releaseNotes': 'RN of 1.12.17',
+                'displayName': '1.12.17 - 392184',
+                'released': '2021-07-02T23:15:52Z',
+                'breakingChanges': True
+            },
+            '1.12.16': {
+                'releaseNotes': 'RN of 1.12.16',
+                'displayName': '1.12.16 - 391562',
+                'released': '2021-06-30T23:32:59Z'
+            },
+            '1.12.23': {
+                'releaseNotes': 'RN of 1.12.23',
+                'displayName': '1.12.23 - 393823',
+                'released': '2021-07-06T23:27:59Z'
+            }
+        }
+        dummy_pack.breaking_changes_versions = [LooseVersion('1.12.22'), LooseVersion('1.12.20')]
+        expected_changelog = {
+            '1.12.20': {
+                'releaseNotes': 'RN of 1.12.20',
+                'displayName': '1.12.18 - 392682',
+                'released': '2021-07-05T02:00:02Z',
+                'breakingChanges': True
+            },
+            '1.12.17': {
+                'releaseNotes': 'RN of 1.12.17',
+                'displayName': '1.12.17 - 392184',
+                'released': '2021-07-02T23:15:52Z',
+                'breakingChanges': False
+            },
+            '1.12.16': {
+                'releaseNotes': 'RN of 1.12.16',
+                'displayName': '1.12.16 - 391562',
+                'released': '2021-06-30T23:32:59Z',
+                'breakingChanges': False
+            },
+            '1.12.23': {
+                'releaseNotes': 'RN of 1.12.23',
+                'displayName': '1.12.23 - 393823',
+                'released': '2021-07-06T23:27:59Z',
+                'breakingChanges': True
+            }
+        }
+        dummy_pack.update_changelog_with_bc(changelog)
+        assert changelog == expected_changelog
