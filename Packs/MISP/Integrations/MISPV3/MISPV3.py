@@ -131,13 +131,13 @@ MISP_DISTRIBUTION_TO_IDS = {
     'Inherit_event': 5
 }
 
-SIGHTING_TO_TYPE_ID = {
+SIGHTING_TYPE_NAME_TO_ID = {
     'sighting': 0,
     'false_positive': 1,
     'expiration': 2
 }
 
-SIGHTING_TYPE_TO_NAME = {
+SIGHTING_TYPE_ID_TO_NAME = {
     '0': 'sighting',
     '1': 'false_positive',
     '2': 'expiration'
@@ -892,7 +892,7 @@ def attribute_response_to_markdown_table(response: dict):
         event = attribute.get('Event', {})
         attribute_tags = [tag.get('Name') for tag in attribute.get('Tag')] if attribute.get(
             'Tag') else None
-        attribute_sightings = [SIGHTING_TYPE_TO_NAME[sighting.get('Type')] for sighting in
+        attribute_sightings = [SIGHTING_TYPE_ID_TO_NAME[sighting.get('Type')] for sighting in
                                attribute.get('Sighting')] if attribute.get('Sighting') else None
         attribute_highlights.append({
             'Attribute ID': attribute.get('ID'),
@@ -1145,7 +1145,7 @@ def add_sighting(demisto_args: dict):
     sighting_args = {
         'id': attribute_id,
         'uuid': attribute_uuid,
-        'type': SIGHTING_TO_TYPE_ID[sighting_type]
+        'type': SIGHTING_TYPE_NAME_TO_ID[sighting_type]
     }
     sigh_obj = MISPSighting()
     sigh_obj.from_dict(**sighting_args)
