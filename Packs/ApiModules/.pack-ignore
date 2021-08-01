@@ -1,5 +1,2 @@
 [file:README.md]
 ignore=RM106
-
-[file:MicrosoftApiModule.yml]
-ignore=CJ105
