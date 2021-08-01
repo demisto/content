@@ -1770,7 +1770,7 @@ def checkpoint_logout_command(base_url: str, sid: str, verify_certificate: bool)
                                   'X-chkp-sid': sid}).json().get('message')
 
 
-def test_module(base_url: str, sid: str, verify_certificate:bool) -> str:
+def test_module(base_url: str, sid: str, verify_certificate: bool) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
