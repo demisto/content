@@ -587,6 +587,7 @@ def auto_detect_indicator_type(indicator_value):
     demisto.debug('Failed to detect indicator type. Indicator value: {}'.format(indicator_value))
     return None
 
+
 def add_http_prefix_if_missing(address=''):
     """
         This function adds `http://` prefix to the proxy address in case it is missing.
@@ -600,6 +601,7 @@ def add_http_prefix_if_missing(address=''):
     if address and not (address.startswith('http://') or address.startswith('https://')):
         return 'http://' + address
     return address
+
 
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
                  insecure_param_name=None):
@@ -658,7 +660,8 @@ def skip_proxy():
         if k in os.environ:
             del os.environ[k]
 
-def ensure_proxy_has_http_pefix():
+
+def ensure_proxy_has_http_prefix():
     """
     The function checks if proxy environment vars are missing http/https prefixes, and adds http if so.
 
@@ -670,7 +673,6 @@ def ensure_proxy_has_http_pefix():
             proxy_env_var = os.getenv(k)
             if proxy_env_var:
                 os.environ[k] = add_http_prefix_if_missing(os.environ[k])
-
 
 
 def skip_cert_verification():
@@ -6842,7 +6844,7 @@ if 'requests' in sys.modules:
             self._auth = auth
             self._session = requests.Session()
             if proxy:
-                ensure_proxy_has_http_pefix()
+                ensure_proxy_has_http_prefix()
             else:
                 skip_proxy()
 
