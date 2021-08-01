@@ -1,0 +1,1794 @@
+id: Grafana-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Grafana-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1c9425e7-b59f-4590-8ee5-0f33a9e052c4
+    type: start
+    task:
+      id: 1c9425e7-b59f-4590-8ee5-0f33a9e052c4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 555226dc-6084-4c94-8380-7b3f686cbf11
+    type: regular
+    task:
+      id: 555226dc-6084-4c94-8380-7b3f686cbf11
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "15"
+      - "8"
+      - "23"
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a7899eac-df76-4b47-88ef-a9799165b74f
+    type: regular
+    task:
+      id: a7899eac-df76-4b47-88ef-a9799165b74f
+      version: -1
+      name: grafana-alerts-list
+      script: '|||grafana-alerts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: fe3d197e-122f-4d74-8a09-5f2e2e7acede
+    type: condition
+    task:
+      id: fe3d197e-122f-4d74-8a09-5f2e2e7acede
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.dashboardId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.dashboardUid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.dashboardSlug
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.panelId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.newStateDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 35afb345-7e4d-45b9-8eb9-cdf9049bef49
+    type: regular
+    task:
+      id: 35afb345-7e4d-45b9-8eb9-cdf9049bef49
+      version: -1
+      name: grafana-alert-pause
+      script: '|||grafana-alert-pause'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: Grafana.Alert
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b7c8f50b-1f24-422e-87e1-5b35ce57687d
+    type: condition
+    task:
+      id: b7c8f50b-1f24-422e-87e1-5b35ce57687d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Grafana.Alert.state
+            iscontext: true
+          right:
+            value:
+              simple: paused
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 5d0c9a3c-1ce5-4389-8198-487ec3293af3
+    type: condition
+    task:
+      id: 5d0c9a3c-1ce5-4389-8198-487ec3293af3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Grafana.Alert.state
+            iscontext: true
+          right:
+            value:
+              simple: un-paused
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: f623386f-f985-4cb9-8192-cca2e2b2f69e
+    type: regular
+    task:
+      id: f623386f-f985-4cb9-8192-cca2e2b2f69e
+      version: -1
+      name: grafana-users-search
+      script: '|||grafana-users-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f5a64fd4-9068-473e-8b07-ea02c11421a0
+    type: condition
+    task:
+      id: f5a64fd4-9068-473e-8b07-ea02c11421a0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.login
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.avatarUrl
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.lastSeenAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.lastSeenAtAge
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a331cdd8-47b3-4704-89cb-033939eab6fe
+    type: regular
+    task:
+      id: a331cdd8-47b3-4704-89cb-033939eab6fe
+      version: -1
+      name: grafana-user-teams-get
+      script: '|||grafana-user-teams-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      user_id:
+        complex:
+          root: Grafana.User
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 9a0ed754-c4de-4e67-8730-14c7f1783450
+    type: condition
+    task:
+      id: 9a0ed754-c4de-4e67-8730-14c7f1783450
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: dfd0efa0-ce2e-46a8-88ce-247aa0b4f47a
+    type: regular
+    task:
+      id: dfd0efa0-ce2e-46a8-88ce-247aa0b4f47a
+      version: -1
+      name: grafana-user-orgs-get
+      script: '|||grafana-user-orgs-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      user_id:
+        complex:
+          root: Grafana.User
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: e3bd9b35-d8e0-4ba6-828a-6e7de5a6f742
+    type: condition
+    task:
+      id: e3bd9b35-d8e0-4ba6-828a-6e7de5a6f742
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.orgs.orgId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.orgs.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.orgs.role
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 70ce60b1-0da8-493d-8ea1-6cdf2af3b5f1
+    type: regular
+    task:
+      id: 70ce60b1-0da8-493d-8ea1-6cdf2af3b5f1
+      version: -1
+      name: grafana-user-update
+      script: '|||grafana-user-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      email:
+        simple: TestUser
+      login:
+        simple: TestUser
+      name:
+        simple: TestUser
+      user_id:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: e39a661b-49ed-4d1e-857c-877d855ae450
+    type: regular
+    task:
+      id: e39a661b-49ed-4d1e-857c-877d855ae450
+      version: -1
+      name: grafana-annotation-create
+      script: '|||grafana-annotation-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      text:
+        simple: playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 129ac2e8-2d17-4aa9-875a-2b7d18a202ee
+    type: condition
+    task:
+      id: 129ac2e8-2d17-4aa9-875a-2b7d18a202ee
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Annotation.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: c8c3999e-a0b1-43f7-8f39-319481b8e84c
+    type: regular
+    task:
+      id: c8c3999e-a0b1-43f7-8f39-319481b8e84c
+      version: -1
+      name: grafana-teams-search
+      script: '|||grafana-teams-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 8d81880a-631c-452a-8d03-1cafbc743aa9
+    type: condition
+    task:
+      id: 8d81880a-631c-452a-8d03-1cafbc743aa9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Team.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Team.orgId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Team.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Team.avatarUrl
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Grafana.Team.memberCount
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: e90118f6-d9e7-44f0-8e8d-dfd6701a3b52
+    type: regular
+    task:
+      id: e90118f6-d9e7-44f0-8e8d-dfd6701a3b52
+      version: -1
+      name: grafana-team-members-list
+      script: '|||grafana-team-members-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      team_id:
+        complex:
+          root: Grafana.Team
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: edcd644f-e619-4818-87d6-e23122b00e32
+    type: condition
+    task:
+      id: edcd644f-e619-4818-87d6-e23122b00e32
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Team.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 09877304-fdce-4517-8511-d2b78ee56e20
+    type: regular
+    task:
+      id: 09877304-fdce-4517-8511-d2b78ee56e20
+      version: -1
+      name: grafana-user-add-to-team
+      script: '|||grafana-user-add-to-team'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      team_id:
+        complex:
+          root: Grafana.Team
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      user_id:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: d569c1a7-e1e1-4d0f-83c2-93f60f581cbf
+    type: regular
+    task:
+      id: d569c1a7-e1e1-4d0f-83c2-93f60f581cbf
+      version: -1
+      name: grafana-user-remove-from-team
+      script: '|||grafana-user-remove-from-team'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      team_id:
+        complex:
+          root: Grafana.Team
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      user_id:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: d73957ac-f4c3-426c-8935-1ee000576593
+    type: regular
+    task:
+      id: d73957ac-f4c3-426c-8935-1ee000576593
+      version: -1
+      name: grafana-team-add
+      script: '|||grafana-team-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      name:
+        simple: Test Playbook Team
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1452.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 12d1df24-fbc8-43ff-87dc-c5d8f3ba96eb
+    type: condition
+    task:
+      id: 12d1df24-fbc8-43ff-87dc-c5d8f3ba96eb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Team.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1452.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 6f54d50c-2f7f-4137-8772-27dd5f212e43
+    type: regular
+    task:
+      id: 6f54d50c-2f7f-4137-8772-27dd5f212e43
+      version: -1
+      name: grafana-team-delete
+      script: '|||grafana-team-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      team_id:
+        complex:
+          root: Grafana.Team
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 50b1ea7f-8342-4189-89d8-50732659ede7
+    type: regular
+    task:
+      id: 50b1ea7f-8342-4189-89d8-50732659ede7
+      version: -1
+      name: grafana-dashboards-search
+      script: '|||grafana-dashboards-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 0781f1e0-ebe5-4678-8736-2ce739624ee3
+    type: condition
+    task:
+      id: 0781f1e0-ebe5-4678-8736-2ce739624ee3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Dashboard.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Dashboard.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Dashboard.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Dashboard.uri
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Dashboard.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Dashboard.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: d8d20518-e7db-4c2a-82fd-bcf3d32f5faa
+    type: regular
+    task:
+      id: d8d20518-e7db-4c2a-82fd-bcf3d32f5faa
+      version: -1
+      name: grafana-user-get-by-id
+      script: '|||grafana-user-get-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      user_id:
+        complex:
+          root: Grafana.User
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 8a5ac7a3-a9c7-423a-8c34-b8178c62dcc5
+    type: condition
+    task:
+      id: 8a5ac7a3-a9c7-423a-8c34-b8178c62dcc5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.login
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.orgId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.updatedAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.User.avatarUrl
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 12002242-2514-4048-814b-abce1c73dee1
+    type: regular
+    task:
+      id: 12002242-2514-4048-814b-abce1c73dee1
+      version: -1
+      name: grafana-team-get-by-id
+      script: '|||grafana-team-get-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      team_id:
+        complex:
+          root: Grafana.Team
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 0778f571-14d3-406b-86cf-01436803b08d
+    type: condition
+    task:
+      id: 0778f571-14d3-406b-86cf-01436803b08d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Team.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Team.orgId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Team.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Team.avatarUrl
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Grafana.Team.memberCount
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 07f2c6fd-74ba-47a4-826e-9198a821e1a6
+    type: regular
+    task:
+      id: 07f2c6fd-74ba-47a4-826e-9198a821e1a6
+      version: -1
+      name: grafana-alert-get-by-id
+      script: '|||grafana-alert-get-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: Grafana.Alert
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 591bcde2-8ee8-4a18-88d9-220b1db9fc15
+    type: condition
+    task:
+      id: 591bcde2-8ee8-4a18-88d9-220b1db9fc15
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.orgId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.dashboardId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.panelId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.frequency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.for
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.newStateDate
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Grafana.Alert.stateChanges
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Alert.updated
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 200ea8ac-03f8-427b-8465-654f291460a7
+    type: regular
+    task:
+      id: 200ea8ac-03f8-427b-8465-654f291460a7
+      version: -1
+      name: grafana-org-list
+      script: '|||grafana-org-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 24b6b8a7-69aa-4466-8aed-fcc8a4d0d472
+    type: condition
+    task:
+      id: 24b6b8a7-69aa-4466-8aed-fcc8a4d0d472
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Organization.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Organization.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 25369fa4-898e-4436-83c9-dea400968326
+    type: regular
+    task:
+      id: 25369fa4-898e-4436-83c9-dea400968326
+      version: -1
+      name: grafana-org-get-by-name
+      script: '|||grafana-org-get-by-name'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      name:
+        complex:
+          root: Grafana.Organization
+          accessor: name
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: c9d323c9-e4f1-417c-8b5b-6217acf68240
+    type: condition
+    task:
+      id: c9d323c9-e4f1-417c-8b5b-6217acf68240
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Organization.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Organization.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: c8398550-376a-49e9-894a-1e8ca88ac7cd
+    type: regular
+    task:
+      id: c8398550-376a-49e9-894a-1e8ca88ac7cd
+      version: -1
+      name: grafana-org-get-by-id
+      script: '|||grafana-org-get-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      org_id:
+        complex:
+          root: Grafana.Organization
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: bab27e4e-fb46-4615-8ce4-95539838231f
+    type: condition
+    task:
+      id: bab27e4e-fb46-4615-8ce4-95539838231f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Organization.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Grafana.Organization.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 4cfe8dde-1bba-4aa8-8fb5-329b0a95cede
+    type: title
+    task:
+      id: 4cfe8dde-1bba-4aa8-8fb5-329b0a95cede
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 8f194ac3-092a-414a-8a2c-46f7f0d0ba44
+    type: regular
+    task:
+      id: 8f194ac3-092a-414a-8a2c-46f7f0d0ba44
+      version: -1
+      name: grafana-alert-unpause
+      description: Unpauses an alert by id.
+      script: '|||grafana-alert-unpause'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: Grafana.Alert
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2310,
+        "width": 2110,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
