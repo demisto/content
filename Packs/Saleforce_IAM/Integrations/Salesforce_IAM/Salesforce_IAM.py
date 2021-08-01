@@ -26,6 +26,31 @@ class Client(BaseClient):
         uri = URI_PREFIX + 'sobjects/User/testid'
         self._http_request(method='GET', url_suffix=uri)
 
+    def get_user_by_id(self, user_id: str) -> Optional[IAMUserAppData]:
+        """ Queries the user in the application using REST API by its ID, and returns an IAMUserAppData object
+        that holds the user_id, username, is_active and app_data attributes given in the query response.
+
+        :type user_id: ``str``
+        :param user_id: ID of the user in the application.
+
+        :return: An IAMUserAppData object if user exists, None otherwise.
+        :rtype: ``Optional[IAMUserAppData]``
+        """
+        uri = URI_PREFIX + f'sobjects/FF__Key_Contact__c/{user_id}'
+
+        res = self._http_request(
+            method='GET',
+            url_suffix=uri
+        )
+
+        if res and res.status_code == 200:
+            user_app_data = res.json()
+            username = user_app_data.get('Work_Email__c')
+            is_active = True
+
+            IAMUserAppData(user_id, username, is_active, user_app_data)
+        return None
+
     def get_user(self, email: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
@@ -36,23 +61,28 @@ class Client(BaseClient):
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        uri = URI_PREFIX + f'sobjects/Work_Email__c/{encode_string_results(user_id)}'
-        # query_params = {'email': email}              # TODO: make sure you pass the correct query parameters
+        uri = URI_PREFIX + 'parameterizedSearch/'
+        params = {
+            "q": email,
+            "sobject": "FF__Key_Contact__c",
+            "FF__Key_Contact__c.where": f"Work_Email__c='{email}'",
+            "FF__Key_Contact__c.fields": "Id, FF__First_Name__c, FF__Last_Name__c,Work_Email__c,Name"
+        }
 
         res = self._http_request(
             method='GET',
             url_suffix=uri,
-            # params=query_params
+            params=params
         )
 
-        if res and len(res.get('result', [])) == 1:  # TODO: make sure you verify a single result was retrieved
-            user_app_data = res.get('result')[0]     # TODO: get the user_id, username, is_active and user_app_data
+        if res and res.status_code == 200:
+            res_json = res.json()
+            user_app_data = res_json.get('searchRecords', [])
 
-            user_id = user_app_data.get('user_id')
-            is_active = user_app_data.get('active')
-            username = user_app_data.get('user_name')
+            if len(user_app_data) > 0:
+                user_id = user_app_data[0].get('Id')
+                return self.get_user_by_id(user_id)
 
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
         return None
 
     def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
@@ -70,12 +100,13 @@ class Client(BaseClient):
             url_suffix=uri,
             json_data=user_data
         )
-        user_app_data = res.get('result')           # TODO: get the user_id, username, is_active and user_app_data
-        user_id = user_app_data.get('user_id')
-        is_active = user_app_data.get('active')
-        username = user_app_data.get('user_name')
+        if res and res.status_code == 200:
+            user_app_data = res.json()
+            user_id = user_app_data.get('id')
+            username = user_app_data.get('userName')
+            is_active = True
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+            return IAMUserAppData(user_id, username, is_active, user_app_data)
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
         """ Updates a user in the application using REST API.
@@ -89,23 +120,21 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the updated user in the application.
         :rtype: ``IAMUserAppData``
         """
-        uri = URI_PREFIX + f'sobjects/FF__Key_Contact__c/{encode_string_results(user_id)}'
-        # params = {"_HttpMethod": "PATCH"}
+        uri = URI_PREFIX + f'sobjects/FF__Key_Contact__c/{user_id}'
+        params = {"_HttpMethod": "PATCH"}
         res = self._http_request(
-            method='PATCH',
+            method='POST',
             url_suffix=uri,
+            params=params,
             json_data=user_data
         )
 
-        user_app_data = res.get('result')
-        user_id = user_app_data.get('user_id')
-        is_active = user_app_data.get('active')
-        username = user_app_data.get('user_name')
-
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        if res and res.status_code == 204:
+            return self.get_user_by_id(user_id)
 
     def enable_user(self, user_id: str) -> IAMUserAppData:
         """ Enables a user in the application using REST API.
+        There is no action on the user for Salesforce Fusion instance needs to be taken.
 
         :type user_id: ``str``
         :param user_id: ID of the user in the application
@@ -113,15 +142,11 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the user in the application.
         :rtype: ``IAMUserAppData``
         """
-        # Note: ENABLE user API endpoints might vary between different APIs.
-        # In this example, we use the same endpoint as in update_user() method,
-        # But other APIs might have a unique endpoint for this request.
 
-        user_data = {'active': True}                # TODO: make sure you pass the correct query parameters
-        return self.update_user(user_id, user_data)
+        return self.get_user_by_id(user_id)
 
     def disable_user(self, user_id: str) -> IAMUserAppData:
-        """ Disables a user in the application using REST API.
+        """ Removes a user in the application using REST API.
 
         :type user_id: ``str``
         :param user_id: ID of the user in the application
@@ -129,12 +154,16 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the user in the application.
         :rtype: ``IAMUserAppData``
         """
-        # Note: DISABLE user API endpoints might vary between different APIs.
-        # In this example, we use the same endpoint as in update_user() method,
-        # But other APIs might have a unique endpoint for this request.
 
-        user_data = {'active': False}               # TODO: make sure you pass the correct query parameters
-        return self.update_user(user_id, user_data)
+        uri = URI_PREFIX + f'sobjects/FF__Key_Contact__c/{user_id}'
+
+        res = self.http_request(
+            method='DELETE',
+            url_suffix=uri
+        )
+
+        if res and res.status_code == 204:
+            return IAMUserAppData(user_id, "", False, {})
 
     def get_app_fields(self) -> Dict[str, Any]:
         """ Gets a dictionary of the user schema fields in the application and their description.
