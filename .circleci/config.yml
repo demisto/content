@@ -694,7 +694,6 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - *restore_cache
       - *prepare_environment
       - save_cache:
           paths:
@@ -712,7 +711,6 @@ jobs:
     steps:
       - *attach_workspace
       - *remote_docker
-      - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
       - *trigger_private_build
@@ -739,7 +737,6 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
       - *secrets
@@ -819,7 +816,6 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - *restore_cache
       - *prepare_environment
       - *get_contribution_pack
       - *add_ssh_keys
@@ -903,7 +899,6 @@ jobs:
               - << pipeline.parameters.non_ami_run >>
           steps:
             - *attach_workspace
-            - *restore_cache
             - *add_ssh_keys
             - *prepare_environment
             - set-instance-role-env-variable:
@@ -1300,7 +1295,6 @@ jobs:
     steps:
       - checkout
       - *remote_docker
-      - *restore_cache
       - *prepare_environment
       - *secrets
       - *update_tests_step
@@ -1329,7 +1323,6 @@ jobs:
     steps:
       - checkout
       - *remote_docker
-      - *restore_cache
       - *prepare_environment
       - *download_configuration
       - *create_instance
