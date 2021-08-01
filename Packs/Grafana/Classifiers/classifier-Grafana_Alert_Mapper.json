@@ -1,64 +1,41 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"definitionId": "incident",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "04720ecf-f623-48ec-8ce8-22359988ba14",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 0,
-	"mapping": {
-		"Grafana Alert": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Alert Name": {
-					"complex": null,
-					"simple": "name"
-				},
-				"Grafana Dashboard Link": {
-					"complex": null,
-					"simple": "url"
-				},
-				"Grafana Dashboard Uid": {
-					"complex": null,
-					"simple": "dashboardUid"
-				},
-				"Grafana Panel Id": {
-					"complex": null,
-					"simple": "panelId"
-				},
-				"State": {
-					"complex": null,
-					"simple": "state"
-				},
-				"occurred": {
-					"complex": null,
-					"simple": "newStateDate"
-				}
-			}
-		}
-	},
-	"name": "Grafana Alert Mapper",
-	"nameRaw": "Grafana Alert Mapper",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1,
-	"fromVersion": "6.0.0"
+    "definitionId": "incident",
+    "description": "",
+    "feed": false,
+    "id": "Grafana Alert Mapper",
+    "mapping": {
+        "Grafana Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Name": {
+                    "complex": null,
+                    "simple": "name"
+                },
+                "Grafana Dashboard Link": {
+                    "complex": null,
+                    "simple": "url"
+                },
+                "Grafana Dashboard Uid": {
+                    "complex": null,
+                    "simple": "dashboardUid"
+                },
+                "Grafana Panel Id": {
+                    "complex": null,
+                    "simple": "panelId"
+                },
+                "State": {
+                    "complex": null,
+                    "simple": "state"
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "newStateDate"
+                }
+            }
+        }
+    },
+    "name": "Grafana Alert Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

@@ -108,7 +108,9 @@ class Client(BaseClient):
     def user_add_to_team_request(self, team_id: str, user_id: str):
         data = {"userId": int(user_id)}
 
-        response = self._http_request('POST', f'api/teams/{team_id}/members', json_data=data, headers=self._headers)
+        # 400 - 'User is already added to this team' might be raised - which isn't a real error
+        response = self._http_request('POST', f'api/teams/{team_id}/members', json_data=data, headers=self._headers,
+                                      ok_codes=(200, 400))
 
         return response
 
@@ -170,8 +172,9 @@ class Client(BaseClient):
         Updates the dict given, and returns it.
         """
         for r in response:
-            url = urljoin(self._base_url, r['url'])
-            r['url'] = url
+            if 'url' in r:
+                url = urljoin(self._base_url, r['url'])
+                r['url'] = url
         return response
 
 
@@ -184,6 +187,7 @@ def change_key(response: dict, prev_key: str, new_key: str):
     """
     if prev_key in response:
         response[new_key] = response.pop(prev_key)
+    demisto.debug(f'changing key "{prev_key}" in response to "{new_key}", edited response is: {response}')
     return response
 
 
@@ -191,6 +195,7 @@ def lower_keys(response: dict):
     """
     Lowers firsts letter of all keys in the dictionary given and returns the new dictionary.
     """
+    demisto.debug(f'lowering keys for response: {response}')
     return dict((decapitalize(key), value) for (key, value) in response.items())
 
 
@@ -200,6 +205,7 @@ def decapitalize(s: str):
     """
     if not s:
         return s
+    demisto.debug(f'de-capitalizing key: {s}')
     return s[0].lower() + s[1:]
 
 
@@ -208,6 +214,7 @@ def url_encode(query: Optional[str]):
     Query values with spaces need to be URL encoded e.g. query=Jane%20Doe.
     """
     if query:
+        demisto.debug(f'url-encoding query {query}')
         return query.replace(' ', '%20')
     return None
 
@@ -674,9 +681,11 @@ def fetch_incidents(client: Client, first_fetch: str, dashboard_id: str = None, 
                     alert_name: str = None, state: str = None, max_fetch: int = MAX_INCIDENTS_TO_FETCH) -> List[dict]:
     last_fetch = demisto.getLastRun().get('last_fetch', None)
     fetch_time = calculate_fetch_start_time(last_fetch, first_fetch)
+    demisto.debug(f'last fetch was at: {last_fetch}, time to fetch from is: {fetch_time}')
     alerts = client.alerts_list_request(dashboard_id=argToList(dashboard_id), panel_id=panel_id, query=alert_name,
                                         state=argToList(state))
     last_fetch, incidents = parse_alerts(alerts, max_fetch, fetch_time)
+    demisto.debug(f'last fetch now is: {last_fetch}, number of incidents fetched is {len(incidents)}')
     demisto.setLastRun({'last_fetch': str(date_to_timestamp(last_fetch, DATE_FORMAT))})
     return incidents
 

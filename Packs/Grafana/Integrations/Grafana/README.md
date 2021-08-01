@@ -78,51 +78,51 @@ Gets alerts.
         "Alert": [
             {
                 "dashboardId": 2,
-                "dashboardSlug": "simple-streaming-example-adis-copy",
+                "dashboardSlug": "streaming2",
                 "dashboardUid": "yzDQUOR7z",
                 "evalData": {
                     "noData": true
                 },
-                "evalDate": "0001-01-01T00:00:00Z",
+                "evalDate": "01-01-01T::Z",
                 "executionError": "",
                 "id": 2,
                 "name": "Adi's Alert",
                 "newStateDate": "2021-07-27T15:27:33.326964015Z",
                 "panelId": 5,
                 "state": "unknown",
-                "url": "https://34.248.110.146:3000/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+                "url": "https://www.url/d/yzDQUOR7z/streaming2"
             },
             {
                 "dashboardId": 1,
-                "dashboardSlug": "simple-streaming-example",
+                "dashboardSlug": "streaming",
                 "dashboardUid": "TXSTREZ",
                 "evalData": {
                     "noData": true
                 },
-                "evalDate": "0001-01-01T00:00:00Z",
+                "evalDate": "01-01-01T::Z",
                 "executionError": "",
                 "id": 1,
                 "name": "Arseny's Alert",
                 "newStateDate": "2021-06-09T15:20:01Z",
                 "panelId": 4,
                 "state": "no_data",
-                "url": "https://34.248.110.146:3000/d/TXSTREZ/simple-streaming-example"
+                "url": "https://www.url/d/TXSTREZ/streaming"
             },
             {
                 "dashboardId": 2,
-                "dashboardSlug": "simple-streaming-example-adis-copy",
+                "dashboardSlug": "streaming2",
                 "dashboardUid": "yzDQUOR7z",
                 "evalData": {
                     "noData": true
                 },
-                "evalDate": "0001-01-01T00:00:00Z",
+                "evalDate": "01-01-01T::Z",
                 "executionError": "",
                 "id": 3,
                 "name": "TryAlert",
                 "newStateDate": "2021-07-08T12:08:40Z",
                 "panelId": 6,
                 "state": "alerting",
-                "url": "https://34.248.110.146:3000/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+                "url": "https://www.url/d/yzDQUOR7z/streaming2"
             }
         ]
     }
@@ -134,9 +134,9 @@ Gets alerts.
 >### Alerts
 >|Dashboard Id|Dashboard Slug|Dashboard Uid|Eval Data|Eval Date|Id|Name|New State Date|Panel Id|State|Url|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 2 | simple-streaming-example-adis-copy | yzDQUOR7z | noData: true | 0001-01-01T00:00:00Z | 2 | Adi's Alert | 2021-07-27T15:27:33.326964015Z | 5 | unknown | https://34.248.110.146:3000/d/yzDQUOR7z/simple-streaming-example-adis-copy |
->| 1 | simple-streaming-example | TXSTREZ | noData: true | 0001-01-01T00:00:00Z | 1 | Arseny's Alert | 2021-06-09T15:20:01Z | 4 | no_data | https://34.248.110.146:3000/d/TXSTREZ/simple-streaming-example |
->| 2 | simple-streaming-example-adis-copy | yzDQUOR7z | noData: true | 0001-01-01T00:00:00Z | 3 | TryAlert | 2021-07-08T12:08:40Z | 6 | alerting | https://34.248.110.146:3000/d/yzDQUOR7z/simple-streaming-example-adis-copy |
+>| 2 | streaming2 | yzDQUOR7z | noData: true | 01-01-01T::Z | 2 | Adi's Alert | 2021-07-27T15:27:33.326964015Z | 5 | unknown | https://www.url/d/yzDQUOR7z/streaming2 |
+>| 1 | streaming | TXSTREZ | noData: true | 01-01-01T::Z | 1 | Arseny's Alert | 2021-06-09T15:20:01Z | 4 | no_data | https://www.url/d/TXSTREZ/streaming |
+>| 2 | streaming2 | yzDQUOR7z | noData: true | 01-01-01T::Z | 3 | TryAlert | 2021-07-08T12:08:40Z | 6 | alerting | https://www.url/d/yzDQUOR7z/streaming2 |
 
 
 ### grafana-alert-pause
@@ -273,20 +273,20 @@ Gets users.
         "User": [
             {
                 "authLabels": [],
-                "avatarUrl": "/avatar/5d9c68c6c50ed3d02a2fcf54f63993b6",
-                "email": "TestUser",
+                "avatarUrl": "/avatar/5d9c68c6c50ed3d02a2fcf54f63993b",
+                "email": "User",
                 "id": 3,
                 "isAdmin": false,
                 "isDisabled": false,
                 "lastSeenAt": "2011-07-27T15:10:37Z",
-                "lastSeenAtAge": "10y",
-                "login": "TestUser",
-                "name": "TestUser"
+                "lastSeenAtAge": "1y",
+                "login": "User",
+                "name": "User"
             },
             {
                 "authLabels": [],
-                "avatarUrl": "/avatar/46d229b033af06a191ff2267bca9ae56",
-                "email": "admin@localhost",
+                "avatarUrl": "/avatar/46d229b033af06a191ff2267bca9ae5",
+                "email": "admin",
                 "id": 1,
                 "isAdmin": true,
                 "isDisabled": false,
@@ -297,15 +297,15 @@ Gets users.
             },
             {
                 "authLabels": [],
-                "avatarUrl": "/avatar/04501192ea3453723d1336c6520ce2bc",
-                "email": "demistoadmin@demisto.local",
+                "avatarUrl": "/avatar/04501192ea3453723d1336c6520ce2c",
+                "email": "xadmin",
                 "id": 2,
                 "isAdmin": false,
                 "isDisabled": false,
                 "lastSeenAt": "2021-06-27T08:43:02Z",
                 "lastSeenAtAge": "30d",
-                "login": "demistoadmin",
-                "name": "demistoadmin"
+                "login": "xadmin",
+                "name": "xadmin"
             }
         ]
     }
@@ -315,11 +315,11 @@ Gets users.
 #### Human Readable Output
 
 >### Users
->|Avatar Url|Email|Id|Is Admin|Is D Is abled|Last Seen At|Last Seen At Age|Login|Name|
+>|Avatar Url|Email|Id|Is Admin|Is Disabled|Last Seen At|Last Seen At Age|Login|Name|
 >|---|---|---|---|---|---|---|---|---|
->| /avatar/5d9c68c6c50ed3d02a2fcf54f63993b6 | TestUser | 3 | false | false | 2011-07-27T15:10:37Z | 10y | TestUser | TestUser |
->| /avatar/46d229b033af06a191ff2267bca9ae56 | admin@localhost | 1 | true | false | 2021-07-27T15:27:29Z | 3m | admin | admin |
->| /avatar/04501192ea3453723d1336c6520ce2bc | demistoadmin@demisto.local | 2 | false | false | 2021-06-27T08:43:02Z | 30d | demistoadmin | demistoadmin |
+>| /avatar/5d9c68c6c50ed3d02a2fcf54f63993b | User | 3 | false | false | 2011-07-27T15:10:37Z | 1y | User | User |
+>| /avatar/46d229b033af06a191ff2267bca9ae5 | admin | 1 | true | false | 2021-07-27T15:27:29Z | 3m | admin | admin |
+>| /avatar/04501192ea3453723d1336c6520ce2c | xadmin | 2 | false | false | 2021-06-27T08:43:02Z | 30d | xadmin | xadmin |
 
 
 ### grafana-user-teams-get
@@ -362,7 +362,7 @@ Gets the user's teams by user id.
             "id": "1",
             "teams": [
                 {
-                    "avatarUrl": "/avatar/1d3226029ef04208904011bf63ffde2f",
+                    "avatarUrl": "/avatar/1d3226029ef0424011bf63ffde2f",
                     "email": "",
                     "id": 2,
                     "memberCount": 2,
@@ -381,7 +381,7 @@ Gets the user's teams by user id.
 >### Teams For User
 >|Avatar Url|Id|Member Count|Name|Org Id|Permission|
 >|---|---|---|---|---|---|
->| /avatar/1d3226029ef04208904011bf63ffde2f | 2 | 2 | MyTestTeam2 | 1 | 0 |
+>| /avatar/1d3226029ef0424011bf63ffde2f | 2 | 2 | MyTestTeam2 | 1 | 0 |
 
 
 ### grafana-user-orgs-get
@@ -474,7 +474,7 @@ Login or name is mandatory. Pay attantion that if you change your own login info
 There is no context output for this command.
 
 #### Command Example
-```!grafana-user-update user_id=3 email=TestUser login=TestUser name=TestUser```
+```!grafana-user-update user_id=3 email=User login=User name=User```
 
 #### Human Readable Output
 
@@ -569,7 +569,7 @@ Gets teams.
     "Grafana": {
         "Team": [
             {
-                "avatarUrl": "/avatar/f1f97cfa813c828a73528989da671a81",
+                "avatarUrl": "/avatar/f1f97cfa3c828a7352da671a",
                 "email": "email@test.com",
                 "id": 1,
                 "memberCount": 0,
@@ -578,7 +578,7 @@ Gets teams.
                 "permission": 0
             },
             {
-                "avatarUrl": "/avatar/1d3226029ef04208904011bf63ffde2f",
+                "avatarUrl": "/avatar/1d3226029ef0424011bf63ffde2f",
                 "email": "",
                 "id": 2,
                 "memberCount": 2,
@@ -587,7 +587,7 @@ Gets teams.
                 "permission": 0
             },
             {
-                "avatarUrl": "/avatar/f1f97cfa813c828a73528989da671a81",
+                "avatarUrl": "/avatar/f1f97cfa3c828a7352da671a",
                 "email": "email@test.com",
                 "id": 5,
                 "memberCount": 1,
@@ -596,7 +596,7 @@ Gets teams.
                 "permission": 0
             },
             {
-                "avatarUrl": "/avatar/f1f97cfa813c828a73528989da671a81",
+                "avatarUrl": "/avatar/f1f97cfa3c828a7352da671a",
                 "email": "email@test.com",
                 "id": 7,
                 "memberCount": 0,
@@ -614,10 +614,10 @@ Gets teams.
 >### Teams
 >|Avatar Url|Email|Id|Member Count|Name|Org Id|Permission|
 >|---|---|---|---|---|---|---|
->| /avatar/f1f97cfa813c828a73528989da671a81 | email@test.com | 1 | 0 | MyTestTeam | 1 | 0 |
->| /avatar/1d3226029ef04208904011bf63ffde2f |  | 2 | 2 | MyTestTeam2 | 1 | 0 |
->| /avatar/f1f97cfa813c828a73528989da671a81 | email@test.com | 5 | 1 | MyTestTeam4 | 1 | 0 |
->| /avatar/f1f97cfa813c828a73528989da671a81 | email@test.com | 7 | 0 | MyTestTeam6 | 1 | 0 |
+>| /avatar/f1f97cfa3c828a7352da671a | email@test.com | 1 | 0 | MyTestTeam | 1 | 0 |
+>| /avatar/1d3226029ef0424011bf63ffde2f |  | 2 | 2 | MyTestTeam2 | 1 | 0 |
+>| /avatar/f1f97cfa3c828a7352da671a | email@test.com | 5 | 1 | MyTestTeam4 | 1 | 0 |
+>| /avatar/f1f97cfa3c828a7352da671a | email@test.com | 7 | 0 | MyTestTeam6 | 1 | 0 |
 
 
 ### grafana-team-members-list
@@ -664,8 +664,8 @@ Gets a list of all team members by team id.
             "members": [
                 {
                     "auth_module": "",
-                    "avatarUrl": "/avatar/46d229b033af06a191ff2267bca9ae56",
-                    "email": "admin@localhost",
+                    "avatarUrl": "/avatar/46d229b033af06a191ff2267bca9ae5",
+                    "email": "admin",
                     "labels": [],
                     "login": "admin",
                     "name": "admin",
@@ -676,11 +676,11 @@ Gets a list of all team members by team id.
                 },
                 {
                     "auth_module": "",
-                    "avatarUrl": "/avatar/04501192ea3453723d1336c6520ce2bc",
-                    "email": "demistoadmin@demisto.local",
+                    "avatarUrl": "/avatar/04501192ea3453723d1336c6520ce2c",
+                    "email": "xadmin",
                     "labels": [],
-                    "login": "demistoadmin",
-                    "name": "demistoadmin",
+                    "login": "xadmin",
+                    "name": "xadmin",
                     "orgId": 1,
                     "permission": 0,
                     "teamId": 2,
@@ -697,8 +697,8 @@ Gets a list of all team members by team id.
 >### Team Members
 >|Avatar Url|Email|Login|Name|Org Id|Permission|Team Id|User Id|
 >|---|---|---|---|---|---|---|---|
->| /avatar/46d229b033af06a191ff2267bca9ae56 | admin@localhost | admin | admin | 1 | 0 | 2 | 1 |
->| /avatar/04501192ea3453723d1336c6520ce2bc | demistoadmin@demisto.local | demistoadmin | demistoadmin | 1 | 0 | 2 | 2 |
+>| /avatar/46d229b033af06a191ff2267bca9ae5 | admin | admin | admin | 1 | 0 | 2 | 1 |
+>| /avatar/04501192ea3453723d1336c6520ce2c | xadmin | xadmin | xadmin | 1 | 0 | 2 | 2 |
 
 
 ### grafana-user-add-to-team
@@ -925,11 +925,11 @@ Searchs dashboards.
                 "slug": "",
                 "sortMeta": 0,
                 "tags": [],
-                "title": "Simple Streaming Example",
+                "title": "Streaming",
                 "type": "dash-db",
                 "uid": "TXSTREZ",
-                "uri": "db/simple-streaming-example",
-                "url": "https://34.248.110.146:3000/d/TXSTREZ/simple-streaming-example"
+                "uri": "db/streaming",
+                "url": "https://www.url/d/TXSTREZ/streaming"
             },
             {
                 "id": 2,
@@ -937,11 +937,11 @@ Searchs dashboards.
                 "slug": "",
                 "sortMeta": 0,
                 "tags": [],
-                "title": "Simple Streaming Example - Adi's Copy",
+                "title": "Streaming Simple",
                 "type": "dash-db",
                 "uid": "yzDQUOR7z",
-                "uri": "db/simple-streaming-example-adis-copy",
-                "url": "https://34.248.110.146:3000/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+                "uri": "db/streaming2",
+                "url": "https://www.url/d/yzDQUOR7z/streaming2"
             }
         ]
     }
@@ -953,8 +953,8 @@ Searchs dashboards.
 >### Dashboard
 >|Id|Is Starred|Sort Meta|Title|Type|Uid|Uri|Url|
 >|---|---|---|---|---|---|---|---|
->| 1 | true | 0 | Simple Streaming Example | dash-db | TXSTREZ | db/simple-streaming-example | https://34.248.110.146:3000/d/TXSTREZ/simple-streaming-example |
->| 2 | false | 0 | Simple Streaming Example - Adi's Copy | dash-db | yzDQUOR7z | db/simple-streaming-example-adis-copy | https://34.248.110.146:3000/d/yzDQUOR7z/simple-streaming-example-adis-copy |
+>| 1 | true | 0 | Streaming | dash-db | TXSTREZ | db/streaming | https://www.url/d/TXSTREZ/streaming |
+>| 2 | false | 0 | Streaming Simple | dash-db | yzDQUOR7z | db/streaming2 | https://www.url/d/yzDQUOR7z/streaming2 |
 
 
 ### grafana-user-get-by-id
@@ -999,9 +999,9 @@ Gets a user by id.
     "Grafana": {
         "User": {
             "authLabels": [],
-            "avatarUrl": "/avatar/46d229b033af06a191ff2267bca9ae56",
+            "avatarUrl": "/avatar/46d229b033af06a191ff2267bca9ae5",
             "createdAt": "2021-06-08T10:57:39Z",
-            "email": "admin@localhost",
+            "email": "admin",
             "id": 1,
             "isDisabled": false,
             "isExternal": false,
@@ -1021,7 +1021,7 @@ Gets a user by id.
 >### User
 >|Avatar Url|Created At|Email|Id|Is D Is abled|Is External|Is Grafana Admin|Login|Name|Org Id|Theme|Updated At|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| /avatar/46d229b033af06a191ff2267bca9ae56 | 2021-06-08T10:57:39Z | admin@localhost | 1 | false | false | true | admin | admin | 1 | dark | 2021-07-08T11:13:45Z |
+>| /avatar/46d229b033af06a191ff2267bca9ae5 | 2021-06-08T10:57:39Z | admin | 1 | false | false | true | admin | admin | 1 | dark | 2021-07-08T11:13:45Z |
 
 
 ### grafana-team-get-by-id
@@ -1060,7 +1060,7 @@ Gets a team by id.
 {
     "Grafana": {
         "Team": {
-            "avatarUrl": "/avatar/f1f97cfa813c828a73528989da671a81",
+            "avatarUrl": "/avatar/f1f97cfa3c828a7352da671a",
             "email": "email@test.com",
             "id": 1,
             "memberCount": 0,
@@ -1077,7 +1077,7 @@ Gets a team by id.
 >### Team
 >|Avatar Url|Email|Id|Member Count|Name|Org Id|Permission|
 >|---|---|---|---|---|---|---|
->| /avatar/f1f97cfa813c828a73528989da671a81 | email@test.com | 1 | 0 | MyTestTeam | 1 | 0 |
+>| /avatar/f1f97cfa3c828a7352da671a | email@test.com | 1 | 0 | MyTestTeam | 1 | 0 |
 
 
 ### grafana-alert-get-by-id
@@ -1136,8 +1136,8 @@ Gets an alert by id.
                 "noData": true
             },
             "executionError": " ",
-            "for": 60000000000,
-            "frequency": 600,
+            "for": 6,
+            "frequency": 6,
             "handler": 1,
             "id": 1,
             "message": "man down!",
@@ -1167,7 +1167,7 @@ Gets an alert by id.
                                 "scenarioId": "streaming_client",
                                 "stream": {
                                     "noise": 2.2,
-                                    "speed": 100,
+                                    "speed": 1,
                                     "spread": 3.5,
                                     "type": "signal"
                                 },
@@ -1211,7 +1211,7 @@ Gets an alert by id.
 >### Alert
 >|Created|Dashboard Id|Eval Data|Execution Error|For|Frequency|Handler|Id|Message|Name|New State Date|Org Id|Panel Id|Settings|Silenced|State|State Changes|Updated|Version|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2021-06-09T15:13:45Z | 1 | noData: true |   | 60000000000 | 600 | 1 | 1 | man down! | Arseny's Alert | 2021-06-09T15:20:01Z | 1 | 4 | alertRuleTags: {"moshe": "2"}<br/>conditions: {'evaluator': {'params': [10], 'type': 'gt'}, 'operator': {'type': 'and'}, 'query': {'datasourceId': 1, 'model': {'refId': 'A', 'scenarioId': 'streaming_client', 'stream': {'noise': 2.2, 'speed': 100, 'spread': 3.5, 'type': 'signal'}, 'stringInput': ''}, 'params': ['A', '5m', 'now']}, 'reducer': {'params': [], 'type': 'avg'}, 'type': 'query'}<br/>executionErrorState: alerting<br/>for: 1m<br/>frequency: 10m<br/>handler: 1<br/>message: man down!<br/>name: Arseny's Alert<br/>noDataState: no_data<br/>notifications:  | false | no_data | 1 | 2021-06-09T15:14:51Z | 0 |
+>| 2021-06-09T15:13:45Z | 1 | noData: true |   | 6 | 6 | 1 | 1 | man down! | Arseny's Alert | 2021-06-09T15:20:01Z | 1 | 4 | alertRuleTags: {"moshe": "2"}<br/>conditions: {'evaluator': {'params': [10], 'type': 'gt'}, 'operator': {'type': 'and'}, 'query': {'datasourceId': 1, 'model': {'refId': 'A', 'scenarioId': 'streaming_client', 'stream': {'noise': 2.2, 'speed': 1, 'spread': 3.5, 'type': 'signal'}, 'stringInput': ''}, 'params': ['A', '5m', 'now']}, 'reducer': {'params': [], 'type': 'avg'}, 'type': 'query'}<br/>executionErrorState: alerting<br/>for: 1m<br/>frequency: 10m<br/>handler: 1<br/>message: man down!<br/>name: Arseny's Alert<br/>noDataState: no_data<br/>notifications:  | false | no_data | 1 | 2021-06-09T15:14:51Z | 0 |
 
 
 ### grafana-org-list
