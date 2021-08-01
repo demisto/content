@@ -10,6 +10,8 @@ import traceback
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+ACCESS_KEY = 'cs_access_key'
+
 
 def convert_environment_id_string_to_int(
         environment_id: str
@@ -39,14 +41,14 @@ class Client:
     Client to use in the CrowdStrikeFalconX integration. Uses BaseClient
     """
 
-    def __init__(self, server_url: str, username: str, password: str, use_ssl: bool, proxy: bool):
+    def __init__(self, server_url: str, username: str, password: str, use_ssl: bool, proxy: bool, context: dict):
         self._base_url = server_url
         self._verify = use_ssl
         self._ok_codes = tuple()  # type: ignore[var-annotated]
         self._username = username
         self._password = password
         self._session = requests.Session()
-        self._token = self._generate_token()
+        self._token = self._get_access_token(context)
         self._headers = {'Authorization': 'bearer ' + self._token}
         if not proxy:
             self._session.trust_env = False
@@ -82,7 +84,7 @@ class Client:
 
     def _http_request(self, method, url_suffix, full_url=None, headers=None,
                       json_data=None, params=None, data=None, files=None,
-                      timeout=10, ok_codes=None, return_empty_response=False):
+                      timeout=10, ok_codes=None, return_empty_response=False, retry=1):
         """A wrapper for requests lib to send our requests and handle requests and responses better.
 
         :type method: ``str``
@@ -142,6 +144,12 @@ class Client:
                 headers=headers,
                 timeout=timeout,
             )
+            if res.status_code in (401, 403) and retry > 0:
+                self._token = self._generate_token()
+                self._headers = {'Authorization': 'bearer ' + self._token}
+                return self._http_request(method, url_suffix, full_url, headers, json_data, params, data, files,
+                                          timeout, ok_codes, return_empty_response, retry=(retry - 1))
+
             # Handle error responses gracefully
             if not self._is_status_code_valid(res, ok_codes):
                 try:
@@ -183,6 +191,12 @@ class Client:
                 .format(err_type, exception.errno, exception.strerror)
             raise DemistoException(err_msg, exception)
 
+    def _get_access_token(self, context: dict) -> str:
+        if context and ACCESS_KEY in context:
+            return context[ACCESS_KEY]
+        else:
+            return self._generate_token()
+
     def _generate_token(self) -> str:
         """Generate an Access token using the user name and password
         :return: valid token
@@ -198,7 +212,9 @@ class Client:
             'Authorization': f'Basic {base64.b64encode(byte_creds).decode()}'
         }
         token_res = self._http_request('POST', '/oauth2/token', data=body, headers=headers)
-        return token_res.get('access_token')
+        access_token = token_res.get('access_token')
+        set_integration_context({ACCESS_KEY: access_token})
+        return access_token
 
     def upload_file(
             self,
@@ -842,11 +858,12 @@ def main():
     password = params.get('credentials').get('password')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    ctx = get_integration_context()
 
     try:
         command = demisto.command()
         LOG(f'Command being called in CrowdStrikeFalconX Sandbox is: {command}')
-        client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy)
+        client = Client(server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy, context=ctx)
         commands = {
             'test-module': test_module,
             'cs-fx-upload-file': upload_file_command,

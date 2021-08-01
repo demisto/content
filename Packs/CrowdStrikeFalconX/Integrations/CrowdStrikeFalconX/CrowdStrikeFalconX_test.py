@@ -1,7 +1,7 @@
 from CrowdStrikeFalconX import Client,\
     send_uploaded_file_to_sandbox_analysis_command, send_url_to_sandbox_analysis_command,\
     get_full_report_command, get_report_summary_command, get_analysis_status_command,\
-    check_quota_status_command, find_sandbox_reports_command, find_submission_id_command
+    check_quota_status_command, find_sandbox_reports_command, find_submission_id_command, ACCESS_KEY
 from TestsInput.context import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT,\
     GET_FULL_REPORT_CONTEXT, GET_REPORT_SUMMARY_CONTEXT, GET_ANALYSIS_STATUS_CONTEXT, CHECK_QUOTA_STATUS_CONTEXT,\
     FIND_SANDBOX_REPORTS_CONTEXT, FIND_SUBMISSION_ID_CONTEXT, MULTIPLE_ERRORS_RESULT
@@ -20,6 +20,19 @@ class ResMocker:
     def json(self):
         return self.http_response
 
+
+class RetryResMocker(ResMocker):
+    def __init__(self, http_response):
+        super().__init__(http_response)
+        self.ok = True
+        self._status_code = None
+
+    @property
+    def status_code(self):
+        if self._status_code is None:
+            self._status_code = 200
+            return 403
+        return self._status_code
 
 SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS = {
     "sha256": "sha256",
@@ -124,9 +137,31 @@ def test_handle_errors(http_response, output, mocker):
     """
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
-                    proxy=False)
+                    proxy=False, context=None)
     try:
         mocker.patch.object(client._session, 'request', return_value=ResMocker(http_response))
         _, output, _ = check_quota_status_command(client)
     except Exception as e:
         assert (str(e) == str(output))
+
+
+def test_http_retry(mocker):
+    """Unit test
+    Given
+    - client is init with last run token
+    - http request fails with 403
+    When
+    - calling a new request
+    Then
+    - the request tries again
+    - the client updates the token
+    """
+    init_context_access_key = 'fail'
+    expected = 'success'
+    mocker.patch.object(Client, '_generate_token', return_value=expected)
+    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False, context={ACCESS_KEY: init_context_access_key})
+    assert client._token == init_context_access_key
+    mocker.patch.object(client._session, 'request', return_value=RetryResMocker({}))
+    _, output, _ = check_quota_status_command(client)
+    assert client._token == expected
