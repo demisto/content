@@ -444,9 +444,18 @@ def test():
     full_url = BASE_URL + '/user/current'
     res = http_request('GET', full_url, is_test=True)
 
+    demisto.debug("###RES STATUS CODE###\n\n")
+    demisto.debug(res.status_code)
+
+    demisto.debug("###RES TEST ENCODE###\n\n")
+    demisto.debug(res.text.encode('utf8'))
+
+    demisto.debug("###RES TEST###\n\n")
+    demisto.debug(res.text)
+
     if not res:
         return_error('Test failed. \nCheck URL and Username/Password.\nURL: {}, Status Code: {}, Response: {}'.format(
-            full_url, res.status_code, res.text))
+            full_url, res.status_code, res.text.encode('utf8')))
 
     demisto.results('ok')
 
