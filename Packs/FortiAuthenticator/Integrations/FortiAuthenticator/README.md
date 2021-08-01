@@ -1,6 +1,7 @@
 
 FortiAuthenticator provides centralized authentication services. 
 Seamless secure two-factor/OTP authentication across the organization in conjunction with FortiToken.
+Tested FortiAuthenticator version: 4.0 - 6.3.0.
 
 ## Enable API Access for admin user on FortiAuthenticator
 ### Steps to get the ***Access Key*** for the API authentication
@@ -51,7 +52,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 | FortiAuthenticator.user.username | Unknown | The user's username | 
 
 #### Command Example
-```!fortiauthenticator-get-user user_type=localusers email=jasonlo@jasonlo.net```
+```!fortiauthenticator-get-user user_type=localusers email=test_user@example.com```
 
 #### Context Example
 ```json
@@ -92,7 +93,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 | FortiAuthenticator.user.username | Unknown | The user's username | 
 
 #### Command Example
-```!fortiauthenticator-update-user active=false user_type=localusers email=jasonlo@jasonlo.net```
+```!fortiauthenticator-update-user active=false user_type=localusers email=test_user@example.com```
 
 #### Context Example
 ```json
