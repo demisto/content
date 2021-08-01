@@ -1,7 +1,6 @@
-from typing import Optional
+from json import JSONDecodeError
 
 import demistomock as demisto  # noqa: F401
-import requests
 from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
@@ -1776,20 +1775,30 @@ def test_module(base_url: str, sid: str, verify_certificate) -> str:
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     """
+    response = None  # for catching JSONDecodeError
     try:
         response = requests.post(base_url + 'show-api-versions',
                                  headers={'Content-Type': 'application/json', 'X-chkp-sid': sid},
                                  verify=verify_certificate, json={})
-        reason = ''
+
         if response.json().get('message') == "Missing header: [X-chkp-sid]":
-            reason = '\nWrong credentials! Please check the username and password you entered and try' \
-                     ' again.\n'
+            raise DemistoException("\n".join(
+                ("Connection failed: Wrong credentials. Please check the username and password and try again.",
+                 f"Full response: {response.json()}")),
+                res=response)
+
+    except JSONDecodeError as e:
+        demisto.info(str(e))
+        if isinstance(response, requests.Response):  # set to None on function head as default
+            raise DemistoException(f"Could not parse JSON content of response.text: {response.text}")
+        else:
+            raise e
     except Exception as e:
         if '500' in str(e):  # for status code 500
             return 'Server Error: make sure Server URL and Server Port are correctly set'
         else:
             raise e
-    return 'ok' if response else f'Connection failed.{reason}\nFull response: {response.json()}'
+    return 'ok'
 
 
 def main():

@@ -2,6 +2,7 @@ import json
 import io
 import demistomock as demisto
 import CheckPointFirewallV2
+from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
@@ -377,3 +378,58 @@ def test_show_task_command(mocker):
     assert result[0].get("task-name") == "Publish operation"
     assert result[0].get("status") == "succeeded"
     assert result[0].get("progress-percentage") == 100
+
+
+def test_test_module():
+    """
+    Given:
+        - a session ID and base_url
+    When:
+        - Calling test_module
+    Then:
+        - Ensure correct behaviour for both valid and invalid responses.
+    """
+    from CheckPointFirewallV2 import test_module
+    import requests_mock
+
+    sid = 'dummy_id'
+    base_url = 'https://example.com/'
+    import pytest
+
+    # Valid credentials
+    with requests_mock.Mocker() as m:
+        m.post(base_url + 'show-api-versions', json=util_load_json('test_data/test_module__valid_response.json'))
+        assert test_module(base_url, sid, verify_certificate=False) == 'ok'
+
+    # Invalid credentials
+    with pytest.raises(DemistoException) as excinfo:
+        with requests_mock.Mocker() as m:
+            m.post(base_url + 'show-api-versions', json={'message': "Missing header: [X-chkp-sid]"})
+            test_module(base_url, sid, verify_certificate=False)
+    assert excinfo.value.message == "Connection failed: Wrong credentials. " \
+                                    "Please check the username and password and try again.\n" \
+                                    "Full response: {'message': 'Missing header: [X-chkp-sid]'}"
+    assert excinfo.type == DemistoException
+
+    # Non-JSON response
+    with pytest.raises(DemistoException) as excinfo:
+        with requests_mock.Mocker() as m:
+            not_a_json = 'not a JSON'
+            m.post(base_url + 'show-api-versions', text=not_a_json)
+            test_module(base_url, sid, verify_certificate=False)
+        assert excinfo.value == f"Could not parse JSON content of response.text: {not_a_json}"
+
+    # Code 500 response
+    with pytest.raises(DemistoException):
+        with requests_mock.Mocker() as m:
+            m.post(base_url + 'show-api-versions', status_code=500)
+            assert test_module(base_url, sid, verify_certificate=False) == \
+                   "Server Error: make sure Server URL and Server Port are correctly set"
+
+    # Invalid, non-500 response code
+    with pytest.raises(DemistoException) as excinfo:
+        with requests_mock.Mocker() as m:
+            m.post(base_url + 'show-api-versions', status_code=418)
+            test_module(base_url, sid, verify_certificate=False)
+    assert excinfo.type == DemistoException
+    assert excinfo.value.message == 'Could not parse JSON content of response.text: '
