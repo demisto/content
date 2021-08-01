@@ -1,7 +1,7 @@
 beta: false
 category: Identity and Access Management
 commonfields:
-  id: ExceedLMS_IAM
+  id: IAM_ExceedLMS
   version: -1
 configuration:
 - display: Base URL
@@ -56,8 +56,8 @@ configuration:
   required: true
   type: 0
 description: An Identity and Access Management integration template.
-display: ExceedLMS_IAM
-name: ExceedLMS_IAM
+display: IAM_ExceedLMS
+name: IAM_ExceedLMS
 script:
   commands:
   - arguments:
