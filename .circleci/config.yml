@@ -104,7 +104,7 @@ parameters:
     default: "dmst-content-team"
   sdk_ref:
     type: string
-    default: "gom-create-contenet-artifacts"
+    default: "master"
 
 references:
   environment: &environment
