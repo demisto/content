@@ -1120,7 +1120,7 @@ def main() -> None:
             return_results(
                 company_services_get_command(
                     client=client,
-                    domain=args.get("domain")
+                    domain=args.get("domain")  # type: ignore
                 )
             )
 
