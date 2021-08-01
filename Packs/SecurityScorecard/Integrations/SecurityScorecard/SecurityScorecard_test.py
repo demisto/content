@@ -8,7 +8,9 @@ from SecurityScorecard import \
     portfolio_list_companies_command, \
     company_score_get_command, \
     company_factor_score_get_command, \
-    company_history_score_get_command
+    company_history_score_get_command, \
+    company_history_factor_score_get_command, \
+    alert_grade_change_create_command
 
 import json
 import io
@@ -106,18 +108,51 @@ companies_list_not_exist_test_inputs = [
 
 # test_get_company_score
 score_mock = test_data.get("score")
+company_score_test_input = [
+    (DOMAIN),
+    ("google.com"),
+    ("GOOGLE.COM")
+]
+company_not_found = test_data.get("company_not_found")
 
 # test_get_company_factor_score
 factor_score_mock = test_data.get("factor_score")
-
+factor_score_test_inputs = [
+    (DOMAIN, None),
+    (DOMAIN, "high"),
+    (DOMAIN, "high,low")
+]
 
 # test_get_company_historical_scores
 historical_score_mock = test_data.get("historical_score")
+company_historical_scores_test_inputs = [
+    (DOMAIN, None, None, None),
+    (DOMAIN, "2021-07-01", "2021-07-31", "daily"),
+    (DOMAIN, "2021-07-01", "2021-07-31", "weekly"),
+]
+
+#  test_get_company_historical_factor_scores
+historical_factor_score_mock = test_data.get("historical_factor_score")
+company_historical_factor_scores_test_inputs = [
+    (DOMAIN, None, None, None),
+    (DOMAIN, "2021-07-01", "2021-07-31", "daily"),
+    (DOMAIN, "2021-07-01", "2021-07-31", "weekly"),
+]
 
 
-historical_factor_score_mock = load_json("./test_data/companies/historical_factor_score.json")
-create_grade_alert_mock = load_json("./test_data/alerts/create_grade_alert.json")
-create_score_alert_mock = load_json("./test_data/alerts/create_score_alert.json")
+# test_create_grade_change_alert
+create_grade_alert_mock = test_data.get("create_grade_alert")
+grade_alert_test_input = [
+    (USERNAME, "rises", "overall", None, PORTFOLIO_ID),
+    (USERNAME, "drops", "overall,cubit_score", None, PORTFOLIO_ID),
+    (USERNAME, "rises", "application_security", "my_scorecard", None),
+    (USERNAME, "rises", "application_security", "my_scorecard", "1"),
+    (USERNAME, "rises", "application_security", None, None)
+]
+
+# test_create_score_change_alert
+create_score_alert_mock = test_data.get("create_score_alert")
+
 services_mock = load_json("./test_data/companies/services.json")
 
 """ Helper Functions Unit Tests"""
@@ -288,53 +323,88 @@ def test_portfolio_list_companies_portfolio_not_found(mocker):
         )
 
 
-def test_get_company_score(mocker):
+@pytest.mark.parametrize("domain", company_score_test_input)
+def test_get_company_score(mocker, domain):
 
     """
     Given:
         - A domain
 
     When:
-        - Domain exists
+        - Case A: domain is domain1.com
+        - Case B: domain is lowercase
+        - Case C: domain is uppercase
 
     Then:
-        - Domain score retrieved
+        - Case A: score returned for domain
+        - Case B: score returned for domain
+        - Case C: score returned for domain
     """
 
     mocker.patch.object(client, "get_company_score", return_value=score_mock)
 
-    response_cmd_res: CommandResults = company_score_get_command(client, domain=DOMAIN)
+    response_cmd_res: CommandResults = company_score_get_command(client=client, domain=domain)
 
     score = response_cmd_res.outputs
 
     assert score == score_mock
 
 
-def test_get_company_factor_score(mocker):
+def test_get_company_score_not_found(mocker):
+    """
+    Given:
+        - A company domain
+
+    When:
+        - Company domain doesn't exist
+
+    Then:
+        - company not found: nonexistentdomain.com (404)
+    """
+
+    mocker.patch.object(client, "get_company_score", return_value=company_not_found)
+
+    cmd_res: CommandResults = company_score_get_command(client=client, domain=DOMAIN_NE)
+
+    status = cmd_res.outputs.get("error").get("statusCode")
+    message = cmd_res.outputs.get("error").get("message")
+
+    assert status == 404
+    assert message == f"company not found: {DOMAIN_NE}"
+
+
+@pytest.mark.parametrize("domain, severity", factor_score_test_inputs)
+def test_get_company_factor_score(mocker, domain, severity):
 
     """
     Given:
         - A domain
+        - A severity filter
 
     When:
-        - Domain is valid
-
+        - Case A: Domain is valid, severity unspecified
+        - Case B: Domain is valid, severity is high
+        - Case C: Domain is valid, severity is low
     Then:
-        - Results in domain 10 factor scores
+        - Case A: Results in all severity factor scores for domain
+        - Case B: Results only in high severity factor scores for domain
+        - Case C: Results in high and low severity factor scores for domain
     """
 
     mocker.patch.object(client, "get_company_factor_score", return_value=factor_score_mock)
 
     response: CommandResults = company_factor_score_get_command(
         client=client,
-        domain=DOMAIN,
-        severity=None
+        domain=domain,
+        severity=severity
     )
 
     assert len(response.outputs) == factor_score_mock.get("total")
+    assert response.outputs == factor_score_mock.get("entries")
 
 
-def test_get_company_historical_scores(mocker):
+@pytest.mark.parametrize("domain,_from,to,timing", company_historical_scores_test_inputs)
+def test_get_company_historical_scores(mocker, domain, _from, to, timing):
 
     """
     Given:
@@ -342,21 +412,23 @@ def test_get_company_historical_scores(mocker):
         - Date range
         - Timing
     When:
-        - Domain is valid
-        - From 2021-07-01 to 2021-07-08
-        - Daily basis
+        - Case A: Domain is valid, no range, no resolution
+        - Case B: Domain is valid, from 2021-07-01 to 2021-07-31, daily
+        - Case C: Domain is valid, from 2021-07-01 to 2021-07-31, weekly
     Then:
-        - Daily company score for domain between set range
+        - Case A: Score received for 1 year ago on weekly bases
+        - Case B: Score received for 2021-07-01 to 2021-07-31 on daily basis
+        - Case C
     """
 
     mocker.patch.object(client, "get_company_historical_scores", return_value=historical_score_mock)
 
     response: CommandResults = company_history_score_get_command(
         client=client,
-        domain=DOMAIN,
-        _from="2021-07-01",
-        to="2021-07-08",
-        timing="daily"
+        domain=domain,
+        _from=_from,
+        to=to,
+        timing=timing
     )
 
     cmd_output = response.outputs
@@ -364,50 +436,117 @@ def test_get_company_historical_scores(mocker):
     assert cmd_output == historical_score_mock.get("entries")
 
 
-def test_get_company_historical_factor_scores(mocker):
+@pytest.mark.parametrize("domain,_from,to,timing", company_historical_factor_scores_test_inputs)
+def test_get_company_historical_factor_scores(mocker, domain, _from, to, timing):
+
+    """
+    Given:
+        - A domain
+        - Date range
+        - Timing
+    When:
+        - Case A: Domain is valid, no range, no resolution
+        - Case B: Domain is valid, from 2021-07-01 to 2021-07-31, daily
+        - Case C: Domain is valid, from 2021-07-01 to 2021-07-31, weekly
+    Then:
+        - Case A: Score received for 1 year ago on weekly bases
+        - Case B: Score received for 2021-07-01 to 2021-07-31 on daily basis
+        - Case C: Score received for 2021-07-01 to 2021-07-31 on weekly basis
+    """
 
     mocker.patch.object(client, "get_company_historical_factor_scores", return_value=historical_factor_score_mock)
 
-    response_historical_factor_score = client.get_company_historical_factor_scores(
-        domain=DOMAIN,
-        _from="2021-07-01",
-        to="2021-07-08",
-        timing="daily"
+    cmd_res: CommandResults = company_history_factor_score_get_command(
+        client=client,
+        domain=domain,
+        _from=_from,
+        to=to,
+        timing=timing
     )
 
-    assert response_historical_factor_score == historical_factor_score_mock
-    assert len(response_historical_factor_score["entries"]) == 8
-    assert len(response_historical_factor_score["entries"][0]["factors"]) == 10
-    assert isinstance(response_historical_factor_score["entries"][0]["factors"][0]["score"], int)
+    factor_scores = cmd_res.outputs
+    assert factor_scores == historical_factor_score_mock.get("entries")
 
 
-def test_create_grade_change_alert(mocker):
+@pytest.mark.parametrize("username, change_direction, score_types, target, portfolios", grade_alert_test_input)
+def test_create_grade_change_alert(mocker, username, change_direction, score_types, target, portfolios):
+    """
+    Given:
+        - A username
+        - Direction change
+        - Score type(s)
+        - Target or Portfolio(s)
+    When:
+        - Case A: Username is valid, rising grade, overall score type, to portfolio
+        - Case B: Username is valid, dropping grade, overall and cubit score score types, to portfolio
+        - Case C: Username is valid, rising grade, application security score type to my scorecard
+        - Case D: Both portfolio and target are specified
+        - Case E: Neither portfolio and target are specified
+    Then:
+        - Case A: Alert created
+        - Case B: Alert created
+        - Case C: Alert created
+        - Case D: DemistoException thrown
+        - Case E: DemistoException thrown
+    """
 
     mocker.patch.object(client, "create_grade_change_alert", return_value=create_grade_alert_mock)
 
-    response = client.create_grade_change_alert(
-        email=USERNAME,
-        change_direction="drops",
-        score_types="application_security",
-        target="any_followed_company"
-    )
+    if target and portfolios:
+        with pytest.raises(DemistoException) as exc:
+            alert_grade_change_create_command(
+                client=client,
+                username=username,
+                change_direction=change_direction,
+                score_types=score_types,
+                target=target,
+                portfolios=portfolios
+            )
 
-    assert response == create_grade_alert_mock
+        assert "Both 'portfolio' and 'target' argument have been set" in str(exc.value)
+    elif not target and not portfolios:
+        with pytest.raises(DemistoException) as exc:
+            alert_grade_change_create_command(
+                client=client,
+                username=username,
+                change_direction=change_direction,
+                score_types=score_types,
+                target=target,
+                portfolios=portfolios
+            )
+
+        assert "Either 'portfolio' or 'target' argument must be given" in str(exc.value)
+    else:
+
+        cmd_res: CommandResults = alert_grade_change_create_command(
+            client=client,
+            username=username,
+            change_direction=change_direction,
+            score_types=score_types,
+            target=target,
+            portfolios=portfolios
+        )
+
+        assert cmd_res.outputs == create_grade_alert_mock.get("id")
 
 
-def test_create_score_threshold_alert(mocker):
+def test_create_alert_portfolio_target_specified_error():
+    pass
 
-    mocker.patch.object(client, "create_score_threshold_alert", return_value=create_score_alert_mock)
 
-    response = client.create_score_threshold_alert(
-        email=USERNAME,
-        change_direction="drops_below",
-        threshold=70,
-        score_types="application_security",
-        target="any_followed_company"
-    )
+# def test_create_score_threshold_alert(mocker):
 
-    assert response == create_score_alert_mock
+#     mocker.patch.object(client, "create_score_threshold_alert", return_value=create_score_alert_mock)
+
+#     response = client.create_score_threshold_alert(
+#         email=USERNAME,
+#         change_direction="drops_below",
+#         threshold=70,
+#         score_types="application_security",
+#         target="any_followed_company"
+#     )
+
+#     assert response == create_score_alert_mock
 
 
 # def test_get_alerts_last_week(mocker):

@@ -482,7 +482,7 @@ def portfolio_list_companies_command(
         ``issue_type`` (``str``): Issue type filter
         ``had_breach_within_last_days`` (``Optional[str])``): Filter breach days back
     Returns:
-        CommandResults: The results of the command.
+        ``CommandResults``: The results of the command.
     """
 
     # We need to capitalize the industry to conform to API
@@ -607,7 +607,7 @@ def company_factor_score_get_command(
     results = CommandResults(
         readable_output=markdown,
         outputs_prefix="SecurityScorecard.Company.Factor",
-        outputs=factor_scores,
+        outputs=entries,
         raw_response=response,
         outputs_key_field='name'
     )
@@ -628,11 +628,15 @@ def company_history_score_get_command(
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-history-score
 
     Args:
-        client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): Dictionary of arguments specified in the command
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client.
+        ``domain`` (``str``): Domain to retrieve historical score for.
+        ``_from`` (``Optional[str]``): Date to start search for historical score.
+        ``to`` (``Optional[str]``): Date to end search for historical score.
+        ``timing`` (``Optional[str]``): Date search resolution.
+
 
     Returns:
-        CommandResults: The results of the command.
+        ``CommandResults``: The results of the command.
     """
 
     response = client.get_company_historical_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
@@ -656,23 +660,28 @@ def company_history_score_get_command(
     return results
 
 
-def company_history_factor_score_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def company_history_factor_score_get_command(
+    client: SecurityScorecardClient,
+    domain: str,
+    _from: Optional[str],
+    to: Optional[str],
+    timing: Optional[str]
+) -> CommandResults:
     """Retrieve company historical factor scores
 
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-history-factors-score
 
     Args:
-        client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): Dictionary of arguments specified in the command
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client.
+        ``domain`` (``str``): Domain to retrieve historical score for.
+        ``_from`` (``Optional[str]``): Date to start search for historical score.
+        ``to`` (``Optional[str]``): Date to end search for historical score.
+        ``timing`` (``Optional[str]``): Date search resolution.
+
 
     Returns:
-        CommandResults: The results of the command.
+        ``CommandResults``: The results of the command.
     """
-
-    domain = args.get('domain')
-    _from = args.get('from')
-    to = args.get('to')
-    timing = args.get('timing')
 
     response = client.get_company_historical_factor_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
 
@@ -701,7 +710,7 @@ def company_history_factor_score_get_command(client: SecurityScorecardClient, ar
     results = CommandResults(
         readable_output=markdown,
         outputs_prefix="SecurityScorecard.Company.FactorHistory",
-        outputs=factor_scores,
+        outputs=entries,
         raw_response=response,
         outputs_key_field='date'
     )
@@ -709,7 +718,14 @@ def company_history_factor_score_get_command(client: SecurityScorecardClient, ar
     return results
 
 
-def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def alert_grade_change_create_command(
+    client: SecurityScorecardClient,
+    username: str,
+    change_direction: str,
+    score_types: List[str],
+    target: Optional[str],
+    portfolios: Optional[str]
+) -> CommandResults:
     """Create alert based on grade
 
     See https://securityscorecard.readme.io/reference#post_users-by-username-username-alerts-grade
@@ -722,25 +738,18 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dic
         CommandResults: The results of the command.
     """
 
-    email = client.username
-    change_direction = args.get('change_direction')
-    score_types = argToList(args.get('score_types'))
-    target_arg = args.get('target')
-    portfolios = args.get('portfolios')
-
     # Only one argument between portfolios and target should be defined
     # Return error if neither of them is defined or if both are defined
     # Else choose the one that is defined and use it as the target
-    if portfolios and target_arg:
+    if portfolios and target:
         raise DemistoException("Both 'portfolio' and 'target' argument have been set. Please remove one of them and try again.")
     else:
-        target = target_arg or portfolios
+        target = target or portfolios
     if not target:
         raise DemistoException("Either 'portfolio' or 'target' argument must be given")
 
-    demisto.debug(f"Attempting to create alert with body {args}")
     response = client.create_grade_change_alert(
-        email=email,
+        email=username,
         change_direction=change_direction,  # type: ignore
         score_types=score_types,
         target=argToList(target)
@@ -1070,9 +1079,22 @@ def main() -> None:
                 timing=args.get("timing")
             ))
         elif demisto.command() == 'securityscorecard-company-history-factor-score-get':
-            return_results(company_history_factor_score_get_command(client, demisto.args()))
+            return_results(company_history_factor_score_get_command(
+                client=client,
+                domain=args.get("domain"),  # type: ignore
+                _from=args.get("from"),
+                to=args.get("to"),
+                timing=args.get("timing")
+            ))
         elif demisto.command() == 'securityscorecard-alert-grade-change-create':
-            return_results(alert_grade_change_create_command(client, demisto.args()))
+            return_results(alert_grade_change_create_command(
+                client=client,
+                username=client.username,
+                change_direction=args.get("change_direction"),  # type: ignore
+                score_types=argToList(args.get('score_types')),
+                target=args.get('target'),
+                portfolios=args.get('portfolios')
+            ))
         elif demisto.command() == 'securityscorecard-alert-score-threshold-create':
             return_results(alert_score_threshold_create_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-alert-delete':
