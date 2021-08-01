@@ -110,11 +110,6 @@
             "timeout": 1000
         },
         {
-            "integrations": "SecurityIntelligenceServicesFeed",
-            "playbookID": "SecurityIntelligenceServicesFeed - Test",
-            "fromversion": "5.5.0"
-        },
-        {
             "integrations": "EwsExtension",
             "playbookID": "O365 - EWS - Extension - Test",
             "fromversion": "6.0.0",
