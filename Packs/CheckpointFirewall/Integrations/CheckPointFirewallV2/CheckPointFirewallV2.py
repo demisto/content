@@ -1770,7 +1770,7 @@ def checkpoint_logout_command(base_url: str, sid: str, verify_certificate: bool)
                                   'X-chkp-sid': sid}).json().get('message')
 
 
-def test_module(base_url: str, sid: str, verify_certificate) -> str:
+def test_module(base_url: str, sid: str, verify_certificate:bool) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -1791,7 +1791,7 @@ def test_module(base_url: str, sid: str, verify_certificate) -> str:
         return "ok"
 
     except requests.HTTPError as e:
-        if response.status_code == 500:
+        if response and response.status_code == 500:
             return 'Server Error: Make sure Server URL and Server Port are correctly set'
         raise e
 
