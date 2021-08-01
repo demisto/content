@@ -726,16 +726,20 @@ def alert_grade_change_create_command(
     target: Optional[str],
     portfolios: Optional[str]
 ) -> CommandResults:
-    """Create alert based on grade
+    """Create alert based on grade change
 
     See https://securityscorecard.readme.io/reference#post_users-by-username-username-alerts-grade
 
     Args:
-        client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): Dictionary of arguments specified in the command
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+        ``username`` (``str``): The username to create alert for
+        ``change_direction`` (``str``): Rise or drop direction to trigger alert
+        ``score_types`` (``List[str]``): A list of score types
+        ``target`` (``Optional[str]``): The alert company to target
+        ``portfolios`` (``Optional[str]``): The alert portfolio to target
 
     Returns:
-        CommandResults: The results of the command.
+        ``CommandResults``: The results of the command.
     """
 
     # Only one argument between portfolios and target should be defined
@@ -770,39 +774,44 @@ def alert_grade_change_create_command(
     return results
 
 
-def alert_score_threshold_create_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
-    """Create alert based threshold met
+def alert_score_threshold_create_command(
+    client: SecurityScorecardClient,
+    username: str,
+    change_direction: str,
+    score_types: List[str],
+    threshold: int,
+    target: Optional[str],
+    portfolios: Optional[str]
+) -> CommandResults:
+    """Create alert based score threshold met
 
     See https://securityscorecard.readme.io/reference#post_users-by-username-username-alerts-score
 
     Args:
-        client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): Dictionary of arguments specified in the command
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+        ``username`` (``str``): The username to create alert for
+        ``change_direction`` (``str``): Rise or drop direction to trigger alert
+        ``threshold``: (``int``): The score threshold
+        ``score_types`` (``List[str]``): A list of score types
+        ``target`` (``Optional[str]``): The alert company to target
+        ``portfolios`` (``Optional[str]``): The alert portfolio to target
 
     Returns:
-        CommandResults: The results of the command.
+        ``CommandResults``: The results of the command.
     """
-
-    email = client.username
-    change_direction = args.get('change_direction')
-    threshold = arg_to_number(args.get('threshold'))
-    score_types = argToList(args.get('score_types'))
-    target_arg = args.get('target')
-    portfolios = args.get('portfolios')
 
     # Only one argument between portfolios and target should be defined
     # Return error if neither of them is defined or if both are defined
     # Else choose the one that is defined and use it as the target
-    if portfolios and target_arg:
+    if portfolios and target:
         raise DemistoException("Both 'portfolio' and 'target' argument have been set. Please remove one of them and try again.")
     else:
-        target = target_arg or portfolios
+        target = target or portfolios
     if not target:
         raise DemistoException("Either 'portfolio' or 'target' argument must be given")
 
-    demisto.debug(f"Attempting to create alert with body {args}")
     response = client.create_score_threshold_alert(
-        email=email,
+        email=username,
         change_direction=change_direction,  # type: ignore
         threshold=threshold,  # type: ignore
         score_types=score_types,
@@ -1096,7 +1105,15 @@ def main() -> None:
                 portfolios=args.get('portfolios')
             ))
         elif demisto.command() == 'securityscorecard-alert-score-threshold-create':
-            return_results(alert_score_threshold_create_command(client, demisto.args()))
+            return_results(alert_score_threshold_create_command(
+                client=client,
+                username=client.username,
+                change_direction=args.get("change_direction"),  # type: ignore
+                threshold=arg_to_number(args.get("threshold")),  # type: ignore
+                score_types=argToList(args.get("score_types")),
+                target=args.get('target'),
+                portfolios=args.get('portfolios'))
+            )
         elif demisto.command() == 'securityscorecard-alert-delete':
             return_results(alert_delete_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-alerts-list':

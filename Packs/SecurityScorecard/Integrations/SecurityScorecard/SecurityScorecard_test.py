@@ -10,7 +10,8 @@ from SecurityScorecard import \
     company_factor_score_get_command, \
     company_history_score_get_command, \
     company_history_factor_score_get_command, \
-    alert_grade_change_create_command
+    alert_grade_change_create_command, \
+    alert_score_threshold_create_command
 
 import json
 import io
@@ -152,6 +153,14 @@ grade_alert_test_input = [
 
 # test_create_score_change_alert
 create_score_alert_mock = test_data.get("create_score_alert")
+score_alert_test_input = [
+    (USERNAME, "rises_above", "overall", 90, None, PORTFOLIO_ID),
+    (USERNAME, "drops_below", "overall,cubit_score", 90, None, PORTFOLIO_ID),
+    (USERNAME, "rises_above", "application_security", 90, "my_scorecard", None),
+    (USERNAME, "rises_above", "application_security", 90, "my_scorecard", "1"),
+    (USERNAME, "rises_above", "application_security", 90, None, None),
+    (USERNAME, "rises_above", "overall", "ninety", None, "1")
+]
 
 services_mock = load_json("./test_data/companies/services.json")
 
@@ -530,34 +539,86 @@ def test_create_grade_change_alert(mocker, username, change_direction, score_typ
         assert cmd_res.outputs == create_grade_alert_mock.get("id")
 
 
-def test_create_alert_portfolio_target_specified_error():
-    pass
+@pytest.mark.parametrize("username, change_direction, score_types, threshold, target, portfolios", score_alert_test_input)
+def test_create_score_change_alert(mocker, username, change_direction, score_types, threshold, target, portfolios):
+    """
+    Given:
+        - A username
+        - Direction change
+        - Score type(s)
+        - A threshold
+        - Target or Portfolio(s)
+    When:
+        - Case A: Username is valid, rising grade, overall score type, to portfolio
+        - Case B: Username is valid, dropping grade, overall and cubit score score types, to portfolio
+        - Case C: Username is valid, rising grade, application security score type to my scorecard
+        - Case D: Both portfolio and target are specified
+        - Case E: Neither portfolio and target are specified
+        - Case E: Threshold supplied is not a number
+    Then:
+        - Case A: Alert created
+        - Case B: Alert created
+        - Case C: Alert created
+        - Case D: DemistoException thrown
+        - Case E: DemistoException thrown
+        - Case F: ValueError thrown
+    """
 
+    mocker.patch.object(client, "create_score_threshold_alert", return_value=create_score_alert_mock)
 
-# def test_create_score_threshold_alert(mocker):
+    if not isinstance(threshold, int):
+        with pytest.raises(ValueError) as exc:
+            res_cmd = alert_score_threshold_create_command(
+                client=client,
+                username=username,
+                change_direction=change_direction,
+                score_types=score_types,
+                threshold=int(threshold),
+                target=target,
+                portfolios=portfolios
+            )
+            print(res_cmd.outputs)
 
-#     mocker.patch.object(client, "create_score_threshold_alert", return_value=create_score_alert_mock)
+        assert f"invalid literal for int() with base 10: '{threshold}" in str(exc.value)
+    elif target and portfolios:
+        with pytest.raises(DemistoException) as exc:
+            alert_score_threshold_create_command(
+                client=client,
+                username=username,
+                change_direction=change_direction,
+                score_types=score_types,
+                threshold=threshold,
+                target=target,
+                portfolios=portfolios
+            )
 
-#     response = client.create_score_threshold_alert(
-#         email=USERNAME,
-#         change_direction="drops_below",
-#         threshold=70,
-#         score_types="application_security",
-#         target="any_followed_company"
-#     )
+        assert "Both 'portfolio' and 'target' argument have been set" in str(exc.value)
+    elif not target and not portfolios:
+        with pytest.raises(DemistoException) as exc:
+            alert_score_threshold_create_command(
+                client=client,
+                username=username,
+                change_direction=change_direction,
+                score_types=score_types,
+                threshold=threshold,
+                target=target,
+                portfolios=portfolios
+            )
 
-#     assert response == create_score_alert_mock
+        assert "Either 'portfolio' or 'target' argument must be given" in str(exc.value)
+    else:
 
+        cmd_res: CommandResults = alert_score_threshold_create_command(
+            client=client,
+            username=username,
+            change_direction=change_direction,
+            score_types=score_types,
+            threshold=threshold,
+            target=target,
+            portfolios=portfolios
+        )
 
-# def test_get_alerts_last_week(mocker):
-
-#     mocker.patch.object(client, "get_alerts_last_week", return_value=alerts_mock)
-
-#     response = client.get_alerts_last_week(email=USERNAME)
-
-#     assert response == alerts_mock
-#     assert response["size"] == 2
-#     assert isinstance(response["entries"][0]["my_scorecard"], bool)
+        assert cmd_res.outputs == create_grade_alert_mock.get("id")
 
 
 def test_get_domain_services(mocker):
@@ -568,16 +629,3 @@ def test_get_domain_services(mocker):
 
     assert response == services_mock
     assert response["total"] == len(response["entries"])
-
-
-# def test_fetch_alerts(mocker):
-
-#     mocker.patch.object(client, "fetch_alerts", return_value=alerts_mock)
-
-#     response = client.fetch_alerts(
-#         username=USERNAME
-#     )
-
-#     assert response == alerts_mock
-#     assert response["size"] == 2
-#     assert isinstance(response["entries"][0]["my_scorecard"], bool)
