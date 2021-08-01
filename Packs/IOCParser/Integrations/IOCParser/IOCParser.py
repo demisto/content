@@ -6,7 +6,7 @@ from CommonServerPython import *
 import json
 import urllib3
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Any, Dict, List
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -150,7 +150,7 @@ def limit_response(response_data: Dict[str, List], limit: int) -> Dict[str, List
         New dictionary with at most "limit" results
     """
 
-    limited_response = {}
+    limited_response: Dict[str, List] = {}
     for ioc_type, iocs in response_data.items():
         limited_response[ioc_type] = []
         for ioc in iocs:
@@ -162,15 +162,18 @@ def limit_response(response_data: Dict[str, List], limit: int) -> Dict[str, List
     return limited_response
 
 
-def process_response(response: Dict[str, Any], keys: List[str], limit: int) -> Dict[str, List]:
+def remove_unwanted_data_from_response(response: Dict[str, Any], keys: List[str], limit: int) -> Dict[str, List]:
     """
+    Removes all unwanted data from the response - ioc types that are not included in keys list,
+    the meta data and limits the results (if necessary)
     Args:
-        response: The data key from the API's response
+        response: A dictionary represents the response
         keys: IOC Types to return
         limit: maximum number of results to return
 
     Returns:
-
+        A dictionary containing only the ioc type according to the keys list as key
+        and list of all iocs from this type as value.
     """
 
     if not response:
@@ -185,7 +188,7 @@ def process_response(response: Dict[str, Any], keys: List[str], limit: int) -> D
 def unite_all_tweets_into_dict(twitter_response: Dict[str, Any]) -> None:
     # The data for this response is a list of "responses", for each tweet of the user
     """
-
+    Replaces the data of the response from list of tweets to a dictionary
     Args:
         twitter_response: A dictionary that represents the response
     """
@@ -247,7 +250,7 @@ def ioc_from_url_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
     except DemistoException as e:
         raise ValueError(str(e))
 
-    response_data = process_response(response, keys, limit)
+    response_data = remove_unwanted_data_from_response(response, keys, limit)
     if not response_data:
         raise ValueError('There is no information about the requested keys')
     command_results = []
@@ -257,7 +260,7 @@ def ioc_from_url_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
             outputs['Results'].append({'type': ioc_type, 'value': ioc})
         command_results.append(CommandResults(
             readable_output=tableToMarkdown(f'results for {ioc_type} from {url}', iocs, headers=ioc_type),
-            outputs_prefix=f'IOCParser.parseFromUrl',
+            outputs_prefix='IOCParser.parseFromUrl',
             outputs=outputs
         ))
 
@@ -282,7 +285,7 @@ def ioc_from_json_text_command(client: Client, args: Dict[str, Any]) -> List[Com
 
     data = args.get('data')
     try:
-        a_json = json.loads(data)
+        json.loads(data)
     except ValueError as e:
         raise ValueError(f'Data should be in JSON format. Error: {str(e)}')
     keys = list_to_upper_case(argToList(args.get('keys'))) or KEYS
@@ -292,7 +295,7 @@ def ioc_from_json_text_command(client: Client, args: Dict[str, Any]) -> List[Com
         response = client.ioc_from_json_text(data)
     except DemistoException as e:
         raise ValueError(str(e))
-    response_data = process_response(response, keys, limit)
+    response_data = remove_unwanted_data_from_response(response, keys, limit)
     if not response_data:
         raise ValueError('There is no information about the requested keys')
     command_results = []
@@ -302,7 +305,7 @@ def ioc_from_json_text_command(client: Client, args: Dict[str, Any]) -> List[Com
             outputs['Results'].append({'type': ioc_type, 'value': ioc})
         command_results.append(CommandResults(
             readable_output=tableToMarkdown(f'results for {ioc_type}', iocs, headers=ioc_type),
-            outputs_prefix=f'IOCParser.parseFromJSONText',
+            outputs_prefix='IOCParser.parseFromJSONText',
             outputs=outputs
         ))
 
@@ -352,7 +355,7 @@ def ioc_from_raw_text_command(client: Client, args: Dict[str, Any]) -> List[Comm
         response = client.ioc_from_raw_text(data)
     except DemistoException as e:
         raise ValueError(str(e))
-    response_data = process_response(response, keys, limit)
+    response_data = remove_unwanted_data_from_response(response, keys, limit)
     if not response_data:
         raise ValueError('There is no information about the requested keys')
     command_results = []
@@ -362,7 +365,7 @@ def ioc_from_raw_text_command(client: Client, args: Dict[str, Any]) -> List[Comm
             outputs['Results'].append({'type': ioc_type, 'value': ioc})
         command_results.append(CommandResults(
             readable_output=tableToMarkdown(f'results for {ioc_type}', iocs, headers=ioc_type),
-            outputs_prefix=f'IOCParser.parseFromRawText',
+            outputs_prefix='IOCParser.parseFromRawText',
             outputs=outputs
         ))
 
@@ -393,7 +396,7 @@ def ioc_from_twitter_command(client: Client, args: Dict[str, Any]) -> List[Comma
     except DemistoException as e:
         raise ValueError('Could not find this twitter account') from e
     unite_all_tweets_into_dict(twitter_response)
-    response_data = process_response(twitter_response, keys, limit)
+    response_data = remove_unwanted_data_from_response(twitter_response, keys, limit)
     if not response_data:
         raise ValueError('There is no information about the requested keys')
     command_results = []
@@ -402,12 +405,10 @@ def ioc_from_twitter_command(client: Client, args: Dict[str, Any]) -> List[Comma
         for ioc in iocs:
             outputs['Results'].append({'type': ioc_type, 'value': ioc})
         command_results.append(CommandResults(
-                readable_output=tableToMarkdown(f'results for {ioc_type} from {twitter_account}',
-                                                iocs,
-                                                headers=ioc_type),
-                outputs_prefix=f'IOCParser.parseFromTwitter',
-                outputs=outputs
-            ))
+            readable_output=tableToMarkdown(f'results for {ioc_type} from {twitter_account}', iocs, headers=ioc_type),
+            outputs_prefix='IOCParser.parseFromTwitter',
+            outputs=outputs
+        ))
 
     command_results.append(CommandResults(
         raw_response=response_data
