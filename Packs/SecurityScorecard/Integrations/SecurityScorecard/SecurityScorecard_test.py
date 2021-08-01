@@ -11,7 +11,8 @@ from SecurityScorecard import \
     company_history_score_get_command, \
     company_history_factor_score_get_command, \
     alert_grade_change_create_command, \
-    alert_score_threshold_create_command
+    alert_score_threshold_create_command, \
+    company_services_get_command
 
 import json
 import io
@@ -162,7 +163,12 @@ score_alert_test_input = [
     (USERNAME, "rises_above", "overall", "ninety", None, "1")
 ]
 
-services_mock = load_json("./test_data/companies/services.json")
+# test_get_domain_services
+services_mock = test_data.get("services")
+services_test_input = (
+    (DOMAIN),
+    (DOMAIN_NE)
+)
 
 """ Helper Functions Unit Tests"""
 
@@ -621,11 +627,21 @@ def test_create_score_change_alert(mocker, username, change_direction, score_typ
         assert cmd_res.outputs == create_grade_alert_mock.get("id")
 
 
-def test_get_domain_services(mocker):
+@pytest.mark.parametrize("domain", services_test_input)
+def test_get_domain_services(mocker, domain):
+
+    """
+    Given:
+        - A domain
+    When:
+        - Domain is valid
+    Then:
+        - List of services is returned
+    """
 
     mocker.patch.object(client, "get_domain_services", return_value=services_mock)
 
-    response = client.get_domain_services(domain=DOMAIN)
+    cmd_res: CommandResults = company_services_get_command(client=client, domain=domain)
+    services = cmd_res.outputs
 
-    assert response == services_mock
-    assert response["total"] == len(response["entries"])
+    assert services == services_mock.get("entries")

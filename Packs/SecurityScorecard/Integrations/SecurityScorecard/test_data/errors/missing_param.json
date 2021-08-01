@@ -1,6 +1,0 @@
-{
-	"error": {
-		"message": "Missing required body parameter \"ScoreAlertSetting\"",
-		"statusCode": 400
-	}
-}

@@ -918,20 +918,18 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
     return results
 
 
-def company_services_get_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+def company_services_get_command(client: SecurityScorecardClient, domain: str) -> CommandResults:
     """Retrieve the service providers of a domain
 
     See https://securityscorecard.readme.io/reference#get_companies-domain-services
 
     Args:
-        client (SecurityScorecardClient): SecurityScorecard client
-        args (Dict[str, Any]): Dictionary of arguments specified in the command
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+        ``domain`` (``str``): Domain.
 
     Returns:
-        CommandResults: The results of the command.
+        ``CommandResults``: The results of the command.
     """
-
-    domain = args.get("domain")
     response = client.get_domain_services(domain=domain)  # type: ignore
 
     entries = response.get("entries")
@@ -950,7 +948,7 @@ def company_services_get_command(client: SecurityScorecardClient, args: Dict[str
 
     results = CommandResults(
         outputs_prefix="SecurityScorecard.Company.Services",
-        outputs=services,
+        outputs=entries,
         readable_output=markdown,
         raw_response=response,
         outputs_key_field='category'
@@ -1119,7 +1117,12 @@ def main() -> None:
         elif demisto.command() == 'securityscorecard-alerts-list':
             return_results(alerts_list_command(client, demisto.args()))
         elif demisto.command() == 'securityscorecard-company-services-get':
-            return_results(company_services_get_command(client, demisto.args()))
+            return_results(
+                company_services_get_command(
+                    client=client,
+                    domain=args.get("domain")
+                )
+            )
 
     # Log exceptions and return errors
     except Exception as e:
