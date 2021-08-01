@@ -34,6 +34,7 @@ class RetryResMocker(ResMocker):
             return 403
         return self._status_code
 
+
 SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS = {
     "sha256": "sha256",
     "environment_id": "160: Windows 10",
