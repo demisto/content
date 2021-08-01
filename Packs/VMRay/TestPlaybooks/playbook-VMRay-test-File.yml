@@ -1,6 +1,6 @@
-id: VMRay-Test
+id: VMRay-Test-File
 version: -1
-name: VMRay-Test
+name: VMRay-Test-File
 starttaskid: "0"
 tasks:
   "0":
@@ -96,8 +96,6 @@ tasks:
         simple: "1"
       max_jobs:
         simple: "1"
-      reanalyze:
-        simple: "1"
       sample_type: {}
       shareable: {}
       tags: {}
@@ -134,17 +132,23 @@ tasks:
     nexttasks:
       '#none#':
       - "6"
+      - "10"
+      - "11"
     scriptarguments:
       limit:
         simple: "1"
       sample_id:
-        simple: ${VMRay.Sample.SampleID}
+        complex:
+          root: VMRay.Sample
+          accessor: SampleID
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 720
+          "y": 710
         }
       }
     note: false
@@ -168,24 +172,32 @@ tasks:
       - "7"
     scriptarguments:
       sample_id:
-        simple: ${VMRay.Sample.SampleID}
+        complex:
+          root: VMRay.Sample
+          accessor: SampleID
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 70,
+          "y": 1160
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 3b6a005d-852c-4004-809a-e0aab8fbd766
+    taskid: 85bd397a-3e12-40ce-86b0-b02b008a8dd7
     type: regular
     task:
-      id: 3b6a005d-852c-4004-809a-e0aab8fbd766
+      id: 85bd397a-3e12-40ce-86b0-b02b008a8dd7
       version: -1
       name: Get IOCs
       description: getting iocs of given sample
@@ -198,13 +210,20 @@ tasks:
       - "7"
     scriptarguments:
       sample_id:
-        simple: ${VMRay.Sample.SampleID}
+        complex:
+          root: VMRay.Sample
+          accessor: SampleID
+          transformers:
+          - operator: uniq
+      all_artifacts:
+        simple: "true"
     separatecontext: false
+    reputationcalc: 2
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1070
+          "y": 1160
         }
       }
     note: false
@@ -228,9 +247,17 @@ tasks:
       - "8"
     scriptarguments:
       analysis_id:
-        simple: ${VMRay.Analysis.AnalysisID}
+        complex:
+          root: VMRay.Analysis
+          accessor: AnalysisID
+          transformers:
+          - operator: uniq
       submission_id:
-        simple: ${VMRay.Submission.SubmissionID}
+        complex:
+          root: VMRay.Submission
+          accessor: SubmissionID
+          transformers:
+          - operator: uniq
       tag:
         simple: test_task
     separatecontext: false
@@ -238,7 +265,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 895
+          "y": 985
         }
       }
     note: false
@@ -260,7 +287,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1245
+          "y": 1425
         }
       }
     note: false
@@ -284,9 +311,17 @@ tasks:
       - "7"
     scriptarguments:
       analysis_id:
-        simple: ${VMRay.Analysis.AnalysisID}
+        complex:
+          root: VMRay.Analysis
+          accessor: AnalysisID
+          transformers:
+          - operator: uniq
       submission_id:
-        simple: ${VMRay.Submission.SubmissionID}
+        complex:
+          root: VMRay.Submission
+          accessor: SubmissionID
+          transformers:
+          - operator: uniq
       tag:
         simple: test_task
     separatecontext: false
@@ -294,7 +329,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1070
+          "y": 1160
         }
       }
     note: false
@@ -319,10 +354,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -334,14 +365,94 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: c2a79f46-1ba3-4bf2-806e-8e62cb9264b3
+    type: regular
+    task:
+      id: c2a79f46-1ba3-4bf2-806e-8e62cb9264b3
+      version: -1
+      name: Get Summary V2
+      description: Retrieves the Summary JSON v2 for a specific analysis.
+      script: vmray|||vmray-get-summary
+      type: regular
+      iscommand: true
+      brand: vmray
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      analysis_id:
+        complex:
+          root: VMRay.Analysis
+          accessor: AnalysisID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 5a2424d0-ddf5-4822-8837-2afd12f63f6a
+    type: regular
+    task:
+      id: 5a2424d0-ddf5-4822-8837-2afd12f63f6a
+      version: -1
+      name: Get sample by hash
+      description: Retrieves sample information by hash.
+      script: vmray|||vmray-get-sample-by-hash
+      type: regular
+      iscommand: true
+      brand: vmray
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      hash:
+        complex:
+          root: VMRay.Analysis
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
-        "width": 1240,
-        "x": 50,
+        "height": 1440,
+        "width": 2100,
+        "x": 70,
         "y": 50
       }
     }
