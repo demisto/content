@@ -143,9 +143,9 @@ try:
         # This is the call made when pressing the integration test button.
         test_module()
         demisto.results('ok')
-    elif demisto.command() == 'FortiAuthenticator-get-user':
+    elif demisto.command() == 'fortiauthenticator-get-user':
         get_user_command()
-    elif demisto.command() == 'FortiAuthenticator-update-user':
+    elif demisto.command() == 'fortiauthenticator-update-user':
         update_user_command()
 
 # Log exceptions and return errors
