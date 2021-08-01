@@ -1,6 +1,6 @@
 There are several steps required to configure this integration. 
 
-For more information, see the [Microsoft Teams](https://support.demisto.com/hc/en-us/articles/360034095994-Microsoft-Teams) integration documentation.
+For more information, see the [Microsoft Teams](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams) integration documentation.
 
 To use the ***microsoft-teams-ring-user*** command make sure your Bot has the following premissions:
  - Calls.Initiate.All
