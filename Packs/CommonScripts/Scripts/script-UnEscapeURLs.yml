@@ -96,6 +96,11 @@ script: >-
       } catch (e) {
       // Ignore if can't decodeURI
       }
+      // Remove URI from URL
+      var ind = clean.indexOf("?");
+      if (ind > -1){
+        clean = clean.slice(0, ind);
+      }
 
       return clean;
   }
