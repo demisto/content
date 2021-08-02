@@ -94,7 +94,7 @@ script:
       name: source
       required: false
     description: Download data from Threat Log in .csv format
-    name: abnormalsecurity-download-data-from-threat-log-in-csv-format
+    name: abnormalsecurity-download-threat-log-csv
   - arguments:
       - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ
           lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently
@@ -106,23 +106,23 @@ script:
         name: filter
         required: false
       - description: Number of abuse campaigns shown on each page. Each page of data
-          will have at most pageSize abuse campaign IDs.
+          will have at most page_size abuse campaign IDs.
         isArray: false
-        name: pageSize
+        name: page_size
         required: false
       - description: 1-indexed page number to get a particular page of threats. Has
           no effect if filter is not specified.
         isArray: false
-        name: pageNumber
+        name: page_number
         required: false
       - description: Returns test data if set to `True`
         isArray: false
         name: mock-data
         required: false
     description: Get a list of campaigns submitted to Abuse Mailbox
-    name: abnormalsecurity-get-a-list-of-campaigns-submitted-to-abuse-mailbox
+    name: abnormalsecurity-list-abuse-mailbox-campaigns
     outputs:
-      - contextPath: AbnormalSecurity.inline_response_200_3.campaigns.campaignID
+      - contextPath: AbnormalSecurity.inline_response_200_3.campaigns.campaignId
         description: An id which maps to an abuse campaign.
         type: String
       - contextPath: AbnormalSecurity.inline_response_200_3.pageNumber
@@ -332,14 +332,14 @@ script:
   - arguments:
     - description: A UUID representing the abuse campaign id
       isArray: false
-      name: campaignId
+      name: campaign_id
       required: true
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
       required: false
     description: Get details of an Abuse Mailbox campaign
-    name: abnormalsecurity-get-details-of-an-abuse-mailbox-campaign
+    name: abnormalsecurity-get-abuse-mailbox-campaign
     outputs:
       - contextPath: AbnormalSecurity.AbuseCampaignDetails.campaignId
         description: An id which maps to an abuse campaign.
@@ -387,24 +387,24 @@ script:
       name: mock-data
       required: false
     description: Get employee identity analysis (Genome) data
-    name: abnormalsecurity-get-employee-identity-analysis-genome-data
+    name: abnormalsecurity-get-employee-identity-analysis
     outputs:
-      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.data.key
+      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.histograms.key
         description: Genome key name
         type: String
-      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.data.name
+      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.histograms.name
         description: Genome title
         type: String
-      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.data.description
+      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.histograms.description
         description: Description of genome object
         type: String
-      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.data.values.value
+      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.histograms.values.value
         description: Category value
         type: String
-      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.data.values.percentage
+      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.histograms.values.percentage
         description: Ratio of this category relative to others
         type: Number
-      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.data.values.total_count
+      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.histograms.values.total_count
         description: Number of occurences for this category
         type: Number
   - arguments:
@@ -441,7 +441,7 @@ script:
       name: mock-data
       required: false
     description: Get employee login information for last 30 days in csv format
-    name: abnormalsecurity-get-employee-login-information-for-last-30-days-in-csv-format
+    name: abnormalsecurity-get-employee-last-30-days-login-csv
   - arguments:
     - description: Returns test data if set to `True`
       isArray: false
@@ -494,6 +494,40 @@ script:
       - contextPath: AbnormalSecurity.CaseManageResults.status_url
         description: URL of the status of the action
         type: String
+  - arguments:
+    - description: A string representing the case
+      isArray: false
+      name: case_id
+      required: true
+    - description: Returns test data if set to `True`
+      isArray: false
+      name: mock-data
+      required: false
+    description: Provides the analysis and timeline details of a case
+    name: abnormalsecurity-get-case-analysis-and-timeline
+    outputs:
+    - contextPath: AbnormalSecurity.CaseAnalysis.insights.signal
+      description: ''
+      type: String
+    - contextPath: AbnormalSecurity.CaseAnalysis.insights.description
+      description: ''
+      type: String
+    - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.event_timestamp
+      description: Time when event occurred
+      type: String
+    - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.category
+      description: Type of event
+      type: String
+    - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.title
+      description: Title of the event
+      type: String
+    - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.ip_address
+      description: IP Address where user accessed mail from
+      type: String
+    - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.field_labels
+      description: Analysis labels associated with the fields in the timeline event
+      type: Unknown
+
   - arguments:
     - description: Returns test data if set to `True`
       isArray: false
