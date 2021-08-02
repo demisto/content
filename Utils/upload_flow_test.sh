@@ -67,7 +67,7 @@ function add_dependency {
 
   pack_path="${CONTENT_PATH}/Packs/${source_pack}/pack_metadata.json"
 
-  sed -i "s/\"dependencies\": {/\"dependencies\": {\n\t${pack_name}: {\n\t\t\"mandatory\": true,\n\t\t\"display_name\": ${pack_name}\n\t},/g" "${pack_path}" || fail
+  sed -i "" "s/\"dependencies\": {/\"dependencies\": {\n\t${pack_name}: {\n\t\t\"mandatory\": true,\n\t\t\"display_name\": ${pack_name}\n\t},/g" "${pack_path}" || fail
 
 }
 # add_author_image
@@ -193,10 +193,10 @@ function set_pack_hidden {
     return
   elif grep '"hidden": false'; then
     # pack set hidden to false
-    sed -i 's/"hidden": false/"hidden": true/g' ./Packs/Microsoft365Defender/pack_metadata.json
+    sed -i "" 's/"hidden": false/"hidden": true/g' ./Packs/Microsoft365Defender/pack_metadata.json
   else
     # pack hidden key is missing
-    sed -i 's/{/{\n"hidden": true,\n/g' ./Packs/Microsoft365Defender/pack_metadata.json
+    sed -i "" 's/{/{\n"hidden": true,\n/g' ./Packs/Microsoft365Defender/pack_metadata.json
   fi
 }
 
@@ -248,7 +248,7 @@ function add_pack_to_landing_page {
   pack_name=$1
 
   json_file="${CONTENT_PATH}/Tests/Marketplace/landingPage_sections.json"
-  sed -i "s/\"Getting Started\":[/\"Getting Started\":[\n\"${pack_name}\",\n/g" "${json_file}"
+  sed -i "" "s/\"Getting Started\":[/\"Getting Started\":[\n\"${pack_name}\",\n/g" "${json_file}"
 
 }
 
@@ -266,7 +266,7 @@ function add_pack_to_landing_page {
 #  pack_name=$1
 #  pack_metadata="${CONTENT_PATH}/Packs/${pack_name}/pack_metadata.json"
 #
-#  sed -i "s/\"Getting Started\":[/\"Getting Started\":[\n\"${pack_name}\",\n/g" "${pack_metadata}"
+#  sed -i "" "s/\"Getting Started\":[/\"Getting Started\":[\n\"${pack_name}\",\n/g" "${pack_metadata}"
 #
 #}
 function trigger_circle_ci() {
