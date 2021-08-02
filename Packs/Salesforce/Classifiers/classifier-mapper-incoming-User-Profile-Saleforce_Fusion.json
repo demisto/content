@@ -22,7 +22,7 @@
 					"complex": null,
 					"simple": "Work_Email__c"
 				},
-				"First Name": {
+				"Given Name": {
 					"complex": null,
 					"simple": "FF__First_Name__c"
 				},

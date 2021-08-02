@@ -24,7 +24,7 @@
 				},
 				"FF__First_Name__c": {
 					"complex": null,
-					"simple": "firstname"
+					"simple": "givenname"
 				},
 				"FF__Last_Name__c": {
 					"complex": null,
@@ -70,10 +70,6 @@
 				"country": {
 					"complex": null,
 					"simple": "country"
-				},
-				"name": {
-					"complex": null,
-					"simple": "displayname"
 				},
 				"Work_Email__c": {
 					"complex": null,

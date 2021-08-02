@@ -1,4 +1,4 @@
-category: Case Management
+category: Identity and Access Management
 commonfields:
   id: Salesforce Fusion IAM
   version: -1
@@ -44,17 +44,18 @@ configuration:
   name: create_if_not_exists
   required: false
   type: 8
-- defaultvalue: User Profile - IAM Template (Incoming)
+- defaultvalue: User Profile - Saleforce Fusion (Incoming)
   display: Incoming Mapper
   name: mapper_in
   required: true
   type: 0
-- defaultvalue: User Profile - IAM Template (Outgoing)
+- defaultvalue: User Profile - Saleforce Fusion (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
   required: true
   type: 0
-description: An Identity and Access Management integration template.
+description: Integrate with Saleforce Fusion Identity Access Management service to execute CRUD
+  operations to employee lifecycle processes.
 display: Salesforce Fusion IAM
 name: Salesforce Fusion IAM
 script:
@@ -261,7 +262,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.22912
   isfetch: false
   longRunning: false
   longRunningPort: false
