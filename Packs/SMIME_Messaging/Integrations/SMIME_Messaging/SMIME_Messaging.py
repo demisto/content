@@ -8,7 +8,9 @@ from M2Crypto import BIO, SMIME, X509, m2
 from typing import Dict, Tuple
 from tempfile import NamedTemporaryFile
 
-from charset_normalizer import detect
+from charset_normalizer import from_bytes
+import warnings
+warnings.simplefilter("default")
 
 ''' HELPER FUNCTIONS '''
 
@@ -141,21 +143,13 @@ def decode_str(decrypted_text: bytes, encoding: str) -> Tuple[str, str]:
     """
     msg = ''
     if not encoding:
-        with warnings.catch_warnings(record=True) as w:
-
-            detection = detect(decrypted_text)
-            encoding = detection.get('encoding', 'utf-8') or 'utf-8'
-            demisto.debug(f"Going to decode decrypted text using {encoding} encoding, detected with confidence: "
-                          f"{detection.get('confidence', 0)}")
-            if w:
-                msg = f'Note: detected encoding ended with warning {w[0].message} Characters may be missing.' \
+        with warnings.catch_warnings(record=True) as e:
+            charset_match = from_bytes(decrypted_text)
+            out = str(charset_match[0]) if len(charset_match) else ''
+            demisto.debug(f"Decode decrypted text using {charset_match[0].encoding} encoding")
+            if e:
+                msg = f'Note: encoding detection ended with warning: {e[0].message} Characters may be missing.' \
                       ' You can try running this command again and pass the encoding code as argument.\n'
-            try:
-                out = decrypted_text.decode(encoding)
-            except UnicodeDecodeError:
-                # In case the detected encoding fails apply the default encoding
-                demisto.debug(f'Could not decode file using detected encoding:{encoding}, retrying using utf-8.\n')
-                out = decrypted_text.decode('utf-8')
     else:
         out = decrypted_text.decode(encoding)
 
