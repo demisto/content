@@ -9,7 +9,7 @@ configuration:
   required: false
   type: 0
 - display: DNS
-  additionalinfo: The IP address of the DNS server the integration will use to resolve your hosts.
+  additionalinfo: Optional IP address of a DNS server the integration will use to resolve your hosts. Use this setting when the host linux machine uses a different DNS from the Windows machines you are targeting.
   name: dns
   required: false
   type: 0
