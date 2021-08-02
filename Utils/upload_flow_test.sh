@@ -100,7 +100,7 @@ function add_1_0_0_release_note {
 
   cd "${CONTENT_PATH}/Packs/${pack_name}/ReleaseNotes" || fail
   current_latest_note=$(ls -t | head -1)
-  cp current_latest_note 1_0_0.md
+  cp "${current_latest_note} 1_0_0.md
   cd "${CONTENT_PATH}" || fail
 }
 
@@ -151,7 +151,7 @@ function change_integration_image {
   source_pack_name=$1
   dest_pack_name=$2
 
-  source_integration_path="${CONTENT_PATH}/Packs/${pack_name}/Integrations/${pack_name}/${pack_name}_image.png"
+  source_integration_path="${CONTENT_PATH}/Packs/${source_pack_name}/Integrations/${source_pack_name}/${source_pack_name}_image.png"
   dest_integration_path="${CONTENT_PATH}/Packs/${dest_pack_name}/Integrations/${dest_pack_name}/${dest_pack_name}_image.png"
   cp "${source_integration_path}" "${dest_integration_path}"
 }
