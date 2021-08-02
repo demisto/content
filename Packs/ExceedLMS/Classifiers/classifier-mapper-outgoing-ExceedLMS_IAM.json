@@ -55,7 +55,6 @@
 					"complex": null,
 					"simple": "surname"
 				},
-
 				"login": {
 					"complex": null,
 					"simple": "username"
@@ -71,6 +70,10 @@
 				"hired_on": {
 					"complex": null,
 					"simple": "hiredate"
+				},
+				"manager_email": {
+					"complex": null,
+					"simple": "manageremailaddress"
 				}
 			}
 		}

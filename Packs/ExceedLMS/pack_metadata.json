@@ -1,6 +1,6 @@
 {
     "name": "ExceedLMS",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "ExceedLMS Identity and Access Management (IAM)",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

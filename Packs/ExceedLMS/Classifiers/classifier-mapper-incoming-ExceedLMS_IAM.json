@@ -18,7 +18,7 @@
 					"complex": null,
 					"simple": "code"
 				},
-				"User Name": {
+				"Username": {
 					"complex": null,
 					"simple": "email"
 				},
@@ -38,7 +38,7 @@
 					"complex": null,
 					"simple": "custom_a"
 				},
-				"User Type": {
+				"userType": {
 					"complex": null,
 					"simple": "custom_b"
 				},
@@ -58,57 +58,17 @@
 					"complex": null,
 					"simple": "custom_f"
 				},
-				"Org Level 1": {
-					"complex": null,
-					"simple": "custom_g"
-				},
-				"Org Level 2": {
-					"complex": null,
-					"simple": "custom_h"
-				},
-				"Org Level 3": {
-					"complex": null,
-					"simple": "custom_i"
-				},
 				"Location Region": {
 					"complex": null,
 					"simple": "custom_j"
 				},
-				"VP Flag": {
-					"complex": null,
-					"simple": "custom_k"
-				},
-				"People Manager Flag": {
-					"complex": null,
-					"simple": "custom_l"
-				},
-				"Manager Email": {
+				"Employee Manager Email": {
 					"complex": null,
 					"simple": "custom_m"
 				},
 				"Employee Type": {
 					"complex": null,
 					"simple": "custom_r"
-				},
-				"Management Level 2": {
-					"complex": null,
-					"simple": "custom_p"
-				},
-				"Management Level 3": {
-					"complex": null,
-					"simple": "custom_q"
-				},
-				"Management Level 4": {
-					"complex": null,
-					"simple": "custom_s"
-				},
-				"Management Level 5": {
-					"complex": null,
-					"simple": "custom_t"
-				},
-				"Exceed LMS Organization ID": {
-					"complex": null,
-					"simple": "organization_id"
 				}
 			}
 		}
