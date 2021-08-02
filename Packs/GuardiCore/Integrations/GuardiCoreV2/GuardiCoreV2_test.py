@@ -5,7 +5,6 @@ import io
 import pytest
 from pytest import raises
 
-
 from dateparser import parse
 from pytz import utc
 
@@ -234,11 +233,8 @@ def test_endpoint_command(mocker, requests_mock):
     mocker.patch.object(client, '_http_request', return_value=mock_response)
     response = endpoint_command(client, args)
     assert len(response) == 1
-    assert response[0].readable_output == '''### GuardiCore v2 - Endpoint: Accounting-web-1
-|Hostname|ID|IPAddress|MACAddress|OS|OSVersion|Vendor|
-|---|---|---|---|---|---|---|
-| Accounting-web-1 | 920b9a05-889e-429e-97d0-94a92ccbe376 | 1.1.1.1,''' +\
-' fe80::250:56ff:fe84:da1e | 00:50:56:84:da:1e | 2 | Ubuntu 16.04.6 LTS | GuardiCore v2 Response |\n'
+    assert response[0].readable_output == open(
+        'test_data/endpoint_command_human.md').read()
 
 
 def test_get_incidents(mocker, requests_mock):
