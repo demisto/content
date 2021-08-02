@@ -248,8 +248,8 @@ def get_incidents(client: Client, args: Dict[str, Any]):
     )
 
 
-def fetch_incidents(client: Client, args: Dict[str, Any]) -> Tuple[
-    List[Dict], int]:
+def fetch_incidents(client: Client, args: Dict[str, Any]) -> \
+        Tuple[List[Dict], int]:
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_fetch")
     first_fetch = args.get('first_fetch', None)
@@ -362,8 +362,8 @@ def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return endpoints
 
 
-def endpoint_command(client: Client, args: Dict[str, Any]) -> List[
-    CommandResults]:
+def endpoint_command(client: Client, args: Dict[str, Any]) -> \
+        List[CommandResults]:
     id = args.get("id", None)
     ip_address = args.get("ip", None)
     hostname = args.get("hostname", None)
