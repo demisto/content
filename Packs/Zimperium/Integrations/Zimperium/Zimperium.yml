@@ -43,10 +43,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Fetch and investigate mobile security alerts, generated based on anomalous
-  or unauthorized activities detected on a user's mobile device.
-display: Zimperium
+description: Fetch and investigate mobile security alerts, generated based on anomalous or unauthorized activities detected on a user's mobile device.
 name: Zimperium
+fromversion: 5.0.0
+display: Zimperium
 script:
   commands:
   - arguments:
@@ -273,8 +273,7 @@ script:
       description: User middle name.
       type: String
     - contextPath: Zimperium.Users.lastSyncFromMdm
-      description: Last time the user synced from MDM, e.g., AirWatch, Mobile Iron,
-        etc.
+      description: Last time the user synced from MDM, e.g., AirWatch, Mobile Iron, etc.
       type: Date
     - contextPath: Zimperium.Users.lastZconsoleLogin
       description: User last login to the Zimperium console.
@@ -316,8 +315,7 @@ script:
       description: Whether the user is a superuser.
       type: bool
     - contextPath: Zimperium.Users.syncedFromMdm
-      description: Whether the user is synced from MDM, e.g., AirWatch, Mobile Iron,
-        etc.
+      description: Whether the user is synced from MDM, e.g., AirWatch, Mobile Iron, etc.
       type: bool
     - contextPath: Zimperium.Users.termsVersion
       description: User terms version.
@@ -365,8 +363,7 @@ script:
       description: User last login date.
       type: Date
     - contextPath: Zimperium.Users.lastSyncFromMdm
-      description: Last time the user synced from MDM, e.g., AirWatch, Mobile Iron,
-        etc.
+      description: Last time the user synced from MDM, e.g., AirWatch, Mobile Iron, etc.
       type: Unknown
     - contextPath: Zimperium.Users.lastZconsoleLogin
       description: User last login to the Zimperium console.
@@ -408,8 +405,7 @@ script:
       description: Whether the user is a superuser.
       type: bool
     - contextPath: Zimperium.Users.syncedFromMdm
-      description: Whether the user is synced from MDM, e.g., AirWatch, Mobile Iron,
-        etc.
+      description: Whether the user is synced from MDM, e.g., AirWatch, Mobile Iron, etc.
       type: bool
     - contextPath: Zimperium.Users.termsVersion
       description: User terms version.
@@ -487,7 +483,7 @@ script:
       description: Device last seen.
       type: Date
     - contextPath: Zimperium.Devices.mdmId
-      description: MDM ID, e.g., AirWatch, Mobile Iron.
+      description: 'MDM ID, e.g., AirWatch, Mobile Iron.'
       type: String
     - contextPath: Zimperium.Devices.model
       description: Device model.
@@ -777,7 +773,7 @@ script:
       description: Device last seen time.
       type: Date
     - contextPath: Zimperium.Devices.mdmId
-      description: MDM ID, e.g., AirWatch, Mobile Iron.
+      description: 'MDM ID, e.g., AirWatch, Mobile Iron.'
       type: String
     - contextPath: Zimperium.Devices.model
       description: Device model.
@@ -1030,39 +1026,39 @@ script:
   - arguments:
     - default: true
       description: The MD5 hash of the file.
-      isArray: true
+      isArray: false
       name: file
-      required: true
+      required: false
       secret: false
+    outputs:
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: File.MD5
+        description: MD5 hash of the file.
+        type: String
+      - contextPath: File.SHA1
+        description: SHA1 hash of the file.
+        type: String
+      - contextPath: File.SHA256
+        description: SHA256 hash of the file.
+        type: String
+      - contextPath: File.Malicious.Vendor
+        description: For malicious files, the vendor that made the decision.
+        type: String
     deprecated: false
     description: Checks the reputation of an app in Zimperium.
     execution: false
     name: file
-    outputs:
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: Number
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: String
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: String
-    - contextPath: File.MD5
-      description: MD5 hash of the file.
-      type: String
-    - contextPath: File.SHA1
-      description: SHA1 hash of the file.
-      type: String
-    - contextPath: File.SHA256
-      description: SHA256 hash of the file.
-      type: String
-    - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision.
-      type: String
   dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: true
@@ -1077,4 +1073,3 @@ tests:
 - Test Convert file hash to corresponding hashes
 defaultmapperin: Zimperium-mapper
 defaultclassifier: Zimperium
-fromversion: 5.0.0

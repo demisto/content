@@ -12,7 +12,7 @@ configuration:
   name: api_key
   required: false
   type: 4
-- additionalInfo: Reliability of the source providing the intelligence data.
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
   name: integrationReliability

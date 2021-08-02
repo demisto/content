@@ -7,7 +7,7 @@ configuration:
   name: APIToken
   required: true
   type: 4
-- additionalInfo: Reliability of the source providing the intelligence data.
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
   name: integrationReliability

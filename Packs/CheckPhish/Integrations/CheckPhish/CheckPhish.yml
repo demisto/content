@@ -60,13 +60,13 @@ configuration:
   - suspicious
   required: false
   type: 16
-- additionalInfo: Reliability of the source providing the intelligence data.
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
   name: integrationReliability
   options:
   - A+ - 3rd party enrichment
-  - A - Completely reliable
+  - A - Completely reliablePacks/GoogleSafeBrowsing/ReleaseNotes/2_0_5.md
   - B - Usually reliable
   - C - Fairly reliable
   - D - Not usually reliable
