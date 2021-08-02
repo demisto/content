@@ -458,7 +458,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             title = f'SOCRadar - Analysis results for hash: {hash_to_score}'
 
             context_entry = build_entry_context(raw_response, 'hash')
-            dbot_entry = build_dbot_entry(f"{hash_to_score}", hash_type, 'SOCRadar ThreatFusion', score)
+            dbot_entry = build_dbot_entry(hash_to_score, hash_type, 'SOCRadar ThreatFusion', score)
             context = {
                 'SOCRadarThreatFusion.Reputation.Hash(val.File && val.File === obj.File)': context_entry
             }
@@ -497,6 +497,136 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return command_results_list
 
 
+def score_ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Returns SOCRadar reputation details for the given IP entity.
+
+    :type client: ``Client``
+    :param client: client to use
+
+    :type args: Dict[str, Any]
+    :param args: contains all arguments for list-detections command
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``
+    :rtype: ``CommandResults``
+    """
+    ip_to_score = args.get('ip', '')
+    verify_entity_type([ip_to_score], 'ip')
+
+    raw_response = client.get_entity_score(ip_to_score)
+    if raw_response.get('is_success'):
+        if raw_response.get('data', {}).get('is_whitelisted'):
+            score = 1
+        elif (score := raw_response.get('data', {}).get('score', 0)) is not None:
+            score = calculate_dbot_score(score)
+        title = f'SOCRadar - Analysis results for IP: {ip_to_score}'
+        context_entry = build_entry_context(raw_response, 'ip')
+        dbot_entry = build_dbot_entry(ip_to_score, DBotScoreType.IP, 'SOCRadar ThreatFusion', score)
+        context = {
+            'SOCRadarThreatFusion.Reputation.IP(val.IP && val.IP === obj.IP)': context_entry
+        }
+        context.update(dbot_entry)
+        human_readable = tableToMarkdown(title, context_entry)
+    else:
+        message = f"Error while getting API response. SOCRadar API Response: {raw_response.get('message', '')}"
+        raise DemistoException(message=message)
+
+    return CommandResults(
+        outputs_prefix="SOCRadarThreatFusion.Reputation.IP",
+        outputs_key_field="IP",
+        readable_output=human_readable,
+        raw_response=raw_response,
+        outputs=context
+    )
+
+
+def score_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Returns SOCRadar reputation details for the given domain entity.
+
+    :type client: ``Client``
+    :param client: client to use
+
+    :type args: Dict[str, Any]
+    :param args: contains all arguments for list-detections command
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``
+    :rtype: ``CommandResults``
+    """
+    domain_to_score = args.get('domain', '')
+    verify_entity_type([domain_to_score], 'domain')
+
+    raw_response = client.get_entity_score(domain_to_score)
+    if raw_response.get('is_success'):
+        if raw_response.get('data', {}).get('is_whitelisted'):
+            score = 1
+        elif (score := raw_response.get('data', {}).get('score', 0)) is not None:
+            score = calculate_dbot_score(score)
+        title = f'SOCRadar - Analysis results for domain: {domain_to_score}'
+        context_entry = build_entry_context(raw_response, 'domain')
+        dbot_entry = build_dbot_entry(domain_to_score, DBotScoreType.DOMAIN, 'SOCRadar ThreatFusion', score)
+        context = {
+            'SOCRadarThreatFusion.Reputation.Domain(val.Domain && val.Domain === obj.Domain)': context_entry
+        }
+        context.update(dbot_entry)
+        human_readable = tableToMarkdown(title, context_entry)
+    else:
+        message = f"Error while getting API response. SOCRadar API Response: {raw_response.get('message', '')}"
+        raise DemistoException(message=message)
+
+    return CommandResults(
+        outputs_prefix="SOCRadarThreatFusion.Reputation.Domain",
+        outputs_key_field="Domain",
+        readable_output=human_readable,
+        raw_response=raw_response,
+        outputs=context
+    )
+
+
+def score_hash_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Returns SOCRadar reputation details for the given hash entity.
+
+    :type client: ``Client``
+    :param client: client to use
+
+    :type args: Dict[str, Any]
+    :param args: contains all arguments for list-detections command
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``
+    :rtype: ``CommandResults``
+    """
+    hash_to_score = args.get('hash', '')
+    verify_entity_type([hash_to_score], 'hash')
+    hash_type = get_hash_type(hash_to_score)
+
+    raw_response = client.get_entity_score(hash_to_score)
+    if raw_response.get('is_success'):
+        if raw_response.get('data', {}).get('is_whitelisted'):
+            score = 1
+        elif (score := raw_response.get('data', {}).get('score', 0)) is not None:
+            score = calculate_dbot_score(score)
+        title = f'SOCRadar - Analysis results for hash: {hash_to_score}'
+        context_entry = build_entry_context(raw_response, 'hash')
+        dbot_entry = build_dbot_entry(hash_to_score, hash_type, 'SOCRadar ThreatFusion', score)
+        context = {
+            'SOCRadarThreatFusion.Reputation.Hash(val.File && val.File === obj.File)': context_entry
+        }
+        context.update(dbot_entry)
+        human_readable = tableToMarkdown(title, context_entry)
+    else:
+        message = f"Error while getting API response. SOCRadar API Response: {raw_response.get('message', '')}"
+        raise DemistoException(message=message)
+
+    return CommandResults(
+        outputs_prefix="SOCRadarThreatFusion.Reputation.Hash",
+        outputs_key_field="File",
+        readable_output=human_readable,
+        raw_response=raw_response,
+        outputs=context
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -525,7 +655,10 @@ def main() -> None:
         commands = {
             'ip': ip_command,
             'domain': domain_command,
-            'file': file_command
+            'file': file_command,
+            'socradar-score-ip': score_ip_command,
+            'socradar-score-domain': score_domain_command,
+            'socradar-score-hash': score_hash_command,
         }
         if command == 'test-module':
             return_results(test_module(client))
