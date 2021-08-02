@@ -353,17 +353,18 @@ update_pack_ignore "Microsoft365Defender"
 add_pack_to_landing_page "${new_pack_name}"
 # todo  Change sdk to sdk master
 
-#cat ~/config_temp > /Users/iyeshaya/dev/demisto/content/.circleci/config.yml # todo remove
+cat ~/config_temp > /Users/iyeshaya/dev/demisto/content/.circleci/config.yml # todo remove
 
-#git commit -am "Adding changes"
-#git push origin "${sdk_branch_name}_uploadFlow_test"
-#
-#if [ -n "$circle_token" ]; then
-#  trigger_circle_ci
-#fi
+git commit -am "Adding changes"
+git push origin "${sdk_branch_name}_uploadFlow_test"
+
+if [ -n "$circle_token" ]; then
+  trigger_circle_ci
+fi
 #
 #if [ -n "$gitlab_token" ]; then
 #  trigger_gitlab_ci
 #fi
 
 #git checkout master
+git checkout Upload_flow_test_script # todo change to master
