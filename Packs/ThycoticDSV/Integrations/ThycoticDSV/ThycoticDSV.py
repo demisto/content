@@ -34,9 +34,10 @@ class Client(BaseClient):
 
 def dsv_secret_get_command(client, name: str = ''):
     secret = client.getSecret(name)
+    markdown = tableToMarkdown("Information", secret)
 
     return CommandResults(
-        readable_output=f"{secret}",
+        readable_output=markdown,
         outputs_prefix="DSV.Secret",
         outputs_key_field="secret",
         raw_response=secret,
