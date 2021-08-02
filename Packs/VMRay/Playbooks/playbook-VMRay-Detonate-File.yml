@@ -657,6 +657,6 @@ outputs:
   description: The ID of the threat indicator.
 - contextPath: VMRay.ThreatIndicator.Operation
   description: The operation that caused the indicators.
-fromversion: 5.0.0
+fromversion: 5.5.0
 tests:
 - VMRay-Test-File
