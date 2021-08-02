@@ -22,6 +22,8 @@ ASSET_COLUMNS = ['status', 'name', 'asset_id', 'last_seen', 'ip_addresses',
 INCIDENT_TYPE = 'GuardiCore Incident'
 ''' CLIENT CLASS '''
 
+INTEGRATION_CONTEXT_NAME = 'Guardicore'
+INTEGRATION_NAME = 'GuardiCore v2'
 GLOBAL_TIMEOUT = 10
 
 class Client(BaseClient):
@@ -53,7 +55,7 @@ class Client(BaseClient):
             self.save_access_token(access_token)
         else:
             demisto.debug(
-                "GuardicoreV2 - Generating a new token (old one isn't valid anymore).")
+                f"{INTEGRATION_NAME} - Generating a new token (old one isn't valid anymore).")
             self.generate_new_token()
 
     def save_access_token(self, access_token: str):
@@ -66,7 +68,7 @@ class Client(BaseClient):
         access_token_expiration = integration_context.get('expires_in')
         access_token = integration_context.get('access_token')
         demisto.debug(
-            'GuardicoreV2 - Checking if context has valid access token...'
+            f'{INTEGRATION_NAME} - Checking if context has valid access token...'
             + f'expiration: {access_token_expiration}, access_token: {access_token}')
         if access_token and access_token_expiration:
             access_token_expiration_datetime = datetime.strptime(
@@ -101,7 +103,7 @@ class Client(BaseClient):
 
         if not new_token or not new_token.get('access_token'):
             raise DemistoException(
-                "GuardiCore error: The client credentials are invalid.")
+                f"{INTEGRATION_NAME} error: The client credentials are invalid.")
 
         new_token = new_token.get('access_token')
         return new_token
@@ -204,7 +206,7 @@ def get_incidents(client: Client, args: Dict[str, Any]):
 
     if not from_time or not to_time:
         raise DemistoException(
-            "GuardiCoreV2 - get incidents needs from_time and to_time.")
+            f"{INTEGRATION_NAME} - get incidents needs from_time and to_time.")
 
     # Convert time format to epoch
     from_time = date_to_timestamp(from_time, DATE_FORMAT)
@@ -235,10 +237,11 @@ def get_incidents(client: Client, args: Dict[str, Any]):
     results = [filter_human_readable(res, human_columns=INCIDENT_COLUMNS) for
                res in raw_results]
 
-    md = tableToMarkdown(f'GuardiCoreV2 - Incidents: {len(results)}', results)
+    md = tableToMarkdown(f'{INTEGRATION_NAME} - Incidents: {len(results)}', results)
 
     return CommandResults(
-        outputs_prefix='Guardicore.Incident',
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Incident',
+        outputs_key_field="_id",
         readable_output=md,
         outputs=results,
         raw_response=raw_results
@@ -250,7 +253,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]):
     last_fetch = last_run.get("last_fetch")
     first_fetch = args.get('first_fetch', None)
     demisto.debug(
-        f'GuardiCoreV2 - Fetch incidents last fetch: {last_fetch}, first fetch: {first_fetch}')
+        f'{INTEGRATION_NAME} - Fetch incidents last fetch: {last_fetch}, first fetch: {first_fetch}')
 
     current_fetch = calculate_fetch_start_time(last_fetch, first_fetch)
 
@@ -265,10 +268,10 @@ def fetch_incidents(client: Client, args: Dict[str, Any]):
         "limit": args.get('limit'),
         "incident_type": args.get('incident_type')
     }
-    demisto.debug(f'GuardiCoreV2 - Fetch incidents parameters: {fetch_params}')
+    demisto.debug(f'{INTEGRATION_NAME} - Fetch incidents parameters: {fetch_params}')
     results = client.get_incidents(fetch_params)
     demisto.debug(
-        f'GuardiCoreV2 - Fetch incidents results count: {len(results)}')
+        f'{INTEGRATION_NAME} - Fetch incidents results count: {len(results)}')
 
     incidents = []
     for inc in results.get('objects'):
@@ -276,7 +279,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]):
         start_time = inc.get('start_time')
         if not id or "-" not in id or not start_time:
             demisto.debug(
-                'GuardiCoreV2 - Fetch incidents: skipped fetched incident because no start time or id')
+                f'{INTEGRATION_NAME} - Fetch incidents: skipped fetched incident because no start time or id')
             continue
 
         incident = {
@@ -290,7 +293,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]):
             current_fetch = start_time
 
     demisto.debug(
-        f'GuardiCoreV2 - Fetch incidents: fetch time finished at: {current_fetch}')
+        f'{INTEGRATION_NAME} - Fetch incidents: fetch time finished at: {current_fetch}')
     return incidents, current_fetch
 
 
@@ -298,16 +301,16 @@ def get_indicent(client: Client, args: Dict[str, Any]) -> CommandResults:
     incident_id = args.get('id', None)
     if not incident_id:
         raise DemistoException(
-            "GuardiCoreV2 - get incident needs an id parameter.")
+            f"{INTEGRATION_NAME} - get incident needs an id parameter.")
 
     # Call the Client function and get the raw response
     result = client.get_incident(incident_id)
 
     hr = filter_human_readable(result, human_columns=INCIDENT_COLUMNS)
-    md = tableToMarkdown(f'GuardiCoreV2 - Incident: {incident_id}', hr)
+    md = tableToMarkdown(f'{INTEGRATION_NAME} - Incident: {incident_id}', hr)
 
     return CommandResults(
-        outputs_prefix='Guardicore.Incident',
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Incident',
         outputs_key_field=incident_id,
         readable_output=md,
         outputs=result,
@@ -323,7 +326,7 @@ def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
     if not ip_address and not name and not asset_id:
         raise DemistoException(
-            "GuardiCoreV2 - Endpoint search must have ip, name or asset_id defined.")
+            f"{INTEGRATION_NAME} - Endpoint search must have ip, name or asset_id defined.")
 
     params = {
         "asset_id": asset_id,
@@ -343,12 +346,12 @@ def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         hostname = res.get("guest_agent_details", {}).get("hostname", "")
 
         res = filter_human_readable(res, human_columns=ASSET_COLUMNS)
-        md = tableToMarkdown(f'GuardiCoreV2 - Asset: {hostname}',
+        md = tableToMarkdown(f'{INTEGRATION_NAME} - Asset: {hostname}',
                              res)
 
         endpoints.append(CommandResults(
             readable_output=md,
-            outputs_prefix='Guardicore.Endpoint',
+            outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Endpoint',
             raw_response=res,
             outputs=res,
         ))
@@ -362,7 +365,7 @@ def endpoint_command(client: Client, args: Dict[str, Any]):
     hostname = args.get("hostname", None)
     if not id and not ip_address and not hostname:
         raise DemistoException(
-            'GuardiCoreV2 - In order to run this command, please provide valid id, ip or hostname')
+            f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
     params = {}
     if id:
@@ -385,11 +388,11 @@ def endpoint_command(client: Client, args: Dict[str, Any]):
             ip_address=", ".join(res.get("ip_addresses", [])),
             mac_address=", ".join(res.get("mac_addresses", [])),
             os=str(res.get("guest_agent_details", {}).get("os", "0")),
-            vendor='GuardiCore Response')
+            vendor=f'{INTEGRATION_NAME} Response')
 
         endpoint_context = endpoint.to_context().get(
             Common.Endpoint.CONTEXT_PATH)
-        md = tableToMarkdown(f'GuardiCoreV2 - Endpoint: {hostname}',
+        md = tableToMarkdown(f'{INTEGRATION_NAME} - Endpoint: {hostname}',
                              endpoint_context)
 
         endpoints.append(CommandResults(
