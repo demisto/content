@@ -106,7 +106,7 @@ class Client:
         else:
             return headers
 
-    def build_iterator(self, feed: dict, **kwargs) -> Tuple(List, bool):
+    def build_iterator(self, feed: dict, **kwargs) -> Tuple[List,bool]:
         url = feed.get('url', self.url)
         if not self.post_data:
             r = requests.get(
