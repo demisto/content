@@ -5,8 +5,8 @@
 # :param $1: message
 function fail() {
   echo "$1"
-  git checkout Upload_flow_test_script # todo change to master 
-  git branch -D "${content_branch}" # delete local branch
+#  git checkout Upload_flow_test_script # todo change to master
+#  git branch -D "${content_branch}" # delete local branch
   exit 1
 }
 
@@ -357,8 +357,8 @@ add_pack_to_landing_page "${new_pack_name}"
 
 cat ~/config_temp > /Users/iyeshaya/dev/demisto/content/.circleci/config.yml # todo remove
 
-git commit -am "Adding changes"
-git push origin "${sdk_branch_name}_uploadFlow_test"
+#git commit -am "Adding changes"
+#git push origin "${sdk_branch_name}_uploadFlow_test"
 
 if [ -n "$circle_token" ]; then
   trigger_circle_ci
@@ -369,4 +369,4 @@ fi
 #fi
 
 #git checkout master
-git checkout Upload_flow_test_script # todo change to master
+#git checkout Upload_flow_test_script # todo change to master
