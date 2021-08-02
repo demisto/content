@@ -32,6 +32,7 @@ Check the status of an action requested on a case.
 | case_id | A string representing the email case. Can be retrieved by first running command to list cases. | Required | 
 | action_id | A string representing the email case. Can be retrieved from payload after performing an action on a case. | Required | 
 | mock-data | Returns test data if set to `True`. | Optional | 
+| subtenant | Subtenant of the user (if applicable). | Optional | 
 
 
 #### Context Output
@@ -80,6 +81,7 @@ Check the status of an action requested on a threat.
 | threat_id | A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat. | Required | 
 | action_id | A UUID representing the action id for a threat. Can be obtained from payload after performing an action on the threat. | Required | 
 | mock-data | Returns test data if set to `True`. | Optional | 
+| subtenant | Subtenant of the user (if applicable). | Optional | 
 
 
 #### Context Output
@@ -113,6 +115,95 @@ Check the status of an action requested on a threat.
 >| The request was completed successfully | acknowledged |
 
 
+### abnormal-security-download-threat-log-csv
+***
+Download data from Threat Log in .csv format
+
+
+#### Base Command
+
+`abnormal-security-download-threat-log-csv`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Filter the results based on a filter key. Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. Supported keys - [`receivedTime`]. | Optional | 
+| mock-data | Returns test data if set to `True`. | Optional | 
+| source | Filters threats based on the source of detection. | Optional | 
+| subtenant | Subtenant of the user (if applicable). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### abnormal-security-list-abuse-mailbox-campaigns
+***
+Get a list of campaigns submitted to Abuse Mailbox
+
+
+#### Base Command
+
+`abnormal-security-list-abuse-mailbox-campaigns`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only the key `lastReportedTime` is supported for `/abusecampaigns`. At least one of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format. Do note that provided filter time is in UTC. | Optional | 
+| page_size | Number of abuse campaigns shown on each page. Each page of data will have at most page_size abuse campaign IDs. | Optional | 
+| page_number | 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified. | Optional | 
+| mock-data | Returns test data if set to `True`. | Optional | 
+| subtenant | Subtenant of the user (if applicable). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AbnormalSecurity.inline_response_200_3.campaigns.campaignId | String | An id which maps to an abuse campaign. | 
+| AbnormalSecurity.inline_response_200_3.pageNumber | Number | The current page number. | 
+| AbnormalSecurity.inline_response_200_3.nextPageNumber | Number | The next page number. | 
+
+
+#### Command Example
+```!abnormal-security-list-abuse-mailbox-campaigns filter="gte 2020-12-01T01:01:01Z"```
+
+#### Context Example
+```json
+{
+    "AbnormalSecurity": {
+        "inline_response_200_3": {
+            "campaigns": [
+                {
+                    "campaignId": "fff51768-c446-34e1-97a8-9802c29c3ebd"
+                },
+                {
+                    "campaignId": "07434ea5-df7b-3ff4-8d07-4a82df0c655d"
+                }
+            ],
+            "pageNumber": 1
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### List of Abuse Mailbox Campaigns
+>### Campaign IDs
+>|campaignId|
+>|---|
+>| fff51768-c446-34e1-97a8-9802c29c3ebd |
+>| 07434ea5-df7b-3ff4-8d07-4a82df0c655d |
+
+
 ### abnormal-security-list-abnormal-cases
 ***
 Get a list of Abnormal cases identified by Abnormal Security
@@ -129,6 +220,7 @@ Get a list of Abnormal cases identified by Abnormal Security
 | page_size | Number of cases that are on each page. Each page of data will have at most page_size threats. Has no effect if filter is not specified. | Optional | 
 | page_number | 1-indexed page number to get a particular page of cases. Has no effect if filter is not specified. | Optional | 
 | mock-data | Returns test data if set to `True`. | Optional | 
+| subtenant | Subtenant of the user (if applicable). | Optional | 
 
 
 #### Context Output
@@ -151,7 +243,7 @@ Get a list of Abnormal cases identified by Abnormal Security
         "inline_response_200_1": {
             "cases": [
                 {
-                    "caseId": "1234",
+                    "caseId": 1234,
                     "description": "Potential Account Takeover"
                 }
             ],
@@ -166,9 +258,9 @@ Get a list of Abnormal cases identified by Abnormal Security
 
 >### List of Cases
 >### Case IDs
->|caseId|severity|
+>|caseId|description|
 >|---|---|
->| 1234 |  |
+>| 1234 | Potential Account Takeover |
 
 
 ### abnormal-security-list-threats
@@ -188,6 +280,7 @@ Get a list of threats
 | page_number | 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified. | Optional | 
 | mock-data | Returns test data if set to `True`. | Optional | 
 | source | Filters threats based on the source of detection. | Optional | 
+| subtenant | Subtenant of the user (if applicable). | Optional | 
 
 
 #### Context Output
@@ -242,6 +335,7 @@ Get details of a threat
 | --- | --- | --- |
 | threat_id | A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat. | Required | 
 | mock-data | Returns test data if set to `True`. | Optional | 
+| subtenant | Subtenant of the user (if applicable). | Optional | 
 
 
 #### Context Output
@@ -332,7 +426,7 @@ Get details of a threat
 
 #### Human Readable Output
 
->### Messages in Threat xwvutsrq-9pon-mlkj-i876-54321hgfedcba
+>### Messages in Threat 184712ab-6d8b-47b3-89d3-a314efef79e2
 >|subject|fromAddress|fromName|toAddresses|recipientAddress|receivedTime|attackType|attackStrategy|returnPath|
 >|---|---|---|---|---|---|---|---|---|
 >| Phishing Email | support@secure-reply.org |  | example@example.com, another@example.com | example@example.com | 2020-06-09T17:42:59Z | Extortion | Name Impersonation | support@secure-reply.org |
@@ -352,6 +446,7 @@ Get details of an Abnormal case
 | --- | --- | --- |
 | case_id | A string representing the email case. Can be retrieved by first running command to list cases. | Required | 
 | mock-data | Returns test data if set to `True`. | Optional | 
+| subtenant | Subtenant of the user (if applicable). | Optional | 
 
 
 #### Context Output
@@ -365,7 +460,7 @@ Get details of an Abnormal case
 
 
 #### Command Example
-```!abnormal-security-get-abnormal-case case_id=1234```
+```!abnormal-security-get-abnormal-case case_id=12805```
 
 #### Context Example
 ```json
@@ -373,8 +468,11 @@ Get details of an Abnormal case
     "AbnormalSecurity": {
         "AbnormalCaseDetails": {
             "affectedEmployee": "FirstName LastName",
-            "caseId": "1234",
+            "analysis": "Mail Sent",
+            "caseId": 1234,
+            "case_status": "Action Required",
             "firstObserved": "2020-06-09T17:42:59Z",
+            "remediation_status": "Not remediated",
             "severity": "Potential Account Takeover",
             "threatIds": [
                 "184712ab-6d8b-47b3-89d3-a314efef79e2"
@@ -390,6 +488,249 @@ Get details of an Abnormal case
 >|caseId|severity|affectedEmployee|firstObserved|threatIds|
 >|---|---|---|---|---|
 >| 1234 | Potential Account Takeover | FirstName LastName | 2020-06-09T17:42:59Z | 184712ab-6d8b-47b3-89d3-a314efef79e2 |
+
+
+### abnormal-security-get-abuse-mailbox-campaign
+***
+Get details of an Abuse Mailbox campaign
+
+
+#### Base Command
+
+`abnormal-security-get-abuse-mailbox-campaign`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| campaign_id | A UUID representing the abuse campaign id. Can be Can be retrieved by first running command to list abuse mailbox campaigns. | Required | 
+| mock-data | Returns test data if set to `True`. | Optional | 
+| subtenant | Subtenant of the user (if applicable). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AbnormalSecurity.AbuseCampaignDetails.campaignId | String | An id which maps to an abuse campaign. | 
+| AbnormalSecurity.AbuseCampaignDetails.firstReported | String | Date abuse campaign was first reported. | 
+| AbnormalSecurity.AbuseCampaignDetails.lastReported | String | Date abuse campaign was last reported. | 
+| AbnormalSecurity.AbuseCampaignDetails.messageId | String | A unique identifier for the first message in the abuse campaign. | 
+| AbnormalSecurity.AbuseCampaignDetails.subject | String | Subject of the first email in the abuse campaign. | 
+| AbnormalSecurity.AbuseCampaignDetails.fromName | String | The display name of the sender. | 
+| AbnormalSecurity.AbuseCampaignDetails.fromAddress | String | The email address of the sender. | 
+| AbnormalSecurity.AbuseCampaignDetails.recipientName | String | The email address of the recipient. | 
+| AbnormalSecurity.AbuseCampaignDetails.recipientAddress | String | The email address of the recipient. | 
+| AbnormalSecurity.AbuseCampaignDetails.judgementStatus | String | Judgement status of message. | 
+| AbnormalSecurity.AbuseCampaignDetails.overallStatus | String | Overall status of message. | 
+| AbnormalSecurity.AbuseCampaignDetails.attackType | String | The type of threat the message represents. | 
+
+
+#### Command Example
+```!abnormal-security-get-abuse-mailbox-campaign campaign_id=xwvutsrq-9pon-mlkj-i876-54321hgfedcba```
+
+#### Context Example
+```json
+{
+    "AbnormalSecurity": {
+        "AbuseCampaignDetails": {
+            "attackType": "Attack Type: Spam",
+            "campaignId": "fff51768-c446-34e1-97a8-9802c29c3ebd",
+            "firstReported": "2020-11-11T13:11:40-08:00",
+            "fromAddress": "example@example.com",
+            "fromName": "Tom Dinkley",
+            "judgementStatus": "Malicious",
+            "lastReported": "2020-11-11T13:11:40-08:00",
+            "messageId": "12345678910",
+            "overallStatus": "Move attempted",
+            "recipientAddress": "example_phisher@example.com",
+            "recipientName": "Booker",
+            "subject": "Fwd: This is spam"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|attackType|campaignId|firstReported|fromAddress|fromName|judgementStatus|lastReported|messageId|overallStatus|recipientAddress|recipientName|subject|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Attack Type: Spam | fff51768-c446-34e1-97a8-9802c29c3ebd | 2020-11-11T13:11:40-08:00 | example@example.com | Tom Dinkley | Malicious | 2020-11-11T13:11:40-08:00 | 12345678910 | Move attempted | example_phisher@example.com | Booker | Fwd: This is spam |
+
+
+### abnormal-security-get-employee-identity-analysis
+***
+Get employee identity analysis (Genome) data
+
+
+#### Base Command
+
+`abnormal-security-get-employee-identity-analysis`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email_address | Email address of the employee you want to retrieve data for. | Required | 
+| mock-data | Returns test data if set to `True`. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AbnormalSecurity.EmployeeIdentityDetails.histograms.key | String | Genome key name | 
+| AbnormalSecurity.EmployeeIdentityDetails.histograms.name | String | Genome title | 
+| AbnormalSecurity.EmployeeIdentityDetails.histograms.description | String | Description of genome object | 
+| AbnormalSecurity.EmployeeIdentityDetails.histograms.values.value | String | Category value | 
+| AbnormalSecurity.EmployeeIdentityDetails.histograms.values.percentage | Number | Ratio of this category relative to others | 
+| AbnormalSecurity.EmployeeIdentityDetails.histograms.values.total_count | Number | Number of occurences for this category | 
+
+
+#### Command Example
+```!abnormal-security-get-employee-identity-analysis email_address="test@test.com"```
+
+#### Context Example
+```json
+{
+    "AbnormalSecurity": {
+        "EmployeeIdentityDetails": {
+            "histograms": [
+                {
+                    "description": "Common IP addresses for user logins",
+                    "key": "ip_address",
+                    "name": "Common IP Addresses",
+                    "values": [
+                        {
+                            "ratio": 0.25,
+                            "raw_count": 12,
+                            "text": "ip-address-0"
+                        },
+                        {
+                            "ratio": 0.25,
+                            "raw_count": 12,
+                            "text": "ip-address-1"
+                        },
+                        {
+                            "ratio": 0.25,
+                            "raw_count": 12,
+                            "text": "ip-address-2"
+                        },
+                        {
+                            "ratio": 0.25,
+                            "raw_count": 12,
+                            "text": "ip-address-3"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Analysis of test@test.com
+>|description|key|name|values|
+>|---|---|---|---|
+>| Common IP addresses for user logins | ip_address | Common IP Addresses | {'text': 'ip-address-0', 'ratio': 0.25, 'raw_count': 12},<br/>{'text': 'ip-address-1', 'ratio': 0.25, 'raw_count': 12},<br/>{'text': 'ip-address-2', 'ratio': 0.25, 'raw_count': 12},<br/>{'text': 'ip-address-3', 'ratio': 0.25, 'raw_count': 12} |
+
+
+### abnormal-security-get-employee-information
+***
+Get employee information
+
+
+#### Base Command
+
+`abnormal-security-get-employee-information`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email_address | Email address of the employee you want to retrieve data for. | Required | 
+| mock-data | Returns test data if set to `True`. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AbnormalSecurity.EmployeeDetails.name | String | Name of the employee. | 
+| AbnormalSecurity.EmployeeDetails.email | String | Email of the employee. | 
+| AbnormalSecurity.EmployeeDetails.title | String | Job title of the employee. | 
+| AbnormalSecurity.EmployeeDetails.manager | String | Email address of the employee's manager | 
+
+
+#### Command Example
+```!abnormal-security-get-employee-information email_address="test@test.com"```
+
+#### Context Example
+```json
+{
+    "AbnormalSecurity": {
+        "EmployeeDetails": {
+            "email": "testemail@email.com",
+            "manager": "testmanageremail@email.net",
+            "name": "test_name",
+            "title": "Test Operator"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|email|manager|name|title|
+>|---|---|---|---|
+>| testemail@email.com | testmanageremail@email.net | test_name | Test Operator |
+
+
+### abnormal-security-get-employee-last-30-days-login-csv
+***
+Get employee login information for last 30 days in csv format
+
+
+#### Base Command
+
+`abnormal-security-get-employee-last-30-days-login-csv`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email_address | Email address of the employee you want to retrieve data for. | Required | 
+| mock-data | Returns test data if set to `True`. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!abnormal-security-get-employee-last-30-days-login-csv email_address="test@test.com"```
+
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "1675@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
+        "Extension": "csv",
+        "Info": "csv",
+        "MD5": "11afb4879c5026e25bd868dfcf23e811",
+        "Name": "employee_login_info_30_days.csv",
+        "SHA1": "345ea1d24b52c96baf6b0e4d892d13d4efcf666d",
+        "SHA256": "12620e0f576f4d74603b1f542919a3e5199e61435ffd99bcd68c26e02ed9c693",
+        "SHA512": "f0e788981ce70d9668100ae3f93d1f28660f0d8a9dfda02284a70f08ac14ca5a356872284f460d8fb7970791e314e0db4a6c84b0032c35046efce62368a00da5",
+        "SSDeep": "12:uR2xCC56aHoW2IY3zg05Eg05ng05Eg05V:uROjHn2IY3v5i5T5i5V",
+        "Size": 484,
+        "Type": "ASCII text, with CRLF line terminators"
+    }
+}
+```
+
+#### Human Readable Output
+
 
 
 ### abnormal-security-get-latest-threat-intel-feed
@@ -413,6 +754,25 @@ There is no context output for this command.
 
 #### Command Example
 ```!abnormal-security-get-latest-threat-intel-feed```
+
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "1651@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
+        "Extension": "json",
+        "Info": "application/json",
+        "MD5": "b649104cfba71cc1c691dc859ff3e4a1",
+        "Name": "threat_intel_feed.json",
+        "SHA1": "d7c6159a7c588a20dd1f2c6fe2d8306aaafe4a24",
+        "SHA256": "8cf8e70d081ce25cd427d416abea1951658a925e95398be694bfd7c3fe8e37d4",
+        "SHA512": "bbee5e60984309916c62d8a1113cba8dc2b3e58f52d95b6bc7d2f214a49f97c7e0f1304a36d0d89afcff059743a61e71ee5c3b809efe250a0e7ff368f5f04684",
+        "SSDeep": "49152:6IZdVn0zFV6rTSbliiX03PUkS1rDV/uYqX/VdId9UUOX8ygMhUcIc:r",
+        "Size": 7659733,
+        "Type": "ASCII text"
+    }
+}
+```
 
 #### Human Readable Output
 
@@ -450,8 +810,10 @@ Manage a Threat identified by Abnormal Security
 ```json
 {
     "AbnormalSecurity": {
-        "action_id": "a33a212a-89ff-461f-be34-ea52aff44a73",
-        "status_url": "https://api.abnormalplatform.com/v1/threats/184712ab-6d8b-47b3-89d3-a314efef79e2/actions/a33a212a-89ff-461f-be34-ea52aff44a73"
+        "ThreatManageResults": {
+            "action_id": "a33a212a-89ff-461f-be34-ea52aff44a73",
+            "status_url": "https://api.abnormalplatform.com/v1/threats/184712ab-6d8b-47b3-89d3-a314efef79e2/actions/a33a212a-89ff-461f-be34-ea52aff44a73"
+        }
     }
 }
 ```
@@ -490,14 +852,16 @@ Manage an Abnormal Case.
 
 
 #### Command Example
-```!abnormal-security-manage-abnormal-case case_id=1234 action=action_required```
+```!abnormal-security-manage-abnormal-case case_id=12805 action=action_required```
 
 #### Context Example
 ```json
 {
     "AbnormalSecurity": {
-        "action_id": "61e76395-40d3-4d78-b6a8-8b17634d0f5b",
-        "status_url": "https://api.abnormalplatform.com/v1/cases/1234/actions/61e76395-40d3-4d78-b6a8-8b17634d0f5b"
+        "CaseManageResults": {
+            "action_id": "61e76395-40d3-4d78-b6a8-8b17634d0f5b",
+            "status_url": "https://api.abnormalplatform.com/v1/cases/1234/actions/61e76395-40d3-4d78-b6a8-8b17634d0f5b"
+        }
     }
 }
 ```
@@ -508,6 +872,130 @@ Manage an Abnormal Case.
 >|action_id|status_url|
 >|---|---|
 >| 61e76395-40d3-4d78-b6a8-8b17634d0f5b | https://api.abnormalplatform.com/v1/cases/1234/actions/61e76395-40d3-4d78-b6a8-8b17634d0f5b |
+
+
+### abnormal-security-get-case-analysis-and-timeline
+***
+Provides the analysis and timeline details of a case
+
+
+#### Base Command
+
+`abnormal-security-get-case-analysis-and-timeline`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | A string representing the case. | Required | 
+| mock-data | Returns test data if set to `True`. | Optional | 
+| subtenant | Subtenant of the user (if applicable). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AbnormalSecurity.CaseAnalysis.insights.signal | String | Insight signal or highlight of a case | 
+| AbnormalSecurity.CaseAnalysis.insights.description | String | Description of insight signal or highlight | 
+| AbnormalSecurity.CaseAnalysis.eventTimeline.event_timestamp | String | Time when event occurred | 
+| AbnormalSecurity.CaseAnalysis.eventTimeline.category | String | Type of event | 
+| AbnormalSecurity.CaseAnalysis.eventTimeline.title | String | Title of the event | 
+| AbnormalSecurity.CaseAnalysis.eventTimeline.ip_address | String | IP Address where user accessed mail from | 
+| AbnormalSecurity.CaseAnalysis.eventTimeline.field_labels | Unknown | Analysis labels associated with the fields in the timeline event | 
+
+
+#### Command Example
+```!abnormal-security-get-case-analysis-and-timeline case_id=12345```
+
+#### Context Example
+```json
+{
+    "AbnormalSecurity": {
+        "CaseAnalysis": {
+            "eventTimeline": [
+                {
+                    "category": "Risk Event",
+                    "description": "Impossible Travel Event was observed for test@lamronba.com.",
+                    "event_timestamp": "2021-07-14T22:41:54Z",
+                    "ip_address": "127.0.0.1",
+                    "location": {
+                        "city": "Aldie",
+                        "country": "US",
+                        "state": "Virginia"
+                    },
+                    "prev_location": {
+                        "city": "Atherton",
+                        "country": "US",
+                        "state": "California"
+                    },
+                    "title": "Impossible Travel"
+                },
+                {
+                    "category": "Mail Rule",
+                    "condition": "hasNoCondition",
+                    "event_timestamp": "2021-07-14T22:41:54Z",
+                    "flagging_detectors": "DELETE_ALL",
+                    "rule_name": "Swag Voice Note",
+                    "title": "Mail Rule Change"
+                },
+                {
+                    "category": "Mail Sent",
+                    "event_timestamp": "2021-07-14T22:41:54Z",
+                    "recipient": "Recipient Name",
+                    "sender": "test@lamronba.com",
+                    "subject": "Spoof email subject",
+                    "title": "Unusual Correspondence"
+                },
+                {
+                    "application": "Microsoft Office 365 Portal",
+                    "browser": "Chrome 79.0.3453",
+                    "category": "Sign In",
+                    "description": "Suspicious Failed Sign In Attempt for test@lamronba.com",
+                    "device_trust_type": "None",
+                    "event_timestamp": "2021-07-14T22:41:54Z",
+                    "field_labels": {
+                        "ip_address": [
+                            "rare",
+                            "proxy"
+                        ],
+                        "operating_system": [
+                            "legacy"
+                        ]
+                    },
+                    "ip_address": "127.0.0.1",
+                    "isp": "NGCOM",
+                    "location": {
+                        "country": "Ireland"
+                    },
+                    "operating_system": "Windows XP",
+                    "protocol": "Browser",
+                    "title": "Suspicious Failed Sign In Attempt"
+                }
+            ],
+            "insights": [
+                {
+                    "description": "There was a signin into test@lamronba.com from a location frequently used to launch attacks.",
+                    "signal": "Risky Location"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Insights for 
+>|signal|description|
+>|---|---|
+>| Risky Location | There was a signin into test@lamronba.com from a location frequently used to launch attacks. |
+>### Event Timeline for 
+>|event_timestamp|category|title|field_labels|ip_address|description|location|sender|subject|title|flagging detectors|rule_name|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 2021-07-14T22:41:54Z | Risk Event | Impossible Travel |  | 127.0.0.1 | Impossible Travel Event was observed for test@lamronba.com. | city: Aldie<br/>state: Virginia<br/>country: US |  |  | Impossible Travel |  |  |
+>| 2021-07-14T22:41:54Z | Mail Rule | Mail Rule Change |  |  |  |  |  |  | Mail Rule Change |  | Swag Voice Note |
+>| 2021-07-14T22:41:54Z | Mail Sent | Unusual Correspondence |  |  |  |  | test@lamronba.com | Spoof email subject | Unusual Correspondence |  |  |
+>| 2021-07-14T22:41:54Z | Sign In | Suspicious Failed Sign In Attempt | ip_address: rare,<br/>proxy<br/>operating_system: legacy | 127.0.0.1 | Suspicious Failed Sign In Attempt for test@lamronba.com | country: Ireland |  |  | Suspicious Failed Sign In Attempt |  |  |
 
 
 ### abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement
@@ -531,7 +1019,7 @@ Submit an Inquiry to request a report on misjudgement by Abnormal Security
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.SubmitInquiry.detail | String | Confirmation of successfully sending inquiry | 
+| AbnormalSecurity.SubmitInquiry.detail | String | Confirmation of inquiry sent | 
 
 
 #### Command Example
@@ -541,7 +1029,9 @@ Submit an Inquiry to request a report on misjudgement by Abnormal Security
 ```json
 {
     "AbnormalSecurity": {
-        "detail": "Thank you for your feedback! We have sent your inquiry to our support staff."
+        "SubmitInquiry": {
+            "detail": "Thank you for your feedback! We have sent your inquiry to our support staff."
+        }
     }
 }
 ```

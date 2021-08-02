@@ -106,7 +106,7 @@ script:
       name: subtenant
       required: false
     description: Download data from Threat Log in .csv format
-    name: abnormalsecurity-download-threat-log-csv
+    name: abnormal-security-download-threat-log-csv
   - arguments:
       - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ
           lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently
@@ -136,7 +136,7 @@ script:
         name: subtenant
         required: false
     description: Get a list of campaigns submitted to Abuse Mailbox
-    name: abnormalsecurity-list-abuse-mailbox-campaigns
+    name: abnormal-security-list-abuse-mailbox-campaigns
     outputs:
       - contextPath: AbnormalSecurity.inline_response_200_3.campaigns.campaignId
         description: An id which maps to an abuse campaign.
@@ -362,7 +362,7 @@ script:
       description: First time suspicious behavior was observed.
       type: String
   - arguments:
-    - description: A UUID representing the abuse campaign id
+    - description: A UUID representing the abuse campaign id. Can be Can be retrieved by first running command to list abuse mailbox campaigns
       isArray: false
       name: campaign_id
       required: true
@@ -375,7 +375,7 @@ script:
       name: subtenant
       required: false
     description: Get details of an Abuse Mailbox campaign
-    name: abnormalsecurity-get-abuse-mailbox-campaign
+    name: abnormal-security-get-abuse-mailbox-campaign
     outputs:
       - contextPath: AbnormalSecurity.AbuseCampaignDetails.campaignId
         description: An id which maps to an abuse campaign.
@@ -416,14 +416,14 @@ script:
   - arguments:
     - description: Email address of the employee you want to retrieve data for
       isArray: false
-      name: emailAddress
+      name: email_address
       required: true
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
       required: false
     description: Get employee identity analysis (Genome) data
-    name: abnormalsecurity-get-employee-identity-analysis
+    name: abnormal-security-get-employee-identity-analysis
     outputs:
       - contextPath: AbnormalSecurity.EmployeeIdentityDetails.histograms.key
         description: Genome key name
@@ -446,14 +446,14 @@ script:
   - arguments:
     - description: Email address of the employee you want to retrieve data for
       isArray: false
-      name: emailAddress
+      name: email_address
       required: true
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
       required: false
     description: Get employee information
-    name: abnormalsecurity-get-employee-information
+    name: abnormal-security-get-employee-information
     outputs:
     - contextPath: AbnormalSecurity.EmployeeDetails.name
       description: Name of the employee.
@@ -470,14 +470,14 @@ script:
   - arguments:
     - description: Email address of the employee you want to retrieve data for
       isArray: false
-      name: emailAddress
+      name: email_address
       required: true
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
       required: false
     description: Get employee login information for last 30 days in csv format
-    name: abnormalsecurity-get-employee-last-30-days-login-csv
+    name: abnormal-security-get-employee-last-30-days-login-csv
   - arguments:
     - description: Returns test data if set to `True`
       isArray: false
@@ -544,13 +544,13 @@ script:
       name: subtenant
       required: false
     description: Provides the analysis and timeline details of a case
-    name: abnormalsecurity-get-case-analysis-and-timeline
+    name: abnormal-security-get-case-analysis-and-timeline
     outputs:
     - contextPath: AbnormalSecurity.CaseAnalysis.insights.signal
-      description: ''
+      description: Insight signal or highlight of a case
       type: String
     - contextPath: AbnormalSecurity.CaseAnalysis.insights.description
-      description: ''
+      description: Description of insight signal or highlight
       type: String
     - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.event_timestamp
       description: Time when event occurred

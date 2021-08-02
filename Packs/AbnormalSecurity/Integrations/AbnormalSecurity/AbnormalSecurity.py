@@ -85,27 +85,27 @@ class Client(BaseClient):
 
         return response
 
-    def get_employee_identity_analysis_genome_data_request(self, emailAddress):
+    def get_employee_identity_analysis_genome_data_request(self, email_address):
 
         headers = self._headers
 
-        response = self._http_request('get', f'employee/{emailAddress}/identity', headers=headers)
+        response = self._http_request('get', f'employee/{email_address}/identity', headers=headers)
 
         return response
 
-    def get_employee_information_request(self, emailAddress):
+    def get_employee_information_request(self, email_address):
 
         headers = self._headers
 
-        response = self._http_request('get', f'employee/{emailAddress}', headers=headers)
+        response = self._http_request('get', f'employee/{email_address}', headers=headers)
 
         return response
 
-    def get_employee_login_information_for_last_30_days_in_csv_format_request(self, emailAddress):
+    def get_employee_login_information_for_last_30_days_in_csv_format_request(self, email_address):
 
         headers = self._headers
 
-        response = self._http_request('get', f'employee/{emailAddress}/logins', headers=headers, resp_type='response')
+        response = self._http_request('get', f'employee/{email_address}/logins', headers=headers, resp_type='response')
 
         return response
 
@@ -332,9 +332,9 @@ def get_details_of_an_abuse_mailbox_campaign_command(client, args):
 
 
 def get_employee_identity_analysis_genome_data_command(client, args):
-    emailAddress = str(args.get('emailAddress', ''))
+    email_address = str(args.get('email_address', ''))
 
-    response = client.get_employee_identity_analysis_genome_data_request(emailAddress)
+    response = client.get_employee_identity_analysis_genome_data_request(email_address)
 
     headers = [
         'description',
@@ -344,7 +344,7 @@ def get_employee_identity_analysis_genome_data_command(client, args):
     ]
 
     markdown = tableToMarkdown(
-        f"Analysis of {emailAddress}", response.get('histograms', []), headers=headers)
+        f"Analysis of {email_address}", response.get('histograms', []), headers=headers)
 
     command_results = CommandResults(
         readable_output=markdown,
@@ -358,9 +358,9 @@ def get_employee_identity_analysis_genome_data_command(client, args):
 
 
 def get_employee_information_command(client, args):
-    emailAddress = str(args.get('emailAddress', ''))
+    email_address = str(args.get('email_address', ''))
 
-    response = client.get_employee_information_request(emailAddress)
+    response = client.get_employee_information_request(email_address)
     command_results = CommandResults(
         outputs_prefix='AbnormalSecurity.EmployeeDetails',
         outputs_key_field='',
@@ -372,9 +372,9 @@ def get_employee_information_command(client, args):
 
 
 def get_employee_login_information_for_last_30_days_in_csv_format_command(client, args):
-    emailAddress = str(args.get('emailAddress', ''))
+    email_address = str(args.get('email_address', ''))
 
-    response = client.get_employee_login_information_for_last_30_days_in_csv_format_request(emailAddress)
+    response = client.get_employee_login_information_for_last_30_days_in_csv_format_request(email_address)
     filename = 'employee_login_info_30_days.csv'
     file_content = response.text
 
@@ -388,7 +388,7 @@ def get_the_latest_threat_intel_feed_command(client, args=None):
     response = client.get_the_latest_threat_intel_feed_request()
     filename = 'threat_intel_feed.json'
     file_content = response.text
-    results = fileResult(filename, file_content, file_type=entryTypes)
+    results = fileResult(filename, file_content)
 
     return results
 
@@ -506,27 +506,27 @@ def main():
                 check_the_status_of_an_action_requested_on_a_case_command,
             'abnormal-security-check-threat-action-status':
                 check_the_status_of_an_action_requested_on_a_threat_command,
-            'abnormalsecurity-download-threat-log-csv': download_data_from_threat_log_in_csv_format_command,
+            'abnormal-security-download-threat-log-csv': download_data_from_threat_log_in_csv_format_command,
             'abnormal-security-list-abnormal-cases':
                 get_a_list_of_abnormal_cases_identified_by_abnormal_security_command,
-            'abnormalsecurity-list-abuse-mailbox-campaigns': get_a_list_of_campaigns_submitted_to_abuse_mailbox_command,
+            'abnormal-security-list-abuse-mailbox-campaigns': get_a_list_of_campaigns_submitted_to_abuse_mailbox_command,
             'abnormal-security-list-threats':
                 get_a_list_of_threats_command,
             'abnormal-security-get-threat':
                 get_details_of_a_threat_command,
             'abnormal-security-get-abnormal-case':
                 get_details_of_an_abnormal_case_command,
-            'abnormalsecurity-get-abuse-mailbox-campaign': get_details_of_an_abuse_mailbox_campaign_command,
-            'abnormalsecurity-get-employee-identity-analysis': get_employee_identity_analysis_genome_data_command,
-            'abnormalsecurity-get-employee-information': get_employee_information_command,
-            'abnormalsecurity-get-employee-last-30-days-login-csv':
+            'abnormal-security-get-abuse-mailbox-campaign': get_details_of_an_abuse_mailbox_campaign_command,
+            'abnormal-security-get-employee-identity-analysis': get_employee_identity_analysis_genome_data_command,
+            'abnormal-security-get-employee-information': get_employee_information_command,
+            'abnormal-security-get-employee-last-30-days-login-csv':
                 get_employee_login_information_for_last_30_days_in_csv_format_command,
             'abnormal-security-get-latest-threat-intel-feed': get_the_latest_threat_intel_feed_command,
             'abnormal-security-manage-threat':
                 manage_a_threat_identified_by_abnormal_security_command,
             'abnormal-security-manage-abnormal-case':
                 manage_an_abnormal_case_command,
-            'abnormalsecurity-get-case-analysis-and-timeline': provides_the_analysis_and_timeline_details_of_a_case_command,
+            'abnormal-security-get-case-analysis-and-timeline': provides_the_analysis_and_timeline_details_of_a_case_command,
             'abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement':
                 submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command,
         }
