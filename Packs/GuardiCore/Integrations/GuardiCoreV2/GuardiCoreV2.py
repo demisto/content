@@ -231,7 +231,7 @@ def get_incidents(client: Client, args: Dict[str, Any]):
     )
 
 
-def fetch_incidents(client: Client, args: Dict[str, Any]):
+def fetch_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_fetch")
     first_fetch = args.get('first_fetch', None)
