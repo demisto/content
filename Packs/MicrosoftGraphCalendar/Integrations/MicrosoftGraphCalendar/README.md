@@ -207,10 +207,6 @@ For more details about the authentication used in this integration, see <a href=
 </tr>
 </tbody>
 </table>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="msgraph-calendar-get-calendar">2. Get one user's calendar</h3>
 <hr>
 <p>Returns a specific user's calendar.</p>
@@ -290,10 +286,6 @@ For more details about the authentication used in this integration, see <a href=
 <h5>Command Example</h5>
 <pre>!msgraph-calendar-get-calendar</pre>
 <h5>Human Readable Output</h5>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="msgraph-calendar-list-events">3. Get a calendar's list of events</h3>
 <hr>
 <p>Returns a list of events from a calendar.</p>
@@ -413,10 +405,6 @@ For more details about the authentication used in this integration, see <a href=
 <h5>Command Example</h5>
 <pre>!msgraph-calendar-list-events</pre>
 <h5>Human Readable Output</h5>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="msgraph-calendar-get-event">4. Get an event by ID</h3>
 <hr>
 <p>Returns an event based on its ID.</p>
@@ -641,10 +629,6 @@ For more details about the authentication used in this integration, see <a href=
 </tr>
 </tbody>
 </table>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="msgraph-calendar-create-event">5. Create a new event</h3>
 <hr>
 <p>Creates a new event.</p>
@@ -980,10 +964,6 @@ For more details about the authentication used in this integration, see <a href=
 </tr>
 </tbody>
 </table>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="msgraph-calendar-update-event">6. Update an existing event</h3>
 <hr>
 <p>Updates an existing event.</p>
@@ -1311,10 +1291,6 @@ For more details about the authentication used in this integration, see <a href=
 </tr>
 </tbody>
 </table>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="msgraph-calendar-delete-event">7. Delete an existing event</h3>
 <hr>
 <p>Deletes an existing event.</p>
@@ -1578,7 +1554,3 @@ For more details about the authentication used in this integration, see <a href=
 </pre>
 <h5>Human Readable Output</h5>
 <p>Event was deleted successfully.</p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>

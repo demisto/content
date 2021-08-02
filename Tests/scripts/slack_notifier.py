@@ -3,15 +3,18 @@ import json
 import logging
 import os
 import re
-import sys
+from collections import OrderedDict
+from typing import Optional, Dict, List
 
-import requests
 import gitlab
+import requests
+import sys
+import xmltodict
 from circleci.api import Api as circle_api
 from slack import WebClient as SlackClient
 
-from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
+from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import str2bool, run_command
 
@@ -111,56 +114,145 @@ def options_handler():
     return options
 
 
-def get_failing_unit_tests_file_data():
-    failing_ut_list = None
+def get_artifact_data(artifact_relative_path: str) -> Optional[str]:
+    """
+    Retrieves artifact data according to the artifact relative path from 'ARTIFACTS_FOLDER' given.
+    Args:
+        artifact_relative_path (str): Relative path of an artifact file.
+
+    Returns:
+        (Optional[str]): data of the artifact as str if exists, None otherwise.
+    """
+    artifact_data = None
     try:
-        file_name = f'{ARTIFACTS_FOLDER}/failed_lint_report.txt'
+        file_name = os.path.join(ARTIFACTS_FOLDER, artifact_relative_path)
         if os.path.isfile(file_name):
-            logging.info('Extracting lint_report')
-            with open(file_name, 'r') as failed_unittests_file:
-                failing_ut = failed_unittests_file.readlines()
-                failing_ut_list = [line.strip('\n') for line in failing_ut]
+            logging.info(f'Extracting {artifact_relative_path}')
+            with open(file_name, 'r') as file_data:
+                artifact_data = file_data.read()
         else:
-            logging.info('Did not find failed_lint_report.txt file')
+            logging.info(f'Did not find {artifact_relative_path} file')
     except Exception:
-        logging.exception('Error getting failed_lint_report.txt file')
-    return failing_ut_list
+        logging.exception(f'Error getting {artifact_relative_path} file')
+    return artifact_data
 
 
-def get_entities_fields(entity_title, report_file_name=''):
-    if 'lint' in report_file_name:  # lint case
-        failed_entities = get_failing_unit_tests_file_data()
+def get_entities_fields(entity_title: str, entities: List[str]) -> List[Dict]:
+    """
+    Builds an entity from given entity title and entities list
+    Args:
+        entity_title (str): Title of the entity.
+        entities (List[str]): List of the entities.
+
+    Returns:
+        (List[Dict]): List of dict containing the entity. List is needed because it is the expected format by Slack API.
+    """
+    return [{
+        "title": f'{entity_title}',
+        "value": '\n'.join(entities),
+        "short": False
+    }]
+
+
+def get_failed_unit_tests_attachment(build_url: str, is_sdk_build: bool = False) -> List[Dict]:
+    """
+    Returns the failed unit tests attachment to be reported in Slack.
+    Args:
+        build_url (str): Build URL of the given nightly.
+        is_sdk_build (bool): Whether build is SDK nightly or content nightly.
+
+    Returns:
+        (List[Dict]) Dict wrapped inside a list containing failed unit tests attachment.
+    """
+    if artifact_data := get_artifact_data('failed_lint_report.txt'):
+        artifact_data = artifact_data.split('\n')
+        unittests_fields: Optional[List[Dict]] = get_entities_fields(f'Failed Unittests - ({len(artifact_data)})',
+                                                                     artifact_data)
     else:
-        failed_entities = get_failed_steps_list()
-    entity_fields = []
-    if failed_entities:
-        entity_fields.append({
-            "title": f'{entity_title} - ({len(failed_entities)})',
-            "value": '\n'.join(failed_entities),
-            "short": False
-        })
-    return entity_fields
-
-
-def get_attachments_for_unit_test(build_url, is_sdk_build=False):
-    unittests_fields = get_entities_fields(entity_title="Failed Unittests", report_file_name="failed_lint_report")
-    color = 'good' if not unittests_fields else 'danger'
-    if not unittests_fields:
-        title = 'Content Nightly Unit Tests - Success' if not is_sdk_build else 'SDK Nightly Unit Tests - Success'
-    else:
-        title = 'Content Nightly Unit Tests - Failure' if not is_sdk_build else 'SDK Nightly Unit Tests - Failure'
-    content_team_attachment = [{
+        unittests_fields = []
+    color: str = 'good' if not unittests_fields else 'danger'
+    build_type: str = 'SDK' if is_sdk_build else 'Content'
+    status = 'Success' if not unittests_fields else 'Failure'
+    title: str = f'{build_type} Nightly Unit Tests - {status}'
+    return [{
         'fallback': title,
         'color': color,
         'title': title,
         'title_link': build_url,
         'fields': unittests_fields
     }]
-    return content_team_attachment
+
+
+def get_coverage_color(coverage_percent: float) -> str:
+    """
+    Returns color to represent coverage percent.
+    Args:
+        coverage_percent (float): Coverage percent.
+
+    Returns:
+        (str): Representing the color
+    """
+    if coverage_percent <= 50.0:
+        return 'danger'
+    elif coverage_percent < 60.0:
+        return 'warning'
+    return 'good'
+
+
+def get_coverage_attachment(build_url: str) -> Optional[Dict]:
+    """
+    Returns content coverage report attachment.
+    Args:
+        build_url (str): Build URL of the nightly.
+
+    Returns:
+        (Dict): Attachment of the coverage if coverage report exists.
+    """
+    xml_coverage_data: str = get_artifact_data('coverage_report/coverage.xml')
+    if not xml_coverage_data:
+        return None
+    coverage_dict_data: OrderedDict = xmltodict.parse(xml_coverage_data)
+    if not (coverage_percent_str := coverage_dict_data.get('coverage', {}).get('@line-rate')):
+        logging.error('Line coverage rate was missing from coverage data.')
+        return None
+    try:
+        coverage_percent: float = float(coverage_percent_str) * 100.0
+    except ValueError:
+        logging.error(
+            f'Unexpected value for line coverage rage: {coverage_percent_str}. Expected float from line coverage rate.')
+        return None
+    return {
+        'fallback': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
+        'color': get_coverage_color(coverage_percent),
+        'title': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
+        'title_link': build_url,
+        'fields': []
+    }
+
+
+def get_attachments_for_unit_test(build_url: str, is_sdk_build: bool = False) -> List[Dict]:
+    """
+    Creates attachment for unit tests. Including failed unit tests attachment and coverage if exists.
+    Args:
+        build_url (str): Build URL.
+        is_sdk_build (bool): Whether build is SDK build.
+
+    Returns:
+        (List[Dict]): List of attachments.
+    """
+    unit_tests_attachments = get_failed_unit_tests_attachment(build_url, is_sdk_build)
+    if not is_sdk_build:
+        coverage_attachment = get_coverage_attachment(build_url)
+        if coverage_attachment:
+            unit_tests_attachments.append(coverage_attachment)
+    return unit_tests_attachments
 
 
 def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_file_path=None):
-    steps_fields = get_entities_fields(entity_title="Failed Steps")
+    if failed_entities := get_failed_steps_list():
+        steps_fields = get_entities_fields(f'Failed Steps - ({len(failed_entities)})', failed_entities)
+    else:
+        steps_fields = []
     color = 'good' if not steps_fields else 'danger'
     title = f'{BucketUploadFlow.BUCKET_UPLOAD_BUILD_TITLE} - Success' if not steps_fields \
         else f'{BucketUploadFlow.BUCKET_UPLOAD_BUILD_TITLE} - Failure'
@@ -212,7 +304,10 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
 
 
 def get_attachments_for_all_steps(build_url, build_title):
-    steps_fields = get_entities_fields(entity_title="Failed Steps")
+    if failed_entities := get_failed_steps_list():
+        steps_fields = get_entities_fields(f'Failed Steps - ({len(failed_entities)})', failed_entities)
+    else:
+        steps_fields = []
     color = 'good' if not steps_fields else 'danger'
     title = f'{build_title} - Success' if not steps_fields else f'{build_title} - Failure'
 

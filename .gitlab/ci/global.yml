@@ -98,7 +98,8 @@
     - *get_contribution_pack
     - *install_ssh_keys
     - section_start "Build Parameters"
-    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^TERM=|^FORCE_COLOR="
+    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL="
+    - $(echo $0) --version
     - python --version
     - python3 --version
     - node --version
@@ -129,10 +130,17 @@
       - /builds/xsoar/content/unit-tests
       - /builds/xsoar/content/artifacts/*
     when: always
+  services:
+    - name: docker.artifactory.pan.local/build-tools--image-dind:19.03.12-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
   extends:
     - .default-job-settings
   script:
-    - section_start "Test Infrustracture"
+    - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v
     - python3 -m pytest ./Tests/scripts/utils/tests -v
@@ -140,13 +148,13 @@
     - python3 -m pytest ./Tests/private_build/ -v
     - python3 -m pytest Utils -v
     - |
-      if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
-      ./Tests/scripts/sdk_pylint_check.sh
+      if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
+        ./Tests/scripts/sdk_pylint_check.sh
       fi
-    - section_end "Test Infrustracture"
+    - section_end "Test Infrastructure"
     - section_start "Run Unit Testing and Lint"
     - |
-      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
+      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
         echo "Skipping validations when uploading to a test bucket."
       else
         echo "demisto-sdk version: $(demisto-sdk --version)"
@@ -209,7 +217,7 @@
     - section_end "Update Tests"
     - section_start "Validate Files and Yaml"
     - |
-      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
+      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
         echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
       else
         echo "Run flake8 on all excluding Packs (Integrations and Scripts) - they will be handled in linting"

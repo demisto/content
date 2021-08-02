@@ -1,4 +1,6 @@
+Deprecated. Use VMware Carbon Black EDR v2 instead. 
 Query and response with Carbon Black endpoint detection and response.
+
 This integration was integrated and tested with version 6.2.0 of Carbon Black Response
 ## Configure carbonblack-v2 on Cortex XSOAR
 
