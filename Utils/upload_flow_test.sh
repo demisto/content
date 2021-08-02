@@ -81,8 +81,8 @@ function add_author_image {
   fi
 
   pack_name=$1
-  echo "Adding Author image to ${pack_name}"
   cp "${CONTENT_PATH}/Packs/Base/Author_image.png" "${CONTENT_PATH}/Packs/${pack_name}" || fail
+  git add "${CONTENT_PATH}/Packs/${pack_name}/Author_image.png"
 }
 
 
