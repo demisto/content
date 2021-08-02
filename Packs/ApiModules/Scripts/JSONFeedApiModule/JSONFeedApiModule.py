@@ -136,7 +136,26 @@ class Client:
         except ValueError as VE:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
 
-        return result
+        return result, get_no_update_value(r)
+
+
+def get_no_update_value(response):
+    context = demisto.getIntegrationContext()
+    old_etag = context.get('etag')
+    old_last_modified = context.get('last_modified')
+
+    etag = response.headers.get('ETag')
+    last_modified = response.headers.get('Last-Modified')
+
+    demisto.setIntegrationContext({'last_modified': last_modified, 'etag': etag})
+
+    if old_etag and old_etag != etag:
+        return False
+
+    if old_last_modified and old_last_modified != last_modified:
+        return False
+
+    return True
 
 
 def test_module(client: Client, limit) -> str:
@@ -162,6 +181,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
     """
     indicators: List[dict] = []
     feeds_results = {}
+    no_update = False
     for feed_name, feed in client.feed_name_to_config.items():
         custom_build_iterator = feed.get('custom_build_iterator')
         if custom_build_iterator:
@@ -170,7 +190,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
                 raise Exception("Custom function to handle with pagination must return a list type")
             feeds_results[feed_name] = indicators_from_feed
         else:
-            feeds_results[feed_name] = client.build_iterator(feed, **kwargs)
+            feeds_results[feed_name], no_update = client.build_iterator(feed, **kwargs)
 
     for service_name, items in feeds_results.items():
         feed_config = client.feed_name_to_config.get(service_name, {})
@@ -193,7 +213,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
                 break
-    return indicators
+    return indicators, no_update
 
 
 def indicator_mapping(mapping: Dict, indicator: Dict, attributes: Dict):
@@ -336,12 +356,13 @@ def feed_main(params, feed_name, prefix):
 
         elif command == 'fetch-indicators':
             create_relationships = params.get('create_relationships')
-            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect, create_relationships)
+            indicators, no_update = fetch_indicators_command(client, indicator_type, feedTags, auto_detect,
+                                                             create_relationships)
             if not len(indicators):
-                demisto.createIndicators(indicators)
+                demisto.createIndicators(indicators, noUpdate=no_update)
             else:
                 for b in batch(indicators, batch_size=2000):
-                    demisto.createIndicators(b)
+                    demisto.createIndicators(b, noUpdate=no_update)
 
         elif command == f'{prefix}get-indicators':
             # dummy command for testing
