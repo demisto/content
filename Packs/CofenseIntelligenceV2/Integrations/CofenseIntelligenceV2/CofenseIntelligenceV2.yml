@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: CofenseIntelligenceV2
 display: Cofense Intelligence v2
-category: Utilities
+category: Data Enrichment & Threat Intelligence 
 description: 'Use the Cofense Intelligence integration to check the reputation of
   URLs, IP addresses, file hashes, and email addresses.'
 configuration:
