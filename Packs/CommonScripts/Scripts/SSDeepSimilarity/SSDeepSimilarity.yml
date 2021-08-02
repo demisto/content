@@ -23,7 +23,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/crypto:1.0.0.23151
+dockerimage: devdemisto/ssdeep:1.0.0.23713
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

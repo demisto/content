@@ -1,32 +1,63 @@
 import traceback
-
-import ssdeep
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+import tempfile
+
+HEADERS = "ssdeep,1.1--blocksize:hash:hash,filename\n"
 
 ''' COMMAND FUNCTION '''
 
 
+def _format_results(results: list) -> List[dict]:
+    """
+    Args:
+        results: a list of results with the following format:
+        ['"<hash>","<anchor_hash>",<score>']
+
+    Returns: a list of dictionaries containing the hash and score
+
+    """
+    formatted_res = []
+
+    # Remove last empty value returned from the process
+    if not results[-1]:
+        results = results[:-1]
+
+    for result in results:
+        result = result.split(',')
+        formatted_res.append({
+            'hash': result[0].strip('"'),
+            'similarityValue': int(result[2])
+        })
+    return formatted_res
+
+
+def run_ssdeep_command(anchor_hash: str, hashes_to_compare: str):
+    with tempfile.NamedTemporaryFile() as hash1:
+        with tempfile.NamedTemporaryFile() as hash2:
+            hash1.write(bytes(anchor_hash, encoding='utf-8'))
+            hash1.flush()
+            hash2.write(bytes(hashes_to_compare, encoding='utf-8'))
+            hash2.flush()
+            stream = os.popen(f"ssdeep -k {hash1.name} {hash2.name} -c -a")  # nosec
+            return stream.read().split('\n')
+
+
 def compare_ssdeep(anchor_hash: str, hashes_to_compare: list, output_key: str) -> CommandResults:
-    hashes_outputs = []
+    hashes_list_to_file = HEADERS
+    anchor_hash_to_file = f'{HEADERS}{anchor_hash},"{anchor_hash}"\n'
+
     for current_hash in hashes_to_compare:
-        try:
-            hashes_outputs.append({
-                'hash': current_hash,
-                'similarityValue': ssdeep.compare(anchor_hash, current_hash)
-            })
+        hashes_list_to_file += f'{current_hash},"{current_hash}"\n'
 
-        except ssdeep.InternalError as e:
-            demisto.error(f'Could not compare hashes due to internal error: {str(e)}')
-            continue
-        except TypeError as e:
-            demisto.error(f'Hashes must be of type String, Unicode or Bytes: {str(e)}')
-            continue
+    res = run_ssdeep_command(anchor_hash_to_file, hashes_list_to_file)
+    hashes_outputs = _format_results(res)
 
+    md = tableToMarkdown(anchor_hash, hashes_outputs)
     return CommandResults(
         outputs_prefix=output_key,
-        outputs_key_field='hash',
+        readable_output=md,
         outputs={'SourceHash': anchor_hash, 'compared_hashes': hashes_outputs}
     )
 
@@ -38,6 +69,7 @@ def _handle_inputs(args: dict):
     hashes_to_compare = argToList(args.get('ssdeep_hashes_to_compare'))
     if not hashes_to_compare:
         raise ValueError('Please provide at least one hash to compare with.')
+
     output_key = args.get('output_key', 'SSDeepSimilarity')
     return anchor_hash, hashes_to_compare, output_key
 
@@ -47,10 +79,10 @@ def _handle_inputs(args: dict):
 
 def main():
     try:
-
         args = demisto.args()
         anchor_hash, hashes_to_compare, output_key = _handle_inputs(args)
-        return_results(compare_ssdeep(anchor_hash, hashes_to_compare, output_key))
+        res = compare_ssdeep(anchor_hash, hashes_to_compare, output_key)
+        return_results(res)
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback

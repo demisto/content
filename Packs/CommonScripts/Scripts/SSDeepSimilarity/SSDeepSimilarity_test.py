@@ -66,17 +66,23 @@ TWO_TO_COMPARE_INCLUDE_ITSELF = {'anchor_hash': '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGH
                                  'hashes_to_compare': ['3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C',
                                                        '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C'], 'output_key': 'test'}
 INPUT_CASES = [
-    (ONE_HASH_TO_COMPARE, {'SourceHash': '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C', 'compared_hashes': [
-        {'hash': '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C', 'similarityValue': 22}]}),
-    (TWO_TO_COMPARE_INCLUDE_ITSELF, {'SourceHash': '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C', 'compared_hashes': [
-        {'hash': '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C', 'similarityValue': 100},
-        {'hash': '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C', 'similarityValue': 22}]}
+    (TWO_TO_COMPARE_INCLUDE_ITSELF, (
+        'ssdeep,1.1--blocksize:hash:hash,filename\n'
+        '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C,"3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C"\n',
+        'ssdeep,1.1--blocksize:hash:hash,filename\n'
+        '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C,"3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C"\n'
+        '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C,"3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C"\n'),
+     {'SourceHash': '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C', 'compared_hashes': [
+         {'hash': '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C', 'similarityValue': 100},
+         {'hash': '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C', 'similarityValue': 22}]}
      ),
 ]
+SSDEEP_RESULT_EXAMPLE = ['"3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C","3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C",100',
+                         '"3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C","3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C",22']
 
 
-@pytest.mark.parametrize('case_inputs, expected_output', INPUT_CASES)
-def test_compare_ssdeep(case_inputs, expected_output):
+@pytest.mark.parametrize('case_inputs, called_with, expected_output', INPUT_CASES)
+def test_compare_ssdeep(mocker, case_inputs, called_with, expected_output):
     """
     Given:
         valid hash, hash list and output key
@@ -85,40 +91,48 @@ def test_compare_ssdeep(case_inputs, expected_output):
     Then:
         validates the outputs are as expected.
     """
-    from SSDeepSimilarity import compare_ssdeep
-    res = compare_ssdeep(**case_inputs)
+    import SSDeepSimilarity
+    command_mock = mocker.patch.object(SSDeepSimilarity, 'run_ssdeep_command', return_value=SSDEEP_RESULT_EXAMPLE)
+    res = SSDeepSimilarity.compare_ssdeep(**case_inputs)
+    assert command_mock.call_args[0] == called_with
     assert res.outputs == expected_output
 
 
-INPUT_CASES = [
-    (TWO_TO_COMPARE_INCLUDE_ITSELF,
-     {'SourceHash': '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C', 'compared_hashes': [
-         {'hash': '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C', 'similarityValue': 22}]}, 'internal_error',
-     'Could not compare hashes due to internal error:'
-     ),
-    (TWO_TO_COMPARE_INCLUDE_ITSELF,
-     {'SourceHash': '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C', 'compared_hashes': [
-         {'hash': '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C', 'similarityValue': 22}]}, 'type_error',
-     'Hashes must be of type String, Unicode or Bytes:'
-     ),
-]
-
-
-@pytest.mark.parametrize('case_inputs, expected_output, error, error_msg', INPUT_CASES)
-def test_compare_ssdeep_fails(mocker, case_inputs, expected_output, error, error_msg):
+def test_format_results():
     """
     Given:
-        either valid or invalid hash, hash list and output key
+        A result list from the ssdeep command
     When:
-        running compare_ssdeep with error from ssdeep module
+        Converting results to outputs format
     Then:
-        validates the relevant error is shown correctly.
+        Validating the outputs created matches expected.
     """
-    from SSDeepSimilarity import compare_ssdeep, ssdeep
-    error = ssdeep.InternalError() if error == 'internal_error' else TypeError()
-    mocker.patch.object(ssdeep, 'compare', side_effect=[error, 22])
-    demisto_mock = mocker.patch.object(demisto, 'error')
-    res = compare_ssdeep(**case_inputs)
-    assert res.outputs == expected_output
-    assert demisto_mock.call_count == 1
-    assert demisto_mock.call_args[0][0].args[0].startswith(error_msg)
+
+    from SSDeepSimilarity import _format_results
+    res = _format_results(SSDEEP_RESULT_EXAMPLE)
+    assert res == [{'hash': '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C',
+                    'similarityValue': 100},
+                   {'hash': '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C',
+                    'similarityValue': 22}]
+
+
+FILE1 = 'ssdeep,1.1--blocksize:hash:hash,filename\n' \
+        '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C,"3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C"\n'
+FILE2 = 'ssdeep,1.1--blocksize:hash:hash,filename\n' \
+        '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C,"3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C"\n'
+
+
+def test_linux_command():
+    """
+    NOTE: CANNOT RUN LOCALLY WHEN NOT LINUX!
+    Given:
+        2 file's content containing ssdeep hashes
+    When:
+        Running ssdeep linux's command
+    Then:
+        Validating the command returns the expected result
+    """
+
+    from SSDeepSimilarity import run_ssdeep_command
+    res = run_ssdeep_command(FILE1, FILE2)
+    assert res == ['"3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C","3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C",22', '']
