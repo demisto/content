@@ -266,7 +266,7 @@ class Client(BaseClient):
                         result
                     )
                 results.append({url: result})
-        return results
+        return results, get_no_update_value(r)
 
     def custom_fields_creator(self, attributes: dict):
         created_custom_fields = {}
@@ -278,6 +278,37 @@ class Client(BaseClient):
                     created_custom_fields[self.custom_fields_mapping[attribute]] = attributes[attribute]
 
         return created_custom_fields
+
+
+def get_no_update_value(response: requests.Response) -> bool:
+    """
+    detect if the feed response has been modified according to the headers etag and last_modified.
+    For more information, see this:
+    https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Last-Modified
+    https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag
+    Args:
+        response: (requests.Response) The feed response.
+    Returns:
+        boolean with the value for noUpdate argument.
+        The value should be False if the response was modified.
+    """
+
+    context = demisto.getIntegrationContext()
+    old_etag = context.get('etag')
+    old_last_modified = context.get('last_modified')
+
+    etag = response.headers.get('ETag')
+    last_modified = response.headers.get('Last-Modified')
+
+    demisto.setIntegrationContext({'last_modified': last_modified, 'etag': etag})
+
+    if old_etag and old_etag != etag:
+        return False
+
+    if old_last_modified and old_last_modified != last_modified:
+        return False
+
+    return True
 
 
 def datestring_to_server_format(date_string: str) -> str:
@@ -362,7 +393,7 @@ def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], c
 
 
 def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, create_relationships=False, **kwargs):
-    iterators = client.build_iterator(**kwargs)
+    iterators, no_update = client.build_iterator(**kwargs)
     indicators = []
     for iterator in iterators:
         for url, lines in iterator.items():
@@ -399,7 +430,7 @@ def fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, c
                         indicator_data["fields"] = custom_fields
 
                     indicators.append(indicator_data)
-    return indicators
+    return indicators, no_update
 
 
 def determine_indicator_type(indicator_type, default_indicator_type, auto_detect, value):
@@ -427,7 +458,7 @@ def get_indicators_command(client: Client, args):
     tlp_color = args.get('tlp_color')
     auto_detect = demisto.params().get('auto_detect_type')
     create_relationships = demisto.params().get('create_relationships')
-    indicators_list = fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, create_relationships)[:limit]
+    indicators_list, _ = fetch_indicators_command(client, feed_tags, tlp_color, itype, auto_detect, create_relationships)[:limit]
     entry_result = camelize(indicators_list)
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
     return hr, {}, indicators_list
@@ -468,11 +499,11 @@ def feed_main(feed_name, params=None, prefix=''):
     }
     try:
         if command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, feed_tags, tlp_color, params.get('indicator_type'),
+            indicators, no_update = fetch_indicators_command(client, feed_tags, tlp_color, params.get('indicator_type'),
                                                   params.get('auto_detect_type'), params.get('create_relationships'))
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)
+                demisto.createIndicators(b, noUpdate=no_update)
         else:
             args = demisto.args()
             args['feed_name'] = feed_name

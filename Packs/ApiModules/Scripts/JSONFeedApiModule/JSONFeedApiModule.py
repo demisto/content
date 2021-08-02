@@ -379,7 +379,7 @@ def feed_main(params, feed_name, prefix):
         elif command == f'{prefix}get-indicators':
             # dummy command for testing
             create_relationships = params.get('create_relationships')
-            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect, create_relationships, limit)
+            indicators, _ = fetch_indicators_command(client, indicator_type, feedTags, auto_detect, create_relationships, limit)
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
             return_results(CommandResults(readable_output=hr, raw_response=indicators))
 
