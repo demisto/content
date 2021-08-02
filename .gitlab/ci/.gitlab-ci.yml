@@ -27,6 +27,7 @@ variables:
   FEATURE_BRANCH_NAME: "v4.5.0"
   IFRA_ENV_TYPE: "Content-Env"
 # Remove this when https://github.com/demisto/etc/issues/36775 is done.
+  GIT_DEPTH: 10
   SKIP_PRIVATE_BUILD: "true"
   ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"
   GCS_PRODUCTION_BUCKET: "marketplace-dist" # change to marketplace-dist this after testing period
