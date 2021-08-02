@@ -101,6 +101,7 @@ function add_1_0_0_release_note {
   cd "${CONTENT_PATH}/Packs/${pack_name}/ReleaseNotes" || fail
   current_latest_note=$(ls -t | head -1)
   cp "${current_latest_note}" 1_0_0.md
+  git add 1_0_0.md
   cd "${CONTENT_PATH}" || fail
 }
 
