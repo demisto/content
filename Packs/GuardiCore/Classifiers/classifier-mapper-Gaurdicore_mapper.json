@@ -1,6 +1,6 @@
 {
   "defaultIncidentType": "",
-  "description": "",
+  "description": "Maps incoming Guardicore incident fields.",
   "feed": false,
   "id": "GuardiCore Incoming Mapper",
   "mapping": {
