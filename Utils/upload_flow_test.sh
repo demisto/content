@@ -32,7 +32,7 @@ function check_arguments {
 function create_new_pack {
   echo "Running - create_new_pack"
 
-  if [ "$#" -ne 3 ]; then
+  if [ "$#" -ne 2 ]; then
     fail "Illegal number of parameters"
   fi
 
