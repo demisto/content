@@ -22,6 +22,18 @@ def util_load_json(path):
     ]
 )
 def test_get_jwt_expiration(input, output):
+    """Unit test
+    Given
+    - empty jwt token
+    - a valid jwt token
+    When
+    - we mock the token generation.
+    - we mock the token generation.
+    Then
+    - return an empty expiration
+    - extract the jwt token expiration
+    Validate that the expiration is correct.
+    """
     from GuardiCoreV2 import get_jwt_expiration
     assert get_jwt_expiration(input) == output
 
@@ -36,6 +48,21 @@ def test_get_jwt_expiration(input, output):
     ]
 )
 def test_filter_human_readable(input, columns, output):
+    """Unit test
+    Given
+    - an empty results dict
+    - a valid result dict
+    - a valid result dict and a filter column
+    - a valid result dict and two filter columns
+    When
+    - we filter the relevant columns.
+    Then
+    - return an empty filtered result dict
+    - return an empty filtered result dict
+    - return a filtered result dict with one column
+    - return a filtered result dict with two columns
+    Validate that the filter human readable returns correct values.
+    """
     from GuardiCoreV2 import filter_human_readable
     assert filter_human_readable(input, human_columns=columns) == output
 
@@ -48,11 +75,33 @@ def test_filter_human_readable(input, columns, output):
     ]
 )
 def test_calculate_fetch_start_time(last_fetch, first_fetch, output):
+    """Unit test
+    Given
+    - a last_fetch time and no first_fetch
+    - a last_fetch time and a first_fetch
+    When
+    - we try to calcualte the current fetch time for fetch incidents.
+    Then
+    - return the last_fetch
+    - return the last_fetch
+    Validate that the calculation is correct.
+    """
     from GuardiCoreV2 import calculate_fetch_start_time
     assert calculate_fetch_start_time(last_fetch, first_fetch) == output
 
 
 def test_calculate_fetch_start_time_dynamic():
+    """Unit test
+    Given
+    - no last_fetch time no first_fetch
+    - no last_fetch time and a first_fetch (4 days)
+    When
+    - we try to calcualte the current fetch time for fetch incidents.
+    Then
+    - return the a last_fetch of 3 days ago approx (default)
+    - return the a last_fetch of 4 days ago approx
+    Validate that the calculation is correct.
+    """
     from GuardiCoreV2 import calculate_fetch_start_time
     out = int(parse('3 days').replace(tzinfo=utc).timestamp()) * 1000
     assert calculate_fetch_start_time(None, None) - out < 1000
@@ -61,6 +110,14 @@ def test_calculate_fetch_start_time_dynamic():
 
 
 def test_authenticate(requests_mock):
+    """Unit test
+    Given
+    - a username and password
+    When
+    - we mock the authentication to the integration api endpoint.
+    Then
+    - Validate that the access_token is returned correctly.
+    """
     from GuardiCoreV2 import Client
     requests_mock.post(
         'https://api.guardicoreexample.com/api/v3.0/authenticate',
@@ -72,6 +129,14 @@ def test_authenticate(requests_mock):
 
 
 def test_get_incident(mocker, requests_mock):
+    """Unit test
+    Given
+    - an incident id
+    When
+    - we mock the incident get api call
+    Then
+    - Validate that the correct response is returned
+    """
     from GuardiCoreV2 import Client, get_indicent
     mock_response = util_load_json('test_data/get_incident_response.json')
     requests_mock.post(
@@ -88,6 +153,14 @@ def test_get_incident(mocker, requests_mock):
 
 
 def test_get_incidents(mocker, requests_mock):
+    """Unit test
+    Given
+    - an incident from and to time, with a limit of 3
+    When
+    - we mock the incidents get api call
+    Then
+    - Validate that the correct responses are returned
+    """
     from GuardiCoreV2 import Client, get_incidents, INCIDENT_COLUMNS, \
         filter_human_readable
 
@@ -108,6 +181,14 @@ def test_get_incidents(mocker, requests_mock):
 
 
 def test_fetch_incidents_no_first(mocker, requests_mock):
+    """Unit test
+    Given
+    - na
+    When
+    - we mock the fetch incidents flow
+    Then
+    - Validate that the last_fetch is correct (deafult of 3 past days)
+    """
     from dateparser import parse
     from pytz import utc
     from GuardiCoreV2 import Client, fetch_incidents
@@ -128,6 +209,19 @@ def test_fetch_incidents_no_first(mocker, requests_mock):
 
 
 def test_fetch_incidents(mocker, requests_mock):
+    """Unit test
+    Given
+    - a first_fetch time (of 40 days)
+    When
+    - we mock the fetch incidents flow
+    - we mock the fetch incidents flow is called twice
+    Then
+    - Validate that the last_fetch is correct (unix time of 40 days)
+    - Validate that the first incident returned has a correct id
+    - Validate that the length of the incidents is correct
+    - Validate that the last_fetch is the last incident fetched
+    - Validate that the incidents are all fetched (only 1 new one)
+    """
     from GuardiCoreV2 import Client, fetch_incidents
     from CommonServerPython import \
         demisto  # noqa # pylint: disable=unused-wildcard-importcommon
