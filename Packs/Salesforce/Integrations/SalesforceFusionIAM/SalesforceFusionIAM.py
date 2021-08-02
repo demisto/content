@@ -100,15 +100,14 @@ class Client(BaseClient):
             url_suffix=uri,
             json_data=user_data
         )
-        if res and res.status_code == 200:
-            user_app_data = res.json()
-            user_id = user_app_data.get('id')
-            username = user_app_data.get('userName')
-            is_active = True
+        user_app_data = res.json()
+        user_id = user_app_data.get('id')
+        username = user_app_data.get('userName')
+        is_active = True
 
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, user_app_data)
 
-    def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
+    def update_user(self, user_id: str, user_data: Dict[str, Any]):
         """ Updates a user in the application using REST API.
 
         :type user_id: ``str``
@@ -122,17 +121,16 @@ class Client(BaseClient):
         """
         uri = URI_PREFIX + f'sobjects/FF__Key_Contact__c/{user_id}'
         params = {"_HttpMethod": "PATCH"}
-        res = self._http_request(
+        self._http_request(
             method='POST',
             url_suffix=uri,
             params=params,
             json_data=user_data
         )
 
-        if res and res.status_code == 204:
-            return self.get_user_by_id(user_id)
+        return self.get_user_by_id(user_id)
 
-    def enable_user(self, user_id: str) -> IAMUserAppData:
+    def enable_user(self, user_id: str):
         """ Enables a user in the application using REST API.
         There is no action on the user for Salesforce Fusion instance needs to be taken.
 
@@ -157,13 +155,12 @@ class Client(BaseClient):
 
         uri = URI_PREFIX + f'sobjects/FF__Key_Contact__c/{user_id}'
 
-        res = self._http_request(
+        self._http_request(
             method='DELETE',
             url_suffix=uri
         )
 
-        if res and res.status_code == 204:
-            return IAMUserAppData(user_id, "", False, {})
+        return IAMUserAppData(user_id, "", False, {})
 
     def get_app_fields(self) -> Dict[str, Any]:
         """ Gets a dictionary of the user schema fields in the application and their description.
