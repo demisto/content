@@ -2,11 +2,11 @@ import os
 import json
 import demistomock as demisto
 from tempfile import mkdtemp
-from Anomali_ThreatStream_v2 import main, file_name_to_valid_string, get_file_reputation, GOOD_SCORE, SUSPICIOUS_SCORE, \
-    MALICIOUS_SCORE, REPUTATION_COMANDS, THRESHOLDS_FROM_PARAM
+from Anomali_ThreatStream_v2 import main, file_name_to_valid_string, get_file_reputation, \
+    REPUTATION_COMANDS, THRESHOLDS_FROM_PARAM
+from CommonServerPython import *
 import emoji
 import pytest
-
 
 
 def util_load_json(path):
@@ -142,22 +142,23 @@ def test_get_file_reputation(mocker, file_hash, expected_result_file_path, raw_r
 
 
 """
-    Hppy path:
+    Happy path:
         1. thresholds for each IOC from command and param
         2. inactive flag from command and param
     Edge cases:
         1. no confidence in the response - consider 0
-        2. 
 """
 
 
-@pytest.mark.parametrize(argnames='confidence, threshold, exp_dbot_score', argvalues=[(20, None, GOOD_SCORE),
-                                                                                      (30, None, SUSPICIOUS_SCORE),
-                                                                                      (70, None, MALICIOUS_SCORE),
-                                                                                      (30, 50, GOOD_SCORE),
-                                                                                      (60, 50, MALICIOUS_SCORE),
-                                                                                      (70, 80, GOOD_SCORE),
-                                                                                      (20, 10, MALICIOUS_SCORE)])
+@pytest.mark.parametrize(
+    argnames='confidence, threshold, exp_dbot_score',
+    argvalues=[(20, None, Common.DBotScore.GOOD),
+               (30, None, Common.DBotScore.SUSPICIOUS),
+               (70, None, Common.DBotScore.BAD),
+               (30, 50, Common.DBotScore.GOOD),
+               (60, 50, Common.DBotScore.BAD),
+               (70, 80, Common.DBotScore.GOOD),
+               (20, 10, Common.DBotScore.BAD)])
 def test_ioc_reputation_with_thresholds_in_command(mocker, confidence, threshold, exp_dbot_score):
     """
     Given
@@ -187,17 +188,17 @@ def test_ioc_reputation_with_thresholds_in_command(mocker, confidence, threshold
 
         # validate
         entry_context = demisto.results.call_args[0][0]['EntryContext']
-        assert entry_context['DBotScore']['Score'] == exp_dbot_score
-        if exp_dbot_score == MALICIOUS_SCORE and ioc_arg_name != 'email':  # email is not a generic reputation
-            assert any('Malicious' in dict_val for dict_val in entry_context.values())
+        assert entry_context[Common.DBotScore.CONTEXT_PATH][0]['Score'] == exp_dbot_score
+        if exp_dbot_score == Common.DBotScore.BAD and ioc_arg_name != 'email':  # email is not a generic reputation
+            assert 'Malicious' in json.dumps(entry_context)
 
 
 @pytest.mark.parametrize(argnames='threshold_in_command, threshold_in_params, exp_dbot_score',
-                         argvalues=[(None, None, SUSPICIOUS_SCORE),
-                                    (50, None, MALICIOUS_SCORE),
-                                    (None, 50, MALICIOUS_SCORE),
-                                    (60, 40, GOOD_SCORE),
-                                    (40, 60, MALICIOUS_SCORE)])
+                         argvalues=[(None, None, Common.DBotScore.SUSPICIOUS),
+                                    (50, None, Common.DBotScore.BAD),
+                                    (None, 50, Common.DBotScore.BAD),
+                                    (60, 40, Common.DBotScore.GOOD),
+                                    (40, 60, Common.DBotScore.BAD)])
 def test_ioc_reputation_with_thresholds_in_instance_param(mocker,
                                                           threshold_in_command,
                                                           threshold_in_params,
@@ -220,7 +221,6 @@ def test_ioc_reputation_with_thresholds_in_instance_param(mocker,
                           value='test_ioc',
                           asn='test_asn',
                           org='test_org',
-                          rdns='test_rdns',
                           tlp='test_tlp',
                           country='test_country',
                           meta=dict(registrant_name='test', maltype='test_maltype'))
@@ -238,9 +238,9 @@ def test_ioc_reputation_with_thresholds_in_instance_param(mocker,
 
         # validate
         entry_context = demisto.results.call_args[0][0]['EntryContext']
-        assert entry_context['DBotScore']['Score'] == exp_dbot_score
-        if exp_dbot_score == MALICIOUS_SCORE:
-            assert any('Malicious' in dict_val for dict_val in entry_context.values())
+        assert entry_context[Common.DBotScore.CONTEXT_PATH][0]['Score'] == exp_dbot_score
+        if exp_dbot_score == Common.DBotScore.BAD:
+            assert 'Malicious' in json.dumps(entry_context)
 
 
 @pytest.mark.parametrize(argnames='include_inactive, exp_status_param',
@@ -300,6 +300,4 @@ def test_no_confidence_in_result_iox(mocker):
 
         # validate
         entry_context = demisto.results.call_args[0][0]['EntryContext']
-        assert entry_context['DBotScore']['Score'] == GOOD_SCORE
-
-
+        assert entry_context[Common.DBotScore.CONTEXT_PATH][0]['Score'] == Common.DBotScore.GOOD
