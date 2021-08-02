@@ -1,5 +1,5 @@
 {
-    "description": "The Guardicore v2 classifier.",
+    "description": "Classifies Guardicore incidents.",
     "defaultIncidentType": "Guardicore Incident",
     "feed": false,
     "id": "Guardicore classifier",
