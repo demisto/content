@@ -152,6 +152,38 @@ def test_get_incident(mocker, requests_mock):
     assert response.outputs == mock_response
 
 
+def test_get_assets(mocker, requests_mock):
+    """Unit test
+    Given
+    - an ip
+    When
+    - we mock the endpoint asset get api call
+    Then
+    - Validate that there is one result
+    - Validate that the correct output is returned
+    """
+    from GuardiCoreV2 import Client, get_assets
+    mock_response = util_load_json('test_data/get_assets_response.json')
+    requests_mock.post(
+        'https://api.guardicoreexample.com/api/v3.0/authenticate',
+        json={'access_token': TEST_API_KEY})
+    client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
+                    verify=False, proxy=False, username='test', password='test')
+    args = {
+        'ip_address': '1.1.1.1'
+    }
+    mocker.patch.object(client, '_http_request', return_value=mock_response)
+    response = get_assets(client, args)
+    assert len(response) == 1
+    response = response[0]
+    assert response.outputs == {'asset_id': '920b9a05-889e-429e-97d0-94a92ccbe376',
+                                'ip_addresses': ['1.1.1.1', 'fe80::250:56ff:fe84:da1e'],
+                                'last_seen': 1627910241995,
+                                'name': 'Accounting-web-1',
+                                'status': 'on',
+                                'tenant_name': 'esx10/lab_a/Apps/Accounting'}
+
+
 def test_get_incidents(mocker, requests_mock):
     """Unit test
     Given
