@@ -294,12 +294,13 @@ new_pack_name="${base_pack_name}New"
 cd "${CONTENT_PATH}" || fail
 
 
-# Setup
-change_sdk_requirements sdk_branch_name "dev-requirements-py3.txt"
 
 git checkout master
 git pull
 git checkout -b "${content_branch}" || fail
+
+# Setup
+change_sdk_requirements sdk_branch_name "dev-requirements-py3.txt"
 
 # New Pack
 create_new_pack "${base_pack_name}" "${new_pack_name}"
@@ -324,7 +325,8 @@ update_pack_ignore "Microsoft365Defender"
 add_pack_to_landing_page "${new_pack_name}"
 # todo  Change sdk to sdk master
 
-#cat ~/config_temp > /Users/iyeshaya/dev/demisto/content/.circleci/config.yml
+cat ~/config_temp > /Users/iyeshaya/dev/demisto/content/.circleci/config.yml # todo remove
+
 git commit -am "Adding changes"
 git push origin "${sdk_branch_name}_uploadFlow_test"
 
@@ -336,4 +338,4 @@ if [ -n "$gitlab_token" ]; then
   trigger_gitlab_ci
 fi
 
-git checkout master
+#git checkout master
