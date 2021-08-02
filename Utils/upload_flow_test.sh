@@ -67,7 +67,7 @@ function add_dependency {
 
   pack_path="${CONTENT_PATH}/Packs/${source_pack}/pack_metadata.json"
 
-  sed -i "" "s/\"dependencies\": {/\"dependencies\": {\n\t${pack_name}: {\n\t\t\"mandatory\": true,\n\t\t\"display_name\": ${pack_name}\n\t},/g" "${pack_path}" || fail
+  sed -i "" "s/\"dependencies\": {/\"dependencies\": {\n\t\"${pack_name}\": {\n\t\t\"mandatory\": true,\n\t\t\"display_name\": \"${pack_name}\"\n\t},/g" "${pack_path}" || fail
 
 }
 # add_author_image
