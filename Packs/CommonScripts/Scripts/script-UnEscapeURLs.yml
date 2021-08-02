@@ -3,6 +3,15 @@ commonfields:
   version: -1
 name: UnEscapeURLs
 script: >-
+
+  function remove_uri(input){
+      var ind = input.indexOf("?");
+      if (ind > -1){
+        input = input.slice(0, ind);
+      }
+      return input;
+  }
+
   function format_url(input) {
       // Check if it is a Microsoft ATP Safe Link
       var atp_link_re = /(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/.*\?url=/;
@@ -30,6 +39,7 @@ script: >-
               return input;
           }
           decoded_url = decodeURIComponent(encoded_url);
+          decoded_url = remove_uri(decoded_url)
           return decoded_url;
       }
       // Check if it is a Proofpoint Protected URL, including gov cloud
@@ -70,8 +80,10 @@ script: >-
               }
           }
           if (url.search(/http/i) !== 0 && url.search(/ftp/i) !== 0) {
+              url = remove_uri(url)
               return 'http://' + url;
           }
+          url = remove_uri(url)
           return url;
       }
       // If proofpoint type v3
@@ -81,6 +93,7 @@ script: >-
           clean = clean.substr(0, closeIndex);
           var url_reg = /((http)s?:)(\/{1,2})(.*)/g;
           var clean_fixed = clean.replace(url_reg, '$1//$4');
+          clean_fixed = remove_uri(clean_fixed)
           return clean_fixed;
       }
 
@@ -96,12 +109,8 @@ script: >-
       } catch (e) {
       // Ignore if can't decodeURI
       }
-      // Remove URI from URL
-      var ind = clean.indexOf("?");
-      if (ind > -1){
-        clean = clean.slice(0, ind);
-      }
 
+      clean = remove_uri(clean)
       return clean;
   }
 
@@ -112,6 +121,7 @@ script: >-
       url_list.forEach(function(the_url, index) {
           formatted_urls[index] = format_url(the_url.trim());
       });
+      formatted_urls = remove_uri(formatted_urls)
       return formatted_urls;
   }
 
