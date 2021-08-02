@@ -324,7 +324,7 @@ git pull
 git checkout -b "${content_branch}" || fail
 
 # Setup
-change_sdk_requirements sdk_branch_name "dev-requirements-py3.txt"
+change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
 
 # New Pack
 create_new_pack "${base_pack_name}" "${new_pack_name}"
