@@ -88,6 +88,10 @@ Scores provided IP entities' reputation in SOCRadar ThreatFusion.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
 | DBotScore.Score | Number | The actual score. | 
+| IP.Address | String | IP address | 
+| IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
+| IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. | 
+| IP.Geo.Country | String | The country in which the IP address is located. | 
 
 #### Command Example
 ```!ip ip="1.1.1.1"```
@@ -102,6 +106,7 @@ Scores provided IP entities' reputation in SOCRadar ThreatFusion.
         "Vendor": "SOCRadar ThreatFusion"
     },
     "IP": {
+        "ASN": "[13335] CLOUDFLARENET, US",
         "Address": "1.1.1.1",
         "Geo": {
             "Country": "US",
@@ -249,6 +254,7 @@ Scores provided domain entities' reputation in SOCRadar ThreatFusion.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
 | DBotScore.Score | Number | The actual score. | 
+| Domain.Name | String | The domain name, for example: "google.com". | 
 
 #### Command Example
 ```!domain domain="paloaltonetworks.com"```
@@ -386,6 +392,8 @@ Scores provided hash entities' reputation in SOCRadar ThreatFusion.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
 | DBotScore.Score | Number | The actual score. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
 
 #### Command Example
 ```!file file="3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792"```

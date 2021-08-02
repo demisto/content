@@ -336,7 +336,7 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
             ip_object = Common.IP(ip=ip_to_score,
                                   dbot_score=dbot_score,
-                                  asn=context_entry['Geo Location'].get('asn'),
+                                  asn=context_entry['Geo Location'].get('ASN'),
                                   geo_country=context_entry['Geo Location'].get('CountryCode'),
                                   geo_latitude=context_entry['Geo Location'].get('Latitude'),
                                   geo_longitude=context_entry['Geo Location'].get('Longitude'),

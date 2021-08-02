@@ -178,6 +178,19 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the indicator score.
       type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      type: String
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format:
+        latitude:longitude.'
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: String
   - arguments:
     - default: true
       description: Domain entities to score.
@@ -272,6 +285,9 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the indicator score.
       type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
   - arguments:
     - default: true
       description: Hash entities to score. (MD5 or SHA1)
@@ -308,6 +324,12 @@ script:
       type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the indicator score.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
       type: String
   - arguments:
     - default: false
