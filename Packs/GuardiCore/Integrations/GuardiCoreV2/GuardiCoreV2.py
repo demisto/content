@@ -191,7 +191,7 @@ def test_module(client: Client) -> str:
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(
                 e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+            message = 'Authorization Error: make sure your username and password are correctly set.'
         else:
             raise e
 
@@ -248,7 +248,7 @@ def get_incidents(client: Client, args: Dict[str, Any]):
     )
 
 
-def fetch_incidents(client: Client, args: Dict[str, Any]):
+def fetch_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_fetch")
     first_fetch = args.get('first_fetch', None)
@@ -360,7 +360,7 @@ def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return endpoints
 
 
-def endpoint_command(client: Client, args: Dict[str, Any]):
+def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     id = args.get("id", None)
     ip_address = args.get("ip", None)
     hostname = args.get("hostname", None)
