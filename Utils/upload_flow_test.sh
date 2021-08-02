@@ -188,15 +188,15 @@ function set_pack_hidden {
 
   pack_name=$1
   pack_metadata="${CONTENT_PATH}/Packs/${pack_name}/pack_metadata.json"
-  if grep "\"hidden\": true"; then
+  if grep "\"hidden\": true" "${pack_metadata}"; then
     # pack is already hidden
     return
-  elif grep "\"hidden\": false"; then
+  elif grep "\"hidden\": false" "${pack_metadata}"; then
     # pack set hidden to false
-    sed -i "" "s/\"hidden\": false/\"hidden\": true/g" ./Packs/Microsoft365Defender/pack_metadata.json
+    sed -i "" "s/\"hidden\": false/\"hidden\": true/g" "${pack_metadata}"
   else
     # pack hidden key is missing
-    sed -i "" "s/{/{\n\"hidden\": true,\n/g" ./Packs/Microsoft365Defender/pack_metadata.json
+    sed -i "" "s/{/{\n\"hidden\": true,\n/g" "${pack_metadata}"
   fi
 }
 
