@@ -275,7 +275,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Name of github branch.
+      description: Name of the branch.
       isArray: false
       name: branch
       required: false
