@@ -1,11 +1,11 @@
 args:
 - default: false
-  description: 'Integration name to check is health'
+  description: 'Integration name to check its health status.'
   isArray: false
   name: integration_name
   required: true
   secret: false
-comment: 'Check integration for existing errors.'
+comment: 'Checks for existing errors in a given integration.'
 commonfields:
   id: VerifyIntegrationHealth
   version: -1
@@ -13,7 +13,7 @@ enabled: false
 name: VerifyIntegrationHealth
 outputs:
 - contextPath: IntegrationHealth.isHealth
-  description: 'Checks if the given integration got errors.'
+  description: 'Determines the health status of the integration.'
   type: Boolean
 - contextPath: IntegrationHealth.fetchDone
   description: 'Checks if the given integration finished it fetch.'

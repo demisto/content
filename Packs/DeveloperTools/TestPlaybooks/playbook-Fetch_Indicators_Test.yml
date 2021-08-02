@@ -39,7 +39,7 @@ tasks:
     task:
       id: c864105f-1f34-4c76-8d2d-83a5ebf11a05
       version: -1
-      name: Check If Indicators exsist
+      name: Check If Indicators exists
       type: condition
       iscommand: false
       brand: ""
@@ -174,9 +174,8 @@ tasks:
     task:
       id: 86d7cddd-bbc0-4eae-834c-0bc53d720941
       version: -1
-      name: Check If Fields Exists
-      description: Verify that a given object includes all the given fields. (Available
-        from Cortex XSOAR 6.0.0).
+      name: Check If Fields Exist
+      description: Verifies that a given object includes all the given fields.
       scriptName: VerifyObjectFieldsList
       type: regular
       iscommand: false
@@ -211,7 +210,7 @@ tasks:
     task:
       id: 04ac916c-092a-40e7-85e2-9c08b1b4b8ff
       version: -1
-      name: Return Value
+      name: Do all the indicator fields exist?
       type: condition
       iscommand: false
       brand: ""
