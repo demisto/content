@@ -14,10 +14,6 @@
 					"complex": null,
 					"simple": "last_name"
 				},
-				"Exceed LMS Code": {
-					"complex": null,
-					"simple": "code"
-				},
 				"Username": {
 					"complex": null,
 					"simple": "email"
@@ -37,10 +33,6 @@
 				"Title": {
 					"complex": null,
 					"simple": "custom_a"
-				},
-				"userType": {
-					"complex": null,
-					"simple": "custom_b"
 				},
 				"Employee ID": {
 					"complex": null,
