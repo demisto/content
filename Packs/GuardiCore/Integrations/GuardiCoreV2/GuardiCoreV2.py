@@ -342,7 +342,7 @@ def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return endpoints
 
 
-def endpoint_command(client: Client, args: Dict[str, Any]):
+def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     id = args.get("id", None)
     ip_address = args.get("ip", None)
     hostname = args.get("hostname", None)
