@@ -1651,8 +1651,15 @@ def checkpoint_login_and_get_sid_command(base_url: str, username: str, password:
         jsonbody['domain'] = domain_arg
 
     response = requests.post(base_url + 'login', verify=verify_certificate, json=jsonbody,
-                             headers={'Content-Type': 'application/json'}).json()
-    printable_result = {'session-id': response.get('sid')}
+                             headers={'Content-Type': 'application/json'})
+
+    demisto.debug(f'Login response: {str(response)}')
+    demisto.debug(f'Login response text: {response.text}')
+    demisto.debug(f'Login response json: {response.json()}')
+    demisto.debug(f'Login response code: {str(response.status_code)}')
+
+    response_json = response.json()
+    printable_result = {'session-id': response_json.get('sid')}
     readable_output = tableToMarkdown('CheckPoint session data:', printable_result)
 
     command_results = CommandResults(
