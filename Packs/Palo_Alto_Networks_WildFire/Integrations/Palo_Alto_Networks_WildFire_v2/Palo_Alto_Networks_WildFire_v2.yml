@@ -172,8 +172,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: Request a structured report (XML or PDF). Only relevant for when
-        using polling=true.
+      description: Request a structured report. Possible values: "XML" and "PDF". Only relevant when 
+        polling=true.
       isArray: false
       name: format
       predefined:
@@ -184,8 +184,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Receive extended information from WildFire. Only relevant for when
-        using polling=true.
+      description: Receive extended information from WildFire. Only relevant when
+        polling=true.
       isArray: false
       name: verbose
       predefined:
