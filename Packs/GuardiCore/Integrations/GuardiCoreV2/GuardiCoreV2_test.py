@@ -1,6 +1,10 @@
+from CommonServerPython import *
+
 import json
 import io
 import pytest
+from pytest import raises
+
 
 from dateparser import parse
 from pytz import utc
@@ -176,12 +180,65 @@ def test_get_assets(mocker, requests_mock):
     response = get_assets(client, args)
     assert len(response) == 1
     response = response[0]
-    assert response.outputs == {'asset_id': '920b9a05-889e-429e-97d0-94a92ccbe376',
-                                'ip_addresses': ['1.1.1.1', 'fe80::250:56ff:fe84:da1e'],
-                                'last_seen': 1627910241995,
-                                'name': 'Accounting-web-1',
-                                'status': 'on',
-                                'tenant_name': 'esx10/lab_a/Apps/Accounting'}
+    assert response.outputs == {
+        'asset_id': '920b9a05-889e-429e-97d0-94a92ccbe376',
+        'ip_addresses': ['1.1.1.1', 'fe80::250:56ff:fe84:da1e'],
+        'last_seen': 1627910241995,
+        'name': 'Accounting-web-1',
+        'status': 'on',
+        'tenant_name': 'esx10/lab_a/Apps/Accounting'}
+
+
+def test_endpoint_command_fails(mocker, requests_mock):
+    """Unit test
+    Given
+    - no parameters
+    When
+    - we mock the endpoint command
+    Then
+    - Validate that there is a correct error
+    """
+    from GuardiCoreV2 import Client, endpoint_command
+    mock_response = util_load_json('test_data/get_endpoint_response.json')
+    requests_mock.post(
+        'https://api.guardicoreexample.com/api/v3.0/authenticate',
+        json={'access_token': TEST_API_KEY})
+    client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
+                    verify=False, proxy=False, username='test', password='test')
+    args = {}
+    mocker.patch.object(client, '_http_request', return_value=mock_response)
+    with raises(DemistoException):
+        endpoint_command(client, args)
+
+
+def test_endpoint_command(mocker, requests_mock):
+    """Unit test
+    Given
+    - a hostname
+    When
+    - we mock the endpoint command
+    Then
+    - Validate that there is one result
+    - Validate that the correct readable output is returned
+    """
+    from GuardiCoreV2 import Client, endpoint_command
+    mock_response = util_load_json('test_data/get_endpoint_response.json')
+    requests_mock.post(
+        'https://api.guardicoreexample.com/api/v3.0/authenticate',
+        json={'access_token': TEST_API_KEY})
+    client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
+                    verify=False, proxy=False, username='test', password='test')
+    args = {
+        'hostname': 'Accounting-web-1'
+    }
+    mocker.patch.object(client, '_http_request', return_value=mock_response)
+    response = endpoint_command(client, args)
+    assert len(response) == 1
+    assert response[0].readable_output == '''### GuardiCoreV2 - Endpoint: Accounting-web-1
+|Hostname|ID|IPAddress|MACAddress|OS|OSVersion|Vendor|
+|---|---|---|---|---|---|---|
+| Accounting-web-1 | 920b9a05-889e-429e-97d0-94a92ccbe376 | 1.1.1.1, fe80::250:56ff:fe84:da1e | 00:50:56:84:da:1e | 2 | Ubuntu 16.04.6 LTS | GuardiCore Response |
+'''
 
 
 def test_get_incidents(mocker, requests_mock):
