@@ -1671,7 +1671,7 @@ def checkpoint_login_and_get_sid_command(base_url: str, username: str, password:
         outputs=printable_result,
         raw_response=response
     )
-
+    demisto.debug('Created post-login&SID command_results successfully')
     return command_results
 
 
@@ -1838,11 +1838,18 @@ def main():
         if demisto.command() == 'test-module':
             response = checkpoint_login_and_get_sid_command(base_url, username, password,
                                                             verify_certificate, 600, domain_arg).outputs
+            demisto.debug('done creating response for test-module')
             if response:
                 sid = response.get('session-id')  # type: ignore
+                demisto.debug('calling return result on login (inside test-module)')
                 return_results(test_module(base_url, sid, verify_certificate))
+                demisto.debug('calling logout command')
                 checkpoint_logout_command(base_url, sid, verify_certificate)
+                demisto.debug('done running test-module')
                 return
+            else:
+                demisto.debug('test-module got an empty response!')
+
         elif command == 'checkpoint-login-and-get-session-id':
             session_timeout = demisto.args().get('session_timeout')
 
