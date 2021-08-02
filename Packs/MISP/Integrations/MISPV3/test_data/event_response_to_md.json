@@ -1,0 +1,47 @@
+[
+  {
+    "ID": "1",
+    "PublishTimestamp": "2021-06-16 08:35:01",
+    "Info": "Test",
+    "OrganizationID": "1",
+    "OwnerOrganization.ID": "8",
+    "Distribution": "0",
+    "UUID": "5e6b322a-9f80-4e2f-9f2a-3cab0a123456",
+    "Tag": [
+      {
+        "id": "1",
+        "Name": "Tag1"
+      },
+      {
+        "id": "2",
+        "Name": "misp-galaxy:tag2",
+        "is_galaxy": true,
+        "is_custom_galaxy": false,
+        "inherited": 1
+      },
+      {
+        "id": "3",
+        "Name": "misp-galaxy:tag3",
+        "is_galaxy": true,
+        "is_custom_galaxy": false,
+        "inherited": 0
+      }
+    ],
+    "Galaxy": [
+      {
+        "Name": "galaxy1"
+      },
+      {
+        "Name": "galaxy2"
+      }
+    ],
+    "Object": [
+      {
+        "ID": "obj1"
+      },
+      {
+        "ID": "obj2"
+      }
+    ]
+  }
+]

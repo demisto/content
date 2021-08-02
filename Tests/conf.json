@@ -51,6 +51,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Azure Active Directory Identity Protection",
+            "playbookID": "AzureADTest",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "GoogleCalendar",
             "playbookID": "GoogleCalendar-Test",
             "fromversion": "5.0.0"
@@ -108,11 +113,6 @@
             "fromversion": "5.5.0",
             "memory_threshold": 250,
             "timeout": 1000
-        },
-        {
-            "integrations": "SecurityIntelligenceServicesFeed",
-            "playbookID": "SecurityIntelligenceServicesFeed - Test",
-            "fromversion": "5.5.0"
         },
         {
             "integrations": "EwsExtension",
@@ -800,6 +800,11 @@
         {
             "integrations": "MISP V2",
             "playbookID": "MISP V2 Test",
+            "timeout": 300
+        },
+        {
+            "integrations": "MISP V3",
+            "playbookID": "MISP V3 Test",
             "timeout": 300
         },
         {
@@ -3746,6 +3751,7 @@
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
         "MISP V2": "Cleanup process isn't performed as expected.",
+        "MISP V3": "Cleanup process isn't performed as expected.",
         "Azure Network Security Groups": "Has a command that sends parameters in the path",
         "GitHub": "Cannot use proxy",
         "LogRhythm": "Cannot use proxy",
