@@ -1803,7 +1803,7 @@ def test_module(base_url: str, sid: str, verify_certificate: bool) -> str:
         raise e
 
     except JSONDecodeError as e:
-        demisto.info("Could not parse JSON content. Exception body: " + str(e))
+        demisto.debug("Could not parse JSON content. Exception body: " + str(e))
         if isinstance(response, requests.Response):  # set to None on function head as default
             raise DemistoException(f"Could not parse JSON content of response.text: {response.text}")
         else:
