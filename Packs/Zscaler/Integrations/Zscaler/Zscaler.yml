@@ -121,7 +121,7 @@ script:
       description: A comma-separated list of IP address for which to look up the classification.
         For example, 8.8.8.8,1.2.3.4. The maximum number of URLs per call is 100.
         An IP address cannot exceed 1024 characters.
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
