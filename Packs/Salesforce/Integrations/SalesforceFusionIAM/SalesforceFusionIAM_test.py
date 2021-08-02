@@ -1,5 +1,5 @@
 from requests import Response, Session
-from HelloIAMWorld import Client, get_mapping_fields
+from SalesforceFusionIAM import Client, get_mapping_fields
 from IAMApiModule import *
 
 APP_USER_OUTPUT = {
@@ -23,6 +23,8 @@ APP_DISABLED_USER_OUTPUT = {
 }
 
 DISABLED_USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=False, app_data=APP_DISABLED_USER_OUTPUT)
+
+demisto.callingContext = {'context': {'IntegrationInstance': 'Test', 'IntegrationBrand': 'Test'}}
 
 
 def mock_client():
@@ -108,7 +110,7 @@ def test_get_user_command__bad_response(mocker):
 
     bad_response = Response()
     bad_response.status_code = 500
-    bad_response._content = b'{"error": {"detail": "details", "message": "message"}}'
+    bad_response._content = b'{"detail": "details", "message": "message"}'
 
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(Session, 'request', return_value=bad_response)
@@ -119,7 +121,7 @@ def test_get_user_command__bad_response(mocker):
     assert outputs.get('action') == IAMActions.GET_USER
     assert outputs.get('success') is False
     assert outputs.get('errorCode') == 500
-    assert outputs.get('errorMessage') == 'message: details'
+    assert outputs.get('errorMessage') == "message: {'detail': 'details', 'message': 'message'}"
 
 
 def test_create_user_command__success(mocker):
@@ -136,7 +138,6 @@ def test_create_user_command__success(mocker):
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=USER_APP_DATA)
 
     user_profile = IAMCommand().create_user(client, args)
@@ -199,7 +200,6 @@ def test_update_user_command__non_existing_user(mocker):
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=USER_APP_DATA)
 
     user_profile = IAMCommand(create_if_not_exists=True).update_user(client, args)
@@ -229,7 +229,6 @@ def test_update_user_command__command_is_disabled(mocker):
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'update_user', return_value=USER_APP_DATA)
 
     user_profile = IAMCommand(is_update_enabled=False).update_user(client, args)
@@ -258,7 +257,8 @@ def test_update_user_command__allow_enable(mocker):
             'allow-enable': 'true'}
 
     mocker.patch.object(client, 'get_user', return_value=DISABLED_USER_APP_DATA)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
+    mocker.patch.object(client, 'get_user_by_id', return_value=DISABLED_USER_APP_DATA)
+    # mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'update_user', return_value=USER_APP_DATA)
 
     user_profile = IAMCommand().update_user(client, args)

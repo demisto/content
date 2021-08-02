@@ -1,7 +1,7 @@
 {
 	"defaultIncidentType": "",
-	"description": "Maps an Salesforce_Fusion user data to a User Profile data.",
-	"id": "User Profile - Salesforce_Fusion (Incoming)",
+	"description": "Maps an Saleforce_Fusion user data to a User Profile data.",
+	"id": "User Profile - Saleforce_Fusion (Incoming)",
 	"mapping": {
 		"User Profile": {
 			"dontMapEventToLabels": true,
@@ -61,7 +61,7 @@
 			}
 		}
 	},
-	"name": "User Profile - Salesforce_Fusion (Incoming)",
+	"name": "User Profile - Saleforce_Fusion (Incoming)",
 	"type": "mapping-incoming",
 	"version": -1,
 	"fromVersion": "6.0.0"
