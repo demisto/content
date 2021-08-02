@@ -798,6 +798,11 @@
             "timeout": 300
         },
         {
+            "integrations": "MISP V3",
+            "playbookID": "MISP V3 Test",
+            "timeout": 300
+        },
+        {
             "playbookID": "test-LinkIncidentsWithRetry"
         },
         {
@@ -3741,6 +3746,7 @@
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
         "MISP V2": "Cleanup process isn't performed as expected.",
+        "MISP V3": "Cleanup process isn't performed as expected.",
         "Azure Network Security Groups": "Has a command that sends parameters in the path",
         "GitHub": "Cannot use proxy",
         "LogRhythm": "Cannot use proxy",
