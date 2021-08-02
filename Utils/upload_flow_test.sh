@@ -47,6 +47,10 @@ function create_new_pack {
   cp -R "${pack_path}" "${new_pack_path}" || fail
   cd "${new_pack_path}" || fail
   find . -type f -name "*.json|*.yml" -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
+  # renaming
+  for file in find . -iname "${pack_name/}"; do
+    mv "${file}" "${file//$pack_name/n$ew_pack_name}"
+  done
   git add ./
   cd "${original_path}" || fail
 }
