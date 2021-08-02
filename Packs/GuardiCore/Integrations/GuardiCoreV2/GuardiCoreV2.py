@@ -352,6 +352,7 @@ def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         endpoints.append(CommandResults(
             readable_output=md,
             outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Endpoint',
+            outputs_key_field="_id",
             raw_response=res,
             outputs=res,
         ))
@@ -399,6 +400,7 @@ def endpoint_command(client: Client, args: Dict[str, Any]):
             readable_output=md,
             outputs_prefix='',
             raw_response=res,
+            outputs_key_field="_id",
             indicator=endpoint
         ))
 
