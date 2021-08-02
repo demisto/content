@@ -427,7 +427,7 @@ tasks:
       - - operator: isTrue
           left:
             value:
-              simple: IntegrationHealth.isHealth
+              simple: IntegrationHealth.isHealthy
             iscontext: true
     view: |-
       {

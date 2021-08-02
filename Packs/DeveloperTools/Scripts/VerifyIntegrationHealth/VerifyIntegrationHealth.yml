@@ -12,11 +12,11 @@ commonfields:
 enabled: false
 name: VerifyIntegrationHealth
 outputs:
-- contextPath: IntegrationHealth.isHealth
+- contextPath: IntegrationHealth.isHealthy
   description: 'Determines the health status of the integration.'
   type: Boolean
 - contextPath: IntegrationHealth.fetchDone
-  description: 'Checks if the given integration finished it fetch.'
+  description: 'Determines whether the fetch-indicators command was ended.'
   type: Boolean
 - contextPath: IntegrationHealth.integrationName
   description: 'Requested integration name.'

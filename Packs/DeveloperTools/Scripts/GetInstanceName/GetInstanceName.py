@@ -1,32 +1,21 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
 from typing import Dict, Any, Tuple
 import traceback
 
 
 def instance_check(instances, integration_name: str) -> Tuple[bool, Any]:
-    for integration in instances:
-        if integration.get('brand') == integration_name:
-            return bool(integration.get('name')), integration.get('name')
+    for instance_name, details in instances.items():
+        if details.get('brand') == integration_name:
+            return True, instance_name
     return False, None
 
 
 def get_instance_name_command(args: Dict[str, Any]) -> CommandResults:
-
     integration_name = args.get('integration_name', '')
 
-    raw_result = demisto.executeCommand(
-        "demisto-api-post",
-        {
-            "uri": "/settings/integration/search",
-            "body": {
-                "size": 10,
-                "query": "name:" + integration_name
-            },
-        })
-    instances = raw_result[0]["Contents"]["response"]["instances"]
+    instances = demisto.getModules()
 
     found, instance_name = instance_check(instances, integration_name)
 
@@ -37,6 +26,7 @@ def get_instance_name_command(args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='Instances',
         outputs_key_field='',
         outputs={
+            'Instances': instances,
             'integrationName': integration_name,
             'instanceName': instance_name
         },

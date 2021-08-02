@@ -28,13 +28,13 @@ def health_check_command(args: Dict[str, Any]) -> CommandResults:
         })
     health_dict = raw_result[0]["Contents"]["response"]["health"]
 
-    is_health, fetch_done = health_check(health_dict, integration_name)
+    is_healthy, fetch_done = health_check(health_dict, integration_name)
 
     return CommandResults(
         outputs_prefix='IntegrationHealth',
         outputs_key_field='integrationName',
         outputs={
-            'isHealth': is_health,
+            'isHealthy': is_healthy,
             'healthDict': health_dict,
             'fetchDone': fetch_done,
             'integrationName': integration_name
