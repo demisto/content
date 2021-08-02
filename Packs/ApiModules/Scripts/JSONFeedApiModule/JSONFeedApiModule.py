@@ -3,7 +3,7 @@ from CommonServerPython import *
 ''' IMPORTS '''
 import urllib3
 import jmespath
-from typing import List, Dict, Union, Optional, Callable
+from typing import List, Dict, Union, Optional, Callable, Tuple
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -106,7 +106,7 @@ class Client:
         else:
             return headers
 
-    def build_iterator(self, feed: dict, **kwargs) -> List:
+    def build_iterator(self, feed: dict, **kwargs) -> Tuple(List, bool):
         url = feed.get('url', self.url)
         if not self.post_data:
             r = requests.get(
@@ -139,7 +139,19 @@ class Client:
         return result, get_no_update_value(r)
 
 
-def get_no_update_value(response):
+def get_no_update_value(response: requests.Response) -> bool:
+    """
+    detect if the feed response has been modified according to the headers etag and last_modified.
+    For more information, see this:
+    https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Last-Modified
+    https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag
+    Args:
+        response: (requests.Response) The feed response.
+    Returns:
+        boolean with the value for noUpdate argument.
+        The value should be False if the response was modified.
+    """
+
     context = demisto.getIntegrationContext()
     old_etag = context.get('etag')
     old_last_modified = context.get('last_modified')
