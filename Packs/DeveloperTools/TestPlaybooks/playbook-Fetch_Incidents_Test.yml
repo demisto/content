@@ -290,8 +290,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1080
+          "x": 275,
+          "y": 1245
         }
       }
     note: false
@@ -356,7 +356,7 @@ tasks:
       - - operator: isTrue
           left:
             value:
-              simple: IntegrationHealth.isHealth
+              simple: IntegrationHealth.isHealthy
             iscontext: true
     view: |-
       {
@@ -615,7 +615,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2660,
-        "width": 610,
+        "width": 605,
         "x": 50,
         "y": 50
       }

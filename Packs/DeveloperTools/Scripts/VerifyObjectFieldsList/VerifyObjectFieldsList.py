@@ -19,7 +19,7 @@ def check_components(components: list, context: Any):
         else:
             context = context[component]
             if not context:
-                raise ValueError
+                raise KeyError
 
 
 def check_fields(fields_to_search_array: list, context_json) -> bool:
@@ -36,7 +36,7 @@ def check_fields(fields_to_search_array: list, context_json) -> bool:
             new_context = context_json
             check_components(components, new_context)
 
-    except Exception:
+    except KeyError:
         return False
     return True
 
