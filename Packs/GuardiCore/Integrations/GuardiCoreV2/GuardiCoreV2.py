@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 import base64
 import json
 from dateparser import parse
@@ -25,6 +25,7 @@ INCIDENT_TYPE = 'GuardiCore Incident'
 INTEGRATION_CONTEXT_NAME = 'Guardicore'
 INTEGRATION_NAME = 'GuardiCore v2'
 GLOBAL_TIMEOUT = 10
+
 
 class Client(BaseClient):
     """
@@ -195,8 +196,6 @@ def test_module(client: Client) -> str:
         else:
             raise e
 
-
-
     return message
 
 
@@ -237,7 +236,8 @@ def get_incidents(client: Client, args: Dict[str, Any]):
     results = [filter_human_readable(res, human_columns=INCIDENT_COLUMNS) for
                res in raw_results]
 
-    md = tableToMarkdown(f'{INTEGRATION_NAME} - Incidents: {len(results)}', results)
+    md = tableToMarkdown(f'{INTEGRATION_NAME} - Incidents: {len(results)}',
+                         results)
 
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Incident',
@@ -248,7 +248,8 @@ def get_incidents(client: Client, args: Dict[str, Any]):
     )
 
 
-def fetch_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
+def fetch_incidents(client: Client, args: Dict[str, Any]) -> Tuple[
+    List[Dict], int]:
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_fetch")
     first_fetch = args.get('first_fetch', None)
@@ -268,7 +269,8 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
         "limit": args.get('limit'),
         "incident_type": args.get('incident_type')
     }
-    demisto.debug(f'{INTEGRATION_NAME} - Fetch incidents parameters: {fetch_params}')
+    demisto.debug(
+        f'{INTEGRATION_NAME} - Fetch incidents parameters: {fetch_params}')
     results = client.get_incidents(fetch_params)
     demisto.debug(
         f'{INTEGRATION_NAME} - Fetch incidents results count: {len(results)}')
@@ -360,7 +362,8 @@ def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return endpoints
 
 
-def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def endpoint_command(client: Client, args: Dict[str, Any]) -> List[
+    CommandResults]:
     id = args.get("id", None)
     ip_address = args.get("ip", None)
     hostname = args.get("hostname", None)
