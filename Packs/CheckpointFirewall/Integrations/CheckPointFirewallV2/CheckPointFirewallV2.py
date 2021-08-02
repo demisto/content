@@ -1657,6 +1657,8 @@ def checkpoint_login_and_get_sid_command(base_url: str, username: str, password:
     demisto.debug(f'Login response text: {response.text}')
     demisto.debug(f'Login response json: {response.json()}')
     demisto.debug(f'Login response code: {str(response.status_code)}')
+    demisto.debug(f'Login response reason: {str(response.reason)}')
+    demisto.debug(f'Login response headers: {str(response.headers)}')
 
     response_json = response.json()
     printable_result = {'session-id': response_json.get('sid')}
