@@ -11,9 +11,7 @@ with open('./test_data/signer.pem') as file_:
     public_key = file_.read()
 
 client = Client(private_key, public_key)
-note_msg = 'Note: encoding detection ended with warning: Trying to detect encoding from a tiny portion of (17) ' \
-           'byte(s). Characters may be missing. You can try running this command again and pass the encoding code ' \
-           'as argument.\n'
+note_msg = 'Note: encoding detection ended with warning: Trying to detect encoding from a tiny portion'
 
 test_data = [
     (
