@@ -248,7 +248,7 @@ function add_pack_to_landing_page {
   pack_name=$1
 
   json_file="${CONTENT_PATH}/Tests/Marketplace/landingPage_sections.json"
-  sed -i "" "s/\"Getting Started\":[/\"Getting Started\":[\n\"${pack_name}\",\n/g" "${json_file}"
+  sed -i "" "s/\"Getting Started\":\[/\"Getting Started\":\[\n\"${pack_name}\",\n/g" "${json_file}" || fail
 
 }
 
