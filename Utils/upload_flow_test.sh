@@ -338,7 +338,7 @@ add_1_0_0_release_note "${new_pack_name}"
 
 # Existing pack
 enhancement_release_notes "${base_pack_name}"
-change_integration_image "Palo_Alto_Networks_WildFire_v2" "${base_pack_name}"
+change_integration_image "PaloAltoNetworks_IoT" "${base_pack_name}"
 updating_old_release_notes "Base"
 enhancement_release_notes "Base"
 updating_old_release_notes "${base_pack_name}"
