@@ -5,20 +5,22 @@
 # :param $1: message
 function fail() {
   echo "$1"
+  git checkout Upload_flow_test_script # todo change to master 
+  git branch -D "${content_branch}" # delete local branch
   exit 1
 }
 
 # check_arguments
 # Check if the given argumentes are valid
 function check_arguments {
-  echo "Running - ${0}"
+  echo "Running - check_arguments"
 
   if [ -z "$sdk_branch_name" ]; then
-    fail "${0} - You must provide sdk branch name."
+    fail "You must provide sdk branch name."
   fi
 
   if [ -z "$gitlab_token" ] && [ -z "$circle_token" ]; then
-    fail "${0} - At least one token [-gt, --gitlab-ci-token] or [-ct, --circle-ci-token] is required."
+    fail "At least one token [-gt, --gitlab-ci-token] or [-ct, --circle-ci-token] is required."
   fi
 
 }
@@ -28,10 +30,10 @@ function check_arguments {
 # :param $1: pack name
 # :param $2: copied pack name
 function create_new_pack {
-  echo "Running - ${0}"
+  echo "Running - create_new_pack"
 
   if [ "$#" -ne 3 ]; then
-    fail "${0} - Illegal number of parameters"
+    fail "Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -55,10 +57,10 @@ function create_new_pack {
 # :param $1: pack to add dependencies to
 # :param $2: pack to be depended on
 function add_dependency {
-  echo "Running - ${0}"
+  echo "Running - add_dependency"
 
   if [ "$#" -ne 1 ]; then
-    fail "${0} - Illegal number of parameters"
+    fail "Illegal number of parameters"
   fi
 
   source_pack=$1
@@ -73,10 +75,10 @@ function add_dependency {
 # Copies the author image from Base to desired pack
 # :param $1: pack to add author image to
 function add_author_image {
-  echo "Running - ${0}"
+  echo "Running - add_author_image"
 
   if [ "$#" -ne 1 ]; then
-    fail "${0} - Illegal number of parameters"
+    fail "Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -89,8 +91,10 @@ function add_author_image {
 # add 1_0_0 release note for given pack by copying the last available release note
 # :param $1: pack name
 function add_1_0_0_release_note {
+  echo "Running - add_1_0_0_release_note"
+
   if [ "$#" -ne 1 ]; then
-    fail "${0} - Illegal number of parameters"
+    fail "Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -106,10 +110,10 @@ function add_1_0_0_release_note {
 # :param $1: sdk branch name
 # :param $2: requirements file
 function change_sdk_requirements {
-  echo "Running - ${0}"
+  echo "Running - change_sdk_requirements"
 
   if [ "$#" -ne 2 ]; then
-    fail "${0} - Illegal number of parameters"
+    fail "Illegal number of parameters"
   fi
 
   sdk_branch=$1
@@ -122,10 +126,10 @@ function change_sdk_requirements {
 # update release notes
 # :param $1: pack name
 function enhancement_release_notes {
-  echo "Running - ${0}"
+  echo "Running - enhancement_release_notes"
 
   if [ "$#" -ne 1 ]; then
-    fail "${0} - Illegal number of parameters"
+    fail "Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -139,10 +143,10 @@ function enhancement_release_notes {
 # :param $1: source pack name
 # :param $2: dest pack name
 function change_integration_image {
-  echo "Running - ${0}"
+  echo "Running - change_integration_image"
 
   if [ "$#" -ne 2 ]; then
-    fail "${0} - Illegal number of parameters"
+    fail "Illegal number of parameters"
   fi
 
   source_pack_name=$1
@@ -157,10 +161,10 @@ function change_integration_image {
 # adding text to the latest release note in pack
 # :param $1: pack name
 function updating_old_release_notes {
-  echo "Running - ${0}"
+  echo "Running - updating_old_release_notes"
 
   if [ "$#" -ne 1 ]; then
-    fail "${0} - Illegal number of parameters"
+    fail "Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -177,10 +181,10 @@ function updating_old_release_notes {
 # set pack as hidden
 # :param $1: pack name
 function set_pack_hidden {
-  echo "Running - ${0}"
+  echo "Running - set_pack_hidden"
 
   if [ "$#" -ne 1 ]; then
-    fail "${0} - Illegal number of parameters"
+    fail "Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -201,8 +205,9 @@ function set_pack_hidden {
 # Update readme file
 # :param $1: pack name
 function update_integration_readme {
+  echo "Running - update_integration_readme"
   if [ "$#" -ne 1 ]; then
-    fail "${0} - Illegal number of parameters"
+    fail "Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -217,10 +222,10 @@ function update_integration_readme {
 # Update pack ignore file
 # :param $1: pack name
 function update_pack_ignore {
-  echo "Running - ${0}"
+  echo "Running - update_pack_ignore"
 
   if [ "$#" -ne 1 ]; then
-    fail "${0} - Illegal number of parameters"
+    fail "Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -235,10 +240,10 @@ function update_pack_ignore {
 # Add pack to the getting started landing page
 # :param $1: pack name
 function add_pack_to_landing_page {
-  echo "Running - ${0}"
+  echo "Running - add_pack_to_landing_page"
 
   if [ "$#" -ne 1 ]; then
-    fail "${0} - Illegal number of parameters"
+    fail "Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -253,10 +258,10 @@ function add_pack_to_landing_page {
 ## Add features to pack metadata
 ## :param $1: pack name
 #function add_features {
-#  echo "Running - ${0}"
+#  echo "Running - add_features"
 #
 #  if [ "$#" -ne 1 ]; then
-#    fail "${0} - Illegal number of parameters"
+#    fail "Illegal number of parameters"
 #  fi
 #
 #  pack_name=$1
