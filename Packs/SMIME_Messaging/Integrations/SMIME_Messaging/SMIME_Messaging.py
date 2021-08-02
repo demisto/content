@@ -142,11 +142,13 @@ def decode_str(decrypted_text: bytes, encoding: str) -> Tuple[str, str]:
     message indicates it. If encoding is given, will use it.
     """
     msg = ''
+    out = ''
     if not encoding:
         with warnings.catch_warnings(record=True) as e:
             charset_match = from_bytes(decrypted_text)
-            out = str(charset_match[0]) if len(charset_match) else ''
-            demisto.debug(f"Decode decrypted text using {charset_match[0].encoding} encoding")
+            if len(charset_match):
+                out = str(charset_match[0])
+                demisto.debug(f"Decode decrypted text using {charset_match[0].encoding} encoding")
             if e:
                 msg = f'Note: encoding detection ended with warning: {e[0].message} Characters may be missing.' \
                       ' You can try running this command again and pass the encoding code as argument.\n'
