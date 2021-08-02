@@ -1001,14 +1001,6 @@ tasks:
           right:
             value:
               simple: http://_23_11.redacted.com
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://www.foo.bar/taz
       - - operator: notContainsGeneral
           left:
             value:
