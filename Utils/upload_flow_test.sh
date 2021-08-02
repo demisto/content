@@ -272,8 +272,9 @@ function add_pack_to_landing_page {
 #}
 function trigger_circle_ci() {
   cd "${CONTENT_PATH}" || fail
-  cat ~/trigger_test_flow >/Users/iyeshaya/dev/demisto/content/Utils/trigger_test_upload_flow.sh
+  cat ~/trigger_test_flow >/Users/iyeshaya/dev/demisto/content/Utils/trigger_test_upload_flow.sh # todo remove
   ./Utils/trigger_test_upload_flow.sh -ct "${circle_token}" -b "${content_branch}" -db "true"
+  git stash # todo remove
 }
 function trigger_gitlab_ci() {
   cd "${CONTENT_PATH}" || return
