@@ -211,7 +211,7 @@ function update_integration_readme {
 
   pack_name=$1
 
-  readme_file="${CONTENT_PATH}/Packs/${pack_name}/Integration/${pack_name}/README.md"
+  readme_file="${CONTENT_PATH}/Packs/${pack_name}/Integrations/${pack_name}/README.md"
 
   printf "\n#### Upload flow\n - Test\n" >>"${readme_file}"
 
