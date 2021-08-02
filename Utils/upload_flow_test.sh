@@ -11,12 +11,14 @@ function fail() {
 # check_arguments
 # Check if the given argumentes are valid
 function check_arguments {
+  echo "Running - ${0}"
+
   if [ -z "$sdk_branch_name" ]; then
-    fail "$0 - You must provide sdk branch name."
+    fail "${0} - You must provide sdk branch name."
   fi
 
   if [ -z "$gitlab_token" ] && [ -z "$circle_token" ]; then
-    fail "$0 - At least one token [-gt, --gitlab-ci-token] or [-ct, --circle-ci-token] is required."
+    fail "${0} - At least one token [-gt, --gitlab-ci-token] or [-ct, --circle-ci-token] is required."
   fi
 
 }
@@ -25,9 +27,11 @@ function check_arguments {
 # Copies a pack and changing the name in the files to the new name.
 # :param $1: pack name
 # :param $2: copied pack name
-function create_new_pack() {
+function create_new_pack {
+  echo "Running - ${0}"
+
   if [ "$#" -ne 3 ]; then
-    fail "$0 - Illegal number of parameters"
+    fail "${0} - Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -51,8 +55,10 @@ function create_new_pack() {
 # :param $1: pack to add dependencies to
 # :param $2: pack to be depended on
 function add_dependency {
+  echo "Running - ${0}"
+
   if [ "$#" -ne 1 ]; then
-    fail "$0 - Illegal number of parameters"
+    fail "${0} - Illegal number of parameters"
   fi
 
   source_pack=$1
@@ -67,8 +73,10 @@ function add_dependency {
 # Copies the author image from Base to desired pack
 # :param $1: pack to add author image to
 function add_author_image {
+  echo "Running - ${0}"
+
   if [ "$#" -ne 1 ]; then
-    fail "$0 - Illegal number of parameters"
+    fail "${0} - Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -82,7 +90,7 @@ function add_author_image {
 # :param $1: pack name
 function add_1_0_0_release_note {
   if [ "$#" -ne 1 ]; then
-    fail "$0 - Illegal number of parameters"
+    fail "${0} - Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -98,8 +106,10 @@ function add_1_0_0_release_note {
 # :param $1: sdk branch name
 # :param $2: requirements file
 function change_sdk_requirements {
+  echo "Running - ${0}"
+
   if [ "$#" -ne 2 ]; then
-    fail "$0 - Illegal number of parameters"
+    fail "${0} - Illegal number of parameters"
   fi
 
   sdk_branch=$1
@@ -112,8 +122,10 @@ function change_sdk_requirements {
 # update release notes
 # :param $1: pack name
 function enhancement_release_notes {
+  echo "Running - ${0}"
+
   if [ "$#" -ne 1 ]; then
-    fail "$0 - Illegal number of parameters"
+    fail "${0} - Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -127,8 +139,10 @@ function enhancement_release_notes {
 # :param $1: source pack name
 # :param $2: dest pack name
 function change_integration_image {
+  echo "Running - ${0}"
+
   if [ "$#" -ne 2 ]; then
-    fail "$0 - Illegal number of parameters"
+    fail "${0} - Illegal number of parameters"
   fi
 
   source_pack_name=$1
@@ -143,8 +157,10 @@ function change_integration_image {
 # adding text to the latest release note in pack
 # :param $1: pack name
 function updating_old_release_notes {
+  echo "Running - ${0}"
+
   if [ "$#" -ne 1 ]; then
-    fail "$0 - Illegal number of parameters"
+    fail "${0} - Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -161,8 +177,10 @@ function updating_old_release_notes {
 # set pack as hidden
 # :param $1: pack name
 function set_pack_hidden {
+  echo "Running - ${0}"
+
   if [ "$#" -ne 1 ]; then
-    fail "$0 - Illegal number of parameters"
+    fail "${0} - Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -184,7 +202,7 @@ function set_pack_hidden {
 # :param $1: pack name
 function update_integration_readme {
   if [ "$#" -ne 1 ]; then
-    fail "$0 - Illegal number of parameters"
+    fail "${0} - Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -199,8 +217,10 @@ function update_integration_readme {
 # Update pack ignore file
 # :param $1: pack name
 function update_pack_ignore {
+  echo "Running - ${0}"
+
   if [ "$#" -ne 1 ]; then
-    fail "$0 - Illegal number of parameters"
+    fail "${0} - Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -215,8 +235,10 @@ function update_pack_ignore {
 # Add pack to the getting started landing page
 # :param $1: pack name
 function add_pack_to_landing_page {
+  echo "Running - ${0}"
+
   if [ "$#" -ne 1 ]; then
-    fail "$0 - Illegal number of parameters"
+    fail "${0} - Illegal number of parameters"
   fi
 
   pack_name=$1
@@ -227,20 +249,22 @@ function add_pack_to_landing_page {
 }
 
 
-# add_features
-# Add features to pack metadata
-# :param $1: pack name
-function add_features {
-  if [ "$#" -ne 1 ]; then
-    fail "$0 - Illegal number of parameters"
-  fi
-
-  pack_name=$1
-  pack_metadata="${content_path}/Packs/${pack_name}/pack_metadata.json"
-
-  sed -i "s/\"Getting Started\":[/\"Getting Started\":[\n\"${pack_name}\",\n/g" "${pack_metadata}"
-
-}
+## add_features
+## Add features to pack metadata
+## :param $1: pack name
+#function add_features {
+#  echo "Running - ${0}"
+#
+#  if [ "$#" -ne 1 ]; then
+#    fail "${0} - Illegal number of parameters"
+#  fi
+#
+#  pack_name=$1
+#  pack_metadata="${content_path}/Packs/${pack_name}/pack_metadata.json"
+#
+#  sed -i "s/\"Getting Started\":[/\"Getting Started\":[\n\"${pack_name}\",\n/g" "${pack_metadata}"
+#
+#}
 function trigger_circle_ci() {
   cd "${content_path}" || fail
   cat ~/trigger_test_flow >/Users/iyeshaya/dev/demisto/content/Utils/trigger_test_upload_flow.sh
@@ -325,17 +349,17 @@ update_pack_ignore "Microsoft365Defender"
 add_pack_to_landing_page "${new_pack_name}"
 # todo  Change sdk to sdk master
 
-cat ~/config_temp > /Users/iyeshaya/dev/demisto/content/.circleci/config.yml # todo remove
+#cat ~/config_temp > /Users/iyeshaya/dev/demisto/content/.circleci/config.yml # todo remove
 
-git commit -am "Adding changes"
-git push origin "${sdk_branch_name}_uploadFlow_test"
-
-if [ -n "$circle_token" ]; then
-  trigger_circle_ci
-fi
-
-if [ -n "$gitlab_token" ]; then
-  trigger_gitlab_ci
-fi
+#git commit -am "Adding changes"
+#git push origin "${sdk_branch_name}_uploadFlow_test"
+#
+#if [ -n "$circle_token" ]; then
+#  trigger_circle_ci
+#fi
+#
+#if [ -n "$gitlab_token" ]; then
+#  trigger_gitlab_ci
+#fi
 
 #git checkout master
