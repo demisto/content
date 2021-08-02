@@ -40,11 +40,10 @@ function create_new_pack {
   new_pack_name=$2
 
   original_path=$(pwd)
-  pack_path="${content_path}/Packs/${pack_name}"
-  new_pack_path="${content_path}/Packs/${new_pack_name}"
+  pack_path="${CONTENT_PATH}/Packs/${pack_name}"
+  new_pack_path="${CONTENT_PATH}/Packs/${new_pack_name}"
 
-  echo "creating new pack - ${new_pack_name}"
-  cd "${content_path}" || fail
+  cd "${CONTENT_PATH}" || fail
   cp -R "${pack_path}" "${new_pack_path}" || fail
   cd "${new_pack_path}" || fail
   find . -type f -name "*.json|*.yml" -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
@@ -59,14 +58,14 @@ function create_new_pack {
 function add_dependency {
   echo "Running - add_dependency"
 
-  if [ "$#" -ne 1 ]; then
+  if [ "$#" -ne 2 ]; then
     fail "Illegal number of parameters"
   fi
 
   source_pack=$1
   pack_name=$2
 
-  pack_path="${content_path}/Packs/${source_pack}/pack_metadata.json"
+  pack_path="${CONTENT_PATH}/Packs/${source_pack}/pack_metadata.json"
 
   sed -i "s/\"dependencies\": {/\"dependencies\": {\n\t${pack_name}: {\n\t\t\"mandatory\": true,\n\t\t\"display_name\": ${pack_name}\n\t},/g" "${pack_path}" || fail
 
@@ -83,7 +82,7 @@ function add_author_image {
 
   pack_name=$1
   echo "Adding Author image to ${pack_name}"
-  cp "${content_path}/Packs/Base/Author_image.png" "${content_path}/Packs/${pack_name}" || fail
+  cp "${CONTENT_PATH}/Packs/Base/Author_image.png" "${CONTENT_PATH}/Packs/${pack_name}" || fail
 }
 
 
@@ -99,10 +98,10 @@ function add_1_0_0_release_note {
 
   pack_name=$1
 
-  cd "${content_path}/Packs/${pack_name}/ReleaseNotes" || fail
+  cd "${CONTENT_PATH}/Packs/${pack_name}/ReleaseNotes" || fail
   current_latest_note=$(ls -t | head -1)
   cp current_latest_note 1_0_0.md
-  cd "${content_path}" || fail
+  cd "${CONTENT_PATH}" || fail
 }
 
 # change_sdk_requirements
@@ -133,7 +132,7 @@ function enhancement_release_notes {
   fi
 
   pack_name=$1
-  pack_path="${content_path}/Packs/${pack_name}"
+  pack_path="${CONTENT_PATH}/Packs/${pack_name}"
   demisto-sdk update-release-notes -i "${pack_path}" --force --text "Adding release notes to check the upload flow" # Waiting for sdk fix
 }
 
@@ -152,8 +151,8 @@ function change_integration_image {
   source_pack_name=$1
   dest_pack_name=$2
 
-  source_integration_path="${content_path}/Packs/${pack_name}/Integrations/${pack_name}/${pack_name}_image.png"
-  dest_integration_path="${content_path}/Packs/${dest_pack_name}/Integrations/${dest_pack_name}/${dest_pack_name}_image.png"
+  source_integration_path="${CONTENT_PATH}/Packs/${pack_name}/Integrations/${pack_name}/${pack_name}_image.png"
+  dest_integration_path="${CONTENT_PATH}/Packs/${dest_pack_name}/Integrations/${dest_pack_name}/${dest_pack_name}_image.png"
   cp "${source_integration_path}" "${dest_integration_path}"
 }
 
@@ -169,12 +168,12 @@ function updating_old_release_notes {
 
   pack_name=$1
 
-  path="${content_path}/Packs/${pack_name}/ReleaseNotes/"
+  path="${CONTENT_PATH}/Packs/${pack_name}/ReleaseNotes/"
 
   cd "${path}" || fail
   current_latest_note=$(ls -t | head -1)
   printf "\n#### Upload flow\n - Test\n" >>"${current_latest_note}"
-  cd "${content_path}" || return
+  cd "${CONTENT_PATH}" || return
 }
 
 # set_pack_hidden
@@ -188,7 +187,7 @@ function set_pack_hidden {
   fi
 
   pack_name=$1
-  pack_metadata="${content_path}/Packs/${pack_name}/pack_metadata.json"
+  pack_metadata="${CONTENT_PATH}/Packs/${pack_name}/pack_metadata.json"
   if grep '"hidden": true'; then
     # pack is already hidden
     return
@@ -212,7 +211,7 @@ function update_integration_readme {
 
   pack_name=$1
 
-  readme_file="${content_path}/Packs/${pack_name}/Integration/${pack_name}/README.md"
+  readme_file="${CONTENT_PATH}/Packs/${pack_name}/Integration/${pack_name}/README.md"
 
   printf "\n#### Upload flow\n - Test\n" >>"${readme_file}"
 
@@ -230,7 +229,7 @@ function update_pack_ignore {
 
   pack_name=$1
 
-  pack_ignore_file="${content_path}/Packs/${pack_name}/.pack-ignore"
+  pack_ignore_file="${CONTENT_PATH}/Packs/${pack_name}/.pack-ignore"
 
   printf "\n[file:README.md]\nignore=RM104\n" >>"${pack_ignore_file}"
 
@@ -248,7 +247,7 @@ function add_pack_to_landing_page {
 
   pack_name=$1
 
-  json_file="${content_path}/Tests/Marketplace/landingPage_sections.json"
+  json_file="${CONTENT_PATH}/Tests/Marketplace/landingPage_sections.json"
   sed -i "s/\"Getting Started\":[/\"Getting Started\":[\n\"${pack_name}\",\n/g" "${json_file}"
 
 }
@@ -265,18 +264,18 @@ function add_pack_to_landing_page {
 #  fi
 #
 #  pack_name=$1
-#  pack_metadata="${content_path}/Packs/${pack_name}/pack_metadata.json"
+#  pack_metadata="${CONTENT_PATH}/Packs/${pack_name}/pack_metadata.json"
 #
 #  sed -i "s/\"Getting Started\":[/\"Getting Started\":[\n\"${pack_name}\",\n/g" "${pack_metadata}"
 #
 #}
 function trigger_circle_ci() {
-  cd "${content_path}" || fail
+  cd "${CONTENT_PATH}" || fail
   cat ~/trigger_test_flow >/Users/iyeshaya/dev/demisto/content/Utils/trigger_test_upload_flow.sh
   ./Utils/trigger_test_upload_flow.sh -ct "${circle_token}" -b "${content_branch}" -db "true"
 }
 function trigger_gitlab_ci() {
-  cd "${content_path}" || return
+  cd "${CONTENT_PATH}" || return
   ./Utils/trigger_test_upload_flow.sh -ct "${gitlab_token}" -g true -b "${content_branch}"
 }
 
