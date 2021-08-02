@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 # exit on errors
 set -e
 
