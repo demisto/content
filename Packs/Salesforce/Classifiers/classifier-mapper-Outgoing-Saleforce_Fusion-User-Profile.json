@@ -1,7 +1,7 @@
 {
 	"defaultIncidentType": "",
 	"description": "Maps a User Profile data to an Saleforce_Fusion user data.",
-	"id": "User Profile - Saleforce_Fusion (Outgoing)",
+	"id": "Saleforce_Fusion-User-Profile (Outgoing)",
 	"mapping": {
 		"User Profile - Create": {
 			"dontMapEventToLabels": true,
@@ -114,7 +114,7 @@
 			}
 		}
 	},
-	"name": "User Profile - Saleforce_Fusion (outgoing)",
+	"name": "Saleforce_Fusion-User-Profile (Outgoing)",
 	"type": "mapping-outgoing",
 	"version": -1,
 	"fromVersion": "6.0.0"
