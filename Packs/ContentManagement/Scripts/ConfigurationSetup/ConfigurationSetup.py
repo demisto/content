@@ -258,12 +258,10 @@ def get_data_from_war_room_file(entry_id):
     Returns:
         str. The content of the configuration file.
     """
-    res = execute_command(
-        'getFilePath',
-        {'id': entry_id},
-    )
-
-    file_path = res['path']
+    try:
+        file_path = demisto.getFilePath(entry_id)['path']
+    except Exception:
+        raise DemistoException(f'Could not find a file with entry ID {entry_id}')
 
     with open(file_path, 'rb') as file:
         file_content = file.read()
