@@ -26,6 +26,9 @@ def health_check_command(args: Dict[str, Any]) -> CommandResults:
                 "query": "name:" + integration_name
             },
         })
+    if is_error(raw_result):
+        return_error(get_error(raw_result))
+
     health_dict = raw_result[0]["Contents"]["response"]["health"]
 
     is_healthy, fetch_done = health_check(health_dict, integration_name)
