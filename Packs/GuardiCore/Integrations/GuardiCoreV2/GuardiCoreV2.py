@@ -22,6 +22,7 @@ ASSET_COLUMNS = ['status', 'name', 'asset_id', 'last_seen', 'ip_addresses',
 INCIDENT_TYPE = 'GuardiCore Incident'
 ''' CLIENT CLASS '''
 
+GLOBAL_TIMEOUT = 10
 
 class Client(BaseClient):
     """
@@ -109,7 +110,8 @@ class Client(BaseClient):
         data = self._http_request(
             method='GET',
             url_suffix='/assets',
-            params=url_params
+            params=url_params,
+            timeout=GLOBAL_TIMEOUT
         )
         return data
 
@@ -117,6 +119,7 @@ class Client(BaseClient):
         data = self._http_request(
             method='GET',
             url_suffix=f'/incidents/{url_params}',
+            timeout=GLOBAL_TIMEOUT
         )
         return data
 
@@ -124,7 +127,9 @@ class Client(BaseClient):
         data = self._http_request(
             method='GET',
             url_suffix='/incidents',
-            params=url_params)
+            params=url_params,
+            timeout=GLOBAL_TIMEOUT
+        )
         return data
 
 
@@ -174,6 +179,12 @@ def test_module(client: Client) -> str:
         to_time = int(
             parse("now").replace(tzinfo=utc).timestamp()) * 1000
         client.get_incidents({"from_time": from_time, "to_time": to_time})
+
+        if demisto.params().get('isFetch'):
+            fetch_incidents(client, {
+                'limit': 10,
+            })
+
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(
@@ -181,6 +192,9 @@ def test_module(client: Client) -> str:
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
+
+
+
     return message
 
 
@@ -389,6 +403,7 @@ def endpoint_command(client: Client, args: Dict[str, Any]):
 
 
 def main() -> None:
+    global GLOBAL_TIMEOUT
     params = demisto.params()
     base_url = params.get('base_url')
     username = params.get('username')
@@ -407,6 +422,7 @@ def main() -> None:
     tag = params.get('tag', None)
     first_fetch = params.get('first_fetch', None)
     limit = int(params.get("max_fetch", 50))
+    GLOBAL_TIMEOUT = int(params.get("timeout", 10))
 
     try:
         args = demisto.args()

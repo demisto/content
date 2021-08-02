@@ -3,77 +3,90 @@ commonfields:
   id: GuardiCore v2
   version: -1
 configuration:
-  - defaultvalue: https://example.com/
+  - name: base_url
     display: API Server URL
-    name: base_url
     required: true
+    defaultvalue: https://example.com/
     type: 0
-  - display: Username for API
-    name: username
+    additionalinfo: null
+  - name: username
+    display: Username for API
     required: true
+    defaultvalue: null
     type: 0
-  - display: Password for API
-    name: password
+    additionalinfo: null
+  - name: password
+    display: Password for API
     required: true
+    defaultvalue: null
     type: 4
-  - display: Source
+    additionalinfo: null
+  - name: source
+    display: Source
+    required: false
+    defaultvalue: null
+    type: 0
     additionalinfo: Fetch incidents - Guardicore Source Incident Value
-    name: source
+  - name: destination
+    display: Desctination
     required: false
+    defaultvalue: null
     type: 0
-  - display: Desctination
     additionalinfo: Fetch incidents - Guardicore Desctination Incident Value
-    name: destination
+  - name: tag
+    display: Tag
     required: false
+    defaultvalue: null
     type: 0
-  - display: Tag
-    name: tag
+    additionalinfo: null
+  - name: incident_type
+    display: Incident Type
     required: false
-    type: 0
-  - display: Incident Type
+    defaultvalue: null
+    type: 16
     additionalinfo: Fetch incidents - Guardicore Incident Type Value
-    name: incident_type
     options:
       - Incident
       - Deception
       - Network Scan
       - Reveal
       - Experimental
+  - name: severity
+    display: Incident Severity
     required: false
+    defaultvalue: null
     type: 16
-  - display: Incident Severity
     additionalinfo: Fetch incidents - Guardicore Incident Severity Value
-    hidden: false
-    name: severity
     options:
       - Low
       - Medium
       - High
       - All
-    required: false
-    type: 16
-  - defaultvalue: '50'
+  - name: max_fetch
     display: Maximum alerts to fetch
+    required: false
+    defaultvalue: "50"
+    type: 0
     additionalinfo: Fetch incidents - limit on incidents to fetch
-    hidden: false
-    name: max_fetch
-    required: false
-    type: 0
-  - additionalinfo: Fetch incidents - First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  - name: first_fetch
     display: First fetch time
-    hidden: false
-    name: first_fetch
     required: false
+    defaultvalue: null
     type: 0
-  - display: Trust any certificate (not secure)
-    name: insecure
+    additionalinfo: Fetch incidents - First fetch timestamp (<number> <time unit>,
+      e.g., 12 hours, 7 days)
+  - name: insecure
+    display: Trust any certificate (not secure)
     required: false
+    defaultvalue: ""
     type: 8
-  - display: Use system proxy settings
-    hidden: false
-    name: proxy
+    additionalinfo: null
+  - name: proxy
+    display: Use system proxy settings
     required: false
+    defaultvalue: ""
     type: 8
+    additionalinfo: null
   - display: Incident type
     name: incidentType
     required: false
@@ -82,8 +95,14 @@ configuration:
     name: isFetch
     required: false
     type: 8
-description: GuardiCore v2 Integration allows to get information about incidents and
-  endpoints (aseets) via the guardicore api.
+  - name: timeout
+    display: Global timeout to all requests
+    required: false
+    defaultvalue: "10"
+    type: 0
+    additionalinfo: ""
+description: GuardiCore v2 Integration allows to get information about incidents
+  and endpoints (aseets) via the guardicore api.
 display: GuardiCore v2
 fromversion: 6.0.0
 name: GuardiCore v2
@@ -108,7 +127,7 @@ script:
           name: asset_id
           required: false
           secret: false
-        - defaultValue: '50'
+        - defaultValue: "50"
           description: Limit results
           isArray: false
           name: limit
@@ -201,8 +220,7 @@ script:
           description: Guardicore Endpoint Orchestration Details Orchestration Type
           type: String
         - contextPath: Guardicore.Endpoint.orchestration_details.orchestration_obj_id
-          description: Guardicore Endpoint Orchestration Details Orchestration Object
-            ID
+          description: Guardicore Endpoint Orchestration Details Orchestration Object ID
           type: String
         - contextPath: Guardicore.Endpoint.orchestration_details.revision_id
           description: Guardicore Endpoint Orchestration Details Revision ID
@@ -262,8 +280,7 @@ script:
           description: Guardicore Endpoint VM Orchestration Details Orchestration Type
           type: String
         - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_obj_id
-          description: Guardicore Endpoint VM Orchestration Details Orchestration Object
-            ID
+          description: Guardicore Endpoint VM Orchestration Details Orchestration Object ID
           type: String
         - contextPath: Guardicore.Endpoint.vm.orchestration_details.revision_id
           description: Guardicore Endpoint VM Orchestration Details Revision ID
@@ -449,8 +466,7 @@ script:
           description: Guardicore Incident Stories Template
           type: String
         - contextPath: Guardicore.Incident.stories.arguments.malicious_process.process_name
-          description: Guardicore Incident Stories Arguments Malicious Process Process
-            Name
+          description: Guardicore Incident Stories Arguments Malicious Process Process Name
           type: String
         - contextPath: Guardicore.Incident.stories.arguments.malicious_process.reputation_info
           description: Guardicore Incident Stories Arguments Malicious Process Reputation
@@ -466,8 +482,7 @@ script:
           description: Guardicore Incident Stories Arguments IP Address
           type: String
         - contextPath: Guardicore.Incident.stories.arguments.malicious_process->process_name
-          description: Guardicore Incident Stories Arguments Malicious Process, Process
-            Name
+          description: Guardicore Incident Stories Arguments Malicious Process, Process Name
           type: String
         - contextPath: Guardicore.Incident.stories.arguments.malicious_process->reputation_info
           description: Guardicore Incident Stories Arguments Malicious Process, Reputation
@@ -858,8 +873,7 @@ script:
           description: Guardicore Incident Events Last Connection Policy Verdict
           type: String
         - contextPath: Guardicore.Incident.events.last_connection.destination_process_id
-          description: Guardicore Incident Events Last Connection Destination Process
-            ID
+          description: Guardicore Incident Events Last Connection Destination Process ID
           type: String
         - contextPath: Guardicore.Incident.events.last_connection.source_process_id
           description: Guardicore Incident Events Last Connection Source Process ID
@@ -878,24 +892,22 @@ script:
             Verdict
           type: String
         - contextPath: Guardicore.Incident.events.last_connection.source_agent_matching.rule
-          description: Guardicore Incident Events Last Connection Source Agent Matching
-            Rule
+          description: Guardicore Incident Events Last Connection Source Agent Matching Rule
           type: String
         - contextPath: Guardicore.Incident.events.last_connection.destination_agent_matching.verdict
-          description: Guardicore Incident Events Last Connection Destination Agent Matching
-            Verdict
+          description: Guardicore Incident Events Last Connection Destination Agent
+            Matching Verdict
           type: String
         - contextPath: Guardicore.Incident.events.last_connection.destination_agent_matching.rule
-          description: Guardicore Incident Events Last Connection Destination Agent Matching
-            Rule
+          description: Guardicore Incident Events Last Connection Destination Agent
+            Matching Rule
           type: String
         - contextPath: Guardicore.Incident.events.last_connection.management_matching.rule_action
-          description: Guardicore Incident Events Last Connection Management Matching
-            Rule Action
+          description: Guardicore Incident Events Last Connection Management Matching Rule
+            Action
           type: String
         - contextPath: Guardicore.Incident.events.last_connection.management_matching.rule
-          description: Guardicore Incident Events Last Connection Management Matching
-            Rule
+          description: Guardicore Incident Events Last Connection Management Matching Rule
           type: String
         - contextPath: Guardicore.Incident.events.reputation_tags.id
           description: Guardicore Incident Events Reputation Tags ID
@@ -995,7 +1007,7 @@ script:
           name: to_time
           required: true
           secret: false
-        - defaultValue: '50'
+        - defaultValue: "50"
           description: Limit results.
           isArray: false
           name: limit
@@ -1221,7 +1233,8 @@ script:
           required: false
           secret: false
         - default: true
-          description: Query assets with specified IP address (ip takes priority over hostname)
+          description: Query assets with specified IP address (ip takes priority over
+            hostname)
           isArray: false
           name: ip
           required: false
@@ -1264,8 +1277,8 @@ script:
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: '-'
+  script: "-"
   subtype: python3
   type: python
 tests:
-- GuardiCoreV2-Test
+  - GuardiCoreV2-Test
