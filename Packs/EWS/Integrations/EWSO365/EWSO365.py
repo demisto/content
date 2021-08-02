@@ -2051,7 +2051,6 @@ def parse_incident_from_item(item):
                     attached_email = email.message_from_bytes(mime_content) if isinstance(mime_content, bytes) \
                         else email.message_from_string(mime_content)
                     if attachment.item.headers:
-
                         attached_email_headers = []
                         for h, v in attached_email.items():
                             if not isinstance(v, str):
