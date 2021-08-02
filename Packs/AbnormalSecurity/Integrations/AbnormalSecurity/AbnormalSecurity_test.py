@@ -18,9 +18,21 @@ headers = {
 }
 
 
+class MockResponse:
+    def __init__(self, data, status_code):
+        self.data = data
+        self.text = str(data)
+        self.status_code = status_code
+
+
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+def util_load_response(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return MockResponse(f.read(), 200)
 
 
 def mock_client(mocker, http_request_result=None, throw_error=False):
@@ -199,6 +211,6 @@ def test_get_the_latest_threat_intel_feed_command(mocker):
         Then
             - Assert output prefix data is as expected
     """
-    client = mock_client(mocker, util_load_json('test_data/test_get_threat_intel_feed.json'))
+    client = mock_client(mocker, util_load_response('test_data/test_get_threat_intel_feed.json'))
     results = get_the_latest_threat_intel_feed_command(client)
-    assert results.outputs_prefix == 'AbnormalSecurity'
+    assert results["File"] == 'threat_intel_feed.json'

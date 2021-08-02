@@ -10,30 +10,32 @@ class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
-    def check_the_status_of_an_action_requested_on_a_case_request(self, case_id, action_id):
+    def check_the_status_of_an_action_requested_on_a_case_request(self, case_id, action_id, subtenant):
+        params = assign_params(subtenant)
         headers = self._headers
 
-        response = self._http_request('get', f'cases/{case_id}/actions/{action_id}', headers=headers)
+        response = self._http_request('get', f'cases/{case_id}/actions/{action_id}', params=params, headers=headers)
 
         return response
 
-    def check_the_status_of_an_action_requested_on_a_threat_request(self, threat_id, action_id):
+    def check_the_status_of_an_action_requested_on_a_threat_request(self, threat_id, action_id, subtenant):
+        params = assign_params(subtenant)
         headers = self._headers
 
-        response = self._http_request('get', f'threats/{threat_id}/actions/{action_id}', headers=headers)
+        response = self._http_request('get', f'threats/{threat_id}/actions/{action_id}', params=params, headers=headers)
 
         return response
 
-    def download_data_from_threat_log_in_csv_format_request(self, filter_, source):
-        params = assign_params(filter=filter_, source=source)
+    def download_data_from_threat_log_in_csv_format_request(self, filter_, source, subtenant):
+        params = assign_params(filter=filter_, source=source, subtenant=subtenant)
 
         headers = self._headers
 
         response = self._http_request('get', 'threats_export/csv', params=params, headers=headers, resp_type='response')
         return response
 
-    def get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(self, filter_, page_size, page_number):
-        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number)
+    def get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(self, filter_, page_size, page_number, subtenant):
+        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, subtenant=subtenant)
 
         headers = self._headers
 
@@ -41,8 +43,8 @@ class Client(BaseClient):
 
         return response
 
-    def get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(self, filter_, page_size, page_number):
-        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number)
+    def get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(self, filter_, page_size, page_number, subtenant):
+        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, subtenant=subtenant)
 
         headers = self._headers
 
@@ -50,8 +52,8 @@ class Client(BaseClient):
 
         return response
 
-    def get_a_list_of_threats_request(self, filter_, page_size, page_number, source):
-        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, source=source)
+    def get_a_list_of_threats_request(self, filter_, page_size, page_number, source, subtenant):
+        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, source=source, subtenant=subtenant)
 
         headers = self._headers
 
@@ -59,28 +61,29 @@ class Client(BaseClient):
 
         return response
 
-    def get_details_of_a_threat_request(self, threat_id):
+    def get_details_of_a_threat_request(self, threat_id, subtenant):
         headers = self._headers
+        params = assign_params(subtenant=subtenant)
 
-        response = self._http_request('get', f'threats/{threat_id}', headers=headers)
+        response = self._http_request('get', f'threats/{threat_id}', params=params, headers=headers)
 
         return response
 
-    def get_details_of_an_abnormal_case_request(self, case_id):
+    def get_details_of_an_abnormal_case_request(self, case_id, subtenant):
         headers = self._headers
+        params = assign_params(subtenant=subtenant)
 
-        response = self._http_request('get', f'cases/{case_id}', headers=headers)
+        response = self._http_request('get', f'cases/{case_id}', params=params, headers=headers)
 
         return response
 
-    def get_details_of_an_abuse_mailbox_campaign_request(self, campaign_id):
-
+    def get_details_of_an_abuse_mailbox_campaign_request(self, campaign_id, subtenant):
         headers = self._headers
+        params = assign_params(subtenant=subtenant)
 
-        response = self._http_request('get', f'abusecampaigns/{campaign_id}', headers=headers)
+        response = self._http_request('get', f'abusecampaigns/{campaign_id}', params=params, headers=headers)
 
         return response
-
 
     def get_employee_identity_analysis_genome_data_request(self, emailAddress):
 
@@ -90,7 +93,6 @@ class Client(BaseClient):
 
         return response
 
-
     def get_employee_information_request(self, emailAddress):
 
         headers = self._headers
@@ -99,7 +101,6 @@ class Client(BaseClient):
 
         return response
 
-
     def get_employee_login_information_for_last_30_days_in_csv_format_request(self, emailAddress):
 
         headers = self._headers
@@ -107,7 +108,6 @@ class Client(BaseClient):
         response = self._http_request('get', f'employee/{emailAddress}/logins', headers=headers, resp_type='response')
 
         return response
-
 
     def get_the_latest_threat_intel_feed_request(self):
 
@@ -132,11 +132,11 @@ class Client(BaseClient):
 
         return response
 
-    def provides_the_analysis_and_timeline_details_of_a_case_request(self, case_id):
-
+    def provides_the_analysis_and_timeline_details_of_a_case_request(self, case_id, subtenant):
+        params = assign_params(subtenant=subtenant)
         headers = self._headers
 
-        response = self._http_request('get', f'cases/{case_id}/analysis', headers=headers)
+        response = self._http_request('get', f'cases/{case_id}/analysis', params=params, headers=headers)
 
         return response
 
@@ -154,8 +154,9 @@ class Client(BaseClient):
 def check_the_status_of_an_action_requested_on_a_case_command(client, args):
     case_id = str(args.get('case_id', ''))
     action_id = str(args.get('action_id', ''))
+    subtenant = args.get('subtenant', None)
 
-    response = client.check_the_status_of_an_action_requested_on_a_case_request(case_id, action_id)
+    response = client.check_the_status_of_an_action_requested_on_a_case_request(case_id, action_id, subtenant)
     command_results = CommandResults(
         outputs_prefix='AbnormalSecurity.ActionStatus',
         outputs_key_field='',
@@ -169,8 +170,9 @@ def check_the_status_of_an_action_requested_on_a_case_command(client, args):
 def check_the_status_of_an_action_requested_on_a_threat_command(client, args):
     threat_id = str(args.get('threat_id', ''))
     action_id = str(args.get('action_id', ''))
+    subtenant = args.get('subtenant', None)
 
-    response = client.check_the_status_of_an_action_requested_on_a_threat_request(threat_id, action_id)
+    response = client.check_the_status_of_an_action_requested_on_a_threat_request(threat_id, action_id, subtenant)
     command_results = CommandResults(
         outputs_prefix='AbnormalSecurity.ActionStatus',
         outputs_key_field='',
@@ -184,8 +186,9 @@ def check_the_status_of_an_action_requested_on_a_threat_command(client, args):
 def download_data_from_threat_log_in_csv_format_command(client, args):
     filter_ = str(args.get('filter', ''))
     source = str(args.get('source', ''))
+    subtenant = args.get('subtenant', None)
 
-    response = client.download_data_from_threat_log_in_csv_format_request(filter_, source)
+    response = client.download_data_from_threat_log_in_csv_format_request(filter_, source, subtenant)
     filename = 'threat_log.csv'
     file_content = response.text
 
@@ -198,8 +201,14 @@ def get_a_list_of_abnormal_cases_identified_by_abnormal_security_command(client,
     filter_ = str(args.get('filter', ''))
     page_size = args.get('page_size', None)
     page_number = args.get('page_number', None)
+    subtenant = args.get('subtenant', None)
 
-    response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(filter_, page_size, page_number)
+    response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(
+        filter_,
+        page_size,
+        page_number,
+        subtenant
+    )
     markdown = '### List of Cases\n'
     markdown += tableToMarkdown('Case IDs', response.get('cases', []), headers=['caseId', 'description'])
     command_results = CommandResults(
@@ -217,8 +226,9 @@ def get_a_list_of_campaigns_submitted_to_abuse_mailbox_command(client, args):
     filter_ = str(args.get('filter', ''))
     page_size = args.get('page_size', None)
     page_number = args.get('page_number', None)
+    subtenant = args.get('subtenant', None)
 
-    response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(filter_, page_size, page_number)
+    response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(filter_, page_size, page_number, subtenant)
     markdown = '### List of Abuse Mailbox Campaigns\n'
     markdown += tableToMarkdown('Campaign IDs', response.get('campaigns', []), headers=['campaignId'])
 
@@ -238,8 +248,9 @@ def get_a_list_of_threats_command(client, args):
     page_size = args.get('page_size', None)
     page_number = args.get('page_number', None)
     source = str(args.get('source', ''))
+    subtenant = args.get('subtenant', None)
 
-    response = client.get_a_list_of_threats_request(filter_, page_size, page_number, source)
+    response = client.get_a_list_of_threats_request(filter_, page_size, page_number, source, subtenant)
     markdown = '### List of Threats\n'
     markdown += tableToMarkdown('Threat IDs', response.get('threats'), headers=['threatId'])
     command_results = CommandResults(
@@ -254,8 +265,9 @@ def get_a_list_of_threats_command(client, args):
 
 def get_details_of_a_threat_command(client, args):
     threat_id = str(args.get('threat_id', ''))
+    subtenant = args.get('subtenant', None)
 
-    response = client.get_details_of_a_threat_request(threat_id)
+    response = client.get_details_of_a_threat_request(threat_id, subtenant)
     headers = [
         'subject',
         'fromAddress',
@@ -282,8 +294,8 @@ def get_details_of_a_threat_command(client, args):
 
 def get_details_of_an_abnormal_case_command(client, args):
     case_id = str(args.get('case_id', ''))
-
-    response = client.get_details_of_an_abnormal_case_request(case_id)
+    subtenant = args.get('subtenant', None)
+    response = client.get_details_of_an_abnormal_case_request(case_id, subtenant)
     headers = [
         'caseId',
         'severity',
@@ -306,8 +318,9 @@ def get_details_of_an_abnormal_case_command(client, args):
 
 def get_details_of_an_abuse_mailbox_campaign_command(client, args):
     campaign_id = str(args.get('campaign_id', ''))
+    subtenant = args.get('subtenant', None)
 
-    response = client.get_details_of_an_abuse_mailbox_campaign_request(campaign_id)
+    response = client.get_details_of_an_abuse_mailbox_campaign_request(campaign_id, subtenant)
     command_results = CommandResults(
         outputs_prefix='AbnormalSecurity.AbuseCampaignDetails',
         outputs_key_field='',
@@ -375,7 +388,7 @@ def get_the_latest_threat_intel_feed_command(client, args=None):
     response = client.get_the_latest_threat_intel_feed_request()
     filename = 'threat_intel_feed.json'
     file_content = response.text
-    results = fileResult(filename, file_content)
+    results = fileResult(filename, file_content, file_type=entryTypes)
 
     return results
 
@@ -412,8 +425,8 @@ def manage_an_abnormal_case_command(client, args):
 
 def provides_the_analysis_and_timeline_details_of_a_case_command(client, args):
     case_id = str(args.get('case_id', ''))
-
-    response = client.provides_the_analysis_and_timeline_details_of_a_case_request(case_id)
+    subtenant = args.get('subtenant', None)
+    response = client.provides_the_analysis_and_timeline_details_of_a_case_request(case_id, subtenant)
     insight_headers = [
         'signal',
         'description'
@@ -506,7 +519,8 @@ def main():
             'abnormalsecurity-get-abuse-mailbox-campaign': get_details_of_an_abuse_mailbox_campaign_command,
             'abnormalsecurity-get-employee-identity-analysis': get_employee_identity_analysis_genome_data_command,
             'abnormalsecurity-get-employee-information': get_employee_information_command,
-            'abnormalsecurity-get-employee-last-30-days-login-csv': get_employee_login_information_for_last_30_days_in_csv_format_command,
+            'abnormalsecurity-get-employee-last-30-days-login-csv':
+                get_employee_login_information_for_last_30_days_in_csv_format_command,
             'abnormal-security-get-latest-threat-intel-feed': get_the_latest_threat_intel_feed_command,
             'abnormal-security-manage-threat':
                 manage_a_threat_identified_by_abnormal_security_command,

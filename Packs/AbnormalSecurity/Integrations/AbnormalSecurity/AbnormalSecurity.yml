@@ -45,6 +45,10 @@ script:
       isArray: false
       name: mock-data
       required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
+      required: false
     description: Check the status of an action requested on a case.
     name: abnormal-security-check-case-action-status
     outputs:
@@ -69,6 +73,10 @@ script:
       isArray: false
       name: mock-data
       required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
+      required: false
     description: Check the status of an action requested on a threat.
     name: abnormal-security-check-threat-action-status
     outputs:
@@ -92,6 +100,10 @@ script:
     - description: Filters threats based on the source of detection.
       isArray: false
       name: source
+      required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
       required: false
     description: Download data from Threat Log in .csv format
     name: abnormalsecurity-download-threat-log-csv
@@ -118,6 +130,10 @@ script:
       - description: Returns test data if set to `True`
         isArray: false
         name: mock-data
+        required: false
+      - description: Subtenant of the user (if applicable)
+        isArray: false
+        name: subtenant
         required: false
     description: Get a list of campaigns submitted to Abuse Mailbox
     name: abnormalsecurity-list-abuse-mailbox-campaigns
@@ -153,6 +169,10 @@ script:
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
+      required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
       required: false
     description: Get a list of Abnormal cases identified by Abnormal Security
     name: abnormal-security-list-abnormal-cases
@@ -199,6 +219,10 @@ script:
       isArray: false
       name: source
       required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
+      required: false
     description: Get a list of threats
     name: abnormal-security-list-threats
     outputs:
@@ -224,6 +248,10 @@ script:
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
+      required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
       required: false
     description: Get details of a threat
     name: abnormal-security-get-threat
@@ -314,6 +342,10 @@ script:
       isArray: false
       name: mock-data
       required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
+      required: false
     description: Get details of an Abnormal case
     name: abnormal-security-get-abnormal-case
     outputs:
@@ -337,6 +369,10 @@ script:
     - description: Returns test data if set to `True`
       isArray: false
       name: mock-data
+      required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
       required: false
     description: Get details of an Abuse Mailbox campaign
     name: abnormalsecurity-get-abuse-mailbox-campaign
@@ -503,6 +539,10 @@ script:
       isArray: false
       name: mock-data
       required: false
+    - description: Subtenant of the user (if applicable)
+      isArray: false
+      name: subtenant
+      required: false
     description: Provides the analysis and timeline details of a case
     name: abnormalsecurity-get-case-analysis-and-timeline
     outputs:
@@ -527,7 +567,6 @@ script:
     - contextPath: AbnormalSecurity.CaseAnalysis.eventTimeline.field_labels
       description: Analysis labels associated with the fields in the timeline event
       type: Unknown
-
   - arguments:
     - description: Returns test data if set to `True`
       isArray: false
