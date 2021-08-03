@@ -1352,6 +1352,11 @@ jobs:
           command: python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $CIRCLE_ARTIFACTS
       - *upload_entities_to_cortex_xsoar
       - run:
+          name: Zip and upload a pack to the Cortex XSOAR's marketpalce
+          command: |
+            printf "y\nZipPackTest\nZipPackTest\n1\n1\ny\ny\nZipPackTest\ny\n6.0.0" | demisto-sdk init -n ZipPackTest
+            demisto-sdk upload -i Packs/ZipPackTest -z --insecure
+      - run:
           name: Download entities from Cortex XSOAR
           command: |
             demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
