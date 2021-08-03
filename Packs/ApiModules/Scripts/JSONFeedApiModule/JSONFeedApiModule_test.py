@@ -20,7 +20,7 @@ def test_json_feed_no_config():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
+        indicators, _ = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
                                               auto_detect=False)
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
@@ -49,7 +49,7 @@ def test_json_feed_with_config():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
+        indicators, _ = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
                                               auto_detect=False)
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
@@ -81,7 +81,7 @@ def test_json_feed_with_config_mapping():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
+        indicators, _ = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
                                               auto_detect=False)
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
         indicator = indicators[0]
@@ -117,7 +117,8 @@ def test_list_of_indicators_with_no_json_object():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'], auto_detect=True)
+        indicators, _ = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'],
+                                                 auto_detect=True)
         assert len(indicators) == 3
         assert indicators[0].get('value') == '1.1.1.1'
         assert indicators[0].get('type') == 'IP'
@@ -143,7 +144,7 @@ def test_post_of_indicators_with_no_json_object():
             insecure=True, data='test=1'
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'], auto_detect=True)
+        indicators, _ = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'], auto_detect=True)
         assert matcher.last_request.text == 'test=1'
         assert len(indicators) == 3
         assert indicators[0].get('value') == '1.1.1.1'

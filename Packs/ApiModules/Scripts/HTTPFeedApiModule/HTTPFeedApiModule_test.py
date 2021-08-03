@@ -372,7 +372,7 @@ def test_get_indicators_with_relations():
             feed_url_to_config=feed_url_to_config,
             indicator_type='ASN'
         )
-        indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
+        indicators, _ = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
                                               create_relationships=True)
 
         assert indicators == expected_res
@@ -437,7 +437,7 @@ def test_get_indicators_without_relations():
             feed_url_to_config=feed_url_to_config,
             indicator_type='ASN'
         )
-        indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
+        indicators, _ = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
                                               create_relationships=False)
 
         assert indicators == expected_res
