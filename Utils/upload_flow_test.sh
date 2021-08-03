@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
+# This script creates new branch with changes that will test the upload flow with given sdk and content branches
+
 # fail
 # show fail message and quit
 # :param $1: message
 function fail() {
   echo "$1"
-#  git checkout Upload_flow_test_script # todo change to master
-#  git branch -D "${content_branch}" # delete local branch
+  git checkout "${content_branch_name}"
+  git branch -D "${new_content_branch}" # delete local branch
   exit 1
 }
 
@@ -15,14 +17,17 @@ function fail() {
 function check_arguments {
   echo " Running - check_arguments"
 
+  if [ -z "$content_branch_name" ]; then
+    content_branch_name="master"
+  fi
+
   if [ -z "$sdk_branch_name" ]; then
-    fail "You must provide sdk branch name."
+    sdk_branch_name="master"
   fi
 
   if [ -z "$gitlab_token" ] && [ -z "$circle_token" ]; then
     fail "At least one token [-gt, --gitlab-ci-token] or [-ct, --circle-ci-token] is required."
   fi
-
 }
 
 # copy_pack
@@ -48,9 +53,37 @@ function create_new_pack {
   cd "${new_pack_path}" || fail
   find . -type f -name "*.json|*.yml" -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
   # renaming
-  find . -iname "${pack_name}" -exec bash -c mv "$1" "${1//$pack_name/$new_pack_name}" {} \;
+  change_files_in_folder "$pack_name" "$new_pack_name"
   git add ./
   cd "${original_path}" || fail
+
+  git commit -am  "Created new pack - $new_pack_name"
+}
+
+# rename_files_and_folders
+# Change all files and folder to the new name
+# :param $1: pack name
+# :param $2: new pack name
+function rename_files_and_folders {
+  echo " change_files_in_folder"
+
+  if [ "$#" -ne 2 ]; then
+    fail " Illegal number of parameters "
+  fi
+
+  pack_name=$1
+  new_pack_name=$2
+
+  find . -type d -mindepth 1 -maxdepth 1 | \
+  while read -r folder;
+  do
+    cd "$folder" || continue ;
+    find . -type f -maxdepth 1 -name  "*${pack_name}*" -exec sh -c 'mv $1 "${1//$2/$3}"' sh {} "$pack_name" "$new_pack_name"  \;
+    change_files_in_folder;
+    cd ../;
+    mv "$folder" "${folder//$pack_name/$new_pack_name}"
+  done
+
 }
 
 # add_dependency
@@ -70,8 +103,10 @@ function add_dependency {
   pack_path="${CONTENT_PATH}/Packs/${source_pack}/pack_metadata.json"
 
   sed -i "" "s/\"dependencies\": {/\"dependencies\": {\n\t\"${pack_name}\": {\n\t\t\"mandatory\": true,\n\t\t\"display_name\": \"${pack_name}\"\n\t},/g" "${pack_path}" || fail
+  git commit -am  "Added dependency for - $pack_name to $source_pack pack"
 
 }
+
 # add_author_image
 # Copies the author image from Base to desired pack
 # :param $1: pack to add author image to
@@ -82,11 +117,14 @@ function add_author_image {
     fail " Illegal number of parameters "
   fi
 
+
   pack_name=$1
   cp "${CONTENT_PATH}/Packs/Base/Author_image.png" "${CONTENT_PATH}/Packs/${pack_name}" || fail
-  git add "${CONTENT_PATH}/Packs/${pack_name}/Author_image.png"
-}
 
+  git add "${CONTENT_PATH}/Packs/${pack_name}/Author_image.png"
+  git commit -am  "Added author image for - $pack_name"
+
+}
 
 # add_1_0_0_release_note
 # add 1_0_0 release note for given pack by copying the last available release note
@@ -105,6 +143,9 @@ function add_1_0_0_release_note {
   cp "${current_latest_note}" 1_0_0.md
   git add 1_0_0.md
   cd "${CONTENT_PATH}" || fail
+
+  git commit -am  "Added release note 1_0_0.md to - $pack_name"
+
 }
 
 # change_sdk_requirements
@@ -122,6 +163,9 @@ function change_sdk_requirements {
   requirements_file_name=$2
 
   sed -i "" "s#demisto-sdk.*#git+https://github.com/demisto/demisto-sdk.git@${sdk_branch}#g" "${requirements_file_name}"
+
+  git commit -am  "Change sdk in $requirements_file_name to be $sdk_branch"
+
 }
 
 # enhancement_release_notes
@@ -137,8 +181,10 @@ function enhancement_release_notes {
   pack_name=$1
   pack_path="${CONTENT_PATH}/Packs/${pack_name}"
   demisto-sdk update-release-notes -i "${pack_path}" --force --text "Adding release notes to check the upload flow" # Waiting for sdk fix
-}
 
+  git commit -am  "Added release note $pack_name"
+
+}
 
 # change_integration_image
 # Copies integration image from one to another
@@ -157,6 +203,9 @@ function change_integration_image {
   source_integration_path="${CONTENT_PATH}/Packs/${source_pack_name}/Integrations/${source_pack_name}/${source_pack_name}_image.png"
   dest_integration_path="${CONTENT_PATH}/Packs/${dest_pack_name}/Integrations/${dest_pack_name}/${dest_pack_name}_image.png"
   cp "${source_integration_path}" "${dest_integration_path}"
+
+  git commit -am  "Copied integration image from  $source_pack_name to $dest_pack_name"
+
 }
 
 # updating_old_release_notes
@@ -177,6 +226,9 @@ function updating_old_release_notes {
   current_latest_note=$(ls -t | head -1)
   printf "\n#### Upload flow\n - Test\n" >>"${current_latest_note}"
   cd "${CONTENT_PATH}" || return
+
+  git commit -am "Updated release note - $current_latest_note"
+
 }
 
 # set_pack_hidden
@@ -201,6 +253,9 @@ function set_pack_hidden {
     # pack hidden key is missing
     sed -i "" "s/{/{\n\"hidden\": true,\n/g" "${pack_metadata}"
   fi
+
+  git commit -am "Set pack - $current_latest_note to be hidden"
+
 }
 
 # update_readme
@@ -217,6 +272,8 @@ function update_integration_readme {
   readme_file="${CONTENT_PATH}/Packs/${pack_name}/Integrations/${pack_name}/README.md"
 
   printf "\n#### Upload flow\n - Test\n" >>"${readme_file}"
+
+  git commit -am "Updated integration - $pack_name README.md file"
 
 }
 
@@ -236,6 +293,9 @@ function update_pack_ignore {
 
   printf "\n[file:README.md]\nignore=RM104\n" >>"${pack_ignore_file}"
 
+  git commit -am "Updated to pack ignore - $pack_name"
+
+
 }
 
 # add_pack_to_landing_page
@@ -249,38 +309,25 @@ function add_pack_to_landing_page {
   fi
 
   pack_name=$1
-
   json_file="${CONTENT_PATH}/Tests/Marketplace/landingPage_sections.json"
+
   sed -i "" "s/\"Getting Started\":\[/\"Getting Started\":\[\n\"${pack_name}\",\n/g" "${json_file}" || fail
+  sed -i "" "s/\"Featured\":\[/\"Featured\":\[\n\"${pack_name}\",\n/g" "${json_file}" || fail
+
+  git commit -am "Added $pack_name to landing page"
 
 }
 
 
-## add_features
-## Add features to pack metadata
-## :param $1: pack name
-#function add_features {
-#  echo " Running - add_features"
-#
-#  if [ "$#" -ne 1 ]; then
-#    fail " Illegal number of parameters "
-#  fi
-#
-#  pack_name=$1
-#  pack_metadata="${CONTENT_PATH}/Packs/${pack_name}/pack_metadata.json"
-#
-#  sed -i "" "s/\"Getting Started\":[/\"Getting Started\":[\n\"${pack_name}\",\n/g" "${pack_metadata}"
-#
-#}
 function trigger_circle_ci() {
   cd "${CONTENT_PATH}" || fail
   cat ~/trigger_test_flow >/Users/iyeshaya/dev/demisto/content/Utils/trigger_test_upload_flow.sh # todo remove
-  ./Utils/trigger_test_upload_flow.sh -ct "${circle_token}" -b "${content_branch}" -db "true"
+  ./Utils/trigger_test_upload_flow.sh -ct "${circle_token}" -b "${new_content_branch}" -db "true"
   git stash # todo remove
 }
 function trigger_gitlab_ci() {
   cd "${CONTENT_PATH}" || return
-  ./Utils/trigger_test_upload_flow.sh -ct "${gitlab_token}" -g true -b "${content_branch}"
+  ./Utils/trigger_test_upload_flow.sh -ct "${gitlab_token}" -g true -b "${new_content_branch}"
 }
 
 
@@ -289,7 +336,8 @@ function trigger_gitlab_ci() {
 # parse inputs
 if [ "$#" -lt "1" ]; then
   fail " Usage:
-  [-b, --branch]                The sdk branch name.
+  [-sb, --sdk-branch]           The sdk branch name, if empty will run the version specified in the requirements file.
+  [-cb, --content-branch]       The content branch name, if empty will run on master branch.
   [-gt, --gitlab-ci-token]      The ci token for gitlab, if provided wil run gitlab pipeline.
   [-ct, --circle-ci-token]      The ci token for circle, if provided wil run circle pipeline.
   [-p, --path]                  The path of content, default is ~/dev/demistio/content
@@ -299,7 +347,11 @@ fi
 while [[ "$#" -gt 0 ]]; do
   case $1 in
 
-  -b|--branch) sdk_branch_name="$2"
+  -sb|--sdk-branch) sdk_branch_name="$2"
+    shift
+    shift;;
+  
+  -cb|--content-branch) content_branch_name="$2"
     shift
     shift;;
 
@@ -317,19 +369,20 @@ done
 
 check_arguments
 
+git checkout "$content_branch_name" || fail
+git pull || fail
+
+
 CONTENT_PATH="$HOME/dev/demisto/content"
 
-content_branch="${sdk_branch_name}_uploadFlow_test"
+new_content_branch="${sdk_branch_name}_${content_branch_name}_uploadFlow_test"
 base_pack_name="HelloWorld"
 new_pack_name="${base_pack_name}New"
 
 cd "${CONTENT_PATH}" || fail
 
-
-
-git checkout master
-git pull
-git checkout -b "${content_branch}" || fail
+git checkout -b "${new_content_branch}" || fail
+git commit -am "Initial commit"
 
 # Setup
 change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
@@ -351,24 +404,22 @@ set_pack_hidden "Microsoft365Defender"
 updating_old_release_notes "${new_pack_name}" # Update release notes in content that are not in the bucket
 update_integration_readme "Microsoft365Defender"
 update_pack_ignore "Microsoft365Defender"
-# todo  Add feature to the pack metadata
 
 # External changes
 add_pack_to_landing_page "${new_pack_name}"
-# todo  Change sdk to sdk master
 
 cat ~/config_temp > /Users/iyeshaya/dev/demisto/content/.circleci/config.yml # todo remove
 
-#git commit -am "Adding changes"
-#git push origin "${sdk_branch_name}_uploadFlow_test"
+git commit -am "Adding changes"
+git push origin "${new_content_branch}"
 
 if [ -n "$circle_token" ]; then
   trigger_circle_ci
 fi
-#
-#if [ -n "$gitlab_token" ]; then
-#  trigger_gitlab_ci
-#fi
 
-#git checkout master
-#git checkout Upload_flow_test_script # todo change to master
+if [ -n "$gitlab_token" ]; then
+  trigger_gitlab_ci
+fi
+
+git checkout "${content_branch_name}"
+git branch -D "${new_content_branch}"
