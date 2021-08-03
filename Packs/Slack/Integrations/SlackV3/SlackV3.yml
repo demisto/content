@@ -496,3 +496,5 @@ script:
 tests:
 - SlackV3 TestPB
 fromversion: 5.5.0
+tests:
+- SlackV3 TestPB
