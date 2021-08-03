@@ -51,6 +51,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Azure Active Directory Identity Protection",
+            "playbookID": "AzureADTest",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "GoogleCalendar",
             "playbookID": "GoogleCalendar-Test",
             "fromversion": "5.0.0"
@@ -2642,13 +2647,14 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": "vmray",
-            "playbookID": "VMRay-Test"
-        },
-        {
             "integrations": "PerceptionPoint",
             "playbookID": "PerceptionPoint Test",
             "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "vmray",
+            "playbookID": "VMRay-Test-File",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "AutoFocus V2",
