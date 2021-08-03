@@ -60,6 +60,9 @@ function create_new_pack {
   if [ "$pack_name" == "HelloWorld" ]; then
     find . -type f \( -name "*.json" -o -name "*.yml" \) -exec sed -i "" "s/Hello_World/Hello_World_New/g" {} \;
     rename_files_and_folders "Hello_World" "Hello_World_New"
+
+    find . -type f \( -name "*.json" -o -name "*.yml" \) -exec sed -i "" "s/Sanity Test/Sanity Test New/g" {} \;
+    rename_files_and_folders "Sanity Test" "Sanity Test New"
   fi
 
   cd "${original_path}" || fail
