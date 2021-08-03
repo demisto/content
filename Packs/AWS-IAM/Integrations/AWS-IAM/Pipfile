@@ -5,14 +5,21 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
-pytest = "==5.0.1"
+pytest = "*"
 pytest-mock = "*"
 requests-mock = "*"
-pytest-asyncio = "*"
+flake8 = "*"
 
 [packages]
-pytest = "*"
-requests = "*"
+boto3 = "==1.9.55"
+botocore = "==1.12.55"
+docutils = "==0.14"
+futures = "==3.2.0"
+jmespath = "==0.9.3"
+python-dateutil = "==2.7.5"
+s3transfer = "==0.1.13"
+six = "==1.11.0"
+urllib3 = "==1.24.1"
 
 [requires]
-python_version = "3.7"
+python_version = "2.7"
