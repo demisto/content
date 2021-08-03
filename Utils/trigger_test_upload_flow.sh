@@ -531,7 +531,7 @@ git commit -am "Adding changes"
 git push origin "${new_content_branch}"
 
 if [ -n "$circle_token" ]; then
-  trigger_circle_ci $new_content_branch $bucket $bucket_upload $force $packs $slack_channel
+  trigger_circle_ci $circle_token $new_content_branch $bucket $bucket_upload $force $packs $slack_channel
 fi
 
 if [ -n "$gitlab_token" ]; then
