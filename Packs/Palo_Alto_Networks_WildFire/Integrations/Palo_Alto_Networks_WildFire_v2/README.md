@@ -81,10 +81,14 @@ Retrieve results for a file hash using WildFire
 
 
 #### Command Example
-``` ```
+```!file file=735bcfa56930d824f9091188eeaac2a1d68bc64a21f90a49c5ff836ed6ea723f```
 
 #### Human Readable Output
 
+>### WildFire File Report
+>|FileType|MD5|SHA256|Size|Status|
+>|---|---|---|---|---|
+>| JScript | ccdb1053f56a2d297906746bc720ef2a | 735bcfa56930d824f9091188eeaac2a1d68bc64a21f90a49c5ff836ed6ea723f | 12 | Completed |
 
 
 ### wildfire-upload
@@ -151,10 +155,14 @@ Uploads a file to WildFire for analysis.
 
 
 #### Command Example
-``` ```
+```!wildfire-upload upload=294@675f238c-ed75-4cae-83d2-02b6b820168b```
 
 #### Human Readable Output
 
+>### WildFire Upload File
+>|FileType|MD5|SHA256|Size|Status|
+>|---|---|---|---|---|
+>| Jscript for WSH | ccdb1053f56a2d297906746bc720ef2a | 735bcfa56930d824f9091188eeaac2a1d68bc64a21f90a49c5ff836ed6ea723f | 12 | Pending |
 
 
 ### wildfire-upload-file-url
@@ -220,10 +228,14 @@ Uploads the URL of a remote file to WildFire for analysis.
 
 
 #### Command Example
-``` ```
+```!wildfire-upload-file-url upload=http://www.software995.net/bin/pdf995s.exe```
 
 #### Human Readable Output
 
+>### WildFire Upload File URL
+>|FileType|MD5|SHA256|Size|Status|URL|
+>|---|---|---|---|---|---|
+>| PE32 executable | 891b77e864c88881ea98be867e74177f | 555092d994b8838b8fa18d59df4fdb26289d146e071e831fcf0c6851b5fb04f8 | 5958304 | Pending | http://www.software995.net/bin/pdf995s.exe |
 
 
 ### wildfire-report
@@ -287,10 +299,14 @@ Retrieves results for a file hash using WildFire.
 
 
 #### Command Example
-``` ```
+```!wildfire-report url=https://www.demisto.com```
 
 #### Human Readable Output
 
+>### Wildfire URL report for https://www.demisto.com
+>|sha256|type|verdict|
+>|---|---|---|
+>| 288cd35401e334a2defc0b428d709f58d4ea28c8e9c6e47fdba88da2d6bc88a7 | wf-report | benign |
 
 
 ### wildfire-get-verdict
@@ -323,10 +339,14 @@ Returns a verdict for a hash.
 
 
 #### Command Example
-``` ```
+```!wildfire-get-verdict hash=afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc```
 
 #### Human Readable Output
 
+>### WildFire Verdict
+>|MD5|SHA256|Verdict|VerdictDescription|
+>|---|---|---|---|
+>| 0e4e3c2d84a9bc726a50b3c91346fbb1 | afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc | 1 | malware |
 
 
 ### wildfire-get-verdicts
@@ -429,10 +449,14 @@ Uploads a URL of a webpage to WildFire for analysis.
 
 
 #### Command Example
-``` ```
+```!wildfire-upload-url upload=https://www.demisto.com```
 
 #### Human Readable Output
 
+>### WildFire Upload URL
+>|MD5|SHA256|Status|URL|
+>|---|---|---|---|
+>| 67632f32e6af123aa8ffd1fe8765a783 | c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb | Pending | https://www.demisto.com |
 
 
 ### wildfire-get-sample
@@ -456,9 +480,11 @@ Retrieves a sample.
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!wildfire-get-sample sha256=afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc```
 
 #### Human Readable Output
+
+There is no human-readable output for this command.
 
 
 
@@ -491,37 +517,10 @@ Get web artifacts for a URL webpage. An empty tgz will be returned, no matter wh
 
 
 #### Command Example
-``` ```
+```!wildfire-get-url-webartifacts url=http://royalmail-login.com```
 
 #### Human Readable Output
 
+There is no human-readable output for this command.
 
 
-### Commands
-#### The following commands were removed in this version:
-* *commandName* - this command was replaced by XXX.
-* *commandName* - this command was replaced by XXX.
-
-### Arguments
-#### The following arguments were removed in this version:
-
-In the *commandName* command:
-* *argumentName* - this argument was replaced by XXX.
-* *argumentName* - this argument was replaced by XXX.
-
-#### The behavior of the following arguments was changed:
-
-In the *commandName* command:
-* *argumentName* - is now required.
-* *argumentName* - supports now comma separated values.
-
-### Outputs
-#### The following outputs were removed in this version:
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
