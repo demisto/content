@@ -426,3 +426,6 @@ if [ -n "$gitlab_token" ]; then
 fi
 
 git checkout "${content_branch_name}"
+echo ""
+echo "Please run the following command once the pipelines are finished"
+echo "git push origin --delete ${new_content_branch}"
