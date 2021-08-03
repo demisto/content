@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: CofenseIntelligenceV2
 display: Cofense Intelligence v2
-category: Utilities
+category: Data Enrichment & Threat Intelligence 
 description: 'Use the Cofense Intelligence integration to check the reputation of
   URLs, IP addresses, file hashes, and email addresses.'
 configuration:
@@ -1096,7 +1096,7 @@ script:
         - contextPath: CofenseIntelligence.URL.Threats.threatType
           description: If malware, will have value ‘malware’, otherwise it is empty.
           type: String
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.22912
   runonce: false
   subtype: python3
 tests:
