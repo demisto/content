@@ -9,7 +9,7 @@ from slack import WebClient as SlackClient
 from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.scripts.utils.log_util import install_logging
-from Tests.scripts.slack_notifier import get_fields, get_failing_unit_tests_file_data
+from Tests.scripts.slack_notifier import get_fields, get_artifact_data
 
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
@@ -49,9 +49,10 @@ def options_handler():
 
 
 def unit_tests_results():
-    failing_unit_tests = get_failing_unit_tests_file_data()
+    failing_unit_tests = get_artifact_data('failed_lint_report.txt')
     slack_results = []
     if failing_unit_tests:
+        failing_unit_tests = failing_unit_tests.split('\n')
         slack_results.append({
             "title": f'{"Failed Unit Tests"} - ({len(failing_unit_tests)})',
             "value": '\n'.join(failing_unit_tests),
