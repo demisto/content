@@ -677,7 +677,7 @@ def test_signed_attachment(mocker):
     main()
     results = demisto.results.call_args[0]
 
-    assert len(results[0]['EntryContext']['Email']) == 1
+    assert len(results[0]['EntryContext']['Email']) == 2
 
 
 def test_eml_contains_html_and_text(mocker):
