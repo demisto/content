@@ -325,7 +325,7 @@ function trigger_circle_ci() {
   ./Utils/trigger_test_upload_flow.sh -ct "${circle_token}" -b "${new_content_branch}" -db "true"
 }
 function trigger_gitlab_ci() {
-  cd "${CONTENT_PATH}" || return
+  cd "${CONTENT_PATH}" || fail
   ./Utils/trigger_test_upload_flow.sh -ct "${gitlab_token}" -g true -b "${new_content_branch}"
 }
 
@@ -368,10 +368,10 @@ done
 
 check_arguments
 
-#git checkout "$content_branch_name" || fail
-#git pull || fail
+git checkout "$content_branch_name" || fail
+git pull || fail
 
-
+# Setup
 CONTENT_PATH="$HOME/dev/demisto/content"
 
 new_content_branch="${sdk_branch_name}_${content_branch_name}_uploadFlow_test"
@@ -390,7 +390,7 @@ fi
 git checkout -b "${new_content_branch}" || fail
 git commit -am "Initial commit"
 
-# Setup
+# Changes
 change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
 
 # New Pack
