@@ -418,6 +418,7 @@ def slack_notifier(build_url, slack_token, test_type, build_number, env_results_
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
+    slack_channel = 'tom-test'
 
     if branch_name == 'master' or slack_channel.lower() != CONTENT_CHANNEL:
         logging.info("Extracting build status")
