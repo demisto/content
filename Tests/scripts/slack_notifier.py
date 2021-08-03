@@ -33,7 +33,7 @@ DMST_SDK_NIGHTLY_GITLAB_JOBS_PREFIX = 'demisto-sdk-nightly'
 SDK_NIGHTLY_CIRCLE_OPTS = {
     SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE
 }
-
+CONTENT_REPO_ID_CIRCLE_CI = '60525392'
 
 def get_failed_steps_list(build_number: str):
     options = options_handler()
@@ -199,11 +199,11 @@ def get_coverage_color(coverage_percent: float) -> str:
     return 'good'
 
 
-def get_coverage_attachment(build_url: str) -> Optional[Dict]:
+def get_coverage_attachment(build_number: str) -> Optional[Dict]:
     """
     Returns content coverage report attachment.
     Args:
-        build_url (str): Build URL of the nightly.
+        build_number (str): Build number in CircleCI.
 
     Returns:
         (Dict): Attachment of the coverage if coverage report exists.
@@ -221,20 +221,23 @@ def get_coverage_attachment(build_url: str) -> Optional[Dict]:
         logging.error(
             f'Unexpected value for line coverage rage: {coverage_percent_str}. Expected float from line coverage rate.')
         return None
+    coverage_url: str = f'https: //{build_number}-{CONTENT_REPO_ID_CIRCLE_CI}-gh.circle-artifacts.com/0/artifacts' \
+                        '/coverage_report/html/index.html'
     return {
         'fallback': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
         'color': get_coverage_color(coverage_percent),
         'title': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
-        'title_link': build_url,
+        'title_link': coverage_url,
         'fields': []
     }
 
 
-def get_attachments_for_unit_test(build_url: str, is_sdk_build: bool = False) -> List[Dict]:
+def get_attachments_for_unit_test(build_url: str, build_number: str, is_sdk_build: bool = False) -> List[Dict]:
     """
     Creates attachment for unit tests. Including failed unit tests attachment and coverage if exists.
     Args:
         build_url (str): Build URL.
+        build_number (str): Build number.
         is_sdk_build (bool): Whether build is SDK build.
 
     Returns:
@@ -242,7 +245,7 @@ def get_attachments_for_unit_test(build_url: str, is_sdk_build: bool = False) ->
     """
     unit_tests_attachments = get_failed_unit_tests_attachment(build_url, is_sdk_build)
     if not is_sdk_build:
-        coverage_attachment = get_coverage_attachment(build_url)
+        coverage_attachment = get_coverage_attachment(build_number)
         if coverage_attachment:
             unit_tests_attachments.append(coverage_attachment)
     return unit_tests_attachments
@@ -420,10 +423,10 @@ def slack_notifier(build_url, slack_token, test_type, build_number, env_results_
         logging.info("Extracting build status")
         if test_type == UNITTESTS_TYPE:
             logging.info("Starting Slack notifications about nightly build - unit tests")
-            content_team_attachments = get_attachments_for_unit_test(build_url)
+            content_team_attachments = get_attachments_for_unit_test(build_url, build_number)
         elif test_type == SDK_UNITTESTS_TYPE:
             logging.info("Starting Slack notifications about SDK nightly build - unit tests")
-            content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=True)
+            content_team_attachments = get_attachments_for_unit_test(build_url, build_number, is_sdk_build=True)
         elif test_type == 'test_playbooks':
             logging.info("Starting Slack notifications about nightly build - tests playbook")
             content_team_attachments, _ = get_attachments_for_test_playbooks(build_url, env_results_file_name)
@@ -443,7 +446,7 @@ def slack_notifier(build_url, slack_token, test_type, build_number, env_results_
                 # as different jobs so it requires different handling
                 logging.info(f"Starting Slack notifications for {job_name}")
                 if 'unittest' in job_name:
-                    content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=True)
+                    content_team_attachments = get_attachments_for_unit_test(build_url, build_number, is_sdk_build=True)
                     # override the 'title' from the attachment to be the job name
                     content_team_attachments[0]['title'] = content_team_attachments[0]['title'].replace(
                         'SDK Nightly Unit Tests', job_name
