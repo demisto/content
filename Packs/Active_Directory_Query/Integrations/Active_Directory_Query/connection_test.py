@@ -33,6 +33,7 @@ def test_bad_host_no_ssl(mocker):
     assert 'Failed to access' in err_msg
 
 
+@pytest.mark.filterwarnings("ignore::ResourceWarning")
 def test_bad_ssl(mocker):
     params = BASE_TEST_PARAMS.copy()
     params['server_ip'] = '185.199.108.153'  # disable-secrets-detection
@@ -86,6 +87,7 @@ def ssl_bad_socket_server(port):
         raise
 
 
+@pytest.mark.filterwarnings("ignore::ResourceWarning")
 def test_faulty_server(mocker):
     port = 9638
     t = Thread(target=ssl_bad_socket_server, args=(port,))
@@ -192,7 +194,7 @@ def test_create_user_iam(mocker):
     args = {"user-profile": json.dumps({"email": "test@paloaltonetworks.com", "username": "test",
                                         "locationregion": "Americas"})}
 
-    mocker.patch('Active_Directory_Query.check_if_user_exists_by_samaccountname', return_value=False)
+    mocker.patch('Active_Directory_Query.check_if_user_exists_by_attribute', return_value=False)
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={'cn': 'test', 'mail': 'test@paloaltonetworks.com',
                                                                     'samaccountname': 'test',
                                                                     'userPrincipalName': 'test',
@@ -236,7 +238,7 @@ def test_unseccsseful_create_user_iam_missing_ou(mocker):
     args = {"user-profile": json.dumps({"email": "test@paloaltonetworks.com", "username": "test",
                                         "locationregion": "Americas"})}
 
-    mocker.patch('Active_Directory_Query.check_if_user_exists_by_samaccountname', return_value=False)
+    mocker.patch('Active_Directory_Query.check_if_user_exists_by_attribute', return_value=False)
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={'cn': 'test', 'mail': 'test@paloaltonetworks.com',
                                                                     'samaccountname': 'test',
                                                                     'userPrincipalName': 'test'})
@@ -279,7 +281,7 @@ def test_unseccsseful_create_user_iam_missing_samaccountname(mocker):
     args = {"user-profile": json.dumps({"email": "test@paloaltonetworks.com", "username": "test",
                                         "locationregion": "Americas"})}
 
-    mocker.patch('Active_Directory_Query.check_if_user_exists_by_samaccountname', return_value=False)
+    mocker.patch('Active_Directory_Query.check_if_user_exists_by_attribute', return_value=False)
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={'cn': 'test', 'mail': 'test@paloaltonetworks.com',
                                                                     "ou": "OU=Americas,OU=Demisto",
                                                                     'userPrincipalName': 'test'})

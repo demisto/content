@@ -19,7 +19,6 @@ import logging
 import warnings
 import email
 from requests.exceptions import ConnectionError
-from collections import deque
 
 from multiprocessing import Process
 import exchangelib
@@ -2052,10 +2051,17 @@ def parse_incident_from_item(item):
                     attached_email = email.message_from_bytes(mime_content) if isinstance(mime_content, bytes) \
                         else email.message_from_string(mime_content)
                     if attachment.item.headers:
-                        attached_email_headers = [
-                            (h, " ".join(map(str.strip, v.split("\r\n"))))
-                            for (h, v) in list(attached_email.items())
-                        ]
+                        attached_email_headers = []
+                        for h, v in attached_email.items():
+                            if not isinstance(v, str):
+                                try:
+                                    v = str(v)
+                                except:  # noqa: E722
+                                    demisto.debug('cannot parse the header "{}"'.format(h))
+                                    continue
+
+                            v = ' '.join(map(str.strip, v.split('\r\n')))
+                            attached_email_headers.append((h, v))
                         for header in attachment.item.headers:
                             if (
                                     (header.name, header.value)
@@ -2143,35 +2149,54 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
     :return:
     """
     last_run = get_last_run(client, last_run)
-
+    excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
     try:
         last_emails = fetch_last_emails(
             client,
             client.folder_name,
             last_run.get(LAST_RUN_TIME),
-            last_run.get(LAST_RUN_IDS),
+            excluded_ids,
         )
 
-        ids = deque(
-            last_run.get(LAST_RUN_IDS, []), maxlen=client.last_run_ids_queue_size
-        )
         incidents = []
         incident: Dict[str, str] = {}
+        demisto.debug(f'{APP_NAME} - Started fetch with {len(last_emails)} at {last_run.get(LAST_RUN_TIME)}')
+        current_fetch_ids = set()
         for item in last_emails:
             if item.message_id:
-                ids.append(item.message_id)
+                current_fetch_ids.add(item.message_id)
                 incident = parse_incident_from_item(item)
                 incidents.append(incident)
 
                 if len(incidents) >= client.max_fetch:
                     break
 
-        last_run_time = incident.get("occurred", last_run.get(LAST_RUN_TIME))
-        if isinstance(last_run_time, EWSDateTime):
-            last_run_time = last_run_time.ewsformat()
+        demisto.debug(f'{APP_NAME} - ending fetch - got {len(incidents)} incidents.')
+
+        last_fetch_time = last_run.get(LAST_RUN_TIME)
+
+        last_incident_run_time = incident.get("occurred", last_fetch_time)
+
+        # making sure both last fetch time and the time of most recent incident are the same type for comparing.
+        if isinstance(last_incident_run_time, EWSDateTime):
+            last_incident_run_time = last_incident_run_time.ewsformat()
+
+        if isinstance(last_fetch_time, EWSDateTime):
+            last_fetch_time = last_fetch_time.ewsformat()
+
+        demisto.debug(
+            f'#### last_incident_time: {last_incident_run_time}({type(last_incident_run_time)}).'
+            f'last_fetch_time: {last_fetch_time}({type(last_fetch_time)}) ####')
+
+        # If the fetch query is not fully fetched (we didn't have any time progress) - then we keep the
+        # id's from current fetch until progress is made. This is for when max_fetch < incidents_from_query.
+        if not last_incident_run_time or not last_fetch_time or last_incident_run_time > last_fetch_time:
+            ids = current_fetch_ids
+        else:
+            ids = current_fetch_ids | excluded_ids
 
         new_last_run = {
-            LAST_RUN_TIME: last_run_time,
+            LAST_RUN_TIME: last_incident_run_time,
             LAST_RUN_FOLDER: client.folder_name,
             LAST_RUN_IDS: list(ids),
             ERROR_COUNTER: 0,
@@ -2207,23 +2232,25 @@ def fetch_last_emails(
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
-        tz = EWSTimeZone.timezone('UTC')
+        tz = EWSTimeZone('UTC')
         first_fetch_datetime = dateparser.parse(FETCH_TIME)
-        first_fetch_ews_datetime = EWSDateTime.from_datetime(tz.localize(first_fetch_datetime))
+        first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
         qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
     qs = qs.filter().only(*[x.name for x in Message.FIELDS])
     qs = qs.filter().order_by("datetime_received")
 
     result = []
+    exclude_ids = exclude_ids if exclude_ids else set()
+    demisto.debug(f'{APP_NAME} - Exclude ID list: {exclude_ids}')
     for item in qs:
-        if isinstance(item, Message):
+        if isinstance(item, Message) and item.message_id not in exclude_ids:
             result.append(item)
             if len(result) >= client.max_fetch:
                 break
+        else:
+            demisto.debug(f'message_id {item.message_id} was excluded. IsMessage: {isinstance(item, Message)}')
 
-    if exclude_ids and len(exclude_ids) > 0:
-        exclude_ids = set(exclude_ids)
-        result = [x for x in result if x.message_id not in exclude_ids]
+    demisto.debug(f'{APP_NAME} - Got total of {len(result)} from ews query.')
     return result
 
 
