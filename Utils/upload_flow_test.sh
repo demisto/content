@@ -65,7 +65,7 @@ function create_new_pack {
 # :param $1: pack name
 # :param $2: new pack name
 function rename_files_and_folders {
-  echo " change_files_in_folder"
+  echo " rename_files_and_folders"
 
   if [ "$#" -ne 2 ]; then
     fail " Illegal number of parameters "
@@ -79,7 +79,7 @@ function rename_files_and_folders {
   do
     cd "$folder" || continue ;
     find . -type f -maxdepth 1 -name  "*${pack_name}*" -exec sh -c 'mv $1 "${1//$2/$3}"' sh {} "$pack_name" "$new_pack_name"  \;
-    change_files_in_folder;
+    change_files_in_folder "$pack_name" "$new_pack_name";
     cd ../;
     mv "$folder" "${folder//$pack_name/$new_pack_name}"
   done
