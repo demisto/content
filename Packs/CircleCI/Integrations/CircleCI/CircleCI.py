@@ -35,8 +35,7 @@ class Client(BaseClient):
         )
 
     def get_last_workflow_runs(self, vc_type: str, organization: str, project: str, workflow_name: str,
-                               page_token: Optional[str] = None):
-        branch: str = demisto.args().get('branch', '')
+                               branch: str, page_token: Optional[str] = None):
 
         url_suffix = f'insights/{vc_type}/{organization}/{project}/workflows/{workflow_name}'
         params = {}
@@ -253,9 +252,10 @@ def circleci_workflow_last_runs_command(client: Client, args: Dict[str, Any]) ->
     """
     vc_type, organization, project, limit = get_common_arguments(client, args)
     workflow_name: str = args.get('workflow_name', '')
+    branch: str = args.get('branch', '')
 
     response = get_response_with_pagination(client.get_last_workflow_runs,
-                                            [vc_type, organization, project, workflow_name], limit)
+                                            [vc_type, organization, project, workflow_name, branch], limit)
 
     return CommandResults(
         outputs_prefix='CircleCI.WorkflowRun',
