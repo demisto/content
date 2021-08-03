@@ -52,9 +52,17 @@ function create_new_pack {
   cp -R "${pack_path}" "${new_pack_path}" || fail
   cd "${new_pack_path}" || fail
 
+  # rename inside yml and json files
   find . -type f \( -name "*.json" -o -name "*.yml" \) -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
-  # renaming
+
   rename_files_and_folders "$pack_name" "$new_pack_name"
+
+  if [ "$pack_name" == "HelloWorld" ]; then
+    sed -i "" "s/Hello World/Hello World New/g" ./Playbooks/playbook-Handle_Hello_World_Alert.yml
+    mv ./Playbooks/playbook-Handle_Hello_World_Alert.yml ./Playbooks/playbook-Handle_Hello_World_New_Alert.yml
+    mv ./Playbooks/playbook-Handle_Hello_World_Alert_README.md ./Playbooks/playbook-Handle_Hello_World_New_Alert.yml
+  fi
+
   cd "${original_path}" || fail
   git add "$new_pack_path"
 
