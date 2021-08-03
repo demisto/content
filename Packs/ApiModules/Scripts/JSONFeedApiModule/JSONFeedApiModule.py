@@ -181,7 +181,7 @@ def test_module(client: Client, limit) -> str:
 
 
 def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool,
-                             create_relationships: bool = False, limit: int = 0, **kwargs) -> Union[Dict, List[Dict]]:
+                             create_relationships: bool = False, limit: int = 0, **kwargs) -> Tuple[List[dict], bool]:
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed

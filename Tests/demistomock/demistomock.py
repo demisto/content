@@ -990,12 +990,13 @@ def integrationInstance():
     return ""
 
 
-def createIndicators(indicators_batch):
+def createIndicators(indicators_batch, noUpdate = False):
     """(Integration only)
     Creates indicators from given indicator objects batch
 
     Args:
       indicators_batch (list): List of indicators objects to create
+      indicators_batch (bool): No update on fetched feed (no new indicators to fetch)
 
     Returns:
       None: No data returned
