@@ -54,8 +54,8 @@ function create_new_pack {
   find . -type f -name "*.json|*.yml" -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
   # renaming
   change_files_in_folder "$pack_name" "$new_pack_name"
-  git add ./
   cd "${original_path}" || fail
+  git add
 
   git commit -am  "Created new pack - $new_pack_name"
 }
