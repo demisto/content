@@ -49,6 +49,10 @@ function create_new_pack {
   pack_path="${CONTENT_PATH}/Packs/${pack_name}"
   new_pack_path="${CONTENT_PATH}/Packs/${new_pack_name}"
 
+  if [ -d "$new_pack_path" ]; then
+    rmdir "$new_pack_path"
+  fi
+
   cp -R "${pack_path}" "${new_pack_path}" || fail
   cd "${new_pack_path}" || fail
 
