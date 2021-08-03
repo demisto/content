@@ -6,7 +6,10 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
+''' CONSTANTS '''
+USER_NOT_FOUND = "User not found"
+userUri = '/scim/v2/Users/'
+groupUri = '/scim/v2/Groups/'
 ERROR_CODES_TO_SKIP = [
     404
 ]
@@ -20,8 +23,18 @@ class Client(BaseClient):
     def test(self):
         """ Tests connectivity with the application. """
 
-        uri = '/test'                                 # TODO: replace to a valid test API endpoint
-        self._http_request(method='GET', url_suffix=uri)
+        uri = userUri
+        demisto_params = demisto.params()
+        params = {
+            "version": demisto_params.get('api_version', None)
+        }
+
+        res = self._http_request(method='GET', url_suffix=uri, params=params)
+
+        if res.status_code == 200:
+            demisto.results('ok')
+        else:
+            return_error(f'Error testing [{res.status_code}] - {res.text}')
 
     def get_user(self, email: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
@@ -33,23 +46,28 @@ class Client(BaseClient):
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        uri = '/users'                               # TODO: replace to the correct GET User API endpoint
-        query_params = {'email': email}              # TODO: make sure you pass the correct query parameters
+        uri = userUri
+        params = {
+            'filter': f'userName eq "{email}"'
+        }
 
         res = self._http_request(
             method='GET',
             url_suffix=uri,
-            params=query_params
+            params=params
         )
 
-        if res and len(res.get('result', [])) == 1:  # TODO: make sure you verify a single result was retrieved
-            user_app_data = res.get('result')[0]     # TODO: get the user_id, username, is_active and user_app_data
+        if res and res.status_code == 200:
+            res_json = res.json()
 
-            user_id = user_app_data.get('user_id')
-            is_active = user_app_data.get('active')
-            username = user_app_data.get('user_name')
+            if res_json.get('totalResults') > 0:
+                user_app_data = res.get('result')[0]     # TODO: get the user_id, username, is_active and user_app_data
 
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+                user_id = user_app_data.get('user_id')
+                is_active = user_app_data.get('active')
+                username = user_app_data.get('user_name')
+
+                return IAMUserAppData(user_id, username, is_active, user_app_data)
         return None
 
     def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
@@ -61,12 +79,14 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the created user in the application.
         :rtype: ``IAMUserAppData``
         """
-        uri = '/users'                              # TODO: replace to the correct CREATE User API endpoint
+        uri = userUri
+
         res = self._http_request(
             method='POST',
             url_suffix=uri,
             json_data=user_data
         )
+
         user_app_data = res.get('result')           # TODO: get the user_id, username, is_active and user_app_data
         user_id = user_app_data.get('user_id')
         is_active = user_app_data.get('active')
@@ -86,7 +106,8 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the updated user in the application.
         :rtype: ``IAMUserAppData``
         """
-        uri = f'/users/{user_id}'                   # TODO: replace to the correct UPDATE User API endpoint
+        uri = userUri + user_id
+
         res = self._http_request(
             method='PATCH',
             url_suffix=uri,
@@ -245,9 +266,10 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
 def main():
     user_profile = None
     params = demisto.params()
-    base_url = urljoin(params['url'].strip('/'), '/api/now/')
-    username = params.get('credentials', {}).get('identifier')
-    password = params.get('credentials', {}).get('password')
+    base_url = urljoin(params['url'].strip('/'))
+    tenant_id = params.get('tenant_id')
+    url_with_tenant = f'{base_url}/{tenant_id}'
+    authentication_token = params.get('authentication_token')
     mapper_in = params.get('mapper_in')
     mapper_out = params.get('mapper_out')
     verify_certificate = not params.get('insecure', False)
@@ -266,16 +288,16 @@ def main():
 
     headers = {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Authorization': f'Bearer {authentication_token}'
     }
 
     client = Client(
-        base_url=base_url,
+        base_url=url_with_tenant,
         verify=verify_certificate,
         proxy=proxy,
         headers=headers,
-        ok_codes=(200, 201),
-        auth=(username, password)
+        ok_codes=(200, 201)
     )
 
     demisto.debug(f'Command being called is {command}')
