@@ -686,38 +686,38 @@ def get_breach_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_breach_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-        
-        pbid = str(args.get('pbid', None))
-        if not pbid:
-            raise ValueError('Darktrace Model Breach ID not specified')
 
-        endtime = str(args.get('endtime', None))
-        count = str(args.get('count', None))
-        offset = str(args.get('offset', None))
+    pbid = str(args.get('pbid', None))
+    if not pbid:
+        raise ValueError('Darktrace Model Breach ID not specified')
 
-        model_breach = client.get_modelbreach_details(pbid=pbid, endtime=endtime, count=count, offset=offset)
+    endtime = str(args.get('endtime', None))
+    count = str(args.get('count', None))
+    offset = str(args.get('offset', None))
 
-        if 'time' in model_breach:
-            created_time = int(model_breach.get('time', '0'))
-            model_breach['time'] = timestamp_to_datestring(created_time)
+    model_breach = client.get_modelbreach_details(pbid=pbid, endtime=endtime, count=count, offset=offset)
 
-        headers = []
-        for event in model_breach:
-            for head in event.keys():
-                headers.append(head)
+    if 'time' in model_breach:
+        created_time = int(model_breach.get('time', '0'))
+        model_breach['time'] = timestamp_to_datestring(created_time)
 
-        headers = list(set(headers))
-        headers = sorted(headers)
+    headers = []
+    for event in model_breach:
+        for head in event.keys():
+            headers.append(head)
 
-        readable_output = tableToMarkdown(f'Darktrace Model Breach {pbid} Details', model_breach, headers=headers,
-                                          removeNull=True)
+    headers = list(set(headers))
+    headers = sorted(headers)
 
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='Darktrace.ModelBreach',
-            outputs_key_field='breach_details',
-            outputs=readable_output
-        )
+    readable_output = tableToMarkdown(f'Darktrace Model Breach {pbid} Details', model_breach, headers=headers,
+                                      removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Darktrace.ModelBreach',
+        outputs_key_field='breach_details',
+        outputs=readable_output
+    )
 
 
 def add_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
