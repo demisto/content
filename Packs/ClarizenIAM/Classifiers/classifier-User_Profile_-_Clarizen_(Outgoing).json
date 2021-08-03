@@ -1,0 +1,141 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a User Profile data to an Clarizen user data.",
+	"id": "User Profile - Clarizen (Outgoing)",
+	"mapping": {
+		"User Profile - Create": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Location": {
+					"complex": null,
+					"simple": "city"
+				},
+				"country": {
+					"complex": null,
+					"simple": "country"
+				},
+				"Name": {
+					"complex": null,
+					"simple": "displayname"
+				},
+				"Email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"firstname": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"active": {
+					"complex": null,
+					"simple": "isactive"
+				},
+				"lastname": {
+					"complex": null,
+					"simple": "lastname"
+				},
+				"Region": {
+					"complex": null,
+					"simple": "locationregion"
+				},
+				"phone_mobile": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"phone_home": {
+					"complex": null,
+					"simple": "phonenumber"
+				},
+				"address_one": {
+					"complex": null,
+					"simple": "streetaddress"
+				},
+				"JobTitle": {
+					"complex": null,
+					"simple": "title"
+				},
+				"Username": {
+					"complex": null,
+					"simple": "username"
+				},
+				"MobilePhone": {
+					"complex": null,
+					"simple": "workphone",
+				},
+				"zip": {
+					"complex": null,
+					"simple": "zipcode"
+				}
+			}
+		},
+		"User Profile - Update": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Location": {
+					"complex": null,
+					"simple": "city"
+				},
+				"country": {
+					"complex": null,
+					"simple": "country"
+				},
+				"Name": {
+					"complex": null,
+					"simple": "displayname"
+				},
+				"Email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"firstname": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"active": {
+					"complex": null,
+					"simple": "isactive"
+				},
+				"lastname": {
+					"complex": null,
+					"simple": "lastname"
+				},
+				"Region": {
+					"complex": null,
+					"simple": "locationregion"
+				},
+				"phone_mobile": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"phone_home": {
+					"complex": null,
+					"simple": "phonenumber"
+				},
+				"address_one": {
+					"complex": null,
+					"simple": "streetaddress"
+				},
+				"JobTitle": {
+					"complex": null,
+					"simple": "title"
+				},
+				"Username": {
+					"complex": null,
+					"simple": "username"
+				},
+				"MobilePhone": {
+					"complex": null,
+					"simple": "workphone",
+				},
+				"zip": {
+					"complex": null,
+					"simple": "zipcode"
+				}
+			}
+		}
+	},
+	"name": "User Profile - Clarizen (Outgoing)",
+	"type": "mapping-outgoing",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}
