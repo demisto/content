@@ -449,6 +449,41 @@ script:
     execution: false
     hidden: false
     name: slack-pin-message
+  - arguments:
+    - default: false
+      description: The channel the message is posted in.
+      isArray: false
+      name: channel
+      required: false
+      secret: false
+    - default: false
+      description: Timestamp of the message.
+      isArray: false
+      name: message_ts
+      required: true
+      secret: false
+    - default: false
+      description: The updated message.
+      isArray: false
+      name: message
+      required: false
+      secret: false
+    - default: false
+      description: A JSON string of the block to send.
+      isArray: false
+      name: blocks
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ignore_add_url
+      required: false
+      secret: false
+    deprecated: false
+    description: Edit an existing slack message.
+    execution: false
+    hidden: false
+    name: slack-edit-message
   dockerimage: demisto/slackv3:1.0.0.21206
   feed: false
   isfetch: false

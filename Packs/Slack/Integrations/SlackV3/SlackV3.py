@@ -8,6 +8,8 @@ import asyncio
 import concurrent
 import slack_sdk
 import threading
+import cProfile, pstats, io
+from pstats import SortKey
 
 from distutils.util import strtobool
 from slack_sdk.web.async_client import AsyncWebClient
@@ -1033,7 +1035,9 @@ async def create_incidents(incidents: list, user_name: str, user_email: str, use
 
 
 async def listen(client: SocketModeClient, req: SocketModeRequest):
+    pr = cProfile.Profile()
     if req:
+        pr.enable()
         demisto.info("Handling request")
     data_type: str = req.type
     payload: dict = req.payload
@@ -1048,6 +1052,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             f'Slack API has thrown an error. Code: {error_code}, Message: {error_msg}.')
         return
     try:
+        integration_context = get_integration_context(SYNC_CONTEXT)
         data: dict = req.payload
         event: dict = data.get('event', {})
         subtype = data.get('subtype', '')
@@ -1081,9 +1086,9 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))
 
         else:
-            logging.info("Shouldnt be here either")
-            user = await get_user_by_id_async(client, user_id)
-            entitlement_reply = await check_and_handle_entitlement(text, user, thread)
+            # logging.info("Shouldnt be here either")
+            user = await get_user_by_id_async(client, user_id, integration_context)
+            entitlement_reply = await check_and_handle_entitlement(text, user, thread, integration_context)
 
         if entitlement_reply:
             send_slack_request_sync(client=CLIENT, method='chat.postMessage',
@@ -1098,14 +1103,14 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             await handle_dm(user, text, client)
         else:
             channel_id = channel
-            integration_context = get_integration_context(SYNC_CONTEXT)
+
             if not integration_context or 'mirrors' not in integration_context:
                 return
 
             mirrors = json.loads(r"{}".format(integration_context['mirrors']))
             mirror_filter = list(filter(lambda m: m['channel_id'] == channel_id, mirrors))
             if not mirror_filter:
-                demisto.info("No mirror filter")
+                # demisto.info("No mirror filter")
                 return
 
             for mirror in mirror_filter:
@@ -1135,7 +1140,13 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 await handle_text(client, investigation_id, text, user)
         # Reset module health
         demisto.updateModuleHealth("")
-        demisto.info("SlackV3 - Event handled successfully.")
+        # demisto.info("SlackV3 - Event handled successfully.")
+        pr.disable()
+        s = io.StringIO()
+        sortby = SortKey.CUMULATIVE
+        ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+        ps.print_stats()
+        print(s.getvalue())
         return
     except Exception as e:
         await handle_listen_error(f'Error occurred while listening to Slack: {str(e)}')
@@ -1143,7 +1154,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         time.sleep(5)
 
 
-async def get_user_by_id_async(client: SocketModeClient, user_id: str) -> dict:
+async def get_user_by_id_async(client: SocketModeClient, user_id: str, integration_context: dict) -> dict:
     """
     Get the details of a slack user by id asynchronously.
     Args:
@@ -1155,7 +1166,7 @@ async def get_user_by_id_async(client: SocketModeClient, user_id: str) -> dict:
     """
     user: dict = {}
     users: list = []
-    integration_context = get_integration_context(SYNC_CONTEXT)
+    # integration_context = get_integration_context(SYNC_CONTEXT)
     if integration_context.get('users'):
         users = json.loads(r"{}".format(integration_context['users']))
         user_filter = list(filter(lambda u: u['id'] == user_id, users))
@@ -1174,6 +1185,19 @@ async def get_user_by_id_async(client: SocketModeClient, user_id: str) -> dict:
     return user
 
 
+def handle_bang_command(investigation_id: str, text: str):
+
+    payload = {
+            "id": "",
+            "version": "",
+            "investigationId": investigation_id,
+            "data": json.dumps(text),
+            "args": None,
+            "markdown": False
+        }
+    demisto.internalHttpRequest(method="POST", uri="/entry", body=payload)
+
+
 async def handle_text(client: SocketModeClient, investigation_id: str, text: str, user: dict):
     """
     Handles text received in the Slack workspace (not DM)
@@ -1184,18 +1208,17 @@ async def handle_text(client: SocketModeClient, investigation_id: str, text: str
         text: The received text
         user: The sender
     """
-    demisto.info(f'SlackV3 - adding entry to incident {investigation_id}')
     if text:
+        handle_bang_command(investigation_id, text)
         demisto.addEntry(id=investigation_id,
                          entry=await clean_message(text, client),
                          username=user.get('name', ''),
                          email=user.get('profile', {}).get('email', ''),
                          footer=MESSAGE_FOOTER
                          )
-        demisto.info("SlackV3 - Text handled successfully.")
 
 
-async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) -> str:
+async def check_and_handle_entitlement(text: str, user: dict, thread_id: str, integration_context: dict) -> str:
     """
     Handles an entitlement message (a reply to a question)
     Args:
