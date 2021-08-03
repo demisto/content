@@ -66,7 +66,7 @@ function create_new_pack {
     rename_files_and_folders "Hello_World" "Hello_World_New"
 
     find . -type f \( -name "*.json" -o -name "*.yml" \) -exec sed -i "" "s/Sanity Test/Sanity Test New/g" {} \;
-    rename_files_and_folders "Sanity Test" "Sanity Test New"
+    rename_files_and_folders "Sanity_Test" "Sanity_Test_New"
   fi
 
   cd "${original_path}" || fail
@@ -343,7 +343,7 @@ function add_pack_to_landing_page {
 # :param $6: A slack channel to send notifications to.
 function trigger_circle_ci {
 
-  local $circle_token=$1
+  local circle_token=$1
   local content_branch=$2
   local bucket=$3
   local bucket_upload=$4
