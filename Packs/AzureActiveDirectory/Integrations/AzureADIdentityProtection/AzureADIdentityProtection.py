@@ -215,6 +215,34 @@ def azure_ad_identity_protection_risky_users_dismiss_command(client: AADClient, 
     return client.azure_ad_identity_protection_risky_users_dismiss(**kwargs)
 
 
+def fetch_incidents(client: AADClient, **kwargs):
+
+    day_ago = datetime.now() - timedelta(days=3)  # Default 3 days ago
+    start_time = day_ago.time()
+    last_run = demisto.getLastRun()
+    if last_run and 'start_time' in last_run:
+        start_time = last_run.get('start_time')
+
+    formatString = "%Y-%m-%dT%H:%M:%S.%fZ"  # 2017-07-01T08:00:00.000Z
+    start_time_string = datetime.strptime(str(start_time), formatString)
+    demisto.info('\n\n*** start_time_string: ' + str(start_time_string) + '\n\n')
+
+    finished_fetch_ok: bool = True
+    incidents: List = []
+
+    # TODO Implement
+    # if error_fetching:
+    #     finished_fetch_ok = False
+
+    if finished_fetch_ok or (incidents and len(incidents) > 0):
+        demisto.incidents(incidents)
+        demisto.setLastRun({
+            'start_time': timestamp_to_datestring(incidents[-1]['time'])
+        })
+    else:
+        demisto.incidents([])
+
+
 def start_auth(client: AADClient) -> CommandResults:
     result = client.start_auth('!azure-ad-auth-complete')
     return CommandResults(readable_output=result)
@@ -273,6 +301,8 @@ def main() -> None:
             return_results(azure_ad_identity_protection_risky_users_confirm_compromised_command(client, **args))
         elif command == 'azure-ad-identity-protection-risky-user-dismiss':
             return_results(azure_ad_identity_protection_risky_users_dismiss_command(client, **args))
+        elif command == 'fetch-incidents':
+            return_results(fetch_incidents(client, **args))
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
@@ -287,3 +317,6 @@ from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
+
+# !azure-ad-identity-protection-risky-user-list limit=3 filter_expression="riskLastUpdatedDateTime gt 2017-07-01T08:00:00.000Z"
