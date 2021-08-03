@@ -35,6 +35,7 @@ SDK_NIGHTLY_CIRCLE_OPTS = {
 }
 CONTENT_REPO_ID_CIRCLE_CI = '60525392'
 
+
 def get_failed_steps_list(build_number: str):
     options = options_handler()
     if options.gitlab_server:
@@ -418,7 +419,6 @@ def slack_notifier(build_url, slack_token, test_type, build_number, env_results_
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
-    slack_channel = 'tom-test'
 
     if branch_name == 'master' or slack_channel.lower() != CONTENT_CHANNEL:
         logging.info("Extracting build status")
