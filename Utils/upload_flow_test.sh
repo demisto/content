@@ -381,10 +381,15 @@ new_pack_name="${base_pack_name}New"
 cd "${CONTENT_PATH}" || fail
 
 existed_in_remote=$(git ls-remote --heads origin "${new_content_branch}")
+existed_in_local=$(git branch --list "${new_content_branch}")
 
 # Deletes the remote branch if exists
 if [[ -z ${existed_in_remote} ]]; then
-    git push origin --delete "${new_content_branch}"
+  git push origin --delete "${new_content_branch}"
+fi
+# Deletes the local branch if exists
+if [[ -z ${existed_in_local} ]]; then
+  git branch -D "${new_content_branch}" # delete local branch
 fi
 
 git checkout -b "${new_content_branch}" || fail
@@ -426,6 +431,7 @@ if [ -n "$gitlab_token" ]; then
 fi
 
 git checkout "${content_branch_name}"
+git branch -D "${new_content_branch}"
 echo ""
-echo "Please run the following command once the pipelines are finished"
+echo "Please run the following commands once the pipelines are finished"
 echo "git push origin --delete ${new_content_branch}"
