@@ -19,6 +19,7 @@ class Client(BaseClient):
         self.vc_type = vc_type
         self.organization = organization
         self.project = project
+        self.api_key = api_key
 
     def get_job_artifacts(self, vc_type: str, organization: str, project: str, job_name: str):
         return self._http_request(
@@ -59,16 +60,14 @@ class Client(BaseClient):
         )
 
     def trigger_workflow(self, vc_type: str, organization: str, project: str, parameters: str):
-        headers = self._headers
-        headers['Circle-Token'] = demisto.params().get('api_key')
-
         url_suffix = f'project/{vc_type}/{organization}/{project}/pipeline'
 
         return self._http_request(
             method='POST',
             url_suffix=url_suffix,
             json_data=parameters,
-            resp_type='text'
+            resp_type='text',
+            headers={'Circle-Token': self.api_key}
         )
 
 
