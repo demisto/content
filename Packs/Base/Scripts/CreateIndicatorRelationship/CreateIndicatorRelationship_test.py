@@ -1,5 +1,7 @@
+import CommonServerPython
 
-def test_validate_arguments():
+
+def test_validate_arguments(mocker):
     """
     Test that all the error occur in each scenario.
     Given:
@@ -102,6 +104,30 @@ def test_validate_arguments():
         validate_arguments(args)
     except Exception as e:
         assert "entity_a is a list, Please insert a single entity_a to create the relationship" in e.args[0]
+
+    # Handle the Threat Intel Indicators in server versions:
+    args = {
+        'entity_a': '1',
+        'entity_a_type': 'STIX Malware',
+        'entity_b': '3.3.3.3',
+        'entity_b_type': 'STIX Tool',
+        'entity_b_query': '',
+        'description': 'Test',
+        'last_seen': '',
+        'source_reliability': '',
+        'relationship': 'compromises',
+        'reverse_relationship': '',
+        'create_indicator': 'false'
+    }
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=False)
+    validate_arguments(args)
+    assert args['entity_a_type'] == 'STIX Malware'
+    assert args['entity_b_type'] == 'STIX Tool'
+
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    validate_arguments(args)
+    assert args['entity_a_type'] == 'Malware'
+    assert args['entity_b_type'] == 'Tool'
 
 
 def test_create_relation_command_using_query(mocker):
