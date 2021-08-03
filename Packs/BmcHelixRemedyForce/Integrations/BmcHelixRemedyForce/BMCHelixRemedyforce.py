@@ -457,6 +457,7 @@ class Client(BaseClient):
             demisto.setIntegrationContext(integration_context)
             return integration_context['sessionId']
         else:
+            demisto.debug(f'RemedyForce Login server returned: {resp.text}')
             raise DemistoException(MESSAGES['AUTHENTICATION_CONFIG_ERROR'])
 
     def get_salesforce_session(self):
