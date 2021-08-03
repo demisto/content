@@ -51,7 +51,7 @@ function create_new_pack {
   cp -R "${pack_path}" "${new_pack_path}" || fail
   cd "${new_pack_path}" || fail
 
-  find . -type f -name "*.json|*.yml" -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
+  find . -type f \( -name "*.json" -o -name "*.yml" \) -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
   # renaming
   rename_files_and_folders "$pack_name" "$new_pack_name"
   cd "${original_path}" || fail
@@ -65,12 +65,10 @@ function create_new_pack {
 # :param $1: pack name
 # :param $2: new pack name
 function rename_files_and_folders {
-  echo " rename_files_and_folders"
 
   if [ "$#" -ne 2 ]; then
     fail " Illegal number of parameters "
   fi
-
   pack_name=$1
   new_pack_name=$2
 
@@ -79,9 +77,11 @@ function rename_files_and_folders {
   do
     cd "$folder" || continue ;
     find . -type f -maxdepth 1 -name  "*${pack_name}*" -exec sh -c 'mv $1 "${1//$2/$3}"' sh {} "$pack_name" "$new_pack_name"  \;
-    change_files_in_folder "$pack_name" "$new_pack_name";
+    rename_files_and_folders "$pack_name" "$new_pack_name";
     cd ../;
-    mv "$folder" "${folder//$pack_name/$new_pack_name}"
+    if [ "$folder" != "${folder//$pack_name/$new_pack_name}" ]; then
+      mv "$folder" "${folder//$pack_name/$new_pack_name}"
+    fi
   done
 
 }
@@ -369,8 +369,8 @@ done
 
 check_arguments
 
-git checkout "$content_branch_name" || fail
-git pull || fail
+#git checkout "$content_branch_name" || fail
+#git pull || fail
 
 
 CONTENT_PATH="$HOME/dev/demisto/content"
@@ -389,37 +389,37 @@ change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
 
 # New Pack
 create_new_pack "${base_pack_name}" "${new_pack_name}"
-#add_dependency "${new_pack_name}" "${base_pack_name}"
-#add_author_image "${new_pack_name}"
-#add_1_0_0_release_note "${new_pack_name}"
-#
+add_dependency "${new_pack_name}" "${base_pack_name}"
+add_author_image "${new_pack_name}"
+add_1_0_0_release_note "${new_pack_name}"
+
 ## Existing pack
-#enhancement_release_notes "${base_pack_name}"
-#change_integration_image "PaloAltoNetworks_IoT" "${base_pack_name}"
-#updating_old_release_notes "Base"
-#enhancement_release_notes "Base"
-#updating_old_release_notes "${base_pack_name}"
-#add_1_0_0_release_note "${base_pack_name}"
-#set_pack_hidden "Microsoft365Defender"
-#updating_old_release_notes "${new_pack_name}" # Update release notes in content that are not in the bucket
-#update_integration_readme "Microsoft365Defender"
-#update_pack_ignore "Microsoft365Defender"
-#
-## External changes
-#add_pack_to_landing_page "${new_pack_name}"
-#
-#cat ~/config_temp > /Users/iyeshaya/dev/demisto/content/.circleci/config.yml # todo remove
-#
-#git commit -am "Adding changes"
-#git push origin "${new_content_branch}"
-#
-#if [ -n "$circle_token" ]; then
-#  trigger_circle_ci
-#fi
-#
-#if [ -n "$gitlab_token" ]; then
-#  trigger_gitlab_ci
-#fi
-#
-#git checkout "${content_branch_name}"
+enhancement_release_notes "${base_pack_name}"
+change_integration_image "PaloAltoNetworks_IoT" "${base_pack_name}"
+updating_old_release_notes "Base"
+enhancement_release_notes "Base"
+updating_old_release_notes "${base_pack_name}"
+add_1_0_0_release_note "${base_pack_name}"
+set_pack_hidden "Microsoft365Defender"
+updating_old_release_notes "${new_pack_name}" # Update release notes in content that are not in the bucket
+update_integration_readme "Microsoft365Defender"
+update_pack_ignore "Microsoft365Defender"
+
+# External changes
+add_pack_to_landing_page "${new_pack_name}"
+
+cat ~/config_temp > /Users/iyeshaya/dev/demisto/content/.circleci/config.yml # todo remove
+
+git commit -am "Adding changes"
+git push origin "${new_content_branch}"
+
+if [ -n "$circle_token" ]; then
+  trigger_circle_ci
+fi
+
+if [ -n "$gitlab_token" ]; then
+  trigger_gitlab_ci
+fi
+
+git checkout "${content_branch_name}"
 #git branch -D "${new_content_branch}"
