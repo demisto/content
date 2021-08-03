@@ -1927,9 +1927,9 @@ tasks:
       version: -1
       name: Detect & Manage Phishing Campaigns
       description: |-
-        This playbook is used to find, create and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to:
-        1. Find and tie together incidents that are related to the same phishing attack (a phishing campaign).
-        2. Search for an existing Phishing Campaign incident or create a new one for the tied Phishing incidents.
+        This playbook is used to find, create and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to do the following:
+        1. Find and link related incidents to the same phishing attack (a phishing campaign).
+        2. Search for an existing Phishing Campaign incident or create a incident for the related Phishing incidents.
         3. Link all detected phishing incidents to the Phishing Campaign incident that was found or created previously.
         4. Update the Phishing Campaign incident with the latest data about the campaign, and update all related phishing incidents to indicate that they are part of the campaign.
       playbookName: Detect & Manage Phishing Campaigns
@@ -2086,7 +2086,7 @@ inputs:
     simple: Soft
   required: false
   description: |-
-    The method by which to delete emails using the O365 - Security And Compliance - Search And Delete playbook. Could be "Soft" (recoverable), or "Hard" (unrecoverable). Leave empty to decide manually for each email incident.
+    The method by which to delete emails using the O365 - Security And Compliance - Search And Delete playbook. Can be "Soft" (recoverable), or "Hard" (unrecoverable). Leave empty to decide manually for each email incident.
     This is only applicable if the SearchAndDeleteIntegration input is set to O365.
   playbookInputQuery:
 - key: O365ExchangeLocation
@@ -2095,10 +2095,10 @@ inputs:
   required: false
   description: Used only when searching and deleting emails in O365. The exchange
     location. Determines from where to search and delete emails searched using O365
-    playbooks. Use the value "All" to search all mailboxes, use "SingleMailbox" to
-    search and delete the email only from the recipient's inbox, or specify "Manual"
+    playbooks. Use "All" to search all mailboxes, "SingleMailbox" to
+    search and delete the email only from the recipient's inbox, or "Manual"
     to decide manually for every incident. Note - searching all mailboxes may take
-    a significant amount of time. This input is only applicable if the SearchAndDeleteIntegration
+    a significant amount of time. This input is applicable only if the SearchAndDeleteIntegration
     input is set to O365.
   playbookInputQuery:
 - key: O365AllowNotFoundSearchLocations
@@ -2106,14 +2106,14 @@ inputs:
     simple: "false"
   required: false
   description: Used only when searching and deleting emails in O365. Whether to include
-    mailboxes other than regular user mailboxes in the compliance search. Default
+    mailboxes other than regular user mailboxes in the search. Default
     is "false".
   playbookInputQuery:
 - key: O365ExchangeLocationExclusion
   value: {}
   required: false
   description: Used only when searching and deleting emails in O365. Comma-separated
-    list of mailboxes/distribution groups to exclude when you use the value "All"
+    list of mailboxes/distribution groups to exclude, when you use the value "All"
     for the O365ExchangeLocation input.
   playbookInputQuery:
 outputs: []
