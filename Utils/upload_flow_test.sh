@@ -62,9 +62,8 @@ function create_new_pack {
   rename_files_and_folders "$pack_name" "$new_pack_name"
 
   if [ "$pack_name" == "HelloWorld" ]; then
-    sed -i "" "s/Hello World/Hello World New/g" ./Playbooks/playbook-Handle_Hello_World_Alert.yml
-    mv ./Playbooks/playbook-Handle_Hello_World_Alert.yml ./Playbooks/playbook-Handle_Hello_World_New_Alert.yml
-    mv ./Playbooks/playbook-Handle_Hello_World_Alert_README.md ./Playbooks/playbook-Handle_Hello_World_New_Alert.yml
+    find . -type f \( -name "*.json" -o -name "*.yml" \) -exec sed -i "" "s/Hello_World/Hello_World_New/g" {} \;
+    rename_files_and_folders "Hello_World" "Hello_World_New"
   fi
 
   cd "${original_path}" || fail
