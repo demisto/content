@@ -105,9 +105,6 @@ parameters:
   sdk_ref:
     type: string
     default: "master"
-  delete_current_branch:
-    type: string
-    default: ""
 
 references:
   environment: &environment
@@ -123,7 +120,6 @@ references:
       GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
       SLACK_CHANNEL: << pipeline.parameters.slack_channel >>
       SDK_REF: << pipeline.parameters.sdk_ref >>
-      DELETE_CURRENT_BRANCH: << pipeline.parameters.delete_current_branch >>
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
       # is done in 'Setup Environment' step.
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
@@ -173,7 +169,6 @@ references:
         echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
         echo 'export ENV_RESULTS_PATH=/home/circleci/project/artifacts/env_results.json' >> $BASH_ENV
         echo 'export GCS_PRODUCTION_BUCKET="marketplace-dist"' >> $BASH_ENV
-        echo 'export DELETE_CURRENT_BRANCH="${DELETE_CURRENT_BRANCH}"' >> $BASH_ENV
         echo 'source /home/circleci/project/.circleci/content_release_vars.sh' >> $BASH_ENV
         chmod +x .circleci/gitlab-ci-env-variables.sh
         ./.circleci/gitlab-ci-env-variables.sh
@@ -234,7 +229,7 @@ references:
         fi
 
         echo "========== Build Parameters =========="
-        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^SDK_REF=|^DELETE_CURRENT_BRANCH"
+        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^SDK_REF"
         python --version
         python3 --version
         node --version
@@ -634,10 +629,6 @@ references:
           - Install Packs in Server 6_1
           - Install Packs in Server 6_0
           - Install Packs in Server Master
-    - Delete Temporary Branch:
-        context: bucket_upload_env
-        requires:
-          - Upload Packs To Marketplace
 
   check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
     when:
@@ -1521,26 +1512,6 @@ jobs:
       - *persist_to_workspace
       - *destroy_instances
       - *store_artifacts
-
-  Delete Temporary Branch:
-    <<: *container_config
-    resource_class: small
-    <<: *environment
-    steps:
-      - checkout
-      - *persist_to_workspace
-      - run:
-          name: Delete Temporary Branch
-          shell: /bin/bash
-          command: |
-            if [ -n "$DELETE_CURRENT_BRANCH" ]; then
-              current_branch=<< pipeline.git.branch >>
-              echo Deleting current branch - $current_branch
-              git checkout master
-              git branch -D "${current_branch}" # delete local branch
-              git push origin --delete $current_branch # delete remote branch
-            fi
-
 
 workflows:
   version: 2
