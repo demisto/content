@@ -5,6 +5,8 @@ import pytest
 
 
 @pytest.mark.parametrize('input,fqdn,domain', [  # noqa: E501 disable-secrets-detection
+    ('https://urldefense.com/v3/__http://survey.lavulcamktg.cl/index.php/783758', 'survey.lavulcamktg.cl',
+     'lavulcamktg.cl'),
     ('http://this.is.test.com', 'this.is.test.com', 'test.com'),
     ('https://caseapi.phishlabs.com', 'caseapi.phishlabs.com', 'phishlabs.com'),
     ('www.bücher.de', 'www.bücher.de', 'bücher.de'),
