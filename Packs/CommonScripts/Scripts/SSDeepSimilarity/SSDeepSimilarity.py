@@ -33,7 +33,7 @@ def _format_results(results: list) -> List[dict]:
     return formatted_res
 
 
-def run_ssdeep_command(anchor_hash: str, hashes_to_compare: str):
+def run_ssdeep_command(anchor_hash: str, hashes_to_compare: str) -> list:
     with tempfile.NamedTemporaryFile() as hash1:
         with tempfile.NamedTemporaryFile() as hash2:
             hash1.write(bytes(anchor_hash, encoding='utf-8'))
