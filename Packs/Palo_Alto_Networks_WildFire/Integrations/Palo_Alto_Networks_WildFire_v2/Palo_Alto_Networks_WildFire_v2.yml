@@ -172,8 +172,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: Request a structured report. Possible values: "XML" and "PDF". Only relevant when 
-        polling=true.
+      description: Request a structured report. Possible values are "XML" and "PDF". Only relevant when polling=true.
       isArray: false
       name: format
       predefined:
