@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if [ "$#" -lt "1" ]; then
   echo "Usage:
   $0 -ct <token>
@@ -56,10 +58,6 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -db|--delete_branch) _delete_branch="true"
-    shift
-    shift;;
-
   *)    # unknown option.
     shift;;
   esac
@@ -107,8 +105,7 @@ else
       "bucket_upload": "${_bucket_upload}",
       "force_pack_upload": "${_force}",
       "packs_to_upload": "${_packs}",
-      "slack_channel": "${_slack_channel}",
-      "delete_current_branch": "${_delete_branch}"
+      "slack_channel": "${_slack_channel}"
     }
   }
   EOF
@@ -122,4 +119,3 @@ else
   --request POST ${trigger_build_url} \
   --user "$_ci_token:"
 fi
-
