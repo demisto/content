@@ -499,8 +499,10 @@ def feed_main(feed_name, params=None, prefix=''):
     }
     try:
         if command == 'fetch-indicators':
-            indicators, no_update = fetch_indicators_command(client, feed_tags, tlp_color, params.get('indicator_type'),
-                                                  params.get('auto_detect_type'), params.get('create_relationships'))
+            indicators, no_update = fetch_indicators_command(client, feed_tags, tlp_color,
+                                                             params.get('indicator_type'),
+                                                             params.get('auto_detect_type'),
+                                                             params.get('create_relationships'))
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b, noUpdate=no_update)

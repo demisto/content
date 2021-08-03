@@ -373,7 +373,7 @@ def test_get_indicators_with_relations():
             indicator_type='ASN'
         )
         indicators, _ = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
-                                              create_relationships=True)
+                                                 create_relationships=True)
 
         assert indicators == expected_res
 
@@ -438,7 +438,7 @@ def test_get_indicators_without_relations():
             indicator_type='ASN'
         )
         indicators, _ = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
-                                              create_relationships=False)
+                                                 create_relationships=False)
 
         assert indicators == expected_res
 
@@ -472,8 +472,8 @@ def test_get_no_update_value(mocker):
     - Ensure that the response is False
     """
     mocker.patch.object(demisto, 'getIntegrationContext',
-                        return_value={'last_modified':'Fri, 30 Jul 2021 00:24:13 GMT',
-                                      'etag':'d309ab6e51ed310cf869dab0dfd0d34b'})
+                        return_value={'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',
+                                      'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'})
 
     class MockResponse:
         headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT', 'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}

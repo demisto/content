@@ -21,7 +21,7 @@ def test_json_feed_no_config():
         )
 
         indicators, _ = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
-                                              auto_detect=False)
+                                                 auto_detect=False)
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
 
@@ -50,7 +50,7 @@ def test_json_feed_with_config():
         )
 
         indicators, _ = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
-                                              auto_detect=False)
+                                                 auto_detect=False)
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
 
@@ -82,7 +82,7 @@ def test_json_feed_with_config_mapping():
         )
 
         indicators, _ = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
-                                              auto_detect=False)
+                                                 auto_detect=False)
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
         indicator = indicators[0]
         custom_fields = indicator['fields']
@@ -194,8 +194,8 @@ def test_get_no_update_value(mocker):
     - Ensure that the response is False
     """
     mocker.patch.object(demisto, 'getIntegrationContext',
-                        return_value={'last_modified':'Fri, 30 Jul 2021 00:24:13 GMT',
-                                      'etag':'d309ab6e51ed310cf869dab0dfd0d34b'})
+                        return_value={'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',
+                                      'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'})
 
     class MockResponse:
         headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT', 'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}
