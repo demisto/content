@@ -76,7 +76,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The country or region of the activity. For example, US or UK. For
+      description: The country or region of the activity. For example, `US` or `UK`. For
         further details, see https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-beta.
       isArray: false
       name: country
@@ -145,7 +145,7 @@ script:
         adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue.
       type: string
     - contextPath: AADIdentityProtection.Risks.source
-      description: Source of the risk detection. For example, activeDirectory.
+      description: Source of the risk detection. For example, `activeDirectory`.
       type: string
     - contextPath: AADIdentityProtection.Risks.detectionTimingType
       description: Timing of the detected risk (real-time/offline). The possible values
@@ -207,7 +207,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The date and time that the risky user was last updated.
+      description: The date and time that the risky user was last updated, formatted as `<number> <time unit>`, e.g., `12 hours`, `7 days`.
       isArray: false
       name: updated_time
       required: false
@@ -436,4 +436,5 @@ script:
   type: python
 fromversion: 6.0.0
 beta: true
-tests: AzureADTest
+tests:
+-  AzureADTest
