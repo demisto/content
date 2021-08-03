@@ -1,0 +1,31 @@
+{
+    "id": "incident_cofensetriagereportsha256",
+    "version": -1,
+    "modified": "2021-06-02T20:06:27.739416795+05:30",
+    "name": "Cofense Triage Report SHA256",
+    "ownerOnly": false,
+    "description": "SHA256 hash signature of the reported email.",
+    "cliName": "cofensetriagereportsha256",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Cofense Triage Report"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

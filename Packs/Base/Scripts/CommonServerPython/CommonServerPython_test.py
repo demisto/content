@@ -18,6 +18,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict
+import CommonServerPython
 
 try:
     from StringIO import StringIO
@@ -47,6 +48,11 @@ def clear_version_cache():
     """
     yield
     get_demisto_version._version = None
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(CommonServerPython, 'get_integration_name', return_value='Test')
 
 
 def test_xml():
@@ -829,6 +835,8 @@ TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAA
 TEST_SSH_KEY = '-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
                'AAAAdzc2gtcn\n-----END OPENSSH PRIVATE KEY-----'
 
+TEST_PASS_JSON_CHARS = 'json_chars'
+
 SENSITIVE_PARAM = {
     'app': None,
     'authentication': {
@@ -852,6 +860,7 @@ SENSITIVE_PARAM = {
         'password': 'ident_pass',
         'passwordChanged': False
     },
+    'password': TEST_PASS_JSON_CHARS + '\\"',
 }
 
 
@@ -876,7 +885,8 @@ def test_debug_logger_replace_strs(mocker):
     msg = debug_logger.int_logger.messages[0]
     assert 'debug-mode started' in msg
     assert 'Params:' in msg
-    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass', TEST_SSH_KEY, TEST_SSH_KEY_ESC):
+    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass', TEST_SSH_KEY,
+              TEST_SSH_KEY_ESC, TEST_PASS_JSON_CHARS):
         assert s not in msg
 
 
@@ -1539,7 +1549,7 @@ class TestCommandResults:
 
         dbot_score = Common.DBotScore(
             indicator='8.8.8.8',
-            integration_name='Virus Total',
+            integration_name='Test',
             indicator_type=DBotScoreType.IP,
             score=Common.DBotScore.GOOD
         )
@@ -1581,7 +1591,7 @@ class TestCommandResults:
                 'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
                     {
                         'Indicator': '8.8.8.8',
-                        'Vendor': 'Virus Total',
+                        'Vendor': 'Test',
                         'Score': 1,
                         'Type': 'ip'
                     }
@@ -1597,7 +1607,7 @@ class TestCommandResults:
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
         dbot_score1 = Common.DBotScore(
             indicator='8.8.8.8',
-            integration_name='Virus Total',
+            integration_name='Test',
             indicator_type=DBotScoreType.IP,
             score=Common.DBotScore.GOOD
         )
@@ -1616,7 +1626,7 @@ class TestCommandResults:
 
         dbot_score2 = Common.DBotScore(
             indicator='5.5.5.5',
-            integration_name='Virus Total',
+            integration_name='Test',
             indicator_type=DBotScoreType.IP,
             score=Common.DBotScore.GOOD
         )
@@ -1662,13 +1672,13 @@ class TestCommandResults:
                 'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
                     {
                         'Indicator': '8.8.8.8',
-                        'Vendor': 'Virus Total',
+                        'Vendor': 'Test',
                         'Score': 1,
                         'Type': 'ip'
                     },
                     {
                         'Indicator': '5.5.5.5',
-                        'Vendor': 'Virus Total',
+                        'Vendor': 'Test',
                         'Score': 1,
                         'Type': 'ip'
                     }
@@ -1798,7 +1808,7 @@ class TestCommandResults:
 
         dbot_score = Common.DBotScore(
             indicator='8.8.8.8',
-            integration_name='Virus Total',
+            integration_name='Test',
             score=Common.DBotScore.GOOD,
             indicator_type=DBotScoreType.IP,
             reliability=DBotScoreReliability.B,
@@ -1824,7 +1834,7 @@ class TestCommandResults:
                 {
                     'Indicator': '8.8.8.8',
                     'Type': 'ip',
-                    'Vendor': 'Virus Total',
+                    'Vendor': 'Test',
                     'Score': 1,
                     'Reliability': 'B - Usually reliable'
                 }
@@ -1901,7 +1911,7 @@ class TestCommandResults:
         mocker.patch.object(demisto, 'params', return_value={'insecure': True})
         dbot_score = Common.DBotScore(
             indicator='8.8.8.8',
-            integration_name='Virus Total',
+            integration_name='Test',
             indicator_type=DBotScoreType.IP,
             score=Common.DBotScore.GOOD
         )
@@ -1926,7 +1936,7 @@ class TestCommandResults:
                 {
                     'Indicator': '8.8.8.8',
                     'Type': 'ip',
-                    'Vendor': 'Virus Total',
+                    'Vendor': 'Test',
                     'Score': 1
                 }
             ]
@@ -3441,6 +3451,97 @@ class TestExecuteCommand:
         with raises(DemistoException, match=r'Cannot run demisto.executeCommand\(\) from integrations.'):
             execute_command('bad', {'arg1': 'value'})
 
+    @staticmethod
+    def test_multiple_results_fail_on_error_false(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+            - fail_on_error set to False.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the status of the execution is True for successful run.
+            - Assert that the "Contents" values of all entries are returned.
+        """
+        from CommonServerPython import execute_command, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            {'Type': EntryType.NOTE, 'Contents': {'entry': '2'}},
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        status, res = execute_command('command', {'arg1': 'value'}, fail_on_error=False)
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(res, list)
+        assert len(res) == 3
+        assert status
+        assert res[0] == {'hello': 'world'}
+        assert res[1] == {}
+        assert res[2] == {'entry': '2'}
+
+    @staticmethod
+    def test_raw_results_fail_on_error_false(mocker):
+        """
+        Given:
+            - A successful command with several entries as output.
+            - fail_on_error set to False.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the status of the execution is True for successful run.
+            - Assert that the entire entries are returned.
+        """
+        from CommonServerPython import execute_command, EntryType
+        entries = [
+            {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}},
+            {'Type': EntryType.NOTE, 'Context': 'no contents here'},
+            'text',
+            1337,
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=entries)
+        status, res = execute_command('command', {'arg1': 'value'}, extract_contents=False, fail_on_error=False)
+        assert demisto_execute_mock.call_count == 1
+        assert isinstance(res, list)
+        assert len(res) == 4
+        assert status
+        assert res[0] == {'Type': EntryType.NOTE, 'Contents': {'hello': 'world'}}
+        assert res[1] == {'Type': EntryType.NOTE, 'Context': 'no contents here'}
+        assert res[2] == 'text'
+        assert res[3] == 1337
+
+    @staticmethod
+    def test_failure_fail_on_error_false(mocker):
+        """
+        Given:
+            - A command that fails.
+            - fail_on_error set to False.
+        When:
+            - Calling execute_command.
+        Then:
+            - Assert that the status of the execution is False for failed run.
+            - Assert that the original errors are returned as a value, and not to the war-room.
+        """
+        from CommonServerPython import execute_command, EntryType
+        error_entries = [
+            {'Type': EntryType.ERROR, 'Contents': 'error number 1'},
+            {'Type': EntryType.NOTE, 'Contents': 'not an error'},
+            {'Type': EntryType.ERROR, 'Contents': 'error number 2'},
+        ]
+        demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
+                                                   return_value=error_entries)
+        demisto_results_mock = mocker.patch.object(demisto, 'results')
+
+        status, error_text = execute_command('bad', {'arg1': 'value'}, fail_on_error=False)
+
+        assert demisto_execute_mock.call_count == 1
+        assert demisto_results_mock.call_count == 0
+        assert not status
+        assert 'error number 1' in error_text
+        assert 'error number 2' in error_text
+        assert 'not an error' not in error_text
+
 
 def test_arg_to_int__valid_numbers():
     """
@@ -3743,7 +3844,7 @@ class TestCommonTypes:
 
         dbot_score = Common.DBotScore(
             indicator='somedomain.com',
-            integration_name='Virus Total',
+            integration_name='Test',
             indicator_type=DBotScoreType.DOMAIN,
             score=Common.DBotScore.GOOD
         )
@@ -3920,7 +4021,7 @@ class TestCommonTypes:
                     {
                         'Indicator': 'somedomain.com',
                         'Type': 'domain',
-                        'Vendor': 'Virus Total',
+                        'Vendor': 'Test',
                         'Score': 1
                     }
                 ]
@@ -3944,7 +4045,7 @@ class TestCommonTypes:
 
         dbot_score = Common.DBotScore(
             indicator='bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d',
-            integration_name='test',
+            integration_name='Test',
             indicator_type=DBotScoreType.CERTIFICATE,
             score=Common.DBotScore.NONE
         )
@@ -4325,7 +4426,7 @@ class TestCommonTypes:
                 'val.Vendor == obj.Vendor && val.Type == obj.Type)': [{
                     "Indicator": "bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d",
                     "Type": "certificate",
-                    "Vendor": "test",
+                    "Vendor": "Test",
                     "Score": 0
                 }]
             },
@@ -4510,7 +4611,7 @@ class TestIndicatorsSearcher:
             results.append(res)
         assert len(results) == 7
         assert search_indicators.page == 17
-        assert search_indicators._is_search_done() is False
+        assert search_indicators._is_search_done() is True
 
     def test_iterator__empty_page(self, mocker):
         """
