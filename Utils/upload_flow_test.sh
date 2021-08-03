@@ -18,7 +18,7 @@ function check_arguments {
   echo " Running - check_arguments"
 
   if [ -z "$content_branch_name" ]; then
-    content_branch_name="master"
+    content_branch_name=$(git branch --show-current)
   fi
 
   if [ -z "$sdk_branch_name" ]; then
@@ -55,7 +55,7 @@ function create_new_pack {
   # renaming
   change_files_in_folder "$pack_name" "$new_pack_name"
   cd "${original_path}" || fail
-  git add
+  git add "$new_pack_path"
 
   git commit -am  "Created new pack - $new_pack_name"
 }
