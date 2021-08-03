@@ -686,7 +686,7 @@ def get_breach_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_breach_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
+        
         pbid = str(args.get('pbid', None))
         if not pbid:
             raise ValueError('Darktrace Model Breach ID not specified')
@@ -709,7 +709,7 @@ def get_breach_details_command(client: Client, args: Dict[str, Any]) -> CommandR
         headers = list(set(headers))
         headers = sorted(headers)
 
-        readable_output = tableToMarkdown(f'Darktrace Model Breach {pbid} Details', model_breach, headers=headers, 
+        readable_output = tableToMarkdown(f'Darktrace Model Breach {pbid} Details', model_breach, headers=headers,
                                           removeNull=True)
 
         return CommandResults(
