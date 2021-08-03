@@ -861,7 +861,7 @@ inputs:
     simple: "True"
   required: false
   description: Whether to automatically link the incidents that make up the campaign,
-    to the phishing campaign incident. Can be True or False.
+    to the phishing campaign incident. Can be True (default) or False. It is recommended not to change the default.
   playbookInputQuery:
 - key: incidentTypeFieldName
   value:
@@ -876,7 +876,7 @@ inputs:
     simple: Phishing
   required: false
   description: A comma-separated list of incident types by which to filter. Specify
-    "None" to search through all incident types.
+    "None" to search through all incident types By default, the value is "Phishing" because the Phishing incident type is used out of the box.
   playbookInputQuery:
 - key: existingIncidentsLookback
   value:
@@ -889,50 +889,50 @@ inputs:
 - key: query
   value: {}
   required: false
-  description: Additional text by which to query incidents.
+  description: Additional text by which to query incidents to find similar Phishing incidents. Uses the same language to query incidents in the UI.
   playbookInputQuery:
 - key: limit
   value:
     simple: "1000"
   required: false
-  description: The maximum number of incidents to fetch.
+  description: The maximum number of incidents to fetch. Determines how many incidents can be checked for similarity at the time of execution.
   playbookInputQuery:
 - key: emailSubject
   value:
     simple: emailsubject
   required: false
-  description: The name of the field that contains the email subject.
+  description: The name of the incident field that contains the email subject. By default this is `emailsubject` (because the email subject is stored under `${incident.emailsubject}`.
   playbookInputQuery:
 - key: emailBody
   value:
     simple: emailbody
   required: false
-  description: The name of the field that contains the email body.
+  description: The name of the incident field that contains the email body.
   playbookInputQuery:
 - key: emailBodyHTML
   value:
     simple: emailbodyhtml
   required: false
-  description: The name of the field that contains the HTML version of the email body.
+  description: The name of the incident field that contains the HTML version of the email body.
   playbookInputQuery:
 - key: emailFrom
   value:
     simple: emailfrom
   required: false
-  description: The name of the field that contains the email sender.
+  description: The name of the incident field that contains the email sender.
   playbookInputQuery:
 - key: statusScope
   value:
     simple: All
   required: false
   description: Whether to compare the new incident to closed incidents, non closed
-    incidents, or all incidents.
+    incidents, or all incidents. Can be "All", "ClosedOnly", or "NonClosedOnly". Default is "All".
   playbookInputQuery:
 - key: threshold
   value:
     simple: "0.8"
   required: false
-  description: Threshold to consider an incident as similar. The range of values is 0-1.
+  description: The threshold to consider an incident as similar. The range of values is 0-1. If needed, make small adjustments and continue to evaluate the required value. It is recommended not to change the default value of `0.8`.|
   playbookInputQuery:
 - key: maxIncidentsToReturn
   value:
@@ -946,13 +946,13 @@ inputs:
   value:
     simple: "3"
   required: false
-  description: Minimum number of incidents to consider as a campaign.
+  description: The minimum number of incidents to consider as a campaign. For example, if you specify `10`, but only `9` similar incidents are found, the script will not find them as part of a campaign.|
   playbookInputQuery:
 - key: minUniqueRecipients
   value:
     simple: "2"
   required: false
-  description: Minimum number of unique recipients of similar email incidents to consider
+  description: The minimum number of unique recipients of similar email incidents to consider as a campaign.
     as a campaign.
   playbookInputQuery:
 - key: fieldsToDisplay
