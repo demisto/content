@@ -129,7 +129,7 @@ FILE2 = 'ssdeep,1.1--blocksize:hash:hash,filename\n' \
         '12#$4!2,"12#$4!2"\nA12#$4!2,"A12#$4!2"\n'
 
 
-def test_linux_command():
+def test_linux_command(capfd):
     """
     NOTE: CANNOT RUN LOCALLY WHEN NOT LINUX!
     Given:
@@ -143,10 +143,11 @@ def test_linux_command():
     """
 
     from SSDeepSimilarity import run_ssdeep_command
-    res = run_ssdeep_command(FILE1, FILE2)
-    assert res == ['"3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C","3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C",22',
-                   '"12#$4!2","3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C",0',
-                   '']
+    with capfd.disabled():
+        res = run_ssdeep_command(FILE1, FILE2)
+        assert res == ['"3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C","3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C",22',
+                       '"12#$4!2","3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C",0',
+                       '']
 
 
 CASE_FIRST_RUN = ('1test',
