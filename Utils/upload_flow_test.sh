@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# This script creates new branch with changes that will test the upload flow with given sdk and content branches
+# This script creates new branch with changes that will test the upload flow with given sdk and content branches.
+# Note: This script creates new remote branch, please delete the branch once the pipeline finished.
 
 # fail
 # show fail message and quit
@@ -41,8 +42,8 @@ function create_new_pack {
     fail " Illegal number of parameters "
   fi
 
-  pack_name=$1
-  new_pack_name=$2
+  local pack_name=$1
+  local new_pack_name=$2
 
   original_path=$(pwd)
   pack_path="${CONTENT_PATH}/Packs/${pack_name}"
@@ -69,8 +70,8 @@ function rename_files_and_folders {
   if [ "$#" -ne 2 ]; then
     fail " Illegal number of parameters "
   fi
-  pack_name=$1
-  new_pack_name=$2
+  local pack_name=$1
+  local new_pack_name=$2
 
   find . -type d -mindepth 1 -maxdepth 1 | \
   while read -r folder;
@@ -97,8 +98,8 @@ function add_dependency {
     fail " Illegal number of parameters "
   fi
 
-  source_pack=$1
-  pack_name=$2
+  local source_pack=$1
+  local pack_name=$2
 
   pack_path="${CONTENT_PATH}/Packs/${source_pack}/pack_metadata.json"
 
@@ -118,7 +119,7 @@ function add_author_image {
   fi
 
 
-  pack_name=$1
+  local pack_name=$1
   cp "${CONTENT_PATH}/Packs/Base/Author_image.png" "${CONTENT_PATH}/Packs/${pack_name}" || fail
 
   git add "${CONTENT_PATH}/Packs/${pack_name}/Author_image.png"
@@ -136,7 +137,7 @@ function add_1_0_0_release_note {
     fail " Illegal number of parameters "
   fi
 
-  pack_name=$1
+  local pack_name=$1
 
   cd "${CONTENT_PATH}/Packs/${pack_name}/ReleaseNotes" || fail
   current_latest_note=$(ls -t | head -1)
@@ -159,8 +160,8 @@ function change_sdk_requirements {
     fail " Illegal number of parameters "
   fi
 
-  sdk_branch=$1
-  requirements_file_name=$2
+  local sdk_branch=$1
+  local requirements_file_name=$2
 
   sed -i "" "s#demisto-sdk.*#git+https://github.com/demisto/demisto-sdk.git@${sdk_branch}#g" "${requirements_file_name}"
 
@@ -178,8 +179,8 @@ function enhancement_release_notes {
     fail " Illegal number of parameters "
   fi
 
-  pack_name=$1
-  pack_path="${CONTENT_PATH}/Packs/${pack_name}"
+  local pack_name=$1
+  local pack_path="${CONTENT_PATH}/Packs/${pack_name}"
   demisto-sdk update-release-notes -i "${pack_path}" --force --text "Adding release notes to check the upload flow" # Waiting for sdk fix
 
   git commit -am  "Added release note $pack_name"
@@ -197,11 +198,11 @@ function change_integration_image {
     fail " Illegal number of parameters "
   fi
 
-  source_pack_name=$1
-  dest_pack_name=$2
+  local source_pack_name=$1
+  local dest_pack_name=$2
 
-  source_integration_path="${CONTENT_PATH}/Packs/${source_pack_name}/Integrations/${source_pack_name}/${source_pack_name}_image.png"
-  dest_integration_path="${CONTENT_PATH}/Packs/${dest_pack_name}/Integrations/${dest_pack_name}/${dest_pack_name}_image.png"
+  local source_integration_path="${CONTENT_PATH}/Packs/${source_pack_name}/Integrations/${source_pack_name}/${source_pack_name}_image.png"
+  local dest_integration_path="${CONTENT_PATH}/Packs/${dest_pack_name}/Integrations/${dest_pack_name}/${dest_pack_name}_image.png"
   cp "${source_integration_path}" "${dest_integration_path}"
 
   git commit -am  "Copied integration image from  $source_pack_name to $dest_pack_name"
@@ -218,12 +219,12 @@ function updating_old_release_notes {
     fail " Illegal number of parameters "
   fi
 
-  pack_name=$1
+  local pack_name=$1
 
-  path="${CONTENT_PATH}/Packs/${pack_name}/ReleaseNotes/"
+  local path="${CONTENT_PATH}/Packs/${pack_name}/ReleaseNotes/"
 
   cd "${path}" || fail
-  current_latest_note=$(ls -t | head -1)
+  local current_latest_note=$(ls -t | head -1)
   printf "\n#### Upload flow\n - Test\n" >>"${current_latest_note}"
   cd "${CONTENT_PATH}" || return
 
@@ -241,8 +242,8 @@ function set_pack_hidden {
     fail " Illegal number of parameters"
   fi
 
-  pack_name=$1
-  pack_metadata="${CONTENT_PATH}/Packs/${pack_name}/pack_metadata.json"
+  local pack_name=$1
+  local pack_metadata="${CONTENT_PATH}/Packs/${pack_name}/pack_metadata.json"
   if grep "\"hidden\": true" "${pack_metadata}"; then
     # pack is already hidden
     return
@@ -267,9 +268,9 @@ function update_integration_readme {
     fail " Illegal number of parameters "
   fi
 
-  pack_name=$1
+  local pack_name=$1
 
-  readme_file="${CONTENT_PATH}/Packs/${pack_name}/Integrations/${pack_name}/README.md"
+  local readme_file="${CONTENT_PATH}/Packs/${pack_name}/Integrations/${pack_name}/README.md"
 
   printf "\n#### Upload flow\n - Test\n" >>"${readme_file}"
 
@@ -287,9 +288,9 @@ function update_pack_ignore {
     fail " Illegal number of parameters "
   fi
 
-  pack_name=$1
+  local pack_name=$1
 
-  pack_ignore_file="${CONTENT_PATH}/Packs/${pack_name}/.pack-ignore"
+  local pack_ignore_file="${CONTENT_PATH}/Packs/${pack_name}/.pack-ignore"
 
   printf "\n[file:README.md]\nignore=RM104\n" >>"${pack_ignore_file}"
 
@@ -308,8 +309,8 @@ function add_pack_to_landing_page {
     fail " Illegal number of parameters "
   fi
 
-  pack_name=$1
-  json_file="${CONTENT_PATH}/Tests/Marketplace/landingPage_sections.json"
+  local pack_name=$1
+  local json_file="${CONTENT_PATH}/Tests/Marketplace/landingPage_sections.json"
 
   sed -i "" "s/\"Getting Started\":\[/\"Getting Started\":\[\n\"${pack_name}\",\n/g" "${json_file}" || fail
   sed -i "" "s/\"Featured\":\[/\"Featured\":\[\n\"${pack_name}\",\n/g" "${json_file}" || fail
@@ -321,9 +322,7 @@ function add_pack_to_landing_page {
 
 function trigger_circle_ci() {
   cd "${CONTENT_PATH}" || fail
-  cat ~/trigger_test_flow >/Users/iyeshaya/dev/demisto/content/Utils/trigger_test_upload_flow.sh # todo remove
   ./Utils/trigger_test_upload_flow.sh -ct "${circle_token}" -b "${new_content_branch}" -db "true"
-  git stash # todo remove
 }
 function trigger_gitlab_ci() {
   cd "${CONTENT_PATH}" || return
@@ -381,6 +380,13 @@ new_pack_name="${base_pack_name}New"
 
 cd "${CONTENT_PATH}" || fail
 
+existed_in_remote=$(git ls-remote --heads origin "${new_content_branch}")
+
+# Deletes the remote branch if exists
+if [[ -z ${existed_in_remote} ]]; then
+    git push origin --delete "${new_content_branch}"
+fi
+
 git checkout -b "${new_content_branch}" || fail
 git commit -am "Initial commit"
 
@@ -408,8 +414,6 @@ update_pack_ignore "Microsoft365Defender"
 # External changes
 add_pack_to_landing_page "${new_pack_name}"
 
-cat ~/config_temp > /Users/iyeshaya/dev/demisto/content/.circleci/config.yml # todo remove
-
 git commit -am "Adding changes"
 git push origin "${new_content_branch}"
 
@@ -422,4 +426,3 @@ if [ -n "$gitlab_token" ]; then
 fi
 
 git checkout "${content_branch_name}"
-#git branch -D "${new_content_branch}"
