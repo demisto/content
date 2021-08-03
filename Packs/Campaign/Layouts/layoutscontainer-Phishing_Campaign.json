@@ -67,7 +67,7 @@
                         "y": 2
                     },
                     {
-                        "description": "The numbers in parenthesis represent the number of incidents from the campaign where that data was found. The incidents composing the campaign were deemed similar by textual similarity in the email subject and body.",
+                        "description": "The numbers in parenthesis represent the number of incidents from the campaign where that data was found. The incidents composing the campaign were deemed similar in the email subject and body, by textual similarity.",
                         "displayType": "ROW",
                         "h": 4,
                         "hideItemTitleOnlyOne": true,
@@ -172,7 +172,7 @@
                         "y": 6
                     },
                     {
-                        "description": "A snippet from the latest incident, showing what the campaign email looks like. Meaningful phishing and spam words are in bold.",
+                        "description": "A snippet from the latest incident, showing how the campaign email looks. Meaningful phishing and spam words are in bold.",
                         "displayType": "ROW",
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
@@ -228,7 +228,7 @@
                 "name": "Campaign Management",
                 "sections": [
                     {
-                        "description": "The following incidents were detected as part of the same campaign by the FindEmailCampaign script. With default configuration - all similar incidents are also linked to the campaign, but you can always change this using the Incident Actions section below.",
+                        "description": "The following incidents were detected as part of the same campaign by the FindEmailCampaign script. With the default configuration, all similar incidents are also linked to the campaign, which can be changed in the Incident Actions section below.",
                         "h": 3,
                         "i": "pfjeh5flj3-7641f640-b7da-11eb-98eb-1965d2f9391a",
                         "items": [],
@@ -246,7 +246,7 @@
                         "y": 0
                     },
                     {
-                        "description": "Take actions on incidents that belong to the campaign.",
+                        "description": "Take action on incidents that belong to the campaign.",
                         "displayType": "CARD",
                         "h": 3,
                         "hideName": false,
@@ -306,7 +306,7 @@
                         "y": 3
                     },
                     {
-                        "description": "Send emails to the recipients involved in the incidents. Select specific incidents, or select \"All\", to automatically detect the relevant recipients.",
+                        "description": "Send emails to the recipients involved in the incidents. Select specific incidents, or select \"All\" to automatically detect the relevant recipients.",
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
@@ -631,7 +631,7 @@
                         "y": 7
                     },
                     {
-                        "description": "Not all linked incidents may actually be related to the phishing campaign, and not all related incidents may be linked. This behavior customized via configuration of the Detect \u0026 Manage Phishing Campaigns playbook, or changed by the user through the Campaign Management tab under the Incident Actions section.",
+                        "description": "Not all linked incidents may be related to the phishing campaign, and not all related incidents may be linked. This behavior can be customized by configuring the Detect \u0026 Manage Phishing Campaigns playbook, or changed by the user in the Campaign Management tab under the Incident Actions section.",
                         "displayType": "ROW",
                         "h": 1,
                         "hideName": false,
