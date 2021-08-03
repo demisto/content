@@ -22,9 +22,9 @@ class SecurityScorecardClient(BaseClient):
     """Client class that interacts with the SecurityScorecard API
 
     Attributes:
-        username (str): SecurityScorecard username/email.
-        api_key (str): SecurityScorecard API token.
-        max_fetch (int): Maximum alerts to fetch.
+        ``username`` (``str``): SecurityScorecard username/email.
+        ``api_key`` (``str``): SecurityScorecard API token.
+        ``max_fetch`` (``int``): Maximum alerts to fetch.
     """
 
     def __init__(self, base_url, verify, proxy, headers, username, api_key, max_fetch):
@@ -273,7 +273,7 @@ def get_last_run(last_run: str, first_fetch: str):
         ``first_fetch`` (``str``): The first fetch configuration from ``demisto.params().get("first_fetch"")``
 
     Returns:
-        int, Last run timestamp.
+        ``int``, Last run timestamp.
     """
 
     # Check for existence of last run
@@ -376,10 +376,10 @@ def test_module(client: SecurityScorecardClient) -> str:
     Runs the fetch-alerts mechanism to validate all integration parameters
 
     Args:
-        client (SecurityScorecardClient): SecurityScorecard client
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
 
     Returns:
-        str: 'ok' if test passed, anything else will fail the test.
+        ``str``: 'ok' if test passed, anything else will fail the test.
     """
     demisto.debug("Initialized test module...")
 
@@ -403,11 +403,11 @@ def portfolios_list_command(client: SecurityScorecardClient, limit: Optional[str
     See https://securityscorecard.readme.io/reference#get_portfolios
 
     Args:
-        client (SecurityScorecardClient): SecurityScorecard client
-        limit (Optional[str]): Limit the number of portfolios
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+        ``limit`` (``Optional[str]``): Limit the number of portfolios
 
     Returns:
-        CommandResults: The results of the command.
+        ``CommandResults``: The results of the command.
     """
 
     limit = arg_to_number(  # type: ignore
@@ -542,7 +542,7 @@ def company_score_get_command(client: SecurityScorecardClient, domain: str) -> C
         ``domain`` (``str``): The domain to get the score for
 
     Returns:
-        CommandResults: The results of the command.
+        ``CommandResults``: The results of the command.
     """
 
     score = client.get_company_score(domain=domain)  # type: ignore
@@ -579,7 +579,7 @@ def company_factor_score_get_command(
         ``severity`` (``Optional[List[str]])``): A severity filter
 
     Returns:
-        CommandResults: The results of the command.
+        ``CommandResults``: The results of the command.
     """
 
     response = client.get_company_factor_score(domain=domain, severity_in=severity)  # type: ignore

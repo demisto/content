@@ -433,7 +433,7 @@ def test_get_company_historical_scores(mocker, domain, _from, to, timing):
     Then:
         - Case A: Score received for 1 year ago on weekly bases
         - Case B: Score received for 2021-07-01 to 2021-07-31 on daily basis
-        - Case C
+        - Case B: Score received for 2021-07-01 to 2021-07-31 on weekly
     """
 
     mocker.patch.object(client, "get_company_historical_scores", return_value=historical_score_mock)
