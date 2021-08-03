@@ -181,7 +181,7 @@ function enhancement_release_notes {
 
   local pack_name=$1
   local pack_path="${CONTENT_PATH}/Packs/${pack_name}"
-  demisto-sdk update-release-notes -i "${pack_path}" --force --text "Adding release notes to check the upload flow" # Waiting for sdk fix
+  demisto-sdk update-release-notes -i "${pack_path}" --force --text "Adding release notes to check the upload flow"
 
   git commit -am  "Added release note $pack_name"
 
