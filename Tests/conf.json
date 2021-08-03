@@ -1040,7 +1040,7 @@
         },
         {
             "playbookID": "Test_export_indicators_service",
-            "instance_namess": "eis_on_demand",
+            "instance_names": "eis_on_demand",
             "integrations": "ExportIndicators",
             "fromversion": "5.5.0"
         },
