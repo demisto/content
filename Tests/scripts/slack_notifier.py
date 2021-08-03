@@ -221,7 +221,7 @@ def get_coverage_attachment(build_number: str) -> Optional[Dict]:
         logging.error(
             f'Unexpected value for line coverage rage: {coverage_percent_str}. Expected float from line coverage rate.')
         return None
-    coverage_url: str = f'https: //{build_number}-{CONTENT_REPO_ID_CIRCLE_CI}-gh.circle-artifacts.com/0/artifacts' \
+    coverage_url: str = f'https://{build_number}-{CONTENT_REPO_ID_CIRCLE_CI}-gh.circle-artifacts.com/0/artifacts' \
                         '/coverage_report/html/index.html'
     return {
         'fallback': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
