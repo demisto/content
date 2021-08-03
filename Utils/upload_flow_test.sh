@@ -102,7 +102,7 @@ function add_dependency {
 
   pack_path="${CONTENT_PATH}/Packs/${source_pack}/pack_metadata.json"
 
-  sed -i "" "s/\"dependencies\": {/\"dependencies\": {\n\t\"${pack_name}\": {\n\t\t\"mandatory\": true,\n\t\t\"display_name\": \"${pack_name}\"\n\t},/g" "${pack_path}" || fail
+  sed -i "" "s/\"dependencies\": {/\"dependencies\": {\n\t\t\"${pack_name}\": {\n\t\t\t\"mandatory\": true,\n\t\t\t\"display_name\": \"${pack_name}\"\n\t\t},/g" "${pack_path}" || fail
   git commit -am  "Added dependency for - $pack_name to $source_pack pack"
 
 }
@@ -251,7 +251,7 @@ function set_pack_hidden {
     sed -i "" "s/\"hidden\": false/\"hidden\": true/g" "${pack_metadata}"
   else
     # pack hidden key is missing
-    sed -i "" "s/{/{\n\"hidden\": true,\n/g" "${pack_metadata}"
+    sed -i "" "s/{/{\n\t\"hidden\": true,\n/g" "${pack_metadata}"
   fi
 
   git commit -am "Set pack - $current_latest_note to be hidden"
