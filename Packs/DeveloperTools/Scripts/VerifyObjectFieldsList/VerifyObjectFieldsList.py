@@ -11,10 +11,10 @@ def check_components(components: list, context: Any):
         components(list): list of components related to one field to search
         context: context to check the fields in
     """
-    for component in components:
+    for idx, component in enumerate(components):
         if isinstance(context, list) and context:
             for x in context:
-                check_components(components[components.index(component):], x)
+                check_components(components[idx:], x)
                 return
         else:
             context = context[component]
