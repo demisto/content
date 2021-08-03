@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: GitHub
+  id: GitHub Reuven
   version: -1
 configuration:
 - display: Fetch incidents
@@ -59,8 +59,8 @@ configuration:
   required: false
   type: 0
 description: Integration to GitHub API
-display: GitHub
-name: GitHub
+display: GitHub Reuven
+name: GitHub Reuven
 script:
   commands:
   - arguments:
