@@ -60,25 +60,29 @@ def test_handle_inputs(case_inputs, expected_hash, expected_list, expected_outpu
     assert output_key == expected_output
 
 
-ONE_HASH_TO_COMPARE = {'anchor_hash': '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C',
-                       'hashes_to_compare': ['3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C'], 'output_key': 'test'}
-TWO_TO_COMPARE_INCLUDE_ITSELF = {'anchor_hash': '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C',
-                                 'hashes_to_compare': ['3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C',
-                                                       '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C'], 'output_key': 'test'}
+HASHES_TO_COMPARE_INCLUDE_ITSELF = {'anchor_hash': '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C',
+                                    'hashes_to_compare': ['3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C',  # same as anchor
+                                                          '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C',  # changed hash
+                                                          '12#$4!2',  # invalid char in hash with valid format
+                                                          'A12#$4!2'],  # invalid hash, will be ignored.
+                                    'output_key': 'test'}
 INPUT_CASES = [
-    (TWO_TO_COMPARE_INCLUDE_ITSELF, (
+    (HASHES_TO_COMPARE_INCLUDE_ITSELF, (
         'ssdeep,1.1--blocksize:hash:hash,filename\n'
         '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C,"3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C"\n',
         'ssdeep,1.1--blocksize:hash:hash,filename\n'
         '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C,"3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C"\n'
-        '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C,"3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C"\n'),
+        '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C,"3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C"\n'
+        '12#$4!2,"12#$4!2"\nA12#$4!2,"A12#$4!2"\n'),
      {'SourceHash': '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C', 'compared_hashes': [
          {'hash': '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C', 'similarityValue': 100},
-         {'hash': '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C', 'similarityValue': 22}]}
+         {'hash': '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C', 'similarityValue': 22},
+         {'hash': '12#$4!2', 'similarityValue': 0}]}
      ),
 ]
 SSDEEP_RESULT_EXAMPLE = ['"3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C","3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C",100',
-                         '"3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C","3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C",22']
+                         '"3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C","3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C",22',
+                         '"12#$4!2","3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C",0']
 
 
 @pytest.mark.parametrize('case_inputs, called_with, expected_output', INPUT_CASES)
@@ -113,26 +117,82 @@ def test_format_results():
     assert res == [{'hash': '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C',
                     'similarityValue': 100},
                    {'hash': '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C',
-                    'similarityValue': 22}]
+                    'similarityValue': 22},
+                   {'hash': '12#$4!2',
+                    'similarityValue': 0}]
 
 
 FILE1 = 'ssdeep,1.1--blocksize:hash:hash,filename\n' \
         '3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C,"3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C"\n'
 FILE2 = 'ssdeep,1.1--blocksize:hash:hash,filename\n' \
-        '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C,"3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C"\n'
+        '3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C,"3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C"\n' \
+        '12#$4!2,"12#$4!2"\nA12#$4!2,"A12#$4!2"\n'
 
 
 def test_linux_command():
     """
     NOTE: CANNOT RUN LOCALLY WHEN NOT LINUX!
     Given:
-        2 file's content containing ssdeep hashes
+        2 file's content containing ssdeep hashes, the second one have valid hash,
+        invalid hash with valid format and invalid hash with invalid format.
     When:
         Running ssdeep linux's command
     Then:
-        Validating the command returns the expected result
+        Validating the command returns the expected result-
+        the first hash with relevant score and the second hash with 0 score (ignoring the third hash)
     """
 
     from SSDeepSimilarity import run_ssdeep_command
     res = run_ssdeep_command(FILE1, FILE2)
-    assert res == ['"3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C","3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C",22', '']
+    assert res == ['"3:AXGBicFlIHBGcL6wCrFQEv:AXGH6xLsr2C","3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C",22',
+                   '"12#$4!2","3:AXGBicFlgVNhBGcL6wCrFQEv:AXGHsNhxLsr2C",0',
+                   '']
+
+
+CASE_FIRST_RUN = ('1test',
+                  'output',
+                  [{'hash': '2test', 'similarityValue': 2}],
+                  {},
+                  [{'hash': '2test', 'similarityValue': 2}])
+CASE_ONE_EXIST = ('1test', 'output',
+                  [{'hash': '2test', 'similarityValue': 2}],
+                  {'SourceHash': '1test', 'compared_hashes':
+                      [{'hash': '3test', 'similarityValue': 2}]},
+                  [{'hash': '3test', 'similarityValue': 2}, {'hash': '2test', 'similarityValue': 2}])
+
+CASE_ONE_RELEVANT_AND_ONE_NOT = ('1test', 'output', [{'hash': '2test', 'similarityValue': 2}],
+                                 [{'SourceHash': '1test', 'compared_hashes': [{'hash': '3test', 'similarityValue': 2}]},
+                                  {'SourceHash': '4test',
+                                   'compared_hashes': [{'hash': '6test', 'similarityValue': 2}]}],
+                                 [{'hash': '3test', 'similarityValue': 2}, {'hash': '2test', 'similarityValue': 2}]
+                                 )
+
+CASE_NO_NEW_ITEMS = ('1test', 'output', [{'hash': '3test', 'similarityValue': 2}],
+                     [{'SourceHash': '1test', 'compared_hashes': [{'hash': '3test', 'similarityValue': 2}]},
+                      {'SourceHash': '4test', 'compared_hashes': [{'hash': '6test', 'similarityValue': 2}]}],
+                     [{'hash': '3test', 'similarityValue': 2}]
+                     )
+
+OUTPUTS_CASES = [
+    CASE_FIRST_RUN,
+    CASE_ONE_EXIST,
+    CASE_ONE_RELEVANT_AND_ONE_NOT,
+    CASE_NO_NEW_ITEMS
+]
+
+
+@pytest.mark.parametrize('anchor, output_key, new_compared_hash, existing_context, expected_new_outputs', OUTPUTS_CASES)
+def test_handle_existing_outputs(mocker, anchor, output_key, new_compared_hash, existing_context, expected_new_outputs):
+    """
+    Given:
+        anchor, output_key, new_compared_hash and existing_context
+    When:
+        Running the script more then once
+    Then:
+        Validating the context gets the updated data without deleting the previous one or creating duplicates
+
+    """
+    from SSDeepSimilarity import _handle_existing_outputs
+    mocker.patch.object(demisto, 'get', return_value=existing_context)
+    res = _handle_existing_outputs(anchor, output_key, new_compared_hash)
+    assert res == expected_new_outputs
