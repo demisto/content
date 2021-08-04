@@ -772,7 +772,7 @@ class MsClient:
         resp.pop('@odata.context')
         return assign_params(values_to_ignore=[None], **resp)
 
-    def update_indicator_security_center_api(self, indicator_value: str,
+    def update_indicator_security_center_api(self, indicator_value: Optional[str],
                                              expiration_date_time: Optional[str],
                                              description: Optional[str], severity: Optional[int],
                                              indicator_type: Optional[str],
@@ -812,7 +812,6 @@ class MsClient:
             recommendedActions=recommended_actions,
             rbacGroupNames=rbac_group_names
         ))
-        print(body)
         resp = self.indicators_http_request(True, 'POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT, json_data=body,
                                             url_suffix=None, headers=header)
         return assign_params(values_to_ignore=[None], **resp)
@@ -2606,8 +2605,6 @@ def main():
             return_outputs(*sc_update_indicator_command(client, args))
         elif command == 'microsoft-atp-sc-indicator-delete':
             return_outputs(sc_delete_indicator_command(client, args))
-
-
     except Exception as err:
         return_error(str(err))
 
