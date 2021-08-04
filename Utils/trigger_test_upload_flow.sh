@@ -465,7 +465,7 @@ done
 cd "${CONTENT_PATH}" || fail
 check_arguments
 
-new_content_branch="${sdk_branch_name}_${content_branch_name}_uploadFlow_test"
+new_content_branch="${sdk_branch_name}_${content_branch_name}_UploadFlow_test"
 new_pack_name="${base_pack_name}New"
 
 git checkout "$content_branch_name" || fail
