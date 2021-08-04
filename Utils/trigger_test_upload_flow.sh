@@ -61,7 +61,7 @@ function create_new_pack {
 
   if [ "$pack_name" == "HelloWorld" ]; then
     rename_files_and_folders "Hello_World" "Hello_World_New"
-
+    rename_files_and_folders "helloworld" "helloworldnew"
     rename_files_and_folders "Sanity_Test" "Sanity_Test_New"
   fi
 
