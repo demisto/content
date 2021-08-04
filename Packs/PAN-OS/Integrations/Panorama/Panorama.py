@@ -713,8 +713,8 @@ def panorama_push_status_command(job_id: str):
         for device in devices:
             device_warnings = safeget(device, ["details", "msg", "warnings", "line"])
             status_warnings.extend([] if not device_warnings else device_warnings)
-            status_errors = safeget(device, ["details", "msg", "errors", "line"])
-            status_errors.extend([] if not status_errors else status_errors)
+            device_errors = safeget(device, ["details", "msg", "errors", "line"])
+            status_errors.extend([] if not device_errors else device_errors)
     push_status_output["Warnings"] = status_warnings
     push_status_output["Errors"] = status_errors
 
