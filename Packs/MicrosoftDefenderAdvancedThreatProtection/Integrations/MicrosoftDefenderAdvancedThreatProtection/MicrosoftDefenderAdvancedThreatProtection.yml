@@ -2283,7 +2283,7 @@ script:
       name: page_size
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Lists all indicators by the ID that the system creates when the indicator
       is ingested.
     execution: false
@@ -2518,7 +2518,7 @@ script:
       name: indicator_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Gets an indicator by its ID.
     execution: false
     name: microsoft-atp-indicator-get-by-id
@@ -2915,7 +2915,7 @@ script:
       name: file_type
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Creates a file indicator.
     execution: false
     name: microsoft-atp-indicator-create-file
@@ -3343,7 +3343,7 @@ script:
       name: user_agent
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Creates a file indicator.
     execution: false
     name: microsoft-atp-indicator-create-network
@@ -3585,7 +3585,7 @@ script:
       name: description
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Updates the spcified indicator.
     execution: false
     name: microsoft-atp-indicator-update
@@ -3819,7 +3819,7 @@ script:
       name: indicator_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Deletes the specified indicator.
     execution: false
     name: microsoft-atp-indicator-delete
