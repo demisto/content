@@ -26,7 +26,6 @@ class Client(BaseClient):
         result = []
 
         res = self._http_request('GET',
-                                 url_suffix='',
                                  full_url=self._base_url,
                                  resp_type='text',
                                  )
@@ -55,7 +54,6 @@ class Client(BaseClient):
     def get_hashes(self, params: Dict[str, str], limit: int) -> List:
         res = self._http_request(
             'GET',
-            url_suffix='',
             full_url="http://api.cybercure.ai/feed/get_hash",
             resp_type='text',
         )
@@ -73,8 +71,7 @@ class Client(BaseClient):
         return result
 
     def get_urls(self, limit: int) -> List:
-        res = self._http_request('GET',
-                                 url_suffix='',
+        res = self._http_request('GET',                                 
                                  full_url="http://api.cybercure.ai/feed/get_url",
                                  resp_type='text',
                                  )
