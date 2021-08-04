@@ -720,7 +720,7 @@ def test_eml_format_multipart_mix(mocker):
     assert "Warsaw, Poland <o:p></o:p>" in results[0]['EntryContext']['Email']['HTML']
 
 
-def test_eml_format_multipart_mix(mocker):
+def test_eml_format_multipart_related(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand',
                         side_effect=exec_command_for_file('multipart_related_format.p7m',
