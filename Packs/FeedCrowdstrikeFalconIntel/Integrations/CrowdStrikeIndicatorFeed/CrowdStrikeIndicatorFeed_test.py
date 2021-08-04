@@ -19,6 +19,7 @@ def test_crowdstrike_indicators_list_command(requests_mock):
         Then
             - convert the result to indicators list
             - validate the length of the indicators list
+            - validate the Feed tags is as expected
         """
 
     from CrowdStrikeIndicatorFeed import Client, crowdstrike_indicators_list_command
