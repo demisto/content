@@ -357,7 +357,7 @@ function trigger_circle_ci {
   }
   EOF
   )
-
+  echo "post-data \n ${post_data}"
   curl \
   --header "Accept: application/json" \
   --header "Content-Type: application/json" \
