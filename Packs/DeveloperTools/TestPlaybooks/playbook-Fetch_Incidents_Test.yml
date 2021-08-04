@@ -138,7 +138,7 @@ tasks:
     task:
       id: e0ea2027-5364-4b49-86f5-6aed5c35a5b7
       version: -1
-      name: Check If Fields Exists
+      name: Check If Fields Exist
       description: Receive fields and context. Verifies that these field exists in
         context.
       scriptName: VerifyContextFieldsList
@@ -175,7 +175,7 @@ tasks:
     task:
       id: 2509bb5a-c256-4d7e-8845-19baa61833b1
       version: -1
-      name: Return Value
+      name: Do all the indicator fields exist?
       type: condition
       iscommand: false
       brand: ""
