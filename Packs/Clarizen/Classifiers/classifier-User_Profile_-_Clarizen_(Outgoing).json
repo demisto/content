@@ -60,7 +60,7 @@
 				},
 				"MobilePhone": {
 					"complex": null,
-					"simple": "workphone",
+					"simple": "workphone"
 				},
 				"zip": {
 					"complex": null,
@@ -125,7 +125,7 @@
 				},
 				"MobilePhone": {
 					"complex": null,
-					"simple": "workphone",
+					"simple": "workphone"
 				},
 				"zip": {
 					"complex": null,
