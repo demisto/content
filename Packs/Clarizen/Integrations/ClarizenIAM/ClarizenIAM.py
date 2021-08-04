@@ -68,7 +68,7 @@ class Client(BaseClient):
             json_data=date
         )
 
-        if res and res.status_code == 200:
+        if res:
             res_json = res.json()
             entities = res_json.get('entities')
 
@@ -76,7 +76,7 @@ class Client(BaseClient):
                 user_id = entities[0].get('id')
                 user_res = self.get_user_by_id(user_id)
 
-                if user_res and user_res.status_code == 200:
+                if user_res:
                     user_app_data = user_res.json()
 
                     if user_app_data:
@@ -105,12 +105,12 @@ class Client(BaseClient):
             json_data=user_data
         )
 
-        if res and res.status_code == 200:
+        if res:
             res_json = res.json()
             user_id = res_json.get('id')
             user_res = self.get_user_by_id(user_id)
 
-            if user_res and user_res.status_code == 200:
+            if user_res:
                 user_app_data = user_res.json()
 
                 if user_app_data:
@@ -140,10 +140,10 @@ class Client(BaseClient):
             json_data=user_data
         )
 
-        if res and res.status_code == 200:
+        if res:
             user_res = self.get_user_by_id(f'/User/{user_id}')
 
-            if user_res and user_res.status_code == 200:
+            if user_res:
                 user_app_data = user_res.json()
 
                 if user_app_data:
@@ -177,10 +177,10 @@ class Client(BaseClient):
             json_data=user_data
         )
 
-        if res and res.status_code == 200:
+        if res:
             user_res = self.get_user_by_id(f'/User/{user_id}')
 
-            if user_res and user_res.status_code == 200:
+            if user_res:
                 user_app_data = user_res.json()
 
                 if user_app_data:
@@ -214,10 +214,10 @@ class Client(BaseClient):
             json_data=user_data
         )
 
-        if res and res.status_code == 200:
+        if res:
             user_res = self.get_user_by_id(f'/User/{user_id}')
 
-            if user_res and user_res.status_code == 200:
+            if user_res:
                 user_app_data = user_res.json()
 
                 if user_app_data:
@@ -245,7 +245,7 @@ class Client(BaseClient):
         )
 
         fields = res.get('entityDescriptions', {}).get('fields')
-        return {field.get('name'): field.get('description') for field in fields}
+        return {field.get('name'): field.get('label') for field in fields}
 
     @staticmethod
     def handle_exception(user_profile: IAMUserProfile,
