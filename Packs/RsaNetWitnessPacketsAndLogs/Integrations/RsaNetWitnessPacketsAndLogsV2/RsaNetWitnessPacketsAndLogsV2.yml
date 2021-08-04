@@ -1,0 +1,187 @@
+commonfields:
+  id: RSA NetWitness Packets and Logs v2
+  version: -1
+name: RSA NetWitness Packets and Logs v2
+display: RSA NetWitness Packets and Logs v2
+category: Analytics & SIEM
+configuration:
+  - name: hostname
+    display: Hostname or IP Address on which Core Service is running
+    required: true
+    defaultvalue: 10.31.244.244
+    type: 0
+    additionalinfo: null
+  - name: port
+    display: The Core Service port on which REST API is exposed
+    required: false
+    defaultvalue: "50105"
+    type: 0
+    additionalinfo: null
+  - name: ssl
+    display: Enable to use SSL for communication to Core REST API Server
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: secure
+    display: Enable to validate the Certificate used by Core REST API Server
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: credentials
+    display: Credentials to be used for Core Server API
+    required: false
+    defaultvalue: null
+    type: 9
+    additionalinfo: null
+    displaypassword: ""
+    hiddenusername: false
+script:
+  script: ""
+  type: python
+  commands:
+    - name: nw-events-search
+      arguments:
+        - name: size
+          description: Number of Meta to be read from Netwitness
+        - name: time
+          required: true
+          description: Netwitness Time Range String
+        - name: q
+          description: Netwitness Where Clause to be used as Filter
+        - name: ip
+          description: Use this in case you want to look up an IP Address in Netwitness.
+            The Mapping from IP to list of Meta is defined in the Integration
+            Client
+        - name: user
+          description: Use this in case you want to look up a Username in Netwitness. The
+            Mapping from Username to list of Meta is defined in the Integration
+            Client
+        - name: domain
+          description: Use this in case you want to look up a Domain in Netwitness. The
+            Mapping from Domain to list of Meta is defined in the Integration
+            Client
+        - name: host
+          description: Use this in case you want to look up an Hostname  in Netwitness.
+            The Mapping from Hostname  to list of Meta is defined in the
+            Integration Client
+        - name: text
+          description: Use this parameter if you want to search for Netwitness Events
+            which contain this Text in one of the Meta
+        - name: op
+          auto: PREDEFINED
+          predefined:
+            - EQUALS
+            - NOT_EQUALS
+            - CONTAINS
+            - BEGINS
+            - ENDS
+            - GTE
+            - LTE
+            - REGEX
+          description: When searching for IP, Hostname, Domain or User this Operation will
+            define the Logical Operator to be used with the Query Conditions.
+            See examples to understand better
+        - name: must
+          auto: PREDEFINED
+          predefined:
+            - "True"
+            - "False"
+          description: When searching for IP, Hostname, Domain or User this Operation will
+            define the Logical Operator to be used with the Query Conditions.
+            See examples to understand better
+          defaultValue: "False"
+        - name: params
+          description: Override Request Parameters to be used while Sending Query to
+            Netwitness. For example you can pass Flags and Id Parameters in case
+            of Scheduled Jobs!
+      outputs:
+        - contextPath: NetwitnessSessions
+          description: The JSON Map containing Session Ids to Meta Maps
+          type: unknown
+    - name: nw-events-info
+      arguments: []
+      outputs: []
+    - name: nw-events-values
+      arguments:
+        - name: time
+          required: true
+          description: Netwitness Time Range String
+        - name: q
+          description: Netwitness Where Clause to be used as Filter
+        - name: size
+          description: Number of Meta to be read from Netwitness
+        - name: find
+          required: true
+          description: The Comma Separated values for Meta to be listed
+        - name: ip
+          description: Use this in case you want to look up an IP Address in Netwitness.
+        - name: domain
+          description: Use this in case you want to look up a Domain in Netwitness.
+            The         Mapping from Domain to list of Meta is defined in the
+            Integration Client
+        - name: user
+          description: Use this in case you want to look up a Username in
+            Netwitness.         The Mapping from Username to list of Meta is
+            defined in the Integration Client
+        - name: host
+          description: Use this in case you want to look up an Hostname  in
+            Netwitness.         The Mapping from Hostname  to list of Meta is
+            defined in the Integration Client
+        - name: params
+          description: Override Request Parameters to be used while Sending Query to
+            Netwitness.         For example you can pass Flags and Id Parameters
+            in case of Scheduled Jobs!
+        - name: op
+          auto: PREDEFINED
+          predefined:
+            - EQUALS
+            - NOT_EQUALS
+            - CONTAINS
+            - BEGINS
+            - ENDS
+            - GTE
+            - LTE
+            - REGEX
+          description: When searching for IP, Hostname, Domain or User this Operation will
+            define the Logical Operator to be used with the Query Conditions.
+            See examples to understand better
+      outputs: []
+    - name: nw-events-details
+      arguments:
+        - name: sessionIds
+          required: true
+          description: Comma Separated Values for Netwitness Events/Session Ids that are
+            needed to be fetched from Core Service
+        - name: renderType
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - DETAILS
+            - TEXT
+            - HEX
+            - RAW
+            - XML
+            - TXT
+            - NWD
+            - FILE
+          description: The way we want to render the Session Ids
+          defaultValue: DETAILS
+        - name: exportType
+          auto: PREDEFINED
+          predefined:
+            - ZIP
+          description: Possible values are WARROOM, BASE64,ZIP
+        - name: params
+          description: Override Request Parameters to be used while Sending Query to
+            Netwitness.         For example you can pass Flags and Id Parameters
+            in case of Scheduled Jobs!
+      outputs: []
+  runonce: false
+  feed: false
+  isfetch: false
+description: RSA NetWitness Logs and Packets decoders are responsible for the
+  real-time collection of network data. The decode captures data in real time
+  and can normalize and reconstruct data for full session analysis. In addition,
+  the decoder can collect flow and endpoint data.
