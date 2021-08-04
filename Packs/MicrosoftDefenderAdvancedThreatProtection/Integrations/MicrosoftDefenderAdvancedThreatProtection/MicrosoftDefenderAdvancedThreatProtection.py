@@ -2399,7 +2399,6 @@ def sc_update_indicator_command(client: MsClient, args: dict) -> Tuple[str, Dict
         recommended_actions=recommended_actions, rbac_group_names=rbac_group_names
     )
     indicator = raw_response.copy()
-    indicator['severity'] = indicator['severity']
     human_readable = tableToMarkdown(
         f'Indicator ID: {indicator_value} was updated successfully.',
         indicator,
@@ -2428,7 +2427,6 @@ def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[
     if raw_response:
         indicators = list()
         for item in raw_response:
-            item['severity'] = item['severity']
             indicators.append(item)
 
         human_readable = tableToMarkdown(
