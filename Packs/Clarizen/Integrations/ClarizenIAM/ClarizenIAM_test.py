@@ -1,5 +1,5 @@
 from requests import Response, Session
-from HelloIAMWorld import Client, get_mapping_fields
+from ClarizenIAM import Client, get_mapping_fields
 from IAMApiModule import *
 
 APP_USER_OUTPUT = {
@@ -26,7 +26,7 @@ DISABLED_USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=F
 
 
 def mock_client():
-    client = Client(base_url='https://test.com')
+    client = Client(base_url='https://test.com', auth=("testdemisto", "123456"))
     return client
 
 
@@ -108,7 +108,7 @@ def test_get_user_command__bad_response(mocker):
 
     bad_response = Response()
     bad_response.status_code = 500
-    bad_response._content = b'{"error": {"detail": "details", "message": "message"}}'
+    bad_response._content = b'{"detail": "details", "message": "message"}'
 
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(Session, 'request', return_value=bad_response)
@@ -119,7 +119,7 @@ def test_get_user_command__bad_response(mocker):
     assert outputs.get('action') == IAMActions.GET_USER
     assert outputs.get('success') is False
     assert outputs.get('errorCode') == 500
-    assert outputs.get('errorMessage') == 'message: details'
+    assert outputs.get('errorMessage') == "message: {'detail': 'details', 'message': 'message'}"
 
 
 def test_create_user_command__success(mocker):
@@ -258,8 +258,10 @@ def test_update_user_command__allow_enable(mocker):
             'allow-enable': 'true'}
 
     mocker.patch.object(client, 'get_user', return_value=DISABLED_USER_APP_DATA)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
+    mocker.patch.object(client, 'get_user_by_id', return_value=DISABLED_USER_APP_DATA)
     mocker.patch.object(client, 'update_user', return_value=USER_APP_DATA)
+    mocker.patch.object(client, 'enable_user', return_value=USER_APP_DATA)
+    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
 
     user_profile = IAMCommand().update_user(client, args)
     outputs = get_outputs_from_user_profile(user_profile)
