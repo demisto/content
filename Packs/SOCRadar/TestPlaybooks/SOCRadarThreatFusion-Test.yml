@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '4fceede8-b86c-44a6-a4bd-8a739903f435'
+    taskid: 'efe42383-7c5f-456c-a039-c8e42cf279db'
     type: start
     task:
-      id: '4fceede8-b86c-44a6-a4bd-8a739903f435'
+      id: 'efe42383-7c5f-456c-a039-c8e42cf279db'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1dd2f2a9-6885-49a8-a508-0bed0f5d138d'
+    taskid: 'e9f9ad6c-3fc7-455a-a208-f795eb11a5d3'
     type: regular
     task:
-      id: '1dd2f2a9-6885-49a8-a508-0bed0f5d138d'
+      id: 'e9f9ad6c-3fc7-455a-a208-f795eb11a5d3'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: 'ffb2d448-e48a-4c13-a406-ea80b3fbfed0'
+    taskid: '623d57e8-24ba-4b0b-978e-1784412db335'
     type: regular
     task:
-      id: 'ffb2d448-e48a-4c13-a406-ea80b3fbfed0'
+      id: '623d57e8-24ba-4b0b-978e-1784412db335'
       version: -1
       name: ip
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: 'dddd6f1a-d671-4c56-8ebd-1dbadc6b0ae7'
+    taskid: '8f3d5b40-be82-426d-a556-c7defb610e71'
     type: condition
     task:
-      id: 'dddd6f1a-d671-4c56-8ebd-1dbadc6b0ae7'
+      id: '8f3d5b40-be82-426d-a556-c7defb610e71'
       version: -1
       name: Verify Outputs
       type: condition
@@ -310,6 +310,26 @@ tasks:
             value:
               simple: DBotScore.Vendor
             iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.ASN
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Geo.Location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Geo.Country
+            iscontext: true
     view: '{"position": {"x": 50, "y": 600}}'
     note: false
     timertriggers: []
@@ -317,10 +337,10 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: '2a38404a-88e5-45f7-a157-e89664e64c3f'
+    taskid: 'e2bedcf4-5bc2-4dba-bd5c-f92bcb35a2b2'
     type: regular
     task:
-      id: '2a38404a-88e5-45f7-a157-e89664e64c3f'
+      id: 'e2bedcf4-5bc2-4dba-bd5c-f92bcb35a2b2'
       version: -1
       name: domain
       description: ''
@@ -340,10 +360,10 @@ tasks:
     skipunavailable: false
   '5':
     id: '5'
-    taskid: 'f03e1a55-af13-44ca-9da0-c2c3e0f69133'
+    taskid: '3405e8f9-3000-4134-8116-517d8bdd9129'
     type: condition
     task:
-      id: 'f03e1a55-af13-44ca-9da0-c2c3e0f69133'
+      id: '3405e8f9-3000-4134-8116-517d8bdd9129'
       version: -1
       name: Verify Outputs
       type: condition
@@ -492,6 +512,91 @@ tasks:
             value:
               simple: DBotScore.Vendor
             iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.DNS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.CreationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.UpdatedDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.ExpirationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.NameServers
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Organization
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Registrant.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.CreationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.UpdatedDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.ExpirationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.NameServers
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.Registrant.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.WHOIS.Registrar.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Geo.Country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Subdomains
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Registrant.Country
+            iscontext: true
     view: '{"position": {"x": 50, "y": 1000}}'
     note: false
     timertriggers: []
@@ -499,10 +604,10 @@ tasks:
     skipunavailable: false
   '6':
     id: 6
-    taskid: '36fb8d2f-ba61-45a1-a2c9-3db086db8010'
+    taskid: 'c0c1eb46-7277-4ca5-ab7c-21d5ce2decd9'
     type: regular
     task:
-      id: '36fb8d2f-ba61-45a1-a2c9-3db086db8010'
+      id: 'c0c1eb46-7277-4ca5-ab7c-21d5ce2decd9'
       version: -1
       name: file
       description: ''
@@ -522,10 +627,10 @@ tasks:
     skipunavailable: false
   '7':
     id: '7'
-    taskid: 'b0a626fb-6060-4d4d-8c42-9d3a1952ebf8'
+    taskid: '76e7f7c9-a098-4397-9097-a90ce65a5e1f'
     type: condition
     task:
-      id: 'b0a626fb-6060-4d4d-8c42-9d3a1952ebf8'
+      id: '76e7f7c9-a098-4397-9097-a90ce65a5e1f'
       version: -1
       name: Verify Outputs
       type: condition
@@ -579,6 +684,16 @@ tasks:
             value:
               simple: DBotScore.Vendor
             iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
     view: '{"position": {"x": 50, "y": 1400}}'
     note: false
     timertriggers: []
@@ -586,10 +701,10 @@ tasks:
     skipunavailable: false
   '8':
     id: 8
-    taskid: 'a24ad411-01df-4434-b44a-437599aec82a'
+    taskid: 'aa21a98e-a378-4807-b092-14590de28832'
     type: regular
     task:
-      id: 'a24ad411-01df-4434-b44a-437599aec82a'
+      id: 'aa21a98e-a378-4807-b092-14590de28832'
       version: -1
       name: socradar-score-ip
       description: ''
@@ -609,10 +724,10 @@ tasks:
     skipunavailable: false
   '9':
     id: '9'
-    taskid: 'b699b478-1352-4a11-8f55-80daac1dad2d'
+    taskid: 'fdbcc8d3-8699-45fa-a1e3-765c2eebbc3a'
     type: condition
     task:
-      id: 'b699b478-1352-4a11-8f55-80daac1dad2d'
+      id: 'fdbcc8d3-8699-45fa-a1e3-765c2eebbc3a'
       version: -1
       name: Verify Outputs
       type: condition
@@ -853,10 +968,10 @@ tasks:
     skipunavailable: false
   '10':
     id: 10
-    taskid: '2438f31b-3c09-4eeb-8dff-239b5d801946'
+    taskid: 'da07f71a-d125-47c1-b6d3-1d5cb31da530'
     type: regular
     task:
-      id: '2438f31b-3c09-4eeb-8dff-239b5d801946'
+      id: 'da07f71a-d125-47c1-b6d3-1d5cb31da530'
       version: -1
       name: socradar-score-domain
       description: ''
@@ -876,10 +991,10 @@ tasks:
     skipunavailable: false
   '11':
     id: '11'
-    taskid: '4a0b405a-eec3-4505-b3eb-d076b4cf2034'
+    taskid: '392f0238-a920-4d4f-a916-7b0013bad251'
     type: condition
     task:
-      id: '4a0b405a-eec3-4505-b3eb-d076b4cf2034'
+      id: '392f0238-a920-4d4f-a916-7b0013bad251'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1035,10 +1150,10 @@ tasks:
     skipunavailable: false
   '12':
     id: 12
-    taskid: '242da8cc-4425-41bb-89e2-3746573f0009'
+    taskid: '36f9780c-0e76-481d-8160-4dd75fb16c80'
     type: regular
     task:
-      id: '242da8cc-4425-41bb-89e2-3746573f0009'
+      id: '36f9780c-0e76-481d-8160-4dd75fb16c80'
       version: -1
       name: socradar-score-hash
       description: ''
@@ -1058,10 +1173,10 @@ tasks:
     skipunavailable: false
   '13':
     id: '13'
-    taskid: 'e06d5edb-aaff-43a2-a880-5bf9f950f4bc'
+    taskid: 'ffe5f0c1-d90a-4189-931a-9b4868891f8f'
     type: condition
     task:
-      id: 'e06d5edb-aaff-43a2-a880-5bf9f950f4bc'
+      id: 'ffe5f0c1-d90a-4189-931a-9b4868891f8f'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1122,10 +1237,10 @@ tasks:
     skipunavailable: false
   '14':
     id: '14'
-    taskid: '40e68fcf-bc58-438c-8bff-000c833e1ab5'
+    taskid: '69500872-adaa-4705-b439-9bff9daa8bde'
     type: title
     task:
-      id: '40e68fcf-bc58-438c-8bff-000c833e1ab5'
+      id: '69500872-adaa-4705-b439-9bff9daa8bde'
       version: -1
       name: Test Done
       type: title

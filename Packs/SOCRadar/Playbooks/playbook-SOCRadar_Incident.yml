@@ -21,13 +21,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "21"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": -30
+          "x": -190,
+          "y": -100
         }
       }
     note: false
@@ -61,8 +61,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 130,
-          "y": 480
+          "x": 610,
+          "y": 700
         }
       }
     note: false
@@ -72,10 +72,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: ee62f7f1-898f-44b8-8ebe-b98ed74cc1ee
+    taskid: 6e5c34d7-82ec-41cb-8d14-af5d0f55ae93
     type: condition
     task:
-      id: ee62f7f1-898f-44b8-8ebe-b98ed74cc1ee
+      id: 6e5c34d7-82ec-41cb-8d14-af5d0f55ae93
       version: -1
       name: Should indicators be extracted and enriched?
       description: Checks whether the Enrich playbook input is set to True.
@@ -83,16 +83,37 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "No":
+      "no":
       - "5"
-      "Yes":
+      "yes":
       - "3"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoEnrich
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    - label: "no"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoEnrich
+            iscontext: true
+          right:
+            value:
+              simple: "No"
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 170
+          "x": 265,
+          "y": 380
         }
       }
     note: false
@@ -119,8 +140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 130,
-          "y": 340
+          "x": 610,
+          "y": 570
         }
       }
     note: false
@@ -148,8 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 130,
-          "y": 650
+          "x": 610,
+          "y": 870
         }
       }
     note: false
@@ -176,8 +197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 830
+          "x": 265,
+          "y": 1040
         }
       }
     note: false
@@ -222,8 +243,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 1010
+          "x": 265,
+          "y": 1185
         }
       }
     note: false
@@ -250,8 +271,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 1220
+          "x": 265,
+          "y": 1360
         }
       }
     note: false
@@ -311,8 +332,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 1420
+          "x": 265,
+          "y": 1535
         }
       }
     note: false
@@ -362,8 +383,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 1835
+          "x": 265,
+          "y": 1855
         }
       }
     note: false
@@ -398,8 +419,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 2670
+          "x": 265,
+          "y": 2525
         }
       }
     note: false
@@ -435,8 +456,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 2880
+          "x": 265,
+          "y": 2700
         }
       }
     note: false
@@ -460,8 +481,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 3080
+          "x": -10,
+          "y": 2920
         }
       }
     note: false
@@ -492,8 +513,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 2240
+          "x": 50,
+          "y": 2175
         }
       }
     note: false
@@ -524,8 +545,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1030,
-          "y": 2240
+          "x": 480,
+          "y": 2175
         }
       }
     note: false
@@ -552,8 +573,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 2055
+          "x": 50,
+          "y": 2030
         }
       }
     note: false
@@ -580,8 +601,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1030,
-          "y": 2055
+          "x": 480,
+          "y": 2030
         }
       }
     note: false
@@ -614,8 +635,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 2440
+          "x": 50,
+          "y": 2350
         }
       }
     note: false
@@ -648,8 +669,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1030,
-          "y": 2440
+          "x": 480,
+          "y": 2350
         }
       }
     note: false
@@ -676,8 +697,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 1605
+          "x": 265,
+          "y": 1680
         }
       }
     note: false
@@ -736,19 +757,66 @@ tasks:
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
+  "21":
+    id: "21"
+    taskid: 39269593-b4fb-4fbf-890f-c55098529d01
+    type: condition
+    task:
+      id: 39269593-b4fb-4fbf-890f-c55098529d01
+      version: -1
+      name: Is SOCRadar Incidents enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "13"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: SOCRadarIncidents
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 85
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "21_2_yes": 0.42,
+      "2_5_no": 0.35
+    },
     "paper": {
       "dimensions": {
-        "height": 3175,
-        "width": 1340,
-        "x": 70,
-        "y": -30
+        "height": 3085,
+        "width": 1180,
+        "x": -190,
+        "y": -100
       }
     }
   }
-inputs: []
+inputs:
+- key: AutoEnrich
+  value:
+    simple: "Yes"
+  required: false
+  description: 'Auto Enrich input to be used for extracting indicators out of the
+    incident content automatically at the beginning of the playbook. (Options: Yes/No)'
+  playbookInputQuery:
 outputs: []
 tests:
 - SOCRadarThreatFusion-Test
