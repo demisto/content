@@ -322,11 +322,6 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             title = f'SOCRadar - Analysis results for IP: {ip_to_score}'
 
             context_entry = build_entry_context(raw_response, 'ip')
-            dbot_entry = build_dbot_entry(ip_to_score, DBotScoreType.IP, 'SOCRadar ThreatFusion', score)
-            context = {
-                'SOCRadarThreatFusion.Reputation.IP(val.IP && val.IP === obj.IP)': context_entry
-            }
-            context.update(dbot_entry)
             human_readable = tableToMarkdown(title, context_entry)
 
             dbot_score = Common.DBotScore(indicator=ip_to_score,
@@ -347,7 +342,7 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
                 outputs_key_field="IP",
                 readable_output=human_readable,
                 raw_response=raw_response,
-                outputs=context,
+                outputs=context_entry,
                 indicator=ip_object
             ))
         else:
@@ -391,11 +386,6 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
             title = f'SOCRadar - Analysis results for domain: {domain_to_score}'
 
             context_entry = build_entry_context(raw_response, 'domain')
-            dbot_entry = build_dbot_entry(domain_to_score, DBotScoreType.DOMAIN, 'SOCRadar ThreatFusion', score)
-            context = {
-                'SOCRadarThreatFusion.Reputation.Domain(val.Domain && val.Domain === obj.Domain)': context_entry
-            }
-            context.update(dbot_entry)
             human_readable = tableToMarkdown(title, context_entry)
 
             dbot_score = Common.DBotScore(indicator=domain_to_score,
@@ -411,7 +401,7 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
                 outputs_key_field="Domain",
                 readable_output=human_readable,
                 raw_response=raw_response,
-                outputs=context,
+                outputs=context_entry,
                 indicator=domain_object
             ))
         else:
@@ -458,11 +448,6 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             title = f'SOCRadar - Analysis results for hash: {hash_to_score}'
 
             context_entry = build_entry_context(raw_response, 'hash')
-            dbot_entry = build_dbot_entry(hash_to_score, hash_type, 'SOCRadar ThreatFusion', score)
-            context = {
-                'SOCRadarThreatFusion.Reputation.Hash(val.File && val.File === obj.File)': context_entry
-            }
-            context.update(dbot_entry)
             human_readable = tableToMarkdown(title, context_entry)
 
             dbot_score = Common.DBotScore(indicator=hash_to_score,
@@ -482,7 +467,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
                 outputs_key_field="File",
                 readable_output=human_readable,
                 raw_response=raw_response,
-                outputs=context,
+                outputs=context_entry,
                 indicator=file_object
             ))
         else:
@@ -522,10 +507,7 @@ def score_ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         title = f'SOCRadar - Analysis results for IP: {ip_to_score}'
         context_entry = build_entry_context(raw_response, 'ip')
         dbot_entry = build_dbot_entry(ip_to_score, DBotScoreType.IP, 'SOCRadar ThreatFusion', score)
-        context = {
-            'SOCRadarThreatFusion.Reputation.IP(val.IP && val.IP === obj.IP)': context_entry
-        }
-        context.update(dbot_entry)
+        context_entry.update(dbot_entry)
         human_readable = tableToMarkdown(title, context_entry)
     else:
         message = f"Error while getting API response. SOCRadar API Response: {raw_response.get('message', '')}"
@@ -536,7 +518,7 @@ def score_ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field="IP",
         readable_output=human_readable,
         raw_response=raw_response,
-        outputs=context
+        outputs=context_entry
     )
 
 
@@ -565,11 +547,8 @@ def score_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults
         title = f'SOCRadar - Analysis results for domain: {domain_to_score}'
         context_entry = build_entry_context(raw_response, 'domain')
         dbot_entry = build_dbot_entry(domain_to_score, DBotScoreType.DOMAIN, 'SOCRadar ThreatFusion', score)
-        context = {
-            'SOCRadarThreatFusion.Reputation.Domain(val.Domain && val.Domain === obj.Domain)': context_entry
-        }
-        context.update(dbot_entry)
         human_readable = tableToMarkdown(title, context_entry)
+        context_entry.update(dbot_entry)
     else:
         message = f"Error while getting API response. SOCRadar API Response: {raw_response.get('message', '')}"
         raise DemistoException(message=message)
@@ -579,7 +558,7 @@ def score_domain_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs_key_field="Domain",
         readable_output=human_readable,
         raw_response=raw_response,
-        outputs=context
+        outputs=context_entry
     )
 
 
@@ -609,11 +588,8 @@ def score_hash_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         title = f'SOCRadar - Analysis results for hash: {hash_to_score}'
         context_entry = build_entry_context(raw_response, 'hash')
         dbot_entry = build_dbot_entry(hash_to_score, hash_type, 'SOCRadar ThreatFusion', score)
-        context = {
-            'SOCRadarThreatFusion.Reputation.Hash(val.File && val.File === obj.File)': context_entry
-        }
-        context.update(dbot_entry)
         human_readable = tableToMarkdown(title, context_entry)
+        context_entry.update(dbot_entry)
     else:
         message = f"Error while getting API response. SOCRadar API Response: {raw_response.get('message', '')}"
         raise DemistoException(message=message)
@@ -623,7 +599,7 @@ def score_hash_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field="File",
         readable_output=human_readable,
         raw_response=raw_response,
-        outputs=context
+        outputs=context_entry
     )
 
 

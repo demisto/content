@@ -117,82 +117,74 @@ Scores provided IP entities' reputation in SOCRadar ThreatFusion.
     "SOCRadarThreatFusion": {
         "Reputation": {
             "IP": {
-                "DBotScore": {
-                    "Indicator": "1.1.1.1",
-                    "Score": 1,
-                    "Type": "ip",
-                    "Vendor": "SOCRadar ThreatFusion"
+                "DNS Details": {
+                    "PTR": [
+                        "one.one.one.one"
+                    ]
                 },
-                "SOCRadarThreatFusion.Reputation.IP(val.IP && val.IP === obj.IP)": {
-                    "DNS Details": {
-                        "PTR": [
-                            "one.one.one.one"
-                        ]
-                    },
-                    "Geo Location": {
-                        "ASN": "[13335] CLOUDFLARENET, US",
-                        "AsnCode": 13335,
-                        "AsnName": "CloudFlare Inc",
-                        "Cidr": "1.1.1.0/24",
-                        "CityName": "Los Angeles",
-                        "CountryCode": "US",
-                        "CountryName": "United States of America",
-                        "Latitude": 0.0,
-                        "Longitude": 0.0,
-                        "RegionName": "California",
-                        "Timezone": "-07:00",
-                        "ZipCode": "90001"
-                    },
-                    "IP": "1.1.1.1",
-                    "Risk Score (Out of 1000)": 0,
-                    "Score Details": {},
-                    "Total Encounters": 0,
-                    "Whois Details": {
-                        "asn": "13335",
-                        "asn_cidr": "1.1.1.0/24",
-                        "asn_country_code": "AU",
-                        "asn_date": "2011-08-11",
-                        "asn_description": "CLOUDFLARENET, US",
-                        "asn_registry": "apnic",
-                        "nets": [
-                            {
-                                "address": "PO Box 3646\nSouth Brisbane, QLD 4101\nAustralia",
-                                "cidr": "1.1.1.0/24",
-                                "city": null,
-                                "country": "AU",
-                                "created": null,
-                                "description": "APNIC and Cloudflare DNS Resolver project\nRouted globally by AS13335/Cloudflare\nResearch prefix for APNIC Labs",
-                                "emails": [
-                                    "resolver-abuse@cloudflare.com"
-                                ],
-                                "handle": "AA1412-AP",
-                                "name": "APNIC-LABS",
-                                "postal_code": null,
-                                "range": "1.1.1.0 - 1.1.1.255",
-                                "state": null,
-                                "updated": null
-                            },
-                            {
-                                "address": null,
-                                "cidr": "1.1.1.0/24",
-                                "city": null,
-                                "country": null,
-                                "created": null,
-                                "description": "APNIC Research and Development\n                6 Cordelia St",
-                                "emails": null,
-                                "handle": null,
-                                "name": null,
-                                "postal_code": null,
-                                "range": "1.1.1.0 - 1.1.1.255",
-                                "state": null,
-                                "updated": null
-                            }
-                        ],
-                        "nir": null,
-                        "query": "1.1.1.1",
-                        "raw_referral": null,
-                        "referral": null
-                    }
+                "Geo Location": {
+                    "ASN": "[13335] CLOUDFLARENET, US",
+                    "AsnCode": 13335,
+                    "AsnName": "CloudFlare Inc",
+                    "Cidr": "1.1.1.0/24",
+                    "CityName": "Los Angeles",
+                    "CountryCode": "US",
+                    "CountryName": "United States of America",
+                    "Latitude": 0.0,
+                    "Longitude": 0.0,
+                    "RegionName": "California",
+                    "Timezone": "-07:00",
+                    "ZipCode": "90001"
+                },
+                "IP": "1.1.1.1",
+                "Risk Score (Out of 1000)": 0,
+                "Score Details": {},
+                "Total Encounters": 0,
+                "Whois Details": {
+                    "asn": "13335",
+                    "asn_cidr": "1.1.1.0/24",
+                    "asn_country_code": "AU",
+                    "asn_date": "2011-08-11",
+                    "asn_description": "CLOUDFLARENET, US",
+                    "asn_registry": "apnic",
+                    "nets": [
+                        {
+                            "address": "PO Box 3646\nSouth Brisbane, QLD 4101\nAustralia",
+                            "cidr": "1.1.1.0/24",
+                            "city": null,
+                            "country": "AU",
+                            "created": null,
+                            "description": "APNIC and Cloudflare DNS Resolver project\nRouted globally by AS13335/Cloudflare\nResearch prefix for APNIC Labs",
+                            "emails": [
+                                "resolver-abuse@cloudflare.com"
+                            ],
+                            "handle": "AA1412-AP",
+                            "name": "APNIC-LABS",
+                            "postal_code": null,
+                            "range": "1.1.1.0 - 1.1.1.255",
+                            "state": null,
+                            "updated": null
+                        },
+                        {
+                            "address": null,
+                            "cidr": "1.1.1.0/24",
+                            "city": null,
+                            "country": null,
+                            "created": null,
+                            "description": "APNIC Research and Development\n                6 Cordelia St",
+                            "emails": null,
+                            "handle": null,
+                            "name": null,
+                            "postal_code": null,
+                            "range": "1.1.1.0 - 1.1.1.255",
+                            "state": null,
+                            "updated": null
+                        }
+                    ],
+                    "nir": null,
+                    "query": "1.1.1.1",
+                    "raw_referral": null,
+                    "referral": null
                 }
             }
         }
@@ -274,82 +266,74 @@ Scores provided domain entities' reputation in SOCRadar ThreatFusion.
     "SOCRadarThreatFusion": {
         "Reputation": {
             "Domain": {
-                "DBotScore": {
-                    "Indicator": "paloaltonetworks.com",
-                    "Score": 1,
-                    "Type": "domain",
-                    "Vendor": "SOCRadar ThreatFusion"
+                "DNS Details": {
+                    "MX": [
+                        "mx record"
+                    ],
+                    "NS": [
+                        "ns record"
+                    ],
+                    "SOA": [
+                        "domains.paloaltonetworks.com. 1627343953 3600 600 604800 3600"
+                    ],
+                    "TXT": [
+                        "txt record"
+                    ]
                 },
-                "SOCRadarThreatFusion.Reputation.Domain(val.Domain && val.Domain === obj.Domain)": {
-                    "DNS Details": {
-                        "MX": [
-                            "mx record"
-                        ],
-                        "NS": [
-                            "ns record"
-                        ],
-                        "SOA": [
-                            "domains.paloaltonetworks.com. 1627343953 3600 600 604800 3600"
-                        ],
-                        "TXT": [
-                            "txt record"
-                        ]
-                    },
-                    "Domain": "paloaltonetworks.com",
-                    "Risk Score (Out of 1000)": 0,
-                    "Score Details": {},
-                    "Subdomains": [],
-                    "Total Encounters": 0,
-                    "Whois Details": {
-                        "address": null,
-                        "city": null,
-                        "country": "US",
-                        "creation_date": [
-                            "Mon, 21 Feb 2005 02:42:10 GMT",
-                            "Mon, 21 Feb 2005 02:42:10 GMT"
-                        ],
-                        "dnssec": "signedDelegation",
-                        "domain_name": "PALOALTONETWORKS.COM",
-                        "emails": [
-                            "whoisrequest@markmonitor.com",
-                            "abusecomplaints@markmonitor.com"
-                        ],
-                        "expiration_date": [
-                            "Wed, 21 Feb 2024 02:42:10 GMT",
-                            "Wed, 21 Feb 2024 02:42:10 GMT"
-                        ],
-                        "name": null,
-                        "name_servers": [
-                            "ns4.p23.dynect.net",
-                            "ns1.p23.dynect.net",
-                            "ns3.p23.dynect.net",
-                            "ns6.dnsmadeeasy.com",
-                            "ns2.p23.dynect.net",
-                            "ns5.dnsmadeeasy.com",
-                            "ns7.dnsmadeeasy.com"
-                        ],
-                        "org": "Palo Alto Networks, Inc.",
-                        "referral_url": null,
-                        "registrar": [
-                            "MarkMonitor Inc.",
-                            "MarkMonitor, Inc."
-                        ],
-                        "state": "CA",
-                        "status": [
-                            "clientTransferProhibited https://icann.org/epp#clientTransferProhibited",
-                            "clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)",
-                            "clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)",
-                            "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited",
-                            "clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)",
-                            "clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited"
-                        ],
-                        "updated_date": [
-                            "Thu, 01 Jul 2021 00:32:38 GMT",
-                            "Thu, 01 Jul 2021 00:32:38 GMT"
-                        ],
-                        "whois_server": "whois.markmonitor.com",
-                        "zipcode": null
-                    }
+                "Domain": "paloaltonetworks.com",
+                "Risk Score (Out of 1000)": 0,
+                "Score Details": {},
+                "Subdomains": [],
+                "Total Encounters": 0,
+                "Whois Details": {
+                    "address": null,
+                    "city": null,
+                    "country": "US",
+                    "creation_date": [
+                        "Mon, 21 Feb 2005 02:42:10 GMT",
+                        "Mon, 21 Feb 2005 02:42:10 GMT"
+                    ],
+                    "dnssec": "signedDelegation",
+                    "domain_name": "PALOALTONETWORKS.COM",
+                    "emails": [
+                        "whoisrequest@markmonitor.com",
+                        "abusecomplaints@markmonitor.com"
+                    ],
+                    "expiration_date": [
+                        "Wed, 21 Feb 2024 02:42:10 GMT",
+                        "Wed, 21 Feb 2024 02:42:10 GMT"
+                    ],
+                    "name": null,
+                    "name_servers": [
+                        "ns4.p23.dynect.net",
+                        "ns1.p23.dynect.net",
+                        "ns3.p23.dynect.net",
+                        "ns6.dnsmadeeasy.com",
+                        "ns2.p23.dynect.net",
+                        "ns5.dnsmadeeasy.com",
+                        "ns7.dnsmadeeasy.com"
+                    ],
+                    "org": "Palo Alto Networks, Inc.",
+                    "referral_url": null,
+                    "registrar": [
+                        "MarkMonitor Inc.",
+                        "MarkMonitor, Inc."
+                    ],
+                    "state": "CA",
+                    "status": [
+                        "clientTransferProhibited https://icann.org/epp#clientTransferProhibited",
+                        "clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)",
+                        "clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)",
+                        "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited",
+                        "clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)",
+                        "clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited"
+                    ],
+                    "updated_date": [
+                        "Thu, 01 Jul 2021 00:32:38 GMT",
+                        "Thu, 01 Jul 2021 00:32:38 GMT"
+                    ],
+                    "whois_server": "whois.markmonitor.com",
+                    "zipcode": null
                 }
             }
         }
@@ -413,20 +397,12 @@ Scores provided hash entities' reputation in SOCRadar ThreatFusion.
     "SOCRadarThreatFusion": {
         "Reputation": {
             "Hash": {
-                "DBotScore": {
-                    "Indicator": "3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792",
-                    "Score": 1,
-                    "Type": "file",
-                    "Vendor": "SOCRadar ThreatFusion"
+                "File": "3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792",
+                "Risk Score (Out of 1000)": 360,
+                "Score Details": {
+                    "Maldatabase": 360
                 },
-                "SOCRadarThreatFusion.Reputation.Hash(val.File && val.File === obj.File)": {
-                    "File": "3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792",
-                    "Risk Score (Out of 1000)": 360,
-                    "Score Details": {
-                        "Maldatabase": 360
-                    },
-                    "Total Encounters": 1
-                }
+                "Total Encounters": 1
             }
         }
     }
