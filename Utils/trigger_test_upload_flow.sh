@@ -346,7 +346,7 @@ function trigger_circle_ci {
 
   post_data=$(cat <<-EOF
   {
-    "branch": "${content_branch}",
+    "branch": "${new_content_branch}",
     "parameters": {
       "gcs_market_bucket": "${bucket}",
       "bucket_upload": "${bucket_upload}",
@@ -357,7 +357,6 @@ function trigger_circle_ci {
   }
   EOF
   )
-  echo "post-data \n ${post_data}"
   curl \
   --header "Accept: application/json" \
   --header "Content-Type: application/json" \
