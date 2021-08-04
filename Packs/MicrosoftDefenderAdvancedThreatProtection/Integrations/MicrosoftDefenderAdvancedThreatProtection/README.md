@@ -3269,3 +3269,1461 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Indicator ID: 18 was successfully deleted
+### microsoft-atp-sc-indicator-list
+***
+Lists all indicators by the ID that the system creates when the indicator is ingested.
+
+
+#### Base Command
+
+`microsoft-atp-sc-indicator-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum amount of indicators to return. Default is 50. Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
+| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Values are Informational,Low, Medium ,High, where High is the most severe and Informational is not severe at all. | 
+| MicrosoftATP.Indicators.indicatorValue | String | The value of the Indicator. | 
+| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. | 
+| MicrosoftATP.Indicators.generateAlert | Boolean | Whether an altet was generated. | 
+| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list in case it exposed to all devices. | 
+| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of mitre techniques. | 
+| MicrosoftATP.Indicators.indicatorType | String | Type of the indicator. Possible values are "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
+| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. | 
+| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. | 
+| MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
+| MicrosoftATP.Indicators.title | String | Indicator title. | 
+| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. | 
+| MicrosoftATP.Indicators.historicalDetection | String | Whether an historical detection exists. | 
+| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. | 
+| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. | 
+| MicrosoftATP.Indicators.category | Number | An number represents the indicator category. | 
+| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. | 
+| File.Name | String | The full file name \(including file extension\). | 
+| File.Size | Number | The size of the file in bytes. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA1 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
+| File.Path | String | The path where the file is located. | 
+| Domain.Name | String | The domain name, for example: "google.com". | 
+| IP.Address | String | IP address | 
+| URL.Data | String | The URL | 
+
+
+#### Command Example
+```!microsoft-atp-sc-indicator-list```
+
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "Indicators": [
+            {
+                "action": "Allowed",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T15:24:47.4581765Z",
+                "description": "test",
+                "expirationTime": "2021-08-05T15:24:46Z",
+                "generateAlert": false,
+                "historicalDetection": false,
+                "id": "5039",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "2.2.2.2",
+                "lastUpdateTime": "2021-08-04T15:24:47.4657125Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "severity": "Informational",
+                "title": "title"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2128985Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5037",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:54.5155097Z",
+                "lastUpdatedBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2128916Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5036",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2889803Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2128845Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5035",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2884322Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2128776Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5034",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2878798Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2128701Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5033",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2872277Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2128632Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5032",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2866145Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2128546Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5031",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2860056Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2128474Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5030",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2854359Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2128406Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5029",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2847874Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2128337Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5028",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.284214Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2128266Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5027",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2834725Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2128198Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5026",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2829303Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2128129Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5025",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2823073Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2128058Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5024",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2816748Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2127988Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5023",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2811558Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2127897Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5022",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2806167Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2127824Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5021",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2800193Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2127754Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5020",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2794826Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2127683Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5019",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2788802Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2127612Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5018",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2783071Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2127542Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5017",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2777432Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2127472Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5016",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2772359Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2127403Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5015",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2766761Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.212733Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5014",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2761655Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.212724Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5013",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2756435Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2127171Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5012",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2750638Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2127102Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5011",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2744572Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2127031Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5010",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2739163Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2126963Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5009",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2732937Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2126894Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5008",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2728118Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2126824Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5007",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2723297Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2126755Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5006",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2718264Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2126685Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5005",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2712466Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2126596Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5004",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2707614Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2126525Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5003",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2702463Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2126454Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5002",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2695608Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2126383Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5001",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2690997Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2126313Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5000",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2686367Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2126241Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "4999",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2681769Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2126173Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "4998",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2677157Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2126103Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "4997",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2672422Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2126031Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "4996",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2667914Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2125945Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "4995",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2663255Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2125874Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "4994",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2658301Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2125805Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "4993",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2653365Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2125734Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "4992",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2629782Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2125661Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "4991",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.262539Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.2125591Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "4990",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2620956Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            },
+            {
+                "action": "Alert",
+                "application": "demo-test",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-04T09:54:33.212552Z",
+                "description": "demo2",
+                "expirationTime": "2021-12-12T00:00:00Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "4989",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "1.2.3.199",
+                "lastUpdateTime": "2021-08-04T09:54:33.2616265Z",
+                "mitreTechniques": [],
+                "rbacGroupIds": [],
+                "rbacGroupNames": [],
+                "recommendedActions": "nothing",
+                "severity": "Informational",
+                "title": "demo"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Microsoft Defender ATP SC returned 50 indicators:
+>|id|action|severity|
+>|---|---|---|
+>| 5039 | Allowed | Informational |
+>| 5037 | Alert | Informational |
+>| 5036 | Alert | Informational |
+>| 5035 | Alert | Informational |
+>| 5034 | Alert | Informational |
+>| 5033 | Alert | Informational |
+>| 5032 | Alert | Informational |
+>| 5031 | Alert | Informational |
+>| 5030 | Alert | Informational |
+>| 5029 | Alert | Informational |
+>| 5028 | Alert | Informational |
+>| 5027 | Alert | Informational |
+>| 5026 | Alert | Informational |
+>| 5025 | Alert | Informational |
+>| 5024 | Alert | Informational |
+>| 5023 | Alert | Informational |
+>| 5022 | Alert | Informational |
+>| 5021 | Alert | Informational |
+>| 5020 | Alert | Informational |
+>| 5019 | Alert | Informational |
+>| 5018 | Alert | Informational |
+>| 5017 | Alert | Informational |
+>| 5016 | Alert | Informational |
+>| 5015 | Alert | Informational |
+>| 5014 | Alert | Informational |
+>| 5013 | Alert | Informational |
+>| 5012 | Alert | Informational |
+>| 5011 | Alert | Informational |
+>| 5010 | Alert | Informational |
+>| 5009 | Alert | Informational |
+>| 5008 | Alert | Informational |
+>| 5007 | Alert | Informational |
+>| 5006 | Alert | Informational |
+>| 5005 | Alert | Informational |
+>| 5004 | Alert | Informational |
+>| 5003 | Alert | Informational |
+>| 5002 | Alert | Informational |
+>| 5001 | Alert | Informational |
+>| 5000 | Alert | Informational |
+>| 4999 | Alert | Informational |
+>| 4998 | Alert | Informational |
+>| 4997 | Alert | Informational |
+>| 4996 | Alert | Informational |
+>| 4995 | Alert | Informational |
+>| 4994 | Alert | Informational |
+>| 4993 | Alert | Informational |
+>| 4992 | Alert | Informational |
+>| 4991 | Alert | Informational |
+>| 4990 | Alert | Informational |
+>| 4989 | Alert | Informational |
+
+### microsoft-atp-sc-indicator-update
+***
+Updates the spcified indicator.
+
+
+#### Base Command
+
+`microsoft-atp-sc-indicator-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_value | The value of the indicator to update. | Required | 
+| indicator_type | Type of the indicator. Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required | 
+| action | The action that will be taken if the indicator will be discovered in the organization. Possible values are: Alert, AlertAndBlock, Allowed. | Required | 
+| severity | The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, Medium, High, where High is the most severe and Informational is not severe at all. Possible values are: Informational, Low, Medium, High. Default is Medium. | Optional | 
+| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) Default value is 1 day. Default is 1 day. | Optional | 
+| indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required | 
+| indicator_title | Indicator alert title. | Required | 
+| indicator_application | The application associated with the indicator. | Optional | 
+| recommended_actions | TI indicator alert recommended actions. | Optional | 
+| rbac_group_names | Comma-separated list of RBAC group names the indicator would be applied to. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
+| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Values are Informational,Low, Medium ,High, where High is the most severe and Informational is not severe at all. | 
+| MicrosoftATP.Indicators.indicatorValue | String | The value of the Indicator. | 
+| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. | 
+| MicrosoftATP.Indicators.generateAlert | Boolean newDescription newTitle | Whether an altet was generated. | 
+| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list in case it exposed to all devices. | 
+| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of mitre techniques. | 
+| MicrosoftATP.Indicators.indicatorType | String | Type of the indicator. Possible values are "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
+| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. | 
+| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. | 
+| MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
+| MicrosoftATP.Indicators.title | String | Indicator title. | 
+| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. | 
+| MicrosoftATP.Indicators.historicalDetection | String | Whether an historical detection exists. | 
+| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. | 
+| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. | 
+| MicrosoftATP.Indicators.category | Number | An number represents the indicator category. | 
+| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. | 
+| File.Name | String | The full file name \(including file extension\). | 
+| File.Size | Number | The size of the file in bytes. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA1 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
+| File.Path | String | The path where the file is located. | 
+| Domain.Name | String | The domain name, for example: "google.com". | 
+| IP.Address | String | IP address | 
+| URL.Data | String | The URL | 
+
+
+#### Command Example
+```!microsoft-atp-sc-indicator-update action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Informational```
+
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "Indicators": {
+            "@odata.context": "https://api.securitycenter.microsoft.com/api/$metadata#Indicators/$entity",
+            "action": "Allowed",
+            "category": 1,
+            "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+            "createdByDisplayName": "MS Graph ATP",
+            "createdBySource": "PublicApi",
+            "creationTimeDateTimeUtc": "2021-08-04T15:24:47.4581765Z",
+            "description": "test",
+            "expirationTime": "2021-08-05T16:03:50Z",
+            "generateAlert": false,
+            "historicalDetection": false,
+            "id": "5039",
+            "indicatorType": "IpAddress",
+            "indicatorValue": "2.2.2.2",
+            "lastUpdateTime": "2021-08-04T16:03:51.5053939Z",
+            "lastUpdatedBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+            "mitreTechniques": [],
+            "rbacGroupIds": [],
+            "rbacGroupNames": [],
+            "severity": "Informational",
+            "title": "title"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Indicator ID: 2.2.2.2 was updated successfully.
+>|@odata.context|action|category|createdBy|createdByDisplayName|createdBySource|creationTimeDateTimeUtc|description|expirationTime|generateAlert|historicalDetection|id|indicatorType|indicatorValue|lastUpdateTime|lastUpdatedBy|severity|title|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| https:<span>//</span>api.securitycenter.microsoft.com/api/$metadata#Indicators/$entity | Allowed | 1 | 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a | MS Graph ATP | PublicApi | 2021-08-04T15:24:47.4581765Z | test | 2021-08-05T16:03:50Z | false | false | 5039 | IpAddress | 2.2.2.2 | 2021-08-04T16:03:51.5053939Z | 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a | Informational | title |
+
+### microsoft-atp-sc-indicator-get-by-id
+***
+Gets an indicator by its ID.
+
+
+#### Base Command
+
+`microsoft-atp-sc-indicator-get-by-id`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_id | The ID of the indicator to get. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
+| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Values are Informational,Low, Medium ,High, where High is the most severe and Informational is not severe at all. | 
+| MicrosoftATP.Indicators.indicatorValue | String | The value of the Indicator. | 
+| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. | 
+| MicrosoftATP.Indicators.generateAlert | Boolean | Whether an altet was generated. | 
+| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list in case it exposed to all devices. | 
+| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of mitre techniques. | 
+| MicrosoftATP.Indicators.indicatorType | String | Type of the indicator. Possible values are "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
+| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. | 
+| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. | 
+| MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
+| MicrosoftATP.Indicators.title | String | Indicator title. | 
+| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. | 
+| MicrosoftATP.Indicators.historicalDetection | String | Whether an historical detection exists. | 
+| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. | 
+| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. | 
+| MicrosoftATP.Indicators.category | Number | An number represents the indicator category. | 
+| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. | 
+| File.Name | String | The full file name \(including file extension\). | 
+| File.Size | Number | The size of the file in bytes. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA1 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
+| File.Path | String | The path where the file is located. | 
+| Domain.Name | String | The domain name, for example: "google.com". | 
+| IP.Address | String | IP address | 
+| URL.Data | String | The URL | 
+
+
+#### Command Example
+```!microsoft-atp-sc-indicator-get-by-id indicator_id=5039```
+
+#### Human Readable Output
+
+>No indicators found
+### microsoft-atp-sc-indicator-delete
+***
+Deletes the specified indicator.
+
+
+#### Base Command
+
+`microsoft-atp-sc-indicator-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_id | The ID of the indicator to delete. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!microsoft-atp-sc-indicator-delete indicator_id=5039```
+
+#### Human Readable Output
+
+>Indicator ID: 5039 was successfully deleted
