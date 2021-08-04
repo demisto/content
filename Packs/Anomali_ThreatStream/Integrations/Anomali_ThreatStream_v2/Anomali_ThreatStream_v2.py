@@ -1016,8 +1016,9 @@ def main():
 
     user_name = params.get('username')
     api_key = params.get('apikey')
+    server_url = params.get('url', '').strip('/')
 
-    CREDENTIALS['user_name'] = user_name
+    CREDENTIALS['username'] = user_name
     CREDENTIALS['api_key'] = api_key
 
     reliability = params.get('integrationReliability')
@@ -1031,7 +1032,7 @@ def main():
     try:
 
         client = Client(
-            base_url=f'{params.get("url", "").strip("/")}/api/',
+            base_url=server_url + '/api/',
             use_ssl=not params.get('insecure', False),
             default_threshold=params.get('default_threshold', 'high'),
             reliability=reliability
