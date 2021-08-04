@@ -5306,7 +5306,7 @@ script:
       required: true
     description: Manages XML file content on Windows hosts
     name: win-xml
-  dockerimage: demisto/ansible-runner:1.0.0.21453
+  dockerimage: demisto/pyjwt:1.0.0.23135
   runonce: false
   script: ''
   subtype: python3
