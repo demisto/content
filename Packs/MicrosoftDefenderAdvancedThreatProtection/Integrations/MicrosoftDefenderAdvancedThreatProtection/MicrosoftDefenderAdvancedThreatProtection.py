@@ -721,8 +721,8 @@ class MsClient:
             indicator_id: if provided, will get only this specific id.
             page_size: specify the page size of the result set.
             limit: Limit the returned results.
-            indicators_endpoint:
-            should_use_security_center
+            indicators_endpoint: A link to the indicators endpoint.
+            should_use_security_center: whether to use the security center's scope and resource.
 
         Returns:
             List of responses.
@@ -795,13 +795,12 @@ class MsClient:
             expiration_date_time: Expiration time of the indicator
             description: A Brief description of the indicator
             severity: The severity of the indicator
-            indicator_type
-            action
-            indicator_title
-            indicator_application
-            recommended_actions
-            rbac_group_names
-
+            indicator_type: The type of the indicator
+            action: The action that will be taken if the indicator will be discovered
+            indicator_title: Indicator alert title.
+            indicator_application: The application associated with the indicator.
+            recommended_actions: TI indicator alert recommended actions.
+            rbac_group_names: Comma-separated list of RBAC group names the indicator would be
 
         Returns:
             A response from the API.
