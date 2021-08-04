@@ -51,7 +51,7 @@ class Client(CrowdStrikeClient):
         self.generic_phrase = generic_phrase
         self.include_deleted = include_deleted
         self.tlp_color = tlp_color
-        self.feed_tags
+        self.feed_tags = feed_tags
         self.limit = limit
         self.first_fetch = first_fetch
 
