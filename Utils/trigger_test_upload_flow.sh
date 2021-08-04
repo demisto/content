@@ -89,7 +89,7 @@ function rename_files_and_folders {
   while read -r folder;
   do
     cd "$folder" || continue ;
-    find . -type f \( -name "*.py" -o -name "*.yml" -o -name "*.json" \) -maxdepth 1 -name  "*${pack_name}*" -exec sh -c 'mv $1 "${1//$2/$3}"' sh {} "$pack_name" "$new_pack_name"  \;
+    find . -type f -maxdepth 1 -name  "*${pack_name}*" -exec sh -c 'mv $1 "${1//$2/$3}"' sh {} "$pack_name" "$new_pack_name"  \;
     rename_files_and_folders "$pack_name" "$new_pack_name";
     cd ../;
     if [ "$folder" != "${folder//$pack_name/$new_pack_name}" ]; then
