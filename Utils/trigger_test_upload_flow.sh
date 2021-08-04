@@ -57,15 +57,11 @@ function create_new_pack {
   cd "${new_pack_path}" || fail
 
   # rename inside yml and json files
-  find . -type f -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
-
   rename_files_and_folders "$pack_name" "$new_pack_name"
 
   if [ "$pack_name" == "HelloWorld" ]; then
-    find . -type f \( -name "*.json" -o -name "*.yml" \) -exec sed -i "" "s/Hello_World/Hello_World_New/g" {} \;
     rename_files_and_folders "Hello_World" "Hello_World_New"
 
-    find . -type f \( -name "*.json" -o -name "*.yml" \) -exec sed -i "" "s/Sanity Test/Sanity Test New/g" {} \;
     rename_files_and_folders "Sanity_Test" "Sanity_Test_New"
   fi
 
@@ -84,8 +80,12 @@ function rename_files_and_folders {
   if [ "$#" -ne 2 ]; then
     fail " Illegal number of parameters "
   fi
+
   local pack_name=$1
   local new_pack_name=$2
+
+  # Rename inside files
+  find . -type f -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
 
   find . -type d -mindepth 1 -maxdepth 1 | \
   while read -r folder;
