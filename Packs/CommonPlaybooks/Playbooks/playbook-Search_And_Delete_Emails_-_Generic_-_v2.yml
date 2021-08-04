@@ -1,12 +1,7 @@
 id: Search And Delete Emails - Generic v2
-version: 19
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: CommonPlaybooks
-    itemVersion: 2.0.0
-    fromServerVersion: 5.5.0
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Search And Delete Emails - Generic v2
 description: This playbook searches and delete emails with similar attributes of a
   malicious email using EWS or Office 365.
@@ -22,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -38,8 +34,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: a7b6936c-73ee-4fba-8314-3514fa9a9070
@@ -91,8 +85,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 88c58e53-8fe7-4ca2-8697-0ed3f67191fe
@@ -104,6 +96,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -117,8 +110,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 5902bdde-4d32-4ee2-8cb3-73707f7c90aa
@@ -181,8 +172,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: e201e0a1-cd90-42de-8bfa-fabda317318f
@@ -432,8 +421,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: d2db2ba7-3e13-47ce-8fd2-0842b89a386f
@@ -492,8 +479,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 25801150-ef91-4ccc-8275-5ca5225fc857
@@ -526,8 +511,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: ac91c4b3-329f-4341-894e-4cb9a92ab88e
@@ -562,8 +545,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 586e6f48-4fd2-489d-8948-f5327f2e431d
@@ -599,8 +580,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: eca8ae30-ebfa-4f62-82c9-5586e000e431
@@ -612,6 +591,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -628,8 +608,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 43de9303-2031-43bc-8c5c-0f88a25a78f4
@@ -641,6 +619,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -657,8 +636,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: afe381a2-655b-4dd3-8b22-2561451fcee2
@@ -670,6 +647,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -686,8 +664,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 60128cf4-a622-4411-87b3-1bb25b0b14d2
@@ -699,6 +675,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -715,8 +692,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -741,7 +716,7 @@ inputs:
       accessor: emailfrom
   required: false
   description: The value of the malicious email's "From" attribute.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Subject
   value:
     complex:
@@ -749,7 +724,7 @@ inputs:
       accessor: emailsubject
   required: false
   description: The value of the malicious email's "Subject" attribute.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AttachmentName
   value:
     complex:
@@ -757,14 +732,14 @@ inputs:
       accessor: attachmentname
   required: false
   description: The value of the malicious email's "AttachmentName" attribute.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SearchAndDeleteIntegration
   value:
     simple: EWS
   required: true
   description: The integration in which to run the search and delete action. Can be
     O365, or EWS.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: O365ExchangeLocation
   value:
     complex:
@@ -773,18 +748,18 @@ inputs:
   required: false
   description: Used only in O365. Comma-separated list of mailboxes/distribution groups
     to include, or use the value "All" to include all.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: O365KQL
   value: {}
   required: false
   description: Used only in O365. Text search string or a query that is formatted
     using the Keyword Query Language (KQL).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: O365Description
   value: {}
   required: false
   description: Used only in O365. Description of the compliance search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: |
     O365AllowNotFoundExchangeLocations
   value:
@@ -792,7 +767,7 @@ inputs:
   required: false
   description: Used only in O365. Whether to include mailboxes other than regular
     user mailboxes in the compliance search. Default is "false".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: O365DeleteType
   value:
     simple: inputs.O365DeleteType
@@ -800,7 +775,7 @@ inputs:
   description: Used only in O365. The delete type to perform on the search results.
     Possible values are Hard and Soft or leave empty to select manually. (Hard = Unrecoverable,
     Soft=Recoverable)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: O365ExchangeLocationExclusion
   value:
     complex:
@@ -812,7 +787,7 @@ inputs:
     search and delete the email only from the recipient's inbox, or specify "Manual"
     to decide manually for every incident. Note - searching all mailboxes may take
     a significant amount of time.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: To
   value:
     complex:
@@ -822,7 +797,7 @@ inputs:
   description: The email address to which the email was sent. This is used if the
     user decides to search for and delete emails only from the inbox of the recipient
     using O365.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
 - No test
