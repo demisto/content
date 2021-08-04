@@ -542,7 +542,7 @@ script:
     description: Upload file to S3 bucket
     execution: false
     name: aws-s3-upload-file
-  dockerimage: demisto/boto3:2.0.0.20513
+  dockerimage: demisto/cloudshare:1.0.0.23151
   isfetch: false
   runonce: false
   script: ''
