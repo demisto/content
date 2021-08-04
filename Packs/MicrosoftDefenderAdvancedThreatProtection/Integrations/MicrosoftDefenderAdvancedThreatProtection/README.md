@@ -33,6 +33,8 @@ For more details about the authentication used in this integration, see [Microso
 * ThreatIndicators.ReadWrite.OwnedBy - Application
 * Url.Read.All - Application
 * User.Read.All - Application
+* Ti.ReadWrite - Application
+* Ti.ReadWrite.All - Application	
 
 ## Configure Microsoft Defender for Endpoint on Cortex XSOAR
 ---
