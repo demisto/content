@@ -29,6 +29,14 @@ NUMBER_TO_SEVERITY = {
     5: 'Informational'
 }
 
+NUMBER_TO_SEVERITY_SECURITY_CENTER = {
+    0: 'Informational',
+    1: 'Low',
+    2: 'Medium',
+    4: 'High',
+    5: 'Informational'
+}
+
 SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
 SECURITY_CENTER_SCOPE = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
 SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
@@ -813,6 +821,7 @@ class MsClient:
             recommendedActions=recommended_actions,
             rbacGroupNames=rbac_group_names
         ))
+        print(body)
         resp = self.indicators_http_request(True, 'POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT, json_data=body,
                                             url_suffix=None, headers=header)
         return assign_params(values_to_ignore=[None], **resp)
@@ -2380,13 +2389,13 @@ def sc_update_indicator_command(client: MsClient, args: dict) -> Tuple[str, Dict
     indicator_value = args.get('indicator_value')
     indicator_type = args.get('indicator_type')
     action = args.get('action')
-    severity = args.get('severity', 'Informational')
-    expiration_time = get_future_time(args.get('expiration_time'))
+    severity = args.get('severity', 'Medium')
+    expiration_time = get_future_time(args.get('expiration_time', '1 day'))
     indicator_description = args.get('indicator_description')
     indicator_title = args.get('indicator_title')
-    indicator_application = args.get('indicator_application')
-    recommended_actions = args.get('recommended_actions')
-    rbac_group_names = argToList(args.get('rbac_group_names'))
+    indicator_application = args.get('indicator_application', '')
+    recommended_actions = args.get('recommended_actions', '')
+    rbac_group_names = argToList(args.get('rbac_group_names', []))
 
     if indicator_description is not None:
         assert 1 <= len(
@@ -2400,7 +2409,7 @@ def sc_update_indicator_command(client: MsClient, args: dict) -> Tuple[str, Dict
         recommended_actions=recommended_actions, rbac_group_names=rbac_group_names
     )
     indicator = raw_response.copy()
-    indicator['severity'] = NUMBER_TO_SEVERITY.get(indicator['severity'])
+    indicator['severity'] = indicator['severity']
     human_readable = tableToMarkdown(
         f'Indicator ID: {indicator_value} was updated successfully.',
         indicator,
@@ -2423,13 +2432,13 @@ def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[
         human_readable, outputs.
     """
     limit = int(args.get('limit', 50))
-    raw_response = client.list_indicators(SECURITY_CENTER_INDICATOR_ENDPOINT, args.get('indicator_id'), args.get('page_size', '50'),
-                                          limit, should_use_security_center=True)
+    raw_response = client.list_indicators(SECURITY_CENTER_INDICATOR_ENDPOINT, args.get('indicator_id'),
+                                          args.get('page_size', '50'), limit, should_use_security_center=True)
     raw_response = raw_response[:limit]
     if raw_response:
         indicators = list()
         for item in raw_response:
-            item['severity'] = NUMBER_TO_SEVERITY.get(item['severity'])
+            item['severity'] = item['severity']
             indicators.append(item)
 
         human_readable = tableToMarkdown(
