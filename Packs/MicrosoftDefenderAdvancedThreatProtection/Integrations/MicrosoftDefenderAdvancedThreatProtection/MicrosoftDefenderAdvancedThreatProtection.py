@@ -704,7 +704,36 @@ class MsClient:
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def list_indicators(self, indicators_endpoint: str,
+    def sc_list_indicators(self, indicator_id: Optional[str] = None, limit: int = 50,
+                           should_use_security_center=False) -> List:
+        """Lists indicators. if indicator_id supplied, will get only that indicator.
+
+                Args:
+                    indicator_id: if provided, will get only this specific id.
+                    limit: Limit the returned results.
+                    should_use_security_center: whether to use the security center's scope and resource.
+
+                Returns:
+                    List of responses.
+                """
+        results = {}
+        # For getting one indicator
+        cmd_url = urljoin(SECURITY_CENTER_INDICATOR_ENDPOINT,
+                          indicator_id) if indicator_id else SECURITY_CENTER_INDICATOR_ENDPOINT
+
+        params = {'$top': limit}
+        resp = self.indicators_http_request(should_use_security_center,
+                                            'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
+                                            ok_codes=(200, 204, 206, 404), resp_type='response')
+        # 404 - No indicators found, an empty list.
+        if resp.status_code == 404:
+            return []
+        resp = resp.json()
+        results.update(resp)
+
+        return [assign_params(values_to_ignore=[None], **item) for item in results.get('value', [])]
+
+    def list_indicators(self,
                         indicator_id: Optional[str] = None, page_size: str = '50', limit: int = 50,
                         should_use_security_center=False) -> List:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
@@ -713,13 +742,13 @@ class MsClient:
             indicator_id: if provided, will get only this specific id.
             page_size: specify the page size of the result set.
             limit: Limit the returned results.
-            indicators_endpoint: A link to the indicators endpoint.
             should_use_security_center: whether to use the security center's scope and resource.
 
         Returns:
             List of responses.
         """
         results = {}
+        indicators_endpoint = 'https://graph.microsoft.com/beta/security/tiIndicators'
         cmd_url = urljoin(indicators_endpoint, indicator_id) if indicator_id else indicators_endpoint
         # For getting one indicator
         # TODO: check in the future if the filter is working. Then remove the filter function.
@@ -2097,9 +2126,7 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
         human_readable, outputs.
     """
     limit = int(args.get('limit', 50))
-    indicators_endpoint = 'https://graph.microsoft.com/beta/security/tiIndicators'
-    raw_response = client.list_indicators(indicators_endpoint, args.get('indicator_id'), args.get('page_size', '50'),
-                                          limit)
+    raw_response = client.list_indicators(args.get('indicator_id'), args.get('page_size', '50'), limit)
     raw_response = raw_response[:limit]
     if raw_response:
         indicators = list()
@@ -2420,16 +2447,15 @@ def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[
         human_readable, outputs.
     """
     limit = int(args.get('limit', 50))
-    raw_response = client.list_indicators(SECURITY_CENTER_INDICATOR_ENDPOINT, args.get('indicator_id'),
-                                          args.get('page_size', '50'), limit, should_use_security_center=True)
-    raw_response = raw_response[:limit]
+    raw_response = client.sc_list_indicators(args.get('indicator_id'), limit, should_use_security_center=True)
     if raw_response:
         indicators = list()
         for item in raw_response:
             indicators.append(item)
 
+        number_of_indicators = len(indicators)
         human_readable = tableToMarkdown(
-            'Microsoft Defender ATP SC Indicators:',
+            f'Microsoft Defender ATP SC returned {number_of_indicators} indicators:',
             indicators,
             headers=[
                 'id',
