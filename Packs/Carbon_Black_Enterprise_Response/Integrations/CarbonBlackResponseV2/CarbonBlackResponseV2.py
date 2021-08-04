@@ -138,9 +138,12 @@ class Client(BaseClient):
                     groupid: str = None, inactive_filter_days: str = None,  # noqa: F841
                     limit: Union[int, str] = None) -> Tuple[int, List[dict]]:
         url = f'/v1/sensor/{id}' if id else '/v1/sensor'
-        query_fields = ['ipaddr', 'hostname', 'groupid', 'inactive_filter_days']
-        query_params: dict = {key: locals().get(key) for key in query_fields if
-                              locals().get(key)}
+        query_params = assign_params(
+            ip=ipaddr,
+            hostname=hostname,
+            groupid=groupid,
+            inactive_filter_days=inactive_filter_days
+        )
         res = self.http_request(url=url, method='GET', params=query_params, ok_codes=(200, 204))
 
         # When querying specific sensor without filters, the api returns dictionary instead of list.
@@ -165,7 +168,7 @@ class Client(BaseClient):
         return self.http_request(url='/v2/alert', method='GET', params=params)
 
     def get_binaries(self, md5: str = None, product_name: str = None, signed: str = None,  # noqa: F841
-                     group: str = None, hostname: str = None, digsig_publisher: str = None,   # noqa: F841
+                     group: str = None, hostname: str = None, digsig_publisher: str = None,  # noqa: F841
                      company_name: str = None, sort: str = None,
                      observed_filename: str = None, query: str = None, facet: str = None,
                      limit: str = None, start: str = None) -> dict:
@@ -253,10 +256,14 @@ def _parse_field(raw_field: str, sep: str = ',', index_after_split: int = 0, cha
     '''
     This function allows getting a specific complex sub-string. "example,example2|" -> 'example2'
     '''
+    if not raw_field:
+        demisto.debug(f'Got empty raw to parse.')
+        return ''
     try:
         new_field = raw_field.split(sep)[index_after_split]
     except IndexError:
-        raise IndexError(f'raw: {raw_field}, split by {sep} has no index {index_after_split}')
+        demisto.error(f'raw: {raw_field}, split by {sep} has no index {index_after_split}')
+        return ''
     chars_to_remove = set(chars_to_remove)
     for char in chars_to_remove:
         new_field = new_field.replace(char, '')
@@ -380,7 +387,8 @@ def get_watchlist_list_command(client: Client, id: str = None, limit: str = None
         })
 
     md = f'{INTEGRATION_NAME} - Watchlists'
-    md += tableToMarkdown(f"\nShowing {len(res)} out of {total_num_of_watchlists} results.", human_readable_data, removeNull=True)
+    md += tableToMarkdown(f"\nShowing {len(res)} out of {total_num_of_watchlists} results.", human_readable_data,
+                          removeNull=True)
     return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.Watchlist', outputs_key_field='name',
                           readable_output=md)
 
@@ -537,7 +545,7 @@ def binary_search_command(client: Client, md5: str = None, product_name: str = N
     md = f'{INTEGRATION_NAME} - Binary Search Results'
     md += tableToMarkdown(f"\nShowing {start} - {len(res.get('results', []))} out of "
                           f"{res.get('total_results', '0')} results.", human_readable_data, headers=[
-                              'md5', 'Group', 'OS Type', 'Host Count', 'Last Seen', 'Is Executable Image', 'Timestamp'])
+        'md5', 'Group', 'OS Type', 'Host Count', 'Last Seen', 'Is Executable Image', 'Timestamp'])
     return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.BinarySearch',
                           outputs_key_field='md5',
                           readable_output=md)
@@ -636,11 +644,12 @@ def processes_search_command(client: Client, process_name: str = None, group: st
                 'Is Terminated': process.get('terminated')
             })
     md = f'#### {INTEGRATION_NAME} - Process Search Results'
-    md += tableToMarkdown(f"\nShowing {start} - {len(res.get('results', []))} out of {res.get('total_results', '0')} results.",
-                          human_readable_data,
-                          headers=['Process Path', 'Process ID', 'Segment ID', 'Process md5', 'Process Name', 'Hostname',
-                                   'Process PID', 'Username', 'Last Update', 'Is Terminated'],
-                          removeNull=True)
+    md += tableToMarkdown(
+        f"\nShowing {start} - {len(res.get('results', []))} out of {res.get('total_results', '0')} results.",
+        human_readable_data,
+        headers=['Process Path', 'Process ID', 'Segment ID', 'Process md5', 'Process Name', 'Hostname',
+                 'Process PID', 'Username', 'Last Update', 'Is Terminated'],
+        removeNull=True)
 
     return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.ProcessSearch', outputs_key_field='Terms',
                           readable_output=md)
@@ -660,11 +669,15 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
         raise Exception(f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
     try:
-        ip = argToList(ip)
-        res = client.get_sensors(id=id, ipaddr=ip, hostname=hostname)[1]
+        ips = argToList(ip)
+        res = []
+        for current_ip in ips:
+            res += client.get_sensors(id=id, ipaddr=current_ip, hostname=hostname)[1]
+
         endpoints = []
         command_results = []
         for sensor in res:
+            demisto.debug(f"Got sensor: {sensor}")
             is_isolated = _get_isolation_status_field(sensor['network_isolation_enabled'],
                                                       sensor['is_isolating'])
             endpoint = Common.Endpoint(
@@ -688,8 +701,8 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
                 indicator=endpoint
             ))
         return command_results
-    except Exception:
-        return CommandResults(readable_output=f'{INTEGRATION_NAME} - Could not get endpoint')
+    except Exception as e:
+        return CommandResults(readable_output=f'{INTEGRATION_NAME} - Could not get endpoint (error- {e}')
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: str, status: str = None,
