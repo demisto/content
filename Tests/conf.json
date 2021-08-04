@@ -1785,6 +1785,12 @@
             "is_mockable": false
         },
         {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
+            "instance_names": "microsoft_defender_atp_dev_self_deployed",
+            "is_mockable": false
+        },
+        {
             "integrations": "Microsoft 365 Defender",
             "playbookID": "Microsoft_365_Defender-Test",
             "instance_names": "ms_365_defender_device_code"
