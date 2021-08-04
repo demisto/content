@@ -27,17 +27,19 @@ def test_crowdstrike_indicators_list_command(requests_mock):
     requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
     requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
 
+    feed_tags = ['Tag1', 'Tag2']
     client = Client(base_url='https://api.crowdstrike.com/', credentials={'identifier': '123', 'password': '123'},
-                    type='Domain', include_deleted='false', limit=2)
+                    type='Domain', include_deleted='false', limit=2, feed_tags=feed_tags)
     args = {
         'limit': '2'
     }
     response = crowdstrike_indicators_list_command(client, args)
 
-    assert len(response.outputs) == 2
-    assert len(response.raw_response) == 2
+    assert len(response.outputs) == 3
+    assert len(response.raw_response) == 3
     assert "Indicators from CrowdStrike Falcon Intel" in response.readable_output
     assert "domain_abc" in response.readable_output
+    assert feed_tags[0] and feed_tags[1] in response.raw_response[0]['fields']['tags']
 
 
 @pytest.mark.parametrize(
