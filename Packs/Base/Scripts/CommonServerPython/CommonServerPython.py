@@ -2493,6 +2493,7 @@ class Common(object):
             }
 
             custom_context.update(self.__dict__)
+            custom_context.__delitem__('dbot_score')
 
             ret_value = {
                 self.CONTEXT_PATH: custom_context
