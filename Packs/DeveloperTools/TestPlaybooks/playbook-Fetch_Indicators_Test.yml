@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -60,8 +60,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 265,
+          "y": 1770
         }
       }
     note: false
@@ -86,7 +86,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "23"
     scriptarguments:
       all:
         simple: "yes"
@@ -94,7 +94,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -120,7 +120,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "25"
     scriptarguments:
       extend-context:
         simple: serverConfig=
@@ -131,7 +131,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -156,8 +156,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2470
+          "x": 265,
+          "y": 3170
         }
       }
     note: false
@@ -185,15 +185,15 @@ tasks:
       - "9"
     scriptarguments:
       fields_to_search:
-        simple: ${serverConfig.response.sysConf.searchfield}
+        simple: ${searchField}
       object:
         simple: ${Indicators}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1595
+          "x": 265,
+          "y": 2295
         }
       }
     note: false
@@ -229,8 +229,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1770
+          "x": 265,
+          "y": 2470
         }
       }
     note: false
@@ -247,7 +247,7 @@ tasks:
     task:
       id: 0293c424-bd5a-4220-83ee-07d6afe498d1
       version: -1
-      name: GenericPolling
+      name: GenericPolling - waiting to fetch Indicators.
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -289,8 +289,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1245
+          "x": 377.5,
+          "y": 1945
         }
       }
     note: false
@@ -325,8 +325,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 265,
+          "y": 2120
         }
       }
     note: false
@@ -361,8 +361,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 265,
+          "y": 1595
         }
       }
     note: false
@@ -390,13 +390,13 @@ tasks:
       - "18"
     scriptarguments:
       integration_name:
-        simple: ${serverConfig.response.sysConf.sourcebrand}
+        simple: ${sourceBrand}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2120
+          "x": 265,
+          "y": 2820
         }
       }
     note: false
@@ -432,8 +432,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2295
+          "x": 265,
+          "y": 2995
         }
       }
     note: false
@@ -468,8 +468,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 265,
+          "y": 1420
         }
       }
     note: false
@@ -486,7 +486,7 @@ tasks:
     task:
       id: 289f574f-845e-4b73-857f-ff077eec31f4
       version: -1
-      name: GenericPolling
+      name: GenericPolling - Waiting to finish fetch.
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -504,7 +504,7 @@ tasks:
       - "17"
     scriptarguments:
       Ids:
-        simple: ${serverConfig.response.sysConf.sourcebrand}
+        simple: ${sourceBrand}
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -524,8 +524,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1945
+          "x": 265,
+          "y": 2645
         }
       }
     note: false
@@ -550,16 +550,244 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "22"
     scriptarguments:
       integration_name:
+        simple: ${sourceBrand}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: af7463b0-2c83-467a-89b8-27ae5230acd4
+    type: condition
+    task:
+      id: af7463b0-2c83-467a-89b8-27ae5230acd4
+      version: -1
+      name: Instance name should not contain spaces.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              simple: Instances.instanceName
+            iscontext: true
+          right:
+            value:
+              simple: ' '
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: d9fe7223-298d-46f7-8622-4614eac6f91d
+    type: condition
+    task:
+      id: d9fe7223-298d-46f7-8622-4614eac6f91d
+      version: -1
+      name: Check if there is inputs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.sourcebrand
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.searchfield
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 5143fe9b-90df-429a-84c2-80c232278114
+    type: regular
+    task:
+      id: 5143fe9b-90df-429a-84c2-80c232278114
+      version: -1
+      name: Set sourcebrand
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: sourceBrand
+      value:
         simple: ${serverConfig.response.sysConf.sourcebrand}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 6dfb2738-c96b-4ef0-8691-50f42a6bd53d
+    type: regular
+    task:
+      id: 6dfb2738-c96b-4ef0-8691-50f42a6bd53d
+      version: -1
+      name: Set searchField
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      key:
+        simple: searchField
+      value:
+        simple: ${serverConfig.response.sysConf.searchfield}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 0a5eec19-bc6a-4933-8424-5ee3b4aed592
+    type: regular
+    task:
+      id: 0a5eec19-bc6a-4933-8424-5ee3b4aed592
+      version: -1
+      name: Set searchField
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      key:
+        simple: searchField
+      value:
+        simple: ${inputs.searchfield}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: feb51062-cb69-4fd8-8761-004e6961f0fb
+    type: regular
+    task:
+      id: feb51062-cb69-4fd8-8761-004e6961f0fb
+      version: -1
+      name: Set sourcebrand
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: sourceBrand
+      value:
+        simple: ${inputs.sourcebrand}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
         }
       }
     note: false
@@ -571,16 +799,28 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "23_5_#default#": 0.2
+    },
     "paper": {
       "dimensions": {
-        "height": 2485,
-        "width": 492.5,
+        "height": 3185,
+        "width": 810,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
+inputs:
+- key: sourcebrand
+  value: {}
+  required: false
+  description: Id of Integration that we want to test.
+  playbookInputQuery: null
+- key: searchfield
+  value: {}
+  required: false
+  description: Comma separated list of fields to confirm that exists in al indicators.
+  playbookInputQuery: null
 outputs: []
 fromversion: 6.0.0
