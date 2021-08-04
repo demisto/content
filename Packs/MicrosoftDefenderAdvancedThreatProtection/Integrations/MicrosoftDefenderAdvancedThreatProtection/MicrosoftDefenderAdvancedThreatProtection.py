@@ -2441,7 +2441,7 @@ def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[
             indicators.append(item)
 
         human_readable = tableToMarkdown(
-            'Microsoft Defender ATP Indicators:',
+            'Microsoft Defender ATP SC Indicators:',
             indicators,
             headers=[
                 'id',
