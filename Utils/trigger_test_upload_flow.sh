@@ -461,7 +461,7 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -f|--force) _force=true
+  -f|--force) force=true
     bucket_upload=""
     shift;;
 
