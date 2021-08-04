@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Microsoft Defender Advanced Threat Protection test
+  id: Microsoft Defender Advanced Threat Protection
   version: -1
 configuration:
 - defaultvalue: https://api.securitycenter.windows.com
@@ -73,7 +73,7 @@ description: Microsoft Defender for Endpoint (previously Microsoft Defender Adva
   Threat Protection (ATP)) is a unified platform for preventative protection, post-breach
   detection, automated investigation, and response.
 display: Microsoft Defender for Endpoint
-name: Microsoft Defender Advanced Threat Protection test
+name: Microsoft Defender Advanced Threat Protection
 script:
   commands:
   - arguments:
@@ -3857,7 +3857,8 @@ script:
       auto: PREDEFINED
       defaultValue: Medium
       description: The severity of the malicious behavior identified by the data within
-        the indicator. Acceptable values are Informational, Low, Medium, High, where High is the most severe and Informational is not severe at all.
+        the indicator. Acceptable values are Informational, Low, Medium, High, where
+        High is the most severe and Informational is not severe at all.
       isArray: false
       name: severity
       predefined:
@@ -3932,10 +3933,9 @@ script:
         would look like this: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.severity
-      description: The severity of the malicious behavior
-        identified by the data within the indicator. Values are Informational,Low,
-        Medium ,High, where High is the most severe and Informational
-        is not severe at all.
+      description: The severity of the malicious behavior identified by the data within
+        the indicator. Values are Informational,Low, Medium ,High, where High is the
+        most severe and Informational is not severe at all.
       type: String
     - contextPath: MicrosoftATP.Indicators.indicatorValue
       description: The value of the Indicator.
@@ -3947,13 +3947,15 @@ script:
       description: Whether an altet was generated.
       type: Boolean
     - contextPath: MicrosoftATP.Indicators.rbacGroupNames
-      description: A list of RBAC device group names where the indicator is exposed and active. Empty list in case it exposed to all devices.
+      description: A list of RBAC device group names where the indicator is exposed
+        and active. Empty list in case it exposed to all devices.
       type: Unknown
     - contextPath: MicrosoftATP.Indicators.mitreTechniques
       description: A list of mitre techniques.
       type: Unknown
     - contextPath: MicrosoftATP.Indicators.indicatorType
-      description: Type of the indicator. Possible values are "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url".
+      description: Type of the indicator. Possible values are "FileSha1", "FileSha256",
+        "IpAddress", "DomainName" and "Url".
       type: String
     - contextPath: MicrosoftATP.Indicators.lastUpdateTime
       description: The last time the indicator was updated.
@@ -4305,10 +4307,9 @@ script:
         would look like this: ''2014-01-01T00:00:00Z'''
       type: Date
     - contextPath: MicrosoftATP.Indicators.severity
-      description: The severity of the malicious behavior
-        identified by the data within the indicator. Values are Informational,Low,
-        Medium ,High, where High is the most severe and Informational
-        is not severe at all.
+      description: The severity of the malicious behavior identified by the data within
+        the indicator. Values are Informational,Low, Medium ,High, where High is the
+        most severe and Informational is not severe at all.
       type: String
     - contextPath: MicrosoftATP.Indicators.indicatorValue
       description: The value of the Indicator.
@@ -4320,13 +4321,15 @@ script:
       description: Whether an altet was generated.
       type: Boolean
     - contextPath: MicrosoftATP.Indicators.rbacGroupNames
-      description: A list of RBAC device group names where the indicator is exposed and active. Empty list in case it exposed to all devices.
+      description: A list of RBAC device group names where the indicator is exposed
+        and active. Empty list in case it exposed to all devices.
       type: Unknown
     - contextPath: MicrosoftATP.Indicators.mitreTechniques
       description: A list of mitre techniques.
       type: Unknown
     - contextPath: MicrosoftATP.Indicators.indicatorType
-      description: Type of the indicator. Possible values are "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url".
+      description: Type of the indicator. Possible values are "FileSha1", "FileSha256",
+        "IpAddress", "DomainName" and "Url".
       type: String
     - contextPath: MicrosoftATP.Indicators.lastUpdateTime
       description: The last time the indicator was updated.
@@ -4392,7 +4395,7 @@ script:
     - contextPath: URL.Data
       description: The URL
       type: String
-  dockerimage: demisto/crypto:1.0.0.19032
+  dockerimage: demisto/crypto:1.0.0.23151
   feed: false
   isfetch: true
   longRunning: false
