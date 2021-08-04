@@ -1,167 +1,11 @@
-"""HelloWorld Feed Integration for Cortex XSOAR (aka Demisto)
-
-This feed integration is a good example on you can build a Cortex XSOAR feed
-using Python 3. Please follow the documentation links below and make sure that
-your feed integration follows the Code Conventions and required parameters, and passes the Linting phase.
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Feed Required Parameters: https://xsoar.pan.dev/docs/integrations/feeds#required-parameters
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-
-The API
---------------
-
-For this template, the feed used as API is OpenPhish, supplying a feed of URLs.
-This API's output is of type freetext, and the suitable handling for this type can be seen in the function
-'fetch_indicators'. Other APIs may have different formats, so when using this template for other feed APIs
-make sure you handle the output properly according to its format.
-
-
-Feed Integration File Structure
---------------------------
-
-A feed integration usually consists of the following parts:
-- Imports
-- Constants
-- Client Class
-- Helper Functions
-- Command Functions
-- Main Function
-- Entry Point
-
-
-Imports
--------
-
-Here you can import Python module you need for your feed integration. If you need
-a module that is not part of the default XSOAR Docker images, you can add
-a custom one. More details: https://xsoar.pan.dev/docs/integrations/docker
-
-There are also internal imports that are used by XSOAR:
-- demistomock (imported as demisto): allows your code to work offline for
-testing. The actual ``demisto`` module is provided at runtime when the
-code runs in XSOAR.
-- CommonServerPython.py: contains a set of helper functions, base classes
-and other useful components that will make your feed integration code easier
-to maintain.
-- CommonServerUserPython.py: includes a set of user defined commands that
-are specific to an XSOAR installation. Do not use it for feed integrations that
-are meant to be shared externally.
-
-These imports are automatically loaded at runtime within the XSOAR script
-runner, so you shouldn't modify them
-
-Constants
----------
-
-Usually some constants that do not require user parameters or inputs, such
-as the default API entry point for your service, or the maximum numbers of
-incidents to fetch every time.
-
-
-Client Class
-------------
-
-We recommend to use a Client class to wrap all the code that needs to interact
-with your API. Moreover, we recommend, when possible, to inherit from the
-BaseClient class, defined in CommonServerPython.py. This class already handles
-a lot of the work, such as system proxy settings, SSL certificate verification
-and exception handling for HTTP errors.
-
-Note that the Client class should NOT contain any Cortex XSOAR specific code,
-i.e. it shouldn't use anything in the ``demisto`` class (functions such as
-``demisto.args()`` or ``demisto.results()`` or even ``return_results`` and
-``return_error``.
-You will use the Command Functions to handle XSOAR inputs and outputs.
-
-When calling an API, you should use the ``_http.request()`` method and you
-can return the raw data to the calling function (usually a Command function).
-
-You should usually have one function for each API endpoint.
-
-Look at the code and the commands of this specific class to better understand
-the implementation details.
-
-
-Helper Functions
-----------------
-
-Helper functions are usually used as utility functions that are used by several
-command functions throughout your code. For example they map arguments to types
-or convert severity formats from feed integration-specific to XSOAR.
-Many helper functions are already defined in ``CommonServerPython.py`` and are
-often very handy.
-
-
-Command Functions
------------------
-
-Command functions perform the mapping between XSOAR inputs and outputs to the
-Client class functions inputs and outputs. As a best practice, they shouldn't
-contain calls to ``demisto.args()``, ``demisto.results()``, ``return_error``
-and ``demisto.command()`` as those should be handled through the ``main()``
-function.
-However, in command functions, use ``demisto`` or ``CommonServerPython.py``
-artifacts, such as ``demisto.debug()`` or the ``CommandResults`` class and the
-``Common.*`` classes.
-
-Every feed integration should have these three base commands:
-``<product-prefix>-get-indicators`` - where <product-prefix> is replaced by the name
-of the Product or Vendor source providing the feed. So for example, if you were
-developing a feed integration for Microsoft Intune this command might be called
-msintune-get-indicators. This command should fetch a limited number of indicators
-from the feed source and display them in the war room.
-``fetch-indicators`` - this command will initiate a request to the feed endpoint, format
-the data fetched from the endpoint to conform to Cortex XSOAR's expected input format
-and create new indicators. If the integration instance is configured to Fetch indicators,
-then this is the command that will be executed at the specified Feed Fetch Interval.
-``test-module`` - this is the command that is run when the Test button in the configuration
- panel of a feed integration is clicked.
-
-More information on Context Outputs, Standards, DBotScore and demisto-sdk:
-https://xsoar.pan.dev/docs/integrations/code-conventions#outputs
-https://xsoar.pan.dev/docs/integrations/context-and-outputs
-https://xsoar.pan.dev/docs/integrations/context-standards
-https://xsoar.pan.dev/docs/integrations/dbot
-https://github.com/demisto/demisto-sdk/blob/master/demisto_sdk/commands/json_to_outputs/README.md
-https://xsoar.pan.dev/docs/integrations/context-and-outputs
-https://xsoar.pan.dev/docs/integrations/code-conventions#outputs
-https://xsoar.pan.dev/docs/integrations/dt
-
-
-Main Function
--------------
-
-The ``main()`` function takes care of reading the feed integration parameters via
-the ``demisto.params()`` function, initializes the Client class and checks the
-different options provided to ``demisto.commands()``, to invoke the correct
-command function passing to it ``demisto.args()`` and returning the data to
-``return_results()``. ``main()`` also catches exceptions and
-returns an error message via ``return_error()``.
-
-
-Entry Point
------------
-
-This is the integration code entry point. It checks whether the ``__name__``
-variable is ``__main__`` , ``__builtin__`` (for Python 2) or ``builtins`` (for
-Python 3) and then calls the ``main()`` function. Just keep this convention.
-
-"""
-
 from typing import Dict, List, Optional
-# from datetime import date
 import urllib3
 import json
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 # disable insecure warnings
 urllib3.disable_warnings()
-
 
 class Client(BaseClient):
     """Client class to interact with the service API
@@ -311,7 +155,6 @@ class Client(BaseClient):
             )
         return result
 
-
 def test_module(client: Client) -> str:
     """Builds the iterator to check that the feed is accessible.
     Args:
@@ -331,7 +174,6 @@ def test_module(client: Client) -> str:
 
     client.build_iterator()
     return 'ok'
-
 
 def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags: List = [], limit: int = -1) \
         -> List[Dict]:
@@ -462,11 +304,6 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
 
     return indicators
 
-
-"""
-"""
-
-
 def fetch_hashes(client: Client, limit: int = -1) \
         -> List[Dict]:
     """Retrieves indicators from the feed
@@ -518,11 +355,6 @@ def fetch_hashes(client: Client, limit: int = -1) \
         indicators.append(indicator_obj)
 
     return indicators
-
-
-"""
-"""
-
 
 def fetch_urls(client: Client, limit: int = -1) \
         -> List[Dict]:
@@ -576,7 +408,6 @@ def fetch_urls(client: Client, limit: int = -1) \
 
     return indicators
 
-
 def get_indicators_command(client: Client,
                            params: Dict[str, str],
                            args: Dict[str, str]
@@ -605,7 +436,6 @@ def get_indicators_command(client: Client,
         outputs=indicators,
     )
 
-
 def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
@@ -620,11 +450,6 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List:
     urls = fetch_urls(client)
     hashes = fetch_hashes(client)
     return [ips, urls, hashes]
-
-
-"""
-"""
-
 
 def get_hashes_command(client: Client,
                        params: Dict[str, str],
@@ -652,11 +477,6 @@ def get_hashes_command(client: Client,
         outputs=hashes,
     )
 
-
-"""
-"""
-
-
 def get_urls_command(client: Client,
                      params: Dict[str, str],
                      args: Dict[str, Any]
@@ -683,7 +503,6 @@ def get_urls_command(client: Client,
         raw_response=urls,
         outputs=urls,
     )
-
 
 def main():
     """
@@ -755,7 +574,6 @@ def main():
     except Exception as e:
         demisto.error(traceback.format_exc())  # Print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
-
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
