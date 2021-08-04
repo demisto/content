@@ -54,15 +54,12 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      assignBy: {}
-      email: {}
       onCall:
         complex:
           root: inputs.OnCall
       roles:
         complex:
           root: inputs.Role
-      username: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -122,12 +119,6 @@ tasks:
     nexttasks:
       '#none#':
       - "29"
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      id: {}
-      timefield1: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -188,7 +179,6 @@ tasks:
       - "53"
       - "85"
     scriptarguments:
-      append: {}
       key:
         simple: ReporterAddress
       value:
@@ -227,11 +217,6 @@ tasks:
       '#none#':
       - "56"
     scriptarguments:
-      additionalHeader: {}
-      attachCIDs: {}
-      attachIDs: {}
-      attachNames: {}
-      bcc: {}
       body:
         simple: "Hi ${.=function(val) { var reporter = val.ReporterAddress ;var account\
           \ = val.Account && val.Account.filter(function(acc) { return acc.DisplayName\
@@ -240,20 +225,12 @@ tasks:
           \ your email and are investigating.\nPlease do not touch the email until\
           \ further notice.\n\nCordially, \n  Your friendly neighborhood security\
           \ team"
-      cc: {}
-      from: {}
-      htmlBody: {}
-      replyTo: {}
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
-      templateParams: {}
       to:
         complex:
           root: incident
           accessor: labels.Email/from
-      transientFile: {}
-      transientFileCID: {}
-      transientFileContent: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -327,10 +304,6 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      attachCIDs: {}
-      attachIDs: {}
-      attachNames: {}
-      bcc: {}
       body:
         simple: |-
           Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
@@ -339,9 +312,6 @@ tasks:
 
           Cordially,
             Your security team
-      cc: {}
-      htmlBody: {}
-      replyTo: {}
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
@@ -380,10 +350,6 @@ tasks:
       '#none#':
       - "27"
     scriptarguments:
-      attachCIDs: {}
-      attachIDs: {}
-      attachNames: {}
-      bcc: {}
       body:
         simple: |-
           Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
@@ -391,15 +357,10 @@ tasks:
 
           All the best,
             Your security team
-      cc: {}
-      htmlBody: {}
-      replyTo: {}
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
         simple: ${incident.labels.Email/from}
-      transientFile: {}
-      transientFileContent: {}
     separatecontext: false
     view: |-
       {
@@ -537,15 +498,15 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 8d14541c-c937-475f-87dd-9ba980d197f9
+    taskid: 6838736c-c177-4b2a-883e-43e36cc896bb
     type: playbook
     task:
-      id: 8d14541c-c937-475f-87dd-9ba980d197f9
+      id: 6838736c-c177-4b2a-883e-43e36cc896bb
       version: -1
-      name: Search And Delete Emails - Generic v2
+      name: Search And Delete Emails - Generic
       description: This playbook searches and delete emails with similar attributes
-        of a malicious email.
-      playbookName: Search And Delete Emails - Generic v2
+        of a malicious email using EWS or Office 365.
+      playbookName: Search And Delete Emails - Generic
       type: playbook
       iscommand: false
       brand: ""
@@ -571,8 +532,7 @@ tasks:
       O365Description:
         simple: Search for potential phishing
       O365ExchangeLocation:
-        complex:
-          root: inputs.O365ExchangeLocation
+        simple: All
       O365ExchangeLocationExclusion:
         complex:
           root: inputs.O365ExchangeLocationExclusion
@@ -956,7 +916,6 @@ tasks:
           root: ReporterAddress
           transformers:
           - operator: uniq
-      InternalDomains: {}
     separatecontext: true
     loop:
       iscommand: false
@@ -1130,25 +1089,6 @@ tasks:
       '#none#':
       - "83"
     scriptarguments:
-      DKIM_override_fail: {}
-      DKIM_override_neutral: {}
-      DKIM_override_none: {}
-      DKIM_override_pass: {}
-      DKIM_override_permerror: {}
-      DKIM_override_policy: {}
-      DKIM_override_temperror: {}
-      DMARC_override_fail: {}
-      DMARC_override_none: {}
-      DMARC_override_pass: {}
-      DMARC_override_permerror: {}
-      DMARC_override_temperror: {}
-      SPF_override_fail: {}
-      SPF_override_neutral: {}
-      SPF_override_none: {}
-      SPF_override_pass: {}
-      SPF_override_permerror: {}
-      SPF_override_softfail: {}
-      SPF_override_temperror: {}
       headers:
         complex:
           root: Email
@@ -1343,16 +1283,10 @@ tasks:
           accessor: Subject
           transformers:
           - operator: uniq
-      hashSeed: {}
-      labelProbabilityThreshold: {}
-      minTextLength: {}
       modelName:
         simple: phishing_model
-      modelStoreType: {}
       returnError:
         simple: "false"
-      topWordsLimit: {}
-      wordThreshold: {}
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
@@ -1528,9 +1462,6 @@ tasks:
         simple: "No"
       CustomBlockRule:
         simple: "True"
-      CustomURLCategory: {}
-      DAG: {}
-      EDLServerIP: {}
       EmailToBlock:
         complex:
           root: DBotScore
@@ -1579,9 +1510,6 @@ tasks:
           accessor: Indicator
           transformers:
           - operator: uniq
-      IPBlacklistMiner: {}
-      IPListName: {}
-      LogForwarding: {}
       MD5:
         complex:
           root: DBotScore
@@ -1664,7 +1592,6 @@ tasks:
           accessor: Indicator
           transformers:
           - operator: uniq
-      StaticAddressGroup: {}
       URL:
         complex:
           root: DBotScore
@@ -1689,8 +1616,6 @@ tasks:
           accessor: Indicator
           transformers:
           - operator: uniq
-      URLBlacklistMiner: {}
-      URLListName: {}
       Username:
         complex:
           root: DBotScore
@@ -1715,9 +1640,6 @@ tasks:
           accessor: Indicator
           transformers:
           - operator: uniq
-      categories: {}
-      device-group: {}
-      type: {}
     separatecontext: true
     loop:
       iscommand: false
@@ -1904,7 +1826,7 @@ tasks:
           left:
             value:
               complex:
-                root: incident.partofcampaign
+                root: PartOfCampaign
             iscontext: true
     view: |-
       {
@@ -1927,9 +1849,9 @@ tasks:
       version: -1
       name: Detect & Manage Phishing Campaigns
       description: |-
-        This playbook is used to find, create and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to do the following:
-        1. Find and link related incidents to the same phishing attack (a phishing campaign).
-        2. Search for an existing Phishing Campaign incident or create a incident for the related Phishing incidents.
+        This playbook is used to find, create and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to:
+        1. Find and tie together incidents that are related to the same phishing attack (a phishing campaign).
+        2. Search for an existing Phishing Campaign incident or create a new one for the tied Phishing incidents.
         3. Link all detected phishing incidents to the Phishing Campaign incident that was found or created previously.
         4. Update the Phishing Campaign incident with the latest data about the campaign, and update all related phishing incidents to indicate that they are part of the campaign.
       playbookName: Detect & Manage Phishing Campaigns
@@ -1978,10 +1900,6 @@ tasks:
       '#none#':
       - "27"
     scriptarguments:
-      attachCIDs: {}
-      attachIDs: {}
-      attachNames: {}
-      bcc: {}
       body:
         simple: |-
           Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
@@ -1989,15 +1907,10 @@ tasks:
 
           All the best,
             Your security team
-      cc: {}
-      htmlBody: {}
-      replyTo: {}
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
         simple: ${incident.labels.Email/from}
-      transientFile: {}
-      transientFileContent: {}
     separatecontext: false
     view: |-
       {
@@ -2013,6 +1926,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -2067,7 +1981,7 @@ inputs:
   playbookInputQuery:
 - key: OnCall
   value:
-    simple: "False"
+    simple: "false"
   required: false
   description: Set to true to assign only user that is currently on shift. Requires
     Cortex XSOAR v5.5 or later.
@@ -2086,34 +2000,35 @@ inputs:
     simple: Soft
   required: false
   description: |-
-    The method by which to delete emails using the O365 - Security And Compliance - Search And Delete playbook. Can be "Soft" (recoverable), or "Hard" (unrecoverable). Leave empty to decide manually for each email incident.
+    The method by which to delete emails using the O365 - Security And Compliance - Search And Delete playbook. Could be "Soft" (recoverable), or "Hard" (unrecoverable). Leave empty to decide manually for each email incident.
     This is only applicable if the SearchAndDeleteIntegration input is set to O365.
   playbookInputQuery:
 - key: O365ExchangeLocation
   value:
-    simple: SingleMailbox
+    complex:
+      root: incident
+      accessor: emailto
   required: false
   description: Used only when searching and deleting emails in O365. The exchange
     location. Determines from where to search and delete emails searched using O365
-    playbooks. Use "All" to search all mailboxes, "SingleMailbox" to
-    search and delete the email only from the recipient's inbox, or "Manual"
-    to decide manually for every incident. Note - searching all mailboxes may take
-    a significant amount of time. This input is applicable only if the SearchAndDeleteIntegration
-    input is set to O365.
+    playbooks. Use the value "All" to search all mailboxes, or use ${incident.emailto}
+    to search and delete the email only from the recipient's inbox. Note - searching
+    all mailboxes may take a significant amount of time. This input is only applicable
+    if the SearchAndDeleteIntegration input is set to O365.
   playbookInputQuery:
 - key: O365AllowNotFoundSearchLocations
   value:
     simple: "false"
   required: false
   description: Used only when searching and deleting emails in O365. Whether to include
-    mailboxes other than regular user mailboxes in the search. Default
+    mailboxes other than regular user mailboxes in the compliance search. Default
     is "false".
   playbookInputQuery:
 - key: O365ExchangeLocationExclusion
   value: {}
   required: false
   description: Used only when searching and deleting emails in O365. Comma-separated
-    list of mailboxes/distribution groups to exclude, when you use the value "All"
+    list of mailboxes/distribution groups to exclude when you use the value "All"
     for the O365ExchangeLocation input.
   playbookInputQuery:
 outputs: []
