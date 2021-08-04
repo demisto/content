@@ -35,7 +35,7 @@ script:
   - name: asana-get-all-projects
     arguments: []
     description: gets the list of projects on asana
-  dockerimage: demisto/asana:1.0.0.18225
+  dockerimage: demisto/minio:1.0.0.23290
   runonce: false
   subtype: python3
 fromversion: 6.0.0
