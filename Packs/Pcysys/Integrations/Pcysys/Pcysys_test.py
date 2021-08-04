@@ -42,6 +42,7 @@ def test_pentera_get_task_run_full_action_report(mocker, requests_mock):
         'port': '8181'
     })
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={
+        'base_url': 'https://pentera.com',
         'tgt': 'omgNewTGT',
         'accessToken': 'omgNewSecret',
         'expiry': MOCK_AUTHENTICATION_EXP
@@ -80,6 +81,7 @@ def test_pentera_get_task_run_stats(mocker, requests_mock):
         'port': '8181'
     })
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={
+        'base_url': 'https://pentera.com',
         'tgt': 'omgNewTGT',
         'accessToken': 'omgNewSecret',
         'expiry': MOCK_AUTHENTICATION_EXP
@@ -113,6 +115,7 @@ def test_pentera_run_template(mocker, requests_mock):
         'port': '8181'
     })
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={
+        'base_url': 'https://pentera.com',
         'tgt': 'omgNewTGT',
         'accessToken': 'omgNewSecret',
         'expiry': MOCK_AUTHENTICATION_EXP

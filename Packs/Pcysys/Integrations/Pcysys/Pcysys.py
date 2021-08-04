@@ -11,8 +11,6 @@ import json
 from typing import List
 from enum import Enum
 
-# Increase csv field size limit
-csv.field_size_limit(sys.maxsize)
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -50,7 +48,7 @@ class Client(BaseClient):
 
     def load_session_parameters(self):
         context: dict = get_integration_context()
-        if context:
+        if context and context['base_url'] == self._base_url:
             self.tgt = context['tgt']
             self.access_token = context['accessToken']
             self.expiry = context['expiry']
@@ -70,10 +68,11 @@ class Client(BaseClient):
             )
             demisto.debug(f'Got response: {res}')
             if not res.ok:
-                if res.status_code == requests.status_codes.codes.UNAUTHORIZED:  # pylint: disable=no-member
-                    raise AuthorizationError(
-                        f'Unauthorized access to Pentera API. Status code: {res.status_code}. Raw response: {res.text}')
-                raise ValueError(f'Error in API call to Pentera. Status code: {res.status_code}. Reason: {res.text}')
+                status_code = res.status_code
+                if status_code == requests.status_codes.codes.UNAUTHORIZED:  # pylint: disable=no-member
+                    info = "Check that your system clock is set to the correct date and time before you try again."
+                    raise AuthorizationError(f'Status code: {status_code}, reason: {res.text}. {info}')
+                raise ValueError(f'Error in API call to Pentera. Status code: {status_code}, reason: {res.text}')
 
             try:
                 if response_type == 'json':
@@ -125,6 +124,7 @@ class Client(BaseClient):
 
     def save_session_parameters(self):
         context = {
+            'base_url': self._base_url,
             'tgt': self.tgt,
             'accessToken': self.access_token,
             'expiry': self.expiry
@@ -144,7 +144,7 @@ class Client(BaseClient):
         authentication_headers['Authorization'] = 'Basic ' + encoded_str
         return authentication_headers
 
-    def run_db_health_checks(self):
+    def run_health_checks(self):
         res = self.generic_request(method=Request.GET.value, url_suffix=HEALTH_URL_SUFFIX)
         return res
 
@@ -174,7 +174,7 @@ class Client(BaseClient):
 
 def pentera_test_module_command(client: Client):
     try:
-        response = client.run_db_health_checks()
+        response = client.run_health_checks()
     except Exception as test_error:
         message = getattr(test_error, 'message', str(test_error))
         raise DemistoException(message)
@@ -333,6 +333,17 @@ def pentera_authentication(client: Client):
             )
 
 
+def increase_csv_field_size_limit():
+    """
+    This method will try to increase the csv field size limit as files might contain huge fields.
+    :return: None
+    """
+    try:
+        csv.field_size_limit(sys.maxsize)
+    except OverflowError:
+        pass
+
+
 def main():
     params: dict = demisto.params()
     application_port = params['port']
@@ -367,4 +378,5 @@ def main():
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
+    increase_csv_field_size_limit()
     main()
