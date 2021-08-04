@@ -136,7 +136,9 @@ class IAMUserProfile:
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
         self._vendor_action_results = []
 
-    def get_attribute(self, item):
+    def get_attribute(self, item, use_old_user_data=False):
+        if use_old_user_data and self._user_profile.get('olduserdata', {}).get(item):
+            return self._user_profile.get('olduserdata', {}).get(item)
         return self._user_profile.get(item)
 
     def to_entry(self):
@@ -444,7 +446,7 @@ class IAMCommand:
                                     skip_reason='Command is disabled.')
         else:
             try:
-                identifier = user_profile.get_attribute(self.attr)
+                identifier = user_profile.get_attribute(self.attr, use_old_user_data=True)
                 user_app_data = client.get_user(identifier)
                 if user_app_data:
                     app_profile = user_profile.map_object(self.mapper_out, IAMUserProfile.UPDATE_INCIDENT_TYPE)
