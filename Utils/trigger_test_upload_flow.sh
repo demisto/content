@@ -508,7 +508,7 @@ change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
 
 # New Pack
 create_new_pack "${base_pack_name}" "${new_pack_name}"
-add_dependency "${new_pack_name}" "${base_pack_name}"
+add_dependency "${new_pack_name}" "Microsoft365Defender"
 add_author_image "${new_pack_name}"
 add_1_0_0_release_note "${new_pack_name}"
 
