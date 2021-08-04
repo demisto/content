@@ -2300,7 +2300,7 @@ script:
       name: append_tags
     description: Manage Azure Web App slot
     name: azure-rm-webappslot
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+  dockerimage: demisto/pyjwt:1.0.0.23135
   runonce: false
   script: ''
   subtype: python3
