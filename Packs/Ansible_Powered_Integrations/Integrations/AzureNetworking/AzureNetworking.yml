@@ -1571,7 +1571,7 @@ script:
       type: number
     - contextPath: AzureNetworking.dnszones.name_servers
       description: '[''The name servers for this DNS zone.'']'
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+  dockerimage: demisto/pyjwt:1.0.0.23135
   runonce: false
   script: ''
   subtype: python3
