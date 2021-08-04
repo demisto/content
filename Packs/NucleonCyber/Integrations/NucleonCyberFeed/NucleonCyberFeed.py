@@ -103,18 +103,18 @@ class Client(BaseClient):
         global_usrn = params.get('usrn')
         global_client_id = params.get('clientid')
         body = {'usrn': global_usrn, 'clientID': global_client_id, 'limit': limit}
-        res = self._http_request('POST',
-                                 url_suffix='',
-                                 full_url="https://api.nucleoncyber.com/feed/activethreats",
-                                 auth=(global_username, global_password),
-                                 data=body,
-                                 resp_type='text',
-                                 )
+        res = self._http_request(
+            'POST',
+            full_url="https://api.nucleoncyber.com/feed/activethreats",
+            auth=(global_username, global_password),
+            data=body,
+            resp_type='text',
+        )
         json_payload = json.loads(res)
         result = []
         all_data = json_payload.get("data")
 
-        demisto.info(all_data)
+        demisto.debug(all_data)
         for data in all_data:
             result.append(
                 {
@@ -145,16 +145,6 @@ def test_module(client: Client) -> str:
     Returns:
         Outputs.
     """
-    # INTEGRATION FEED DEVELOPER TIP
-    # Client class should raise the exceptions, but if the test fails
-    # the exception text is printed to the Cortex XSOAR UI.
-    # If you have some specific errors you want to capture (i.e. auth failure)
-    # you should catch the exception here and return a string with a more
-    # readable output (for example return 'Authentication Error, API Key
-    # invalid').
-    # Cortex XSOAR will print everything you return different than 'ok' as
-    # an error
-
     client.build_iterator()
     return 'ok'
 
@@ -331,8 +321,6 @@ def fetch_urls(client: Client, limit: int = -1) \
     Returns:
         Indicators.
     """
-    # iterator = client.build_iterator()
-    # params = demisto.params()
     iterator = client.get_urls(limit)
 
     indicators = []
@@ -415,13 +403,11 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List:
     return [ips, urls, hashes]
 
 def get_hashes_command(client: Client,
-                       params: Dict[str, str],
                        args: Dict[str, Any]
                        ) -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
-        params: demisto.params()
         args: demisto.args()
     Returns:
         Outputs.
@@ -441,13 +427,11 @@ def get_hashes_command(client: Client,
     )
 
 def get_urls_command(client: Client,
-                     params: Dict[str, str],
                      args: Dict[str, Any]
                      ) -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
-        params: demisto.params()
         args: demisto.args()
     Returns:
         Outputs.
