@@ -25,7 +25,7 @@ class Client(BaseClient):
 
         result = []
 
-        res = self._http_request('GET',
+        indicators = self._http_request('GET',
                                  full_url=self._base_url,
                                  resp_type='text',
                                  )
@@ -34,8 +34,6 @@ class Client(BaseClient):
         # iterating over it's lines solely. Other feeds could be in other kinds of formats (CSV, MISP, etc.), or might
         # require additional processing as well.
         try:
-            indicators = res.split('\n')
-
             for indicator in indicators:
                 # Infer the type of the indicator using 'auto_detect_indicator_type(indicator)' function
                 # (defined in CommonServerPython).
@@ -113,6 +111,16 @@ class Client(BaseClient):
 
         demisto.debug(all_data)
         for data in all_data:
+
+            if not data.get("attackDetails"):
+                continue
+            
+            if not data.get("attackDetails").get('remote'):
+                continue
+
+            if not data.get("attackMeta"):
+                continue
+                
             result.append(
                 {
                     'value': data.get("ip"),
