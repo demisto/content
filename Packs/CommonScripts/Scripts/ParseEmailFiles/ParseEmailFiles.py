@@ -3307,6 +3307,8 @@ def extract_address_eml(eml, entry):
 
 
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False):
+    if email_data is None:
+        return 'No data extracted from email'
     email_data = recursive_convert_to_unicode(email_data)
     email_file_name = recursive_convert_to_unicode(email_file_name)
     parent_email_file = recursive_convert_to_unicode(parent_email_file)
@@ -3619,7 +3621,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attached_emails.extend(inner_attached_emails)
                             # if we are outter email is a singed attachment it is a wrapper and we don't return the output of
                             # this inner email as it will be returned as part of the main result
-                            if 'multipart/signed' not in eml.get_content_type():
+                            if 'multipart/signed' not in eml.get_content_type() and inner_eml:
                                 return_outputs(readable_output=data_to_md(inner_eml, attachment_file_name, file_name),
                                                outputs=None)
                         finally:
@@ -3686,7 +3688,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         # 1. it is 'multipart/signed' so it is probably a wrapper and we can ignore the outer "email"
         # 2. if it is 'multipart/signed' but has 'to' address so it is actually a real mail.
         if 'multipart/signed' not in eml.get_content_type() \
-                or ('multipart/signed' in eml.get_content_type() and extract_address_eml(eml, 'to')):
+                or ('multipart/signed' in eml.get_content_type()
+                    and (extract_address_eml(eml, 'to') or extract_address_eml(eml, 'from') or eml.get('subject'))):
             email_data = {
                 'To': extract_address_eml(eml, 'to'),
                 'CC': extract_address_eml(eml, 'cc'),
