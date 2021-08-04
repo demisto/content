@@ -85,13 +85,14 @@ Scores provided IP entities' reputation in SOCRadar ThreatFusion.
 | SOCRadarThreatFusion.Reputation.IP.Geo Location.Timezone | String | Timezone field Geographical location information of queried IP address. | 
 | SOCRadarThreatFusion.Reputation.IP.Geo Location.ZipCode | String | Zip code field Geographical location information of queried IP address. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
-| DBotScore.Score | Number | The actual score. | 
 | IP.Address | String | IP address | 
 | IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
 | IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. | 
 | IP.Geo.Country | String | The country in which the IP address is located. | 
+
 
 #### Command Example
 ```!ip ip="1.1.1.1"```
@@ -243,10 +244,27 @@ Scores provided domain entities' reputation in SOCRadar ThreatFusion.
 | SOCRadarThreatFusion.Reputation.Domain.Whois Details.expiration_date | Date | Expiration date field Whois information of queried domain. | 
 | SOCRadarThreatFusion.Reputation.Domain.DNS Details | String | DNS information of queried domain. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
-| DBotScore.Score | Number | The actual score. | 
 | Domain.Name | String | The domain name, for example: "google.com". | 
+| Domain.DNS | String | A list of IP objects resolved by DNS. | 
+| Domain.CreationDate | Date | The date that the domain was created. | 
+| Domain.UpdatedDate | String | The date that the domain was last updated. | 
+| Domain.ExpirationDate | Date | The expiration date of the domain. | 
+| Domain.NameServers | Unknown | \(List&lt;String&gt;\) Name servers of the domain. | 
+| Domain.Organization | String | The organization of the domain. | 
+| Domain.Registrant.Name | String | The name of the registrant. | 
+| Domain.WHOIS.CreationDate | Date | The date that the domain was created. | 
+| Domain.WHOIS.UpdatedDate | Date | The date that the domain was last updated. | 
+| Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. | 
+| Domain.WHOIS.NameServers | String | \(List&lt;String&gt;\) Name servers of the domain. | 
+| Domain.WHOIS.Registrant.Name | String | The name of the registrant. | 
+| Domain.WHOIS.Registrar.Name | String | The name of the registrar, for example: "GoDaddy" | 
+| Domain.Geo.Country | String | The country in which the domain address is located. | 
+| Domain.Subdomains | Unknown | \(List&lt;String&gt;\) Subdomains of the domain. | 
+| Domain.Registrant.Country | String | The country of the registrant. | 
+
 
 #### Command Example
 ```!domain domain="paloaltonetworks.com"```
@@ -261,12 +279,44 @@ Scores provided domain entities' reputation in SOCRadar ThreatFusion.
         "Vendor": "SOCRadar ThreatFusion"
     },
     "Domain": {
-        "Name": "paloaltonetworks.com"
+        "CreationDate": "Mon, 21 Feb 2005 02:42:10 GMT",
+        "DNS": "1.1.1.1",
+        "ExpirationDate": "Wed, 21 Feb 2024 02:42:10 GMT",
+        "Geo": {
+            "Country": "US"
+        },
+        "Name": "paloaltonetworks.com",
+        "NameServers": [
+            "ns record"
+        ],
+        "Organization": "Palo Alto Networks, Inc.",
+        "Registrar": {
+            "AbuseEmail": null,
+            "AbusePhone": null,
+            "Name": "MarkMonitor Inc."
+        },
+        "UpdatedDate": "Thu, 01 Jul 2021 00:32:38 GMT",
+        "WHOIS": {
+            "CreationDate": "Mon, 21 Feb 2005 02:42:10 GMT",
+            "ExpirationDate": "Wed, 21 Feb 2024 02:42:10 GMT",
+            "NameServers": [
+                "ns record"
+            ],
+            "Registrar": {
+                "AbuseEmail": null,
+                "AbusePhone": null,
+                "Name": "MarkMonitor Inc."
+            },
+            "UpdatedDate": "Thu, 01 Jul 2021 00:32:38 GMT"
+        }
     },
     "SOCRadarThreatFusion": {
         "Reputation": {
             "Domain": {
                 "DNS Details": {
+                    "A": [
+                        "1.1.1.1"
+                    ],
                     "MX": [
                         "mx record"
                     ],
@@ -289,36 +339,21 @@ Scores provided domain entities' reputation in SOCRadar ThreatFusion.
                     "address": null,
                     "city": null,
                     "country": "US",
-                    "creation_date": [
-                        "Mon, 21 Feb 2005 02:42:10 GMT",
-                        "Mon, 21 Feb 2005 02:42:10 GMT"
-                    ],
+                    "creation_date": "Mon, 21 Feb 2005 02:42:10 GMT",
                     "dnssec": "signedDelegation",
                     "domain_name": "PALOALTONETWORKS.COM",
                     "emails": [
-                        "whoisrequest@markmonitor.com",
-                        "abusecomplaints@markmonitor.com"
+                        "abusecomplaints@markmonitor.com",
+                        "whoisrequest@markmonitor.com"
                     ],
-                    "expiration_date": [
-                        "Wed, 21 Feb 2024 02:42:10 GMT",
-                        "Wed, 21 Feb 2024 02:42:10 GMT"
-                    ],
+                    "expiration_date": "Wed, 21 Feb 2024 02:42:10 GMT",
                     "name": null,
                     "name_servers": [
-                        "ns4.p23.dynect.net",
-                        "ns1.p23.dynect.net",
-                        "ns3.p23.dynect.net",
-                        "ns6.dnsmadeeasy.com",
-                        "ns2.p23.dynect.net",
-                        "ns5.dnsmadeeasy.com",
-                        "ns7.dnsmadeeasy.com"
+                        "ns record"
                     ],
                     "org": "Palo Alto Networks, Inc.",
                     "referral_url": null,
-                    "registrar": [
-                        "MarkMonitor Inc.",
-                        "MarkMonitor, Inc."
-                    ],
+                    "registrar": "MarkMonitor Inc.",
                     "state": "CA",
                     "status": [
                         "clientTransferProhibited https://icann.org/epp#clientTransferProhibited",
@@ -328,10 +363,7 @@ Scores provided domain entities' reputation in SOCRadar ThreatFusion.
                         "clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)",
                         "clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited"
                     ],
-                    "updated_date": [
-                        "Thu, 01 Jul 2021 00:32:38 GMT",
-                        "Thu, 01 Jul 2021 00:32:38 GMT"
-                    ],
+                    "updated_date": "Thu, 01 Jul 2021 00:32:38 GMT",
                     "whois_server": "whois.markmonitor.com",
                     "zipcode": null
                 }
@@ -346,7 +378,7 @@ Scores provided domain entities' reputation in SOCRadar ThreatFusion.
 >### SOCRadar - Analysis results for domain: paloaltonetworks.com
 >|DNS Details|Domain|Risk Score (Out of 1000)|Score Details|Subdomains|Total Encounters|Whois Details|
 >|---|---|---|---|---|---|---|
->| A: 34.107.151.202<br/>MX: mx record<br/>NS: ns record<br/>SOA: domains.paloaltonetworks.com. 1627343953 3600 600 604800 3600<br/>TXT: txt record | paloaltonetworks.com | 0 |  |  | 0 | address: null<br/>city: null<br/>country: US<br/>creation_date: Mon, 21 Feb 2005 02:42:10 GMT,<br/>Mon, 21 Feb 2005 02:42:10 GMT<br/>dnssec: signedDelegation<br/>domain_name: PALOALTONETWORKS.COM<br/>emails: whoisrequest@markmonitor.com,<br/>abusecomplaints@markmonitor.com<br/>expiration_date: Wed, 21 Feb 2024 02:42:10 GMT,<br/>Wed, 21 Feb 2024 02:42:10 GMT<br/>name: null<br/>name_servers: ns4.p23.dynect.net,<br/>ns1.p23.dynect.net,<br/>ns3.p23.dynect.net,<br/>ns6.dnsmadeeasy.com,<br/>ns2.p23.dynect.net,<br/>ns5.dnsmadeeasy.com,<br/>ns7.dnsmadeeasy.com<br/>org: Palo Alto Networks, Inc.<br/>referral_url: null<br/>registrar: MarkMonitor Inc.,<br/>MarkMonitor, Inc.<br/>state: CA<br/>status: clientTransferProhibited https:<span>//</span>icann.org/epp#clientTransferProhibited,<br/>clientUpdateProhibited (https:<span>//</span>www.icann.org/epp#clientUpdateProhibited),<br/>clientTransferProhibited (https:<span>//</span>www.icann.org/epp#clientTransferProhibited),<br/>clientDeleteProhibited https:<span>//</span>icann.org/epp#clientDeleteProhibited,<br/>clientDeleteProhibited (https:<span>//</span>www.icann.org/epp#clientDeleteProhibited),<br/>clientUpdateProhibited https:<span>//</span>icann.org/epp#clientUpdateProhibited<br/>updated_date: Thu, 01 Jul 2021 00:32:38 GMT,<br/>Thu, 01 Jul 2021 00:32:38 GMT<br/>whois_server: whois.markmonitor.com<br/>zipcode: null |
+>| A: 1.1.1.1<br/>MX: mx record<br/>NS: ns record<br/>SOA: domains.paloaltonetworks.com. 1627343953 3600 600 604800 3600<br/>TXT: txt record | paloaltonetworks.com | 0 |  |  | 0 | org: Palo Alto Networks, Inc.<br/>city: null<br/>name: null<br/>state: CA<br/>dnssec: signedDelegation<br/>emails: abusecomplaints@markmonitor.com,<br/>whoisrequest@markmonitor.com<br/>status: clientUpdateProhibited https:<span>//</span>icann.org/epp#clientUpdateProhibited,<br/>clientTransferProhibited https:<span>//</span>icann.org/epp#clientTransferProhibited,<br/>clientDeleteProhibited https:<span>//</span>icann.org/epp#clientDeleteProhibited,<br/>clientTransferProhibited (https:<span>//</span>www.icann.org/epp#clientTransferProhibited),<br/>clientUpdateProhibited (https:<span>//</span>www.icann.org/epp#clientUpdateProhibited),<br/>clientDeleteProhibited (https:<span>//</span>www.icann.org/epp#clientDeleteProhibited)<br/>address: null<br/>country: US<br/>zipcode: null<br/>registrar: MarkMonitor Inc.<br/>domain_name: PALOALTONETWORKS.COM<br/>name_servers: ns record<br/>referral_url: null<br/>updated_date: Thu, 01 Jul 2021 00:32:38 GMT<br/>whois_server: whois.markmonitor.com<br/>creation_date: Mon, 21 Feb 2005 02:42:10 GMT<br/>expiration_date: Wed, 21 Feb 2024 02:42:10 GMT |
 
 
 ### file
@@ -373,11 +405,12 @@ Scores provided hash entities' reputation in SOCRadar ThreatFusion.
 | SOCRadarThreatFusion.Reputation.Hash.Total Encounters | Number | Number of times that SOCRadar has encountered with the queried hash in its threat sources. | 
 | SOCRadarThreatFusion.Reputation.Hash.File | String | Queried hash. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
-| DBotScore.Score | Number | The actual score. | 
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
+
 
 #### Command Example
 ```!file file="3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792"```
@@ -415,6 +448,7 @@ Scores provided hash entities' reputation in SOCRadar ThreatFusion.
 >|File|Risk Score (Out of 1000)|Score Details|Total Encounters|
 >|---|---|---|---|
 >| 3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792 | 360.0 | Maldatabase: 360.0 | 1 |
+
 
 ### socradar-score-ip
 ***
@@ -476,9 +510,10 @@ Scores provided IP entity's reputation in SOCRadar ThreatFusion.
 | SOCRadarThreatFusion.Reputation.IP.Geo Location.Timezone | String | Timezone field Geographical location information of queried IP address. | 
 | SOCRadarThreatFusion.Reputation.IP.Geo Location.ZipCode | String | Zip code field Geographical location information of queried IP address. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
-| DBotScore.Score | Number | The actual score. | 
+
 
 #### Command Example
 ```!socradar-score-ip ip="1.1.1.1"```
@@ -486,12 +521,6 @@ Scores provided IP entity's reputation in SOCRadar ThreatFusion.
 #### Context Example
 ```json
 {
-    "DBotScore": {
-        "Indicator": "1.1.1.1",
-        "Score": 1,
-        "Type": "ip",
-        "Vendor": "SOCRadar ThreatFusion"
-    },
     "SOCRadarThreatFusion": {
         "Reputation": {
             "IP": {
@@ -501,76 +530,74 @@ Scores provided IP entity's reputation in SOCRadar ThreatFusion.
                     "Type": "ip",
                     "Vendor": "SOCRadar ThreatFusion"
                 },
-                "SOCRadarThreatFusion.Reputation.IP(val.IP && val.IP === obj.IP)": {
-                    "DNS Details": {
-                        "PTR": [
-                            "one.one.one.one"
-                        ]
-                    },
-                    "Geo Location": {
-                        "ASN": "[13335] CLOUDFLARENET, US",
-                        "AsnCode": 13335,
-                        "AsnName": "CloudFlare Inc",
-                        "Cidr": "1.1.1.0/24",
-                        "CityName": "Los Angeles",
-                        "CountryCode": "US",
-                        "CountryName": "United States of America",
-                        "Latitude": 0.0,
-                        "Longitude": 0.0,
-                        "RegionName": "California",
-                        "Timezone": "-07:00",
-                        "ZipCode": "90001"
-                    },
-                    "IP": "1.1.1.1",
-                    "Risk Score (Out of 1000)": 0,
-                    "Score Details": {},
-                    "Total Encounters": 0,
-                    "Whois Details": {
-                        "asn": "13335",
-                        "asn_cidr": "1.1.1.0/24",
-                        "asn_country_code": "AU",
-                        "asn_date": "2011-08-11",
-                        "asn_description": "CLOUDFLARENET, US",
-                        "asn_registry": "apnic",
-                        "nets": [
-                            {
-                                "address": "PO Box 3646\nSouth Brisbane, QLD 4101\nAustralia",
-                                "cidr": "1.1.1.0/24",
-                                "city": null,
-                                "country": "AU",
-                                "created": null,
-                                "description": "APNIC and Cloudflare DNS Resolver project\nRouted globally by AS13335/Cloudflare\nResearch prefix for APNIC Labs",
-                                "emails": [
-                                    "resolver-abuse@cloudflare.com"
-                                ],
-                                "handle": "AA1412-AP",
-                                "name": "APNIC-LABS",
-                                "postal_code": null,
-                                "range": "1.1.1.0 - 1.1.1.255",
-                                "state": null,
-                                "updated": null
-                            },
-                            {
-                                "address": null,
-                                "cidr": "1.1.1.0/24",
-                                "city": null,
-                                "country": null,
-                                "created": null,
-                                "description": "APNIC Research and Development\n                6 Cordelia St",
-                                "emails": null,
-                                "handle": null,
-                                "name": null,
-                                "postal_code": null,
-                                "range": "1.1.1.0 - 1.1.1.255",
-                                "state": null,
-                                "updated": null
-                            }
-                        ],
-                        "nir": null,
-                        "query": "1.1.1.1",
-                        "raw_referral": null,
-                        "referral": null
-                    }
+                "DNS Details": {
+                    "PTR": [
+                        "one.one.one.one"
+                    ]
+                },
+                "Geo Location": {
+                    "ASN": "[13335] CLOUDFLARENET, US",
+                    "AsnCode": 13335,
+                    "AsnName": "CloudFlare Inc",
+                    "Cidr": "1.1.1.0/24",
+                    "CityName": "Los Angeles",
+                    "CountryCode": "US",
+                    "CountryName": "United States of America",
+                    "Latitude": 0.0,
+                    "Longitude": 0.0,
+                    "RegionName": "California",
+                    "Timezone": "-07:00",
+                    "ZipCode": "90001"
+                },
+                "IP": "1.1.1.1",
+                "Risk Score (Out of 1000)": 0,
+                "Score Details": {},
+                "Total Encounters": 0,
+                "Whois Details": {
+                    "asn": "13335",
+                    "asn_cidr": "1.1.1.0/24",
+                    "asn_country_code": "AU",
+                    "asn_date": "2011-08-11",
+                    "asn_description": "CLOUDFLARENET, US",
+                    "asn_registry": "apnic",
+                    "nets": [
+                        {
+                            "address": "PO Box 3646\nSouth Brisbane, QLD 4101\nAustralia",
+                            "cidr": "1.1.1.0/24",
+                            "city": null,
+                            "country": "AU",
+                            "created": null,
+                            "description": "APNIC and Cloudflare DNS Resolver project\nRouted globally by AS13335/Cloudflare\nResearch prefix for APNIC Labs",
+                            "emails": [
+                                "resolver-abuse@cloudflare.com"
+                            ],
+                            "handle": "AA1412-AP",
+                            "name": "APNIC-LABS",
+                            "postal_code": null,
+                            "range": "1.1.1.0 - 1.1.1.255",
+                            "state": null,
+                            "updated": null
+                        },
+                        {
+                            "address": null,
+                            "cidr": "1.1.1.0/24",
+                            "city": null,
+                            "country": null,
+                            "created": null,
+                            "description": "APNIC Research and Development\n                6 Cordelia St",
+                            "emails": null,
+                            "handle": null,
+                            "name": null,
+                            "postal_code": null,
+                            "range": "1.1.1.0 - 1.1.1.255",
+                            "state": null,
+                            "updated": null
+                        }
+                    ],
+                    "nir": null,
+                    "query": "1.1.1.1",
+                    "raw_referral": null,
+                    "referral": null
                 }
             }
         }
@@ -629,9 +656,9 @@ Scores provided domain entity's reputation in SOCRadar ThreatFusion.
 | SOCRadarThreatFusion.Reputation.Domain.Whois Details.expiration_date | Date | Expiration date field Whois information of queried domain. | 
 | SOCRadarThreatFusion.Reputation.Domain.DNS Details | String | DNS information of queried domain. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
-| DBotScore.Score | Number | The actual score. | 
 
 
 #### Command Example
@@ -640,12 +667,6 @@ Scores provided domain entity's reputation in SOCRadar ThreatFusion.
 #### Context Example
 ```json
 {
-    "DBotScore": {
-        "Indicator": "paloaltonetworks.com",
-        "Score": 1,
-        "Type": "domain",
-        "Vendor": "SOCRadar ThreatFusion"
-    },
     "SOCRadarThreatFusion": {
         "Reputation": {
             "Domain": {
@@ -655,76 +676,59 @@ Scores provided domain entity's reputation in SOCRadar ThreatFusion.
                     "Type": "domain",
                     "Vendor": "SOCRadar ThreatFusion"
                 },
-                "SOCRadarThreatFusion.Reputation.Domain(val.Domain && val.Domain === obj.Domain)": {
-                    "DNS Details": {
-                        "MX": [
-                            "mx record"
-                        ],
-                        "NS": [
-                            "ns record"
-                        ],
-                        "SOA": [
-                            "domains.paloaltonetworks.com. 1627343953 3600 600 604800 3600"
-                        ],
-                        "TXT": [
-                            "txt record"
-                        ]
-                    },
-                    "Domain": "paloaltonetworks.com",
-                    "Risk Score (Out of 1000)": 0,
-                    "Score Details": {},
-                    "Subdomains": [],
-                    "Total Encounters": 0,
-                    "Whois Details": {
-                        "address": null,
-                        "city": null,
-                        "country": "US",
-                        "creation_date": [
-                            "Mon, 21 Feb 2005 02:42:10 GMT",
-                            "Mon, 21 Feb 2005 02:42:10 GMT"
-                        ],
-                        "dnssec": "signedDelegation",
-                        "domain_name": "PALOALTONETWORKS.COM",
-                        "emails": [
-                            "whoisrequest@markmonitor.com",
-                            "abusecomplaints@markmonitor.com"
-                        ],
-                        "expiration_date": [
-                            "Wed, 21 Feb 2024 02:42:10 GMT",
-                            "Wed, 21 Feb 2024 02:42:10 GMT"
-                        ],
-                        "name": null,
-                        "name_servers": [
-                            "ns4.p23.dynect.net",
-                            "ns1.p23.dynect.net",
-                            "ns3.p23.dynect.net",
-                            "ns6.dnsmadeeasy.com",
-                            "ns2.p23.dynect.net",
-                            "ns5.dnsmadeeasy.com",
-                            "ns7.dnsmadeeasy.com"
-                        ],
-                        "org": "Palo Alto Networks, Inc.",
-                        "referral_url": null,
-                        "registrar": [
-                            "MarkMonitor Inc.",
-                            "MarkMonitor, Inc."
-                        ],
-                        "state": "CA",
-                        "status": [
-                            "clientTransferProhibited https://icann.org/epp#clientTransferProhibited",
-                            "clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)",
-                            "clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)",
-                            "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited",
-                            "clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)",
-                            "clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited"
-                        ],
-                        "updated_date": [
-                            "Thu, 01 Jul 2021 00:32:38 GMT",
-                            "Thu, 01 Jul 2021 00:32:38 GMT"
-                        ],
-                        "whois_server": "whois.markmonitor.com",
-                        "zipcode": null
-                    }
+                "DNS Details": {
+                    "A": [
+                        "1.1.1.1"
+                    ],
+                    "MX": [
+                        "mx record"
+                    ],
+                    "NS": [
+                        "ns record"
+                    ],
+                    "SOA": [
+                        "domains.paloaltonetworks.com. 1627343953 3600 600 604800 3600"
+                    ],
+                    "TXT": [
+                        "txt record"
+                    ]
+                },
+                "Domain": "paloaltonetworks.com",
+                "Risk Score (Out of 1000)": 0,
+                "Score Details": {},
+                "Subdomains": [],
+                "Total Encounters": 0,
+                "Whois Details": {
+                    "address": null,
+                    "city": null,
+                    "country": "US",
+                    "creation_date": "Mon, 21 Feb 2005 02:42:10 GMT",
+                    "dnssec": "signedDelegation",
+                    "domain_name": "PALOALTONETWORKS.COM",
+                    "emails": [
+                        "abusecomplaints@markmonitor.com",
+                        "whoisrequest@markmonitor.com"
+                    ],
+                    "expiration_date": "Wed, 21 Feb 2024 02:42:10 GMT",
+                    "name": null,
+                    "name_servers": [
+                        "ns record"
+                    ],
+                    "org": "Palo Alto Networks, Inc.",
+                    "referral_url": null,
+                    "registrar": "MarkMonitor Inc.",
+                    "state": "CA",
+                    "status": [
+                        "clientTransferProhibited https://icann.org/epp#clientTransferProhibited",
+                        "clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)",
+                        "clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)",
+                        "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited",
+                        "clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)",
+                        "clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited"
+                    ],
+                    "updated_date": "Thu, 01 Jul 2021 00:32:38 GMT",
+                    "whois_server": "whois.markmonitor.com",
+                    "zipcode": null
                 }
             }
         }
@@ -737,7 +741,7 @@ Scores provided domain entity's reputation in SOCRadar ThreatFusion.
 >### SOCRadar - Analysis results for domain: paloaltonetworks.com
 >|DNS Details|Domain|Risk Score (Out of 1000)|Score Details|Subdomains|Total Encounters|Whois Details|
 >|---|---|---|---|---|---|---|
->| A: 34.107.151.202<br/>MX: mx record<br/>NS: ns record<br/>SOA: domains.paloaltonetworks.com. 1627343953 3600 600 604800 3600<br/>TXT: txt record | paloaltonetworks.com | 0 |  |  | 0 | address: null<br/>city: null<br/>country: US<br/>creation_date: Mon, 21 Feb 2005 02:42:10 GMT,<br/>Mon, 21 Feb 2005 02:42:10 GMT<br/>dnssec: signedDelegation<br/>domain_name: PALOALTONETWORKS.COM<br/>emails: whoisrequest@markmonitor.com,<br/>abusecomplaints@markmonitor.com<br/>expiration_date: Wed, 21 Feb 2024 02:42:10 GMT,<br/>Wed, 21 Feb 2024 02:42:10 GMT<br/>name: null<br/>name_servers: ns4.p23.dynect.net,<br/>ns1.p23.dynect.net,<br/>ns3.p23.dynect.net,<br/>ns6.dnsmadeeasy.com,<br/>ns2.p23.dynect.net,<br/>ns5.dnsmadeeasy.com,<br/>ns7.dnsmadeeasy.com<br/>org: Palo Alto Networks, Inc.<br/>referral_url: null<br/>registrar: MarkMonitor Inc.,<br/>MarkMonitor, Inc.<br/>state: CA<br/>status: clientTransferProhibited https:<span>//</span>icann.org/epp#clientTransferProhibited,<br/>clientUpdateProhibited (https:<span>//</span>www.icann.org/epp#clientUpdateProhibited),<br/>clientTransferProhibited (https:<span>//</span>www.icann.org/epp#clientTransferProhibited),<br/>clientDeleteProhibited https:<span>//</span>icann.org/epp#clientDeleteProhibited,<br/>clientDeleteProhibited (https:<span>//</span>www.icann.org/epp#clientDeleteProhibited),<br/>clientUpdateProhibited https:<span>//</span>icann.org/epp#clientUpdateProhibited<br/>updated_date: Thu, 01 Jul 2021 00:32:38 GMT,<br/>Thu, 01 Jul 2021 00:32:38 GMT<br/>whois_server: whois.markmonitor.com<br/>zipcode: null |
+>| A: 1.1.1.1<br/>MX: mx record<br/>NS: ns record<br/>SOA: domains.paloaltonetworks.com. 1627343953 3600 600 604800 3600<br/>TXT: txt record | paloaltonetworks.com | 0 |  |  | 0 | org: Palo Alto Networks, Inc.<br/>city: null<br/>name: null<br/>state: CA<br/>dnssec: signedDelegation<br/>emails: abusecomplaints@markmonitor.com,<br/>whoisrequest@markmonitor.com<br/>status: clientUpdateProhibited https:<span>//</span>icann.org/epp#clientUpdateProhibited,<br/>clientTransferProhibited https:<span>//</span>icann.org/epp#clientTransferProhibited,<br/>clientDeleteProhibited https:<span>//</span>icann.org/epp#clientDeleteProhibited,<br/>clientTransferProhibited (https:<span>//</span>www.icann.org/epp#clientTransferProhibited),<br/>clientUpdateProhibited (https:<span>//</span>www.icann.org/epp#clientUpdateProhibited),<br/>clientDeleteProhibited (https:<span>//</span>www.icann.org/epp#clientDeleteProhibited)<br/>address: null<br/>country: US<br/>zipcode: null<br/>registrar: MarkMonitor Inc.<br/>domain_name: PALOALTONETWORKS.COM<br/>name_servers: ns record<br/>referral_url: null<br/>updated_date: Thu, 01 Jul 2021 00:32:38 GMT<br/>whois_server: whois.markmonitor.com<br/>creation_date: Mon, 21 Feb 2005 02:42:10 GMT<br/>expiration_date: Wed, 21 Feb 2024 02:42:10 GMT |
 
 
 ### socradar-score-hash
@@ -764,9 +768,9 @@ Scores provided hash entity's reputation in SOCRadar ThreatFusion.
 | SOCRadarThreatFusion.Reputation.Hash.Total Encounters | Number | Number of times that SOCRadar has encountered with the queried hash in its threat sources. | 
 | SOCRadarThreatFusion.Reputation.Hash.File | String | Queried hash. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
-| DBotScore.Score | Number | The actual score. | 
 
 
 #### Command Example
@@ -775,12 +779,6 @@ Scores provided hash entity's reputation in SOCRadar ThreatFusion.
 #### Context Example
 ```json
 {
-    "DBotScore": {
-        "Indicator": "3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792",
-        "Score": 1,
-        "Type": "file",
-        "Vendor": "SOCRadar ThreatFusion"
-    },
     "SOCRadarThreatFusion": {
         "Reputation": {
             "Hash": {
@@ -790,14 +788,12 @@ Scores provided hash entity's reputation in SOCRadar ThreatFusion.
                     "Type": "file",
                     "Vendor": "SOCRadar ThreatFusion"
                 },
-                "SOCRadarThreatFusion.Reputation.Hash(val.File && val.File === obj.File)": {
-                    "File": "3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792",
-                    "Risk Score (Out of 1000)": 360,
-                    "Score Details": {
-                        "Maldatabase": 360
-                    },
-                    "Total Encounters": 1
-                }
+                "File": "3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792",
+                "Risk Score (Out of 1000)": 360,
+                "Score Details": {
+                    "Maldatabase": 360
+                },
+                "Total Encounters": 1
             }
         }
     }

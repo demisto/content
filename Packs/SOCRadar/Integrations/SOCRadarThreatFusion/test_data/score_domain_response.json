@@ -26,29 +26,17 @@
         "address": null,
         "country": "US",
         "zipcode": null,
-        "registrar": [
-            "MarkMonitor, Inc.",
-            "MarkMonitor Inc."
-        ],
+        "registrar": "MarkMonitor, Inc.",
         "domain_name": "PALOALTONETWORKS.COM",
         "name_servers": [
             "Name Server 1",
             "Name Server 2"
         ],
         "referral_url": null,
-        "updated_date": [
-            "Thu, 01 Jul 2021 00:32:38 GMT",
-            "Thu, 01 Jul 2021 00:32:38 GMT"
-        ],
+        "updated_date": "Thu, 01 Jul 2021 00:32:38 GMT",
         "whois_server": "whois.markmonitor.com",
-        "creation_date": [
-            "Mon, 21 Feb 2005 02:42:10 GMT",
-            "Mon, 21 Feb 2005 02:42:10 GMT"
-        ],
-        "expiration_date": [
-            "Wed, 21 Feb 2024 02:42:10 GMT",
-            "Wed, 21 Feb 2024 02:42:10 GMT"
-        ]
+        "creation_date": "Mon, 21 Feb 2005 02:42:10 GMT",
+        "expiration_date": "Wed, 21 Feb 2024 02:42:10 GMT"
     },
     "dns_info": {
         "A": [

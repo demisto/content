@@ -54,11 +54,5 @@
         "TXT": [
             "TXT Record"
         ]
-  },
-  "DBotScore": {
-    "Indicator": "paloaltonetworks.com",
-    "Type": "domain",
-    "Vendor": "SOCRadar ThreatFusion",
-    "Score": 1
   }
 }

@@ -56,11 +56,5 @@
     "Timezone": "+07:00",
     "ZipCode": "310000",
     "ASN": "[45899] VNPT-AS-VN VNPT Corp, VN"
-  },
-  "DBotScore": {
-    "Indicator": "1.1.1.1",
-    "Type": "ip",
-    "Vendor": "SOCRadar ThreatFusion",
-    "Score": 2
   }
 }

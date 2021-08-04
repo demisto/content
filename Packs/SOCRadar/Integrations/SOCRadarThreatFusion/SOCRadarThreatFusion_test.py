@@ -92,13 +92,12 @@ def test_ip_command(requests_mock):
     )
 
     expected_output = util_load_json('test_data/score_ip_expected_output.json')
-    expected_context = util_load_json('test_data/score_ip_expected_context.json')
+    expected_context = util_load_json('test_data/score_ip_expected_context_generic_command.json')
 
     assert isinstance(result, list)
     assert result != []
     assert '### SOCRadar - Analysis results for IP: 1.1.1.1' in result[0].readable_output
-    output_key = 'SOCRadarThreatFusion.Reputation.IP(val.IP && val.IP === obj.IP)'
-    assert result[0].outputs[output_key] == expected_context
+    assert result[0].outputs == expected_context
     assert result[0].raw_response == expected_output
 
 
@@ -153,12 +152,11 @@ def test_domain_command(requests_mock):
     )
 
     expected_output = util_load_json('test_data/score_domain_expected_output.json')
-    expected_context = util_load_json('test_data/score_domain_expected_context.json')
+    expected_context = util_load_json('test_data/score_domain_expected_context_generic_command.json')
     assert isinstance(result, list)
     assert result != []
     assert '### SOCRadar - Analysis results for domain: paloaltonetworks.com' in result[0].readable_output
-    output_key = 'SOCRadarThreatFusion.Reputation.Domain(val.Domain && val.Domain === obj.Domain)'
-    assert result[0].outputs[output_key] == expected_context
+    assert result[0].outputs == expected_context
     assert result[0].raw_response == expected_output
 
 
@@ -213,14 +211,13 @@ def test_file_command(requests_mock):
     )
 
     expected_output = util_load_json('test_data/score_hash_expected_output.json')
-    expected_context = util_load_json('test_data/score_hash_expected_context.json')
+    expected_context = util_load_json('test_data/score_hash_expected_context_generic_command.json')
 
     assert isinstance(result, list)
     assert result != []
     assert '### SOCRadar - Analysis results for hash: 3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792' \
            in result[0].readable_output
-    output_key = 'SOCRadarThreatFusion.Reputation.Hash(val.File && val.File === obj.File)'
-    assert result[0].outputs[output_key] == expected_context
+    assert result[0].outputs == expected_context
     assert result[0].raw_response == expected_output
 
 
@@ -279,8 +276,7 @@ def test_score_ip(requests_mock):
 
     assert isinstance(result, CommandResults)
     assert '### SOCRadar - Analysis results for IP: 1.1.1.1' in result.readable_output
-    output_key = 'SOCRadarThreatFusion.Reputation.IP(val.IP && val.IP === obj.IP)'
-    assert result.outputs[output_key] == expected_context
+    assert result.outputs == expected_context
     assert result.raw_response == expected_output
 
 
@@ -338,8 +334,7 @@ def test_score_domain(requests_mock):
     expected_context = util_load_json('test_data/score_domain_expected_context.json')
     assert isinstance(result, CommandResults)
     assert '### SOCRadar - Analysis results for domain: paloaltonetworks.com' in result.readable_output
-    output_key = 'SOCRadarThreatFusion.Reputation.Domain(val.Domain && val.Domain === obj.Domain)'
-    assert result.outputs[output_key] == expected_context
+    assert result.outputs == expected_context
     assert result.raw_response == expected_output
 
 
@@ -399,8 +394,7 @@ def test_score_hash(requests_mock):
     assert isinstance(result, CommandResults)
     assert '### SOCRadar - Analysis results for hash: 3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792' \
            in result.readable_output
-    output_key = 'SOCRadarThreatFusion.Reputation.Hash(val.File && val.File === obj.File)'
-    assert result.outputs[output_key] == expected_context
+    assert result.outputs == expected_context
     assert result.raw_response == expected_output
 
 

@@ -249,7 +249,14 @@ def build_entry_context(results: Union[Dict, List], indicator_type: str):
         return_context['Subdomains'] = result_data.get('subdomains', [])
 
     if indicator_type != 'hash':
-        return_context['Whois Details'] = {key: value for key, value in result_data.get('whois', {}).items() if key != 'raw'}
+        return_context['Whois Details'] = {}
+        for key, value in result_data.get('whois', {}).items():
+            # Exclude raw whois
+            if key == 'raw':
+                continue
+            if value and type(value) == list and key in ('creation_date', 'expiration_date', 'updated_date', 'registrar'):
+                value = value[0]
+            return_context['Whois Details'][key] = value
         return_context['DNS Details'] = result_data.get('dns_info', {})
 
     if indicator_type == 'ip':
@@ -394,7 +401,20 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
                                           score=score)
 
             domain_object = Common.Domain(domain=domain_to_score,
-                                          dbot_score=dbot_score)
+                                          dbot_score=dbot_score,
+                                          dns=', '.join(context_entry['DNS Details'].get('A', [])),
+                                          creation_date=context_entry['Whois Details'].get('creation_date'),
+                                          expiration_date=context_entry['Whois Details'].get('expiration_date'),
+                                          updated_date=context_entry['Whois Details'].get('updated_date'),
+                                          registrant_country=context_entry['Whois Details'].get('registrant_country'),
+                                          registrant_name=context_entry['Whois Details'].get('registrant_name')
+                                          or context_entry['Whois Details'].get('name'),
+                                          registrar_name=context_entry['Whois Details'].get('registrar'),
+                                          organization=context_entry['Whois Details'].get('org'),
+                                          geo_country=context_entry['Whois Details'].get('country'),
+                                          sub_domains=context_entry['Subdomains'],
+                                          name_servers=context_entry['DNS Details'].get('NS')
+                                          or context_entry['Whois Details'].get('name_servers'))
 
             command_results_list.append(CommandResults(
                 outputs_prefix="SOCRadarThreatFusion.Reputation.Domain",
@@ -507,8 +527,8 @@ def score_ip_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         title = f'SOCRadar - Analysis results for IP: {ip_to_score}'
         context_entry = build_entry_context(raw_response, 'ip')
         dbot_entry = build_dbot_entry(ip_to_score, DBotScoreType.IP, 'SOCRadar ThreatFusion', score)
-        context_entry.update(dbot_entry)
         human_readable = tableToMarkdown(title, context_entry)
+        context_entry.update(dbot_entry)
     else:
         message = f"Error while getting API response. SOCRadar API Response: {raw_response.get('message', '')}"
         raise DemistoException(message=message)
