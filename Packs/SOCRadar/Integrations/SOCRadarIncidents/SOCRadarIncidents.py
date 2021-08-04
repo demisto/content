@@ -27,6 +27,18 @@ MESSAGES: Dict[str, str] = {
 ''' HELPER FUNCTIONS '''
 
 
+def parse_int_or_raise(str_to_parse: Any, error_msg=None) -> int:
+    """Parse a string to integer. Raise ValueError exception if fails with given error_msg
+    """
+    try:
+        res = int(str_to_parse)
+    except (TypeError, ValueError):
+        if not error_msg:
+            error_msg = f"Error while parsing integer! Provided string: {str_to_parse}"
+        raise ValueError(error_msg)
+    return res
+
+
 def convert_to_demisto_severity(severity: str) -> Union[int, float]:
     """Maps SOCRadar severity to Cortex XSOAR severity
 
@@ -136,12 +148,12 @@ class Client(BaseClient):
                                       error_handler=self.handle_error_response)
         return response
 
-    def mark_incident_as_false_positive(self, incident_id: str, comments: Optional[str]):
+    def mark_incident_as_false_positive(self, incident_id: int, comments: Optional[str]):
         """Sends a request that marks incident as false positive in SOCRadar platform
         using '/company/{company_id}/incidents/fp'. All the parameters are passed directly to the API as
         HTTP GET parameters in the request
 
-        :type incident_id: ``str``
+        :type incident_id: ``int``
         :param incident_id: SOCRadar incident ID of particular incident to that will be used to mark it as false positive.
 
         :type comments: ``Optional[str]``
@@ -156,12 +168,12 @@ class Client(BaseClient):
                                       timeout=60, error_handler=self.handle_error_response)
         return response
 
-    def mark_incident_as_resolved(self, incident_id: str, comments: Optional[str]):
+    def mark_incident_as_resolved(self, incident_id: int, comments: Optional[str]):
         """Sends a request that marks incident as resolved in SOCRadar platform
         using '/company/{company_id}/incidents/resolve'. All the parameters are passed directly to the API as
         HTTP GET parameters in the request
 
-        :type incident_id: ``str``
+        :type incident_id: ``int``
         :param incident_id: SOCRadar incident ID of particular incident to that will be used to mark it as resolved.
 
         :type comments: ``Optional[str]``
@@ -382,7 +394,7 @@ def mark_incident_as_fp_command(client: Client, args: Dict[str, str]) -> Command
         A ``CommandResults`` object that is then passed to ``return_results``
     :rtype: ``CommandResults``
     """
-    incident_id = args.get('socradar_incident_id', '')
+    incident_id = parse_int_or_raise(args.get('socradar_incident_id', ''))
     comments = args.get('comments', '')
     raw_response = client.mark_incident_as_false_positive(
         incident_id=incident_id,
@@ -413,7 +425,7 @@ def mark_incident_as_resolved_command(client: Client, args: Dict[str, str]) -> C
         A ``CommandResults`` object that is then passed to ``return_results``
     :rtype: ``CommandResults``
     """
-    incident_id = args.get('socradar_incident_id', '')
+    incident_id = parse_int_or_raise(args.get('socradar_incident_id', ''))
     comments = args.get('comments', '')
     raw_response = client.mark_incident_as_resolved(
         incident_id=incident_id,
