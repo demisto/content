@@ -492,19 +492,19 @@ change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
 
 # New Pack
 create_new_pack "${base_pack_name}" "${new_pack_name}"
-add_dependency "${new_pack_name}" "Microsoft365Defender"
+add_dependency "${new_pack_name}" "Viper"
 add_author_image "${new_pack_name}"
 add_1_0_0_release_note "${new_pack_name}"
 
 ## Existing pack
-enhancement_release_notes "${base_pack_name}"
-change_integration_image "PaloAltoNetworks_IoT" "${base_pack_name}"
+enhancement_release_notes "Viper"
+change_integration_image "PaloAltoNetworks_IoT" "Viper"
 updating_old_release_notes "Base"
 enhancement_release_notes "Base"
-updating_old_release_notes "${base_pack_name}"
-add_1_0_0_release_note "${base_pack_name}"
+updating_old_release_notes "Viper"
+add_1_0_0_release_note "Viper"
 set_pack_hidden "Microsoft365Defender"
-updating_old_release_notes "${new_pack_name}" # Update release notes in content that are not in the bucket
+updating_old_release_notes "Viper" # Update release notes in content that are not in the bucket
 update_integration_readme "Microsoft365Defender"
 update_pack_ignore "Microsoft365Defender"
 
