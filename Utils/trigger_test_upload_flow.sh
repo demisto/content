@@ -71,9 +71,10 @@ function create_new_pack {
 }
 
 # rename_files_and_folders
-# Change all files and folder to the new name
-# :param $1: pack name
-# :param $2: new pack name
+# Change all files and folder to the new name.
+# :param $1: pack name.
+# :param $2: new pack name.
+# :param $3: change occurrence inside files
 function rename_files_and_folders {
 
   if [ "$#" -ne 2 ]; then
@@ -83,7 +84,9 @@ function rename_files_and_folders {
   local pack_name=$1
   local new_pack_name=$2
   # Rename inside files
-  find . -type f \( -name "*.py" -o -name "*.yml" -o -name "*.json" \) -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
+  if [ -n $3 ]; then
+    find . -type f \( -name "*.py" -o -name "*.yml" -o -name "*.json" \) -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
+  fi
 
   find . -type d -mindepth 1 -maxdepth 1 | \
   while read -r folder;
@@ -98,6 +101,7 @@ function rename_files_and_folders {
   done
 
 }
+
 
 # add_dependency
 # Edits pack_metadata and adding Dependency to desired pack
