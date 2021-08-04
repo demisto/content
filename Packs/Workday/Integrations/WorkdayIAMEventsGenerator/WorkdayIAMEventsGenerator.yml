@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - display: Long running instance
   name: longRunning
-  required: true
+  required: false
   type: 8
 - defaultvalue: '5000'
   display: Port mapping (<port> or <host port>:<docker port>)
