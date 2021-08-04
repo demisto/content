@@ -1,7 +1,7 @@
 
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 import traceback
 
 
@@ -11,10 +11,10 @@ def check_components(components: list, context: Any):
         components(list): list of components related to one field to search
         context: context to check the fields in
     """
-    for component in components:
+    for idx, component in enumerate(components):
         if isinstance(context, list) and context:
             for x in context:
-                check_components(components[components.index(component):], x)
+                check_components(components[idx:], x)
                 return
         else:
             context = context[component]
@@ -22,7 +22,7 @@ def check_components(components: list, context: Any):
                 raise KeyError
 
 
-def check_fields(fields_to_search_array: list, context_json) -> bool:
+def check_fields(fields_to_search_array: list, context_json) -> Tuple[bool, Any]:
     """
     Args:
         fields_to_search_array(list): list of fields to search
@@ -30,15 +30,17 @@ def check_fields(fields_to_search_array: list, context_json) -> bool:
 
     Returns: True if all fields are in context_json, else false.
     """
+    non_found_field = None
     try:
         for fields in fields_to_search_array:
             components = fields.split('.')
             new_context = context_json
+            non_found_field = fields
             check_components(components, new_context)
 
     except KeyError:
-        return False
-    return True
+        return False, non_found_field
+    return True, None
 
 
 def check_fields_command(args: Dict[str, Any]) -> CommandResults:
@@ -52,9 +54,9 @@ def check_fields_command(args: Dict[str, Any]) -> CommandResults:
     context = args.get('object', '{}')
 
     # Call the standalone function and get the raw response
-    result = check_fields(fields_to_search, context)
+    result, non_found_field = check_fields(fields_to_search, context)
     readable_output = f'Fields {",".join(fields_to_search)} are in given context.' if result \
-        else 'There are some fields that not in context.'
+        else f'Field "{non_found_field}" is not in context.'
 
     return CommandResults(
         outputs_prefix='CheckIfFieldsExists.FieldsExists',
