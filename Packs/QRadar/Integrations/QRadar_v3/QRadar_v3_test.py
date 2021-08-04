@@ -924,22 +924,25 @@ def test_get_remote_data_command_pre_6_1(mocker, params, args, expected: GetRemo
     assert result.entries == expected.entries
 
 
-@pytest.mark.parametrize('params, offense, enriched_offense, expected',
+@pytest.mark.parametrize('params, offense, enriched_offense, note_response, expected',
                          [
                              (dict(), command_test_data['get_remote_data']['response'],
                               command_test_data['get_remote_data']['enrich_offenses_result'],
+                              None,
                               GetRemoteDataResponse(
                                   sanitize_outputs(command_test_data['get_remote_data']['enrich_offenses_result'])[0],
                                   [])),
 
                              (dict(), command_test_data['get_remote_data']['closed'],
                               command_test_data['get_remote_data']['enrich_closed_offense'],
+                              None,
                               GetRemoteDataResponse(
                                   sanitize_outputs(command_test_data['get_remote_data']['enrich_closed_offense'])[0],
                                   [])),
 
                              ({'close_incident': True}, command_test_data['get_remote_data']['closed'],
                               command_test_data['get_remote_data']['enrich_closed_offense'],
+                              [],
                               GetRemoteDataResponse(
                                   sanitize_outputs(command_test_data['get_remote_data']['enrich_closed_offense'])[0],
                                   [{
@@ -949,9 +952,41 @@ def test_get_remote_data_command_pre_6_1(mocker, params, args, expected: GetRemo
                                           'closeReason': 'From QRadar: False-Positive, Tuned'
                                       },
                                       'ContentsFormat': EntryFormat.JSON
+                                  }])),
+
+                             ({'close_incident': True}, command_test_data['get_remote_data']['closed'],
+                              command_test_data['get_remote_data']['enrich_closed_offense'],
+                              [{'note_text': 'This offense was closed with reason: False-Positive, Tuned.'}],
+                              GetRemoteDataResponse(
+                                  sanitize_outputs(command_test_data['get_remote_data']['enrich_closed_offense'])[0],
+                                  [{
+                                      'Type': EntryType.NOTE,
+                                      'Contents': {
+                                          'dbotIncidentClose': True,
+                                          'closeReason': 'From QRadar: This offense was closed with reason: '
+                                                         'False-Positive, Tuned.'
+                                      },
+                                      'ContentsFormat': EntryFormat.JSON
+                                  }])),
+
+                             ({'close_incident': True}, command_test_data['get_remote_data']['closed'],
+                              command_test_data['get_remote_data']['enrich_closed_offense'],
+                              [{'note_text': 'This offense was closed with reason: False-Positive, Tuned. Notes: '
+                                             'Closed because it is on our white list.'}],
+                              GetRemoteDataResponse(
+                                  sanitize_outputs(command_test_data['get_remote_data']['enrich_closed_offense'])[0],
+                                  [{
+                                      'Type': EntryType.NOTE,
+                                      'Contents': {
+                                          'dbotIncidentClose': True,
+                                          'closeReason': 'From QRadar: This offense was closed with reason: '
+                                                         'False-Positive, Tuned. Notes: Closed because it is on our '
+                                                         'white list.'
+                                      },
+                                      'ContentsFormat': EntryFormat.JSON
                                   }]))
                          ])
-def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, enriched_offense,
+def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, enriched_offense, note_response,
                                                 expected: GetRemoteDataResponse):
     """
     Given:
@@ -962,12 +997,16 @@ def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, e
     When:
      - Case a: Offense updated, not closed, no events.
      - Case b: Offense updated, closed, no events, close_incident is false.
-     - Case c: Offense updated, closed, no events, close_incident is true.
+     - Case c: Offense updated, closed, no events, close_incident is true, close was made through API call (no note).
+     - Case d: Offense updated, closed, no events, close_incident is true, close was made through QRadar UI, empty note.
+     - Case e: Offense updated, closed, no events, close_incident is true, close was made through QRadar UI, with note.
 
     Then:
      - Case a: Ensure that offense is returned as is.
      - Case b: Ensure that offense is returned as is.
      - Case c: Ensure that offense is returned, along with expected entries.
+     - Case d: Ensure that offense is returned, along with expected entries.
+     - Case e: Ensure that offense is returned, along with expected entries.
     """
     set_integration_context({'last_update': 1})
     mocker.patch.object(client, 'offenses_list', return_value=offense)
@@ -975,6 +1014,8 @@ def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, e
     if 'close_incident' in params:
         mocker.patch.object(client, 'closing_reasons_list',
                             return_value=command_test_data['closing_reasons_list']['response'][0])
+    if note_response is not None:
+        mocker.patch.object(client, 'offense_notes_list', return_value=note_response)
     result = get_remote_data_command(client, params, {'id': offense.get('id'), 'lastUpdate': 1})
     assert result.mirrored_object == expected.mirrored_object
     assert result.entries == expected.entries
