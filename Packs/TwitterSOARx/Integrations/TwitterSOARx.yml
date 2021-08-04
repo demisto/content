@@ -1,0 +1,301 @@
+commonfields:
+  id: TwitterSOARx
+  version: -1
+name: TwitterSOARx
+display: TwitterSOARx
+category: Utilities
+description: 'The TwitterSOARx Integration allows users to parse Twitter for Users,
+  Tweets, and additional info about users. Perform enhanced searches with additional
+  search arguments. TwitterSOARx returns search results as a markdown table. '
+detaileddescription: "### Community Contributed Integration\n #### Integration Author:\
+  \ Christian Brake\n No support or maintenance is provided by the author. Customers\
+  \ are encouraged to engage with the user community for questions and guidance at\
+  \ the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).\n\
+  ***\nUsers must have a valid Twitter Dev Account in order to obtain their own API\
+  \ (Consumer) Key,  API Secret, Access token, Access Token Secret, and Bearer Token.\
+  \ Users can apply for a Twitter Dev Account here: \nhttps://developer.twitter.com/en/apply-for-access\n\
+  [View Integration Documentation]()"
+configuration:
+- display: API Key
+  name: apikey
+  type: 4
+  required: true
+- display: API Key Secret
+  name: apikey_secret
+  type: 4
+  required: true
+- display: Access Token
+  name: access_token
+  type: 4
+  required: true
+- display: Access Token Secret
+  name: access_token_secret
+  type: 4
+  required: true
+- display: Bearer Token
+  name: bearer_token
+  type: 4
+  required: true
+script:
+  script: |-
+    ''' IMPORTS '''
+    import requests
+    import os
+    import tweepy
+    import json
+    import urllib
+    class Client(BaseClient):
+
+        def auth():
+            auth = tweepy.OAuthHandler(demisto.params().get('apikey'), demisto.params().get('apikey_secret'))
+            auth.set_access_token(demisto.params().get('access_token'), demisto.params().get('access_token_secret'))
+            api = tweepy.API(auth)
+            return api
+
+    # Build a search URL using the usernames argument and a preset list of all of the user fields of interest
+    # Link to Twitter reference under Apache 2.0: https://github.com/twitterdev/Twitter-API-v2-sample-code/blob/master/User-Lookup/get_users_with_bearer_token.py
+    # Changes made: changed function name to "create_users_info_url", added extra user fields and made user_fields a constant, usernames is no longer a static variable, removed the print statement from connect_to_endpoint
+        def create_users_info_url():
+            usernames = "usernames=" + demisto.args().get('usernames')
+            USER_FIELDS = "&user.fields=description,pinned_tweet_id,protected,created_at,id,location,name,url,public_metrics,profile_image_url,username,verified,withheld"
+            TWITTER_APIV2_URL = "https://api.twitter.com/2/users/by?{}&{}"
+            url = TWITTER_APIV2_URL.format(usernames, USER_FIELDS)
+            return url
+
+        def create_headers(bearer_token):
+            headers = {"Authorization": "Bearer {}".format(bearer_token)}
+            return headers
+
+        def connect_to_endpoint(url, headers):
+            response = requests.request("GET", url, headers=headers)
+            if response.status_code != 200:
+                raise Exception(
+                    "Request returned an error: {} {}".format(
+                        response.status_code, response.text
+                    )
+                )
+            return response.json()
+
+        def get_tweets():
+            TWITTER_APIV1_TWEETS_URL = "https://api.twitter.com/1.1/search/tweets.json?q="
+            if demisto.args().get('q')[0] == '#':
+                q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
+            else:
+                q = demisto.args().get('q')
+            search_url = TWITTER_APIV1_TWEETS_URL + q
+    #Query arguments are set to have no default value. If the user does not input a value, the integration will check for if a value for the argument exists, and append it to the HTTP request if so.
+            if demisto.args().get('from_user'):
+                search_url += urllib.parse.quote(f" from:{demisto.args().get('from_user')}")
+            if demisto.args().get('to_user'):
+                search_url += urllib.parse.quote(f" to:{demisto.args().get('to_user')}")
+            if demisto.args().get('geocode'):
+                search_url += "&geocode=" + demisto.args().get('geocode')
+                geocode_check = demisto.args().get('geocode').split(',')
+                try:
+                    float(geocode_check[0])
+                    float(geocode_check[1])
+                    float(geocode_check[2][:-2])
+                except ValueError:
+                    return_error('Incorrect geocode syntax. Geocode syntax is Lat,Long,RadiusUnits - Where Units = mi or km. \nExample Syntax: 60,324321,-27.98789,400mi')
+                if geocode_check[2][-2:] != 'mi' and geocode_check[2][-2:] != 'km':
+                    return_error('Incorrect geocode syntax. Geocode syntax is Lat,Long,RadiusUnits - Where Units = mi or km. \nExample Syntax: 60,324321,-27.98789,400mi')
+            if demisto.args().get('lang'):
+                search_url += "&lang=" + demisto.args().get('lang')
+                SUPPORTED_LANGS = ['en','ar','bn','cs','da','de','el','es','fa','fi','fil','fr','he','hi','hu','id','it','ja','ko','msa','nl','no','pl','pt','ro','ru','sv','th','tr','uk','ur','vi','zh-cn','zh-tw']
+                if demisto.args().get('lang') not in SUPPORTED_LANGS:
+                    return_error('Language code is not supported. For a list of supported langauge codes, visit https://developer.twitter.com/en/docs/twitter-for-websites/supported-languages')
+            if demisto.args().get('result_type'):
+                search_url += "&result_type=" + (demisto.args().get('result_type')).lower()
+                SUPPORTED_RESULT_TYPES = ['popular', 'recent', 'mixed']
+                if demisto.args().get('result_type') not in SUPPORTED_RESULT_TYPES:
+                    return_error("Entered result_type is not supported. Please use 'recent', 'popular', or 'mixed'.")
+            if demisto.args().get('count'):
+                try:
+                    int(demisto.args().get('count'))
+                except:
+                    return_error("Count must be an integer less than or equal to 100.")
+                if int(demisto.args().get('count')) > 100:
+                    search_url += "&count=" + demisto.args().get('count')
+                else:
+                    print("Error: Count must not exceed 100. Count was set to 100.")
+                    search_url += "&count=100"
+            search_url += "&tweet_mode=extended"
+            headers = Client.create_headers(demisto.params().get('bearer_token'))
+            json_response = Client.connect_to_endpoint(search_url, headers)
+            table = []
+
+            def get_entity(value, entity, subentity):
+                entity_list = []
+                if value.get('entities').get(entity) != []:
+                    for item in value.get('entities').get(entity):
+                        entity_list.append(item[subentity])
+                return entity_list
+
+            for value in json_response.get('statuses'):
+                obj = {
+                    'Tweet Text': value.get('full_text'),
+                    'Post ID': value.get('id_str'),
+                    'User Full Name': value.get('user').get('name'),
+                    'Username': value.get('user').get('screen_name'),
+                    'Date of Creation': value.get('created_at'),
+                    'User Verified Status': value.get('user').get('verified'),
+                    'Post Retweet Count': value.get('retweet_count'),
+                    'Post Favorite Count': value.get('favorite_count')
+                        }
+                if demisto.args().get('include_entities') == "True":
+                    obj['Hashtags'] = get_entity(value, 'hashtags', 'text')
+                    obj['User Mentions'] = get_entity(value, 'user_mentions', 'screen_name')
+                    obj['Expanded URL'] =  get_entity(value, 'urls', 'expanded_url')
+                    obj['Media'] = get_entity(value, 'media', 'media_url_https') if 'media' in value.get('entities').keys() else None
+                table.append(obj)
+            if demisto.args().get('include_entities') == "True":
+                headers = ['Tweet Text', 'Post ID', 'User Full Name', 'Username', 'Date of Creation', 'User Verified Status', 'Post Retweet Count', 'Post Favorite Count', 'Hashtags', 'User Mentions', 'Expanded URL', 'Media']
+            else:
+                headers = ['Tweet Text', 'Post ID', 'User Full Name', 'Username', 'Date of Creation', 'User Verified Status', 'Post Retweet Count', 'Post Favorite Count']
+            name = "TwitterSOARx twitter-get-tweets Search Results"
+            results_to_markdown(table, headers, name)
+
+    #Documentation for the tweepy search_users api call: https://docs.tweepy.org/en/stable/api.html#API.search_users
+
+        def get_users():
+            table = []
+            try:
+                int(demisto.args().get('count'))
+            except:
+                return_error("Count must be an integer less than or equal to 20.")
+            try:
+                int(demisto.args().get('page'))
+            except:
+                return_error("Page must be an integer.")
+            if int(demisto.args().get('count')) > 20:
+                    print("Error: Count must not exceed 20. Count was set to 20.")
+            for user in ((Client.auth().search_users(q=demisto.args().get('name'), page=int(demisto.args().get('page')), count=int(demisto.args().get('count')), include_entities=True))):
+                if 'url' in user.entities.keys():
+                    user_url = user.entities.get('url').get('urls')[0].get('expanded_url')
+                else:
+                    user_url = None
+                obj = {
+                    'Username': user.screen_name,
+                    'User ID': user.id,
+                    'Follower Count': user.followers_count,
+                    'Verified Status': user.verified,
+                    'User URL': user_url
+                }
+                table.append(obj)
+            headers = ['Username', 'User ID', 'Follower Count', 'Verified Status', 'User URL']
+            name = "TwitterSOARx twitter-get-users Search Results"
+            results_to_markdown(table, headers, name)
+
+    # Documentation on the user class used: https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user
+
+        def get_user_info():
+            url = Client.create_users_info_url()
+            headers = Client.create_headers(demisto.params().get('bearer_token'))
+            json_response = Client.connect_to_endpoint(url, headers)
+            table = []
+            for value in json_response.get('data'):
+                obj = {
+                    'Name': value.get('name'),
+                    'Username': value.get('username'),
+                    'ID': value.get('id'),
+                    'Description': value.get('description'),
+                    'Verified': value.get('verified'),
+                    'Date of Creation': value.get('created_at'),
+                    'Follower Count': value.get('public_metrics').get('followers_count'),
+                    'Following Count': value.get('public_metrics').get('following_count'),
+                    'Listed Count': value.get('public_metrics').get('listed_count'),
+                    'Tweet Count': value.get('public_metrics').get('tweet_count'),
+                    'Location': value.get('location'),
+                    'Protected': value.get('protected'),
+                    'URL': value.get('url'),
+                    'Profile Image URL': value.get('profile_image_url')
+                   }
+                table.append(obj)
+                headers = ['Name', 'Username', 'ID', 'Description', 'Verified', 'Date of Creation', 'Follower Count', 'Following Count', 'Listed Count', 'Tweet Count', 'Location', 'Protected', 'URL', 'Profile Image URL']
+                name = "TwitterSOARx twitter-get-user-info Search Results"
+            results_to_markdown(table, headers, name)
+
+    def results_to_markdown(table, headers, name):
+        markdown = tableToMarkdown(name, table, headers=headers)
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix='TwitterSOARx',
+            outputs_key_field="SearchResults",
+            outputs=table
+        )
+        return_results(results)
+
+    def main():
+        if demisto.command() == 'twitter-get-users':
+            Client.get_users()
+        if demisto.command() == 'twitter-get-user-info':
+            Client.get_user_info()
+        if demisto.command() == 'twitter-get-tweets':
+            Client.get_tweets()
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+  type: python
+  commands:
+  - name: twitter-get-users
+    arguments:
+    - name: name
+      required: true
+      description: The string to search for accounts with similar names
+    - name: count
+      description: 'Number of accounts to return. Note: The max is 20. Any number
+        greater than 20 will return 20 accounts.'
+      defaultValue: "15"
+    - name: page
+      description: Page to look for search results on
+      defaultValue: "1"
+    outputs:
+    - contextPath: TwitterSOARx
+      description: Results of the twitter-get-users command
+      type: string
+    description: Search for public users on Twitter
+  - name: twitter-get-user-info
+    arguments:
+    - name: usernames
+      description: 'The twitter usernames to search'
+      required: true
+    outputs:
+    - contextPath: TwitterSOARx
+      description: Results of the twitter-get-user-info command
+      type: string
+    description: 'Lookup users by name to display information about them. Search multiple
+      users simultaneously by separating them by commas. Ex: "name="user1,user2,user3"'
+  - name: twitter-get-tweets
+    arguments:
+    - name: q
+      required: true
+      description: The word or string of words to search for in tweets.
+    - name: result_type
+      description: Recent, Popular, Mixed
+    - name: geocode
+      description: 'GPS Coordinates: Latitude,Longitude,RadiusMi/KM. Ex: geocode="23.453987,-35.726374,100mi"'
+    - name: lang
+      description: 'The language code of tweets to search for. List of supported languages:  https://developer.twitter.com/en/docs/twitter-for-websites/supported-languages'
+    - name: count
+      description: The number of tweets to return. The max is 100. Any number greater
+        than 100  will return 100.
+    - name: include_entities
+      description: Display entities (True/False), Defaults to True
+      defaultValue: "True"
+    - name: from_user
+      description: 'Search tweets from a given user. Ex: "from_user=PaloAltoNtwks"
+        returns only tweets from Palo Alto Networks'
+    - name: to_user
+      description: 'Search tweets to a given user. Ex: "to_user=PaloAltoNtwks" returns
+        only tweets in reply to Palo Alto Networks'
+    outputs:
+    - contextPath: TwitterSOARx
+      description: Results of the twitter-get-tweets command
+      type: string
+    description: Search for tweets on Twitter.
+  dockerimage: tweepy:latest
+  runonce: false
+  subtype: python3
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
