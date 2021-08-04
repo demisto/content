@@ -70,6 +70,10 @@ script:
       description: The file type to which to convert the contents of the URL. Can be "pdf" or "png". Default is "png".
       isArray: false
       name: type
+      predefined:
+        - pdf
+        - png
+        - json
       required: false
       secret: false
     deprecated: false
