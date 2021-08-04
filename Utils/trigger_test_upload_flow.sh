@@ -335,23 +335,14 @@ function add_pack_to_landing_page {
 
 # trigger_circle_ci
 # Trigger Circleci uploading packs workflow.
-# :param $1: The ci token for circle.
-# :param $2: Content branch to upload from.
-# :param $3: The name of the bucket to upload the packs to.
-# :param $4: Whether to trigger the force upload flow.
-# :param $5: CSV list of pack IDs.
-# :param $6: A slack channel to send notifications to.
+# :circle_token: The ci token for circle.
+# :content_branch: Content branch to upload from.
+# :bucket: The name of the bucket to upload the packs to.
+# :force: Whether to trigger the force upload flow.
+# :packs: CSV list of pack IDs.
+# :slack_channel: A slack channel to send notifications to.
 function trigger_circle_ci {
-
-  local circle_token=$1
-  local content_branch=$2
-  local bucket=$3
-  local bucket_upload=$4
-  local force=$5
-  local packs=$6
-  local slack_channel=$7
-
-  local trigger_build_url="https://circleci.com/api/v2/project/github/demisto/content/pipeline"
+  trigger_build_url="https://circleci.com/api/v2/project/github/demisto/content/pipeline"
 
   post_data=$(cat <<-EOF
   {
@@ -378,20 +369,13 @@ function trigger_circle_ci {
 
 # trigger_gitlab_ci
 # Trigger GitLabci uploading packs workflow.
-# :param $1: The ci token for gitlab.
-# :param $2: Content branch to upload from.
-# :param $3: The name of the bucket to upload the packs to.
-# :param $5: CSV list of pack IDs.
-# :param $6: A slack channel to send notifications to.
+# :gitlab_token: The ci token for gitlab.
+# :new_content_branch: Content branch to upload from.
+# :bucket: The name of the bucket to upload the packs to.
+# :packs: CSV list of pack IDs.
+# :slack_channel: A slack channel to send notifications to.
 function trigger_gitlab_ci {
-
-  local gitlab_token=$1
-  local new_content_branch=$2
-  local bucket=$3
-  local packs=$4
-  local slack_channel=$5
-
-  local variables="variables[BUCKET_UPLOAD]=true"
+  variables="variables[BUCKET_UPLOAD]=true"
   if [ -n "$_force" ]; then
     variables="variables[FORCE_BUCKET_UPLOAD]=true"
   fi
@@ -531,11 +515,11 @@ git commit -am "Adding changes"
 git push origin "${new_content_branch}"
 
 if [ -n "$circle_token" ]; then
-  trigger_circle_ci $circle_token $new_content_branch $bucket $bucket_upload $force $packs $slack_channel
+  trigger_circle_ci
 fi
 
 if [ -n "$gitlab_token" ]; then
-  trigger_gitlab_ci $gitlab_token $new_content_branch $bucket $packs $slack_channel
+  trigger_gitlab_ci
 fi
 echo ""
 
