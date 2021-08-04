@@ -77,7 +77,7 @@ function create_new_pack {
 # :param $3: change occurrence inside files
 function rename_files_and_folders {
 
-  if [ "$#" -ne 2 ]; then
+  if [ "$#" -ne 3 ]; then
     fail " Illegal number of parameters "
   fi
 
