@@ -60,10 +60,13 @@ Creates a user.
 
 
 #### Command Example
-```!iam-create-user user-profile={\"email\": \"john.doe@example.com\", \"givenname\": \"test\", \"surname\": \"test\"}```
+```!iam-create-user user-profile={\"email\": \"john.doe@example.com\", \"givenname\": \"John\", \"surname\": \"Doe\"}```
 
 #### Human Readable Output
-
+### Create User Results (Saleforce Fusion IAM)
+|brand|instanceName|success|active|id|username|email|details|
+|---|---|---|---|---|---|---|---|
+| Saleforce Fusion IAM | Saleforce Fusion IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:54:30.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Saleforce Fusion", "name": "Saleforce Fusion"}}|
 
 
 ### iam-update-user
@@ -102,7 +105,10 @@ Updates an existing user with the data passed in the user-profile argument.
 ```!iam-update-user user-profile={\"email\": \"john.doe@example.com\", \"givenname\": \"John\"}```
 
 #### Human Readable Output
-
+### Update User Results (Saleforce Fusion IAM)
+|brand|instanceName|success|active|id|username|email|details|
+|---|---|---|---|---|---|---|---|
+| Saleforce Fusion IAM | Saleforce Fusion IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Saleforce Fusion", "name": "Saleforce Fusion"}} |
 
 
 ### iam-get-user
@@ -140,7 +146,10 @@ Retrieves a single user resource.
 ```!iam-get-user user-profile=`{\"email\": \"john.doe@example.com\"}````
 
 #### Human Readable Output
-
+### Get User Results (Saleforce Fusion IAM)
+|brand|instanceName|success|active|id|username|email|details|
+|---|---|---|---|---|---|---|---|
+| Saleforce Fusion IAM | Saleforce Fusion IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Saleforce Fusion", "name": "Saleforce Fusion"}} |
 
 
 ### iam-disable-user
@@ -178,21 +187,7 @@ Disable an active user.
 ```!iam-disable-user user-profile={\"email\": \"john.doe@example.com\", \"givenname\": \"John\"}```
 
 #### Human Readable Output
-
-
-
-### get-mapping-fields
-***
-Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
-
-
-#### Base Command
-
-`get-mapping-fields`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
+### Disable User Results (Saleforce Fusion IAM)
+|brand|instanceName|success|active|id|username|email|details|
+|---|---|---|---|---|---|---|---|
+| Saleforce Fusion IAM | Saleforce Fusion IAM_instance_1 | true | false | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Saleforce Fusion", "name": "Saleforce Fusion"}} |

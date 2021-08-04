@@ -43,7 +43,7 @@ class Client(BaseClient):
             url_suffix=uri
         )
 
-        if res and res.status_code == 200:
+        if res:
             user_app_data = res.json()
             username = user_app_data.get('Work_Email__c')
             is_active = True
@@ -75,7 +75,7 @@ class Client(BaseClient):
             params=params
         )
 
-        if res and res.status_code == 200:
+        if res:
             res_json = res.json()
             user_app_data = res_json.get('searchRecords', [])
 
@@ -169,14 +169,14 @@ class Client(BaseClient):
         :rtype: ``Dict[str, str]``
         """
 
-        uri = '/schema'                             # TODO: replace to the correct GET Schema API endpoint
+        uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/describe/'
         res = self._http_request(
             method='GET',
             url_suffix=uri
         )
 
         fields = res.get('result', [])
-        return {field.get('name'): field.get('description') for field in fields}
+        return {field.get('name'): field.get('label') for field in fields}
 
     @staticmethod
     def handle_exception(user_profile: IAMUserProfile,
