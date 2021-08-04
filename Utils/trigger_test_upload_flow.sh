@@ -56,7 +56,6 @@ function create_new_pack {
   cp -R "${pack_path}" "${new_pack_path}" || fail
   cd "${new_pack_path}" || fail
 
-  # rename inside yml and json files
   rename_files_and_folders "$pack_name" "$new_pack_name"
 
   if [ "$pack_name" == "HelloWorld" ]; then
@@ -83,15 +82,14 @@ function rename_files_and_folders {
 
   local pack_name=$1
   local new_pack_name=$2
-
   # Rename inside files
-  find . -type f -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
+  find . -type f \( -name "*.py" -o -name "*.yml" -o -name "*.json" \) -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
 
   find . -type d -mindepth 1 -maxdepth 1 | \
   while read -r folder;
   do
     cd "$folder" || continue ;
-    find . -type f -maxdepth 1 -name  "*${pack_name}*" -exec sh -c 'mv $1 "${1//$2/$3}"' sh {} "$pack_name" "$new_pack_name"  \;
+    find . -type f \( -name "*.py" -o -name "*.yml" -o -name "*.json" \) -maxdepth 1 -name  "*${pack_name}*" -exec sh -c 'mv $1 "${1//$2/$3}"' sh {} "$pack_name" "$new_pack_name"  \;
     rename_files_and_folders "$pack_name" "$new_pack_name";
     cd ../;
     if [ "$folder" != "${folder//$pack_name/$new_pack_name}" ]; then
