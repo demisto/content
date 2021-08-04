@@ -1,7 +1,11 @@
+import demistomock as demisto
+
 import urllib3
 from MicrosoftApiModule import *
 
 urllib3.disable_warnings()
+
+''' GLOBAL VARS '''
 
 OUTPUTS_PREFIX = "AADIdentityProtection"
 BASE_URL = 'https://graph.microsoft.com/beta'
@@ -11,6 +15,9 @@ REQUIRED_PERMISSIONS = (
     'IdentityRiskyUser.ReadWrite.All'
 )
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
+params = demisto.params()
+FETCH_TIME = params.get('fetch_time', '1 days')
 
 
 def __reorder_first_headers(headers: List[str], first_headers: List[str]) -> None:
@@ -32,6 +39,10 @@ def __json_list_to_headers(value_list: List[Dict[str, Any]]) -> List[str]:
     return headers
 
 
+def get_next_link_url(raw_response: dict) -> str:
+    return raw_response.get('@odata.nextLink', '').replace(' ', '%20')
+
+
 def parse_list(raw_response: dict, human_readable_title: str, context_path: str) -> CommandResults:
     """
     converts a response of Microsoft's graph search into a CommandResult object
@@ -49,7 +60,7 @@ def parse_list(raw_response: dict, human_readable_title: str, context_path: str)
     outputs = {f'{OUTPUTS_PREFIX}.{context_path}(val.id === obj.id)': values}
 
     # removing whitespaces so they aren't mistakenly considered as argument separators in CLI
-    next_link = raw_response.get('@odata.nextLink', '').replace(' ', '%20')
+    next_link = get_next_link_url(raw_response)
     if next_link:
         next_link_key = f'{OUTPUTS_PREFIX}.NextLink(obj.Description === "{context_path}")'
         next_link_value = {'Description': context_path, 'URL': next_link}
@@ -107,13 +118,13 @@ class AADClient(MicrosoftClient):
             remove_nulls_from_dictionary(params)
             return self.http_request(method='GET', url_suffix=url_suffix, params=params)
 
-    def azure_ad_identity_protection_risk_detection_list(self,
-                                                         limit: int,
-                                                         filter_expression: Optional[str] = None,
-                                                         next_link: Optional[str] = None,
-                                                         user_id: Optional[str] = None,
-                                                         user_principal_name: Optional[str] = None,
-                                                         country: Optional[str] = None) -> CommandResults:
+    def azure_ad_identity_protection_risk_detection_list_raw(self,
+                                                             limit: int,
+                                                             filter_expression: Optional[str] = None,
+                                                             next_link: Optional[str] = None,
+                                                             user_id: Optional[str] = None,
+                                                             user_principal_name: Optional[str] = None,
+                                                             country: Optional[str] = None) -> Dict:
         filter_arguments = []
 
         if user_id:
@@ -123,11 +134,25 @@ class AADClient(MicrosoftClient):
         if country:
             filter_arguments.append(f"location/countryOrRegion eq '{country}'")
 
-        raw_response = self.query_list(url_suffix='riskDetections',
-                                       filter_arguments=filter_arguments,
-                                       limit=limit,
-                                       filter_expression=filter_expression,
-                                       next_link=next_link)
+        return self.query_list(url_suffix='riskDetections',
+                               filter_arguments=filter_arguments,
+                               limit=limit,
+                               filter_expression=filter_expression,
+                               next_link=next_link)
+
+    def azure_ad_identity_protection_risk_detection_list(self,
+                                                         limit: int,
+                                                         filter_expression: Optional[str] = None,
+                                                         next_link: Optional[str] = None,
+                                                         user_id: Optional[str] = None,
+                                                         user_principal_name: Optional[str] = None,
+                                                         country: Optional[str] = None) -> CommandResults:
+        raw_response = self.azure_ad_identity_protection_risk_detection_list_raw(limit=limit,
+                                                                                 filter_expression=filter_expression,
+                                                                                 next_link=next_link,
+                                                                                 user_id=user_id,
+                                                                                 user_principal_name=user_principal_name,
+                                                                                 country=country)
 
         return parse_list(raw_response, human_readable_title="Risks", context_path="Risks")
 
@@ -217,18 +242,25 @@ def azure_ad_identity_protection_risky_users_dismiss_command(client: AADClient, 
 
 def fetch_incidents(client: AADClient, **kwargs):
 
-    day_ago = datetime.now() - timedelta(days=3)  # Default 3 days ago
-    start_time = day_ago.time()
-    last_run = demisto.getLastRun()
-    if last_run and 'start_time' in last_run:
-        start_time = last_run.get('start_time')
+    last_run: Dict[str, str] = demisto.getLastRun()
+    demisto.debug(f'last run: {last_run}')
 
-    formatString = "%Y-%m-%dT%H:%M:%S.%fZ"  # 2017-07-01T08:00:00.000Z
-    start_time_string = datetime.strptime(str(start_time), formatString)
-    demisto.info('\n\n*** start_time_string: ' + str(start_time_string) + '\n\n')
+    last_fetch = last_run.get('last_item_time', '')
+    if not last_fetch:
+        # handle first time fetch
+        default_fetch_datetime, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
+        last_fetch = str(default_fetch_datetime.isoformat(timespec='seconds')) + 'Z'
+
+    # use replace(tzinfo) to make the datetime aware of the timezone as all other dates we use are aware
+    last_fetch_datetime: datetime = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+    demisto.debug(f'last_fetch_datetime: {last_fetch_datetime}')
 
     finished_fetch_ok: bool = True
     incidents: List = []
+
+    risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(**kwargs)
+    values: list = risk_detection_list_raw.get('value', [])
+    demisto.debug(f'len(values): ' + str(len(values)))
 
     # TODO Implement
     # if error_fetching:
@@ -237,7 +269,7 @@ def fetch_incidents(client: AADClient, **kwargs):
     if finished_fetch_ok or (incidents and len(incidents) > 0):
         demisto.incidents(incidents)
         demisto.setLastRun({
-            'start_time': timestamp_to_datestring(incidents[-1]['time'])
+            'last_item_time': timestamp_to_datestring(incidents[-1]['time'])
         })
     else:
         demisto.incidents([])
