@@ -25,10 +25,7 @@ class Client(BaseClient):
 
         result = []
 
-        indicators = self._http_request('GET',
-                                 full_url=self._base_url,
-                                 resp_type='text',
-                                 )
+        indicators = self._http_request('GET', full_url=self._base_url)
 
         # In this case the feed output is in text format, so extracting the indicators from the response requires
         # iterating over it's lines solely. Other feeds could be in other kinds of formats (CSV, MISP, etc.), or might
@@ -50,14 +47,9 @@ class Client(BaseClient):
         return result
 
     def get_hashes(self, params: Dict[str, str], limit: int) -> List:
-        res = self._http_request(
-            'GET',
-            full_url="http://api.cybercure.ai/feed/get_hash",
-            resp_type='text',
-        )
-
-        json_payload = json.loads(res)
+        json_payload = self._http_request( 'GET', full_url="http://api.cybercure.ai/feed/get_hash" )
         result = []
+        
         all_urls = json_payload.get("data").get("hash")
         for data in all_urls:
             result.append(
@@ -69,21 +61,18 @@ class Client(BaseClient):
         return result
 
     def get_urls(self, limit: int) -> List:
-        res = self._http_request('GET',                                 
-                                 full_url="http://api.cybercure.ai/feed/get_url",
-                                 resp_type='text',
-                                 )
-
-        json_payload = json.loads(res)
+        json_payload = self._http_request('GET', full_url="http://api.cybercure.ai/feed/get_url")
         result = []
-        all_urls = json_payload.get("data").get("urls")
-        for data in all_urls:
-            result.append(
-                {
-                    'value': data,
-                    "type": "URL",
-                }
-            )
+        response_data = json_payload.get("data")
+        if response_data:
+            all_urls = response_data.get("urls")
+            for data in all_urls:
+                result.append(
+                    {
+                        'value': data,
+                        "type": "URL",
+                    }
+                )
         return result
 
     def fix_segment(self, segment) -> str:
@@ -98,18 +87,17 @@ class Client(BaseClient):
         global_usrn = params.get('usrn')
         global_client_id = params.get('clientid')
         body = {'usrn': global_usrn, 'clientID': global_client_id, 'limit': limit}
-        res = self._http_request(
+        json_payload = self._http_request(
             'POST',
             full_url="https://api.nucleoncyber.com/feed/activethreats",
             auth=(global_username, global_password),
             data=body,
-            resp_type='text',
         )
-        json_payload = json.loads(res)
         result = []
         all_data = json_payload.get("data")
 
         demisto.debug(all_data)
+        
         for data in all_data:
 
             if not data.get("attackDetails"):
@@ -120,7 +108,7 @@ class Client(BaseClient):
 
             if not data.get("attackMeta"):
                 continue
-                
+
             result.append(
                 {
                     'value': data.get("ip"),
