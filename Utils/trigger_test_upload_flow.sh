@@ -57,7 +57,7 @@ function create_new_pack {
   cd "${new_pack_path}" || fail
 
   # rename inside yml and json files
-  find . -type f \( -name "*.json" -o -name "*.yml" \) -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
+  find . -type f -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
 
   rename_files_and_folders "$pack_name" "$new_pack_name"
 
