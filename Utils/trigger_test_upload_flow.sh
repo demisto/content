@@ -56,12 +56,12 @@ function create_new_pack {
   cp -R "${pack_path}" "${new_pack_path}" || fail
   cd "${new_pack_path}" || fail
 
-  rename_files_and_folders "$pack_name" "$new_pack_name"
+  rename_files_and_folders "$pack_name" "$new_pack_name" "true"
 
   if [ "$pack_name" == "HelloWorld" ]; then
-    rename_files_and_folders "Hello_World" "Hello_World_New"
-    rename_files_and_folders "helloworld" "helloworldnew"
-    rename_files_and_folders "Sanity_Test" "Sanity_Test_New"
+    rename_files_and_folders "Hello_World" "Hello_World_New" "false"
+    rename_files_and_folders "helloworld" "helloworldnew" "false"
+    rename_files_and_folders "Sanity_Test" "Sanity_Test_New" "false"
   fi
 
   cd "${original_path}" || fail
@@ -84,7 +84,7 @@ function rename_files_and_folders {
   local pack_name=$1
   local new_pack_name=$2
   # Rename inside files
-  if [ -n $3 ]; then
+  if [ $3 == "true" ]; then
     find . -type f \( -name "*.py" -o -name "*.yml" -o -name "*.json" \) -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
   fi
 
