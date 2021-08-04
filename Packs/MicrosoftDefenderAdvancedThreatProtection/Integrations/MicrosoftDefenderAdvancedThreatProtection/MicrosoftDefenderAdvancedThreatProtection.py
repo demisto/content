@@ -727,8 +727,7 @@ class MsClient:
         params = {'$top': page_size}
         resp = self.indicators_http_request(should_use_security_center,
                                             'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
-                                            ok_codes=(200, 204, 206, 404), resp_type='response'
-                                            )
+                                            ok_codes=(200, 204, 206, 404), resp_type='response')
         # 404 - No indicators found, an empty list.
         if resp.status_code == 404:
             return []
