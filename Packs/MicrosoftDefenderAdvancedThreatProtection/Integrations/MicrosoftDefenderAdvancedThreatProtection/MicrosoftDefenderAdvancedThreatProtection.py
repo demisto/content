@@ -2607,7 +2607,6 @@ def main():
             return_outputs(*update_indicator_command(client, args))
         elif command == 'microsoft-atp-indicator-delete':
             return_outputs(delete_indicator_command(client, args))
-
         # using security-center api for indicators
         elif command in ('microsoft-atp-sc-indicator-list', 'microsoft-atp-sc-indicator-get-by-id'):
             return_outputs(*sc_list_indicators_command(client, args))
