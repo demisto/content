@@ -3945,7 +3945,7 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.generateAlert
       description: Whether an altet was generated.
-      type: Boolean
+      type: Boolean newDescription newTitle
     - contextPath: MicrosoftATP.Indicators.rbacGroupNames
       description: A list of RBAC device group names where the indicator is exposed
         and active. Empty list in case it exposed to all devices.
