@@ -537,6 +537,7 @@ fi
 if [ -n "$gitlab_token" ]; then
   trigger_gitlab_ci $gitlab_token $new_content_branch $bucket $packs $slack_channel
 fi
+echo ""
 
 git checkout "${content_branch_name}"
 git branch -D "${new_content_branch}"
