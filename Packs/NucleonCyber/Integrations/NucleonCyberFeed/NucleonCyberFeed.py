@@ -62,20 +62,15 @@ class Client(BaseClient):
 
         json_payload = json.loads(res)
         result = []
-        # all_data = json_payload.get("data")
         all_urls = json_payload.get("data").get("hash")
         for data in all_urls:
             result.append(
                 {
                     'value': data,
                     "type": "File",
-                    # "reputation":"Bad",
                 }
             )
         return result
-
-    """
-    """
 
     def get_urls(self, limit: int) -> List:
         res = self._http_request('GET',
@@ -86,21 +81,15 @@ class Client(BaseClient):
 
         json_payload = json.loads(res)
         result = []
-        # all_data = json_payload.get("data")
         all_urls = json_payload.get("data").get("urls")
         for data in all_urls:
             result.append(
                 {
                     'value': data,
                     "type": "URL",
-                    # "reputation":"Bad",
-
                 }
             )
         return result
-
-    """
-    """
 
     def fix_segment(self, segment) -> str:
         if segment is None:
@@ -108,15 +97,11 @@ class Client(BaseClient):
         else:
             return segment
 
-    """
-    """
-
     def get_ips(self, params: Dict[str, str], limit: int) -> List:
         global_username = params.get('username')
         global_password = params.get('password')
         global_usrn = params.get('usrn')
         global_client_id = params.get('clientid')
-        # ips_indicators_url = params.get('ips')
         body = {'usrn': global_usrn, 'clientID': global_client_id, 'limit': limit}
         res = self._http_request('POST',
                                  url_suffix='',
@@ -149,8 +134,6 @@ class Client(BaseClient):
                     'automated': data.get("attackMeta").get("automated"),
                     'bruteForce': data.get("attackMeta").get("bruteForce"),
                     'sourceCountry': data.get("attackMeta").get("sourceCountry"),
-                    # "reputation":"Bad",
-
                 }
             )
         return result
@@ -186,13 +169,10 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
     Returns:
         Indicators.
     """
-    # iterator = client.build_iterator()
     params = demisto.params()
     iterator = client.get_ips(params, limit)
 
     indicators = []
-    # if limit > 0:
-    #     iterator = iterator[:limit]
 
     # extract values from iterator
     tags_ = []
@@ -225,13 +205,9 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
             if (isinstance(tag_value, str) and tag_value == 'true') or (isinstance(tag_value, bool) and tag_value is True):
                 tags_.append(tag_name)
 
-        # exp = item.get('exp')
-        # exp_= timestamp_to_datestring(exp_ms)
-
         raw_data = {
             'value': value_,
             'type': type_,
-            # 'exp':exp_,
             'segment': segment_,
             'targetCountry': targetCountry_,
             'os': os_,
@@ -272,14 +248,11 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
             'automated': automated_,
             'bruteForce': bruteForce_,
             'sourceCountry': sourceCountry_,
-            # 'exp':exp_,
-
             # The name of the service supplying this feed.
             'service': 'NucleonCyberFeed',
             # A dictionary that maps values to existing indicator fields defined in Cortex XSOAR.
             # One can use this section in order to map custom indicator fields previously defined
             # in Cortex XSOAR to their values.
-
 
             'fields': {
                 'osversion': osVersion_,
@@ -288,14 +261,10 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
                 'nucleonsegment': segment_,
                 'targetCountry': targetCountry_,
                 'tags': tags_,
-                #    'expiration':exp_,
             },
             # A dictionary of the raw data returned from the feed source about the indicator.
             'rawJSON': raw_data
         }
-
-        # if feed_tags:
-        #     indicator_obj['fields']['tags'] = feed_tags
 
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
@@ -313,7 +282,6 @@ def fetch_hashes(client: Client, limit: int = -1) \
     Returns:
         Indicators.
     """
-    # iterator = client.build_iterator()
     params = demisto.params()
     iterator = client.get_hashes(params, limit)
 
@@ -340,8 +308,6 @@ def fetch_hashes(client: Client, limit: int = -1) \
             'type': type_,
             # The indicator type as defined in Cortex XSOAR.
             # One can use the FeedIndicatorType class under CommonServerPython to populate this field.
-            # 'exp':exp_,
-            # "port":port_,
             # The name of the service supplying this feed.
             'service': 'NucleonCyberFeed',
             # A dictionary that maps values to existing indicator fields defined in Cortex XSOAR.
@@ -392,8 +358,6 @@ def fetch_urls(client: Client, limit: int = -1) \
             'type': type_,
             # The indicator type as defined in Cortex XSOAR.
             # One can use the FeedIndicatorType class under CommonServerPython to populate this field.
-            # 'exp':exp_,
-            # "port":port_,
             # The name of the service supplying this feed.
             'service': 'NucleonCyberFeed',
             # A dictionary that maps values to existing indicator fields defined in Cortex XSOAR.
@@ -432,7 +396,6 @@ def get_indicators_command(client: Client,
         outputs_prefix='NucleonCyber.Indicators',
         outputs_key_field='',
         raw_response=indicators,
-        # outputs={},
         outputs=indicators,
     )
 
@@ -495,7 +458,6 @@ def get_urls_command(client: Client,
     human_readable = tableToMarkdown('URL indicators from NucleonCyberFeed:', urls,
                                      headers=['value', 'type'], headerTransform=string_to_table_header, removeNull=True)
 
-    # res = client.get_urls()
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='NucleonCyber.Indicators.url',
