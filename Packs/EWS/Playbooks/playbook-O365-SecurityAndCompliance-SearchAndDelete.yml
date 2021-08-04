@@ -1,12 +1,7 @@
 id: O365 - Security And Compliance - Search And Delete
-version: 10
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: EWS
-    itemVersion: 1.8.29
-    fromServerVersion: 5.5.0
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: O365 - Security And Compliance - Search And Delete
 description: |-
   This playbook performs the following steps:
@@ -45,8 +40,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 401e2d9a-11db-45ed-82e9-734db5db3ca8
@@ -86,8 +79,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: f341c194-b500-4f99-8f3e-cd3885b51711
@@ -113,8 +104,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 326e36dd-d7cb-4001-85e4-061ec01226ef
@@ -151,8 +140,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 413cef08-8ba6-43b8-8f51-aeb1ecf602f1
@@ -191,8 +178,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "21":
     id: "21"
     taskid: a4757abb-ddc7-493b-8879-c0e0710ce8f0
@@ -260,8 +245,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: 7ef52938-a049-4864-86c8-7a1fc43373d2
@@ -332,8 +315,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: 089dc291-6f60-44db-807c-13e090115979
@@ -366,8 +347,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: b69e032a-dc04-4c3a-837f-c49b4ef10939
@@ -411,8 +390,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "25":
     id: "25"
     taskid: 2aa70f15-3594-4832-829b-f3f398480518
@@ -484,8 +461,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: eb4ae985-e3ae-4f50-8eca-acf94da282e1
@@ -520,8 +495,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "28":
     id: "28"
     taskid: e3f49938-386d-4310-8ef9-55fa8529f584
@@ -567,8 +540,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "29":
     id: "29"
     taskid: c6b58231-3264-4c5a-84c1-88d3fbc62c2d
@@ -614,8 +585,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "30":
     id: "30"
     taskid: 50e3fe8c-982b-4715-84f4-86b1aaec3adb
@@ -645,8 +614,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "31":
     id: "31"
     taskid: 1a65115a-5733-4a90-8b9a-92863d644c57
@@ -676,8 +643,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "32":
     id: "32"
     taskid: 3799629e-3828-45ff-8ac6-76f91c2269af
@@ -715,8 +680,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "33":
     id: "33"
     taskid: def40f3a-e3ba-496d-88af-39731e3d320b
@@ -757,8 +720,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "35":
     id: "35"
     taskid: b51ca904-5901-47db-8a6a-06cd5b6f31f1
@@ -793,8 +754,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "36":
     id: "36"
     taskid: 7bffe37a-56c1-4b6a-8f22-d93e811a3ce4
@@ -830,8 +789,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -863,43 +820,43 @@ inputs:
   value: {}
   required: false
   description: The name of the compliance search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: case
   value: {}
   required: false
   description: The name of a Core eDiscovery case to associate with the new compliance
     search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: kql
   value: {}
   required: true
   description: Text search string or a query that is formatted using the Keyword Query
     Language (KQL).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: description
   value: {}
   required: false
   description: Description of the compliance search.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: allow_not_found_exchange_locations
   value:
     simple: "true"
   required: false
   description: Whether to include mailboxes other than regular user mailboxes in the
     compliance search. Default is "false".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: exchange_location
   value: {}
   required: false
   description: Comma-separated list of mailboxes/distribution groups to include, or
     use the value "All" to include all.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: exchange_location_exclusion
   value: {}
   required: false
   description: Comma-separated list of mailboxes/distribution groups to exclude when
     you use the value "All" for the exchange_location parameter.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: force
   value:
     simple: "false"
@@ -907,19 +864,22 @@ inputs:
   description: Whether to replace the existing search. If "true", the existing search
     will be removed and a new search will be created. If "false", the existing search
     will be used and any new search configurations will be ignored.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: preview
   value:
     simple: "true"
   required: true
   description: 'Whether to preview the results using the search action "Preview".
     Possible values are: "true" and "false" or leave empty to select manually.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: delete_type
   value: {}
   required: false
   description: Specify the delete type to perform on the search results. Possible
     values are Hard and Soft or leave empty to select manually. (Hard = Unrecoverable,
     Soft=Recoverable)
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- O365-SecurityAndCompliance-Test
+fromversion: 5.5.0
