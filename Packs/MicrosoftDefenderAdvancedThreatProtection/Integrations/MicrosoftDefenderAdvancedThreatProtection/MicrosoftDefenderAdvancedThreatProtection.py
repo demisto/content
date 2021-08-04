@@ -29,14 +29,6 @@ NUMBER_TO_SEVERITY = {
     5: 'Informational'
 }
 
-NUMBER_TO_SEVERITY_SECURITY_CENTER = {
-    0: 'Informational',
-    1: 'Low',
-    2: 'Medium',
-    4: 'High',
-    5: 'Informational'
-}
-
 SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
 SECURITY_CENTER_SCOPE = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
 SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
