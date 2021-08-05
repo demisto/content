@@ -12,3 +12,15 @@ ignore=RM106
 
 [file:playbook-PAN-OS_-_Block_URL_-_Custom_URL_Category_README.md]
 ignore=RM106
+
+[file:playbook-PAN-OS_Create_Or_Edit_Rule_Test.yml]
+ignore=auto-test
+
+[file:playbook-MISPV3-Test.yml]
+ignore=auto-test
+
+[file:Phishing_v2_-_Test_-_Incident_Starter.yml]
+ignore=auto-test
+
+[file:Test_XDR_Playbook.yml]
+ignore=auto-test
