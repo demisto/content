@@ -130,20 +130,6 @@ class Client(BaseClient):
             resp_type='response'
         )
 
-    def get_logs_for_groups(self, filter=None, from_date=None, to_date=None, sort_order=None):
-        uri = 'logs'
-        query_params = {}
-        if from_date:
-            query_params['since'] = encode_string_results(from_date)
-        if to_date:
-            query_params['until'] = encode_string_results(to_date)
-        if filter:
-            query_params['filter'] = encode_string_results(filter)
-
-        query_params['sortOrder'] = sort_order if sort_order else 'ASCENDING'
-
-        return self.get_paged_results(uri, query_params)
-
     def get_group_members(self, group_id):
         uri = f'groups/{group_id}/users'
         return self.get_paged_results(uri)
@@ -843,7 +829,7 @@ def get_logs_command(client, args):
     filter = args.get('filter')
     since = args.get('since')
     until = args.get('until')
-    log_events = client.get_logs_for_groups(filter=filter, from_date=since, to_date=until)
+    log_events, _ = client.get_logs(query_filter=filter, last_run_time=since, time_now=until)
 
     return CommandResults(
         raw_response=log_events,

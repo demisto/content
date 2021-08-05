@@ -129,28 +129,10 @@ class GroupClient(BaseClient):
         self.base_url = base_url
         self.verify = verify
         self.headers = headers
-        self.session = requests.Session()
-        if not proxy:
-            self.session.trust_env = False
-
-    def http_request(self, method, url_suffix, params=None, data=None, headers=None):
-        if headers is None:
-            headers = self.headers
-        full_url = self.base_url + url_suffix
-        res = requests.request(
-            method,
-            full_url,
-            verify=self.verify,
-            headers=headers,
-            params=params,
-            json=data
-        )
-
-        return res
 
     def get_group_by_id(self, group_id):
         uri = f'/Groups/{group_id}'
-        return self.http_request(
+        return self._http_request(
             method="GET",
             url_suffix=uri
         )
@@ -160,7 +142,7 @@ class GroupClient(BaseClient):
         query_params = {
             'filter': f'displayName eq "{group_name}"'
         }
-        return self.http_request(
+        return self._http_request(
             method="GET",
             url_suffix=uri,
             params=query_params
@@ -168,7 +150,7 @@ class GroupClient(BaseClient):
 
     def create_group(self, data):
         uri = '/Groups'
-        return self.http_request(
+        return self._http_request(
             method="POST",
             url_suffix=uri,
             data=data
@@ -176,7 +158,7 @@ class GroupClient(BaseClient):
 
     def update_group(self, group_id, data):
         uri = f'/Groups/{group_id}'
-        return self.http_request(
+        return self._http_request(
             method="PATCH",
             url_suffix=uri,
             data=data
@@ -184,7 +166,7 @@ class GroupClient(BaseClient):
 
     def delete_group(self, group_id):
         uri = f'/Groups/{group_id}'
-        return self.http_request(
+        return self._http_request(
             method="DELETE",
             url_suffix=uri
         )
@@ -202,10 +184,7 @@ class GroupClient(BaseClient):
                 new_extension_schema = {}
                 for key, value in custom_mapping.items():
                     # key is the attribute name in input scim. value is the attribute name of slack profile
-                    try:
-                        new_extension_schema[value] = extension_schema.get(key)
-                    except Exception:
-                        pass
+                    new_extension_schema[value] = extension_schema.get(key)
                 scim[SLACK_SCIM_EXTENSION_KEY] = new_extension_schema
             else:
                 scim[SLACK_SCIM_EXTENSION_KEY] = extension_schema
@@ -279,68 +258,18 @@ class OutputContext:
         }
 
 
-def map_scim(clientData):
-    clientData = json.loads(clientData)
-    if type(clientData) != dict:
-        raise Exception('Provided client data is not JSON compatible')
+def get_group_id_by_name(client, group_name):
+    res = client.search_group(group_name)
+    res_json = res.json()
 
-    scim_extension = INPUT_SCIM_EXTENSION_KEY.replace('.', '\.')
-    mapping = {
-        "active": "active",
-        "addressCountry": "addresses(val.primary && val.primary==true).[0].country",
-        "addressFormatted": "addresses(val.primary && val.primary==true).[0].formatted",
-        "addressLocailty": "addresses(val.primary && val.primary==true).[0].locality",
-        "addressPostalCode": "addresses(val.primary && val.primary==true).[0].postalCode",
-        "addressRegion": "addresses(val.primary && val.primary==true).[0].region",
-        "addressStreeetAddress": "addresses(val.primary && val.primary==true).[0].streetAddress",
-        "addressType": "addresses(val.primary && val.primary==true).[0].type",
-        "costCenter": scim_extension + ".costCenter",
-        "department": scim_extension + ".department",
-        "division": scim_extension + ".division",
-        "email": "emails(val.primary && val.primary==true).[0].value",
-        "emailType": "emails(val.primary && val.primary==true).[0].type",
-        "employeeNumber": scim_extension + ".employeeNumber",
-        "groups": "groups(val.display).display",
-        "id": "id",
-        "externalId": "externalId",
-        "locale": "locale",
-        "manager": scim_extension + ".manager.value",
-        "nameFormatted": "name.formatted",
-        "nameFamilyName": "name.familyName",
-        "nameGivenName": "name.givenName",
-        "nameHonorificPrefix": "name.honorificPrefix",
-        "nameHonorificSuffix": "name.honorificSuffix",
-        "nameMiddleName": "name.middleName",
-        "nickName": "nickName",
-        "organization": scim_extension + ".organization",
-        "password": "password",
-        "photo": "photos(val.type && val.type=='photo').[0].value",
-        "preferredLanguage": "preferredLanguage",
-        "profileUrl": "profileUrl",
-        "thumbnnail": "photos(val.type && val.type=='thumbnail').[0].value",
-        "timezone": "timezone",
-        "title": "title",
-        "userName": "userName",
-        "userType": "userType",
-    }
-    ret = dict()
-    for k, v in mapping.items():
-        try:
-            ret[k] = demisto.dt(clientData, v)
-        except Exception:
-            ret[k] = None
-    return ret
-
-
-def verify_and_load_scim_data(scim):
-    scim = json.loads(scim)
-    if type(scim) != dict:
-        raise Exception('SCIM data is not a valid JSON')
-    return scim
+    if res.status_code == 200:
+        if res_json.get('totalResults') >= 1:
+            return res_json['Resources'][0].get('id')
+    return None
 
 
 def get_group_command(client, args):
-    scim = verify_and_load_scim_data(args.get('scim'))
+    scim = safe_load_json(args.get('scim'))
 
     group_id = scim.get('id')
     group_name = scim.get('displayName')
@@ -403,12 +332,14 @@ def get_group_command(client, args):
 
 
 def delete_group_command(client, args):
-    scim = verify_and_load_scim_data(args.get('scim'))
+    scim = safe_load_json(args.get('scim'))
     group_id = scim.get('id')
     group_name = scim.get('displayName')
 
     if not group_id:
-        return_error("You must supply 'id' in the scim data")
+        group_id = get_group_id_by_name(client, group_name)
+        if not group_id:
+            return_error("You must supply 'id' in the scim data")
 
     res = client.delete_group(group_id)
 
@@ -432,7 +363,7 @@ def delete_group_command(client, args):
 
 
 def create_group_command(client, args):
-    scim = verify_and_load_scim_data(args.get('scim'))
+    scim = safe_load_json(args.get('scim'))
     group_name = scim.get('displayName')
 
     if not group_name:
@@ -461,13 +392,15 @@ def create_group_command(client, args):
 
 
 def update_group_command(client, args):
-    scim = verify_and_load_scim_data(args.get('scim'))
+    scim = safe_load_json(args.get('scim'))
 
     group_id = scim.get('id')
     group_name = scim.get('displayName')
 
     if not group_id:
-        return_error("You must supply 'id' in the scim data")
+        group_id = get_group_id_by_name(client, group_name)
+        if not group_id:
+            return_error("You must supply 'id' in the scim data")
 
     member_ids_to_add = args.get('memberIdsToAdd')
     member_ids_to_delete = args.get('memberIdsToDelete')
