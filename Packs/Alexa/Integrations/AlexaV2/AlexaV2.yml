@@ -23,6 +23,11 @@ configuration:
   name: threshold
   required: true
   type: 0
+- defaultvalue: 'https://awis.api.alexa.com/api'
+  display: Base API URL
+  name: base_url
+  required: true
+  type: 0
 - additionalinfo: These domains will be given a DbotScore of good.
   defaultvalue: '0'
   display: Alexa rank - top domains to be considered trusted.
@@ -88,7 +93,7 @@ script:
       description: Alexa rank as determined by Amazon
       type: string
   dockerimage: demisto/python3:3.9.6.22912
-  feed: false
+  feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false

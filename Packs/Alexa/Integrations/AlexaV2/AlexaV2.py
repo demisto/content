@@ -42,23 +42,24 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, api_key: str, base_url: str, proxy: bool, insecure: bool):
+    def __init__(self, api_key: str, base_url: str, proxy: bool, verify: bool):
         super().__init__(base_url=base_url,
-                         verify=not insecure,
+                         verify=verify,
                          proxy=proxy)
+        demisto.debug(api_key)
         self.api_key = api_key
 
     def http_request(self, params: Dict):
         return self._http_request(method='GET',
-                                  url_suffix='api?',
+                                  url_suffix='',
                                   headers={'x-api-key': self.api_key},
                                   params=params)
 
-    def alexa_rank(self, url: str) -> Dict[Any]:
+    def alexa_rank(self, domain: str) -> Dict:
         params = {'Action': 'UrlInfo',
                   'ResponseGroup': 'Rank',
-                  'Url': url,
-                  'Output': 'Json'}
+                  'Url': domain,
+                  'Output': 'json'}
         return self.http_request(params=params)
 
 
@@ -98,38 +99,56 @@ def test_module(client: Client) -> str:
 
 
 # TODO: REMOVE the following dummy command function
-def alexa_domain(client: Client, args: Dict[str, Any]) -> CommandResults:
+def alexa_domain(client: Client, args: Dict[str, Any], threshold: int, benign: int,
+                 reliability: DBotScoreReliability) -> CommandResults:
     domain = args.get('domain', None)
     if not domain:
         raise ValueError('url doesn\'t exists')
 
     # Call the Client function and get the raw response
     result = client.alexa_rank(domain)
-    rank: str = '0'
-    try:
-        rank = result['Awis']['Results']['Result']['Alexa']['TrafficData']['Rank']
-    except KeyError:
-        pass
+    score: int = 0
+    score_text: str = ''
+    alexa_rank = demisto.get(result, 'Awis.Results.Result.Alexa.TrafficData.Rank')
+    if alexa_rank is None:
+        score = 2
+        score_text = 'suspicious'
+    elif 0 < int(alexa_rank) <= benign:
+        score = 1
+        score_text = 'good'
+    elif int(alexa_rank) > threshold:
+        score = 2
+        score_text = 'suspicious'
+    elif int(alexa_rank) < threshold:
+        score = 0
+        score_text = 'unknown'
+    # else:
+    #     score = 2
+    #     score_text = 'suspicious'
 
     dbot_score = Common.DBotScore(
         indicator=domain,
         integration_name='AlexaV2',
         indicator_type=DBotScoreType.DOMAIN,
-        score=rank,
-        malicious_description=f'Alexa V2 reputation is {rank}'  # todo change
+        reliability=reliability,
+        score=score,
+        malicious_description=score_text
     )
     domain_standard_context = Common.Domain(
         domain=domain,
         dbot_score=dbot_score
     )
+    alexa_rank: str = alexa_rank if alexa_rank else 'Unknown'
     result = {'Name': domain,
               'Indicator': domain,
-              'Rank': rank}
-
+              'Rank': alexa_rank}
+    readable = f'The Alexa rank of {domain} is {alexa_rank} and has been marked as {score_text}.' \
+               f' The benign threshold is {benign} while the suspicious threshold is {threshold}.'
     return CommandResults(
-        outputs_prefix='Alexa.Domain',
+        outputs_prefix='AlexaV2.Domain',
         outputs_key_field='Name',
         outputs=result,
+        readable_output=readable,
         indicator=domain_standard_context
     )
 
@@ -146,21 +165,28 @@ def main() -> None:
     :return:
     :rtype:
     """
-
+    params = demisto.params()
     # TODO: make sure you properly handle authentication
-    api_key = demisto.params().get('apikey')
-
+    api_key = params.get('api_key')
+    demisto.debug(f'Ilan debug {api_key}')
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    base_api = params.get('base_url')
+    threshold = int(params.get('threshold'))
+    benign = int(params.get('benign'))
+    reliability = demisto.params().get('integrationReliability')
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        return_error("PhishTankV2 error: Please provide a valid value for the Source Reliability parameter.")
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not params.get('insecure', False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -168,11 +194,10 @@ def main() -> None:
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
         client = Client(
-            base_url=base_url,
-            insecure=verify_certificate,
+            base_url=base_api,
+            verify=verify_certificate,
             proxy=proxy,
             api_key=api_key)
-
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
@@ -180,7 +205,7 @@ def main() -> None:
 
         # TODO: REMOVE the following dummy command case:
         elif demisto.command() == 'domain':
-            return_results(alexa_domain(client, demisto.args()))
+            return_results(alexa_domain(client, demisto.args(), threshold, benign, reliability))
         # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
