@@ -348,7 +348,7 @@ script:
       - contextPath: AbnormalSecurity.SubmitInquiry.detail
         description: Confirmation of inquiry sent
         type: String
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/carbon-black-cloud:1.0.0.23151
   isfetch: false
   script: ''
   subtype: python3
