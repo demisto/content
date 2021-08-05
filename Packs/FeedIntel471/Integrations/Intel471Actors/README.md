@@ -45,7 +45,7 @@ Gets the feed indicators.
 
 #### Context Output
 
-There is no context output for this command.
+There is no context output for this command...
 
 #### Command Example
 ```!intel471-actors-get-indicators limit=10```
