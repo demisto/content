@@ -133,7 +133,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 38. microsoft-atp-indicator-delete (deprecated)
 39. microsoft-atp-sc-indicator-list
 40. microsoft-atp-sc-indicator-get-by-id
-41. microsoft-atp-sc-indicator-update
+41. microsoft-atp-sc-indicator-create-update
 42. microsoft-atp-sc-indicator-delete
 
 ### 1. microsoft-atp-isolate-machine
@@ -3398,7 +3398,7 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 >| 5039 | Allowed | Informational |
 >| 5037 | Alert | Informational |
 
-### microsoft-atp-sc-indicator-update
+### microsoft-atp-sc-indicator-create-update
 ***
 Updates the spcified indicator.
 
@@ -3408,7 +3408,7 @@ Updates the spcified indicator.
 
 #### Base Command
 
-`microsoft-atp-sc-indicator-update`
+`microsoft-atp-sc-indicator-create-update`
 
 #### Input
 
@@ -3465,7 +3465,7 @@ Updates the spcified indicator.
 
 
 #### Command Example
-```!microsoft-atp-sc-indicator-update action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Informational```
+```!microsoft-atp-sc-indicator-create-update action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Informational```
 
 #### Context Example
 ```json

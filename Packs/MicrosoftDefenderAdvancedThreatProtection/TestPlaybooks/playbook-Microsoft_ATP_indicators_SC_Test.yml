@@ -215,7 +215,7 @@ tasks:
       version: -1
       name: Update indicators description and severity
       description: Updates the spcified indicator.
-      script: '|||microsoft-atp-sc-indicator-update'
+      script: '|||microsoft-atp-sc-indicator-create-update'
       type: regular
       iscommand: true
       brand: ""
@@ -348,9 +348,9 @@ tasks:
     task:
       id: 3d4d135c-5398-49ac-8a09-1f2b3f9a3b3a
       version: -1
-      name: microsoft-atp-sc-indicator-update
+      name: microsoft-atp-sc-indicator-create-update
       description: Updates the spcified indicator.
-      script: '|||microsoft-atp-sc-indicator-update'
+      script: '|||microsoft-atp-sc-indicator-create-update'
       type: regular
       iscommand: true
       brand: ""

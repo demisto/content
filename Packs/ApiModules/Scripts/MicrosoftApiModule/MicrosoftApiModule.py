@@ -13,6 +13,7 @@ from typing import Dict, Tuple, List, Optional
 class Scopes:
     graph = 'https://graph.microsoft.com/.default'
     security_center = 'https://api.securitycenter.windows.com/.default'
+    security_center_apt_service = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
 
 
 # authorization types

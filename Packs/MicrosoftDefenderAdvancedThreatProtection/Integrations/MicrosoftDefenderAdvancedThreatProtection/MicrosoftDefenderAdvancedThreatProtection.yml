@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Microsoft Defender Advanced Threat Protection
+  id: Microsoft Defender Advanced Threat Protection test
   version: -1
 configuration:
 - defaultvalue: https://api.securitycenter.windows.com
@@ -73,7 +73,7 @@ description: Microsoft Defender for Endpoint (previously Microsoft Defender Adva
   Threat Protection (ATP)) is a unified platform for preventative protection, post-breach
   detection, automated investigation, and response.
 display: Microsoft Defender for Endpoint
-name: Microsoft Defender Advanced Threat Protection
+name: Microsoft Defender Advanced Threat Protection test
 script:
   commands:
   - arguments:
@@ -3909,9 +3909,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates the spcified indicator.
+    description: Updates the spcified indicator. If an indicator with the given value is already exists, a new indicator will be created.
     execution: false
-    name: microsoft-atp-sc-indicator-update
+    name: microsoft-atp-sc-indicator-create-update
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
       description: Created by the system when the indicator is ingested. Generated

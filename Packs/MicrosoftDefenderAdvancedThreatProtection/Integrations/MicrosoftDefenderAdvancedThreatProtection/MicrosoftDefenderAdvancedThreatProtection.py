@@ -30,7 +30,6 @@ NUMBER_TO_SEVERITY = {
 }
 
 SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
-SECURITY_CENTER_SCOPE = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
 SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
 
 
@@ -175,11 +174,12 @@ class MsClient:
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
 
-    def indicators_http_request(self, should_use_security_center=False, *args, **kwargs):
+    def indicators_http_request(self, should_use_security_center: bool = False, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
+            should_use_security_center (bool): whether to use the security center's scope and resource
         """
         if should_use_security_center:
-            kwargs['scope'] = SECURITY_CENTER_SCOPE
+            kwargs['scope'] = Scopes.security_center_apt_service
             kwargs['resource'] = SECURITY_CENTER_RESOURCE
         else:
             kwargs['scope'] = "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else Scopes.graph
@@ -705,13 +705,13 @@ class MsClient:
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
     def sc_list_indicators(self, indicator_id: Optional[str] = None, limit: int = 50,
-                           should_use_security_center=False) -> List:
+                           should_use_security_center: bool = False) -> List:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
                 Args:
                     indicator_id: if provided, will get only this specific id.
                     limit: Limit the returned results.
-                    should_use_security_center: whether to use the security center's scope and resource.
+                    should_use_security_center (bool): whether to use the security center's scope and resource.
 
                 Returns:
                     List of responses.
@@ -735,7 +735,7 @@ class MsClient:
 
     def list_indicators(self,
                         indicator_id: Optional[str] = None, page_size: str = '50', limit: int = 50,
-                        should_use_security_center=False) -> List:
+                        should_use_security_center: bool = False) -> List:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
         Args:
@@ -800,15 +800,18 @@ class MsClient:
         resp.pop('@odata.context')
         return assign_params(values_to_ignore=[None], **resp)
 
-    def update_indicator_security_center_api(self, indicator_value: Optional[str],
-                                             expiration_date_time: Optional[str],
-                                             description: Optional[str], severity: Optional[int],
-                                             indicator_type: Optional[str],
-                                             action: Optional[str], indicator_title: Optional[str],
-                                             indicator_application: Optional[str],
-                                             recommended_actions: Optional[str], rbac_group_names: Optional[list]
-                                             ) -> Dict:
-        """Updates a given indicator
+    def create_update_indicator_security_center_api(self, indicator_value: str,
+                                                    indicator_type: str,
+                                                    action: str,
+                                                    indicator_title: str,
+                                                    description: str,
+                                                    expiration_date_time: Optional[str] = None,
+                                                    severity: Optional[int] = None,
+                                                    indicator_application: Optional[str] = None,
+                                                    recommended_actions: Optional[str] = None,
+                                                    rbac_group_names: Optional[list] = None
+                                                    ) -> Dict:
+        """creates or updates (if already exists) a given indicator
 
         Args:
             indicator_value: Value of the indicator to update
@@ -825,7 +828,6 @@ class MsClient:
         Returns:
             A response from the API.
         """
-        header = {'Content-Type': 'application/json'}
         body = {  # required params
             'indicatorValue': indicator_value,
             'indicatorType': indicator_type,
@@ -841,7 +843,7 @@ class MsClient:
             rbacGroupNames=rbac_group_names
         ))
         resp = self.indicators_http_request(True, 'POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT, json_data=body,
-                                            url_suffix=None, headers=header)
+                                            url_suffix=None)
         return assign_params(values_to_ignore=[None], **resp)
 
     def update_indicator(
@@ -877,13 +879,14 @@ class MsClient:
         resp.pop('@odata.context')
         return assign_params(values_to_ignore=[None], **resp)
 
-    def delete_indicator(self, indicator_id: str, indicators_endpoint: str, use_security_center=False) -> Response:
+    def delete_indicator(self, indicator_id: str, indicators_endpoint: str,
+                         use_security_center: bool = False) -> Response:
         """Deletes a given indicator
 
         Args:
-            indicator_id: ID of the indicator to delete
-            indicators_endpoint:
-            use_security_center
+            indicator_id: ID of the indicator to delete.
+            indicators_endpoint: The indicator endpoint to use.
+            use_security_center: whether to use the security center's scope and resource.
 
         Returns:
             A response from the API.
@@ -2391,8 +2394,8 @@ def sc_delete_indicator_command(client: MsClient, args: dict) -> str:
     return f'Indicator ID: {indicator_id} was successfully deleted'
 
 
-def sc_update_indicator_command(client: MsClient, args: dict) -> Tuple[str, Dict, Dict]:
-    """Updates an indicator
+def sc_create_update_indicator_command(client: MsClient, args: dict) -> Tuple[str, Dict, Dict]:
+    """Updates an indicator if exists, if does not exist, create new one
     Note: CIDR notation for IPs is not supported.
 
     Args:
@@ -2418,7 +2421,7 @@ def sc_update_indicator_command(client: MsClient, args: dict) -> Tuple[str, Dict
             indicator_description) <= 100, 'The description argument must contain at least 1 ' \
                                            'character and not more than 100'
 
-    raw_response = client.update_indicator_security_center_api(
+    raw_response = client.create_update_indicator_security_center_api(
         indicator_value=indicator_value, expiration_date_time=expiration_time,
         description=indicator_description, severity=severity, indicator_type=indicator_type, action=action,
         indicator_title=indicator_title, indicator_application=indicator_application,
@@ -2446,7 +2449,7 @@ def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[
     Returns:
         human_readable, outputs.
     """
-    limit = int(args.get('limit', 50))
+    limit = arg_to_number(args.get('limit', 50))
     raw_response = client.sc_list_indicators(args.get('indicator_id'), limit, should_use_security_center=True)
     if raw_response:
         indicators = list()
@@ -2455,7 +2458,7 @@ def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[
 
         number_of_indicators = len(indicators)
         human_readable = tableToMarkdown(
-            f'Microsoft Defender ATP SC returned {number_of_indicators} indicators:',
+            f'Microsoft Defender ATP SC returned {number_of_indicators} indicator(s)',
             indicators,
             headers=[
                 'id',
@@ -2624,8 +2627,8 @@ def main():
         # using security-center api for indicators
         elif command in ('microsoft-atp-sc-indicator-list', 'microsoft-atp-sc-indicator-get-by-id'):
             return_outputs(*sc_list_indicators_command(client, args))
-        elif command == 'microsoft-atp-sc-indicator-update':
-            return_outputs(*sc_update_indicator_command(client, args))
+        elif command == 'microsoft-atp-sc-indicator-create-update':
+            return_outputs(*sc_create_update_indicator_command(client, args))
         elif command == 'microsoft-atp-sc-indicator-delete':
             return_outputs(sc_delete_indicator_command(client, args))
     except Exception as err:
