@@ -1,0 +1,70 @@
+{
+    "description": "Maps SOCRadar incident fields.",
+    "feed": false,
+    "id": "SOCRadar Incident Mapper",
+    "mapping": {
+        "SOCRadar Generic": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Alert Name": {
+                    "complex": null,
+                    "simple": "alarm_notification_texts.alarm_title"
+                },
+                "SOCRadar Incident Main Type": {
+                    "complex": null,
+                    "simple": "alarm_type_details.alarm_main_type"
+                },
+                "SOCRadar Incident Sub Type": {
+                    "complex": null,
+                    "simple": "alarm_type_details.alarm_sub_type"
+                },
+                "SOCRadar Incident ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "alarm_risk_level"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Name": {
+                    "complex": null,
+                    "simple": "alarm_notification_texts.alarm_title"
+                },
+                "SOCRadar Incident Main Type": {
+                    "complex": null,
+                    "simple": "alarm_type_details.alarm_main_type"
+                },
+                "SOCRadar Incident Sub Type": {
+                    "complex": null,
+                    "simple": "alarm_type_details.alarm_sub_type"
+                },
+                "Ticket Opened Date": {
+                    "complex": null,
+                    "simple": "insert_date"
+                },
+                "details": {
+                    "complex": {
+                        "accessor": "alarm_main_type",
+                        "filters": [],
+                        "root": "alarm_type_details",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "SOCRadar Incident Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
