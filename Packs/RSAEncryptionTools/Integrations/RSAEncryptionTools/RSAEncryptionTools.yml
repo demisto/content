@@ -112,4 +112,4 @@ commonfields:
   version: -1
 fromversion: 6.0.0
 tests:
-- playbook-test-rsa-encryption-decryption
+- test-rsa-encryption-decryption
