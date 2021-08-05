@@ -74,6 +74,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit: int = 0, **kwargs) 
             current_result = jmespath.search(expression=feed.get('extractor'), data=data)
             if current_result:
                 if not total_count:
+
                     total_count = limit if limit else data.get('actorTotalCount')
                 result = result + current_result
                 params['from'] = result[-1].get('activeFrom')
