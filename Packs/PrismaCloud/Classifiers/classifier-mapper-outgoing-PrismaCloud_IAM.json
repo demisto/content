@@ -21,14 +21,6 @@
 				"displayName": {
 					"complex": null,
 					"simple": "displayname"
-				},
-				"timeZone": {
-					"complex": null,
-					"simple": "\"America/Los_Angeles\""
-				},
-				"roleId": {
-					"complex": null,
-					"simple": "\"6afd3ee1-f429-4666-961d-3a7338e10bb8\""
 				}
 			}
 		},
