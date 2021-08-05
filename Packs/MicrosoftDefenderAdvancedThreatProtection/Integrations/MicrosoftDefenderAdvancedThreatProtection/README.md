@@ -34,7 +34,6 @@ For more details about the authentication used in this integration, see [Microso
 * Url.Read.All - Application
 * User.Read.All - Application
 * Ti.ReadWrite (Read and write IOCs belonging to the app) - Application
-* Ti.ReadWrite.All (Read and write all IOCs) - Application	
 
 ## Configure Microsoft Defender for Endpoint on Cortex XSOAR
 ---
@@ -3283,7 +3282,6 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 
 ### Permissions
 `Ti.ReadWrite`
-`Ti.ReadWrite.All`
 
 #### Base Command
 
@@ -3405,7 +3403,6 @@ Creates a new indicator.
 
 ### Permissions
 `Ti.ReadWrite`
-`Ti.ReadWrite.All`
 
 #### Base Command
 
@@ -3512,7 +3509,6 @@ Gets an indicator by its ID.
 
 ### Permissions
 `Ti.ReadWrite`
-`Ti.ReadWrite.All`
 
 #### Base Command
 
@@ -3574,7 +3570,6 @@ Deletes the specified indicator.
 
 ### Permissions
 `Ti.ReadWrite`
-`Ti.ReadWrite.All`
 
 
 #### Base Command
@@ -3604,7 +3599,6 @@ Updates the specified indicator.
 
 ### Permissions
 `Ti.ReadWrite`
-`Ti.ReadWrite.All`
 
 #### Base Command
 
