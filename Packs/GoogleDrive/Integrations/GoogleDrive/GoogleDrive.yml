@@ -1759,22 +1759,14 @@ script:
       required: false
       isArray: false
       defaultValue: "100"
-      predefined:
-      - ""
     - name: page_token
       description: Page token for shared drives.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: query
       description: Query string for searching shared drives.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: use_domain_admin_access
       description: "Issue the request as a domain administrator; if set to true, then\
         \ all shared drives of the domain in which the requester is an administrator\
@@ -1782,15 +1774,10 @@ script:
       required: false
       isArray: false
       defaultValue: "false"
-      predefined:
-      - ""
     - name: user_id
       description: The user's primary email address.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     outputs:
     - contextPath: GoogleDrive.Drive.Drive.id
       description: The ID of this shared drive which is also the ID of the top level
@@ -1905,30 +1892,20 @@ script:
       required: false
       isArray: false
       defaultValue: "false"
-      predefined:
-      - ""
     - name: user_id
       description: The user's primary email address.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: drive_id
       description: id of the shared drive. Use the command google-drive-drives-list
         to get drives details.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: fields
       description: The fields you want included in the response.
       required: false
       isArray: false
       defaultValue: kind, id, name, themeId, capabilities, createdTime, hidden, restrictions
-      predefined:
-      - ""
     outputs:
     - contextPath: GoogleDrive.Drive.Drive.id
       description: The ID of this shared drive which is also the ID of the top level
@@ -2042,29 +2019,18 @@ script:
       required: false
       isArray: false
       defaultValue: "100"
-      predefined:
-      - ""
     - name: page_token
       description: Page token for shared drives.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: query
       description: Query string for searching shared drives.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: user_id
       description: The user's primary email address.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: fields
       description: The fields you want included in the response.
       required: false
@@ -2079,8 +2045,6 @@ script:
         originalFilename, fullFileExtension, fileExtension, md5Checksum, size, quotaBytesUsed,
         headRevisionId, contentHints, isAppAuthorized, exportLinks, shortcutDetails,
         contentRestrictions, resourceKey, linkShareMetadata
-      predefined:
-      - ""
     - auto: PREDEFINED
       default: false
       description: Whether the requesting application supports both My Drives and
@@ -2114,16 +2078,10 @@ script:
       description: id of the requested file.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: user_id
       description: The user's primary email address.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: fields
       description: The fields you want included in the response.
       required: false
@@ -2138,8 +2096,6 @@ script:
         originalFilename, fullFileExtension, fileExtension, md5Checksum, size, quotaBytesUsed,
         headRevisionId, contentHints, isAppAuthorized, exportLinks, shortcutDetails,
         contentRestrictions, resourceKey, linkShareMetadata
-      predefined:
-      - ""
     outputs:
     - contextPath: GoogleDrive.File.File.capabilities.canAddChildren
       description: Whether the current user can add children to this folder. This
@@ -2387,25 +2343,16 @@ script:
       description: The name of the file to upload.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: entry_id
       description: The file's Entry ID.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: parent
       description: The ID of the parent folder which contains the file. If not specified
         as part of a create request, the file will be placed directly in the user's
         My Drive folder.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     outputs:
     - contextPath: GoogleDrive.File.File.id
       description: The ID of the file.
@@ -2657,23 +2604,15 @@ script:
       description: id of the requested file.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: file_name
       description: Name of the downloaded file.
       required: false
       isArray: false
       defaultValue: "untitled"
-      predefined:
-      - ""
     - name: user_id
       description: The user's primary email address.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -2713,16 +2652,10 @@ script:
       description: id of the file to replace.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: entry_id
       description: The file's Entry ID.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     outputs:
     - contextPath: GoogleDrive.File.File.id
       description: The ID of the file.
@@ -2977,16 +2910,10 @@ script:
       description: id of the requested file.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: user_id
       description: The user's primary email address.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - auto: PREDEFINED
       default: false
       defaultValue: "false"
@@ -3011,31 +2938,20 @@ script:
       description: id of the requested file.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: user_id
       description: The user's primary email address.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: page_size
       description: "Maximum number of shared drives to return. Acceptable values are\
         \ 1 to 100, inclusive. (Default: 100)"
       required: false
       isArray: false
       defaultValue: "100"
-      predefined:
-      - ""
     - name: page_token
       description: Page token for shared drives.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - auto: PREDEFINED
       default: false
       defaultValue: "false"
@@ -3080,16 +2996,10 @@ script:
       description: id of the requested file.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: user_id
       description: The user's primary email address.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - auto: PREDEFINED
       default: false
       defaultValue: "false"
@@ -3136,17 +3046,11 @@ script:
       description: The domain to which this permission refers.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: email_address
       description: The email address of the user or group to which this permission
         refers.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     outputs:
     - contextPath: GoogleDrive.FilePermission.FilePermission.deleted
       description: Whether the account associated with this permission has been deleted.
@@ -3179,30 +3083,18 @@ script:
       description: id of the requested file.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: user_id
       description: The user's primary email address.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: expiration_time
       description: The time at which this permission will expire (RFC 3339 date-time).
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: permission_id
       description: The ID of the permission.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - auto: PREDEFINED
       default: false
       defaultValue: "reader"
@@ -3250,23 +3142,14 @@ script:
       description: id of the requested file.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: user_id
       description: The user's primary email address.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: permission_id
       description: The ID of the permission.
       required: false
       isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
   dockerimage: demisto/googleapi-python3:1.0.0.23531
   feed: false
   isfetch: true
