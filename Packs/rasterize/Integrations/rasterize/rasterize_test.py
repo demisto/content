@@ -66,6 +66,7 @@ def test_rasterize_no_defunct_processes(caplog):
         caplog.clear()
 
 
+@pytest.mark.filterwarnings('ignore::ResourceWarning')
 def test_find_zombie_processes(mocker):
     ps_output = '''   PID  PPID S CMD
     1     0 S python /tmp/pyrunner/_script_docker_python_loop.py
@@ -147,6 +148,7 @@ def http_wait_server():
 # In this case chromium will hang. An example for this is:
 # curl -v -H 'user-agent: HeadlessChrome' --max-time 10  "http://www.grainger.com/"  # disable-secrets-detection
 # This tests access a server which waits for 10 seconds and makes sure we timeout
+@pytest.mark.filterwarnings('ignore::ResourceWarning')
 def test_rasterize_url_long_load(mocker, http_wait_server):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     time.sleep(1)  # give time to the servrer to start
@@ -161,6 +163,7 @@ def test_rasterize_url_long_load(mocker, http_wait_server):
     assert not return_error_mock.called
 
 
+@pytest.mark.filterwarnings('ignore::ResourceWarning')
 def test_rasterize_image_to_pdf(mocker):
     path = os.path.realpath('test_data/image.png')
     mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})

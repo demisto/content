@@ -34,4 +34,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Cortex XDR - Execute snippet code script](Insert the link to your image here)
+![Cortex XDR - Execute snippet code script](https://raw.githubusercontent.com/demisto/content/2e19477c6355d781bf8f5c9dfdd1216a6bca07b7/Packs/CortexXDR/doc_files/Cortex_XDR_-_Execute_snippet_code_script.png)

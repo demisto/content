@@ -3,15 +3,18 @@ import json
 import logging
 import os
 import re
-import sys
+from collections import OrderedDict
+from typing import Optional, Dict, List
 
-import requests
 import gitlab
+import requests
+import sys
+import xmltodict
 from circleci.api import Api as circle_api
 from slack import WebClient as SlackClient
 
-from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
+from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import str2bool, run_command
 
@@ -30,14 +33,15 @@ DMST_SDK_NIGHTLY_GITLAB_JOBS_PREFIX = 'demisto-sdk-nightly'
 SDK_NIGHTLY_CIRCLE_OPTS = {
     SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE
 }
+CONTENT_REPO_ID_CIRCLE_CI = '60525392'
 
 
-def get_failed_steps_list():
+def get_failed_steps_list(build_number: str):
     options = options_handler()
     if options.gitlab_server:
-        return get_gitlab_failed_steps(options.ci_token, options.buildNumber, options.gitlab_server,
+        return get_gitlab_failed_steps(options.ci_token, build_number, options.gitlab_server,
                                        options.gitlab_project_id)
-    return get_circle_failed_steps(options.ci_token, options.buildNumber)
+    return get_circle_failed_steps(options.ci_token, build_number)
 
 
 def get_circle_failed_steps(ci_token, build_number):
@@ -111,56 +115,148 @@ def options_handler():
     return options
 
 
-def get_failing_unit_tests_file_data():
-    failing_ut_list = None
+def get_artifact_data(artifact_relative_path: str) -> Optional[str]:
+    """
+    Retrieves artifact data according to the artifact relative path from 'ARTIFACTS_FOLDER' given.
+    Args:
+        artifact_relative_path (str): Relative path of an artifact file.
+
+    Returns:
+        (Optional[str]): data of the artifact as str if exists, None otherwise.
+    """
+    artifact_data = None
     try:
-        file_name = f'{ARTIFACTS_FOLDER}/failed_lint_report.txt'
+        file_name = os.path.join(ARTIFACTS_FOLDER, artifact_relative_path)
         if os.path.isfile(file_name):
-            logging.info('Extracting lint_report')
-            with open(file_name, 'r') as failed_unittests_file:
-                failing_ut = failed_unittests_file.readlines()
-                failing_ut_list = [line.strip('\n') for line in failing_ut]
+            logging.info(f'Extracting {artifact_relative_path}')
+            with open(file_name, 'r') as file_data:
+                artifact_data = file_data.read()
         else:
-            logging.info('Did not find failed_lint_report.txt file')
+            logging.info(f'Did not find {artifact_relative_path} file')
     except Exception:
-        logging.exception('Error getting failed_lint_report.txt file')
-    return failing_ut_list
+        logging.exception(f'Error getting {artifact_relative_path} file')
+    return artifact_data
 
 
-def get_entities_fields(entity_title, report_file_name=''):
-    if 'lint' in report_file_name:  # lint case
-        failed_entities = get_failing_unit_tests_file_data()
+def get_entities_fields(entity_title: str, entities: List[str]) -> List[Dict]:
+    """
+    Builds an entity from given entity title and entities list
+    Args:
+        entity_title (str): Title of the entity.
+        entities (List[str]): List of the entities.
+
+    Returns:
+        (List[Dict]): List of dict containing the entity. List is needed because it is the expected format by Slack API.
+    """
+    return [{
+        "title": f'{entity_title}',
+        "value": '\n'.join(entities),
+        "short": False
+    }]
+
+
+def get_failed_unit_tests_attachment(build_url: str, is_sdk_build: bool = False) -> List[Dict]:
+    """
+    Returns the failed unit tests attachment to be reported in Slack.
+    Args:
+        build_url (str): Build URL of the given nightly.
+        is_sdk_build (bool): Whether build is SDK nightly or content nightly.
+
+    Returns:
+        (List[Dict]) Dict wrapped inside a list containing failed unit tests attachment.
+    """
+    if artifact_data := get_artifact_data('failed_lint_report.txt'):
+        artifact_data = artifact_data.split('\n')
+        unittests_fields: Optional[List[Dict]] = get_entities_fields(f'Failed Unittests - ({len(artifact_data)})',
+                                                                     artifact_data)
     else:
-        failed_entities = get_failed_steps_list()
-    entity_fields = []
-    if failed_entities:
-        entity_fields.append({
-            "title": f'{entity_title} - ({len(failed_entities)})',
-            "value": '\n'.join(failed_entities),
-            "short": False
-        })
-    return entity_fields
-
-
-def get_attachments_for_unit_test(build_url, is_sdk_build=False):
-    unittests_fields = get_entities_fields(entity_title="Failed Unittests", report_file_name="failed_lint_report")
-    color = 'good' if not unittests_fields else 'danger'
-    if not unittests_fields:
-        title = 'Content Nightly Unit Tests - Success' if not is_sdk_build else 'SDK Nightly Unit Tests - Success'
-    else:
-        title = 'Content Nightly Unit Tests - Failure' if not is_sdk_build else 'SDK Nightly Unit Tests - Failure'
-    content_team_attachment = [{
+        unittests_fields = []
+    color: str = 'good' if not unittests_fields else 'danger'
+    build_type: str = 'SDK' if is_sdk_build else 'Content'
+    status = 'Success' if not unittests_fields else 'Failure'
+    title: str = f'{build_type} Nightly Unit Tests - {status}'
+    return [{
         'fallback': title,
         'color': color,
         'title': title,
         'title_link': build_url,
         'fields': unittests_fields
     }]
-    return content_team_attachment
 
 
-def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_file_path=None):
-    steps_fields = get_entities_fields(entity_title="Failed Steps")
+def get_coverage_color(coverage_percent: float) -> str:
+    """
+    Returns color to represent coverage percent.
+    Args:
+        coverage_percent (float): Coverage percent.
+
+    Returns:
+        (str): Representing the color
+    """
+    if coverage_percent <= 50.0:
+        return 'danger'
+    elif coverage_percent < 60.0:
+        return 'warning'
+    return 'good'
+
+
+def get_coverage_attachment(build_number: str) -> Optional[Dict]:
+    """
+    Returns content coverage report attachment.
+    Args:
+        build_number (str): Build number in CircleCI.
+
+    Returns:
+        (Dict): Attachment of the coverage if coverage report exists.
+    """
+    xml_coverage_data: str = get_artifact_data('coverage_report/coverage.xml')
+    if not xml_coverage_data:
+        return None
+    coverage_dict_data: OrderedDict = xmltodict.parse(xml_coverage_data)
+    if not (coverage_percent_str := coverage_dict_data.get('coverage', {}).get('@line-rate')):
+        logging.error('Line coverage rate was missing from coverage data.')
+        return None
+    try:
+        coverage_percent: float = float(coverage_percent_str) * 100.0
+    except ValueError:
+        logging.error(
+            f'Unexpected value for line coverage rage: {coverage_percent_str}. Expected float from line coverage rate.')
+        return None
+    coverage_url: str = f'https://{build_number}-{CONTENT_REPO_ID_CIRCLE_CI}-gh.circle-artifacts.com/0/artifacts' \
+                        '/coverage_report/html/index.html'
+    return {
+        'fallback': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
+        'color': get_coverage_color(coverage_percent),
+        'title': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
+        'title_link': coverage_url,
+        'fields': []
+    }
+
+
+def get_attachments_for_unit_test(build_url: str, build_number: str, is_sdk_build: bool = False) -> List[Dict]:
+    """
+    Creates attachment for unit tests. Including failed unit tests attachment and coverage if exists.
+    Args:
+        build_url (str): Build URL.
+        build_number (str): Build number.
+        is_sdk_build (bool): Whether build is SDK build.
+
+    Returns:
+        (List[Dict]): List of attachments.
+    """
+    unit_tests_attachments = get_failed_unit_tests_attachment(build_url, is_sdk_build)
+    if not is_sdk_build:
+        coverage_attachment = get_coverage_attachment(build_number)
+        if coverage_attachment:
+            unit_tests_attachments.append(coverage_attachment)
+    return unit_tests_attachments
+
+
+def get_attachments_for_bucket_upload_flow(build_url, job_name, build_number, packs_results_file_path=None):
+    if failed_entities := get_failed_steps_list(build_number):
+        steps_fields = get_entities_fields(f'Failed Steps - ({len(failed_entities)})', failed_entities)
+    else:
+        steps_fields = []
     color = 'good' if not steps_fields else 'danger'
     title = f'{BucketUploadFlow.BUCKET_UPLOAD_BUILD_TITLE} - Success' if not steps_fields \
         else f'{BucketUploadFlow.BUCKET_UPLOAD_BUILD_TITLE} - Failure'
@@ -211,8 +307,11 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
     return content_team_attachment
 
 
-def get_attachments_for_all_steps(build_url, build_title):
-    steps_fields = get_entities_fields(entity_title="Failed Steps")
+def get_attachments_for_all_steps(build_url, build_title, build_number):
+    if failed_entities := get_failed_steps_list(build_number):
+        steps_fields = get_entities_fields(f'Failed Steps - ({len(failed_entities)})', failed_entities)
+    else:
+        steps_fields = []
     color = 'good' if not steps_fields else 'danger'
     title = f'{build_title} - Success' if not steps_fields else f'{build_title} - Failure'
 
@@ -263,9 +362,11 @@ def get_attachments_for_test_playbooks(build_url, env_results_file_name):
 
 def get_fields():
     failed_tests = []
-    if os.path.isfile('./Tests/failed_tests.txt'):
+    # failed_tests.txt is copied into the artifacts directory
+    failed_tests_file_path = os.path.join(ARTIFACTS_FOLDER, 'failed_tests.txt')
+    if os.path.isfile(failed_tests_file_path):
         logging.info('Extracting failed_tests')
-        with open('./Tests/failed_tests.txt', 'r') as failed_tests_file:
+        with open(failed_tests_file_path, 'r') as failed_tests_file:
             failed_tests = failed_tests_file.readlines()
             failed_tests = [line.strip('\n') for line in failed_tests]
 
@@ -313,7 +414,7 @@ def get_fields():
     return content_team_fields, content_fields, failed_tests
 
 
-def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, packs_results_file=None,
+def slack_notifier(build_url, slack_token, test_type, build_number, env_results_file_name=None, packs_results_file=None,
                    job_name="", slack_channel=CONTENT_CHANNEL, gitlab_server=None):
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
@@ -323,37 +424,36 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
         logging.info("Extracting build status")
         if test_type == UNITTESTS_TYPE:
             logging.info("Starting Slack notifications about nightly build - unit tests")
-            content_team_attachments = get_attachments_for_unit_test(build_url)
+            content_team_attachments = get_attachments_for_unit_test(build_url, build_number)
         elif test_type == SDK_UNITTESTS_TYPE:
             logging.info("Starting Slack notifications about SDK nightly build - unit tests")
-            content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=True)
+            content_team_attachments = get_attachments_for_unit_test(build_url, build_number, is_sdk_build=True)
         elif test_type == 'test_playbooks':
             logging.info("Starting Slack notifications about nightly build - tests playbook")
             content_team_attachments, _ = get_attachments_for_test_playbooks(build_url, env_results_file_name)
         elif test_type == SDK_FAILED_STEPS_TYPE:
             logging.info('Starting Slack notifications about SDK nightly build - test playbook')
-            content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE)
+            content_team_attachments = get_attachments_for_all_steps(build_url, SDK_BUILD_TITLE, build_number)
         elif test_type == BucketUploadFlow.BUCKET_UPLOAD_TYPE:
             logging.info('Starting Slack notifications about upload to production bucket build')
-            content_team_attachments = get_attachments_for_bucket_upload_flow(
-                build_url=build_url, job_name=job_name, packs_results_file_path=packs_results_file
-            )
+            content_team_attachments = get_attachments_for_bucket_upload_flow(build_url, job_name, build_number,
+                                                                              packs_results_file)
         elif test_type == SDK_RUN_AGAINST_FAILED_STEPS_TYPE:
             logging.info("Starting Slack notifications about SDK nightly build - run against an xsoar instance")
-            content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_XSOAR_BUILD_TITLE)
+            content_team_attachments = get_attachments_for_all_steps(build_url, SDK_XSOAR_BUILD_TITLE, build_number)
         elif job_name and test_type == job_name:
             if job_name.startswith(DMST_SDK_NIGHTLY_GITLAB_JOBS_PREFIX):
                 # We run the various circleci sdk nightly builds in a single pipeline in GitLab
                 # as different jobs so it requires different handling
                 logging.info(f"Starting Slack notifications for {job_name}")
                 if 'unittest' in job_name:
-                    content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=True)
+                    content_team_attachments = get_attachments_for_unit_test(build_url, build_number, is_sdk_build=True)
                     # override the 'title' from the attachment to be the job name
                     content_team_attachments[0]['title'] = content_team_attachments[0]['title'].replace(
                         'SDK Nightly Unit Tests', job_name
                     )
                 else:
-                    content_team_attachments = get_attachments_for_all_steps(build_url, build_title=job_name)
+                    content_team_attachments = get_attachments_for_all_steps(build_url, job_name, build_number)
                     # override the 'fields' from the attachment since any failure will be the same as the job name
                     content_team_attachments[0]['fields'] = []
         else:
@@ -384,16 +484,17 @@ def main():
     job_name = options.job_name
     slack_channel = options.slack_channel or CONTENT_CHANNEL
     gitlab_server = options.gitlab_server
+    build_number = options.buildNumber
     if nightly:
-        slack_notifier(url, slack, test_type, env_results_file_name)
+        slack_notifier(url, slack, test_type, build_number, env_results_file_name)
     elif bucket_upload:
-        slack_notifier(url, slack, test_type,
+        slack_notifier(url, slack, test_type, build_number,
                        packs_results_file=os.path.join(
                            ci_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE), job_name=job_name,
                        slack_channel=slack_channel, gitlab_server=gitlab_server)
     elif test_type in SDK_NIGHTLY_CIRCLE_OPTS or test_type == job_name:
         slack_notifier(
-            url, slack, test_type, job_name=job_name,
+            url, slack, test_type, build_number, job_name=job_name,
             slack_channel=slack_channel, gitlab_server=gitlab_server
         )
     else:

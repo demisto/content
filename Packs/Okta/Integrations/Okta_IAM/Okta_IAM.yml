@@ -20,17 +20,22 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: iam-create-user Command Enabled
+  display: Allow creating users
   name: create-user-enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: iam-update-user Command Enabled
+  display: Allow updating users
   name: update-user-enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: iam-disable-user Command Enabled
+  display: Allow enabling users
+  name: enable-user-enabled
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Allow disabling users
   name: disable-user-enabled
   required: false
   type: 8
@@ -419,7 +424,7 @@ script:
     - contextPath: Okta.Application.Status
       description: Status of the application.
       type: String
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: true
   longRunning: false

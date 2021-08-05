@@ -19,6 +19,8 @@ from CommonServerUserPython import *
 urllib3.disable_warnings()
 
 """ ADVANCED GLOBAL PARAMETERS """
+REQUEST_TIMEOUT = 30                # number of seconds to wait for a request result
+SAMPLE_SIZE = 2                     # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 15           # interval between events polling
 EVENTS_FAILURE_LIMIT = 3            # amount of consecutive failures events fetch will tolerate
 FAILURE_SLEEP = 15           # sleep between consecutive failures events fetch
@@ -44,6 +46,7 @@ ADVANCED_PARAMETER_NAMES = [
     "RULES_ENRCH_FLG",
     "MAX_FETCH_EVENT_RETIRES",
     "SLEEP_FETCH_EVENT_RETIRES",
+    "REQUEST_TIMEOUT"
 ]
 
 """ GLOBAL VARS """
@@ -221,6 +224,7 @@ class QRadarClient:
                 verify=self._use_ssl,
                 data=data,
                 auth=auth,
+                timeout=REQUEST_TIMEOUT
             )
             res.raise_for_status()
         except HTTPError:
@@ -1029,7 +1033,7 @@ def fetch_incidents_long_running_events(
         print_debug_msg("Enriched offenses successfully.")
     new_incidents_samples = create_incidents(enriched_offenses, incident_type)
     incidents_batch_for_sample = (
-        new_incidents_samples if new_incidents_samples else last_run.get("samples", [])
+        new_incidents_samples[:SAMPLE_SIZE] if new_incidents_samples else last_run.get("samples", [])
     )
 
     context = {LAST_FETCH_KEY: offense_id, "samples": incidents_batch_for_sample}

@@ -84,7 +84,3 @@ Specify the Dynamic Address Group tag name for IP handling. |  | Optional |
 | CheckpointFWRule.Hits.Level | Level of rule hits. | unknown |
 | CheckpointFWRule.Hits.Percentage | Percentage of rule hits. | unknown |
 | CheckpointFWRule.Hits.Value | Value of rule hits. | unknown |
-
-## Playbook Image
----
-![Block IP - Generic v2](Insert the link to your image here)

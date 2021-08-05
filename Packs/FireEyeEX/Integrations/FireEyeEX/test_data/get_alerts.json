@@ -1,0 +1,192 @@
+{
+  "alert": [
+    {
+      "ack": "no",
+      "action": "notified",
+      "alertUrl": "https://FireEyeEX/emps/eanalysis?e_id=9\u0026type=url",
+      "applianceId": "appid",
+      "attackTime": "2021-02-14 09:42:43 +0000",
+      "dst": {
+        "smtpTo": "test@actualdomain.org"
+      },
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "md5Sum": "271c1bcd28d01c6863fdb5b5c5d94e73",
+              "name": "FETestEvent",
+              "sha256": "abebb5862eea61a3d0a1c75bf5a2e2abcd6c4ee6a6ad086e1d518445594970fc"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "id": 1,
+      "malicious": "yes",
+      "name": "MALWARE_OBJECT",
+      "occurred": "2021-02-14 09:42:47 +0000",
+      "product": "EMAIL_MPS",
+      "scVersion": "1115.212",
+      "severity": "MAJR",
+      "smtpMessage": {
+        "subject": "test"
+      },
+      "src": {
+        "smtpMailFrom": "test@malicious.net"
+      },
+      "uuid": "uuid",
+      "vlan": 0
+    },
+    {
+      "ack": "no",
+      "action": "notified",
+      "alertUrl": "https://FireEyeEX/emps/eanalysis?e_id=10\u0026type=url",
+      "applianceId": "appid",
+      "attackTime": "2021-02-14 09:43:51 +0000",
+      "dst": {
+        "smtpTo": "test@actualdomain.org"
+      },
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "md5Sum": "6efaa05d0d98711416f7d902639155fb",
+              "name": "FETestEvent",
+              "sha256": "340d367ebe68ad833ea055cea7678463a896d03eae86f7816cc0c836b9508fa8"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "id": 2,
+      "malicious": "yes",
+      "name": "MALWARE_OBJECT",
+      "occurred": "2021-02-14 09:43:55 +0000",
+      "product": "EMAIL_MPS",
+      "scVersion": "1115.212",
+      "severity": "MAJR",
+      "smtpMessage": {
+        "subject": "test"
+      },
+      "src": {
+        "smtpMailFrom": "test@malicious.net"
+      },
+      "uuid": "uuid",
+      "vlan": 0
+    },
+    {
+      "ack": "no",
+      "action": "notified",
+      "alertUrl": "https://FireEyeEX/emps/eanalysis?e_id=12\u0026type=url",
+      "applianceId": "appid",
+      "attackTime": "2021-02-14 09:45:55 +0000",
+      "dst": {
+        "smtpTo": "test@actualdomain.org"
+      },
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "md5Sum": "a705075df02f217e8bfc9ac5ec2ffee2",
+              "name": "Malicious.LIVE.DTI.URL",
+              "sha256": "d1eeadbb4e3d1c57af5a069a0886aa2b4f71484721aafe5c90708b66b8d0090a"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "id": 3,
+      "malicious": "yes",
+      "name": "MALWARE_OBJECT",
+      "occurred": "2021-02-14 09:45:58 +0000",
+      "product": "EMAIL_MPS",
+      "scVersion": "1115.212",
+      "severity": "MAJR",
+      "smtpMessage": {
+        "subject": "test"
+      },
+      "src": {
+        "smtpMailFrom": "test@malicious.net"
+      },
+      "uuid": "uuid",
+      "vlan": 0
+    },
+    {
+      "ack": "no",
+      "action": "notified",
+      "alertUrl": "https://FireEyeEX/emps/eanalysis?e_id=16\u0026type=url",
+      "applianceId": "appid",
+      "attackTime": "2021-02-14 09:53:30 +0000",
+      "dst": {
+        "smtpTo": "test@actualdomain.org"
+      },
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "md5Sum": "2a0bea4c95837d5e6c62eb1e7faa4cc4",
+              "name": "Phish.LIVE.DTI.URL",
+              "sha256": "56805163764d9eab8b7311844fa0df3c4c32535042794b1c9a24579fb7836f29"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "id": 4,
+      "malicious": "yes",
+      "name": "MALWARE_OBJECT",
+      "occurred": "2021-02-14 09:53:33 +0000",
+      "product": "EMAIL_MPS",
+      "scVersion": "1115.212",
+      "severity": "MAJR",
+      "smtpMessage": {
+        "subject": "test"
+      },
+      "src": {
+        "smtpMailFrom": "test@malicious.net"
+      },
+      "uuid": "uuid"
+    },
+    {
+      "ack": "no",
+      "action": "notified",
+      "alertUrl": "https://FireEyeEX/emps/eanalysis?e_id=18\u0026type=url",
+      "applianceId": "appid",
+      "attackTime": "2021-02-14 17:01:12 +0000",
+      "dst": {
+        "smtpTo": "test@actualdomain.org"
+      },
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "md5Sum": "271c1bcd28d01c6863fdb5b5c5d94e73",
+              "name": "FETestEvent",
+              "sha256": "abebb5862eea61a3d0a1c75bf5a2e2abcd6c4ee6a6ad086e1d518445594970fc"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "id": 5,
+      "malicious": "yes",
+      "name": "MALWARE_OBJECT",
+      "occurred": "2021-02-14 17:01:14 +0000",
+      "product": "EMAIL_MPS",
+      "scVersion": "1115.226",
+      "severity": "MAJR",
+      "smtpMessage": {
+        "subject": "test"
+      },
+      "src": {
+        "smtpMailFrom": "test@malicious.net"
+      },
+      "uuid": "7c33b498-c17f-4d35-8a4b-29e96e11ce63",
+      "vlan": 0
+    }
+  ],
+  "alertsCount": 200,
+  "appliance": "eMPS",
+  "msg": "concise",
+  "version": "eMPS (eMPS) 9.0.2.929543"
+}

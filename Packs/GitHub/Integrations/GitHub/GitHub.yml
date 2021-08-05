@@ -3558,6 +3558,256 @@ script:
     - contextPath: GitHub.PR.ChangedFiles
       description: The number of changed files in the pull request
       type: Number
+  - arguments:
+    - default: false
+      description: The issue number for which to retrieve events.
+      isArray: false
+      name: issue_number
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns events corresponding to the given issue.
+    execution: false
+    name: Github-list-issue-events
+    outputs:
+    - contextPath: GitHub.IssueEvent.id
+      description: Event ID.
+      type: Number
+    - contextPath: GitHub.IssueEvent.node_id
+      description: Event node ID.
+      type: String
+    - contextPath: GitHub.IssueEvent.url
+      description: Event URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.login
+      description: Event actor login username.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.id
+      description: Event actor ID.
+      type: Number
+    - contextPath: GitHub.IssueEvent.actor.node_id
+      description: Event actor node ID.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.avatar_url
+      description: Event actor avatar URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.gravatar_id
+      description: Event actor gravatar ID.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.url
+      description: Event actor URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.html_url
+      description: Event actor HTML URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.followers_url
+      description: Event actor followers URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.following_url
+      description: Event actor following URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.gists_url
+      description: Event actor gists URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.starred_url
+      description: Event actor starred URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.subscriptions_url
+      description: Event actor subscriptions URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.organizations_url
+      description: Event actor organizations URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.repos_url
+      description: Event actor repos URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.events_url
+      description: Event actor events URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.received_events_url
+      description: Event actor received events URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.type
+      description: Event actor type.
+      type: String
+    - contextPath: GitHub.IssueEvent.actor.site_admin
+      description: Indicates whether the event actor is site admin.
+      type: Boolean
+    - contextPath: GitHub.IssueEvent.event
+      description: Issue event type, e.g labeled, closed.
+      type: String
+    - contextPath: GitHub.IssueEvent.commit_id
+      description: Event commit ID.
+      type: Unknown
+    - contextPath: GitHub.IssueEvent.commit_url
+      description: Event commit URL.
+      type: Unknown
+    - contextPath: GitHub.IssueEvent.created_at
+      description: Event created time.
+      type: Date
+    - contextPath: GitHub.IssueEvent.label.name
+      description: Event label name.
+      type: String
+    - contextPath: GitHub.IssueEvent.label.color
+      description: Event label color
+      type: String
+    - contextPath: GitHub.IssueEvent.performed_via_github_app
+      description: Indicates whether event was performed via GitHub application.
+      type: Unknown
+    - contextPath: GitHub.IssueEvent.assignee.login
+      description: Assignee login username.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.id
+      description: Assignee ID.
+      type: Number
+    - contextPath: GitHub.IssueEvent.assignee.node_id
+      description: Assignee node ID.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.avatar_url
+      description: Assignee avatar URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.gravatar_id
+      description: Assignee gravatar ID.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.url
+      description: Assignee URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.html_url
+      description: Assignee HTML URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.followers_url
+      description: Assignee followers URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.following_url
+      description: Assignee following URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.gists_url
+      description: Assignee gists URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.starred_url
+      description: Assignee starred URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.subscriptions_url
+      description: Assignee subscriptions URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.organizations_url
+      description: Assignee organizations URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.repos_url
+      description: Assignee repos URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.events_url
+      description: Assignee events URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.received_events_url
+      description: Assignee received events URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.type
+      description: Assignee type.
+      type: String
+    - contextPath: GitHub.IssueEvent.assignee.site_admin
+      description: Indicates whether the assignee is site admin.
+      type: Boolean
+    - contextPath: GitHub.IssueEvent.assigner.login
+      description: Assigner login username.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.id
+      description: Assigner ID.
+      type: Number
+    - contextPath: GitHub.IssueEvent.assigner.node_id
+      description: Assigner node ID.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.avatar_url
+      description: Assigner avatar URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.gravatar_id
+      description: Assigner gravatar ID.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.url
+      description: Assigner URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.html_url
+      description: Assigner HTML URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.followers_url
+      description: Assigner followers URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.following_url
+      description: Assigner following URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.gists_url
+      description: Assigner gists URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.starred_url
+      description: Assigner starred URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.subscriptions_url
+      description: Assigner subscriptions URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.organizations_url
+      description: Assigner organizations URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.repos_url
+      description: Assigner repos URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.events_url
+      description: Assigner events URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.received_events_url
+      description: Assigner received events URL.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.type
+      description: Assigner type.
+      type: String
+    - contextPath: GitHub.IssueEvent.assigner.site_admin
+      description: Indicates whether the assignee is site admin.
+      type: Boolean
+  - arguments:
+    - description: Only list projects with the following numbers
+      isArray: true
+      name: project_filter
+    - defaultValue: '20'
+      description: The number of projects to return. Default is 20. Maximum is 100.
+      name: limit
+    description: Lists all issues that the user has access to view.
+    name: GitHub-list-all-projects
+    outputs:
+    - contextPath: GitHub.Project.Name
+      description: The name of the project board.
+      type: String
+    - contextPath: GitHub.Project.ID
+      description: The ID of the project board.
+      type: Number
+    - contextPath: GitHub.Project.Number
+      description: Project board number.
+      type: Number
+    - contextPath: GitHub.Project.Columns.Name
+      description: Column Name.
+      type: String
+    - contextPath: GitHub.Project.Columns.ColumnID
+      description: The ID of the column.
+      type: Number
+    - contextPath: GitHub.Project.Columns.Cards.CardID
+      description: The ID of the card.
+      type: Number
+    - contextPath: GitHub.Project.Columns.Cards.ContentNumber
+      description: The content number of this card, usually this is the issue number.
+      type: Number
+    - contextPath: GitHub.Project.Issues
+      description: List of all issue numbers that are in this project board.
+      type: Unknown
+  - arguments:
+    - description: 'Column unique id '
+      name: column_id
+      required: true
+    - description: Issue unique ID
+      name: issue_unique_id
+      required: true
+    - defaultValue: Issue
+      description: Content type of the project card
+      name: content_type
+    description: 'Add an Issue as a card in column of a spesific project  '
+    name: GitHub-add-issue-to-project-board
   dockerimage: demisto/pyjwt3:1.0.0.19327
   feed: false
   isfetch: true
@@ -3568,3 +3818,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

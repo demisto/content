@@ -15,6 +15,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' ADVANCED GLOBAL PARAMETERS '''
+SAMPLE_SIZE = 2  # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 15  # interval between events polling
 EVENTS_FAILURE_LIMIT = 3  # amount of consecutive failures events fetch will tolerate
 FAILURE_SLEEP = 15  # sleep between consecutive failures events fetch
@@ -1479,7 +1480,7 @@ def long_running_execution_command(client: Client, params: Dict):
             if not incidents and not new_highest_id:
                 continue
 
-            incident_batch_for_sample = incidents if incidents else ctx.get('samples', [])
+            incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
             set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
                                      'last_mirror_update': ctx.get('last_mirror_update')})
 
@@ -2636,15 +2637,15 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     """
     remote_args = GetRemoteDataArgs(args)
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
-
-    offense = client.offenses_list(offense_id=remote_args.remote_incident_id)
+    offense_id = remote_args.remote_incident_id
+    offense = client.offenses_list(offense_id=offense_id)
     offense_last_update = get_time_parameter(offense.get('last_persisted_time'))
 
     # versions below 6.1 compatibility
     last_update = get_time_parameter(args.get('lastUpdate'))
     if last_update and last_update > offense_last_update:
         demisto.debug('Nothing new in the ticket')
-        return GetRemoteDataResponse({'id': remote_args.remote_incident_id, 'in_mirror_error': ''}, [])
+        return GetRemoteDataResponse({'id': offense_id, 'in_mirror_error': ''}, [])
 
     demisto.debug(f'Updating offense. Offense last update was {offense_last_update}')
     entries = []
@@ -2652,12 +2653,25 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         demisto.debug(f'Offense is closed: {offense}')
         if closing_reason := offense.get('closing_reason_id', ''):
             closing_reason = client.closing_reasons_list(closing_reason).get('text')
+        offense_close_time = offense.get('close_time', '')
+        closed_offense_notes = client.offense_notes_list(offense_id, f'items={DEFAULT_RANGE_VALUE}',
+                                                         filter_=f'create_time >= {offense_close_time}')
+        # In QRadar UI, when you close a reason, a note is added with the reason and more details. Try to get note
+        # if exists, else fallback to closing reason only, as closing QRadar through an API call does not create a note.
+        close_reason_with_note = next((note.get('note_text') for note in closed_offense_notes if
+                                       note.get('note_text').startswith('This offense was closed with reason:')),
+                                      closing_reason)
+        if not close_reason_with_note:
+            print_debug_msg(f'Could not find closing reason or closing note for offense with offense id {offense_id}')
+            close_reason_with_note = 'Unknown closing reason from QRadar'
+        else:
+            close_reason_with_note = f'From QRadar: {close_reason_with_note}'
 
         entries.append({
             'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
-                'closeReason': f'From QRadar: {closing_reason}'
+                'closeReason': close_reason_with_note
             },
             'ContentsFormat': EntryFormat.JSON
         })

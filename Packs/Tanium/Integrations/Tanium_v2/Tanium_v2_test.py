@@ -2,6 +2,7 @@ import pytest
 from Tanium_v2 import Client, get_question_result
 import json
 
+
 BASE_URL = 'https://test.com/'
 
 parse_question_res = {
@@ -294,7 +295,7 @@ def test_parse_question(requests_mock):
     requests_mock.post(BASE_URL + 'parse_question', json=parse_question_Folder_Contents_res)
     requests_mock.get(BASE_URL + 'sensors/by-name/Folder-Contents', json=sensor_res)
 
-    results = client.parse_question('Get Folder-Contents[c:\] from all machines', '')
+    results = client.parse_question(r'Get Folder-Contents[c:\] from all machines', '')
     assert results['selects'][0]['sensor']['name'] == 'Folder-Contents'
     assert results['selects'][0]['sensor']['parameters'][0]['key'] == '||folderPath||'
     assert results['selects'][0]['sensor']['parameters'][0]['value'] == 'c:\\'
@@ -343,3 +344,25 @@ def test_parse_action_parameters(parameters, accepted_result):
     client = Client(BASE_URL, 'username', 'password', 'domain')
     result = client.parse_action_parameters(parameters)
     assert result == accepted_result
+
+
+def test_update_session(mocker):
+    """
+    Tests the authentication method, based on the instance configurations.
+    Given:
+        - A client created using username and password
+        - A client created using an API token
+    When:
+        - calling the update_session() function of the client
+    Then:
+        - Verify that the session was created using basic authentication
+        - Verify that the session was created using oauth authentication
+    """
+    client = Client(BASE_URL, username='abdc', password='1234', domain='domain', api_token='')
+    mocker.patch.object(Client, '_http_request', return_value={'data': {'session': 'basic authentication'}})
+    client.update_session()
+    assert client.session == 'basic authentication'
+
+    client = Client(BASE_URL, username='', password='', domain='domain', api_token='oauth authentication')
+    client.update_session()
+    assert client.session == 'oauth authentication'
