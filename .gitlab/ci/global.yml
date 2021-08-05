@@ -116,6 +116,8 @@
 
 
 .trigger-slack-notification:
+  tags:
+    - gke
   stage: .post
   trigger:
     strategy: depend
@@ -179,6 +181,8 @@
     - section_end "Run Unit Testing and Lint"
 
 .run-validations:
+  tags:
+    - gke
   stage: unittests-and-validations
   extends:
     - .default-job-settings
