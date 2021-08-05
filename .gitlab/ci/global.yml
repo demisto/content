@@ -116,8 +116,6 @@
 
 
 .trigger-slack-notification:
-  tags:
-    - gke
   stage: .post
   trigger:
     strategy: depend
