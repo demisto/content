@@ -1,5 +1,4 @@
 id: palo_alto_panorama_test_pb
-version: -1
 name: palo_alto_panorama_test_pb
 description: Test playbook for palo alto panorama
 starttaskid: "0"
@@ -22,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 50
         }
       }
@@ -55,7 +54,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 195
         }
       }
@@ -94,12 +93,12 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 0bd2c23a-7ad5-459a-8e2f-f8dbbbfb5327
+    taskid: f178f989-014f-4ac3-845d-e9923d147927
     type: title
     task:
-      id: 0bd2c23a-7ad5-459a-8e2f-f8dbbbfb5327
+      id: f178f989-014f-4ac3-845d-e9923d147927
       version: -1
-      name: Address Groups and Services
+      name: Address Groups, URL Filtering, Services
       type: title
       iscommand: false
       brand: ""
@@ -108,11 +107,12 @@ tasks:
       '#none#':
       - "21"
       - "76"
+      - "52"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 1740
         }
       }
@@ -140,8 +140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3560
+          "x": 695,
+          "y": 3080
         }
       }
     note: false
@@ -318,7 +318,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 265,
           "y": 1885
         }
       }
@@ -355,8 +355,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2205
+          "x": 50,
+          "y": 2235
         }
       }
     note: false
@@ -392,8 +392,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2205
+          "x": 480,
+          "y": 2235
         }
       }
     note: false
@@ -423,8 +423,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2555
+          "x": 50,
+          "y": 2585
         }
       }
     note: false
@@ -454,8 +454,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2730
+          "x": 50,
+          "y": 2760
         }
       }
     note: false
@@ -494,8 +494,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2555
+          "x": 480,
+          "y": 2585
         }
       }
     note: false
@@ -525,8 +525,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2730
+          "x": 480,
+          "y": 2760
         }
       }
     note: false
@@ -556,8 +556,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3720
+          "x": 695,
+          "y": 3225
         }
       }
     note: false
@@ -587,8 +587,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 3895
+          "x": 695,
+          "y": 3575
         }
       }
     note: false
@@ -648,8 +648,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4710
+          "x": 695,
+          "y": 4390
         }
       }
     note: false
@@ -676,8 +676,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4070
+          "x": 695,
+          "y": 3750
         }
       }
     note: false
@@ -704,8 +704,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3050
+          "x": 1340,
+          "y": 1900
         }
       }
     note: false
@@ -732,8 +732,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2060
+          "x": 50,
+          "y": 2075
         }
       }
     note: false
@@ -760,8 +760,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2060
+          "x": 480,
+          "y": 2075
         }
       }
     note: false
@@ -821,8 +821,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3195
+          "x": 1340,
+          "y": 2060
         }
       }
     note: false
@@ -863,8 +863,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 2205
+          "x": 910,
+          "y": 2235
         }
       }
     note: false
@@ -891,8 +891,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 2060
+          "x": 910,
+          "y": 2075
         }
       }
     note: false
@@ -922,8 +922,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 2555
+          "x": 910,
+          "y": 2585
         }
       }
     note: false
@@ -953,8 +953,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 2730
+          "x": 910,
+          "y": 2760
         }
       }
     note: false
@@ -981,8 +981,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3560
+          "x": 265,
+          "y": 3240
         }
       }
     note: false
@@ -1012,8 +1012,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3720
+          "x": 265,
+          "y": 3400
         }
       }
     note: false
@@ -1249,7 +1249,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 1565
         }
       }
@@ -1278,12 +1278,13 @@ tasks:
       - "25"
       - "27"
       - "78"
+      - "111"
     separatecontext: true
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 2380
+          "y": 2410
         }
       }
     note: false
@@ -1293,12 +1294,12 @@ tasks:
     quietmode: 0
   "93":
     id: "93"
-    taskid: 5c385806-6524-49d8-84e8-fefc8510bcc5
+    taskid: 3a6f9e69-e1da-41f6-8720-c5ead5e1341f
     type: title
     task:
-      id: 5c385806-6524-49d8-84e8-fefc8510bcc5
+      id: 3a6f9e69-e1da-41f6-8720-c5ead5e1341f
       version: -1
-      name: Finished Address groups and services UC
+      name: Finished Address groups, URL Filtering, Services UC
       type: title
       iscommand: false
       brand: ""
@@ -1307,14 +1308,13 @@ tasks:
       '#none#':
       - "80"
       - "15"
-      - "52"
       - "101"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 2905
+          "y": 2935
         }
       }
     note: false
@@ -1337,7 +1337,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "51"
+      - "38"
     scriptarguments:
       action:
         simple: add
@@ -1349,8 +1349,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3895
+          "x": 695,
+          "y": 3400
         }
       }
     note: false
@@ -1378,7 +1378,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4390
+          "y": 4070
         }
       }
     note: false
@@ -1410,7 +1410,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4535
+          "y": 4215
         }
       }
     note: false
@@ -1437,8 +1437,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 3735
+          "x": 1125,
+          "y": 3240
         }
       }
     note: false
@@ -1461,13 +1461,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "51"
+      - "38"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 3895
+          "x": 1125,
+          "y": 3400
         }
       }
     note: false
@@ -1507,7 +1507,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 4535
+          "y": 4215
         }
       }
     note: false
@@ -1535,7 +1535,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 4390
+          "y": 4070
         }
       }
     note: false
@@ -1564,7 +1564,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4855
+          "y": 4535
         }
       }
     note: false
@@ -1593,7 +1593,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 4855
+          "y": 4535
         }
       }
     note: false
@@ -1617,39 +1617,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 5030
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "109":
-    id: "109"
-    taskid: 8db5cb29-d3c4-4f01-8b46-686117db118f
-    type: regular
-    task:
-      id: 8db5cb29-d3c4-4f01-8b46-686117db118f
-      version: -1
-      name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
-        as Panorama, it also pushes the Policies to the specified Device Group in
-        the instance.
-      playbookId: PAN-OS Commit Configuration
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "111"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 3545
+          "x": 695,
+          "y": 4710
         }
       }
     note: false
@@ -1672,7 +1641,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "109"
+      - "92"
     scriptarguments:
       action:
         simple: alert
@@ -1686,8 +1655,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3370
+          "x": 1340,
+          "y": 2235
         }
       }
     note: false
@@ -1710,7 +1679,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
+      - "93"
     scriptarguments:
       name:
         simple: URL Filter TPB temp
@@ -1718,8 +1687,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3720
+          "x": 1340,
+          "y": 2760
         }
       }
     note: false
@@ -1748,8 +1717,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4215
+          "x": 695,
+          "y": 3895
         }
       }
     note: false
@@ -1764,7 +1733,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5045,
+        "height": 4725,
         "width": 1670,
         "x": 50,
         "y": 50
@@ -1774,3 +1743,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.0.0
+version: -1
