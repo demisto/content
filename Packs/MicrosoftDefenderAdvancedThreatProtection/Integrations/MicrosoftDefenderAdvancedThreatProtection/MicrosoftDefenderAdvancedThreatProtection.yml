@@ -2271,7 +2271,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum amount of indicators to return. Default is 50.
+      description: The maximum amount of indicators to return.
       isArray: false
       name: limit
       required: false
@@ -3870,7 +3870,7 @@ script:
       secret: false
     - default: false
       description: 'DateTime string indicating when the indicator expires. Format:
-        (<number> <time unit>, e.g., 12 hours, 7 days) Default value is 1 day.'
+        (<number> <time unit>, e.g., 12 hours, 7 days).'
       isArray: false
       defaultValue: 1 day
       name: expiration_time
@@ -3945,7 +3945,7 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.generateAlert
       description: Whether an altet was generated.
-      type: Boolean newDescription newTitle
+      type: Boolean
     - contextPath: MicrosoftATP.Indicators.rbacGroupNames
       description: A list of RBAC device group names where the indicator is exposed
         and active. Empty list in case it exposed to all devices.
@@ -3974,7 +3974,7 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.historicalDetection
       description: Whether an historical detection exists.
-      type: String
+      type: Boolean
     - contextPath: MicrosoftATP.Indicators.lastUpdatedBy
       description: Identity of the user/application that last updated the indicator.
       type: String
@@ -4023,7 +4023,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the indicator to delete.
+      description: The ID of the indicator to delete. The ID can be retreived by running the microsoft-atp-sc-indicator-list command.
       isArray: false
       name: indicator_id
       required: true
@@ -4035,7 +4035,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum amount of indicators to return. Default is 50.
+      description: The maximum amount of indicators to return.
       isArray: false
       name: limit
       required: false
@@ -4106,7 +4106,7 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.historicalDetection
       description: Whether an historical detection exists.
-      type: String
+      type: Boolean
     - contextPath: MicrosoftATP.Indicators.lastUpdatedBy
       description: Identity of the user/application that last updated the indicator.
       type: String
@@ -4155,7 +4155,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The ID of the indicator to get.
+      description: The ID of the indicator to get. The ID can be retreived by running the microsoft-atp-sc-indicator-list command.
       isArray: false
       name: indicator_id
       required: true
@@ -4226,7 +4226,7 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.historicalDetection
       description: Whether an historical detection exists.
-      type: String
+      type: Boolean
     - contextPath: MicrosoftATP.Indicators.lastUpdatedBy
       description: Identity of the user/application that last updated the indicator.
       type: String
