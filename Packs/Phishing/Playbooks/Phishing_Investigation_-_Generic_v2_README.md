@@ -27,7 +27,7 @@ These task have the following names:
   - Update the user that the reported email is safe (task #16)
   - Update the user that the reported email is malicious (task #17
 - Optional - Configure the `ExchangeLocation` input of the `Search And Delete Emails - Generic v2` playbook.
-- Optional - Personalize the inputs of the `Detect & Manage Phishing Campaigns` subplaybook.
+- Optional - Personalize the inputs of the `Detect & Manage Phishing Campaigns` playbook.
 
 ##### Best Practices & Suggestions
 - The email received in the designated phishing inbox should be an email **containing** the potential phishing email as a file attachment, so that the headers of the original suspected email are retained.
