@@ -101,7 +101,7 @@ def test_module():
         return_error('Dedicated channel not found.')
     message = 'Hi there! This is a test message.'
 
-    CLIENT.chat_postMessage(channel=channel.get('id'), text=message)
+    CLIENT.chat_postMessage(channel=channel.get('id'), text=message)  # type: ignore
 
     demisto.results('ok')
 
@@ -322,7 +322,7 @@ async def send_slack_request_async(client: AsyncWebClient, method: str, http_ver
             raise
         break
 
-    return response
+    return response  # type: ignore
 
 
 ''' MIRRORING '''
@@ -355,7 +355,7 @@ async def get_slack_name(slack_id: str, client: AsyncWebClient) -> str:
             if conversations:
                 conversation = conversations[0]
         if not conversation:
-            conversation = await client.conversations_info(channel=slack_id)
+            conversation = await client.conversations_info(channel=slack_id)  # type: ignore
         slack_name = conversation.get('name', '')
     elif prefix == 'U':
         user: dict = {}
@@ -364,7 +364,7 @@ async def get_slack_name(slack_id: str, client: AsyncWebClient) -> str:
             if users:
                 user = users[0]
         if not user:
-            user = await client.users_info(user=slack_id)
+            user = await client.users_info(user=slack_id)  # type: ignore
 
         slack_name = user.get('name', '')
 
@@ -819,9 +819,9 @@ async def slack_loop():
         client = SocketModeClient(
             app_token=APP_TOKEN,
             web_client=ASYNC_CLIENT,
-            logger=slack_logger
+            logger=slack_logger  # type: ignore
         )
-        client.socket_mode_request_listeners.append(listen)
+        client.socket_mode_request_listeners.append(listen)  # type: ignore
         try:
             await client.connect()
             await asyncio.sleep(float("inf"))
@@ -1053,20 +1053,20 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))
 
         else:
-            user = await get_user_by_id_async(ASYNC_CLIENT, user_id, integration_context)
-            entitlement_reply = await check_and_handle_entitlement(text, user, thread, integration_context)
+            user = await get_user_by_id_async(ASYNC_CLIENT, user_id, integration_context)  # type: ignore
+            entitlement_reply = await check_and_handle_entitlement(text, user, thread, integration_context)  # type: ignore
 
         if entitlement_reply:
             await send_slack_request_async(client=ASYNC_CLIENT, method='chat.postMessage',
                                            body={
-                                                'channel': channel,
-                                                'thread_ts': thread,
-                                                'text': entitlement_reply
+                                               'channel': channel,
+                                               'thread_ts': thread,
+                                               'text': entitlement_reply
                                            })
 
         elif channel and channel[0] == 'D' and ENABLE_DM:
             # DM
-            await handle_dm(user, text, ASYNC_CLIENT)
+            await handle_dm(user, text, ASYNC_CLIENT)  # type: ignore
         else:
             channel_id = channel
 
@@ -1103,7 +1103,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                                                                 OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
                 investigation_id = mirror['investigation_id']
-                await handle_text(client, investigation_id, text, user)
+                await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
         # Reset module health
         demisto.updateModuleHealth("")
         demisto.info("SlackV3 - Event handled successfully.")
@@ -1172,6 +1172,7 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str, in
         text: The message text
         user: The user who sent the reply
         thread_id: The thread ID
+        integration_context: The integration's context
 
     Returns:
         If the message contains entitlement, return a reply.
@@ -1185,7 +1186,6 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str, in
 
         return 'Thank you for your response.'
     else:
-        integration_context = get_integration_context(SYNC_CONTEXT)
         questions = integration_context.get('questions', [])
         if questions and thread_id:
             questions = json.loads(questions)
