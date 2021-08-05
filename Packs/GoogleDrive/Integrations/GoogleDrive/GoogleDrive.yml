@@ -118,7 +118,7 @@ script:
     execution: false
     name: google-drive-create
     outputs:
-      - contextPath: GoogleDrive.Drive.kind
+    - contextPath: GoogleDrive.Drive.kind
       description: Identifies what kind of resource this is.
       type: String
     - contextPath: GoogleDrive.Drive.id
