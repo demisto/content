@@ -5190,9 +5190,10 @@ class TestCustomIndicator:
             score=Common.DBotScore.BAD,
             malicious_description='malicious!'
         )
-        indicator = Common.CustomIndicator('test', dbot_score, {'param': 'value'}, 'prefix')
+        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
         assert indicator.CONTEXT_PATH == 'prefix(val.value && val.value == obj.value)'
         assert indicator.param == 'value'
+        assert indicator.value == 'test_value'
 
     def test_custom_indicator_init_existing_type(self):
         """
@@ -5209,7 +5210,7 @@ class TestCustomIndicator:
                 score=Common.DBotScore.BAD,
                 malicious_description='malicious!'
             )
-            Common.CustomIndicator('ip', dbot_score, {'param': 'value'}, 'prefix')
+            Common.CustomIndicator('ip', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
 
     def test_custom_indicator_init_no_prefix(self):
         """
@@ -5226,7 +5227,7 @@ class TestCustomIndicator:
                 score=Common.DBotScore.BAD,
                 malicious_description='malicious!'
             )
-            Common.CustomIndicator('test', dbot_score, {'param': 'value'}, None)
+            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, None)
 
     def test_custom_indicator_init_no_dbot_score(self):
         """
@@ -5237,7 +5238,7 @@ class TestCustomIndicator:
         with pytest.raises(ValueError):
             from CommonServerPython import Common
             dbot_score = ''
-            Common.CustomIndicator('test', dbot_score, {'param': 'value'}, 'prefix')
+            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
 
     def test_custom_indicator_to_context(self):
         """
@@ -5253,11 +5254,12 @@ class TestCustomIndicator:
             score=Common.DBotScore.BAD,
             malicious_description='malicious!'
         )
-        indicator = Common.CustomIndicator('test', dbot_score, {'param': 'value'}, 'prefix')
+        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
         context = indicator.to_context()
         assert context['DBotScore(val.Indicator &&'
                        ' val.Indicator == obj.Indicator &&'
                        ' val.Vendor == obj.Vendor && val.Type == obj.Type)']['Indicator'] == 'test'
+        assert context['prefix(val.value && val.value == obj.value)']['Value'] == 'test_value'
         assert context['prefix(val.value && val.value == obj.value)']['param'] == 'value'
 
     def test_custom_indicator_no_params(self):
@@ -5275,5 +5277,5 @@ class TestCustomIndicator:
                 score=Common.DBotScore.BAD,
                 malicious_description='malicious!'
             )
-            indicator = Common.CustomIndicator('test', dbot_score, None, 'prefix')
+            indicator = Common.CustomIndicator('test', 'test_value', dbot_score, None, 'prefix')
             assert indicator.CONTEXT_PATH == 'prefix(val.value && val.value == obj.value)'

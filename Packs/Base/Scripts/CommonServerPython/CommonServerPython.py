@@ -2448,10 +2448,13 @@ class Common(object):
 
     class CustomIndicator(Indicator):
 
-        def __init__(self, indicator_type, dbot_score, params, prefix_str):
+        def __init__(self, indicator_type, value, dbot_score, params, prefix_str):
             """
             :type indicator_type: ``Str``
             :param indicator_type: type name of the indicator
+
+            :type value: ``Any``
+            :param value: Value of the indicator
 
             :type dbot_score: ``DBotScore``
             :param dbot_score: If custom indicator has a score then create and set a DBotScore object.
@@ -2472,6 +2475,8 @@ class Common(object):
 
             self.CONTEXT_PATH = '{prefix_str}(val.value && val.value == obj.value)'.format(prefix_str=prefix_str)
 
+            self.value = value
+
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
 
@@ -2484,7 +2489,9 @@ class Common(object):
                 setattr(self, key, params[key])
 
         def to_context(self):
-            custom_context = {}
+            custom_context = {
+                'Value': self.value
+            }
 
             for key in self.params:
                 custom_context[key] = self.params[key]
