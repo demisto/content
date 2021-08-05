@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8827d913-a1b0-4974-81ea-c7dc5aa1a713
+    taskid: 6b20b540-3a19-4552-8faa-caa3a82db627
     type: start
     task:
-      id: 8827d913-a1b0-4974-81ea-c7dc5aa1a713
+      id: 6b20b540-3a19-4552-8faa-caa3a82db627
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 7a05f88b-0687-4076-8974-f94cdf763636
+    taskid: c4d37754-1223-4b3b-887f-d44e5f661d8c
     type: regular
     task:
-      id: 7a05f88b-0687-4076-8974-f94cdf763636
+      id: c4d37754-1223-4b3b-887f-d44e5f661d8c
       version: -1
       name: Get indicators by ID
       description: Gets an indicator by its ID.
@@ -69,10 +69,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: e7571c8a-3365-4817-8f61-a845221c127a
+    taskid: a96f80b9-1f18-41d9-862e-f65309cd6946
     type: regular
     task:
-      id: e7571c8a-3365-4817-8f61-a845221c127a
+      id: a96f80b9-1f18-41d9-862e-f65309cd6946
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -103,10 +103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 809e5184-913a-4b92-8ed2-662fc6f36bb3
+    taskid: 117673d2-59e1-4999-8d46-3d079f707bbd
     type: regular
     task:
-      id: 809e5184-913a-4b92-8ed2-662fc6f36bb3
+      id: 117673d2-59e1-4999-8d46-3d079f707bbd
       version: -1
       name: List indicators
       description: Lists all indicators by the ID that the system creates when the
@@ -135,10 +135,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: be424911-5b01-4f6b-8d7c-b9ec2b336631
+    taskid: 04712c85-af44-48ed-8185-11ca4f34c976
     type: condition
     task:
-      id: be424911-5b01-4f6b-8d7c-b9ec2b336631
+      id: 04712c85-af44-48ed-8185-11ca4f34c976
       version: -1
       name: Check number of indicators
       type: condition
@@ -179,10 +179,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 2f4211b1-0ebe-4c9a-81f3-9802dff0330f
+    taskid: 23bc2f37-f127-4770-8614-0d069d151f12
     type: title
     task:
-      id: 2f4211b1-0ebe-4c9a-81f3-9802dff0330f
+      id: 23bc2f37-f127-4770-8614-0d069d151f12
       version: -1
       name: Continue the test
       type: title
@@ -208,14 +208,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 12d874d9-051a-4ec7-83f0-d2a76581a720
+    taskid: 230baf6c-991a-477b-867b-e4247ed62710
     type: regular
     task:
-      id: 12d874d9-051a-4ec7-83f0-d2a76581a720
+      id: 230baf6c-991a-477b-867b-e4247ed62710
       version: -1
       name: Update indicators description and severity
-      description: Updates the spcified indicator.
-      script: '|||microsoft-atp-sc-indicator-create-update'
+      description: Updates the specified indicator.
+      script: '|||microsoft-atp-sc-indicator-update'
       type: regular
       iscommand: true
       brand: ""
@@ -254,10 +254,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: ef95287b-f092-4995-8a8c-0384cf4099c8
+    taskid: a7b87594-6c16-4a4a-8a75-cb2f34d848b2
     type: title
     task:
-      id: ef95287b-f092-4995-8a8c-0384cf4099c8
+      id: a7b87594-6c16-4a4a-8a75-cb2f34d848b2
       version: -1
       name: Done
       type: title
@@ -280,10 +280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 9e5d84a9-a5fb-4ac2-8755-9f6d36dd749d
+    taskid: 203ae72d-b7f0-41d8-83f4-4ed38cc646a7
     type: regular
     task:
-      id: 9e5d84a9-a5fb-4ac2-8755-9f6d36dd749d
+      id: 203ae72d-b7f0-41d8-83f4-4ed38cc646a7
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -314,10 +314,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 1a067d3b-ac5a-4e3f-8f2e-267451f107be
+    taskid: 79595339-5159-459a-8401-b81e47163b77
     type: title
     task:
-      id: 1a067d3b-ac5a-4e3f-8f2e-267451f107be
+      id: 79595339-5159-459a-8401-b81e47163b77
       version: -1
       name: Setup
       type: title
@@ -343,14 +343,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 3d4d135c-5398-49ac-8a09-1f2b3f9a3b3a
+    taskid: 1d47c61b-db40-48dc-833c-e46e84017da8
     type: regular
     task:
-      id: 3d4d135c-5398-49ac-8a09-1f2b3f9a3b3a
+      id: 1d47c61b-db40-48dc-833c-e46e84017da8
       version: -1
-      name: microsoft-atp-sc-indicator-create-update
-      description: Updates the spcified indicator.
-      script: '|||microsoft-atp-sc-indicator-create-update'
+      name: microsoft-atp-sc-indicator-create
+      description: Creates a new indicator.
+      script: '|||microsoft-atp-sc-indicator-create'
       type: regular
       iscommand: true
       brand: ""
@@ -389,10 +389,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 8e342d07-fa78-4b96-8bac-554d490c0695
+    taskid: d8ab056d-59e5-4f2e-884b-0afc82876e91
     type: condition
     task:
-      id: 8e342d07-fa78-4b96-8bac-554d490c0695
+      id: d8ab056d-59e5-4f2e-884b-0afc82876e91
       version: -1
       name: Check the indicators returned with the High severity
       type: condition
@@ -474,10 +474,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 1f26aca2-96b5-4037-84f8-c67dfa0eaed4
+    taskid: 4e7ad983-51e4-453d-8df5-c72f059f06d2
     type: regular
     task:
-      id: 1f26aca2-96b5-4037-84f8-c67dfa0eaed4
+      id: 4e7ad983-51e4-453d-8df5-c72f059f06d2
       version: -1
       name: Get indicators by ID
       description: Gets an indicator by its ID.
@@ -510,10 +510,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: a731ccf5-17a5-4e6f-87a3-351983131dbf
+    taskid: f7f4fb05-b56e-423f-87ce-a1090fcd2880
     type: condition
     task:
-      id: a731ccf5-17a5-4e6f-87a3-351983131dbf
+      id: f7f4fb05-b56e-423f-87ce-a1090fcd2880
       version: -1
       name: Check the indicators returned with the Low severity and updated fields
       type: condition
@@ -595,10 +595,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 40f190ca-5553-4fe8-8612-fca3dbb33517
+    taskid: b947e2c0-f233-4e9f-8960-5f2b513d598e
     type: regular
     task:
-      id: 40f190ca-5553-4fe8-8612-fca3dbb33517
+      id: b947e2c0-f233-4e9f-8960-5f2b513d598e
       version: -1
       name: Delete Indicator
       description: Deletes the specified indicator.

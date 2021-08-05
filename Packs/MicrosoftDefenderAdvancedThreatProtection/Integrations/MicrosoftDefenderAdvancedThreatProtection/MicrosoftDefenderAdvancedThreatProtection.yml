@@ -2284,8 +2284,9 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all indicators by the ID that the system creates when the indicator.
-      is ingested.
+    description: Deprecated. Use the microsoft-atp-sc-indicator-list command instead.
+      Lists all indicators by the ID that the system creates when the indicator. is
+      ingested.
     execution: false
     name: microsoft-atp-indicator-list
     outputs:
@@ -2519,7 +2520,8 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets an indicator by its ID.
+    description: Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command
+      instead. Gets an indicator by its ID.
     execution: false
     name: microsoft-atp-indicator-get-by-id
     outputs:
@@ -2916,7 +2918,8 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a file indicator.
+    description: Deprecated. Use the microsoft-atp-sc-indicator-create command instead.
+      Creates a file indicator.
     execution: false
     name: microsoft-atp-indicator-create-file
     outputs:
@@ -3344,7 +3347,8 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a file indicator.
+    description: Deprecated. Use the microsoft-atp-sc-indicator-create command instead.
+      Creates a file indicator.
     execution: false
     name: microsoft-atp-indicator-create-network
     outputs:
@@ -3586,7 +3590,8 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates the specified indicator.
+    description: Deprecated. Use the microsoft-atp-sc-indicator-update command instead.
+      Updates the specified indicator.
     execution: false
     name: microsoft-atp-indicator-update
     outputs:
@@ -3820,7 +3825,8 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: Deprecated. Use the microsoft-atp-sc-indicator-delete command instead. Deletes the specified indicator.
+    description: Deprecated. Use the microsoft-atp-sc-indicator-delete command instead.
+      Deletes the specified indicator.
     execution: false
     name: microsoft-atp-indicator-delete
   - arguments:
@@ -4221,7 +4227,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the indicator to delete. The ID can be retreived by running the microsoft-atp-sc-indicator-list command.
+      description: The ID of the indicator to delete. The ID can be retreived by running
+        the microsoft-atp-sc-indicator-list command.
       isArray: false
       name: indicator_id
       required: true
@@ -4353,7 +4360,8 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The ID of the indicator to get. The ID can be retreived by running the microsoft-atp-sc-indicator-list command.
+      description: The ID of the indicator to get. The ID can be retreived by running
+        the microsoft-atp-sc-indicator-list command.
       isArray: false
       name: indicator_id
       required: true

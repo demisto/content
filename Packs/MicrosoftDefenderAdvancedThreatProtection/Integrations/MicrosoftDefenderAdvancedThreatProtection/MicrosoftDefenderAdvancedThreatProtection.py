@@ -2627,7 +2627,7 @@ def main():
         # using security-center api for indicators
         elif command in ('microsoft-atp-sc-indicator-list', 'microsoft-atp-sc-indicator-get-by-id'):
             return_outputs(*sc_list_indicators_command(client, args))
-        elif command == ('microsoft-atp-sc-indicator-update', 'microsoft-atp-sc-indicator-create'):
+        elif command in ('microsoft-atp-sc-indicator-update', 'microsoft-atp-sc-indicator-create'):
             return_outputs(*sc_create_update_indicator_command(client, args))
         elif command == 'microsoft-atp-sc-indicator-delete':
             return_outputs(sc_delete_indicator_command(client, args))
