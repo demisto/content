@@ -2470,6 +2470,8 @@ class Common(object):
             """
             if hasattr(DBotScoreType, indicator_type.upper()):
                 raise ValueError('Creating a custom indicator type with an existing type name is not allowed')
+            if not value:
+                raise ValueError('value is mandatory for creating the indicator')
             if not prefix_str:
                 raise ValueError('prefix_str is mandatory for creating the indicator')
 

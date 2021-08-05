@@ -5277,5 +5277,21 @@ class TestCustomIndicator:
                 score=Common.DBotScore.BAD,
                 malicious_description='malicious!'
             )
-            indicator = Common.CustomIndicator('test', 'test_value', dbot_score, None, 'prefix')
-            assert indicator.CONTEXT_PATH == 'prefix(val.value && val.value == obj.value)'
+            Common.CustomIndicator('test', 'test_value', dbot_score, None, 'prefix')
+
+    def test_custom_indicator_no_value(self):
+        """
+        Given: Data needed for creating a custom indicator
+        When: value is None
+        Then: Raise an error
+        """
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common, DBotScoreType
+            dbot_score = Common.DBotScore(
+                'test',
+                DBotScoreType.CUSTOM,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+            Common.CustomIndicator('test', None, dbot_score,  {'param': 'value'}, 'prefix')
