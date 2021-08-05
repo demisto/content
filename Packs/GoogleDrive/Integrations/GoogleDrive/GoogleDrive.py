@@ -991,8 +991,8 @@ def file_get_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResul
     # Specific file
     prepare_file_read_request_res = prepare_file_read_request(client, args)
     http_request_params = prepare_file_read_request_res['http_request_params']
-    # Make sure we have the fields "kind" and "id".
-    http_request_params['fields'] = 'kind, id, ' + args.get('fields', 'kind, id')
+    # Make sure we have the field "id".
+    http_request_params['fields'] = 'id, ' + args.get('fields', 'id')
     url_suffix = URL_SUFFIX['DRIVE_FILES_ID'].format(args.get('file_id'))
     response = client.http_request(url_suffix=url_suffix, method='GET', params=http_request_params)
     return handle_response_single_file(response, args)
@@ -1076,18 +1076,6 @@ def prepare_single_file_output(response: Dict[str, Any]) -> Dict[str, Any]:
 
     :return: Context output.
     """
-    """
-    # Sample file output:
-    #     {
-    #       "kind": "drive#file",
-    #       "id": "0AMKcwzQfpjgBUk9PVA",
-    #       "name": "New Test File"
-    #     }
-    """
-
-    if not 'drive#file' == response.get('kind', ''):
-        # demisto.info('Not a file kind, ignoring. response: ' + str(response))
-        return {}
 
     files_context = set_true_for_empty_dict(response)
     return GSuiteClient.remove_empty_entities(files_context)
@@ -1105,7 +1093,7 @@ def prepare_single_file_human_readable(outputs_context: Dict[str, Any], args: Di
     return tableToMarkdown(
         HR_MESSAGES['LIST_COMMAND_SUCCESS'].format('File(s)', 1),
         GSuiteClient.remove_empty_entities(outputs_context),
-        [x.strip() for x in args.get('fields', 'kind, id').split(',')],
+        [x.strip() for x in args.get('fields', 'id').split(',')],
         headerTransform=pascalToSpace,
         removeNull=False)
 
@@ -1251,10 +1239,6 @@ def file_delete_command(client: GSuiteClient, args: Dict[str, str]) -> CommandRe
 
 def handle_response_file_single(response: Dict[str, Any], args: Dict[str, str]) -> CommandResults:
 
-    # if not 'drive#file' == response.get('kind', ''):
-    #     # demisto.info('Not a file kind, ignoring. permission: ' + str(response))
-    #     return {}
-
     readable_output = ''
 
     outputs_context = prepare_file_single_output(response)
@@ -1284,9 +1268,6 @@ def prepare_file_single_output(file_single: Dict[str, Any]) -> Dict[str, Any]:
 
     :return: Context output.
     """
-
-    if file_single.get('kind', '') != 'drive#file':
-        return {}
 
     ret_value = {}
     ret_value.update(file_single)
@@ -1470,10 +1451,6 @@ def file_permission_delete_command(client: GSuiteClient, args: Dict[str, str]) -
 
 def handle_response_permissions_list(response: Dict[str, Any], args: Dict[str, str]) -> CommandResults:
 
-    # if not 'drive#permissionList' == response.get('kind', ''):
-    #     # demisto.info('Not a permissionList kind, ignoring. permission: ' + str(response))
-    #     return {}
-
     outputs_context = []
     readable_output = ''
 
@@ -1520,10 +1497,6 @@ def prepare_permissions_human_readable(outputs_context: List[Dict[str, Any]], ar
 
 def handle_response_permission_single(response: Dict[str, Any], args: Dict[str, str]) -> CommandResults:
 
-    # if not 'drive#permission' == response.get('kind', ''):
-    #     # demisto.info('Not a permission kind, ignoring. permission: ' + str(response))
-    #     return {}
-
     readable_output = ''
 
     outputs_context = prepare_permission_output(response)
@@ -1553,10 +1526,6 @@ def prepare_permission_output(permission: Dict[str, Any]) -> Dict[str, Any]:
 
     :return: Context output.
     """
-
-    if not 'drive#permission' == permission.get('kind', ''):
-        # demisto.info('Not a permission kind, ignoring. permission: ' + str(permission))
-        return {}
 
     ret_value = {}
     ret_value.update(permission)

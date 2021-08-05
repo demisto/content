@@ -118,9 +118,6 @@ script:
     execution: false
     name: google-drive-create
     outputs:
-    - contextPath: GoogleDrive.Drive.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.Drive.id
       description: The ID of the shared drive which is also the ID of the top level
         folder of the shared drive.
@@ -270,9 +267,6 @@ script:
     - contextPath: GoogleDrive.DriveChange.userId
       description: The user's primary email address.
       type: String
-    - contextPath: GoogleDrive.DriveChange.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.DriveChange.changeType
       description: The type of the change. Possible values are "file" and "drive".
       type: String
@@ -288,9 +282,6 @@ script:
       type: String
     - contextPath: GoogleDrive.DriveChange.driveId
       description: The ID of the shared drive associated with this change.
-      type: String
-    - contextPath: GoogleDrive.DriveChange.file.kind
-      description: Identifies what kind of resource this is.
       type: String
     - contextPath: GoogleDrive.DriveChange.file.id
       description: The ID of the file.
@@ -315,9 +306,6 @@ script:
       description: Whether the file has been explicitly trashed, as opposed to recursively
         trashed from a parent folder.
       type: Boolean
-    - contextPath: GoogleDrive.DriveChange.file.trashingUser.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.DriveChange.file.trashingUser.displayName
       description: A plain text displayable name for this user.
       type: String
@@ -400,9 +388,6 @@ script:
       description: The time at which the file was shared with the user, if applicable
         (RFC 3339 date-time).
       type: Date
-    - contextPath: GoogleDrive.DriveChange.file.sharingUser.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.DriveChange.file.sharingUser.displayName
       description: A plain text displayable name for this user.
       type: String
@@ -418,9 +403,6 @@ script:
     - contextPath: GoogleDrive.DriveChange.file.sharingUser.emailAddress
       description: The email address of the user. This may not be present in certain
         contexts if the user has not made their email address visible to the requester.
-      type: String
-    - contextPath: GoogleDrive.DriveChange.file.owners.kind
-      description: Identifies what kind of resource this is.
       type: String
     - contextPath: GoogleDrive.DriveChange.file.owners.displayName
       description: A plain text displayable name for this user.
@@ -441,9 +423,6 @@ script:
     - contextPath: GoogleDrive.DriveChange.file.driveId
       description: ID of the shared drive the file resides in. Only populated for
         items in shared drives.
-      type: String
-    - contextPath: GoogleDrive.DriveChange.file.lastModifyingUser.kind
-      description: Identifies what kind of resource this is.
       type: String
     - contextPath: GoogleDrive.DriveChange.file.lastModifyingUser.displayName
       description: A plain text displayable name for this user.
@@ -574,9 +553,6 @@ script:
       description: Whether users with only writer permission can modify the file's
         permissions. Not populated for items in shared drives.
       type: Boolean
-    - contextPath: GoogleDrive.DriveChange.file.permissions.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.DriveChange.file.permissions.id
       description: The ID of this permission.
       type: String
@@ -774,9 +750,6 @@ script:
       description: Reason for why the content of the file is restricted. This is only
         mutable on requests that also set readOnly=true.
       type: String
-    - contextPath: GoogleDrive.DriveChange.file.contentRestrictions.restrictingUser.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.DriveChange.file.contentRestrictions.restrictingUser.displayName
       description: A plain text displayable name for this user.
       type: String
@@ -800,9 +773,6 @@ script:
     - contextPath: GoogleDrive.DriveChange.file.contentRestrictions.type
       description: The type of the content restriction. Currently the only possible
         value is globalContentRestriction.
-      type: String
-    - contextPath: GoogleDrive.DriveChange.drive.kind
-      description: Identifies what kind of resource this is.
       type: String
     - contextPath: GoogleDrive.DriveChange.drive.id
       description: The ID of this shared drive which is also the ID of the top level
@@ -1822,9 +1792,6 @@ script:
       predefined:
       - ""
     outputs:
-    - contextPath: GoogleDrive.Drive.Drive.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.Drive.Drive.id
       description: The ID of this shared drive which is also the ID of the top level
         folder of this shared drive.
@@ -1963,9 +1930,6 @@ script:
       predefined:
       - ""
     outputs:
-    - contextPath: GoogleDrive.Drive.Drive.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.Drive.Drive.id
       description: The ID of this shared drive which is also the ID of the top level
         folder of this shared drive.
@@ -2133,9 +2097,6 @@ script:
     - contextPath: GoogleDrive.File.File.id
       description: The ID of the file.
       type: String
-    - contextPath: GoogleDrive.File.File.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.File.File.mimeType
       description: The MIME type of the file.
       type: String
@@ -2287,18 +2248,12 @@ script:
     - contextPath: GoogleDrive.File.File.isAppAuthorized
       description: Whether the file was created or opened by the requesting app.
       type: Boolean
-    - contextPath: GoogleDrive.File.File.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.File.File.lastModifyingUser.displayName
       description: A plain text displayable name for this user.
       type: String
     - contextPath: GoogleDrive.File.File.lastModifyingUser.emailAddress
       description: The email address of the user. This may not be present in certain
         contexts if the user has not made their email address visible to the requester.
-      type: String
-    - contextPath: GoogleDrive.File.File.lastModifyingUser.kind
-      description: Identifies what kind of resource this is.
       type: String
     - contextPath: GoogleDrive.File.File.lastModifyingUser.me
       description: Whether this user is the requesting user.
@@ -2343,9 +2298,6 @@ script:
       description: The email address of the user. This may not be present in certain
         contexts if the user has not made their email address visible to the requester.
       type: String
-    - contextPath: GoogleDrive.File.File.owners.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.File.File.owners.me
       description: Whether this user is the requesting user.
       type: Boolean
@@ -2372,9 +2324,6 @@ script:
       type: String
     - contextPath: GoogleDrive.File.File.permissions.id
       description: The ID of this permission.
-      type: String
-    - contextPath: GoogleDrive.File.File.permissions.kind
-      description: Identifies what kind of resource this is.
       type: String
     - contextPath: GoogleDrive.File.File.permissions.role
       description: The role granted by this permission.
@@ -2458,9 +2407,6 @@ script:
       predefined:
       - ""
     outputs:
-    - contextPath: GoogleDrive.File.File.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.File.File.id
       description: The ID of the file.
       type: String
@@ -2648,9 +2594,6 @@ script:
       description: The email address of the user. This may not be present in certain
         contexts if the user has not made their email address visible to the requester.
       type: String
-    - contextPath: GoogleDrive.File.File.lastModifyingUser.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.File.File.lastModifyingUser.me
       description: Whether this user is the requesting user.
       type: Boolean
@@ -2672,9 +2615,6 @@ script:
     - contextPath: GoogleDrive.File.File.owners.emailAddress
       description: The email address of the user. This may not be present in certain
         contexts if the user has not made their email address visible to the requester.
-      type: String
-    - contextPath: GoogleDrive.File.File.owners.kind
-      description: Identifies what kind of resource this is.
       type: String
     - contextPath: GoogleDrive.File.File.owners.me
       description: Whether this user is the requesting user.
@@ -2699,9 +2639,6 @@ script:
       type: String
     - contextPath: GoogleDrive.File.File.permissions.id
       description: The ID of this permission.
-      type: String
-    - contextPath: GoogleDrive.File.File.permissions.kind
-      description: Identifies what kind of resource this is.
       type: String
     - contextPath: GoogleDrive.File.File.permissions.role
       description: The role granted by this permission.
@@ -2787,9 +2724,6 @@ script:
       predefined:
       - ""
     outputs:
-    - contextPath: GoogleDrive.File.File.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.File.File.id
       description: The ID of the file.
       type: String
@@ -2977,9 +2911,6 @@ script:
       description: The email address of the user. This may not be present in certain
         contexts if the user has not made their email address visible to the requester.
       type: String
-    - contextPath: GoogleDrive.File.File.lastModifyingUser.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.File.File.lastModifyingUser.me
       description: Whether this user is the requesting user.
       type: Boolean
@@ -3001,9 +2932,6 @@ script:
     - contextPath: GoogleDrive.File.File.owners.emailAddress
       description: The email address of the user. This may not be present in certain
         contexts if the user has not made their email address visible to the requester.
-      type: String
-    - contextPath: GoogleDrive.File.File.owners.kind
-      description: Identifies what kind of resource this is.
       type: String
     - contextPath: GoogleDrive.File.File.owners.me
       description: Whether this user is the requesting user.
@@ -3028,9 +2956,6 @@ script:
       type: String
     - contextPath: GoogleDrive.File.File.permissions.id
       description: The ID of this permission.
-      type: String
-    - contextPath: GoogleDrive.File.File.permissions.kind
-      description: Identifies what kind of resource this is.
       type: String
     - contextPath: GoogleDrive.File.File.permissions.role
       description: The role granted by this permission.
@@ -3138,9 +3063,6 @@ script:
     - contextPath: GoogleDrive.FilePermission.FilePermission.id
       description: The ID of this permission.
       type: String
-    - contextPath: GoogleDrive.FilePermission.FilePermission.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.FilePermission.FilePermission.role
       description: The role granted by this permission.
       type: String
@@ -3240,9 +3162,6 @@ script:
     - contextPath: GoogleDrive.FilePermission.FilePermission.id
       description: The ID of this permission.
       type: String
-    - contextPath: GoogleDrive.FilePermission.FilePermission.kind
-      description: Identifies what kind of resource this is.
-      type: String
     - contextPath: GoogleDrive.FilePermission.FilePermission.role
       description: The role granted by this permission.
       type: String
@@ -3313,9 +3232,6 @@ script:
       type: String
     - contextPath: GoogleDrive.FilePermission.FilePermission.id
       description: The ID of this permission.
-      type: String
-    - contextPath: GoogleDrive.FilePermission.FilePermission.kind
-      description: Identifies what kind of resource this is.
       type: String
     - contextPath: GoogleDrive.FilePermission.FilePermission.role
       description: The role granted by this permission.
