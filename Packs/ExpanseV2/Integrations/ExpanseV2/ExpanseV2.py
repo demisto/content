@@ -39,7 +39,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_FIRST_FETCH = "3 days"  # default parameter for first fetch
 
 ISSUE_PROGRESS_STATUS = ['New', 'Investigating', 'InProgress', 'AcceptableRisk', 'Resolved']
-ISSUE_PROGRESS_STATUS_CLOSED = ['AcceptableRisk', 'Resolved']
+ISSUE_PROGRESS_STATUS_CLOSED = ['AcceptableRisk', 'Resolved', 'No Risk']
 ISSUE_ACTIVITY_STATUS = ['Active', 'Inactive']
 ISSUE_PRIORITY = ['Critical', 'High', 'Medium', 'Low']
 CLOUD_MANAGEMENT_STATUS = ['ManagedCloud', 'UnmanagedCloud', 'NotApplicable']
@@ -1520,10 +1520,34 @@ def fetch_incidents(client: Client, max_incidents: int,
     return next_run, incidents
 
 
+def get_modified_remote_data_command(client, args):
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update  # In the first run, this value will be set to 1 minute earlier
+
+    demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
+
+    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
+    modified_after =last_update_utc.strftime(DATE_FORMAT)
+    demisto.debug(f'$$$$$$$$$$$$$ modified after is {modified_after}')
+
+    modified_incidents = client.get_issues(
+        limit=100,
+        modified_after=modified_after
+    )
+
+    modified_incident_ids = list()
+    for raw_incident in modified_incidents:
+        incident_id = raw_incident.get('id')
+        modified_incident_ids.append(incident_id)
+
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+
 def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: bool = False,
                             incoming_tags: Optional[List[str]] = [],
                             mirror_details: bool = False) -> GetRemoteDataResponse:
     parsed_args = GetRemoteDataArgs(args)
+    demisto.debug(f'Performing get-remote-data command with incident id: {parsed_args.remote_incident_id}')
     issue_updates: List[Dict[str, Any]] = sorted(
         islice(
             client.get_issue_updates(
@@ -1541,6 +1565,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
     incident_updates: Dict[str, Any] = {}
     latest_comment: Dict[str, Any] = {}  # used for closing comment
     for update in issue_updates:
+        demisto.debug(f'\n!!!!!!!!!!!!!!!!!!!!! The update field is: {update}\n')
         update_type = update.get('updateType')
         if not update_type or update_type not in ISSUE_UPDATE_TYPES:
             demisto.debug('Skipping unknown Expanse incoming update type: {update_type}')
@@ -1589,23 +1614,41 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
                 demisto.debug(f'The user assigned to Expanse incident {parsed_args.remote_incident_id} [{new_value}]'
                               f'is not registered on XSOAR, cannot change owner')
 
-        # handle issue closure
-        elif update_type == 'ProgressStatus' and new_value in ISSUE_PROGRESS_STATUS_CLOSED:
-            close_reason = EXPANSE_RESOLVEDSTATUS_TO_XSOAR[
-                new_value] if new_value in EXPANSE_RESOLVEDSTATUS_TO_XSOAR else 'Other'
-            resolve_comment = latest_comment['value'] if 'value' in latest_comment else ''
-            demisto.debug(f'Closing Expanse issue {parsed_args.remote_incident_id}')
-            new_entries.append({
-                'Type': EntryType.NOTE,
-                'Contents': {
-                    'dbotIncidentClose': True,
-                    'closeReason': close_reason,
-                    'closeNotes': resolve_comment
-                },
-                'ContentsFormat': EntryFormat.JSON
-            })
-            incident_updates['closeReason'] = close_reason
-            incident_updates['closeNotes'] = resolve_comment
+        elif update_type == 'ProgressStatus':
+            # handle issue closure
+            if previous_value not in ISSUE_PROGRESS_STATUS_CLOSED and new_value in ISSUE_PROGRESS_STATUS_CLOSED:
+                close_reason = EXPANSE_RESOLVEDSTATUS_TO_XSOAR[
+                    new_value] if new_value in EXPANSE_RESOLVEDSTATUS_TO_XSOAR else 'Other'
+                resolve_comment = latest_comment['value'] if 'value' in latest_comment else ''
+                demisto.debug(f'Closing Expanse issue {parsed_args.remote_incident_id}')
+                new_entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': {
+                        'dbotIncidentClose': True,
+                        'closeReason': close_reason,
+                        'closeNotes': resolve_comment
+                    },
+                    'ContentsFormat': EntryFormat.JSON
+                })
+                incident_updates['closeReason'] = close_reason
+                incident_updates['closeNotes'] = resolve_comment
+
+            # handle issue reopening
+            elif previous_value in ISSUE_PROGRESS_STATUS_CLOSED and new_value not in ISSUE_PROGRESS_STATUS_CLOSED:
+                demisto.debug(f'Reopening Expanse issue {parsed_args.remote_incident_id}')
+                new_entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': {
+                        'dbotIncidentReopen': True
+                    },
+                    'ContentsFormat': EntryFormat.JSON
+                })
+
+                incident_updates['closeReason'] = None
+                incident_updates['closeNotes'] = None
+
+            else:
+                incident_updates[updated_field] = new_value
 
         # handle everything else
         else:
@@ -2622,7 +2665,7 @@ def main() -> None:
 
         #  To be compatible with 6.1
         elif command == "get-modified-remote-data":
-            raise DemistoException('get-modified-remote-data not implemented')
+            return_results(get_modified_remote_data_command(client, demisto.args()))
 
         elif command == "get-remote-data":
             sync_owners = argToBoolean(params.get('sync_owners'))
