@@ -636,6 +636,12 @@ script:
       name: activity_id
       required: false
       secret: false
+    - default: false
+      description: Timeout of the request to Microsoft CAS, in seconds. Default is 60 seconds.
+      isArray: false
+      name: activity_id
+      required: false
+      secret: false
     deprecated: false
     description: Returns a list of activities that match the specified filters.
     execution: false
