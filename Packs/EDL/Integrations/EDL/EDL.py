@@ -282,8 +282,7 @@ def format_indicators(iocs: list, request_args: RequestArguments) -> set:
         if request_args.collapse_ips != DONT_COLLAPSE and ioc_type in (FeedIndicatorType.IP, FeedIndicatorType.CIDR):
             ipv4_formatted_indicators.add(indicator)
 
-        elif request_args.collapse_ips != DONT_COLLAPSE and ioc_type in (FeedIndicatorType.IPv6,
-                                                                         FeedIndicatorType.IPv6CIDR):
+        elif request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IPv6:
             ipv6_formatted_indicators.add(indicator)
 
         else:
