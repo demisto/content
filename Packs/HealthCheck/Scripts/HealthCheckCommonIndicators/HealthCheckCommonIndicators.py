@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 THRESHOLDS = {
-    'relatedIndicatorCount': 100,
+    'relatedIndicatorCount': 1000,
 }
 
 BODY = {
@@ -35,7 +35,7 @@ def main(args):
 
     res = []
     for indicator in indicators:
-        if indicator['relatedIncCount'] > indicator_thresholds['relatedIndicatorCount']:
+        if indicator.get('relatedIncCount', 0) > indicator_thresholds['relatedIndicatorCount']:
             res.append({
                 'category': 'Indicators',
                 'severity': 'Low',

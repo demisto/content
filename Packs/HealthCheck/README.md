@@ -6,6 +6,12 @@ The actionable items report will contain recommendations based on errors found o
 
 **Prerequisites**:
 Configure "Demisto REST API" Integration Instance.
+For Multi-Tenants Environments there are 2 optiosn to define the "Demisto REST API" Integration Instance 
+- Create API Key on Main Tenant and propogate the instance to All or Relevant tenentats using the lables
+with the following instance settings:
+  
+- Create API Key on the relevant Tenant with the following instance settings.
+make sure not to specify the tenant name in the settings:
 
 **How to**:
 1. Create manually new **System Diagnostics and Health Check** incident type.

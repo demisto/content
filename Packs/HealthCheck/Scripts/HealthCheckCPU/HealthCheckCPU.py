@@ -92,6 +92,7 @@ def main(args):
     higher = 0
     if is_widget is True:
         build_number = get_demisto_version()['buildNumber']
+        build_number = f'{build_number}' if build_number != "REPLACE_THIS_WITH_CI_BUILD_NUM" else "618658"
         if int(build_number) >= 618657:
             # Line graph:
             for entry in stats:
