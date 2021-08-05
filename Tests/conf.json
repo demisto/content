@@ -51,6 +51,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Azure Active Directory Identity Protection",
+            "playbookID": "AzureADTest",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "GoogleCalendar",
             "playbookID": "GoogleCalendar-Test",
             "fromversion": "5.0.0"
@@ -2642,13 +2647,14 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": "vmray",
-            "playbookID": "VMRay-Test"
-        },
-        {
             "integrations": "PerceptionPoint",
             "playbookID": "PerceptionPoint Test",
             "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "vmray",
+            "playbookID": "VMRay-Test-File",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "AutoFocus V2",
@@ -3542,8 +3548,7 @@
         "test playbook - QRadarCorrelations": "Issue 38639",
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
         "O365 - EWS - Extension - Test": "Issue 39008",
-        "Majestic Million Test Playbook": "Issue 30931",
-        "Azure SecurityCenter - Test": "Issue 27391"
+        "Majestic Million Test Playbook": "Issue 30931"
     },
     "skipped_integrations": {
         
