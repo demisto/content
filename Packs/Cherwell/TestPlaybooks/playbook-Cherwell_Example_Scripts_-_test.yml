@@ -46,14 +46,14 @@ tasks:
       - "7"
     scriptarguments:
       customer_display_name:
-        simple: Lucas Sato
+        simple: Playbook customer
       description:
         simple: 'Example scripts test playbook '
       owned_by: {}
       priority:
         simple: "1"
       service:
-        simple: Enterprise Apps
+        simple: Account Management
       category:
         simple: PeopleSoft
       sub_category:
@@ -289,7 +289,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Enterprise Apps
+              simple: Account Management
       - - operator: isEqualString
           left:
             value:
@@ -297,7 +297,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Lucas Sato
+              simple: Playbook customer
       - - operator: isExists
           left:
             value:
@@ -576,7 +576,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Enterprise Apps
+              simple: Account Management
       - - operator: containsGeneral
           left:
             value:
@@ -584,7 +584,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Lucas Sato
+              simple: Playbook customer
       - - operator: isExists
           left:
             value:
