@@ -1,4 +1,3 @@
-import base64
 # -*- coding: utf-8 -*-
 import codecs
 # -*- coding: utf-8 -*-
@@ -8,16 +7,11 @@ import codecs
 # ref:https://msdn.microsoft.com/en-us/library/cc463912(v=EXCHG.80).aspx
 import email
 import email.utils
-import os
 import quopri
-import re
-import sys
 import tempfile
-import traceback
 import unicodedata
 from base64 import b64decode
 # coding=utf-8
-from datetime import datetime, timedelta
 from email import encoders, message_from_string
 from email.header import Header, decode_header
 from email.mime.audio import MIMEAudio
@@ -30,9 +24,10 @@ from email.utils import getaddresses
 from struct import unpack
 
 import chardet
+from olefile import OleFileIO, isOleFile
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from olefile import OleFileIO, isOleFile
 
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=no-member
@@ -3776,7 +3771,7 @@ def main():
 
         elif any(eml_candidate in file_type_lower for eml_candidate in
                  ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'multipart/alternative', 'multipart/mixed', 'message/rfc822',
-                  'application/pkcs7-mime']):
+                  'application/pkcs7-mime', 'multipart/related']):
             if 'unicode (with bom) text' in file_type_lower:
                 email_data, attached_emails = handle_eml(
                     file_path, False, file_name, parse_only_headers, max_depth, bom=True
