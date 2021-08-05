@@ -1,4 +1,4 @@
-Each of entry in an array is merged into the existing array if the keyed-value matches.
+Each entry in an array is merged into the existing array if the keyed-value matches.
 
 ## Script Data
 ---
@@ -48,7 +48,7 @@ There are no outputs for this script.
                 "ASN": "AS15169"
             }
         }, 
-        "DBotScore [
+        "DBotScore": [
             {
                 "Indicator": "8.8.8.8", 
                 "Score": 0, 
@@ -74,6 +74,9 @@ There are no outputs for this script.
 | out_path | |
 | appendable | true |
 
+```
+!MergeDictArray value=${DBotScore} mapping=Address:Indicator merge_with=${Shodan.IP} appendable=true
+```
 
 ##### Output
     [
@@ -118,7 +121,7 @@ There are no outputs for this script.
                 "ASN": "AS15169"
             }
         }, 
-        "DBotScore [
+        "DBotScore": [
             {
                 "Indicator": "8.8.8.8", 
                 "Score": 0, 
@@ -144,6 +147,9 @@ There are no outputs for this script.
 | out_path | |
 | appendable | true |
 
+```
+!MergeDictArray value=${DBotScore} mapping=Address:Indicator merge_with=${Shodan.IP} out_key=Shodan appendable=true
+```
 
 ##### Output
     [

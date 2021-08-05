@@ -1,4 +1,4 @@
-Each of entry in an array is merged into the existing array if the keyed-value matches.
+Each entry in an array is merged into the existing array if the keyed-value matches.
 
 ---
 ## Script Data
