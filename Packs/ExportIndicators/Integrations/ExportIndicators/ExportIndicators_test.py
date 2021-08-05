@@ -551,7 +551,7 @@ class TestHelperFunctions:
         from ExportIndicators import refresh_outbound_context, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
+            mocker.patch.object(ei, 'find_indicators_with_limit', side_effect=[iocs_json, []])
             request_args = RequestArguments(query='', out_format='text', sort_field=sort_field, sort_order=sort_order)
             ei_vals = refresh_outbound_context(request_args)
 
@@ -563,7 +563,7 @@ class TestHelperFunctions:
         from ExportIndicators import refresh_outbound_context, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
+            mocker.patch.object(ei, 'find_indicators_with_limit', side_effect=[iocs_json, []])
             request_args = RequestArguments(query='', out_format='text', sort_field='lastSeen', sort_order='invalid_sort_order')
             ei_vals = refresh_outbound_context(request_args)
 
@@ -575,7 +575,7 @@ class TestHelperFunctions:
         from ExportIndicators import refresh_outbound_context, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
+            mocker.patch.object(ei, 'find_indicators_with_limit', side_effect=[iocs_json, []])
             request_args = RequestArguments(query='', out_format='text', sort_field='invalid_field_name', sort_order='asc')
             mocker.patch.object(demisto, 'debug')
             refresh_outbound_context(request_args)

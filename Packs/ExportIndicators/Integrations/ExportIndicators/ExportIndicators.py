@@ -181,7 +181,7 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
     """
     now = datetime.now()
     # poll indicators into list from demisto
-
+    iocs = []
     limit = request_args.offset + request_args.limit
     indicator_searcher = IndicatorsSearcher(
         query=request_args.query,
@@ -189,7 +189,10 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
     )
     while True:
         indicator_searcher.limit = limit + 100  # fetch more indicators to reduce chances of search after truncation
-        iocs = find_indicators_with_limit(indicator_searcher)[request_args.offset:limit]
+        new_iocs = find_indicators_with_limit(indicator_searcher)[request_args.offset:limit]
+        if not new_iocs:
+            break
+        iocs += new_iocs
         iocs = sort_iocs(request_args, iocs)
         # reformat the output
         out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
