@@ -483,7 +483,7 @@ def list_activities_command(client: Client, args: dict):
     activity_id = args.get('activity_id')
     custom_filter = args.get('custom_filter')
     arguments = assign_params(**args)
-    timeout = int(args.get('timeout'), 60) or 60
+    timeout = int(arguments.get('timeout'), 60) or 60
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, activity_id)
     activities_response_data = client.list_activities(url_suffix, request_data, timeout)
     list_activities = activities_response_data.get('data') if activities_response_data.get('data') \
