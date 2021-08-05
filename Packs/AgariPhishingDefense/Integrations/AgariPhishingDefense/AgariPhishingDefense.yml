@@ -443,7 +443,7 @@ script:
     description: Remediate suspected message.
     execution: false
     name: apd-remediate-message
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/devo:1.0.0.23084
   feed: false
   isfetch: true
   longRunning: false
