@@ -805,6 +805,7 @@
         {
             "integrations": "MISP V3",
             "playbookID": "MISP V3 Test",
+            "fromversion": "5.5.0",
             "timeout": 300
         },
         {
