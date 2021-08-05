@@ -412,7 +412,7 @@ tasks:
       version: -1
       name: Create an inbound rule
       description: Add the element in the input as the new source of the rule
-      script: 'panorama-create-rule'
+      script: '|||panorama-create-rule'
       type: regular
       iscommand: true
       brand: Panorama
