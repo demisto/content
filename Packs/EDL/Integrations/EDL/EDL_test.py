@@ -2,7 +2,6 @@
 import json
 import pytest
 import os
-from netaddr import IPAddress
 from tempfile import mkdtemp
 
 IOC_RES_LEN = 38
