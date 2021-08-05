@@ -1,0 +1,469 @@
+id: Cloud IDS-IP Blacklist-GCP Firewall_Append
+version: -1
+name: Cloud IDS-IP Blacklist-GCP Firewall_Append
+description: Set a list of IP addresses in GCP firewall.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ead23198-fccb-45bb-8220-5ef5ee7dd8be
+    type: start
+    task:
+      id: ead23198-fccb-45bb-8220-5ef5ee7dd8be
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: fa63a6e8-acb5-4473-800f-fd66b6510cba
+    type: regular
+    task:
+      id: fa63a6e8-acb5-4473-800f-fd66b6510cba
+      version: -1
+      name: Get GCP Firewall
+      description: Returns the specified firewall.
+      script: '|||gcp-compute-get-firewall'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      name:
+        simple: ${inputs.GCPFirewallName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 08941920-f142-4b3e-8042-8311f91d6aad
+    type: regular
+    task:
+      id: 08941920-f142-4b3e-8042-8311f91d6aad
+      version: -1
+      name: Set and replace IP list on GCP Security Firewall
+      description: Updates the specified firewall rule with the data included in the
+        request.
+      script: '|||gcp-compute-patch-firewall'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      name:
+        simple: ${inputs.GCPFirewallName}
+      sourceRanges:
+        complex:
+          root: myRanges
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: srcIP
+                iscontext: true
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 41ce221a-56eb-4c57-8051-d66e848cd970
+    type: condition
+    task:
+      id: 41ce221a-56eb-4c57-8051-d66e848cd970
+      version: -1
+      name: Is Google Compute integration enabled?
+      description: Checks if Google Compute Integration is enable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Google Cloud Compute
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Google Cloud Compute
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 7a1e8bf0-88a2-4633-8273-d3722a190768
+    type: title
+    task:
+      id: 7a1e8bf0-88a2-4633-8273-d3722a190768
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: d6d30d44-2e92-4038-8152-fab75e4f73a4
+    type: condition
+    task:
+      id: d6d30d44-2e92-4038-8152-fab75e4f73a4
+      version: -1
+      name: GCP Firewall found?
+      description: Checks if GCP Firewall is found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleCloudCompute.Firewalls.name
+            iscontext: true
+          right:
+            value:
+              simple: inputs.GCPFirewallName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 7b8acbb6-ddb1-4d2c-8421-cae172ba3e4c
+    type: title
+    task:
+      id: 7b8acbb6-ddb1-4d2c-8421-cae172ba3e4c
+      version: -1
+      name: GCP Firewall Name Not Found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 881c747d-a710-4e05-8809-490d4f931c9d
+    type: regular
+    task:
+      id: 881c747d-a710-4e05-8809-490d4f931c9d
+      version: -1
+      name: Engineer - Fix Firewall Name and rerun
+      description: Wait for Engineer to fix Firewall Name and rerun
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 8bfdcd09-3926-4a84-8726-9647ae258f0a
+    type: regular
+    task:
+      id: 8bfdcd09-3926-4a84-8726-9647ae258f0a
+      version: -1
+      name: copy-src-ranges
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      key:
+        simple: myRanges
+      value:
+        simple: ${GoogleCloudCompute.Firewalls.sourceRanges}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "29_22_yes": 0.3,
+      "29_34_#default#": 0.49,
+      "35_37_#default#": 0.36
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 910,
+        "x": 50,
+        "y": 190
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: Indicators to trigger the playbook
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+- key: GCPFirewallName
+  value:
+    simple: fw-test-ids-cortex
+  required: true
+  description: Name of the GCP Firewall where the playbook should set the IPs
+  playbookInputQuery:
+- key: srcip
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs:
+- contextPath: GoogleCloudCompute.Operations.id
+  description: The unique identifier for the resource. This identifier is defined
+    by the server.
+- contextPath: GoogleCloudCompute.Operations.name
+  description: Name of the resource.
+- contextPath: GoogleCloudCompute.Operations.zone
+  description: The URL of the zone where the operation resides. Only available when
+    performing per-zone operations. You must specify this field as part of the HTTP
+    request URL. It is not settable as a field in the request body.
+- contextPath: GoogleCloudCompute.Operations.clientOperationId
+  description: The value of requestId if you provided it in the request. Not present
+    otherwise.
+- contextPath: GoogleCloudCompute.Operations.operationType
+  description: The type of operation, such as insert, update, or delete, and so on.
+- contextPath: GoogleCloudCompute.Operations.targetLink
+  description: The URL of the resource that the operation modifies. For operations
+    related to creating a snapshot, this points to the persistent disk that the snapshot
+    was created from.
+- contextPath: GoogleCloudCompute.Operations.targetId
+  description: The unique target ID, which identifies a specific incarnation of the
+    target resource
+- contextPath: GoogleCloudCompute.Operations.status
+  description: 'The status of the operation, which can be one of the following: PENDING
+    RUNNING or DONE'
+- contextPath: GoogleCloudCompute.Operations.statusMessage
+  description: An optional textual description of the current status of the operation.
+- contextPath: GoogleCloudCompute.Operations.user
+  description: User who requested the operation for example EMAILADDRESS.
+- contextPath: GoogleCloudCompute.Operations.progress
+  description: An optional progress indicator that ranges from 0 to 100. There is
+    no requirement that this be linear or support any granularity of operations. This
+    should not be used to guess when the operation will be complete. This number should
+    monotonically increase as the operation progresses.
+- contextPath: GoogleCloudCompute.Operations.insertTime
+  description: The time that this operation was requested. This value is in RFC3339
+    text format.
+- contextPath: GoogleCloudCompute.Operations.startTime
+  description: The time that this operation was started by the server. This value
+    is in RFC3339 text format.
+- contextPath: GoogleCloudCompute.Operations.endTime
+  description: The time that this operation was completed. This value is in RFC3339
+    text format.
+- contextPath: GoogleCloudCompute.Operations.error
+  description: If errors are generated during processing of the operation, this field
+    will be populated.
+- contextPath: GoogleCloudCompute.Operations.warnings
+  description: If warning messages are generated during processing of the operation,
+    this field will be populated.
+- contextPath: GoogleCloudCompute.Operations.httpErrorStatusCode
+  description: If the operation fails, this field contains the HTTP error status code
+    that was returned. For example, a 404 means the resource was not found.
+- contextPath: GoogleCloudCompute.Operations.httpErrorMessage
+  description: If the operation fails, this field contains the HTTP error message
+    that was returned, such as NOT FOUND.
+- contextPath: GoogleCloudCompute.Operations.selfLink
+  description: Server-defined URL for the resource.
+- contextPath: GoogleCloudCompute.Operations.region
+  description: The URL of the region where the operation resides. Only available when
+    performing regional operations. You must specify this field as part of the HTTP
+    request URL. It is not settable as a field in the request body.
+- contextPath: GoogleCloudCompute.Operations.description
+  description: A textual description of the operation, which is set when the operation
+    is created.
+- contextPath: GoogleCloudCompute.Operations.kind
+  description: Type of the resource. Always compute#operation for Operation resources.
+- contextPath: GoogleCloudCompute.Operations.error.errors
+  description: The array of errors encountered while processing this operation.
+- contextPath: GoogleCloudCompute.Operations.error.errors.code
+  description: The error type identifier for this error.
+- contextPath: GoogleCloudCompute.Operations.error.errors.location
+  description: Indicates the field in the request that caused the error. This property
+    is optional.
+- contextPath: GoogleCloudCompute.Operations.error.errors.message
+  description: An optional, human-readable error message.
+- contextPath: GoogleCloudCompute.Operations.warnings.code
+  description: A warning code, if applicable. For example, Compute Engine returns
+    NO_RESULTS_ON_PAGE if there are no results in the response.
+- contextPath: GoogleCloudCompute.Operations.warnings.message
+  description: A human-readable description of the warning code.
+- contextPath: GoogleCloudCompute.Operations.warnings.data
+  description: 'Metadata about this warning in key: value format.'
+- contextPath: GoogleCloudCompute.Operations.warnings.data.key
+  description: A key that provides more detail on the warning being returned. For
+    example, for warnings where there are no results in a list request for a particular
+    zone, this key might be scope and the key value might be the zone name. Other
+    examples might be a key indicating a deprecated resource and a suggested replacement,
+    or a warning about invalid network settings (for example, if an instance attempts
+    to perform IP forwarding but is not enabled for IP forwarding).
+- contextPath: GoogleCloudCompute.Operations.warnings.data.value
+  description: A warning data value corresponding to the key.
+quiet: true
+fromversion: 6.0.0
