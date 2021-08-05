@@ -105,6 +105,7 @@ This shared drive/team drive feature is available only with G Suite Enterprise, 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| GoogleDrive.Drive.kind | String | Identifies what kind of resource this is. | 
 | GoogleDrive.Drive.id | String | The ID of this shared drive which is also the ID of the top level folder of this shared drive. | 
 | GoogleDrive.Drive.name | String | The name of this shared drive. |
 | GoogleDrive.Drive.hidden | Boolean | Whether the shared drive is hidden from default view. |
@@ -120,6 +121,7 @@ This shared drive/team drive feature is available only with G Suite Enterprise, 
 {
  "GoogleDrive": {
    "Drive": {
+     "kind": "drive#drive",
      "id": "YYg1BVyzlZx",
      "name": "drive1",
      "hidden": true
@@ -170,12 +172,13 @@ Lists the changes for a user or shared drive.
 | GoogleDrive.PageToken.DriveChange.newStartPageToken | String | The starting page token for future changes. | 
 | GoogleDrive.PageToken.DriveChange.driveId | String | The ID of the shared drive associated with this change. | 
 | GoogleDrive.PageToken.DriveChange.userId | String | The user's primary email address. | 
-| GoogleDrive.DriveChange.userId | String | The user's primary email address. | 
+| GoogleDrive.DriveChange.userId | String | The user's primary email address. | | GoogleDrive.DriveChange.kind | String | Identifies what kind of resource this is. | 
 | GoogleDrive.DriveChange.changeType | String | The type of the change. Possible values are file and drive. | 
 | GoogleDrive.DriveChange.time | Date | The time of this change \(RFC 3339 date-time\). | 
 | GoogleDrive.DriveChange.removed | Boolean | Whether the file or shared drive has been removed from this list of changes, for example by deletion or loss of access. | 
 | GoogleDrive.DriveChange.fileId | String | The ID of the file which has changed. | 
 | GoogleDrive.DriveChange.driveId | String | The ID of the shared drive associated with this change. | 
+| GoogleDrive.DriveChange.file.kind | String | Identifies what kind of resource this is. | 
 | GoogleDrive.DriveChange.file.id | String | The ID of the file. | 
 | GoogleDrive.DriveChange.file.name | String | The name of the file. | 
 | GoogleDrive.DriveChange.file.mimeType | String | The MIME type of the file. | 
@@ -183,6 +186,7 @@ Lists the changes for a user or shared drive.
 | GoogleDrive.DriveChange.file.starred | Boolean | Whether the user has starred the file. | 
 | GoogleDrive.DriveChange.file.trashed | Boolean | Whether the file has been trashed, either explicitly or from a trashed parent folder. Only the owner may trash a file. | 
 | GoogleDrive.DriveChange.file.explicitlyTrashed | Boolean | Whether the file has been explicitly trashed, as opposed to recursively trashed from a parent folder. | 
+| GoogleDrive.DriveChange.file.trashingUser.kind | String | Identifies what kind of resource this is. | 
 | GoogleDrive.DriveChange.file.trashingUser.displayName | String | A plain text displayable name for this user. | 
 | GoogleDrive.DriveChange.file.trashingUser.photoLink | String | A link to the user's profile photo, if available. | 
 | GoogleDrive.DriveChange.file.trashingUser.me | Boolean | Whether this user is the requesting user. | 
@@ -207,17 +211,20 @@ Lists the changes for a user or shared drive.
 | GoogleDrive.DriveChange.file.modifiedByMeTime | Date | The last time the file was modified by the user \(RFC 3339 date-time\). | 
 | GoogleDrive.DriveChange.file.modifiedByMe | Boolean | Whether the file has been modified by this user. | 
 | GoogleDrive.DriveChange.file.sharedWithMeTime | Date | The time at which the file was shared with the user, if applicable \(RFC 3339 date-time\). | 
+| GoogleDrive.DriveChange.file.sharingUser.kind | String | Identifies what kind of resource this is. | 
 | GoogleDrive.DriveChange.file.sharingUser.displayName | String | A plain text displayable name for this user. | 
 | GoogleDrive.DriveChange.file.sharingUser.photoLink | Date | A link to the user's profile photo, if available. | 
 | GoogleDrive.DriveChange.file.sharingUser.me | Boolean | Whether this user is the requesting user. | 
 | GoogleDrive.DriveChange.file.sharingUser.permissionId | String | The user's ID as visible in Permission resources. | 
 | GoogleDrive.DriveChange.file.sharingUser.emailAddress | String | The email address of the user. This may not be present in certain contexts if the user has not made their email address visible to the requester. | 
+| GoogleDrive.DriveChange.file.owners.kind | String | Identifies what kind of resource this is. | 
 | GoogleDrive.DriveChange.file.owners.displayName | String | A plain text displayable name for this user. | 
 | GoogleDrive.DriveChange.file.owners.photoLink | String | A link to the user's profile photo, if available. | 
 | GoogleDrive.DriveChange.file.owners.me | Boolean | Whether this user is the requesting user. | 
 | GoogleDrive.DriveChange.file.owners.permissionId | String | The user's ID as visible in Permission resources. | 
 | GoogleDrive.DriveChange.file.owners.emailAddress | String | The email address of the user. This may not be present in certain contexts if the user has not made their email address visible to the requester. | 
 | GoogleDrive.DriveChange.file.driveId | String | ID of the shared drive the file resides in. Only populated for items in shared drives. | 
+| GoogleDrive.DriveChange.file.lastModifyingUser.kind | String | Identifies what kind of resource this is. | 
 | GoogleDrive.DriveChange.file.lastModifyingUser.displayName | String | A plain text displayable name for this user. | 
 | GoogleDrive.DriveChange.file.lastModifyingUser.photoLink | String | A link to the user's profile photo, if available. | 
 | GoogleDrive.DriveChange.file.lastModifyingUser.me | Boolean | Whether this user is the requesting user. | 
@@ -253,6 +260,7 @@ Lists the changes for a user or shared drive.
 | GoogleDrive.DriveChange.file.capabilities.canUntrash | Boolean | Whether the current user can restore this file from trash. | 
 | GoogleDrive.DriveChange.file.copyRequiresWriterPermission | Boolean | Whether the options to copy, print, or download this file, should be disabled for readers and commenters. | 
 | GoogleDrive.DriveChange.file.writersCanShare | Boolean | Whether users with only writer permission can modify the file's permissions. Not populated for items in shared drives. | 
+| GoogleDrive.DriveChange.file.permissions.kind | String | Identifies what kind of resource this is. | 
 | GoogleDrive.DriveChange.file.permissions.id | String | The ID of this permission. | 
 | GoogleDrive.DriveChange.file.permissions.type | String | The type of the grantee. | 
 | GoogleDrive.DriveChange.file.permissions.emailAddress | String | The email address of the user or group to which this permission refers. | 
@@ -313,6 +321,7 @@ Lists the changes for a user or shared drive.
 | GoogleDrive.DriveChange.file.shortcutDetails.targetMimeType | String | The MIME type of the file that this shortcut points to. The value of this field is a snapshot of the target's MIME type, captured when the shortcut is created. | 
 | GoogleDrive.DriveChange.file.contentRestrictions.readOnly | Boolean | Whether the content of the file is read-only. | 
 | GoogleDrive.DriveChange.file.contentRestrictions.reason | String | Reason for why the content of the file is restricted. This is only mutable on requests that also set readOnly=true. | 
+| GoogleDrive.DriveChange.file.contentRestrictions.restrictingUser.kind | String | Identifies what kind of resource this is. | 
 | GoogleDrive.DriveChange.file.contentRestrictions.restrictingUser.displayName | String | A plain text displayable name for this user. | 
 | GoogleDrive.DriveChange.file.contentRestrictions.restrictingUser.photoLink | String | A link to the user's profile photo, if available. | 
 | GoogleDrive.DriveChange.file.contentRestrictions.restrictingUser.me | Boolean | Whether this user is the requesting user. | 
@@ -320,6 +329,7 @@ Lists the changes for a user or shared drive.
 | GoogleDrive.DriveChange.file.contentRestrictions.restrictingUser.emailAddress | String | The email address of the user. This may not be present in certain contexts if the user has not made their email address visible to the requester. | 
 | GoogleDrive.DriveChange.file.contentRestrictions.restrictionTime | Date | The time at which the content restriction was set \(formatted RFC 3339 timestamp\). Only populated if readOnly is true. | 
 | GoogleDrive.DriveChange.file.contentRestrictions.type | String | The type of the content restriction. Currently the only possible value is globalContentRestriction. | 
+| GoogleDrive.DriveChange.drive.kind | String | Identifies what kind of resource this is. | 
 | GoogleDrive.DriveChange.drive.id | String | The ID of this shared drive which is also the ID of the top level folder of this shared drive. | 
 | GoogleDrive.DriveChange.drive.name | String | The name of this shared drive. | 
 | GoogleDrive.DriveChange.drive.themeId | String | The ID of the theme from which the background image and color will be set. | 
@@ -405,9 +415,11 @@ Lists the changes for a user or shared drive.
                         "width": 1745
                     },
                     "isAppAuthorized": false,
+                    "kind": "drive#file",
                     "lastModifyingUser": {
                         "displayName": "drive activity",
                         "emailAddress": "user@domain.com",
+                        "kind": "drive#user",
                         "me": true,
                         "permissionId": "13917841530253496391"
                     },
@@ -423,6 +435,7 @@ Lists the changes for a user or shared drive.
                         {
                             "displayName": "drive activity",
                             "emailAddress": "user@domain.com",
+                            "kind": "drive#user",
                             "me": true,
                             "permissionId": "13917841530253496391"
                         }
@@ -441,6 +454,7 @@ Lists the changes for a user or shared drive.
                             "displayName": "Deval Mehta",
                             "emailAddress": "user1@domain.com",
                             "id": "06693729183418228120",
+                            "kind": "drive#permission",
                             "role": "writer",
                             "type": "user"
                         },
@@ -449,6 +463,7 @@ Lists the changes for a user or shared drive.
                             "displayName": "Data Technologies",
                             "domain": "domain.com",
                             "id": "12910357923353950258k",
+                            "kind": "drive#permission",
                             "role": "reader",
                             "type": "domain"
                         },
@@ -457,6 +472,7 @@ Lists the changes for a user or shared drive.
                             "displayName": "drive activity",
                             "emailAddress": "user@domain.com",
                             "id": "13917841530253496391",
+                            "kind": "drive#permission",
                             "role": "owner",
                             "type": "user"
                         }
@@ -480,6 +496,7 @@ Lists the changes for a user or shared drive.
                     "writersCanShare": true
                 },
                 "fileId": "1i_rViDYPnCJERqClTVXxgT2BlbBozvsl",
+                "kind": "drive#change",
                 "removed": false,
                 "time": "2020-09-21T14:14:21.131Z",
                 "type": "file"
@@ -519,9 +536,11 @@ Lists the changes for a user or shared drive.
                     "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/vnd123",
                     "id": "1i8dC0MGowqwg2IjGWs1CJekqZOn5X1mb",
                     "isAppAuthorized": false,
+                    "kind": "drive#file",
                     "lastModifyingUser": {
                         "displayName": "drive activity",
                         "emailAddress": "user@domain.com",
+                        "kind": "drive#user",
                         "me": true,
                         "permissionId": "13917841530253496391"
                     },
@@ -535,6 +554,7 @@ Lists the changes for a user or shared drive.
                         {
                             "displayName": "drive activity",
                             "emailAddress": "user@domain.com",
+                            "kind": "drive#user",
                             "me": true,
                             "permissionId": "13917841530253496391"
                         }
@@ -552,6 +572,7 @@ Lists the changes for a user or shared drive.
                             "displayName": "Data Technologies",
                             "domain": "domain.com",
                             "id": "12910357923353950258k",
+                            "kind": "drive#permission",
                             "role": "reader",
                             "type": "domain"
                         },
@@ -560,6 +581,7 @@ Lists the changes for a user or shared drive.
                             "displayName": "drive activity",
                             "emailAddress": "user@domain.com",
                             "id": "13917841530253496391",
+                            "kind": "drive#permission",
                             "role": "owner",
                             "type": "user"
                         }
@@ -580,6 +602,7 @@ Lists the changes for a user or shared drive.
                     "writersCanShare": true
                 },
                 "fileId": "1i8dC0MGowqwg2IjGWs1CJekqZOn5X1mb",
+                "kind": "drive#change",
                 "removed": false,
                 "time": "2020-09-21T14:16:36.333Z",
                 "type": "file"
