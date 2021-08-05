@@ -2651,7 +2651,7 @@ Machine.ReadWrite.All
 
 ### microsoft-atp-indicator-list
 ***
-Lists all indicators by the ID that the system creates when the indicator is ingested.
+Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all indicators by the ID that the system creates when the indicator is ingested.
 
 
 #### Base Command
@@ -2763,7 +2763,7 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 
 ### microsoft-atp-indicator-get-by-id
 ***
-Gets an indicator by its ID.
+Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets an indicator by its ID.
 
 
 #### Base Command
@@ -2874,7 +2874,7 @@ Gets an indicator by its ID.
 
 ### microsoft-atp-indicator-create-network
 ***
-Creates a file indicator.
+Deprecated. Use the microsoft-atp-sc-indicator-create-update command instead. Creates a file indicator.
 
 
 #### Base Command
@@ -3009,7 +3009,7 @@ Creates a file indicator.
 
 ### microsoft-atp-indicator-create-file
 ***
-Creates a file indicator
+Deprecated. Use the microsoft-atp-sc-indicator-create-update command instead. Creates a file indicator
 
 
 #### Base Command
@@ -3137,7 +3137,7 @@ Creates a file indicator
 
 ### microsoft-atp-indicator-update
 ***
-Updates the specified indicator.
+Deprecated. Use the microsoft-atp-sc-indicator-create-update command instead. Updates the specified indicator.
 
 
 #### Base Command
@@ -3252,7 +3252,7 @@ Updates the specified indicator.
 
 ### microsoft-atp-indicator-delete
 ***
-Deletes the specified indicator.
+Deprecated. Use the microsoft-atp-sc-indicator-delete command instead. Deletes the specified indicator.
 
 
 #### Base Command

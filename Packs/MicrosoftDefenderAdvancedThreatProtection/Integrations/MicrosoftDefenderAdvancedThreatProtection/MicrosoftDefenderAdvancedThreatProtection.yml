@@ -2284,7 +2284,7 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Lists all indicators by the ID that the system creates when the indicator
+    description: Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all indicators by the ID that the system creates when the indicator.
       is ingested.
     execution: false
     name: microsoft-atp-indicator-list
@@ -2519,7 +2519,7 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: Gets an indicator by its ID.
+    description: Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets an indicator by its ID.
     execution: false
     name: microsoft-atp-indicator-get-by-id
     outputs:
@@ -2916,7 +2916,7 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Creates a file indicator.
+    description: Deprecated. Use the microsoft-atp-sc-indicator-create-update command instead. Creates a file indicator.
     execution: false
     name: microsoft-atp-indicator-create-file
     outputs:
@@ -3344,7 +3344,7 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Creates a file indicator.
+    description: Deprecated. Use the microsoft-atp-sc-indicator-create-update command instead. Creates a file indicator.
     execution: false
     name: microsoft-atp-indicator-create-network
     outputs:
@@ -3586,7 +3586,7 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Updates the spcified indicator.
+    description: Deprecated. Use the microsoft-atp-sc-indicator-create-update command instead. Updates the specified indicator.
     execution: false
     name: microsoft-atp-indicator-update
     outputs:
@@ -3820,7 +3820,7 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: Deletes the specified indicator.
+    description: Deprecated. Use the microsoft-atp-sc-indicator-delete command instead. Deletes the specified indicator.
     execution: false
     name: microsoft-atp-indicator-delete
   - arguments:
