@@ -48,7 +48,7 @@ class Client(BaseClient):
         return self._http_request(
             method='GET',
             url_suffix=url_suffix,
-            params=params
+            params=params,
         )
 
     def get_workflow_jobs(self, workflow_id: str, page_token: Optional[str] = None):
@@ -67,7 +67,7 @@ class Client(BaseClient):
             url_suffix=url_suffix,
             json_data=parameters,
             resp_type='text',
-            headers={'Circle-Token': self.api_key}
+            headers={'Circle-Token': self.api_key},
         )
 
 
@@ -281,7 +281,7 @@ def circleci_trigger_workflow_command(client: Client, args: Dict[str, Any]) -> C
         outputs_prefix='CircleCI.WorkflowTrigger',
         outputs_key_field='id',
         readable_output=f"CircleCI Workflow created successfully, ID={response.get('number')}",
-        outputs=response
+        outputs=response,
     )
 
 
