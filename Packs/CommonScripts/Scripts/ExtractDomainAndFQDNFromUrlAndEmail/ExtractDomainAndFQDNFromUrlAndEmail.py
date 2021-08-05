@@ -6,7 +6,8 @@ from urllib.parse import urlparse, parse_qs, unquote
 import re
 
 
-PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u=']
+PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u=',
+                       "https://urldefense.com/v3/__"]
 ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/.*\?url='
 
 
@@ -25,6 +26,9 @@ def atp_get_original_url(safe_url):
 
 
 def proofpoint_get_original_url(safe_url):
+    if safe_url.startswith(PROOFPOINT_PREFIXES[2]):
+        safe_url = safe_url.replace(PROOFPOINT_PREFIXES[2], '')
+        return safe_url
     regex = r'&.*$'
     split_url = urlparse(safe_url)
     query = split_url.query
@@ -76,7 +80,8 @@ def extract_fqdn_or_domain(the_input, is_fqdn=None, is_domain=None):
         if re.match(ATP_LINK_REG, the_input):
             the_input = atp_get_original_url(the_input)
         # Check if it is a Proofpoint URL
-        elif the_input.find(PROOFPOINT_PREFIXES[0]) == 0 or the_input.find(PROOFPOINT_PREFIXES[1]) == 0:
+        elif the_input.find(PROOFPOINT_PREFIXES[0]) == 0 or the_input.find(PROOFPOINT_PREFIXES[1]) == 0 or \
+                the_input.find(PROOFPOINT_PREFIXES[2]) == 0:
             the_input = proofpoint_get_original_url(the_input)
         # Not ATP Link or Proofpoint URL so just unescape
         else:
