@@ -2916,7 +2916,7 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Deprecated. Use the microsoft-atp-sc-indicator-create-update command instead. Creates a file indicator.
+    description: Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a file indicator.
     execution: false
     name: microsoft-atp-indicator-create-file
     outputs:
@@ -3344,7 +3344,7 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Deprecated. Use the microsoft-atp-sc-indicator-create-update command instead. Creates a file indicator.
+    description: Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a file indicator.
     execution: false
     name: microsoft-atp-indicator-create-network
     outputs:
@@ -3586,7 +3586,7 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Deprecated. Use the microsoft-atp-sc-indicator-create-update command instead. Updates the specified indicator.
+    description: Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates the specified indicator.
     execution: false
     name: microsoft-atp-indicator-update
     outputs:
@@ -3909,9 +3909,207 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates the specified indicator. If an indicator with the given value is already exists, a new indicator will be created.
+    description: Updates the specified indicator.
     execution: false
-    name: microsoft-atp-sc-indicator-create-update
+    name: microsoft-atp-sc-indicator-update
+    outputs:
+    - contextPath: MicrosoftATP.Indicators.id
+      description: Created by the system when the indicator is ingested. Generated
+        GUID/unique identifier.
+      type: String
+    - contextPath: MicrosoftATP.Indicators.action
+      description: 'The action to apply if the indicator is matched from within the
+        targetProduct security tool. Possible values are: unknown, allow, block, alert.'
+      type: String
+    - contextPath: MicrosoftATP.Indicators.description
+      description: Brief description (100 characters or less) of the threat represented
+        by the indicator.
+      type: String
+    - contextPath: MicrosoftATP.Indicators.expirationTime
+      description: 'DateTime string indicating when the indicator expires. To avoid
+        stale indicators persisting in the system, all indicators must have an expiration
+        date. The timestamp type represents date and time information in ISO 8601
+        format and is always in UTC time. For example, midnight UTC on Jan 1, 2014
+        would look like this: ''2014-01-01T00:00:00Z'''
+      type: Date
+    - contextPath: MicrosoftATP.Indicators.severity
+      description: The severity of the malicious behavior identified by the data within
+        the indicator. Values are Informational,Low, Medium ,High, where High is the
+        most severe and Informational is not severe at all.
+      type: String
+    - contextPath: MicrosoftATP.Indicators.indicatorValue
+      description: The value of the Indicator.
+      type: String
+    - contextPath: MicrosoftATP.Indicators.recommendedActions
+      description: Recommended actions for the indicator.
+      type: String
+    - contextPath: MicrosoftATP.Indicators.generateAlert
+      description: Whether an altet was generated.
+      type: Boolean
+    - contextPath: MicrosoftATP.Indicators.rbacGroupNames
+      description: A list of RBAC device group names where the indicator is exposed
+        and active. Empty list in case it exposed to all devices.
+      type: Unknown
+    - contextPath: MicrosoftATP.Indicators.mitreTechniques
+      description: A list of mitre techniques.
+      type: Unknown
+    - contextPath: MicrosoftATP.Indicators.indicatorType
+      description: Type of the indicator. Possible values are "FileSha1", "FileSha256",
+        "IpAddress", "DomainName" and "Url".
+      type: String
+    - contextPath: MicrosoftATP.Indicators.lastUpdateTime
+      description: The last time the indicator was updated.
+      type: Date
+    - contextPath: MicrosoftATP.Indicators.createdByDisplayName
+      description: Display name of the created app.
+      type: String
+    - contextPath: MicrosoftATP.Indicators.application
+      description: The application associated with the indicator.
+      type: String
+    - contextPath: MicrosoftATP.Indicators.title
+      description: Indicator title.
+      type: String
+    - contextPath: MicrosoftATP.Indicators.createdBySource
+      description: Source of indicator creation. For example, PublicApi.
+      type: String
+    - contextPath: MicrosoftATP.Indicators.historicalDetection
+      description: Whether an historical detection exists.
+      type: Boolean
+    - contextPath: MicrosoftATP.Indicators.lastUpdatedBy
+      description: Identity of the user/application that last updated the indicator.
+      type: String
+    - contextPath: MicrosoftATP.Indicators.creationTimeDateTimeUtc
+      description: The date and time when the indicator was created.
+      type: Date
+    - contextPath: MicrosoftATP.Indicators.category
+      description: An number represents the indicator category.
+      type: Number
+    - contextPath: MicrosoftATP.Indicators.createdBy
+      description: Unique identity of the user/application that submitted the indicator.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+      type: String
+    - contextPath: File.Path
+      description: The path where the file is located.
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+  - arguments:
+    - default: false
+      description: The value of the indicator to update.
+      isArray: false
+      name: indicator_value
+      required: true
+      secret: false
+    - default: false
+      auto: PREDEFINED
+      description: Type of the indicator.
+      isArray: false
+      name: indicator_type
+      required: true
+      predefined:
+      - FileSha1
+      - FileSha256
+      - IpAddress
+      - DomainName
+      - Url
+    - default: false
+      auto: PREDEFINED
+      description: The action that will be taken if the indicator will be discovered
+        in the organization.
+      isArray: false
+      name: action
+      required: true
+      predefined:
+      - Alert
+      - AlertAndBlock
+      - Allowed
+    - default: false
+      auto: PREDEFINED
+      defaultValue: Medium
+      description: The severity of the malicious behavior identified by the data within
+        the indicator. Acceptable values are Informational, Low, Medium, High, where
+        High is the most severe and Informational is not severe at all.
+      isArray: false
+      name: severity
+      predefined:
+      - Informational
+      - Low
+      - Medium
+      - High
+      required: false
+      secret: false
+    - default: false
+      description: 'DateTime string indicating when the indicator expires. Format:
+        (<number> <time unit>, e.g., 12 hours, 7 days).'
+      isArray: false
+      defaultValue: 1 day
+      name: expiration_time
+      required: false
+      secret: false
+    - default: false
+      description: Brief description (100 characters or less) of the threat represented
+        by the indicator.
+      isArray: false
+      name: indicator_description
+      required: true
+      secret: false
+    - default: false
+      description: Indicator alert title.
+      isArray: false
+      name: indicator_title
+      required: true
+      secret: false
+    - default: false
+      description: The application associated with the indicator.
+      isArray: false
+      name: indicator_application
+      required: false
+      secret: false
+    - default: false
+      description: TI indicator alert recommended actions.
+      isArray: false
+      name: recommended_actions
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of RBAC group names the indicator would be
+        applied to.
+      isArray: true
+      name: rbac_group_names
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new indicator.
+    execution: false
+    name: microsoft-atp-sc-indicator-create
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
       description: Created by the system when the indicator is ingested. Generated

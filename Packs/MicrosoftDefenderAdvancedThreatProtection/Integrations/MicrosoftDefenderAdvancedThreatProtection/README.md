@@ -133,8 +133,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 38. microsoft-atp-indicator-delete (deprecated)
 39. microsoft-atp-sc-indicator-list
 40. microsoft-atp-sc-indicator-get-by-id
-41. microsoft-atp-sc-indicator-create-update
-42. microsoft-atp-sc-indicator-delete
+41. microsoft-atp-sc-indicator-create
+42. microsoft-atp-sc-indicator-update
+43. microsoft-atp-sc-indicator-delete
 
 ### 1. microsoft-atp-isolate-machine
 ---
@@ -2874,7 +2875,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets a
 
 ### microsoft-atp-indicator-create-network
 ***
-Deprecated. Use the microsoft-atp-sc-indicator-create-update command instead. Creates a file indicator.
+Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a file indicator.
 
 
 #### Base Command
@@ -3009,7 +3010,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-create-update command instead. Cr
 
 ### microsoft-atp-indicator-create-file
 ***
-Deprecated. Use the microsoft-atp-sc-indicator-create-update command instead. Creates a file indicator
+Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a file indicator
 
 
 #### Base Command
@@ -3137,7 +3138,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-create-update command instead. Cr
 
 ### microsoft-atp-indicator-update
 ***
-Deprecated. Use the microsoft-atp-sc-indicator-create-update command instead. Updates the specified indicator.
+Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates the specified indicator.
 
 
 #### Base Command
@@ -3398,9 +3399,9 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 >| 5039 | Allowed | Informational |
 >| 5037 | Alert | Informational |
 
-### microsoft-atp-sc-indicator-create-update
+### microsoft-atp-sc-indicator-create
 ***
-Updates the specified indicator. If an indicator with the given value is already exists, a new indicator will be created.
+Creates a new indicator. 
 
 ### Permissions
 `Ti.ReadWrite`
@@ -3408,7 +3409,7 @@ Updates the specified indicator. If an indicator with the given value is already
 
 #### Base Command
 
-`microsoft-atp-sc-indicator-create-update`
+`microsoft-atp-sc-indicator-create`
 
 #### Input
 
@@ -3465,7 +3466,7 @@ Updates the specified indicator. If an indicator with the given value is already
 
 
 #### Command Example
-```!microsoft-atp-sc-indicator-create-update action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Informational```
+```!microsoft-atp-sc-indicator-create action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Informational```
 
 #### Context Example
 ```json
@@ -3596,3 +3597,110 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Indicator ID: 5039 was successfully deleted
+
+### microsoft-atp-sc-indicator-update
+***
+Updates the specified indicator.
+
+### Permissions
+`Ti.ReadWrite`
+`Ti.ReadWrite.All`
+
+#### Base Command
+
+`microsoft-atp-sc-indicator-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_value | The value of the indicator to update. | Required | 
+| indicator_type | Type of the indicator. Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required | 
+| action | The action that will be taken if the indicator will be discovered in the organization. Possible values are: Alert, AlertAndBlock, Allowed. | Required | 
+| severity | The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, Medium, High, where High is the most severe and Informational is not severe at all. Possible values are: Informational, Low, Medium, High. Default is Medium. | Optional | 
+| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) Default value is 1 day. | Optional | 
+| indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required | 
+| indicator_title | Indicator alert title. | Required | 
+| indicator_application | The application associated with the indicator. | Optional | 
+| recommended_actions | TI indicator alert recommended actions. | Optional | 
+| rbac_group_names | Comma-separated list of RBAC group names the indicator would be applied to. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
+| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Values are Informational,Low, Medium ,High, where High is the most severe and Informational is not severe at all. | 
+| MicrosoftATP.Indicators.indicatorValue | String | The value of the Indicator. | 
+| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. | 
+| MicrosoftATP.Indicators.generateAlert | Boolean newDescription newTitle | Whether an altet was generated. | 
+| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list in case it exposed to all devices. | 
+| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of mitre techniques. | 
+| MicrosoftATP.Indicators.indicatorType | String | Type of the indicator. Possible values are "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
+| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. | 
+| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. | 
+| MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
+| MicrosoftATP.Indicators.title | String | Indicator title. | 
+| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. | 
+| MicrosoftATP.Indicators.historicalDetection | String | Whether an historical detection exists. | 
+| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. | 
+| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. | 
+| MicrosoftATP.Indicators.category | Number | An number represents the indicator category. | 
+| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. | 
+| File.Name | String | The full file name \(including file extension\). | 
+| File.Size | Number | The size of the file in bytes. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA1 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
+| File.Path | String | The path where the file is located. | 
+| Domain.Name | String | The domain name, for example: "google.com". | 
+| IP.Address | String | IP address | 
+| URL.Data | String | The URL | 
+
+
+#### Command Example
+```!microsoft-atp-sc-indicator-update action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Informational```
+
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "Indicators": {
+            "@odata.context": "https://api.securitycenter.microsoft.com/api/$metadata#Indicators/$entity",
+            "action": "Allowed",
+            "category": 1,
+            "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+            "createdByDisplayName": "MS Graph ATP",
+            "createdBySource": "PublicApi",
+            "creationTimeDateTimeUtc": "2021-08-04T15:24:47.4581765Z",
+            "description": "test",
+            "expirationTime": "2021-08-05T16:03:50Z",
+            "generateAlert": false,
+            "historicalDetection": false,
+            "id": "5039",
+            "indicatorType": "IpAddress",
+            "indicatorValue": "2.2.2.2",
+            "lastUpdateTime": "2021-08-04T16:03:51.5053939Z",
+            "lastUpdatedBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+            "mitreTechniques": [],
+            "rbacGroupIds": [],
+            "rbacGroupNames": [],
+            "severity": "Informational",
+            "title": "title"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Indicator ID: 2.2.2.2 was updated successfully.
+>|@odata.context|action|category|createdBy|createdByDisplayName|createdBySource|creationTimeDateTimeUtc|description|expirationTime|generateAlert|historicalDetection|id|indicatorType|indicatorValue|lastUpdateTime|lastUpdatedBy|severity|title|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| https:<span>//</span>api.securitycenter.microsoft.com/api/$metadata#Indicators/$entity | Allowed | 1 | 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a | MS Graph ATP | PublicApi | 2021-08-04T15:24:47.4581765Z | test | 2021-08-05T16:03:50Z | false | false | 5039 | IpAddress | 2.2.2.2 | 2021-08-04T16:03:51.5053939Z | 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a | Informational | title |
