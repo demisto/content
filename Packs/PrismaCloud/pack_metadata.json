@@ -61,6 +61,10 @@
         "Azure-Network": {
             "mandatory": false,
             "display_name": "Azure - Network"
+        },
+        "Azure-Storage": {
+            "mandatory": false,
+            "display_name": "Azure - Storage"
         }
     }
 }

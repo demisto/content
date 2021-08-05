@@ -47,7 +47,7 @@ class BitcoinAbuseClient(BaseClient):
         '30 Days': '30d'
     }
 
-    def __init__(self, base_url, insecure, proxy, api_key, initial_fetch_interval, reader_config,
+    def __init__(self, base_url, insecure, proxy, api_key, initial_fetch_interval, reader_config, feed_tags, tlp_color,
                  have_fetched_first_time):
         super().__init__(base_url=base_url, verify=not insecure, proxy=proxy)
         self.server_url = base_url
@@ -56,6 +56,8 @@ class BitcoinAbuseClient(BaseClient):
         self.reader_config = reader_config
         self.have_fetched_first_time = have_fetched_first_time
         self.insecure = insecure
+        self.feed_tags = feed_tags
+        self.tlp_color = tlp_color
 
     def report_address(self, address: str, abuse_type_id: int, abuse_type_other: Optional[str],
                        abuser: str, description: str) -> Dict:
@@ -187,6 +189,9 @@ class BitcoinAbuseClient(BaseClient):
         params['encoding'] = 'utf-8'
 
         params['insecure'] = self.insecure
+
+        params['feedTags'] = self.feed_tags
+        params['tlp_color'] = self.tlp_color
 
         return params
 
@@ -332,6 +337,8 @@ def main() -> None:
     api_key = params.get('api_key', '')
     insecure = params.get('insecure', False)
     proxy = params.get('proxy', False)
+    feed_tags = argToList(params.get('feedTags'))
+    tlp_color = params.get('tlp_color')
     initial_fetch_interval = params.get('initial_fetch_interval', '30 Days')
 
     have_fetched_first_time = argToBoolean(demisto.getIntegrationContext().get('have_fetched_first_time', False))
@@ -344,6 +351,8 @@ def main() -> None:
             api_key=api_key,
             initial_fetch_interval=initial_fetch_interval,
             reader_config=READER_CONFIG,
+            feed_tags=feed_tags,
+            tlp_color=tlp_color,
             have_fetched_first_time=have_fetched_first_time)
 
         if command == 'test-module':
