@@ -917,7 +917,7 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "Panorama Query Logs - Test",
-            "fromversion": "5.5.0",
+            "fromversion": "6.1.0",
             "timeout": 1500,
             "nightly": true
         },
@@ -925,34 +925,35 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall",
             "playbookID": "palo_alto_firewall_test_pb",
-            "fromversion": "5.5.0",
+            "fromversion": "6.1.0",
             "timeout": 1000
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "palo_alto_firewall_test_pb",
-            "fromversion": "5.5.0",
+            "fromversion": "6.1.0",
             "timeout": 1000
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "playbookID": "palo_alto_panorama_test_pb",
-            "fromversion": "5.5.0",
+            "fromversion": "6.1.0",
             "timeout": 1600
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
             "playbookID": "palo_alto_panorama_test_pb",
-            "fromversion": "5.5.0",
+            "fromversion": "6.1.0",
             "timeout": 1600
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
-            "playbookID": "PAN-OS URL Filtering enrichment - Test"
+            "playbookID": "PAN-OS URL Filtering enrichment - Test",
+            "fromversion": "6.1.0"
         },
         {
             "integrations": "Panorama",
@@ -1029,7 +1030,7 @@
                 "palo_alto_networks_pan_os_edl_management"
             ],
             "instance_names": "palo_alto_firewall_9.0",
-            "fromversion": "4.0.0"
+            "fromversion": "6.1.0"
         },
         {
             "playbookID": "Test_EDL",
@@ -1047,19 +1048,19 @@
             "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
-            "fromversion": "4.0.0"
+            "fromversion": "6.1.0"
         },
         {
             "playbookID": "PAN-OS - Block IP - Static Address Group Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
-            "fromversion": "4.0.0"
+            "fromversion": "6.1.0"
         },
         {
             "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
-            "fromversion": "4.0.0"
+            "fromversion": "6.1.0"
         },
         {
             "playbookID": "Endpoint Malware Investigation - Generic - Test",
