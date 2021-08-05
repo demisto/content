@@ -176,7 +176,7 @@ upload-packs-to-marketplace:
     - section_end "Download packs from GCP"
     - section_start "Zip Content Packs From GCS"
     - |
-        python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
+      python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
     - section_end "Zip Content Packs From GCS"
     - section_start "Validate Premium Packs"
     - |
