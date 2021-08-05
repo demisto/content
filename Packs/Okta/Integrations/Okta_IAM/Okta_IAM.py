@@ -497,7 +497,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
                                 skip_reason='Command is disabled.')
     else:
         try:
-            okta_user = client.get_user(user_profile.get_attribute('email'))
+            okta_user = client.get_user(user_profile.get_attribute('email', use_old_user_data=True))
             if okta_user:
                 user_id = okta_user.get('id')
 
