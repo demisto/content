@@ -142,7 +142,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The shared drive from which changes are returned.
+      description: The shared drive from which changes are returned (can be retrieved
+        using the `google-drive-drives-list` command)
       isArray: false
       name: drive_id
       required: false
@@ -1897,8 +1898,8 @@ script:
       required: false
       isArray: false
     - name: drive_id
-      description: id of the shared drive. Use the command google-drive-drives-list
-        to get drives details.
+      description: id of the shared drive (can be retrieved using the `google-drive-drives-list`
+        command)
       required: false
       isArray: false
     - name: fields
@@ -2075,7 +2076,8 @@ script:
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the requested file.
+      description: id of the requested file (can be retrieved using the `google-drive-files-list`
+        command)
       required: false
       isArray: false
     - name: user_id
@@ -2601,7 +2603,8 @@ script:
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the requested file.
+      description: id of the requested file (can be retrieved using the `google-drive-files-list`
+        command)
       required: false
       isArray: false
     - name: file_name
@@ -2649,7 +2652,8 @@ script:
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the file to replace.
+      description: id of the file to replace (can be retrieved using the `google-drive-files-list`
+        command)
       required: false
       isArray: false
     - name: entry_id
@@ -2907,7 +2911,8 @@ script:
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the requested file.
+      description: id of the requested file (can be retrieved using the `google-drive-files-list`
+        command)
       required: false
       isArray: false
     - name: user_id
@@ -2935,7 +2940,8 @@ script:
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the requested file.
+      description: id of the requested file (can be retrieved using the `google-drive-files-list`
+        command)
       required: false
       isArray: false
     - name: user_id
@@ -2993,7 +2999,8 @@ script:
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the requested file.
+      description: id of the requested file (can be retrieved using the `google-drive-files-list`
+        command)
       required: false
       isArray: false
     - name: user_id
@@ -3080,7 +3087,8 @@ script:
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the requested file.
+      description: id of the requested file (can be retrieved using the `google-drive-files-list`
+        command)
       required: false
       isArray: false
     - name: user_id
@@ -3092,7 +3100,8 @@ script:
       required: false
       isArray: false
     - name: permission_id
-      description: The ID of the permission.
+      description: The ID of the permission (can be retrieved using the `google-drive-file-permissions-list`
+        command)
       required: false
       isArray: false
     - auto: PREDEFINED
@@ -3139,7 +3148,8 @@ script:
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the requested file.
+      description: id of the requested file (can be retrieved using the `google-drive-files-list`
+        command)
       required: false
       isArray: false
     - name: user_id
@@ -3147,7 +3157,8 @@ script:
       required: false
       isArray: false
     - name: permission_id
-      description: The ID of the permission.
+      description: The ID of the permission (can be retrieved using the `google-drive-file-permissions-list`
+        command)
       required: false
       isArray: false
   dockerimage: demisto/googleapi-python3:1.0.0.23531
