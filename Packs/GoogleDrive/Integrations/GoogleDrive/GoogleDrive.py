@@ -1,7 +1,5 @@
 from CommonServerPython import *
 import demistomock as demisto
-from GSuiteApiModule import *  # noqa: E402
-
 ''' IMPORTS '''
 
 import io
@@ -1726,6 +1724,8 @@ def main() -> None:
         demisto.error(traceback.format_exc())
         return_error(f'Error: {str(e)}')
 
+
+from GSuiteApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
