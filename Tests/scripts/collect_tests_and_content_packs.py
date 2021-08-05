@@ -1389,10 +1389,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
                 packs_diff = tools.run_command("git diff --name-status HEAD -- Packs")
                 files_string += f"\n{packs_diff}"
         else:
-            commit_string = tools.run_command("git log -n 2 --pretty='%H'")
-            commit_string = commit_string.replace("'", "")
-            last_commit, second_last_commit = commit_string.split()
-            files_string = tools.run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
+            files_string = tools.run_command("git diff --name-status HEAD~...HEAD")
         logging.debug(f'Files string: {files_string}')
 #         files_string = """M	Tests/Marketplace/Tests/marketplace_services_test.py
 # M	Tests/Marketplace/Tests/test_data/user_pack_metadata.json
