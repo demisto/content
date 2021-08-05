@@ -639,7 +639,7 @@ script:
     - default: false
       description: Timeout of the request to Microsoft CAS, in seconds. Default is 60 seconds.
       isArray: false
-      name: activity_id
+      name: timeout
       required: false
       secret: false
     deprecated: false
