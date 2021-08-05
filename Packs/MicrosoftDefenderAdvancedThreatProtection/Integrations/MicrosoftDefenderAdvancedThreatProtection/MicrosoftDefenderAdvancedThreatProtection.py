@@ -704,7 +704,7 @@ class MsClient:
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def sc_list_indicators(self, indicator_id: Optional[str] = None, limit: int = 50,
+    def sc_list_indicators(self, indicator_id: Optional[str] = None, limit: Optional[int] = 50,
                            should_use_security_center: bool = False) -> List:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
@@ -806,7 +806,7 @@ class MsClient:
                                                     indicator_title: str,
                                                     description: str,
                                                     expiration_date_time: Optional[str] = None,
-                                                    severity: Optional[int] = None,
+                                                    severity: Optional[str] = None,
                                                     indicator_application: Optional[str] = None,
                                                     recommended_actions: Optional[str] = None,
                                                     rbac_group_names: Optional[list] = None
@@ -2394,7 +2394,7 @@ def sc_delete_indicator_command(client: MsClient, args: dict) -> str:
     return f'Indicator ID: {indicator_id} was successfully deleted'
 
 
-def sc_create_update_indicator_command(client: MsClient, args: dict) -> Tuple[str, Dict, Dict]:
+def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -> Tuple[str, Dict, Dict]:
     """Updates an indicator if exists, if does not exist, create new one
     Note: CIDR notation for IPs is not supported.
 
@@ -2405,13 +2405,13 @@ def sc_create_update_indicator_command(client: MsClient, args: dict) -> Tuple[st
     Returns:
         human readable, outputs
     """
-    indicator_value = args.get('indicator_value')
-    indicator_type = args.get('indicator_type')
-    action = args.get('action')
+    indicator_value = args['indicator_value']
+    indicator_type = args['indicator_type']
+    action = args['action']
     severity = args.get('severity', 'Medium')
     expiration_time = get_future_time(args.get('expiration_time', '1 day'))
-    indicator_description = args.get('indicator_description')
-    indicator_title = args.get('indicator_title')
+    indicator_description = args['indicator_description']
+    indicator_title = args['indicator_title']
     indicator_application = args.get('indicator_application', '')
     recommended_actions = args.get('recommended_actions', '')
     rbac_group_names = argToList(args.get('rbac_group_names', []))
