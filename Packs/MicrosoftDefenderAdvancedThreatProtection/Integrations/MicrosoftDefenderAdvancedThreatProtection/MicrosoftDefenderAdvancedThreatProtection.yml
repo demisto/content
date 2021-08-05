@@ -3909,7 +3909,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates the spcified indicator. If an indicator with the given value is already exists, a new indicator will be created.
+    description: Updates the specified indicator. If an indicator with the given value is already exists, a new indicator will be created.
     execution: false
     name: microsoft-atp-sc-indicator-create-update
     outputs:

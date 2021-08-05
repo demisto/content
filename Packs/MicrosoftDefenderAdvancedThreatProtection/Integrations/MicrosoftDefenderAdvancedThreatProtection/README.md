@@ -3400,7 +3400,7 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 
 ### microsoft-atp-sc-indicator-create-update
 ***
-Updates the spcified indicator.
+Updates the specified indicator. If an indicator with the given value is already exists, a new indicator will be created.
 
 ### Permissions
 `Ti.ReadWrite`
