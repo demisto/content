@@ -509,28 +509,27 @@ updating_old_release_notes "Viper" # Update release notes in content that are no
 update_integration_readme "Microsoft365Defender"
 update_pack_ignore "Microsoft365Defender"
 
-# External changes
-add_pack_to_landing_page "${new_pack_name}"
-
-git commit --untracked-files=no -am "Adding changes"
-git push origin "${new_content_branch}"
-
-if [ -n "$circle_token" ]; then
-  trigger_circle_ci
-fi
-
-if [ -n "$gitlab_token" ]; then
-  trigger_gitlab_ci
-fi
-echo ""
-
-git checkout "${content_branch_name}"
-git branch -D "${new_content_branch}"
-
-if [ -d "$new_pack_path" ]; then
-  rm -r "$new_pack_path"
-fi
-
-echo ""
-echo "Please run the following commands once the pipelines are finished"
-echo "git push origin --delete ${new_content_branch}"
+## External changes
+#add_pack_to_landing_page "${new_pack_name}"
+#
+#git push origin "${new_content_branch}"
+#
+#if [ -n "$circle_token" ]; then
+#  trigger_circle_ci
+#fi
+#
+#if [ -n "$gitlab_token" ]; then
+#  trigger_gitlab_ci
+#fi
+#echo ""
+#
+#git checkout "${content_branch_name}"
+#git branch -D "${new_content_branch}"
+#
+#if [ -d "$new_pack_path" ]; then
+#  rm -r "$new_pack_path"
+#fi
+#
+#echo ""
+#echo "Please run the following commands once the pipelines are finished"
+#echo "git push origin --delete ${new_content_branch}"
