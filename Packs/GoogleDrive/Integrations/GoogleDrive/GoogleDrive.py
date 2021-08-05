@@ -697,7 +697,7 @@ def test_module(gsuite_client: 'GSuiteClient', last_run: Dict, params: Dict[str,
 
 
 @logger
-def drive_create_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResults:
+def drive_create_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
     """
     Creates a new Team Drive. The name argument specifies the name of the Team Drive. The specified user will be the
     first organizer.
@@ -735,7 +735,7 @@ def drive_create_command(client: GSuiteClient, args: Dict[str, str]) -> CommandR
 
 
 @logger
-def drive_changes_list_command(client: GSuiteClient, args: Dict[str, Any]) -> CommandResults:
+def drive_changes_list_command(client: 'GSuiteClient', args: Dict[str, Any]) -> CommandResults:
     """
     Lists the changes for a user or shared drive.
 
@@ -775,7 +775,7 @@ def drive_changes_list_command(client: GSuiteClient, args: Dict[str, Any]) -> Co
     )
 
 
-def prepare_drives_request(client: GSuiteClient, args: Dict[str, str]) -> Dict[str, Any]:
+def prepare_drives_request(client: 'GSuiteClient', args: Dict[str, str]) -> Dict[str, Any]:
     """
     prepare_drives_request
     Preparing http_request_params and populating the client
@@ -803,7 +803,7 @@ def prepare_drives_request(client: GSuiteClient, args: Dict[str, str]) -> Dict[s
 
 
 @logger
-def drives_list_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResults:
+def drives_list_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
     """
     google-drive-drives-list
     Query drives list in Google Drive.
@@ -825,7 +825,7 @@ def drives_list_command(client: GSuiteClient, args: Dict[str, str]) -> CommandRe
 
 
 @logger
-def drive_get_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResults:
+def drive_get_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
     """
     google-drive-drive-get
     Query a single drive in Google Drive.
@@ -934,7 +934,7 @@ def prepare_single_drive_human_readable(outputs_context: Dict[str, Any], args: D
                            removeNull=True)
 
 
-def prepare_file_read_request(client: GSuiteClient, args: Dict[str, str]) -> Dict[str, Any]:
+def prepare_file_read_request(client: 'GSuiteClient', args: Dict[str, str]) -> Dict[str, Any]:
     http_request_params: Dict[str, str] = assign_params(
         q=args.get('query'),
         pageSize=args.get('page_size'),
@@ -954,7 +954,7 @@ def prepare_file_read_request(client: GSuiteClient, args: Dict[str, str]) -> Dic
 
 
 @logger
-def files_list_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResults:
+def files_list_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
     """
     google-drive-files-list
     Query files list in Google Drive.
@@ -975,7 +975,7 @@ def files_list_command(client: GSuiteClient, args: Dict[str, str]) -> CommandRes
 
 
 @logger
-def file_get_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResults:
+def file_get_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
     """
     google-drive-file-get
     Query a single file in Google Drive.
@@ -1096,7 +1096,7 @@ def prepare_single_file_human_readable(outputs_context: Dict[str, Any], args: Di
         removeNull=False)
 
 
-def prepare_file_command_request(client: GSuiteClient, args: Dict[str, str], scopes: List[str]) -> Dict[str, Any]:
+def prepare_file_command_request(client: 'GSuiteClient', args: Dict[str, str], scopes: List[str]) -> Dict[str, Any]:
 
     http_request_params: Dict[str, str] = {}
 
@@ -1111,7 +1111,7 @@ def prepare_file_command_request(client: GSuiteClient, args: Dict[str, str], sco
 
 
 @logger
-def file_upload_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResults:
+def file_upload_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
     """
     Upload a file to Google Drive
 
@@ -1146,7 +1146,7 @@ def file_upload_command(client: GSuiteClient, args: Dict[str, str]) -> CommandRe
 
 
 @logger
-def file_download_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResults:
+def file_download_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
     """
     Download a file from Google Drive
 
@@ -1171,7 +1171,7 @@ def file_download_command(client: GSuiteClient, args: Dict[str, str]) -> Command
 
 
 @logger
-def file_replace_existing_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResults:
+def file_replace_existing_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
     """
     Replace an existing file in Google Drive
         google-drive-file-replace-existing
@@ -1198,7 +1198,7 @@ def file_replace_existing_command(client: GSuiteClient, args: Dict[str, str]) ->
 
 
 @logger
-def file_delete_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResults:
+def file_delete_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
     """
     Delete a file in Google Drive
 
@@ -1302,7 +1302,7 @@ def prepare_file_single_human_readable(outputs_context: Dict[str, Any], args: Di
                            removeNull=False)
 
 
-def prepare_file_permission_request(client: GSuiteClient, args: Dict[str, str], scopes: List[str]) -> Dict[str, Any]:
+def prepare_file_permission_request(client: 'GSuiteClient', args: Dict[str, str], scopes: List[str]) -> Dict[str, Any]:
     # user_id can be overridden in the args
     user_id = args.get('user_id') or client.user_id
     client.set_authorized_http(scopes=scopes, subject=user_id)
@@ -1322,7 +1322,7 @@ def prepare_file_permission_request(client: GSuiteClient, args: Dict[str, str], 
 
 
 @logger
-def file_permission_list_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResults:
+def file_permission_list_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
     """
     List file permissions
 
@@ -1350,7 +1350,7 @@ def file_permission_list_command(client: GSuiteClient, args: Dict[str, str]) -> 
 
 
 @logger
-def file_permission_create_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResults:
+def file_permission_create_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
     """
     Create file permissions
 
@@ -1383,7 +1383,7 @@ def file_permission_create_command(client: GSuiteClient, args: Dict[str, str]) -
 
 
 @logger
-def file_permission_update_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResults:
+def file_permission_update_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
     """
     Update file permissions
 
@@ -1408,7 +1408,7 @@ def file_permission_update_command(client: GSuiteClient, args: Dict[str, str]) -
 
 
 @logger
-def file_permission_delete_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResults:
+def file_permission_delete_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
     """
     Delete file permissions
 
@@ -1549,7 +1549,7 @@ def prepare_permission_human_readable(outputs_context: Dict[str, Any], args: Dic
 
 
 @logger
-def drive_activity_list_command(client: GSuiteClient, args: Dict[str, str]) -> CommandResults:
+def drive_activity_list_command(client: 'GSuiteClient', args: Dict[str, str]) -> CommandResults:
     """
     Query past activity in Google Drive.
 
@@ -1589,7 +1589,7 @@ def drive_activity_list_command(client: GSuiteClient, args: Dict[str, str]) -> C
     )
 
 
-def fetch_incidents(client: GSuiteClient, last_run: Dict, params: Dict, is_test: bool = False) -> \
+def fetch_incidents(client: 'GSuiteClient', last_run: Dict, params: Dict, is_test: bool = False) -> \
         Tuple[Optional[list], Optional[dict]]:
     """
     Prepares incidents from past activity in Google Drive.
