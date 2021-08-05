@@ -1,0 +1,69 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a User Profile data to the PrismaCloudIAM user data.",
+	"id": "User Profile - PrismaCloudIAM (Outgoing)",
+	"mapping": {
+		"User Profile - Create": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"firstName": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"lastName": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"displayName": {
+					"complex": null,
+					"simple": "displayname"
+				},
+				"timeZone": {
+					"complex": null,
+					"simple": "\"America/Los_Angeles\""
+				},
+				"roleId": {
+					"complex": null,
+					"simple": "\"6afd3ee1-f429-4666-961d-3a7338e10bb8\""
+				}
+			}
+		},
+		"User Profile - Update": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"firstName": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"lastName": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"displayName": {
+					"complex": null,
+					"simple": "displayname"
+				},
+				"timeZone": {
+					"complex": null,
+					"simple": "\"America/Los_Angeles\""
+				},
+				"roleId": {
+					"complex": null,
+					"simple": "\"6afd3ee1-f429-4666-961d-3a7338e10bb8\""
+				}
+			}
+		}
+	},
+	"name": "User Profile - PrismaCloudIAM (Outgoing)",
+	"type": "mapping-outgoing",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}
