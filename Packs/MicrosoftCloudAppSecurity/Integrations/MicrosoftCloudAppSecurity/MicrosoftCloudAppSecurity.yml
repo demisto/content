@@ -640,6 +640,14 @@ script:
     description: Returns a list of activities that match the specified filters.
     execution: false
     name: microsoft-cas-activities-list
+  - arguments:
+    - default: false
+      defaultValue: '300'
+      description: Timeout of the command, in seconds. Default is one minute.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
     outputs:
     - contextPath: IP.Address
       description: IP address.
