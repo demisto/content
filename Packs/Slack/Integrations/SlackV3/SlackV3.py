@@ -351,7 +351,7 @@ async def get_slack_name(slack_id: str, client: AsyncWebClient) -> str:
         conversation: dict = {}
         if integration_context.get('conversations'):
             conversations = list(filter(lambda c: c['id'] == slack_id,
-                                        json.loads(r"{}".format(integration_context['conversations']))))
+                                        json.loads(integration_context['conversations'])))
             if conversations:
                 conversation = conversations[0]
         if not conversation:
@@ -1109,9 +1109,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         demisto.info("SlackV3 - Event handled successfully.")
         return
     except Exception as e:
-        await handle_listen_error(f'Error occurred while listening to Slack: {str(e)}')
-    finally:
-        time.sleep(5)
+        await handle_listen_error(f'Error occurred while listening to Slack: {e}')
 
 
 async def get_user_by_id_async(client: AsyncWebClient, user_id: str, integration_context: dict) -> dict:
