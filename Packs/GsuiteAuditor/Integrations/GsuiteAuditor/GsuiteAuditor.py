@@ -154,6 +154,17 @@ def create_end_time(start_time: str, added_time: str) -> str:
     return end_time.strftime(DATE_FORMAT)
 
 
+def fetch_request(client: GSuiteClient, app: str, start_time: str, end_time: str) -> List[Dict]:
+    """
+    for an app and start time, send an API request and returns the items
+    """
+    response = client.http_request(
+        url_suffix=URL_SUFFIX.format('all', app),
+        params={'startTime': start_time, 'endTime': end_time})
+
+    return response.get('items', [])
+
+
 @logger
 def test_module(client: GSuiteClient) -> str:
     """
@@ -211,28 +222,34 @@ def activities_list_command(client: GSuiteClient, args: Dict[str, Any]) -> Comma
 
 
 @logger
-def fetch_incidents(client: GSuiteClient, first_fetch_time: str, fetch_limit: int, application: str) -> List[Dict]:
-    incidents = []
+def fetch_incidents(client: GSuiteClient, first_fetch_time: str, fetch_limit: int, applications: Any) -> List[Dict]:
+    total_items = []
     last_run_dict = demisto.getLastRun()
     last_run = last_run_dict.get('last_run')
     last_ids = last_run_dict.get('last_ids', [])
-
+    last_leftover_items = last_run_dict.get('last_leftover_items', [])
+    new_leftover_items = []
     if not last_run:  # this is the first run
         last_run = dateparser.parse(first_fetch_time).strftime(DATE_FORMAT)
 
-    end_time = create_end_time(last_run, '1 hour')
+    end_time = create_end_time(last_run, "1 hours")
 
-    response = client.http_request(
-        url_suffix=URL_SUFFIX.format('all', application),
-        params={'startTime': last_run,
-                'endTime': end_time})
+    if len(last_leftover_items) != 0:
+        total_items = last_leftover_items[:fetch_limit]
+        new_leftover_items = last_leftover_items[fetch_limit:]
 
-    items = response.get('items', [])
-    sorted_items = sorted(items, key=lambda k: k['id']['time'])  # sort the data from earlist to last.
+    if len(total_items) < fetch_limit:
+        for app in applications:
+            total_items.extend(fetch_request(client, app, last_run, end_time))
+
+    sorted_items = sorted(total_items, key=lambda k: k['id']['time'])  # sort the data from earlist to last.
+
+    incidents = []
     counter = 0
-
-    for item in sorted_items:
+    for i in range(0, len(sorted_items)):
+        item = sorted_items[i]
         if counter == fetch_limit:
+            new_leftover_items.extend(sorted_items[i:])
             break
 
         if item['id']['uniqueQualifier'] in last_ids:
@@ -259,7 +276,7 @@ def fetch_incidents(client: GSuiteClient, first_fetch_time: str, fetch_limit: in
             item = json.loads(incident["rawJSON"])
             new_last_ids.append(item['id']['uniqueQualifier'])
 
-    demisto.setLastRun({'last_run': new_last_run, 'last_ids': new_last_ids})
+    demisto.setLastRun({'last_run': new_last_run, 'last_ids': new_last_ids, 'last_leftover_incidents': new_leftover_items})
     return incidents
 
 
@@ -296,7 +313,7 @@ def main() -> None:
         args = GSuiteClient.strip_dict(demisto.args())
         first_fetch_time = demisto.params().get('first_fetch', '12 hours').strip()
         fetch_limit = demisto.params().get('max_fetch', '10')
-        fetch_app = params.get('application', 'admin')
+        fetch_app = params.get('applications', 'admin')
 
         ADMIN_EMAIL = args.get('admin_email') if args.get('admin_email') else params.get('admin_email')
         # Validation of ADMIN_EMAIL

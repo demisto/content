@@ -1,6 +1,5 @@
 id: TestGSuiteAuditPlaybook
-version: 4
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: TestGSuiteAuditPlaybook
 description: This playbook uses the G Suite Auditor integration and tests it's single
   command - 'gsuite-activity-search'
@@ -16,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -32,8 +32,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 57f478df-a338-4cdd-80d4-df0eba8b8930
@@ -65,8 +63,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 1819387d-df57-4c41-8218-226d201e984b
@@ -100,8 +96,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: d3c07bef-705e-4b2e-88cb-14a6960c35e6
@@ -142,8 +136,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 745ff365-8cfd-4594-8b49-2aa143933ce6
@@ -155,6 +147,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -168,8 +161,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -184,3 +175,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.5.0

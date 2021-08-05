@@ -1,0 +1,64 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "GSuiteAuditor - Incoming Mapper",
+    "mapping": {
+        "Google Activity": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "AffectedDomain": {
+                    "complex": null,
+                    "simple": "ownerDomain"
+                },
+                "Application Name": {
+                    "complex": null,
+                    "simple": "id.applicationName"
+                },
+                "Event Name": {
+                    "complex": null,
+                    "simple": "events.name"
+                },
+                "Event Type": {
+                    "complex": null,
+                    "simple": "events.type"
+                },
+                "GSuiteActivity User": {
+                    "complex": null,
+                    "simple": "actor.email"
+                },
+                "GsuiteAuditor Affected Domain": {
+                    "complex": null,
+                    "simple": "ownerDomain"
+                },
+                "GsuiteAuditor Event Name": {
+                    "complex": null,
+                    "simple": "events.name"
+                },
+                "GsuiteAuditor User": {
+                    "complex": null,
+                    "simple": "actor.email"
+                },
+                "GsuiteAuditor User IP": {
+                    "complex": null,
+                    "simple": "ipAddress"
+                },
+                "User IP": {
+                    "complex": null,
+                    "simple": "ipAddress"
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "id.time"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "GSuiteAuditor - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

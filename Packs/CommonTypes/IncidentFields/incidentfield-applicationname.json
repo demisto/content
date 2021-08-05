@@ -20,7 +20,8 @@
     "hidden": false,
     "associatedTypes": [
         "IAM - App Add",
-        "IAM - App Remove"
+        "IAM - App Remove",
+        "Google Activity"
     ],
     "associatedToAll": false,
     "unmapped": false,

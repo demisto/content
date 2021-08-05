@@ -1,0 +1,33 @@
+{
+    "autorun": false,
+    "color": "#F8E7A5",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {
+            "affecteddomain": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            }
+        },
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Google Activity",
+    "layout": "38638306-bbb3-4f73-87b4-2a21fb335c79",
+    "locked": false,
+    "name": "Google Activity",
+    "onChangeRepAlg": 0,
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "5.5.0"
+}
