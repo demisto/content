@@ -22,7 +22,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 from typing import Tuple, Any, Union
 
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored
+    PackTags, PackIgnored, Changelog
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
@@ -68,6 +68,8 @@ class Pack(object):
         self._hidden = False  # initialized in load_user_metadata function
         self._description = None  # initialized in load_user_metadata function
         self._display_name = None  # initialized in load_user_metadata function
+        self._user_metadata = None  # initialized in load_user_metadata function
+        self.eula_link = None   # initialized in load_user_metadata function
         self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
         self._bucket_url = None  # URL of where the pack was uploaded.
@@ -100,6 +102,9 @@ class Pack(object):
         self._keywords = None  # initialized in enhance_pack_attributes function
         self._dependencies = None  # initialized in enhance_pack_attributes function
         self._pack_statistics_handler = None  # initialized in enhance_pack_attributes function
+        self._contains_transformer = False  # initialized in collect_content_items function
+        self._contains_filter = False  # initialized in collect_content_items function
+        self._is_missing_dependencies = False  # a flag that specifies if pack is missing dependencies
 
     @property
     def name(self):
@@ -218,6 +223,12 @@ class Pack(object):
         """
         return self._display_name
 
+    @property
+    def user_metadata(self):
+        """ dict: the pack_metadata.
+        """
+        return self._user_metadata
+
     @display_name.setter
     def display_name(self, display_name_value):
         """ setter of display name property of the pack.
@@ -307,6 +318,10 @@ class Pack(object):
         """
         return self._uploaded_integration_images
 
+    @property
+    def is_missing_dependencies(self):
+        return self._is_missing_dependencies
+
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
 
@@ -347,7 +362,6 @@ class Pack(object):
             list: list of sorted integration images
 
         """
-
         def sort_by_name(integration_image: dict):
             return integration_image.get('name', '')
 
@@ -445,7 +459,7 @@ class Pack(object):
         for dependency_id, dependency_data in dependencies_data.items():
             parsed_result[dependency_id] = {
                 "mandatory": first_level_dependencies.get(dependency_id, {}).get('mandatory', True),
-                "minVersion": dependency_data.get('currentVersion', Pack.PACK_INITIAL_VERSION),
+                "minVersion": dependency_data.get(Metadata.CURRENT_VERSION, Pack.PACK_INITIAL_VERSION),
                 "author": dependency_data.get('author', ''),
                 "name": dependency_data.get('name') if dependency_data.get('name') else dependency_id,
                 "certification": dependency_data.get('certification', 'certified')
@@ -542,11 +556,10 @@ class Pack(object):
 
         return tags
 
-    def _parse_pack_metadata(self, user_metadata, build_number, commit_hash):
+    def _parse_pack_metadata(self, build_number, commit_hash):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
-            user_metadata (dict): user metadata that was created in pack initialization.
             build_number (str): circleCI build number.
             commit_hash (str): current commit hash.
 
@@ -563,13 +576,13 @@ class Pack(object):
             'legacy': self._legacy,
             'support': self._support_type,
             'supportDetails': self._support_details,
-            'eulaLink': Metadata.EULA_URL,
+            'eulaLink': self.eula_link,
             'author': self._author,
             'authorImage': self._author_image,
             'certification': self._certification,
             'price': self._price,
-            'serverMinVersion': user_metadata.get('serverMinVersion') or self.server_min_version,
-            'currentVersion': user_metadata.get('currentVersion', ''),
+            Metadata.SERVER_MIN_VERSION: self.user_metadata.get(Metadata.SERVER_MIN_VERSION) or self.server_min_version,
+            Metadata.CURRENT_VERSION: self.user_metadata.get(Metadata.CURRENT_VERSION, ''),
             'versionInfo': build_number,
             'commit': commit_hash,
             'downloads': self._downloads_count,
@@ -595,19 +608,20 @@ class Pack(object):
 
         return pack_metadata
 
-    def _load_pack_dependencies(self, index_folder_path, first_level_dependencies, all_level_displayed_dependencies):
+    def _load_pack_dependencies(self, index_folder_path, pack_names):
         """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
-
         Args:
             index_folder_path (str): full path to download index folder.
-            first_level_dependencies (dict): user defined dependencies.
-            all_level_displayed_dependencies (list): all level pack's images to display.
+            pack_names (set): List of all packs.
 
         Returns:
             dict: pack id as key and loaded metadata of packs as value.
+            bool: True if the pack is missing dependencies, False otherwise.
 
         """
         dependencies_data_result = {}
+        first_level_dependencies = self.user_metadata.get('dependencies', {})
+        all_level_displayed_dependencies = self.user_metadata.get('displayedImages', [])
         dependencies_ids = {d for d in first_level_dependencies.keys()}
         dependencies_ids.update(all_level_displayed_dependencies)
 
@@ -621,11 +635,47 @@ class Pack(object):
                 with open(dependency_metadata_path, 'r') as metadata_file:
                     dependency_metadata = json.load(metadata_file)
                     dependencies_data_result[dependency_pack_id] = dependency_metadata
+            elif dependency_pack_id in pack_names:
+                # If the pack is dependent on a new pack (which is not yet in the index.json)
+                # we will note that it is missing dependencies.
+                # And finally after updating all the packages in index.json.
+                # We will go over the pack again to add what was missing
+                self._is_missing_dependencies = True
+                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
+                                f"was not found in index, marking it as missing dependencies - to be resolved in next"
+                                f" iteration over packs")
+
             else:
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
-                continue
 
-        return dependencies_data_result
+        return dependencies_data_result, self._is_missing_dependencies
+
+    def _get_updated_changelog_entry(self, changelog: dict, version: str, release_notes: str = None,
+                                     version_display_name: str = None, build_number_with_prefix: str = None,
+                                     released_time: str = None):
+        """
+        Args:
+            changelog (dict): The changelog from the production bucket.
+            version (str): The version that is the key in the changelog of the entry wished to be updated.
+            release_notes (str): The release notes lines to update the entry with.
+            version_display_name (str): The version display name to update the entry with.
+            build_number_with_prefix(srt): the build number to modify the entry to, including the prefix R (if present).
+            released_time: The released time to update the entry with.
+
+        """
+        changelog_entry = changelog.get(version)
+        if not changelog_entry:
+            raise Exception('The given version is not a key in the changelog')
+        version_display_name = \
+            version_display_name if version_display_name else changelog_entry[Changelog.DISPLAY_NAME].split('-')[0]
+        build_number_with_prefix = \
+            build_number_with_prefix if build_number_with_prefix else changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
+
+        changelog_entry[Changelog.RELEASE_NOTES] = release_notes if release_notes else changelog_entry[Changelog.RELEASE_NOTES]
+        changelog_entry[Changelog.DISPLAY_NAME] = f'{version_display_name} - {build_number_with_prefix}'
+        changelog_entry[Changelog.RELEASED] = released_time if released_time else changelog_entry[Changelog.RELEASED]
+
+        return changelog_entry
 
     def _create_changelog_entry(self, release_notes, version_display_name, build_number, pack_was_modified=False,
                                 new_version=True, initial_release=False):
@@ -638,25 +688,24 @@ class Pack(object):
             pack_was_modified (bool): whether the pack was modified.
             new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
             initial_release (bool): whether the entry is an initial release or not.
-
         Returns:
             dict: release notes entry of changelog
 
         """
         if new_version:
-            return {'releaseNotes': release_notes,
-                    'displayName': f'{version_display_name} - {build_number}',
-                    'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+            return {Changelog.RELEASE_NOTES: release_notes,
+                    Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
+                    Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
 
         elif initial_release:
-            return {'releaseNotes': release_notes,
-                    'displayName': f'{version_display_name} - {build_number}',
-                    'released': self._create_date}
+            return {Changelog.RELEASE_NOTES: release_notes,
+                    Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
+                    Changelog.RELEASED: self._create_date}
 
         elif pack_was_modified:
-            return {'releaseNotes': release_notes,
-                    'displayName': f'{version_display_name} - R{build_number}',
-                    'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+            return {Changelog.RELEASE_NOTES: release_notes,
+                    Changelog.DISPLAY_NAME: f'{version_display_name} - R{build_number}',
+                    Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
 
         return {}
 
@@ -752,7 +801,8 @@ class Pack(object):
 
             secondary_encryption_key_output_file = zip_pack_path.replace("_not_encrypted.zip", ".enc2.zip")
             full_command_with_secondary_encryption = f'./encryptor ./{pack_name}_not_encrypted.zip ' \
-                                                     f'{secondary_encryption_key_output_file} "{secondary_encryption_key}"'
+                                                     f'{secondary_encryption_key_output_file}' \
+                                                     f' "{secondary_encryption_key}"'
             subprocess.call(full_command_with_secondary_encryption, shell=True)
 
             new_artefacts = os.path.join(current_working_dir, private_artifacts_dir)
@@ -898,6 +948,9 @@ class Pack(object):
                         else:
                             logging.debug(f'{modified_file.a_path} is an ignored file')
             task_status = True
+            if pack_was_modified:
+                # Make sure the modification is not only of release notes files, if so count that as not modified
+                pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_files_paths)
             return
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
@@ -1066,7 +1119,7 @@ class Pack(object):
 
         return changelog, changelog_latest_rn_version, changelog_latest_rn
 
-    def get_modified_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion,
+    def get_modified_release_notes_lines(self, release_notes_dir: str, new_release_notes_versions: list,
                                          changelog: dict, modified_rn_files: list):
         """
         In the case where an rn file was changed, this function returns the new content
@@ -1079,7 +1132,8 @@ class Pack(object):
 
         Args:
             release_notes_dir (str): the path to the release notes dir
-            changelog_latest_rn_version (LooseVersion): the last version of release notes in the changelog.json file
+            new_release_notes_versions (list): a list of the new versions of release notes in the pack since the
+             last upload. This means they were already handled on this upload run (and aggregated if needed).
             changelog (dict): the changelog from the production bucket.
             modified_rn_files (list): a list of the rn files that were modified according to the last commit in
              'filename.md' format.
@@ -1096,7 +1150,7 @@ class Pack(object):
         for rn_filename in modified_rn_files:
             version = release_notes_file_to_version(rn_filename)
             # Should only apply on modified files that are not the last rn file
-            if LooseVersion(version) >= changelog_latest_rn_version:
+            if version in new_release_notes_versions:
                 continue
             # The case where the version is a key in the changelog file,
             # and the value is not an aggregated release note
@@ -1149,7 +1203,7 @@ class Pack(object):
         return same_block_versions_dict, higher_nearest_version.vstring
 
     def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion,
-                                changelog_latest_rn: str) -> Tuple[str, str]:
+                                changelog_latest_rn: str) -> Tuple[str, str, list]:
         """
         Prepares the release notes contents for the new release notes entry
         Args:
@@ -1157,7 +1211,8 @@ class Pack(object):
             changelog_latest_rn_version (LooseVersion): the last version of release notes in the changelog.json file
             changelog_latest_rn (str): the last release notes in the changelog.json file
 
-        Returns: The release notes contents and the latest release notes version (in the release notes directory)
+        Returns: The release notes contents, the latest release notes version (in the release notes directory),
+        and a list of the new rn versions that this is the first time they have been uploaded.
 
         """
         found_versions: list = list()
@@ -1181,7 +1236,7 @@ class Pack(object):
         if len(pack_versions_dict) > 1:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
-            aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]" \
+            aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]"\
                               f" => {latest_release_notes_version_str}"
             logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
@@ -1195,8 +1250,9 @@ class Pack(object):
             # We should take the release notes from the index as it has might been aggregated
             logging.info(f'No new RN file was detected for pack {self._pack_name}, taking latest RN from the index')
             release_notes_lines = changelog_latest_rn
+        new_release_notes_versions = list(pack_versions_dict.keys())
 
-        return release_notes_lines, latest_release_notes_version_str
+        return release_notes_lines, latest_release_notes_version_str, new_release_notes_versions
 
     def assert_upload_bucket_version_matches_release_notes_version(self,
                                                                    changelog: dict,
@@ -1268,14 +1324,15 @@ class Pack(object):
 
                 if os.path.exists(release_notes_dir):
                     # Handling latest release notes files
-                    release_notes_lines, latest_release_notes = self.get_release_notes_lines(
-                        release_notes_dir, changelog_latest_rn_version, changelog_latest_rn)
+                    release_notes_lines, latest_release_notes, new_release_notes_versions = \
+                        self.get_release_notes_lines(
+                            release_notes_dir, changelog_latest_rn_version, changelog_latest_rn)
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     # Handling modified old release notes files, if there are any
                     rn_files_names = self.get_rn_files_names(modified_files_paths)
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
-                        release_notes_dir, changelog_latest_rn_version, changelog, rn_files_names)
+                        release_notes_dir, new_release_notes_versions, changelog, rn_files_names)
 
                     if self._current_version != latest_release_notes:
                         # TODO Need to implement support for pre-release versions
@@ -1303,15 +1360,11 @@ class Pack(object):
                             changelog[latest_release_notes] = version_changelog
 
                         if modified_release_notes_lines_dict:
-                            logging.info("Creating changelog entries for modified rn")
+                            logging.info("updating changelog entries for modified rn")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
-                                changelog_entry = self._create_changelog_entry(
-                                    release_notes=modified_release_notes_lines,
-                                    version_display_name=version,
-                                    build_number=build_number,
-                                    pack_was_modified=True,
-                                    new_version=False)
-                                changelog[version] = changelog_entry
+                                updated_entry = self._get_updated_changelog_entry(
+                                    changelog, version, release_notes=modified_release_notes_lines)
+                                changelog[version] = updated_entry
 
                 else:  # will enter only on initial version and release notes folder still was not created
                     if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
@@ -1466,12 +1519,21 @@ class Pack(object):
                     self._server_min_version = get_updated_server_version(self._server_min_version, content_item,
                                                                           self._pack_name)
 
+                    content_item_tags = content_item.get('tags', [])
+
                     if current_directory == PackFolders.SCRIPTS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'description': content_item.get('comment', ""),
-                            'tags': content_item.get('tags', [])
+                            'tags': content_item_tags
                         })
+
+                        if not self._contains_transformer and 'transformer' in content_item_tags:
+                            self._contains_transformer = True
+
+                        if not self._contains_filter and 'filter' in content_item_tags:
+                            self._contains_filter = True
+
                     elif current_directory == PackFolders.PLAYBOOKS.value:
                         self.is_feed_pack(content_item, 'Playbook')
                         folder_collected_items.append({
@@ -1561,7 +1623,7 @@ class Pack(object):
         """ Loads user defined metadata and stores part of it's data in defined properties fields.
 
         Returns:
-            dict: user metadata of pack defined in content repo pack (pack_metadata.json)
+            bool: whether the operation succeeded.
 
         """
         task_status = False
@@ -1571,7 +1633,7 @@ class Pack(object):
             user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
             if not os.path.exists(user_metadata_path):
                 logging.error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
-                return task_status, user_metadata
+                return task_status
 
             with open(user_metadata_path, "r") as user_metadata_file:
                 user_metadata = json.load(user_metadata_file)  # loading user metadata
@@ -1579,23 +1641,27 @@ class Pack(object):
                 user_metadata = {} if isinstance(user_metadata, list) else user_metadata
             # store important user metadata fields
             self.support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
-            self.current_version = user_metadata.get('currentVersion', '')
-            self.hidden = user_metadata.get('hidden', False)
+            self.current_version = user_metadata.get(Metadata.CURRENT_VERSION, '')
+            self.hidden = user_metadata.get(Metadata.HIDDEN, False)
             self.description = user_metadata.get('description', False)
             self.display_name = user_metadata.get('name', '')
+            self._user_metadata = user_metadata
+            self.eula_link = user_metadata.get('eulaLink', Metadata.EULA_URL)
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
         except Exception:
             logging.exception(f"Failed in loading {self._pack_name} user metadata.")
         finally:
-            return task_status, user_metadata
+            return task_status
 
     def _collect_pack_tags(self, user_metadata, landing_page_sections, trending_packs):
         tags = set(input_to_list(input_data=user_metadata.get('tags')))
         tags |= self._get_tags_from_landing_page(landing_page_sections)
         tags |= {PackTags.TIM} if self._is_feed else set()
         tags |= {PackTags.USE_CASE} if self._use_cases else set()
+        tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
+        tags |= {PackTags.FILTER} if self._contains_filter else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
@@ -1612,54 +1678,58 @@ class Pack(object):
 
         return tags
 
-    def _enhance_pack_attributes(self, user_metadata, index_folder_path, pack_was_modified,
-                                 dependencies_data, statistics_handler=None):
+    def _enhance_pack_attributes(self, index_folder_path, pack_was_modified,
+                                 dependencies_data, statistics_handler=None, format_dependencies_only=False):
         """ Enhances the pack object with attributes for the metadata file
 
         Args:
-            user_metadata (dict): user metadata that was created in pack initialization.
             dependencies_data (dict): mapping of pack dependencies data, of all levels.
+            format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
+            dependencies or not.
 
         Returns:
             dict: parsed pack metadata.
 
         """
         landing_page_sections = mp_statistics.StatisticsHandler.get_landing_page_sections()
-        displayed_dependencies = user_metadata.get('displayedImages', [])
+        displayed_dependencies = self.user_metadata.get('displayedImages', [])
         trending_packs = None
         pack_dependencies_by_download_count = displayed_dependencies
-
-        # ===== Pack Regular Attributes =====
-        self._support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
-        self._support_details = self._create_support_section(
-            support_type=self._support_type, support_url=user_metadata.get('url'),
-            support_email=user_metadata.get('email')
-        )
-        self._author = self._get_author(support_type=self._support_type, author=user_metadata.get('author', ''))
-        self._certification = self._get_certification(
-            support_type=self._support_type, certification=user_metadata.get('certification')
-        )
-        self._legacy = user_metadata.get('legacy', True)
-        self._create_date = self._get_pack_creation_date(index_folder_path)
-        self._update_date = self._get_pack_update_date(index_folder_path, pack_was_modified)
-        self._use_cases = input_to_list(input_data=user_metadata.get('useCases'), capitalize_input=True)
-        self._categories = input_to_list(input_data=user_metadata.get('categories'), capitalize_input=True)
-        self._keywords = input_to_list(user_metadata.get('keywords'))
-        self._dependencies = self._parse_pack_dependencies(user_metadata.get('dependencies', {}), dependencies_data)
+        if not format_dependencies_only:
+            # ===== Pack Regular Attributes =====
+            self._support_type = self.user_metadata.get('support', Metadata.XSOAR_SUPPORT)
+            self._support_details = self._create_support_section(
+                support_type=self._support_type, support_url=self.user_metadata.get('url'),
+                support_email=self.user_metadata.get('email')
+            )
+            self._author = self._get_author(
+                support_type=self._support_type, author=self.user_metadata.get('author', ''))
+            self._certification = self._get_certification(
+                support_type=self._support_type, certification=self.user_metadata.get('certification')
+            )
+            self._legacy = self.user_metadata.get('legacy', True)
+            self._create_date = self._get_pack_creation_date(index_folder_path)
+            self._update_date = self._get_pack_update_date(index_folder_path, pack_was_modified)
+            self._use_cases = input_to_list(input_data=self.user_metadata.get('useCases'), capitalize_input=True)
+            self._categories = input_to_list(input_data=self.user_metadata.get('categories'), capitalize_input=True)
+            self._keywords = input_to_list(self.user_metadata.get('keywords'))
+        self._dependencies = self._parse_pack_dependencies(
+            self.user_metadata.get('dependencies', {}), dependencies_data)
 
         # ===== Pack Private Attributes =====
-        self._is_private_pack = 'partnerId' in user_metadata
-        self._is_premium = self._is_private_pack
-        self._preview_only = get_valid_bool(user_metadata.get('previewOnly', False))
-        self._price = convert_price(pack_id=self._pack_name, price_value_input=user_metadata.get('price'))
-        if self._is_private_pack:
-            self._vendor_id = user_metadata.get('vendorId', "")
-            self._partner_id = user_metadata.get('partnerId', "")
-            self._partner_name = user_metadata.get('partnerName', "")
-            self._content_commit_hash = user_metadata.get('contentCommitHash', "")
-            # Currently all content packs are legacy.
-            # Since premium packs cannot be legacy, we directly set this attribute to false.
-            self._legacy = False
+        if not format_dependencies_only:
+            self._is_private_pack = 'partnerId' in self.user_metadata
+            self._is_premium = self._is_private_pack
+            self._preview_only = get_valid_bool(self.user_metadata.get('previewOnly', False))
+            self._price = convert_price(pack_id=self._pack_name, price_value_input=self.user_metadata.get('price'))
+            if self._is_private_pack:
+                self._vendor_id = self.user_metadata.get('vendorId', "")
+                self._partner_id = self.user_metadata.get('partnerId', "")
+                self._partner_name = self.user_metadata.get('partnerName', "")
+                self._content_commit_hash = self.user_metadata.get('contentCommitHash', "")
+                # Currently all content packs are legacy.
+                # Since premium packs cannot be legacy, we directly set this attribute to false.
+                self._legacy = False
 
         # ===== Pack Statistics Attributes =====
         if not self._is_private_pack and statistics_handler:  # Public Content case
@@ -1670,8 +1740,7 @@ class Pack(object):
             self._downloads_count = self._pack_statistics_handler.download_count
             trending_packs = statistics_handler.trending_packs
             pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
-
-        self._tags = self._collect_pack_tags(user_metadata, landing_page_sections, trending_packs)
+        self._tags = self._collect_pack_tags(self.user_metadata, landing_page_sections, trending_packs)
         self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
             tags=self._tags, certification=self._certification, content_items=self._content_items
         )
@@ -1680,41 +1749,42 @@ class Pack(object):
             pack_dependencies_by_download_count
         )
 
-    def format_metadata(self, user_metadata, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        pack_was_modified, statistics_handler):
+    def format_metadata(self, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
+                        pack_was_modified, statistics_handler, pack_names=[], format_dependencies_only=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
         Args:
-            user_metadata (dict): user defined pack_metadata, prior the parsing process.
-            public url.
             index_folder_path (str): downloaded index folder directory path.
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
             build_number (str): circleCI build number.
             commit_hash (str): current commit hash.
             pack_was_modified (bool): Indicates whether the pack was modified or not.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
-
+            pack_names (set): List of all packs.
+            format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
+             dependencies or not.
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
+            bool: True is returned in pack is missing dependencies.
 
         """
         task_status = False
 
         try:
-            self.set_pack_dependencies(user_metadata, packs_dependencies_mapping)
-            if 'displayedImages' not in user_metadata:
-                user_metadata['displayedImages'] = packs_dependencies_mapping.get(
+            self.set_pack_dependencies(packs_dependencies_mapping)
+            if 'displayedImages' not in self.user_metadata:
+                self._user_metadata['displayedImages'] = packs_dependencies_mapping.get(
                     self._pack_name, {}).get('displayedImages', [])
                 logging.info(f"Adding auto generated display images for {self._pack_name} pack")
-            dependencies_data = self._load_pack_dependencies(index_folder_path,
-                                                             user_metadata.get('dependencies', {}),
-                                                             user_metadata.get('displayedImages', []))
+            dependencies_data, is_missing_dependencies = \
+                self._load_pack_dependencies(index_folder_path, pack_names)
 
             self._enhance_pack_attributes(
-                user_metadata, index_folder_path, pack_was_modified, dependencies_data, statistics_handler
+                index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
+                format_dependencies_only
             )
-            formatted_metadata = self._parse_pack_metadata(user_metadata, build_number, commit_hash)
+            formatted_metadata = self._parse_pack_metadata(build_number, commit_hash)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
             json_write(metadata_path, formatted_metadata)  # writing back parsed metadata
 
@@ -1725,7 +1795,7 @@ class Pack(object):
             logging.exception(f"Failed in formatting {self._pack_name} pack metadata. Additional Info: {str(e)}")
 
         finally:
-            return task_status
+            return task_status, is_missing_dependencies
 
     @staticmethod
     def pack_created_in_time_delta(pack_name, time_delta: timedelta, index_folder_path: str) -> bool:
@@ -1783,10 +1853,10 @@ class Pack(object):
 
         return latest_changelog_released_date
 
-    def set_pack_dependencies(self, user_metadata, packs_dependencies_mapping):
+    def set_pack_dependencies(self, packs_dependencies_mapping):
         pack_dependencies = packs_dependencies_mapping.get(self._pack_name, {}).get('dependencies', {})
-        if 'dependencies' not in user_metadata:
-            user_metadata['dependencies'] = {}
+        if 'dependencies' not in self.user_metadata:
+            self._user_metadata['dependencies'] = {}
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
@@ -1794,13 +1864,13 @@ class Pack(object):
             mandatory_dependencies = [k for k, v in pack_dependencies.items()
                                       if v.get('mandatory', False) is True
                                       and k not in GCPConfig.CORE_PACKS_LIST
-                                      and k not in user_metadata['dependencies'].keys()]
+                                      and k not in self.user_metadata['dependencies'].keys()]
             if mandatory_dependencies:
                 raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
                                 f'found in the core pack {self._pack_name}')
 
-        pack_dependencies.update(user_metadata['dependencies'])
-        user_metadata['dependencies'] = pack_dependencies
+        pack_dependencies.update(self.user_metadata['dependencies'])
+        self._user_metadata['dependencies'] = pack_dependencies
 
     def prepare_for_index_upload(self):
         """ Removes and leaves only necessary files in pack folder.

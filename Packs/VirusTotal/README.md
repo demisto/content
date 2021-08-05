@@ -1,4 +1,6 @@
-VirusTotal inspects submitted hashes, URLs, domains, and IP addresses for suspicious behavior. 
+Note: Support for this pack will be moving to the partner around September 28, 2021.
+
+VirusTotal inspects submitted hashes, URLs, domains, and IP addresses for suspicious behavior.
 
 ## What does this pack do?
 This pack includes 3 integrations:
@@ -6,13 +8,13 @@ This pack includes 3 integrations:
    - Analyze suspicious hashes, URLs, domains, and IP addresses.
    - Use your premium API key for advanced indicator analysis (Check "Premium Subscription' box in the integration parameters)
 
-- VirusTotal Premium (API v3) integration: 
-   - Fetch live hunt notifications as incidents. 
+- VirusTotal Premium (API v3) integration:
+   - Fetch live hunt notifications as incidents.
    - Use retro hunt to analyze files with custom YARA rules.
    - Download suspicious files from VirusTotal for further analysis.
    - Group several files from VirusTotal into a password-protected ZIP file.
-   - Get a PCAP file generated from VirusTotal's sandbox for further analysis. 
-  
+   - Get a PCAP file generated from VirusTotal's sandbox for further analysis.
+
 - VirusTotal:
    - Analyze suspicious hashes, URLs, domains, and IP addresses.
 

@@ -159,6 +159,6 @@ else
         echo "and then run: 'npm install'"
     else
         echo "Running: npm install ..."        
-        npm install        
+        npm install
     fi
 fi

@@ -1,8 +1,11 @@
-from GitHub import main, BASE_URL, list_branch_pull_requests
-import demistomock as demisto
 import json
+
 import pytest
 
+import demistomock as demisto
+from CommonServerPython import CommandResults
+from GitHub import main, BASE_URL, list_branch_pull_requests, list_all_projects_command, \
+    add_issue_to_project_board_command
 
 MOCK_PARAMS = {
     'user': 'test',
@@ -58,7 +61,7 @@ def mock_http_request(method, url_suffix, params=None, data=None, headers=None, 
 
 SEARCH_CASES = [
     (200, 100),
-    (40, 40)
+    (40, 100)
 ]
 
 LIST_TEAM_MEMBERS_CASES = [
@@ -115,3 +118,110 @@ def test_list_team_members_command(mocker, maximum_users, expected_result1):
 
     url_suffix = '/orgs/demisto/teams/content/members'
     mock_list_members.call_args_list[0]('GET', url_suffix, expected_result1)
+
+
+def test_get_issue_events_command(mocker):
+    """
+    Given:
+        'issue_number': Issue number in GitHub.
+    When:
+        Wanting to retrieve events for given issue number.
+    Then:
+        Assert expected CommandResults object is returned.
+    """
+    import GitHub
+    GitHub.ISSUE_SUFFIX = ''
+    mock_response = load_test_data('test_data/search_issue_events_response.json')
+    mocker.patch('GitHub.http_request', return_value=mock_response)
+    mocker_output = mocker.patch('GitHub.return_results')
+    GitHub.get_issue_events_command()
+    result: CommandResults = mocker_output.call_args[0][0]
+    assert result.outputs == mock_response
+    assert result.outputs_key_field == 'id'
+    assert result.outputs_prefix == 'GitHub.IssueEvent'
+
+
+PROJECTS_TEST = [
+    {
+        "number": 22,
+        "Number": 22,
+        "Columns": {},
+        "Issues": [],
+        "ID": 11111111,
+        "Name": "Project_1"
+    },
+    {
+        "number": 23,
+        "Number": 23,
+        "Columns": {},
+        "Issues": [],
+        "ID": 2222222,
+        "Name": "Project_2"
+    },
+    {
+        "number": 24,
+        "Number": 24,
+        "Columns": {},
+        "Issues": [],
+        "ID": 3333333,
+        "Name": "Project_2"
+    }
+]
+
+
+def get_project_d(project=None, header=None):
+    return project
+
+
+def test_list_all_projects_command(mocker, requests_mock):
+    """
+    Given:
+        'project_filter': Numbers of projects to filter.
+    When:
+        Running the list_all_projects_command function.
+    Then:
+        Assert that only the filtered projects are returned.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'project_filter': '22,24'})
+    requests_mock.get(f'{BASE_URL}/projects?per_page=100', json=PROJECTS_TEST)
+    mocker.patch('GitHub.get_project_details', side_effect=get_project_d)
+    mocker_output = mocker.patch('GitHub.return_results')
+
+    import GitHub
+    GitHub.PROJECT_SUFFIX = '/projects'
+
+    list_all_projects_command()
+    result: CommandResults = mocker_output.call_args[0][0]
+
+    assert len(result.outputs) == 2
+    assert result.outputs[0]['Number'] == 22
+    assert result.outputs[1]['Number'] == 24
+
+
+RESPONSE_DETAILS = [
+    (200, b'{}', 'GitHub.return_results', "The issue was successfully added to column ID column_id."),
+    (404, b'{"message": "Column not found."}', 'GitHub.return_error',
+     'Post result <Response [404]>\nMessage: Column not found.')
+]
+
+
+@pytest.mark.parametrize('response_code,response_content,mocked_return,expected_result', RESPONSE_DETAILS)
+def test_add_issue_to_project_board_command(mocker, requests_mock, response_code, response_content, mocked_return,
+                                            expected_result):
+    """
+    Given:
+        'issue_unique_id': The issue ID to add.
+        'column_id': The column ID to add to.
+    When:
+        Running the add_issue_to_project_board_command function.
+    Then:
+        Assert the message returned is as expected.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'column_id': 'column_id', 'issue_unique_id': '11111'})
+    requests_mock.post(f'{BASE_URL}/projects/columns/column_id/cards', status_code=response_code,
+                       content=response_content)
+    mocker_results = mocker.patch(mocked_return)
+
+    add_issue_to_project_board_command()
+
+    assert mocker_results.call_args[0][0] == expected_result

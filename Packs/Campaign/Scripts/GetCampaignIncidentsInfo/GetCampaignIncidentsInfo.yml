@@ -4,7 +4,7 @@ commonfields:
 dockerimage: demisto/python3:3.9.5.21272
 enabled: true
 name: GetCampaignIncidentsInfo
-runas: DBotWeakRole
+runas: DBotRole
 runonce: false
 script: ''
 comment: Get the campaign incidents information as a MD table.
