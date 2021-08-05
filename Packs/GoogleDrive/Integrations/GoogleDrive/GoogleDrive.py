@@ -673,7 +673,7 @@ def validate_params_for_fetch_incidents(params: Dict[str, Any]) -> None:
 
 
 @logger
-def test_module(gsuite_client: GSuiteClient, last_run: Dict, params: Dict[str, Any]) -> str:
+def test_module(gsuite_client: 'GSuiteClient', last_run: Dict, params: Dict[str, Any]) -> str:
     """
     Performs test connectivity by valid http response
 
