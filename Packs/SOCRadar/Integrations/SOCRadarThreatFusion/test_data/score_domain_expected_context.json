@@ -1,0 +1,64 @@
+{
+  "Risk Score (Out of 1000)": 0,
+  "Score Details": {},
+  "Total Encounters": 0,
+  "Domain": "paloaltonetworks.com",
+  "Subdomains": [],
+  "Whois Details": {
+        "org": "Palo Alto Networks, Inc.",
+        "city": null,
+        "name": null,
+        "state": "CA",
+        "dnssec": "signedDelegation",
+        "emails": [
+            "Email 1",
+            "Email 2"
+        ],
+        "status": [
+            "clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)",
+            "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited",
+            "clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)",
+            "clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)",
+            "clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited",
+            "clientTransferProhibited https://icann.org/epp#clientTransferProhibited"
+        ],
+        "address": null,
+        "country": "US",
+        "zipcode": null,
+        "registrar": "MarkMonitor, Inc.",
+        "domain_name": "PALOALTONETWORKS.COM",
+        "name_servers": [
+            "Name Server 1",
+            "Name Server 2"
+        ],
+        "referral_url": null,
+        "updated_date": "Thu, 01 Jul 2021 00:32:38 GMT",
+        "whois_server": "whois.markmonitor.com",
+        "creation_date": "Mon, 21 Feb 2005 02:42:10 GMT",
+        "expiration_date": "Wed, 21 Feb 2024 02:42:10 GMT"
+    },
+  "DNS Details": {
+        "A": [
+            "A Record"
+        ],
+        "MX": [
+            "MX Record"
+        ],
+        "NS": [
+            "NS Record 1",
+            "NS Record 2"
+        ],
+        "SOA": [
+            "SOA Record"
+        ],
+        "TXT": [
+            "TXT Record"
+        ]
+  },
+  "DBotScore": {
+    "Indicator": "paloaltonetworks.com",
+    "Type": "domain",
+    "Vendor": "SOCRadar ThreatFusion",
+    "Score": 1
+  }
+}
