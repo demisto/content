@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ExpanseV2 mirroring
+  id: ExpanseV2
   version: -1
 configuration:
 - defaultvalue: https://expander.expanse.co
@@ -122,8 +122,8 @@ description: The Expanse v2 integration for Cortex XSOAR leverages the Expander 
   to create incidents from Expanse issues. It also leverages Expanse's unparalleled
   view of the Internet to enrich IPs, domains and certificates using information from
   assets discovered by Expanse Expander and risky flows detected by Expanse Behavior.
-display: Expanse v2 mirroring
-name: ExpanseV2 mirroring
+display: Expanse v2
+name: ExpanseV2
 script:
   commands:
   - name: expanse-get-service
@@ -6381,7 +6381,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.22912
 defaultclassifier: ExpanseV2
 defaultmapperin: ExpanseV2-mapper
 fromversion: 6.0.0

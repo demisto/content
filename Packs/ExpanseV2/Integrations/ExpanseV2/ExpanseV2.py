@@ -39,7 +39,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_FIRST_FETCH = "3 days"  # default parameter for first fetch
 
 ISSUE_PROGRESS_STATUS = ['New', 'Investigating', 'InProgress', 'AcceptableRisk', 'Resolved']
-ISSUE_PROGRESS_STATUS_CLOSED = ['AcceptableRisk', 'Resolved', 'No Risk']
+ISSUE_PROGRESS_STATUS_CLOSED = ['AcceptableRisk', 'Resolved', 'NoRisk']
 ISSUE_ACTIVITY_STATUS = ['Active', 'Inactive']
 ISSUE_PRIORITY = ['Critical', 'High', 'Medium', 'Low']
 CLOUD_MANAGEMENT_STATUS = ['ManagedCloud', 'UnmanagedCloud', 'NotApplicable']
@@ -1528,7 +1528,6 @@ def get_modified_remote_data_command(client, args):
 
     last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
     modified_after =last_update_utc.strftime(DATE_FORMAT)
-    demisto.debug(f'$$$$$$$$$$$$$ modified after is {modified_after}')
 
     modified_incidents = client.get_issues(
         limit=100,
@@ -1565,7 +1564,6 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
     incident_updates: Dict[str, Any] = {}
     latest_comment: Dict[str, Any] = {}  # used for closing comment
     for update in issue_updates:
-        demisto.debug(f'\n!!!!!!!!!!!!!!!!!!!!! The update field is: {update}\n')
         update_type = update.get('updateType')
         if not update_type or update_type not in ISSUE_UPDATE_TYPES:
             demisto.debug('Skipping unknown Expanse incoming update type: {update_type}')
@@ -1647,8 +1645,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
                 incident_updates['closeReason'] = None
                 incident_updates['closeNotes'] = None
 
-            else:
-                incident_updates[updated_field] = new_value
+            incident_updates[updated_field] = new_value
 
         # handle everything else
         else:
