@@ -3393,7 +3393,7 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 
 #### Human Readable Output
 
->### Microsoft Defender ATP SC returned 50 indicators:
+>### Microsoft Defender ATP SC returned 2 indicators:
 >|id|action|severity|
 >|---|---|---|
 >| 5039 | Allowed | Informational |
