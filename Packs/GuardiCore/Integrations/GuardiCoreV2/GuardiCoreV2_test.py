@@ -111,6 +111,73 @@ def test_calculate_fetch_start_time_dynamic():
     out = int(parse('4 days').replace(tzinfo=utc).timestamp()) * 1000
     assert calculate_fetch_start_time(None, '4 days') - out < 1000
 
+@pytest.mark.parametrize(
+    'guardicore_severity, dbot_score',
+    [
+        (0, 1),
+        (None, 0),
+        (-1, 1),
+        (121, 3),
+        (50, 3),
+        (40, 2),
+        (30, 1),
+    ]
+)
+def test_incident_severity_to_dbot_score(guardicore_severity, dbot_score):
+    """Unit test
+    Given
+    - zero number
+    - None
+    - minus 1
+    - A number that is big
+    - High severity
+    - Medium severity
+    - Low severity
+    When
+    - we try to map the guardicore severity to dbot score
+    Then
+    - return Low (1)
+    - return Unkown (0)
+    - return Low (1)
+    - return High (3)
+    - return High (3)
+    - return Medium (2)
+    - return Low (1)
+    """
+    from GuardiCoreV2 import incident_severity_to_dbot_score
+    assert incident_severity_to_dbot_score(guardicore_severity) == dbot_score
+
+
+@pytest.mark.parametrize(
+    'guardicore_os, os_string',
+    [
+        (-1, 'Unknown'),
+        (None, 'Unknown'),
+        (0, 'Unknown'),
+        (1, 'Windows'),
+        (2, 'Linux'),
+    ]
+)
+def test_map_guardicore_os(guardicore_os, os_string):
+    """Unit test
+       Given
+       - minus one
+       - None
+       - zero
+       - one
+       - two
+       When
+       - trying to map the guardicore os number to string
+       Then
+       - should return Unknown
+       - should return Unknown
+       - should return Unknown
+       - should return Windows
+       - should return Linux
+   """
+    from GuardiCoreV2 import map_guardicore_os
+    assert map_guardicore_os(guardicore_os) == os_string
+
 
 def test_authenticate(requests_mock):
     """Unit test

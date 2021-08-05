@@ -171,6 +171,31 @@ def filter_human_readable(results: dict, human_columns=List[str]) -> dict:
     return filtered
 
 
+def incident_severity_to_dbot_score(severity: int) -> int:
+    if not isinstance(severity, int):
+        return 0
+
+    if severity <= 30:
+        return 1
+    elif severity >= 50:
+        return 3
+
+    demisto.info(
+        f'GuardiCore Incident severity: {severity} is not known. Setting as unknown (DBotScore of 0).')
+    return 2
+
+
+def map_guardicore_os(os: int) -> str:
+    if not isinstance(os, int):
+        return 'Unknown'
+
+    return {
+        0: 'Unknown',
+        1: 'Windows',
+        2: 'Linux',
+    }.get(os, 'Unknown')
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -208,8 +233,15 @@ def get_incidents(client: Client, args: Dict[str, Any]):
             f"{INTEGRATION_NAME} - get incidents needs from_time and to_time.")
 
     # Convert time format to epoch
-    from_time = date_to_timestamp(from_time, DATE_FORMAT)
-    to_time = date_to_timestamp(to_time, DATE_FORMAT)
+    try:
+        from_time = date_to_timestamp(from_time, DATE_FORMAT)
+    except ValueError:
+        from_time = int(parse(from_time).replace(tzinfo=utc).timestamp()) * 1000
+
+    try:
+        to_time = date_to_timestamp(to_time, DATE_FORMAT)
+    except ValueError:
+        to_time = int(parse(to_time).replace(tzinfo=utc).timestamp()) * 1000
 
     limit = int(args.get('limit', 50))
     offset = int(args.get('offset', 0))
@@ -279,6 +311,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> \
     for inc in results.get('objects'):
         id = inc.get('_id')
         start_time = inc.get('start_time')
+        severity = inc.get('severity')
         if not id or "-" not in id or not start_time:
             demisto.debug(
                 f'{INTEGRATION_NAME} - Fetch incidents: skipped fetched incident because no start time or id')
@@ -287,6 +320,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> \
         incident = {
             'name': f"INC-{id.split('-')[0].upper()}",
             'occurred': timestamp_to_datestring(start_time, DATE_FORMAT),
+            'severity': incident_severity_to_dbot_score(severity),
             'rawJSON': json.dumps(inc)
         }
         incidents.append(incident)
@@ -389,9 +423,11 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> \
             id=res.get("_id"),
             os_version=res.get("guest_agent_details", {}).get(
                 "os_details", {}).get("os_display_name"),
+            # TODO: map to string value
             ip_address=", ".join(res.get("ip_addresses", [])),
             mac_address=", ".join(res.get("mac_addresses", [])),
-            os=str(res.get("guest_agent_details", {}).get("os", "0")),
+            os=map_guardicore_os(res.get("guest_agent_details", {}).get("os")),
+            status='Online' if res.get('status') == "on" else 'Offline',
             vendor=f'{INTEGRATION_NAME} Response')
 
         endpoint_context = endpoint.to_context().get(

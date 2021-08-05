@@ -26,19 +26,19 @@ configuration:
     required: false
     defaultvalue: null
     type: 0
-    additionalinfo: Fetch incidents - Guardicore Source Incident Value
+    additionalinfo: Fetch incidents - Guardicore Source Incident Value (eg Environment:*, App:*, Role:*)
   - name: destination
     display: Desctination
     required: false
     defaultvalue: null
     type: 0
-    additionalinfo: Fetch incidents - Guardicore Desctination Incident Value
+    additionalinfo: Fetch incidents - Guardicore Desctination Incident Value (eg Environment:*, App:*, Role:*)
   - name: tag
     display: Tag
     required: false
     defaultvalue: null
     type: 0
-    additionalinfo: null
+    additionalinfo: Fetch incidents - Guardicore Tag Incident Value (eg Reputation, Internal, Blocked Traffic)
   - name: incident_type
     display: Incident Type
     required: false
@@ -56,7 +56,7 @@ configuration:
     required: false
     defaultvalue: null
     type: 16
-    additionalinfo: Fetch incidents - Guardicore Incident Severity Value
+    additionalinfo: Fetch incidents - Guardicore Incident Severity Value (Default is All)
     options:
       - Low
       - Medium
@@ -75,6 +75,12 @@ configuration:
     type: 0
     additionalinfo: Fetch incidents - First fetch timestamp (<number> <time unit>,
       e.g., 12 hours, 7 days)
+  - name: timeout
+    display: Global timeout to all requests
+    required: false
+    defaultvalue: "10"
+    type: 0
+    additionalinfo: ""
   - name: insecure
     display: Trust any certificate (not secure)
     required: false
@@ -95,12 +101,6 @@ configuration:
     name: isFetch
     required: false
     type: 8
-  - name: timeout
-    display: Global timeout to all requests
-    required: false
-    defaultvalue: "10"
-    type: 0
-    additionalinfo: ""
 description: GuardiCore v2 Integration allows to get information about incidents
   and endpoints (assets) via the guardicore api.
 display: GuardiCore v2
@@ -996,13 +996,13 @@ script:
           type: String
     - arguments:
         - default: false
-          description: From time
+          description: From time (ISO8601 or <number> <time unit>, e.g., 12 hours, 7 days)
           isArray: false
           name: from_time
           required: true
           secret: false
         - default: false
-          description: To time
+          description: To time (ISO8601 or <number> <time unit>, e.g., 12 hours, 7 days)
           isArray: false
           name: to_time
           required: true

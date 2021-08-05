@@ -221,7 +221,7 @@
                 "endCol": 2,
                 "fieldId": "dbotclosed",
                 "height": 22,
-                "id": "incident-closed-field",
+                "id": "incident-close-field",
                 "index": 1,
                 "sectionItemType": "field",
                 "startCol": 1
@@ -336,9 +336,9 @@
               },
               {
                 "endCol": 2,
-                "fieldId": "dbotclosed",
+                "fieldId": "closetime",
                 "height": 22,
-                "id": "1b2ce6f0-ed56-11eb-b6cc-d9d8af995038",
+                "id": "201c4b90-f5f5-11eb-9621-a79ea81203c7",
                 "index": 2,
                 "sectionItemType": "field",
                 "startCol": 0
