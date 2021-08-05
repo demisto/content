@@ -134,6 +134,7 @@ class AADClient(MicrosoftClient):
         if country:
             filter_arguments.append(f"location/countryOrRegion eq '{country}'")
 
+        demisto.info('\n\n*** azure_ad_identity_protection_risk_detection_list_raw, filter_arguments: ' + str(filter_arguments) + '\n\n')
         return self.query_list(url_suffix='riskDetections',
                                filter_arguments=filter_arguments,
                                limit=limit,
@@ -240,9 +241,11 @@ def azure_ad_identity_protection_risky_users_dismiss_command(client: AADClient, 
     return client.azure_ad_identity_protection_risky_users_dismiss(**kwargs)
 
 
-def fetch_incidents(client: AADClient, **kwargs):
+def fetch_incidents(client: AADClient, params: Dict[str, str]):
+    demisto.info('\n\n*** fetch_incidents, params: ' + str(params) + '\n\n')
 
     last_run: Dict[str, str] = demisto.getLastRun()
+    demisto.info('\n\n*** fetch_incidents, last_run: ' + str(last_run) + '\n\n')
     demisto.debug(f'last run: {last_run}')
 
     last_fetch = last_run.get('last_item_time', '')
@@ -255,24 +258,33 @@ def fetch_incidents(client: AADClient, **kwargs):
     last_fetch_datetime: datetime = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
     demisto.debug(f'last_fetch_datetime: {last_fetch_datetime}')
 
-    finished_fetch_ok: bool = True
-    incidents: List = []
-
-    risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(**kwargs)
+    risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(
+        limit=int(params.get('fetch_limit', '50')),
+        filter_expression=params.get('fetch_filter_expression', ''),
+        next_link=params.get('', ''),
+        user_id=params.get('fetch_user_id', ''),
+        user_principal_name=params.get('fetch_user_principal_name', ''),
+        country=params.get('', ''),
+    )
     values: list = risk_detection_list_raw.get('value', [])
-    demisto.debug(f'len(values): ' + str(len(values)))
+    # demisto.info('\n\n*** fetch_incidents, values: ' + str(values) + '\n\n')
+    demisto.debug('len(values): ' + str(len(values)))
+
+    incidents: List = []
+    # {'id': 'b7d9b782ed160b3000a9906be230ce91d1702949ddb49d326f3c2510576bdf13', 'requestId': 'e7a62d3b-8367-414b-8fd2-95fff3563801', 'correlationId': '1618d4b2-4a02-4f7a-a1e7-033b10b5313b', 'riskType': 'NewCountry', 'riskEventType': 'newCountry', 'riskState': 'dismissed', 'riskLevel': 'medium', 'riskDetail': 'adminDismissedAllRiskForUser', 'source': 'MicrosoftCloudAppSecurity', 'detectionTimingType': 'offline', 'activity': 'signin', 'tokenIssuerType': 'AzureAD', 'ipAddress': '84.207.227.14', 'activityDateTime': '2021-07-15T11:02:54Z', 'detectedDateTime': '2021-07-15T11:08:54Z', 'lastUpdatedDateTime': '2021-07-20T13:56:42.4023143Z', 'userId': '3fa9f28b-eb0e-463a-ba7b-8089fe9991e2', 'userDisplayName': 'Avishai Brandeis', 'userPrincipalName': 'avishai@demistodev.onmicrosoft.com', 'additionalInfo': '[{"Key":"userAgent","Value":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"},{"Key":"alertUrl","Value":"https://demistodev.portal.cloudappsecurity.com/#/alerts/60f01746cdbeaf0b87f69a30"}]', 'location': {'city': 'Amsterdam', 'state': 'Noord-Holland', 'countryOrRegion': None, 'geoCoordinates': {'latitude': 52.30905, 'longitude': 4.94019}}}
+
+    for current_value in values:
+        demisto.info('\n\n*** , current_value: ' + str(current_value) + '\n\n')
 
     # TODO Implement
     # if error_fetching:
     #     finished_fetch_ok = False
 
-    if finished_fetch_ok or (incidents and len(incidents) > 0):
+    if len(incidents) > 0:
         demisto.incidents(incidents)
         demisto.setLastRun({
             'last_item_time': timestamp_to_datestring(incidents[-1]['time'])
         })
-    else:
-        demisto.incidents([])
 
 
 def start_auth(client: AADClient) -> CommandResults:
@@ -334,7 +346,7 @@ def main() -> None:
         elif command == 'azure-ad-identity-protection-risky-user-dismiss':
             return_results(azure_ad_identity_protection_risky_users_dismiss_command(client, **args))
         elif command == 'fetch-incidents':
-            return_results(fetch_incidents(client, **args))
+            return_results(fetch_incidents(client, params))
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')

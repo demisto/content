@@ -33,6 +33,37 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: '50'
+  display: Fetch limit
+  additionalinfo: Maximum number of incidents per fetch (even if a higher number is configured). Default is 50.
+  name: fetch_limit
+  required: false
+  type: 0
+- display: Fetch filter expression
+  name: fetch_filter_expression
+  required: false
+  type: 0
+- display: Fetch User ID
+  additionalinfo: Comma separated of User IDs
+  name: fetch_user_id
+  required: false
+  type: 0
+- display: Fetch User Principal Name
+  name: fetch_user_principal_name
+  required: false
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 0
 description: Gets information from Azure Active Directory Identity Protection service.
 display: Azure Active Directory Identity Protection (Beta)
 name: Azure Active Directory Identity Protection
@@ -425,9 +456,137 @@ script:
       the targeted user's risk level to none.
     execution: false
     name: azure-ad-identity-protection-risky-user-dismiss
+  - arguments:
+    - default: false
+      description: The date and time that the risky user was last updated, formatted as `<number> <time unit>`, e.g., `12 hours`, `7 days`.
+      isArray: false
+      name: updated_time
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Risk level of the detected risky user. The possible values are low,
+        medium, high, hidden, none, and unknownFutureValue.
+      isArray: false
+      name: risk_level
+      predefined:
+      - low
+      - medium
+      - high
+      - hidden
+      - none
+      - unknownFeatureValue
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: State of the user's risk. The possible values are none, confirmedSafe,
+        remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
+      isArray: false
+      name: risk_state
+      predefined:
+      - none
+      - confirmedSafe
+      - remediated
+      - dismissed
+      - atRisk
+      - confirmedCompromised
+      - unknownFutureValue
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Details of the detected risk. The possible values are limited to none, adminGeneratedTemporaryPassword,
+        userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe,
+        aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser,
+        adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue.
+      isArray: false
+      name: risk_detail
+      predefined:
+      - none
+      - adminGeneratedTemporaryPassword
+      - userPerformedSecuredPasswordChange
+      - userPerformedSecuredPasswordReset
+      - adminConfirmedSigninSafe
+      - aiConfirmedSigninSafe
+      - userPassedMFADrivenByRiskBasedPolicy
+      - adminDismissedAllRiskForUser
+      - adminConfirmedSigninCompromised
+      - hidden
+      - adminConfirmedUserCompromised
+      - unknownFutureValue
+      required: false
+      secret: false
+    - default: false
+      description: A custom query in OData syntax. Using this overrides all
+        arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters.
+      isArray: false
+      name: filter_expression
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of results to provide.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A link that specifies a starting point for subsequent calls.
+        Using this argument overrides all other arguments.
+      isArray: false
+      name: next_link
+      required: false
+      secret: false
+    - default: false
+      description: Risky user principal name.
+      isArray: false
+      name: user_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the properties of a collection of riskDetection objects.
+    execution: false
+    name: azure-ad-identity-protection-fetch
+    outputs:
+    - contextPath: AADIdentityProtection.RiskyUsers.id
+      description: Unique ID of the risky user.
+      type: string
+    - contextPath: AADIdentityProtection.RiskyUsers.isDeleted
+      description: Indicates whether the user is deleted.
+      type: Boolean
+    - contextPath: AADIdentityProtection.RiskyUsers.isProcessing
+      description: Indicates whether a user's risky state is being processed by the
+        backend.
+      type: Boolean
+    - contextPath: AADIdentityProtection.RiskyUsers.riskLastUpdatedDateTime
+      description: The date and time that the risky user was last updated. The DateTimeOffset
+        type represents date and time information using the ISO 8601 format and is always
+        in UTC time.
+      type: DateTime
+    - contextPath: AADIdentityProtection.RiskyUsers.riskLevel
+      description: Risk level of the detected risky user. The possible values are low,
+        medium, high, hidden, none, and unknownFutureValue.
+      type: string
+    - contextPath: AADIdentityProtection.RiskyUsers.riskState
+      description: State of the user's risk. The possible values are none, confirmedSafe,
+        remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
+      type: string
+    - contextPath: AADIdentityProtection.RiskyUsers.riskDetail
+      description: Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword,
+        userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe,
+        aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser,
+        adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue.
+      type: string
+    - contextPath: AADIdentityProtection.RiskyUsers.userDisplayName
+      description: Risky user display name.
+      type: string
+    - contextPath: AADIdentityProtection.RiskyUsers.userPrincipalName
+      description: Risky user principal name.
+      type: string
   dockerimage: demisto/crypto:1.0.0.14297
   feed: false
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
