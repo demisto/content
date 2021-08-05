@@ -1,4 +1,4 @@
-Use the Microsoft Teams integration to send messages and notifications to your team members and create meetings. This integration was integrated and tested with version 1.0 of Microsoft Teams.
+Use the Microsoft Teams integration to send messages and notifications to your team members and create meetings. 
 
 To create an instance of the Microsoft Teams integration in Cortex XSOAR, complete the following:
 
