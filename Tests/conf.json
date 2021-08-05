@@ -3462,12 +3462,6 @@
             "integrations": "AzureWAF"
         },
         {
-            "playbookID": "SOCRadarThreatFusion-Test"
-        },
-        {
-            "playbookID": "SOCRadarIncidents-Test"
-        },
-        {
             "integrations": "SOCRadarIncidents",
             "playbookID": "SOCRadarIncidents-Test"
         },
@@ -3567,6 +3561,8 @@
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
         "SolarWinds": "No instance - developed by Crest",
+        "SOCRadarIncidents": "No instance - developed by partner",
+        "SOCRadarThreatFusion": "No instance - developed by partner",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
         "VMware Workspace ONE UEM (AirWatch MDM)": "No instance - developed by crest",
         "ServiceDeskPlus (On-Premise)": "No instance",
