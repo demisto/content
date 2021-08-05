@@ -643,7 +643,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of activities that match the specified filters.
+    description: Returns a list of activities that match the specified filters. In case of timeout errors, please consider increasing the timeout argument.
     execution: false
     name: microsoft-cas-activities-list
     outputs:
