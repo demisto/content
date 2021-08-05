@@ -102,7 +102,7 @@ configuration:
     type: 0
     additionalinfo: ""
 description: GuardiCore v2 Integration allows to get information about incidents
-  and endpoints (aseets) via the guardicore api.
+  and endpoints (assets) via the guardicore api.
 display: GuardiCore v2
 fromversion: 6.0.0
 name: GuardiCore v2
