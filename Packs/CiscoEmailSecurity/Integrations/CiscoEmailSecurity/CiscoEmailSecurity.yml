@@ -20,7 +20,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '2000'
-  display: request timeout
+  display: Request Timeout
   hidden: false
   name: timeout
   required: false
