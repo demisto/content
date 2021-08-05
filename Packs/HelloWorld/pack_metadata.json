@@ -15,13 +15,27 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
         "CommonPlaybooks": {
             "mandatory": true,
             "display_name": "Common Playbooks"
+        },
+        "HelloWorldNew": {
+            "mandatory": false,
+            "display_name": "HelloWorldNew"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
         }
-    }
+    },
+    "displayedImages": [
+        "CommonPlaybooks",
+        "HelloWorldNew",
+        "CommonTypes",
+        "CommonScripts"
+    ]
 }

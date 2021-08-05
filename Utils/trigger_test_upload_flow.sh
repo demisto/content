@@ -59,9 +59,10 @@ function create_new_pack {
   rename_files_and_folders "$pack_name" "$new_pack_name" "true"
 
   if [ "$pack_name" == "HelloWorld" ]; then
-    rename_files_and_folders "Hello_World" "Hello_World_New" "false"
-    rename_files_and_folders "helloworld" "helloworldnew" "false"
-    rename_files_and_folders "Sanity_Test" "Sanity_Test_New" "false"
+    rename_files_and_folders "Hello_World" "Hello_World_New" "true"
+    rename_files_and_folders "Hello World" "Hello World New" "true"
+    rename_files_and_folders "helloworld" "helloworldnew" "true"
+    rename_files_and_folders "Sanity_Test" "Sanity_Test_New" "true"
   fi
 
   cd "${original_path}" || fail
