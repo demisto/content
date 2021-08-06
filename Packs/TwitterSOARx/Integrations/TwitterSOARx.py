@@ -1,6 +1,4 @@
 ''' IMPORTS '''
-import requests
-import os
 import tweepy
 import json
 import urllib
