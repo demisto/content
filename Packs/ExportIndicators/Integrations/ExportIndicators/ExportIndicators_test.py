@@ -297,7 +297,6 @@ class TestHelperFunctions:
                 limit=limit
             )
             mocker.patch.object(indicator_searcher, 'search_indicators_by_version', side_effect=indicator_searcher_res)
-            # mocker.patch.object(ei, 'find_indicators_with_limit_loop', return_value=(iocs_json, 1))
             ei_vals = ei.find_indicators_with_limit(indicator_searcher)
             assert len(ei_vals) == limit
 
