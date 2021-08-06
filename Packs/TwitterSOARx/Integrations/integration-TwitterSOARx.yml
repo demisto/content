@@ -39,8 +39,6 @@ configuration:
 script:
   script: |-
     ''' IMPORTS '''
-    import requests
-    import os
     import tweepy
     import json
     import urllib
