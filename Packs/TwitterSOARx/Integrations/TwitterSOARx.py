@@ -2,6 +2,7 @@
 import tweepy
 import json
 import urllib
+import requests
 class Client(BaseClient):
 
     def auth():
