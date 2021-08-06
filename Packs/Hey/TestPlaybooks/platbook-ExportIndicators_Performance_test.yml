@@ -1096,7 +1096,7 @@ tasks:
             value:
               complex:
                 root: HttpRequest.Response.Headers
-                accessor: X-Edl-Query-Time-Secs
+                accessor: X-Exportindicators-Query-Time-Secs
                 transformers:
                 - operator: round
             iscontext: true
@@ -1180,7 +1180,7 @@ tasks:
             value:
               complex:
                 root: HttpRequest.Response.Headers
-                accessor: X-Edl-Query-Time-Secs
+                accessor: X-Exportindicators-Query-Time-Secs
                 transformers:
                 - operator: round
             iscontext: true
@@ -1334,7 +1334,7 @@ tasks:
             value:
               complex:
                 root: HttpRequest.Response.Headers
-                accessor: X-Edl-Query-Time-Secs
+                accessor: X-Exportindicators-Query-Time-Secs
                 transformers:
                 - operator: round
             iscontext: true
@@ -1418,7 +1418,7 @@ tasks:
             value:
               complex:
                 root: HttpRequest.Response.Headers
-                accessor: X-Edl-Query-Time-Secs
+                accessor: X-Exportindicators-Query-Time-Secs
                 transformers:
                 - operator: round
             iscontext: true
@@ -1537,7 +1537,7 @@ tasks:
             value:
               complex:
                 root: HttpRequest.Response.Headers
-                accessor: X-Edl-Query-Time-Secs
+                accessor: X-Exportindicators-Query-Time-Secs
                 transformers:
                 - operator: round
             iscontext: true
@@ -1656,7 +1656,7 @@ tasks:
             value:
               complex:
                 root: HttpRequest.Response.Headers
-                accessor: X-Edl-Query-Time-Secs
+                accessor: X-Exportindicators-Query-Time-Secs
                 transformers:
                 - operator: round
             iscontext: true
@@ -1740,7 +1740,7 @@ tasks:
             value:
               complex:
                 root: HttpRequest.Response.Headers
-                accessor: X-Edl-Query-Time-Secs
+                accessor: X-Exportindicators-Query-Time-Secs
                 transformers:
                 - operator: round
             iscontext: true
@@ -1859,7 +1859,7 @@ tasks:
             value:
               complex:
                 root: HttpRequest.Response.Headers
-                accessor: X-Edl-Query-Time-Secs
+                accessor: X-Exportindicators-Query-Time-Secs
                 transformers:
                 - operator: round
             iscontext: true
@@ -1978,7 +1978,7 @@ tasks:
             value:
               complex:
                 root: HttpRequest.Response.Headers
-                accessor: X-Edl-Query-Time-Secs
+                accessor: X-Exportindicators-Query-Time-Secs
                 transformers:
                 - operator: round
             iscontext: true
