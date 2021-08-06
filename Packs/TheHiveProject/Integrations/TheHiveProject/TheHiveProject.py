@@ -4,6 +4,8 @@ from CommonServerPython import *
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
 
 class Client(BaseClient):
 
@@ -339,7 +341,7 @@ class Client(BaseClient):
                 "query": [
                     {
                         "_name": "getCase",
-                        "idOrName": case_id
+                        "idOrName": case_id if case_id else ''
                     },
                     {
                         "_name": "observables"
@@ -705,7 +707,6 @@ def update_task_command(client: Client, args: dict):
             outputs=updated_task,
             readable_output=read
         )
-
 
 def get_users_list_command(client: Client, args: dict = None):
     users = client.get_users()
