@@ -102,7 +102,7 @@ script:
                 search_url += "&lang=" + demisto.args().get('lang')
                 SUPPORTED_LANGS = ['en','ar','bn','cs','da','de','el','es','fa','fi','fil','fr','he','hi','hu','id','it','ja','ko','msa','nl','no','pl','pt','ro','ru','sv','th','tr','uk','ur','vi','zh-cn','zh-tw']
                 if demisto.args().get('lang') not in SUPPORTED_LANGS:
-                    return_error('Language code is not supported. For a list of supported langauge codes, visit https://developer.twitter.com/en/docs/twitter-for-websites/supported-languages')
+                    return_error('Language code is not supported. For a list of supported language codes, visit https://developer.twitter.com/en/docs/twitter-for-websites/supported-languages')
             if demisto.args().get('result_type'):
                 search_url += "&result_type=" + (demisto.args().get('result_type')).lower()
                 SUPPORTED_RESULT_TYPES = ['popular', 'recent', 'mixed']
