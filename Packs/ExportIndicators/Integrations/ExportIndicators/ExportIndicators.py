@@ -240,7 +240,7 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
             'sort_field': request_args.sort_field,
             'sort_order': request_args.sort_order,
         })
-    return out_dict[CTX_VALUES_KEY]
+    return out_dict[CTX_VALUES_KEY] if CTX_VALUES_KEY in out_dict else []
 
 
 def find_indicators_with_limit(indicator_searcher: IndicatorsSearcher) -> list:
