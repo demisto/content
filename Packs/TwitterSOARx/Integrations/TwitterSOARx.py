@@ -75,7 +75,7 @@ class Client(BaseClient):
                 int(demisto.args().get('count'))
             except:
                 return_error("Count must be an integer less than or equal to 100.")
-            if int(demisto.args().get('count')) > 100:
+            if int(demisto.args().get('count')) < 100:
                 search_url += "&count=" + demisto.args().get('count')
             else:
                 print("Error: Count must not exceed 100. Count was set to 100.")
