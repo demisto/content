@@ -17,17 +17,24 @@ ERROR_CODES_TO_SKIP = [
 
 
 class Client:
-    def __init__(self, user) -> None:
-        self.user = user    
+    def __init__(self, user: Users, remove_from_sharing: bool, transfer_sheets: bool, transfer_to_email: Optional[str]) -> None:
+        self.user = user
+        self.remove_from_sharing = remove_from_sharing
+        self.transfer_sheets = transfer_sheets
+        self.transfer_to_email = transfer_to_email
+
     def test(self):
         """ Tests connectivity with the application. """
+        res = self.user.get_current_user().to_dict()
 
-        uri = '/test'                                 # TODO: replace to a valid test API endpoint
-        self._http_request(method='GET', url_suffix=uri)
+        if res.get('id'):
+            return 'ok'
+        else:
+            return res.get('result').get('message') or res
 
     def get_user(self, email: str) -> Optional[IAMUserAppData]:
-        """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
-        that holds the user_id, username, is_active and app_data attributes given in the query response.
+        """ Queries the user in the application using smartsheet SDK by its email, and returns an IAMUserAppData object
+        that holds the user_id, is_active and app_data attributes given in the query response.
 
         :type email: ``str``
         :param email: Email address of the user
@@ -36,19 +43,18 @@ class Client:
         :rtype: ``Optional[IAMUserAppData]``
         """
         res = self.user.list_users(email=email).to_dict()
-        
+
         if res and len(res.get('data', [])) == 1:
             user_app_data = res.get('data')[0]
 
             user_id = user_app_data.get('id')
-            is_active = user_app_data.get('status') == 'ACTIVE'
-            username = user_app_data.get('userName')
+            is_active = user_app_data.get('status') in ['ACTIVE', 'PENDING']
 
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+            return IAMUserAppData(user_id, None, is_active, user_app_data)
         return None
 
     def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
-        """ Creates a user in the application using REST API.
+        """ Creates a user in the application using smartsheet SDK.
 
         :type user_data: ``Dict[str, Any]``
         :param user_data: User data in the application format
@@ -62,15 +68,15 @@ class Client:
 
         if res.get('resultCode') != 0:
             raise DemistoException(res.get('message'), res=res)
-        
+
         user_app_data = res.get('result')
         user_id = user_app_data.get('id')
-        is_active = user_app_data.get('status', 'ACTIVE') == 'ACTIVE'
+        is_active = user_app_data.get('status', 'ACTIVE') in ['ACTIVE', 'PENDING']
 
         return IAMUserAppData(user_id, None, is_active, user_app_data)
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
-        """ Updates a user in the application using REST API.
+        """ Updates a user in the application using smartsheet SDK.
 
         :type user_id: ``str``
         :param user_id: ID of the user in the application
@@ -81,24 +87,31 @@ class Client:
         :return: An IAMUserAppData object that contains the data of the updated user in the application.
         :rtype: ``IAMUserAppData``
         """
-        res = self.user.update_user(user_id, smartsheet.models.User(user_data))
+        res = self.user.update_user(user_id, smartsheet.models.User(user_data)).to_dict()
 
         if res.get('resultCode') != 0:
             raise DemistoException(res.get('message'), res=res)
 
         user_app_data = res.get('result')
         user_id = user_app_data.get('id')
-        is_active = user_app_data.get('status') == 'ACTIVE'
+        is_active = user_app_data.get('status', 'ACTIVE') in ['ACTIVE', 'PENDING']
 
         return IAMUserAppData(user_id, None, is_active, user_app_data)
 
-    def enable_user(self, user_id: str) -> IAMUserAppData:
-        # No need to implement - when user is terminated it is removed, 
+    def enable_user(self, user_id: str) -> None:
+        # No need to implement - when user is terminated it is removed,
         # so a rehire should execute create_user().
-        raise NotImplementedError()
+        return None
+
+    def get_user_to_transfer_sheets(self) -> Optional[str]:
+        if self.transfer_to_email:
+            res = self.get_user(self.transfer_to_email)
+            if res:
+                return res.id
+        return None
 
     def disable_user(self, user_id: str) -> IAMUserAppData:
-        """ Removes a user in the application using REST API.
+        """ Removes a user in the application using smartsheet SDK.
 
         :type user_id: ``str``
         :param user_id: ID of the user in the application
@@ -106,12 +119,13 @@ class Client:
         :return: An IAMUserAppData object that contains the data of the user in the application.
         :rtype: ``IAMUserAppData``
         """
-        # Note: DISABLE user API endpoints might vary between different APIs.
-        # In this example, we use the same endpoint as in update_user() method,
-        # But other APIs might have a unique endpoint for this request.
-
-        user_data = {'active': False}               # TODO: make sure you pass the correct query parameters
-        return self.remove_user(user_id, transfer_to=transfer_to, transfer_sheets=transfer_sheets, remove_from_sharing=remove_from_sharing)
+        res = self.user.remove_user(
+            user_id,
+            transfer_to=self.get_user_to_transfer_sheets(),
+            transfer_sheets=self.transfer_sheets,
+            remove_from_sharing=self.remove_from_sharing
+        ).to_dict()
+        return IAMUserAppData(user_id, None, False, res)
 
     def get_app_fields(self) -> Dict[str, Any]:
         """ Gets a dictionary of the user schema fields in the application and their description.
@@ -119,15 +133,13 @@ class Client:
         :return: The user schema fields dictionary
         :rtype: ``Dict[str, str]``
         """
-
-        uri = '/schema'                             # TODO: replace to the correct GET Schema API endpoint
-        res = self._http_request(
-            method='GET',
-            url_suffix=uri
-        )
-
-        fields = res.get('result', [])
-        return {field.get('name'): field.get('description') for field in fields}
+        default_fields_list = ['email', 'name', 'firstName', 'lastName',
+                               'admin', 'licensedSheetCreator', 'groupAdmin', 'resourceViewer']
+        fields_to_exclude = ['id', 'profileImage', 'status', 'sheetCount', 'customWelcomeScreenViewed']
+        data = self.user.list_users(page_size=1).to_dict().get('data', [])
+        if not data:
+            return {field: '' for field in default_fields_list}
+        return {field: '' for field in data[0].keys() if field not in fields_to_exclude}
 
     @staticmethod
     def handle_exception(user_profile: IAMUserProfile,
@@ -204,9 +216,7 @@ def get_error_details(res: Dict[str, Any]) -> str:
 
 def test_module(client: Client):
     """ Tests connectivity with the client. """
-
-    client.test()
-    return_results('ok')
+    return client.test()
 
 
 def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
@@ -224,6 +234,13 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
+def get_transfer_to_email(args: Dict[str, Any], default: Optional[str] = None):
+    user_profile = safe_load_json(args.get('user-profile'))
+    if not user_profile or not user_profile.get('manageremail'):
+        return default
+    return user_profile.get('manageremail')
+
+
 def main():
     user_profile = None
     params = demisto.params()
@@ -239,12 +256,21 @@ def main():
     is_update_enabled = params.get("update_user_enabled")
     create_if_not_exists = params.get("create_if_not_exists")
 
+    remove_from_sharing = params.get("remove_from_sharing")
+    transfer_to_email = get_transfer_to_email(args, default=params.get("default_transfer_to"))
+    transfer_sheets = params.get("transfer_sheets")
+
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
                              create_if_not_exists, mapper_in, mapper_out)
 
     smartsheet_obj = smartsheet.Smartsheet(access_token=access_token)
     smartsheet_obj.errors_as_exceptions(False)
-    client = Client(user=smartsheet_obj)
+    client = Client(
+        user=Users(smartsheet_obj),
+        remove_from_sharing=remove_from_sharing,
+        transfer_sheets=transfer_sheets,
+        transfer_to_email=transfer_to_email
+    )
 
     demisto.debug(f'Command being called is {command}')
 
