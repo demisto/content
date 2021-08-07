@@ -268,7 +268,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ?n=80000
+                  simple: ?n=70000
     separatecontext: false
     loop:
       iscommand: false
@@ -1703,7 +1703,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ?n=80000&q=type:URL
+                  simple: ?n=70000&q=type:URL
     separatecontext: false
     view: |-
       {
@@ -1822,7 +1822,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ?n=80000&q=type:IP
+                  simple: ?n=70000&q=type:IP
     separatecontext: false
     view: |-
       {
@@ -1941,7 +1941,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ?n=80000&q=type:Domain
+                  simple: ?n=70000&q=type:Domain
     separatecontext: false
     view: |-
       {
@@ -2193,7 +2193,7 @@ inputs:
   playbookInputQuery:
 - key: iocs_in_xsoar
   value:
-    simple: "80000"
+    simple: "70000"
   required: false
   description: Expected number of indicators in the system.
   playbookInputQuery:
