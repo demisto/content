@@ -7891,7 +7891,7 @@ class IndicatorsSearcher:
                                                 size=size,
                                                 to_date=self._to_date,
                                                 value=self._value)
-        fetched_len = len(res.get('iocs', []) or [])
+        fetched_len = len(res.get('iocs') or [])
         if fetched_len == 0:
             raise StopIteration
         if self.limit:
@@ -7973,7 +7973,7 @@ class IndicatorsSearcher:
             page=self.page if use_paging else None
         )
         res = demisto.searchIndicators(**search_iocs_params)
-        if len(res.get('iocs', [])) > 0:
+        if len(res.get('iocs') or []) > 0:
             self._page += 1  # advance pages for search_after, as fallback
         else:
             self._search_is_done = True
