@@ -72,6 +72,9 @@ create-instances:
         echo "Skipping - not running in INSTANCE_TESTS build"
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+
+        git symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/master
+
         echo attempt 1: branch
         git diff --name-status origin/master...$CI_COMMIT_BRANCH || echo failed
 
