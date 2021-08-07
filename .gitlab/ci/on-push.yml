@@ -95,8 +95,14 @@ create-instances:
         git diff --name-status HEAD^ HEAD || echo failed
 
         echo attempt 6: master
+        git log -n 2 --pretty=%H || echo failed
+        echo phase2:
         git diff --name-status `git log -n 2 --pretty=%H` || echo failed
 
+        echo attempt 7: master
+        git log -n 3
+
+        echo additional tests
         echo rev-parse head
         git rev-parse @
         
