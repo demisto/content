@@ -73,8 +73,6 @@ create-instances:
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
 
-        git fetch origin master:refs/remotes/origin/master
-
         echo attempt 1: branch
         git diff --name-status origin/master...$CI_COMMIT_BRANCH || echo failed
 
@@ -98,6 +96,12 @@ create-instances:
 
         echo attempt 6: master
         git diff --name-status `git log -n 2 --pretty=%H` || echo failed
+
+        echo rev-parse head
+        git rev-parse @
+        
+        echo rev-parse prev commit
+        git rev-parse @~
 
         exit 1
 
