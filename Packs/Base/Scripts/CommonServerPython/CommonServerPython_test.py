@@ -2975,6 +2975,24 @@ def test_handle_proxy_with_http_prefix():
     assert proxies['https'] == 'https://testproxy:8899'
 
 
+def test_handle_proxy_with_socks5_prefix():
+    """
+        Given
+            proxy is configured in environment vars with socks5 (socks proxy) prefixes
+
+        When
+            run handle_proxy()
+
+        Then
+            the function will return proxies unchanged
+    """
+    os.environ['HTTP_PROXY'] = 'socks5://testproxy:8899'
+    os.environ['HTTPS_PROXY'] = 'socks5://testproxy:8899'
+    proxies = handle_proxy(checkbox_default_value=True)
+    assert proxies['http'] == 'socks5://testproxy:8899'
+    assert proxies['https'] == 'socks5://testproxy:8899'
+
+
 @pytest.mark.parametrize(argnames="dict_obj, keys, expected, default_return_value",
                          argvalues=[
                              ({'a': '1'}, ['a'], '1', None),

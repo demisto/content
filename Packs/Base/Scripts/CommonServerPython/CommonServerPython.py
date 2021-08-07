@@ -598,7 +598,8 @@ def add_http_prefix_if_missing(address=''):
         :rtype: ``string``
         :return: proxy address after the 'http://' prefix was added, if needed.
     """
-    if address and not (address.startswith('http://') or address.startswith('https://')):
+    if address and not \
+            (address.startswith('http://') or address.startswith('https://') or address.startswith('socks5://')):
         return 'http://' + address
     return address
 
@@ -630,9 +631,10 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
     """
     proxies = {}  # type: dict
     if demisto.params().get(proxy_param_name, checkbox_default_value):
+        ensure_proxy_has_http_prefix()
         proxies = {
-            'http': add_http_prefix_if_missing(os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', '')),
-            'https': add_http_prefix_if_missing(os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy', ''))
+            'http': os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', ''),
+            'https': os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy', '')
         }
     else:
         skip_proxy()
