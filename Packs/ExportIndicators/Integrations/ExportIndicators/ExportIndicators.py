@@ -182,7 +182,7 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
     now = datetime.now()
     # poll indicators into list from demisto
     iocs = []
-    out_dict = {}
+    out_dict: dict = {}
     limit = request_args.offset + request_args.limit
     indicator_searcher = IndicatorsSearcher(
         query=request_args.query,
