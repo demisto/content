@@ -2397,7 +2397,7 @@ def sc_delete_indicator_command(client: MsClient, args: Dict[str, str]) -> Comma
     Returns:
           An indication of whether the indicator was deleted successfully.
     """
-    indicator_id = args.get('indicator_id')
+    indicator_id = args['indicator_id']
     client.delete_indicator(indicator_id, SECURITY_CENTER_INDICATOR_ENDPOINT, use_security_center=True)
     return CommandResults(readable_output=f'Indicator ID: {indicator_id} was successfully deleted')
 
