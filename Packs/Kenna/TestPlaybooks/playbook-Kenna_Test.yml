@@ -1,6 +1,7 @@
 id: Kenna Test
 version: -1
 name: Kenna Test
+description: test playbook
 starttaskid: "0"
 tasks:
   "0":
@@ -21,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 235,
+          "x": 245,
           "y": 50
         }
       }
@@ -50,7 +51,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 235,
+          "x": 245,
           "y": 195
         }
       }
@@ -79,7 +80,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
+          "x": 470,
           "y": 1420
         }
       }
@@ -119,7 +120,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 572.5,
+          "x": 582.5,
           "y": 1770
         }
       }
@@ -158,7 +159,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 235,
+          "x": 245,
           "y": 370
         }
       }
@@ -183,8 +184,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 3170
+          "x": 705,
+          "y": 2995
         }
       }
     note: false
@@ -213,7 +214,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 2645
         }
       }
     note: false
@@ -260,7 +261,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 347.5,
+          "x": 357.5,
           "y": 720
         }
       }
@@ -289,7 +290,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 347.5,
+          "x": 357.5,
           "y": 895
         }
       }
@@ -335,7 +336,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 347.5,
+          "x": 357.5,
           "y": 1070
         }
       }
@@ -383,7 +384,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
+          "x": 470,
           "y": 1595
         }
       }
@@ -419,7 +420,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 572.5,
+          "x": 582.5,
           "y": 1945
         }
       }
@@ -459,7 +460,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 572.5,
+          "x": 582.5,
           "y": 2120
         }
       }
@@ -497,7 +498,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
+          "x": 470,
           "y": 1245
         }
       }
@@ -533,7 +534,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
+          "x": 695,
           "y": 2295
         }
       }
@@ -573,7 +574,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
+          "x": 695,
           "y": 2470
         }
       }
@@ -597,7 +598,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+      - "31"
     scriptarguments:
       id:
         complex:
@@ -611,50 +612,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 797.5,
+          "x": 705,
           "y": 2645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "27":
-    id: "27"
-    taskid: 04811235-eeb9-424e-810d-f2b634f39022
-    type: condition
-    task:
-      id: 04811235-eeb9-424e-810d-f2b634f39022
-      version: -1
-      name: check tag deletion
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: notContainsGeneral
-          left:
-            value:
-              complex:
-                root: Kenna
-                accessor: Assets.Tags
-                transformers:
-                - operator: toUpperCase
-            iscontext: true
-          right:
-            value:
-              simple: TestTag
-    view: |-
-      {
-        "position": {
-          "x": 797.5,
-          "y": 2820
         }
       }
     note: false
@@ -686,7 +645,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 347.5,
+          "x": 357.5,
           "y": 545
         }
       }
@@ -726,8 +685,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 2995
+          "x": 705,
+          "y": 2820
         }
       }
     note: false
@@ -742,8 +701,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3185,
-        "width": 1137.5,
+        "height": 3010,
+        "width": 1035,
         "x": 50,
         "y": 50
       }
@@ -752,4 +711,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: test playbook
