@@ -1,6 +1,7 @@
 """
 Cortex XSOAR Integration for IOC Parser.
 """
+
 from CommonServerPython import *
 
 import json
@@ -28,7 +29,7 @@ class Client(BaseClient):
         url = URL
         super().__init__(url, verify=verify, proxy=proxy)
 
-    def ioc_from_url(self, url: str) -> Dict[str, Any]:
+    def ioc_from_url(self, url: Optional[str]) -> Dict[str, Any]:
         """
         Extracts all IOCs from a URL.
         Args:
@@ -48,7 +49,7 @@ class Client(BaseClient):
             return_empty_response=True
         )
 
-    def ioc_from_json_text(self, text: str) -> Dict[str, Any]:
+    def ioc_from_json_text(self, text: Optional[str]) -> Dict[str, Any]:
         """
         Extracts all IOCs from a JSON text.
         Args:
@@ -68,7 +69,7 @@ class Client(BaseClient):
             return_empty_response=True
         )
 
-    def ioc_from_raw_text(self, raw_text: str) -> Dict[str, Any]:
+    def ioc_from_raw_text(self, raw_text: Optional[str]) -> Dict[str, Any]:
         """
         Extracts all IOCs from a raw text.
         Args:
@@ -87,7 +88,7 @@ class Client(BaseClient):
             return_empty_response=True
         )
 
-    def ioc_from_twitter(self, user_name: str) -> Dict[str, Any]:
+    def ioc_from_twitter(self, user_name: Optional[str]) -> Dict[str, Any]:
         """
         Extracts all IOCs from a twitter account
         Args:
@@ -124,7 +125,7 @@ def list_to_upper_case(lst: List[str]) -> List[str]:
     return [s.upper() for s in lst]
 
 
-def remove_unwanted_keys(response_data: Dict[str, List], keys: List[str]) -> None:
+def remove_unwanted_keys(response_data: Any, keys: List[str]) -> None:
     """
     Removes all keys that were not specified by the user as the desired keys to return
 
@@ -135,11 +136,11 @@ def remove_unwanted_keys(response_data: Dict[str, List], keys: List[str]) -> Non
 
     keys_list = list(response_data.keys())
     for ioc_type in keys_list:
-        if ioc_type not in keys or not response_data[ioc_type]:
+        if ioc_type.upper() not in keys or not response_data[ioc_type]:
             del response_data[ioc_type]
 
 
-def limit_response(response_data: Dict[str, List], limit: int) -> Dict[str, List]:
+def limit_response(response_data: Any, limit: int) -> dict:
     """
     Trims the result from the API according to limit parameter.
     Args:
@@ -150,19 +151,36 @@ def limit_response(response_data: Dict[str, List], limit: int) -> Dict[str, List
         New dictionary with at most "limit" results
     """
 
-    limited_response: Dict[str, List] = {}
+    limited_response: Dict[str, List[str]] = {}
     for ioc_type, iocs in response_data.items():
-        limited_response[ioc_type] = []
         for ioc in iocs:
             if limit > 0:
-                limited_response.get(ioc_type).append(ioc)
+                limited_response.setdefault(ioc_type, []).append(ioc)
                 limit -= 1
             else:
                 return limited_response
     return limited_response
 
 
-def remove_unwanted_data_from_response(response: Dict[str, Any], keys: List[str], limit: int) -> Dict[str, List]:
+def is_empty_response(response: Any) -> bool:
+    """
+    Checks if the response from API is empty
+    Args:
+        response: response object (the return value from _http_request method)
+
+    Returns:
+        true if the response is empty and false otherwise.
+    """
+    try:
+        status_code = response.status_code
+        if status_code == 204:
+            return True
+        return False
+    except AttributeError:
+        return False
+
+
+def remove_unwanted_data_from_response(response: dict, keys: List[str], limit: Optional[int]) -> Any:
     """
     Removes all unwanted data from the response - ioc types that are not included in keys list,
     the meta data and limits the results (if necessary)
@@ -176,7 +194,7 @@ def remove_unwanted_data_from_response(response: Dict[str, Any], keys: List[str]
         and list of all iocs from this type as value.
     """
 
-    if not response:
+    if is_empty_response(response):
         raise ValueError('The response from the API is empty.')
     response_data = response.get('data')
     remove_unwanted_keys(response_data, keys)
@@ -193,18 +211,14 @@ def unite_all_tweets_into_dict(twitter_response: Dict[str, Any]) -> None:
         twitter_response: A dictionary that represents the response
     """
 
-    try:
-        response_data = twitter_response.get('data')
-    except Exception:
-        raise ValueError('The response from the API is empty')
-
-    united_data = {}
+    if is_empty_response(twitter_response):
+        raise ValueError('The response from the API is empty.')
+    response_data = twitter_response.setdefault('data', [])
+    united_data: Dict[str, List[str]] = {}
     for tweet in response_data:
         for ioc_type, iocs in tweet.get('data').items():
             for ioc in iocs:
-                if not united_data.get(ioc_type):
-                    united_data[ioc_type] = []
-                united_data.get(ioc_type).append(ioc)
+                united_data.setdefault(ioc_type, []).append(ioc)
 
     twitter_response['data'] = united_data
 
@@ -254,10 +268,10 @@ def ioc_from_url_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
     if not response_data:
         raise ValueError('There is no information about the requested keys')
     command_results = []
-    outputs = {'url': url, 'Results': []}
+    outputs: Dict[str, Any] = {'url': url, 'Results': []}
     for ioc_type, iocs in response_data.items():
         for ioc in iocs:
-            outputs['Results'].append({'type': ioc_type, 'value': ioc})
+            outputs.setdefault('Results', []).append({'type': ioc_type, 'value': ioc})
         command_results.append(CommandResults(
             readable_output=tableToMarkdown(f'results for {ioc_type} from {url}', iocs, headers=ioc_type),
             outputs_prefix='IOCParser.parseFromUrl',
@@ -285,7 +299,7 @@ def ioc_from_json_text_command(client: Client, args: Dict[str, Any]) -> List[Com
 
     data = args.get('data')
     try:
-        json.loads(data)
+        json.loads(str(data))
     except ValueError as e:
         raise ValueError(f'Data should be in JSON format. Error: {str(e)}')
     keys = list_to_upper_case(argToList(args.get('keys'))) or KEYS
@@ -299,10 +313,10 @@ def ioc_from_json_text_command(client: Client, args: Dict[str, Any]) -> List[Com
     if not response_data:
         raise ValueError('There is no information about the requested keys')
     command_results = []
-    outputs = {'data': data, 'Results': []}
+    outputs: Dict[str, Any] = {'data': data, 'Results': []}
     for ioc_type, iocs in response_data.items():
         for ioc in iocs:
-            outputs['Results'].append({'type': ioc_type, 'value': ioc})
+            outputs.setdefault('Results', []).append({'type': ioc_type, 'value': ioc})
         command_results.append(CommandResults(
             readable_output=tableToMarkdown(f'results for {ioc_type}', iocs, headers=ioc_type),
             outputs_prefix='IOCParser.parseFromJSONText',
@@ -399,11 +413,11 @@ def ioc_from_twitter_command(client: Client, args: Dict[str, Any]) -> List[Comma
     response_data = remove_unwanted_data_from_response(twitter_response, keys, limit)
     if not response_data:
         raise ValueError('There is no information about the requested keys')
-    command_results = []
-    outputs = {'data': twitter_account, 'Results': []}
+    command_results: List[CommandResults] = []
+    outputs: Dict[str, Any] = {'data': twitter_account, 'Results': []}
     for ioc_type, iocs in response_data.items():
         for ioc in iocs:
-            outputs['Results'].append({'type': ioc_type, 'value': ioc})
+            outputs.setdefault('Results', []).append({'type': ioc_type, 'value': ioc})
         command_results.append(CommandResults(
             readable_output=tableToMarkdown(f'results for {ioc_type} from {twitter_account}', iocs, headers=ioc_type),
             outputs_prefix='IOCParser.parseFromTwitter',

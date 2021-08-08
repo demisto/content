@@ -1,5 +1,8 @@
 import io
 import json
+
+from requests import Response
+
 from CommonServerPython import tableToMarkdown, DemistoException
 import demistomock as demisto
 import pytest
@@ -381,7 +384,9 @@ def test_ioc_from_url_command_empty_response(mocker, args):
         - Verify that ValueError is raised
     """
     client = create_client()
-    mocker.patch.object(client, 'ioc_from_url', return_value="")
+    response = Response()
+    response.status_code = 204
+    mocker.patch.object(client, 'ioc_from_url', return_value=response)
     with pytest.raises(ValueError) as e:
         ioc_from_url_command(client, args)
         if not e:
@@ -435,7 +440,9 @@ def test_ioc_from_json_text_command_empty_response(mocker, args):
         - Verify that ValueError is raised
     """
     client = create_client()
-    mocker.patch.object(client, 'ioc_from_json_text', return_value="")
+    response = Response()
+    response.status_code = 204
+    mocker.patch.object(client, 'ioc_from_json_text', return_value=response)
     with pytest.raises(ValueError) as e:
         ioc_from_json_text_command(client, args)
         if not e:
@@ -463,7 +470,7 @@ def test_ioc_from_raw_text_command_valid_response_for_data_field(mocker, args, r
 
 
 @pytest.mark.parametrize('args', [{'entry_id': MOCK_ENTRY_ID}])
-def test_ioc_from_raw_text_command_invalid_file_format(mocker, args):
+def test_ioc_from_raw_text_command_invalid_entry_id(mocker, args):
     """
         Given:
             - Invalid file path
@@ -497,8 +504,8 @@ def test_ioc_from_raw_text_command_invalid_command_arguments(mocker, args):
             assert False
 
 
-@pytest.mark.parametrize('args', [{'entry_id': "@212"}])
-def test_ioc_from_raw_text_command_invalid_entry_id(mocker, args):
+@pytest.mark.parametrize('args', [{'entry_id': MOCK_ENTRY_ID}])
+def test_ioc_from_raw_text_command_invalid_file_format(mocker, args):
     """
     Given:
         - Invalid entry id
@@ -526,7 +533,9 @@ def test_ioc_from_raw_text_command_empty_response(mocker, args):
         - Verify that ValueError is raised
     """
     client = create_client()
-    mocker.patch.object(client, 'ioc_from_raw_text', return_value="")
+    response = Response()
+    response.status_code = 204
+    mocker.patch.object(client, 'ioc_from_raw_text', return_value=response)
     with pytest.raises(ValueError) as e:
         ioc_from_raw_text_command(client, args)
         if not e:
@@ -571,7 +580,7 @@ def test_ioc_from_twitter_command_invalid_username(mocker, args):
 
 
 @pytest.mark.parametrize('args', [({'data': MOCK_USERNAME})])
-def test_ioc_from_url_command_empty_response(mocker, args):
+def test_ioc_from_twitter_command_empty_response(mocker, args):
     """
     Given:
         - A twitter account that does not contain IOCs
@@ -581,7 +590,9 @@ def test_ioc_from_url_command_empty_response(mocker, args):
         - Verify that ValueError is raised
     """
     client = create_client()
-    mocker.patch.object(client, 'ioc_from_twitter', return_value="")
+    response = Response()
+    response.status_code = 204
+    mocker.patch.object(client, 'ioc_from_twitter', return_value=response)
     with pytest.raises(ValueError) as e:
         ioc_from_twitter_command(client, args)
         if not e:
