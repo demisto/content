@@ -505,7 +505,7 @@ Gets a single event by the event ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | IllusionBlack.Event | Unknown | IllusionBLACK Single Event. | 
-| IllusionBlack.Event.attacker.id	 | Unknown | IllusionBLACK Event Attacker ID. | 
+| IllusionBlack.Event.attacker.id | Unknown | IllusionBLACK Event Attacker ID. | 
 | IllusionBlack.Event.decoy.id | Unknown | IllusionBLACK Event Decoy ID. | 
 | IllusionBlack.Event.id | Unknown | IllusionBLACK Event ID. | 
 | IllusionBlack.Event.severity | Unknown | IllusionBLACK Event Severity. | 

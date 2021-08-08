@@ -1130,7 +1130,7 @@ script:
       description: The number of entities (users, groups, and roles) that the policy
         is attached to.
       type: number
-    - contextPath: 'AWS.IAM.Policies.PermissionsBoundaryUsageCount '
+    - contextPath: 'AWS.IAM.Policies.PermissionsBoundaryUsageCount'
       description: The number of entities (users and roles) for which the policy is
         used to set the permissions boundary.
       type: number
@@ -1410,7 +1410,7 @@ script:
         has expired. Can be "True" or "False".
     description: Create/update password policy
     execution: true
-  dockerimage: demisto/boto3:2.0.0.20513
+  dockerimage: demisto/boto3:2.0.0.23135
   runonce: false
   subtype: python2
 tests:
