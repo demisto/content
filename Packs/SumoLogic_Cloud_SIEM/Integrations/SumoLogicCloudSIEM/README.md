@@ -2,7 +2,7 @@ Freeing the analyst with autonomous decisions.
 This integration was integrated and tested with version 6.1.0 of SumoLogicSEC.
 
 ## Prerequisites
-Only use this integration if your Cloud SIEM portal url ends with `.sumologic.net` - this can be verified via the url in your browser when logged into Cloud SIEM.
+Only use this integration if your Cloud SIEM portal url ends with `.sumologic.com` - this can be verified via the url in your browser when logged into Cloud SIEM.
 
 You'll need an access key in order to complete the instance setup. Instructions on how to generate access keys can be found [here](https://help.sumologic.com/Manage/Security/Access-Keys).
 
@@ -23,6 +23,7 @@ You'll need an access key in order to complete the instance setup. Instructions 
     | Fetch Limit | Fetch limit must not be greater than 20 | False |
     | Override default fetch query | Default fetch query is status:in\("new", "inprogress"\) | False |
     | First fetch time |  | False |
+    | Override Record Summary Fields | Record Summary Fields included when fetching Insights (override default) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -112,6 +113,7 @@ Get Insight details for a specific Insight ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | insight_id | The insight to retrieve details for. | Required | 
+| record_summary_fields | Record Summary Fields to include in the output (override default fields). | Optional | 
 
 
 #### Context Output
@@ -129,6 +131,7 @@ Get Insight details for a specific Insight ID.
 | SumoLogicSec.Insight.LastUpdatedBy | string | The last user to update the Insight | 
 | SumoLogicSec.Insight.Name | String | The name of the Insight | 
 | SumoLogicSec.Insight.ReadableId | String | The ID of the Insight in readable form | 
+| SumoLogicSec.InsightList.RecordSummaryFields | Array | Record Summary Fields associated with the Insight | 
 | SumoLogicSec.Insight.Resolution | String | Resolution for closed Insight | 
 | SumoLogicSec.Insight.Severity | String | The severity of the Insight | 
 | SumoLogicSec.Insight.Signals.contentType | String | Type of content that triggered the Signal | 
@@ -298,6 +301,7 @@ Search insights using available filters
 | asignee | User assigned to Insights. | Optional | 
 | offset | The number of items to skip before starting to collect the result set. Default is 0. | Optional | 
 | limit | The maximum number of items to return. Default is 10. | Optional | 
+| record_summary_fields | Record Summary Fields to include in the output (override default fields). | Optional | 
 
 
 #### Context Output
@@ -315,6 +319,7 @@ Search insights using available filters
 | SumoLogicSec.InsightList.LastUpdatedBy | String | The last user to update the Insight | 
 | SumoLogicSec.InsightList.Name | String | The name of the Insight | 
 | SumoLogicSec.InsightList.ReadableId | String | The ID of the Insight in readable form | 
+| SumoLogicSec.InsightList.RecordSummaryFields | Array | Record Summary Fields associated with the Insight | 
 | SumoLogicSec.InsightList.Resolution | String | Resolution for closed Insight | 
 | SumoLogicSec.InsightList.Severity | String | The severity of the Insight | 
 | SumoLogicSec.InsightList.Signals.contentType | String | Type of content that triggered the Signal | 
