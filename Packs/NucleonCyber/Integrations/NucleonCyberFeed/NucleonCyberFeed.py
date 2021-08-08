@@ -1,6 +1,5 @@
 from typing import Dict, List, Optional
 import urllib3
-import json
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -43,7 +42,7 @@ class Client(BaseClient):
 
         except ValueError as err:
             demisto.debug(str(err))
-            raise ValueError(f'Could not parse returned data as indicator. \n\nError massage: {err}')
+            raise ValueError(f'Could not parse returned data as indicator. \n\nError massage: {err}') from err
         return result
 
     def get_hashes(self, params: Dict[str, str], limit: int) -> List:
@@ -79,7 +78,7 @@ class Client(BaseClient):
         global_username = params.get('username')
         global_password = params.get('password')
         global_usrn = params.get('usrn')
-        global_client_id = params.get('clientid')
+        global_client_id = params.get('client_id')
         body = {'usrn': global_usrn, 'clientID': global_client_id, 'limit': limit}
         json_payload = self._http_request(
             'POST',
@@ -369,7 +368,7 @@ def get_indicators_command(client: Client,
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='NucleonCyber.Indicators',
-        outputs_key_field='',
+        outputs_key_field='value',
         raw_response=indicators,
         outputs=indicators,
     )
@@ -408,7 +407,7 @@ def get_hashes_command(client: Client,
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='NucleonCyber.Indicators.hash',
-        outputs_key_field='',  # in Xsoar it helps to update exist instead of adding new
+        outputs_key_field='hash',
         raw_response=hashes,
         outputs=hashes,
     )
@@ -432,7 +431,7 @@ def get_urls_command(client: Client,
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='NucleonCyber.Indicators.url',
-        outputs_key_field='',  # in Xsoar it helps to update exist instead of adding new
+        outputs_key_field='url', 
         raw_response=urls,
         outputs=urls,
     )
