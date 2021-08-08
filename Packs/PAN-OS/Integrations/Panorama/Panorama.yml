@@ -3332,6 +3332,12 @@ script:
       name: source-user
       required: false
       secret: false
+    - default: false
+      description: Target number of the firewall. Use only on a Panorama instance.
+      isArray: false
+      name: target
+      required: false
+      secret: false
     deprecated: false
     description: Checks whether a session matches a specified security policy. This
       command is only available on Firewall instances.
@@ -4654,7 +4660,7 @@ script:
       description: Installation status.
       type: string
     description: Installs specific content update file.
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
   longRunning: false

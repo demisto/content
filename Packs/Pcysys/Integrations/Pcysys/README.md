@@ -1,8 +1,8 @@
 ## Overview
 
-Integration with Pcysys. 
-This integration was integrated and tested with version 3.3.2 of Pentera by Pcysys
-## Pcysys Playbook
+Integration with Pentera. 
+This integration was integrated and tested with version 4.5.2 of Pentera
+## Pentera Playbook
 
 ## Use Cases
 
@@ -134,7 +134,7 @@ Operator and admin users
 ```
 
 ##### Human Readable Output
-### Test Template for Playbook: Done
+### Test Template for Playbook
 |EndTime|ID|StartTime|Status|TemplateName|
 |---|---|---|---|---|
 | 2020-02-13 17:10:58Z | 1581614052321.0 | 5e4583221deb8eda82b195c5 | 1581613858961.0 | Done | Test Template for Playbook |
@@ -213,11 +213,11 @@ User view, operator and admin users
 ```
 
 ##### Human Readable Output
-# Pentera Report for TaskRun ID 5e4583221deb8eda82b195c5### # Pentera Report for TaskRun ID 5e4583221deb8eda82b195c5
-|Duration|Operation Type|Parameters|Severity|Status|Techniques|Time|
-|---|---|---|---|---|---|---|
-| 31578 | BlueKeep (CVE-2019-0708) Vulnerability Discovery | Host: 192.168.1.2 |  | no results | Network Service Scanning(T1046) | 13/02/2020, 17:11:59 |
-| 31618 | BlueKeep (CVE-2019-0708) Vulnerability Discovery | Host: 192.168.1.1 |  | no results | Network Service Scanning(T1046) | 13/02/2020, 17:12:01 |
+### Pentera Report for TaskRun ID
+|Agent Name|Categories|Duration|Operation Type|Parameters|Severity|Status|Techniques|Time|
+|---|---|---|---|---|---|---|---|---|
+| default-node | Discovery, Reconnaissance | 31578 | BlueKeep (CVE-2019-0708) Vulnerability Discovery | Host: 192.168.1.2 | | no results | Network Service Scanning(T1046) | 13/02/2020, 17:11:59 |
+| default-node | Discovery, Reconnaissance | 31618 | BlueKeep (CVE-2019-0708) Vulnerability Discovery | Host: 192.168.1.1 | | no results | Network Service Scanning(T1046) | 13/02/2020, 17:12:01 |
 Integration log: Full Integration Log:
 Got command: pentera-get-task-run-full-action-report
 result is TEXT

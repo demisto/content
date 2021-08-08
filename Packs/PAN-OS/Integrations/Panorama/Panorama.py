@@ -707,14 +707,14 @@ def panorama_push_status_command(job_id: str):
 
     # WARNINGS - Job warnings
     status_warnings = []  # type: ignore
-    status_errors = []   # type: ignore
+    status_errors = []  # type: ignore
     devices = safeget(result, ["response", "result", "job", "devices", "entry"])
     if devices:
         for device in devices:
             device_warnings = safeget(device, ["details", "msg", "warnings", "line"])
             status_warnings.extend([] if not device_warnings else device_warnings)
-            status_errors = safeget(device, ["details", "msg", "errors", "line"])
-            status_errors.extend([] if not status_errors else status_errors)
+            device_errors = safeget(device, ["details", "msg", "errors", "line"])
+            status_errors.extend([] if not device_errors else device_errors)
     push_status_output["Warnings"] = status_warnings
     push_status_output["Errors"] = status_errors
 
@@ -736,23 +736,22 @@ def prettify_addresses_arr(addresses_arr: list) -> List:
     if not isinstance(addresses_arr, list):
         return prettify_address(addresses_arr)
     pretty_addresses_arr = []
+
     for address in addresses_arr:
         pretty_address = {'Name': address['@name']}
         if DEVICE_GROUP:
             pretty_address['DeviceGroup'] = DEVICE_GROUP
         if 'description' in address:
             pretty_address['Description'] = address['description']
-
         if 'ip-netmask' in address:
             pretty_address['IP_Netmask'] = address['ip-netmask']
-
         if 'ip-range' in address:
             pretty_address['IP_Range'] = address['ip-range']
-
         if 'fqdn' in address:
             pretty_address['FQDN'] = address['fqdn']
-
-        if 'tag' in address and 'member' in address['tag']:
+        if 'tag' in address and address['tag'] is not None and 'member' in address['tag']:
+            # handling edge cases in which the Tag value is None, e.g:
+            # {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}
             pretty_address['Tags'] = address['tag']['member']
 
         pretty_addresses_arr.append(pretty_address)
@@ -817,7 +816,9 @@ def prettify_address(address: Dict) -> Dict:
     if 'fqdn' in address:
         pretty_address['FQDN'] = address['fqdn']
 
-    if 'tag' in address and 'member' in address['tag']:
+    if 'tag' in address and address['tag'] is not None and 'member' in address['tag']:
+        # handling edge cases in which the Tag value is None, e.g:
+        # {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}
         pretty_address['Tags'] = address['tag']['member']
 
     return pretty_address
@@ -986,7 +987,9 @@ def prettify_address_groups_arr(address_groups_arr: list) -> List:
             pretty_address_group['DeviceGroup'] = DEVICE_GROUP
         if 'description' in address_group:
             pretty_address_group['Description'] = address_group['description']
-        if 'tag' in address_group and 'member' in address_group['tag']:
+        if 'tag' in address_group and address_group['tag'] is not None and 'member' in address_group['tag']:
+            # handling edge cases in which the Tag value is None, e.g:
+            # {'@name': 'test', 'static': {'member': 'test_address'}, 'tag': None}
             pretty_address_group['Tags'] = address_group['tag']['member']
 
         if pretty_address_group['Type'] == 'static':
@@ -1050,10 +1053,11 @@ def prettify_address_group(address_group: Dict) -> Dict:
     }
     if DEVICE_GROUP:
         pretty_address_group['DeviceGroup'] = DEVICE_GROUP
-
     if 'description' in address_group:
         pretty_address_group['Description'] = address_group['description']
-    if 'tag' in address_group and 'member' in address_group['tag']:
+    if 'tag' in address_group and address_group['tag'] is not None and 'member' in address_group['tag']:
+        # handling edge cases in which the Tag value is None, e.g:
+        # {'@name': 'test', 'static': {'member': 'test_address'}, 'tag': None}
         pretty_address_group['Tags'] = address_group['tag']['member']
 
     if pretty_address_group['Type'] == 'static':
@@ -1357,7 +1361,7 @@ def prettify_services_arr(services_arr: Union[dict, list]):
             pretty_service['DeviceGroup'] = DEVICE_GROUP
         if 'description' in service:
             pretty_service['Description'] = service['description']
-        if 'tag' in service and 'member' in service['tag']:
+        if 'tag' in service and service['tag'] is not None and 'member' in service['tag']:
             pretty_service['Tags'] = service['tag']['member']
 
         protocol = ''
@@ -1430,7 +1434,7 @@ def prettify_service(service: Dict):
         pretty_service['DeviceGroup'] = DEVICE_GROUP
     if 'description' in service:
         pretty_service['Description'] = service['description']
-    if 'tag' in service and 'member' in service['tag']:
+    if 'tag' in service and service['tag'] is not None and 'member' in service['tag']:
         pretty_service['Tags'] = service['tag']['member']
 
     protocol = ''
@@ -1609,7 +1613,9 @@ def prettify_service_groups_arr(service_groups_arr: list):
         }
         if DEVICE_GROUP:
             pretty_service_group['DeviceGroup'] = DEVICE_GROUP
-        if 'tag' in service_group and 'member' in service_group['tag']:
+        if 'tag' in service_group and service_group['tag'] is not None and 'member' in service_group['tag']:
+            # handling edge cases in which the Tag value is None, e.g:
+            # {'@name': 'sg_group', 'members': {'member': 'test_sg'}, 'tag': None}
             pretty_service_group['Tags'] = service_group['tag']['member']
 
         pretty_service_groups_arr.append(pretty_service_group)
@@ -1665,7 +1671,9 @@ def prettify_service_group(service_group: dict):
     }
     if DEVICE_GROUP:
         pretty_service_group['DeviceGroup'] = DEVICE_GROUP
-    if 'tag' in service_group and 'member' in service_group['tag']:
+    if 'tag' in service_group and service_group['tag'] is not None and 'member' in service_group['tag']:
+        # handling edge cases in which the Tag value is None, e.g:
+        # {'@name': 'sg_group', 'members': {'member': 'test_sg'}, 'tag': None}
         pretty_service_group['Tags'] = service_group['tag']['member']
 
     return pretty_service_group
@@ -2436,18 +2444,20 @@ def panorama_create_url_filter(
         override_allow_list: Optional[str] = None,
         override_block_list: Optional[str] = None,
         description: Optional[str] = None):
-    element = add_argument_list(url_category_list, action, True) + add_argument_list(override_allow_list, 'allow-list',
-                                                                                     True) + add_argument_list(
-        override_block_list, 'block-list', True) + add_argument(description, 'description',
-                                                                False) + "<action>block</action>"
+
+    element = add_argument_list(url_category_list, action, True) + \
+              add_argument_list(override_allow_list, 'allow-list', True) + \
+              add_argument_list(override_block_list, 'block-list', True) + \
+              add_argument(description, 'description', False)
 
     params = {
         'action': 'set',
         'type': 'config',
-        'xpath': XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']",
+        'xpath': f'{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']',
         'element': element,
         'key': API_KEY
     }
+
     result = http_request(
         URL,
         'POST',
@@ -4512,8 +4522,8 @@ def panorama_security_policy_match(application: Optional[str] = None, category: 
                                    destination: Optional[str] = None, destination_port: Optional[str] = None,
                                    from_: Optional[str] = None, to_: Optional[str] = None,
                                    protocol: Optional[str] = None, source: Optional[str] = None,
-                                   source_user: Optional[str] = None):
-    params = {'type': 'op', 'key': API_KEY,
+                                   source_user: Optional[str] = None, target: Optional[str] = None):
+    params = {'type': 'op', 'key': API_KEY, 'target': target,
               'cmd': build_policy_match_query(application, category, destination, destination_port, from_, to_,
                                               protocol, source, source_user)}
 
@@ -4580,8 +4590,11 @@ def prettify_query_fields(application: Optional[str] = None, category: Optional[
 
 
 def panorama_security_policy_match_command(args: dict):
-    if not VSYS:
-        raise Exception("The 'panorama-security-policy-match' command is only relevant for a Firewall instance.")
+    target = args.get('target')
+    if not VSYS and not target:
+        err_msg = "The 'panorama-security-policy-match' command is relevant for a Firewall instance " \
+                  "or for a Panorama instance, to be used with the target argument."
+        raise DemistoException(err_msg)
 
     application = args.get('application')
     category = args.get('category')
@@ -4594,7 +4607,7 @@ def panorama_security_policy_match_command(args: dict):
     source_user = args.get('source-user')
 
     matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
-                                                    protocol, source, source_user)
+                                                    protocol, source, source_user, target)
     if not matching_rules:
         return_results('The query did not match a Security policy.')
     else:

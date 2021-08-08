@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_valid_bool, convert_price, \
     get_updated_server_version, load_json, \
-    store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file,\
+    store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
     is_the_only_rn_in_block
 from Tests.Marketplace.marketplace_constants import PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
     PACKS_FOLDER, PackTags
@@ -46,7 +46,7 @@ TEST_METADATA = {
 AGGREGATED_CHANGELOG = {
     "1.0.1": {
         "releaseNotes": "dummy release notes",
-        "displayName": "1.0.0",
+        "displayName": "1.0.0 - 264879",
         "released": "2020-05-05T13:39:33Z"
     },
     "1.0.3": {
@@ -86,13 +86,12 @@ class TestMetadataParsing:
         dummy_pack._server_min_version = Metadata.SERVER_DEFAULT_MIN_VERSION
         dummy_pack._downloads_count = 10
         dummy_pack._displayed_integration_images = []
+        dummy_pack._user_metadata = dummy_pack_metadata
         dummy_pack._enhance_pack_attributes(
-            user_metadata=dummy_pack_metadata, index_folder_path="", pack_was_modified=False,
+            index_folder_path="", pack_was_modified=False,
             dependencies_data={}, statistics_handler=None
         )
-        parsed_metadata = dummy_pack._parse_pack_metadata(
-            user_metadata=dummy_pack_metadata, build_number="dummy_build_number", commit_hash="dummy_commit"
-        )
+        parsed_metadata = dummy_pack._parse_pack_metadata(build_number="dummy_build_number", commit_hash="dummy_commit")
 
         assert parsed_metadata['name'] == 'Test Pack Name'
         assert parsed_metadata['id'] == 'Test Pack Name'
@@ -126,9 +125,9 @@ class TestMetadataParsing:
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
         """
         dummy_pack._displayed_integration_images = []
+        dummy_pack._user_metadata = dummy_pack_metadata
         dummy_pack._enhance_pack_attributes(
-            user_metadata=dummy_pack_metadata, index_folder_path="", pack_was_modified=False,
-            dependencies_data={}, statistics_handler=None
+            index_folder_path="", pack_was_modified=False, dependencies_data={}, statistics_handler=None
         )
 
         assert dummy_pack._pack_name == 'Test Pack Name'
@@ -152,9 +151,9 @@ class TestMetadataParsing:
         """
 
         dummy_pack._displayed_integration_images = []
+        dummy_pack._user_metadata = {}
         dummy_pack._enhance_pack_attributes(
-            user_metadata={}, index_folder_path="", pack_was_modified=False,
-            dependencies_data={}, statistics_handler=None
+            index_folder_path="", pack_was_modified=False, dependencies_data={}, statistics_handler=None
         )
 
         assert dummy_pack._support_type == Metadata.XSOAR_SUPPORT
@@ -695,7 +694,7 @@ class TestChangelogCreation:
         modified_rn_file = 'modified dummy release notes'
         mocker.patch("builtins.open", mock_open(read_data=modified_rn_file))
         same_block_versions_dict = {'1.0.2': modified_rn_file, '1.0.3': modified_rn_file}
-        assert dummy_pack.get_same_block_versions(release_notes_dir, version, AGGREGATED_CHANGELOG) ==\
+        assert dummy_pack.get_same_block_versions(release_notes_dir, version, AGGREGATED_CHANGELOG) == \
                (same_block_versions_dict, higher_nearest_version)
 
     def test_get_modified_release_notes_lines(self, mocker, dummy_pack):
@@ -709,7 +708,7 @@ class TestChangelogCreation:
         """
 
         release_notes_dir = 'Irrelevant/Test/Path'
-        changelog_latest_rn_version = LooseVersion('1.0.3')
+        changelog_latest_rn_versions = ['1.0.3']
         modified_rn_files = ['1_0_2.md']
         modified_rn_lines = 'dummy release notes\nmodified dummy release notes'
         modified_rn_file = 'modified dummy release notes'
@@ -721,8 +720,23 @@ class TestChangelogCreation:
         mocker.patch("Tests.Marketplace.marketplace_services.aggregate_release_notes_for_marketplace",
                      return_value=modified_rn_lines)
         modified_versions_dict = dummy_pack.get_modified_release_notes_lines(
-            release_notes_dir, changelog_latest_rn_version, AGGREGATED_CHANGELOG, modified_rn_files)
+            release_notes_dir, changelog_latest_rn_versions, AGGREGATED_CHANGELOG, modified_rn_files)
         assert modified_versions_dict == {'1.0.3': modified_rn_lines}
+
+    def test_update_changelog_entry(self, dummy_pack):
+        """
+           Given:
+               - Changelog from production bucket, a version that is a key of an entry in the changelog and rn lines
+                to update the entry with.
+           When:
+               - Modifying an exiting rn.
+           Then:
+               - The entry will keep all the other data other than the modified part.
+        """
+        entry = dummy_pack._get_updated_changelog_entry(AGGREGATED_CHANGELOG, '1.0.1', 'updated_rn')
+        assert entry['releaseNotes'] == 'updated_rn'
+        assert entry['displayName'] == AGGREGATED_CHANGELOG['1.0.1']['displayName']
+        assert entry['released'] == AGGREGATED_CHANGELOG['1.0.1']['released']
 
     def test_assert_production_bucket_version_matches_release_notes_version_positive(self, dummy_pack):
         """
@@ -1233,11 +1247,29 @@ class TestCopyAndUploadToStorage:
 
 
 class TestLoadUserMetadata:
-    @pytest.fixture(scope="class")
+    @pytest.fixture(scope="function")
     def dummy_pack(self):
         """ dummy pack fixture
         """
         return Pack(pack_name="TestPack", pack_path="dummy_path")
+
+    def test_load_user_metadata(self, dummy_pack, dummy_pack_metadata, tmp_path):
+        """
+        Given:
+            - A pack with metadata containing pack data like eula link
+        When:
+            - Loading the file data into the pack object
+        Then:
+            - Ensure eula link appears in the pack object metadata
+        """
+        metadata_path = os.path.join(tmp_path, 'pack_metadata.json')
+        dummy_pack._pack_path = tmp_path
+        with open(metadata_path, 'w') as metadata_file:
+            metadata_file.write(json.dumps(dummy_pack_metadata))
+        dummy_pack.load_user_metadata()
+        loaded_metadata = dummy_pack.user_metadata
+
+        assert loaded_metadata['eulaLink'] == 'https://my.eula.com'
 
     def test_load_user_metadata_with_missing_file(self, mocker, dummy_pack):
         """
@@ -1250,11 +1282,11 @@ class TestLoadUserMetadata:
        """
         mocker.patch("os.path.exists", return_value=False)
         logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.error")
-        task_status, user_metadata = dummy_pack.load_user_metadata()
+        task_status = dummy_pack.load_user_metadata()
 
         assert logging_mock.call_count == 1
         assert not task_status
-        assert user_metadata == {}
+        assert not dummy_pack.user_metadata
 
 
 class TestSetDependencies:
@@ -1319,10 +1351,10 @@ class TestSetDependencies:
         dependencies = json.dumps(metadata['dependencies'])
         dependencies = json.loads(dependencies)
         dependencies.update(generated_dependencies['ImpossibleTraveler']['dependencies'])
+        p._user_metadata = metadata
+        p.set_pack_dependencies(generated_dependencies)
 
-        p.set_pack_dependencies(metadata, generated_dependencies)
-
-        assert metadata['dependencies'] == dependencies
+        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_no_user_dependencies(self):
         """
@@ -1375,10 +1407,10 @@ class TestSetDependencies:
 
         metadata['dependencies'] = {}
         p = Pack('ImpossibleTraveler', 'dummy_path')
+        p._user_metadata = metadata
+        p.set_pack_dependencies(generated_dependencies)
 
-        p.set_pack_dependencies(metadata, generated_dependencies)
-
-        assert metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
+        assert p.user_metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
 
     def test_set_dependencies_no_generated_dependencies(self):
         """
@@ -1395,9 +1427,9 @@ class TestSetDependencies:
         metadata = self.get_pack_metadata()
         dependencies = metadata['dependencies']
         p = Pack('ImpossibleTraveler', 'dummy_path')
-        p.set_pack_dependencies(metadata, {})
-
-        assert metadata['dependencies'] == dependencies
+        p._user_metadata = metadata
+        p.set_pack_dependencies({})
+        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_core_pack(self):
         """
@@ -1431,12 +1463,13 @@ class TestSetDependencies:
         metadata['name'] = 'HelloWorld'
         metadata['id'] = 'HelloWorld'
         p = Pack('HelloWorld', 'dummy_path')
+        p._user_metadata = metadata
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
 
-        p.set_pack_dependencies(metadata, generated_dependencies)
+        p.set_pack_dependencies(generated_dependencies)
 
-        assert metadata['dependencies'] == dependencies
+        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_core_pack_new_mandatory_dependency(self):
         """
@@ -1475,9 +1508,10 @@ class TestSetDependencies:
 
         metadata['dependencies'] = {}
         p = Pack('HelloWorld', 'dummy_path')
+        p._user_metadata = metadata
 
         with pytest.raises(Exception) as e:
-            p.set_pack_dependencies(metadata, generated_dependencies)
+            p.set_pack_dependencies(generated_dependencies)
 
         assert str(e.value) == "New mandatory dependencies ['SlackV2'] were found in the core pack HelloWorld"
 
@@ -1521,10 +1555,11 @@ class TestSetDependencies:
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
         dependencies.update(user_dependencies)
+        p._user_metadata = metadata
 
-        p.set_pack_dependencies(metadata, generated_dependencies)
+        p.set_pack_dependencies(generated_dependencies)
 
-        assert metadata['dependencies'] == dependencies
+        assert p.user_metadata['dependencies'] == dependencies
 
 
 class TestReleaseNotes:
@@ -1627,9 +1662,11 @@ class TestReleaseNotes:
         open_mocker['rn_dir_fake_path/1_1_0.md'].read_data = rn_one
         open_mocker['rn_dir_fake_path/2_0_0.md'].read_data = rn_two
         mocker.patch('builtins.open', open_mocker)
-        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'), '')
+        rn_lines, latest_rn, new_versions = \
+            dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'), '')
         assert latest_rn == '2.0.0'
         assert rn_lines == aggregated_rn
+        assert new_versions == ['1.1.0', '2.0.0']
 
     def test_get_release_notes_lines_updated_rn(self, mocker, dummy_pack):
         """
@@ -1647,9 +1684,11 @@ class TestReleaseNotes:
         '''
         mocker.patch('builtins.open', mock_open(read_data=rn))
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
-        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'), rn)
+        rn_lines, latest_rn, new_versions = \
+            dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'), rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == rn
+        assert new_versions == []
 
     def test_get_release_notes_lines_no_rn(self, mocker, dummy_pack):
         """
@@ -1668,9 +1707,11 @@ class TestReleaseNotes:
         '''
 
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
-        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('wow', LooseVersion('1.0.1'), changelog_latest_rn)
+        rn_lines, latest_rn, new_versions = \
+            dummy_pack.get_release_notes_lines('wow', LooseVersion('1.0.1'), changelog_latest_rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == changelog_latest_rn
+        assert new_versions == []
 
     FAILED_PACKS_DICT = {
         'TestPack': {'status': 'wow1'},

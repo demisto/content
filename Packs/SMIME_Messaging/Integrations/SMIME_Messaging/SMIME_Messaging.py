@@ -5,9 +5,12 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 from M2Crypto import BIO, SMIME, X509, m2
-from typing import Dict
+from typing import Dict, Tuple
 from tempfile import NamedTemporaryFile
 
+from charset_normalizer import from_bytes
+import warnings
+warnings.simplefilter("default")
 
 ''' HELPER FUNCTIONS '''
 
@@ -133,6 +136,28 @@ def verify(client: Client, args: Dict):
     return human_readable, {}
 
 
+def decode_str(decrypted_text: bytes, encoding: str) -> Tuple[str, str]:
+    """
+    Detect encoding type using chardet, if the confidence of the detected encoding is lower than 0.9 we will add a
+    message indicates it. If encoding is given, will use it.
+    """
+    msg = ''
+    out = ''
+    if not encoding:
+        with warnings.catch_warnings(record=True) as e:
+            charset_match = from_bytes(decrypted_text)
+            if len(charset_match):
+                out = str(charset_match[0])
+                demisto.debug(f"Decode decrypted text using {charset_match[0].encoding} encoding")
+            if e:
+                msg = f'Note: encoding detection ended with warning: {e[0].message} Characters may be missing.' \
+                      ' You can try running this command again and pass the encoding code as argument.\n'
+    else:
+        out = decrypted_text.decode(encoding)
+
+    return out, msg
+
+
 def decrypt_email_body(client: Client, args: Dict, file_path=None):
     """ Decrypt the message
 
@@ -146,11 +171,13 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
     else:
         encrypt_message = demisto.getFilePath(args.get('encrypt_message'))
 
+    encoding = args.get('encoding', '')
+    msg = ''
     client.smime.load_key(client.private_key_file, client.public_key_file)
     try:
         p7, data = SMIME.smime_load_pkcs7(encrypt_message['path'])
-
-        out = client.smime.decrypt(p7).decode('utf-8')
+        decrypted_text = client.smime.decrypt(p7)
+        out, msg = decode_str(decrypted_text, encoding)
 
     except SMIME.SMIME_Error as e:
 
@@ -159,14 +186,18 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
                 p7data = message_file.read()
             p7bio = BIO.MemoryBuffer(p7data)
             p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))
-            out = client.smime.decrypt(p7, flags=SMIME.PKCS7_NOVERIFY).decode('utf-8')
+            decrypted_text = client.smime.decrypt(p7, flags=SMIME.PKCS7_NOVERIFY)
+            out, msg = decode_str(decrypted_text, encoding)
+
+        else:
+            raise
 
     entry_context = {
         'SMIME.Decrypted': {
             'Message': out
         }
     }
-    human_readable = f'The decrypted message is: \n{out}'
+    human_readable = f'{msg}The decrypted message is: \n{out}'
 
     return human_readable, entry_context
 
