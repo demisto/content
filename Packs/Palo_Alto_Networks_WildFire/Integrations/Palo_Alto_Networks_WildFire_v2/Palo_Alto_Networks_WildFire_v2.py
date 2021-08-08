@@ -965,7 +965,6 @@ def wildfire_file_command(args):
                 'Contents': 'WildFire file hash reputation supports only MD5, SHA256 hashes',
                 'ContentsFormat': formats['text']
             })
-            return
         else:
             command_results = wildfire_get_file_report(element, args)[0]
             command_results_list.append(command_results)
