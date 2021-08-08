@@ -1,6 +1,5 @@
 id: IOCParser_test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: IOCParser_test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -30,8 +30,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 52430d89-2645-4766-8f50-6f137bdbf335
@@ -64,8 +62,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: e7704ef0-d1af-48d4-8666-358753d5427a
@@ -98,8 +94,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 53e91cc5-9034-48fb-83d5-f3597cb50f53
@@ -149,8 +143,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 9c544e03-78d2-40c8-83a6-ea5b81d5f26a
@@ -183,8 +175,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 4567c6f9-7665-49d9-8f01-ba651a2beb35
@@ -217,8 +207,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 56d297d5-1278-4ded-8db6-580e64942cdb
@@ -268,8 +256,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: b8c86a0c-1d0a-4b53-8188-23ae44a83a62
@@ -302,8 +288,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: a118d4d0-e832-45dd-8b2d-afa251a84b72
@@ -337,8 +321,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 83c6d88e-dd8f-4eec-83c1-6b4906792a6f
@@ -388,8 +370,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 53eb3ed6-6a7a-4bf8-8499-646d82590708
@@ -422,8 +402,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 2f46b4f5-0f22-447f-8a6f-ddef00acbbd3
@@ -456,8 +434,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 24db30f7-17db-47fe-819a-3f4a6942aae9
@@ -507,8 +483,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: a9d4cd46-0501-46a5-8240-1f17257e9d34
@@ -520,6 +494,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -533,8 +508,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -549,3 +522,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.0.0
+description: Use this playbook to parse IOCs using IOCParser

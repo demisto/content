@@ -1,5 +1,5 @@
 Use the IOCParser integration to extract IOCs and intelligence from different data sources.
-This integration was integrated and tested with version xx of IOCParser
+This integration was integrated and tested with version v1 of IOCParser
 
 ## Configure IOCParser on Cortex XSOAR
 
