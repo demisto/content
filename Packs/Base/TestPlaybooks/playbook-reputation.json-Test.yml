@@ -938,7 +938,7 @@ tasks:
       key:
         simple: invalid_urls
       value:
-        simple: '"http://a.b--c.de/", "http://-a.b.co", "http://3628126748", "http://.www.foo.bar/", "http://10.1.1.254", "http:// shouldfail.com", "http://foo.bar/foo(bar)baz quux", "http://-error-.invalid/"'
+        simple: '"http://a.b--c.de/", "http://-a.b.co", "165.225.225.99","http://3628126748", "http://.www.foo.bar/", "http://10.1.1.254", "http:// shouldfail.com", "http://foo.bar/foo(bar)baz quux", "http://-error-.invalid/"'
     separatecontext: false
     view: |-
       {
@@ -1005,6 +1005,14 @@ tasks:
           right:
             value:
               simple: http://a.b--c.de/
+      - - operator: notContainsString
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://165.225.225.99
       - - operator: notContainsString
           left:
             value:
