@@ -1520,7 +1520,7 @@ def fetch_incidents(client: Client, max_incidents: int,
     return next_run, incidents
 
 
-def get_modified_remote_data_command(client, args):
+def get_modified_remote_data_command(client: Client, args: Dict[str, Any]) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = remote_args.last_update  # In the first run, this value will be set to 1 minute earlier
 
