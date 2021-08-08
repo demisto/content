@@ -159,7 +159,10 @@ Get analysis history.
 
 ### anyrun-get-report
 ***
-Gets the report of a task created for a submitted file or URL.
+Gets the report of a task created for a submitted file or URL. 
+
+*Note: This command can only get reports for files or URLs deployed by the integration account. It cannot pull reports on public submissions.*
+
 
 
 #### Base Command

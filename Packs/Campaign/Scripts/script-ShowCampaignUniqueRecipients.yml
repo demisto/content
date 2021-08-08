@@ -7,9 +7,10 @@ script: |2-
   # Variable initialization:
   html = ""
   campaign_incidents = ""
-  incident_id = demisto.incidents()[0].get('id', {})
+  
 
   try:
+      incident_id = demisto.incidents()[0].get('id', {})
       context = demisto.executeCommand("getContext", {'id': incident_id})
       campaign_incidents = demisto.get(context[0], "Contents.context.EmailCampaign.incidents")
       unique_recipients = set([incident.get("recipients")[0] for incident in campaign_incidents])
@@ -31,7 +32,7 @@ enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.9.6.22912
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
