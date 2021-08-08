@@ -143,35 +143,37 @@ def test_module(client: Client) -> str:
     return message
 
 
-def alexa_domain(client: Client, args: Dict[str, Any]) -> CommandResults:
-    domain = args.get('domain', None)
-    if not domain:
+def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    domains = args.get('domains', None)
+    if not domains:
         raise ValueError('url doesn\'t exists')
+    domains = argToList(domains)
+    command_results : List[CommandResults] = []
+    for domain in domains:
+        result = client.alexa_rank(domain)
+        rank = demisto.get(result, 'Awis.Results.Result.Alexa.TrafficData.Rank')
+        domain_standard_context, score_text = rank_to_score(domain=domain,
+                                                            rank=None if rank is None else int(rank),
+                                                            threshold=client.threshold,
+                                                            benign=client.benign,
+                                                            reliability=client.reliability)
 
-    result = client.alexa_rank(domain)
-    rank = demisto.get(result, 'Awis.Results.Result.Alexa.TrafficData.Rank')
-    domain_standard_context, score_text = rank_to_score(domain=domain,
-                                                        rank=None if rank is None else int(rank),
-                                                        threshold=client.threshold,
-                                                        benign=client.benign,
-                                                        reliability=client.reliability)
-
-    alexa_rank: str = rank if rank else 'Unknown'
-    result = {'Name': domain,
-              'Indicator': domain,
-              'Rank': alexa_rank}
-    readable = f'The Alexa rank of {domain} is {alexa_rank} and has been marked as {score_text}.' \
-               f' The benign threshold is {client.benign} while the suspicious threshold is {client.threshold}.'
-    return CommandResults(
-        outputs_prefix='AlexaV2.Domain',
-        outputs_key_field='Name',
-        outputs=result,
-        readable_output=readable,
-        indicator=domain_standard_context
-    )
+        alexa_rank: str = rank if rank else 'Unknown'
+        result = {'Name': domain,
+                  'Indicator': domain,
+                  'Rank': alexa_rank}
+        readable = f'The Alexa rank of {domain} is {alexa_rank} and has been marked as {score_text}.' \
+                   f' The benign threshold is {client.benign} while the suspicious threshold is {client.threshold}.'
+        command_results.append(CommandResults(
+            outputs_prefix='AlexaV2.Domain',
+            outputs_key_field='Name',
+            outputs=result,
+            readable_output=readable,
+            indicator=domain_standard_context
+        ))
+    return command_results
 
 
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
 ''' MAIN FUNCTION '''
