@@ -126,6 +126,7 @@ def http_request(url: str, method: str, headers: dict = None, body=None, params=
         json_res = json.loads(xml2json(result.text))
         return json_res
     except Exception:
+        demisto.debug('Failed to parse response to json.')
         raise Exception(f'Failed to parse response to json. response: {result.text}')
 
 
@@ -305,6 +306,7 @@ def wildfire_upload_file(upload):
     try:
         shutil.copy(file_path, file_name)
     except Exception:
+        demisto.debug('Failed to prepare file for upload.')
         raise Exception('Failed to prepare file for upload.')
 
     try:
@@ -647,6 +649,7 @@ def wildfire_get_url_webartifacts_command():
             file_entry = fileResult(f'{url}_webartifacts.tgz', result.content, entryTypes['entryInfoFile'])
             demisto.results(file_entry)
         except NotFoundError:
+            demisto.debug('Webartifacts were not found.')
             return_results('Webartifacts were not found. For more info contact your WildFire representative.')
 
 
@@ -871,6 +874,7 @@ def wildfire_get_url_report(url: str) -> Tuple:
         entry_context['Status'] = ''
         human_readable = f'Error while requesting the report: {e}.'
         report = ''
+        demisto.debug('Error while requesting the given report.')
 
     finally:
         command_results = CommandResults(outputs_prefix='WildFire.Report', outputs_key_field='url',
@@ -917,6 +921,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             score=dbot_score_file,
             reliability=RELIABILITY)
         indicator = Common.File(dbot_score=dbot_score_object, md5=md5, sha256=sha256)
+        demisto.debug('Report not found.')
 
     finally:
         command_results = CommandResults(outputs_prefix=WILDFIRE_REPORT_DT_FILE,
@@ -1003,6 +1008,7 @@ def wildfire_get_sample_command():
             file_entry = fileResult(file_name, result.content)
             demisto.results(file_entry)
         except NotFoundError:
+            demisto.debug('Sample was not found.')
             demisto.results(
                 'Sample was not found. '
                 'Please note that grayware and benign samples are available for 14 days only. '
