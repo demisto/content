@@ -23,14 +23,14 @@ configuration:
   name: threshold
   required: true
   type: 0
-- defaultvalue: 'https://awis.api.alexa.com/api'
+- defaultvalue: 'https://awis.api.alexa.com'
   display: Base API URL
   name: base_url
   required: true
   type: 0
 - additionalinfo: These domains will be given a DbotScore of good.
   defaultvalue: '0'
-  display: Alexa rank - top domains to be considered trusted.
+  display: Alexa rank
   name: benign
   required: true
   type: 0
@@ -45,7 +45,7 @@ configuration:
 - display: Api Key
   hidden: false
   name: api_key
-  required: false
+  required: true
   type: 4
 description: Alexa provides website ranking information that can be useful in determining
   if the domain in question has a strong web presence. V2
@@ -56,7 +56,7 @@ script:
   - arguments:
     - default: true
       description: Domain to search.
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false

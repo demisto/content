@@ -13,7 +13,7 @@ This is an empty structure file. Check an example at;
 https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
 
 """
-
+import CommonServerPython
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -63,7 +63,7 @@ class Client(BaseClient):
 
     def http_request(self, params: Dict):
         return self._http_request(method='GET',
-                                  url_suffix='',
+                                  url_suffix='api',
                                   headers={'x-api-key': self.api_key},
                                   params=params)
 
@@ -80,12 +80,11 @@ class Client(BaseClient):
 
 def rank_to_score(domain: str, rank: Optional[int], threshold: int, benign: int, reliability: DBotScoreReliability):
     if rank is None:
-        score = 2
-        score_text = 'suspicious'
+        score = Common.DBotScore.SUSPICIOUS
     elif rank < 0:
         raise DemistoException('Rank should be positive')
     elif 0 < rank <= benign:
-        score = 1
+        score = Common.DBotScore.GOOD
         score_text = 'good'
     elif rank > threshold:
         score = 2
@@ -96,20 +95,18 @@ def rank_to_score(domain: str, rank: Optional[int], threshold: int, benign: int,
     # else: # Should never be here
     #     score = 2
     #     score_text = 'suspicious'
-
+    # todo check with Meital / Dean if we use score_text
     dbot_score = Common.DBotScore(
         indicator=domain,
-        integration_name='AlexaV2',
         indicator_type=DBotScoreType.DOMAIN,
         reliability=reliability,
-        score=score,
-        malicious_description=score_text
+        score=score
     )
     domain_standard_context = Common.Domain(
         domain=domain,
         dbot_score=dbot_score
     )
-    return domain_standard_context, score_text
+    return domain_standard_context
 
 
 # TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
@@ -133,7 +130,8 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        client.alexa_rank('google.com')
+        res = client.alexa_rank('google.com')
+        print(res)
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
@@ -144,25 +142,25 @@ def test_module(client: Client) -> str:
 
 
 def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    domains = args.get('domains', None)
+    domains = argToList(args.get('domains'))
     if not domains:
-        raise ValueError('url doesn\'t exists')
-    domains = argToList(domains)
-    command_results : List[CommandResults] = []
+        raise ValueError('domain doesn\'t exists')
+    command_results: List[CommandResults] = []
     for domain in domains:
         result = client.alexa_rank(domain)
-        rank = demisto.get(result, 'Awis.Results.Result.Alexa.TrafficData.Rank')
-        domain_standard_context, score_text = rank_to_score(domain=domain,
-                                                            rank=None if rank is None else int(rank),
-                                                            threshold=client.threshold,
-                                                            benign=client.benign,
-                                                            reliability=client.reliability)
+        rank = demisto.get(result,
+                           'Awis.Results.Result.Alexa.TrafficData.Rank')  # todo check what happens with a key does not exist
+        domain_standard_context: Common.Domain = rank_to_score(domain=domain,
+                                                               rank=arg_to_number(rank),
+                                                               threshold=client.threshold,
+                                                               benign=client.benign,
+                                                               reliability=client.reliability)
 
         alexa_rank: str = rank if rank else 'Unknown'
         result = {'Name': domain,
                   'Indicator': domain,
                   'Rank': alexa_rank}
-        readable = f'The Alexa rank of {domain} is {alexa_rank} and has been marked as {score_text}.' \
+        readable = f'The Alexa rank of {domain} is {alexa_rank} and has been marked as {domain_standard_context.dbot_score}.' \
                    f' The benign threshold is {client.benign} while the suspicious threshold is {client.threshold}.'
         command_results.append(CommandResults(
             outputs_prefix='AlexaV2.Domain',
@@ -172,8 +170,6 @@ def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             indicator=domain_standard_context
         ))
     return command_results
-
-
 
 
 ''' MAIN FUNCTION '''
@@ -202,8 +198,8 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        threshold = int(params.get('threshold'))
-        benign = int(params.get('benign'))
+        threshold = arg_to_number(params.get('threshold'), required=True, arg_name='threshold')
+        benign = arg_to_number(params.get('benign'), required=True, arg_name='benign')
         if threshold < 0 or benign < 0:
             raise DemistoException('threshold and benign should be above 0')
         client = Client(

@@ -23,21 +23,34 @@ DOMAINS_GOOD_RESULTS = [('google.com', file_to_dct('google_response.json')),
 def test_domain_rank(mocker, domain, raw_result):
     """
     Given:
-        - domains, valid or 404
+        - A domain to be ranked by Alexa API
 
     When:
-        - In the beginning of the domain command
+        - running the domain command:
+            1. when getting a valid response with an existing domain.
+            2. when getting a valid response with an non-existing domain.
 
     Then:
-        - Returns the rank of google
+        - Ensure that the rank the domain got is valid
+        - Ensure the context data is valid with the expected outputs.
     """
     mocker.patch.object(client, 'alexa_rank', return_value=raw_result)
-    result = alexa_domain(client, {'domain': domain})
+    result = alexa_domain(client, {'domains': domain})[0]
     assert result.outputs.get('Rank') == demisto.get(raw_result, 'Awis.Results.Result.Alexa.TrafficData.Rank')
 
 
-DOMAINS_BAD_RESULTS = [('demisto.com', file_to_dct('negative_rank_response.json')),
-                       ('demisto.com', file_to_dct('nan_rank_response.json'))]
+DOMAINS_BAD_RESULTS = [('xsoar.com', file_to_dct('negative_rank_response.json')),
+                       ('xsoar.com', file_to_dct('nan_rank_response.json'))]
+
+
+def test_multi_domains(mocker):
+    domains = 'google.com,xsoar.com'
+    raw_res = file_to_dct('google_response.json')
+    mocker.patch.object(client, 'alexa_rank', return_value=raw_res)
+    result = alexa_domain(client, {'domains': domains})
+    assert len(result) == len(argToList(domains))
+    for res in result:
+        assert res.outputs.get('Rank') == demisto.get(raw_res, 'Awis.Results.Result.Alexa.TrafficData.Rank')
 
 
 @pytest.mark.parametrize('domain, raw_result', DOMAINS_BAD_RESULTS)
@@ -73,7 +86,7 @@ def test_rank_to_score(rank, threshold, benign, reliability, score, score_text):
     Then:
         - Returns the context of the dbot and the score text
     """
-
+    #todo check all the conditions
     context, score_text_res = rank_to_score('google.com', rank, threshold, benign, reliability)
     assert context.dbot_score.score == score and score_text == score_text_res
 
