@@ -6,7 +6,7 @@ import copy
 import json
 from datetime import datetime
 from typing import Any, Union
-
+import codecs
 import requests
 
 # Disable insecure warnings
@@ -1834,34 +1834,53 @@ def fetch_incidents_command_rec(start_time, last_time, page=1):
     return incidents, last_time
 
 
-def get_file_data():
-    """Gets the content of a file from GitHub.
+def get_path_data():
+    """
+    Get path data from given relative file path, repository and organization corresponding to branch name if given.
+    Returns:
+        Outputs to XSOAR.
     """
     args = demisto.args()
 
-    file_path: str = args.get('file_path', '')
+    relative_path: str = args.get('relative_path', '')
     repo: str = args.get('repository') or REPOSITORY
     organization: str = args.get('organization') or USER
     branch_name: Optional[str] = args.get('branch_name')
 
-    url_suffix = f'/repos/{organization}/{repo}/contents/{file_path}'
-    url_suffix = f'{url_suffix}/?ref={branch_name}' if branch_name else url_suffix
+    url_suffix = f'/repos/{organization}/{repo}/contents/{relative_path}'
+    url_suffix = f'{url_suffix}?ref={branch_name}' if branch_name else url_suffix
 
     headers = {
         'Authorization': "Bearer " + TOKEN,
         'Accept': f'application/vnd.github.VERSION.object',
     }
+    try:
+        raw_response = http_request(method="GET", url_suffix=url_suffix, headers=headers)
+    except DemistoException as e:
+        if '[404]' in str(e):
+            err_msg = 'Could not find path.'
+            if branch_name:
+                err_msg += f' Make sure branch {branch_name} exists.'
+            err_msg += f' Make sure relative path {relative_path} is correct.'
+            raise DemistoException(err_msg)
+        raise e
 
-    file_data = http_request(method="GET", url_suffix=url_suffix, headers=headers, is_raw_response=True)
+    # Content is given as str of base64, need to encode and decode in order to retrieve its human readable content.
+    file_data = copy.deepcopy(raw_response)
+    if 'content' in file_data:
+        file_data['content'] = codecs.decode(file_data.get('content', '').encode(), 'base64').decode('utf-8')
+    # Links are duplications of the Git/HTML/URL. Deleting duplicate data from context.
+    file_data.pop('_links', None)
+    for entry in file_data.get('entries', []):
+        entry.pop('_links', None)
 
     results = CommandResults(
-        outputs_prefix='GitHub.FileContent',
-        outputs_key_field=['Path', 'Branch', 'MediaType'],
-        outputs=file_processed_data,
-        readable_output=f'File {file_path} successfully fetched.',
-        raw_response=file_data,
+        outputs_prefix='GitHub.PathData',
+        outputs_key_field='url',
+        outputs=file_data,
+        readable_output=tableToMarkdown(f'File Data For File {relative_path}', file_data, removeNull=True),
+        raw_response=raw_response,
     )
-
     return_results(results)
 
 
@@ -1920,6 +1939,7 @@ COMMANDS = {
     'GitHub-create-release': create_release_command,
     'Github-list-issue-events': get_issue_events_command,
     'GitHub-add-issue-to-project-board': add_issue_to_project_board_command,
+    'GitHub-get-path-data': get_path_data
 }
 
 
@@ -1983,6 +2003,7 @@ def main():
         if cmd in COMMANDS.keys():
             COMMANDS[cmd]()
     except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(str(e))
 
 

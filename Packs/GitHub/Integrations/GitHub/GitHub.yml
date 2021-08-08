@@ -3808,6 +3808,96 @@ script:
       name: content_type
     description: 'Add an Issue as a card in column of a spesific project  '
     name: GitHub-add-issue-to-project-board
+  - arguments:
+    - default: true
+      description: Relative path to retrieve its data.
+      isArray: false
+      name: relative_path
+      required: true
+      secret: false
+    - default: false
+      description: The branch name from which to get the file data. Default is master.
+      isArray: false
+      name: branch_name
+      required: false
+      secret: false
+    - default: false
+      description: The name of the organization containing the file.
+      isArray: false
+      name: organization
+      required: false
+      secret: false
+    - default: false
+      description: The repository of the file.
+      isArray: false
+      name: repository
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the data of the a given path.
+    execution: false
+    name: GitHub-get-path-data
+    outputs:
+    - contextPath: GitHub.PathData.name
+      description: Path name.
+      type: String
+    - contextPath: GitHub.PathData.path
+      description: Relative path for the given repository.
+      type: String
+    - contextPath: GitHub.PathData.sha
+      description: Path SHA.
+      type: String
+    - contextPath: GitHub.PathData.size
+      description: Path size in bytes. Will be 0 if path to a dir was given.
+      type: Number
+    - contextPath: GitHub.PathData.url
+      description: Path URL.
+      type: String
+    - contextPath: GitHub.PathData.html_url
+      description: Path HTML URL.
+      type: String
+    - contextPath: GitHub.PathData.git_url
+      description: Path Git URL.
+      type: String
+    - contextPath: GitHub.PathData.download_url
+      description: Path download URL. If a directory path was given will be empty.
+      type: String
+    - contextPath: GitHub.PathData.type
+      description: Path data, e.g file, dir.
+      type: String
+    - contextPath: GitHub.PathData.content
+      description: Content of the path if a file path was given.
+      type: String
+    - contextPath: GitHub.PathData.encoding
+      description: Encoding method if path to a file was given.
+      type: String
+    - contextPath: GitHub.PathData.entries.name
+      description: If dir was given in file_path, name of the dir entry.
+      type: String
+    - contextPath: GitHub.PathData.entries.path
+      description: If dir was given in file_path, path of the dir entry.
+      type: String
+    - contextPath: GitHub.PathData.entries.sha
+      description: If dir was given in file_path, SHA of the dir entry.
+      type: String
+    - contextPath: GitHub.PathData.entries.size
+      description: If dir was given in file_path, size of the dir entry. Will be 0 if entry is also a dir.
+      type: Number
+    - contextPath: GitHub.PathData.entries.url
+      description: If dir was given in file_path, URL of the dir entry.
+      type: String
+    - contextPath: GitHub.PathData.entries.html_url
+      description: If dir was given in file_path, HTML URL of the dir entry.
+      type: String
+    - contextPath: GitHub.PathData.entries.git_url
+      description: If dir was given in file_path, Git URL of the dir entry.
+      type: String
+    - contextPath: GitHub.PathData.entries.download_url
+      description: If dir was given in file_path, download URL of the dir entry. Will be empty if entry is also a dir.
+      type: String
+    - contextPath: GitHub.PathData.entries.type
+      description: If dir was given in file_path, type of the dir entry.
+      type: String
   dockerimage: demisto/pyjwt3:1.0.0.19327
   feed: false
   isfetch: true
