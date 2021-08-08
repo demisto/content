@@ -23,6 +23,8 @@ MOCK_URL = 'https://example.com/url'
 
 INVALID_URL = 'iamnotavalidurl'
 
+RESPONSE_FILE_URL_COMMAND = './test_data/ioc_from_url_response_1.json'
+
 EXPECTED_TABLE_PARSE_URL_DOMAIN_ALL_RESULTS = \
     tableToMarkdown(
         f'results for DOMAIN from {MOCK_URL}',
@@ -73,7 +75,7 @@ EXPECTED_OUTPUTS_PARSE_URL_URL_KEYS_NO_LIMIT = \
 IOC_FROM_ULR_LIST = [
     (
         {'url': MOCK_URL},
-        "./test_data/ioc_from_url_response_1.json",
+        RESPONSE_FILE_URL_COMMAND,
         [
             EXPECTED_TABLE_PARSE_URL_DOMAIN_ALL_RESULTS,
             EXPECTED_TABLE_PARSE_URL_URL_ALL_RESULTS
@@ -85,26 +87,28 @@ IOC_FROM_ULR_LIST = [
          'keys': ['DOMAIN'],
          'limit': 1
          },
-        "./test_data/ioc_from_url_response_1.json",
+        RESPONSE_FILE_URL_COMMAND,
         [EXPECTED_TABLE_PARSE_URL_DOMAIN_LIMIT1_RESULTS],
         EXPECTED_OUTPUTS_PARSE_URL_DOMAIN_KEYS_1_LIMIT),
     (
         {'url': MOCK_URL,
          'keys': ['url']
          },
-        "./test_data/ioc_from_url_response_1.json",
+        RESPONSE_FILE_URL_COMMAND,
         [EXPECTED_TABLE_PARSE_URL_URL_ALL_RESULTS],
         EXPECTED_OUTPUTS_PARSE_URL_URL_KEYS_NO_LIMIT
     )
 ]
 
-''' VARIABLES FOR PARSE_FROM_JSON_TEXT COMMAND '''
+''' VARIABLES FOR PARSE_FROM_JSONANT_RAW_TEXT COMMANDS '''
 
 MOCK_JSON_TEXT = '{"Dummy": ["jsontext"]}'
 
 MOCK_RAW_TEXT = 'i am a dummy raw text'
 
 MOCK_ENTRY_ID = '@123'
+
+RESPONSE_FILE_TEXT_COMMAND = './test_data/ioc_from_json_and_raw_text_response.json'
 
 EXPECTED_TABLE_PARSE_JSON_AND_RAW_TEXT_DOMAIN_ALL_RESULTS = \
     tableToMarkdown(
@@ -179,7 +183,7 @@ EXPECTED_OUTPUTS_PARSE_RAW_TEXT_FILE_HASH_SHA256_KEYS_NO_LIMIT = \
 IOC_FROM_JSON_TEXT_LIST = [
     (
         {'data': MOCK_JSON_TEXT},
-        "./test_data/ioc_from_json_and_raw_text_response.json",
+        RESPONSE_FILE_TEXT_COMMAND,
         [
             EXPECTED_TABLE_PARSE_JSON_AND_RAW_TEXT_DOMAIN_ALL_RESULTS,
             EXPECTED_TABLE_PARSE_JSON_AND_RAW_TEXT_FILE_HASH_SHA256_ALL_RESULTS
@@ -191,7 +195,7 @@ IOC_FROM_JSON_TEXT_LIST = [
          'keys': ['DOMAIN'],
          'limit': 1
          },
-        "./test_data/ioc_from_json_and_raw_text_response.json",
+        RESPONSE_FILE_TEXT_COMMAND,
         [EXPECTED_TABLE_PARSE_JSON_AND_RAW_TEXT_DOMAIN_LIMIT1_RESULTS],
         EXPECTED_OUTPUTS_PARSE_JSON_TEXT_DOMAIN_KEYS_1_LIMIT
     ),
@@ -199,7 +203,7 @@ IOC_FROM_JSON_TEXT_LIST = [
         {'data': MOCK_JSON_TEXT,
          'keys': ['FILE_HASH_SHA256']
          },
-        "./test_data/ioc_from_json_and_raw_text_response.json",
+        RESPONSE_FILE_TEXT_COMMAND,
         [EXPECTED_TABLE_PARSE_JSON_AND_RAW_TEXT_FILE_HASH_SHA256_ALL_RESULTS],
         EXPECTED_OUTPUTS_PARSE_JSON_TEXT_FILE_HASH_SHA256_KEYS_NO_LIMIT
     )
@@ -208,7 +212,7 @@ IOC_FROM_JSON_TEXT_LIST = [
 IOC_FROM_RAW_TEXT_LIST = [
     (
         {'data': MOCK_RAW_TEXT},
-        "./test_data/ioc_from_json_and_raw_text_response.json",
+        RESPONSE_FILE_TEXT_COMMAND,
         [
             EXPECTED_TABLE_PARSE_JSON_AND_RAW_TEXT_DOMAIN_ALL_RESULTS,
             EXPECTED_TABLE_PARSE_JSON_AND_RAW_TEXT_FILE_HASH_SHA256_ALL_RESULTS
@@ -220,7 +224,7 @@ IOC_FROM_RAW_TEXT_LIST = [
          'keys': ['DOMAIN'],
          'limit': 1
          },
-        "./test_data/ioc_from_json_and_raw_text_response.json",
+        RESPONSE_FILE_TEXT_COMMAND,
         [EXPECTED_TABLE_PARSE_JSON_AND_RAW_TEXT_DOMAIN_LIMIT1_RESULTS],
         EXPECTED_OUTPUTS_PARSE_RAW_TEXT_DOMAIN_KEYS_1_LIMIT
     ),
@@ -228,7 +232,7 @@ IOC_FROM_RAW_TEXT_LIST = [
         {'data': MOCK_RAW_TEXT,
          'keys': ['FILE_HASH_SHA256']
          },
-        "./test_data/ioc_from_json_and_raw_text_response.json",
+        RESPONSE_FILE_TEXT_COMMAND,
         [EXPECTED_TABLE_PARSE_JSON_AND_RAW_TEXT_FILE_HASH_SHA256_ALL_RESULTS],
         EXPECTED_OUTPUTS_PARSE_RAW_TEXT_FILE_HASH_SHA256_KEYS_NO_LIMIT
     )
@@ -237,6 +241,8 @@ IOC_FROM_RAW_TEXT_LIST = [
 ''' VARIABLES FOR PARSE_FROM_TWITTER COMMAND '''
 
 MOCK_USERNAME = "MOCK"
+
+RESPONSE_FILE_TWITTER_COMMAND = './test_data/ioc_from_twitter_response.json'
 
 EXPECTED_TABLE_PARSE_TWITTER_DOMAIN_ALL_RESULTS = \
     tableToMarkdown(
@@ -299,7 +305,7 @@ EXPECTED_OUTPUTS_PARSE_TWITTER_URL_DOMAIN_KEYS_NO_LIMIT = \
 IOC_FROM_TWITTER_LIST = [
     (
         {'data': MOCK_USERNAME},
-        "./test_data/ioc_from_twitter_response.json",
+        RESPONSE_FILE_TWITTER_COMMAND,
         [
             EXPECTED_TABLE_PARSE_TWITTER_FILE_HASH_SHA256_ALL_RESULTS,
             EXPECTED_TABLE_PARSE_TWITTER_DOMAIN_ALL_RESULTS,
@@ -312,7 +318,7 @@ IOC_FROM_TWITTER_LIST = [
          'keys': ['DOMAIN'],
          'limit': 1
          },
-        "./test_data/ioc_from_twitter_response.json",
+        RESPONSE_FILE_TWITTER_COMMAND,
         [EXPECTED_TABLE_PARSE_TWITTER_DOMAIN_ALL_RESULTS],
         EXPECTED_OUTPUTS_PARSE_TWITTER_DOMAIN_KEYS_1_LIMIT
     ),
@@ -320,7 +326,7 @@ IOC_FROM_TWITTER_LIST = [
         {'data': MOCK_USERNAME,
          'keys': ['URL', 'DOMAIN']
          },
-        "./test_data/ioc_from_twitter_response.json",
+        RESPONSE_FILE_TWITTER_COMMAND,
         [
             EXPECTED_TABLE_PARSE_TWITTER_DOMAIN_ALL_RESULTS,
             EXPECTED_TABLE_PARSE_TWITTER_URL_ALL_RESULTS
