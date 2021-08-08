@@ -1104,14 +1104,13 @@ Gets compliance search action from the Security & Compliance Center.
 
 ## Tips for finding messages to remove
 * Keyword Query Language (KQL)
-    * If you know the exact text or phrase used in the subject line of the message, use the Subject property in the search query. e.g `(subject:give me all ur money)`.
-    * If you know that exact date (or date range) of the message, include the Received property in the search query. e.g `(received:6/13/2021..6/16/2021)`.
-    * If you know who sent the message, include the From property in the search query. e.g `(from:user1@demistodev.onmicrosoft.com)`.
+    * If you know the exact text or phrase used in the subject line of the message, use the Subject property in the search query, e.g., `(subject:give me all ur money)`.
+    * If you know that exact date (or date range) of the message, include the Received property in the search query, e.g., `(received:6/13/2021..6/16/2021)`.
+    * If you know who sent the message, include the From property in the search query, e.g., `(from:user1@demistodev.onmicrosoft.com)`.
     * For all the available search properties see: [Keyword queries and search conditions for eDiscovery.](https://docs.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions?view=o365-worldwide
 )
 * Preview the search results to verify that the search returned only the message (or messages) that you want to delete.
-* Use the search estimate statistics (displayed by using the `o365-sc-get-search` command) to get a count of the total number of results.
-
+* Use the search estimate statistics (displayed by using the `o365-sc-get-search` command) to get a count of the total number of emails.
 ## Known Limitations
 
 * Security and compliance integrations do not support Security and compliance on-premise.
