@@ -9,17 +9,17 @@ tags: []
 comment: Find the differences between two indicators lists.
 enabled: true
 args:
-- name: ioc_list1
+- name: base_list
   required: true
   description: Indicators of Compromise list.
-- name: ioc_list2
+- name: compare_to_list
   required: true
   description: Indicators of Compromise list.
 outputs:
-- contextPath: IndicatorsCompare.UniqueIndicators1
+- contextPath: IndicatorsCompare.BaseList.UniqueIndicators
   description: Indicators that appear in the first indicators list only.
   type: String
-- contextPath: IndicatorsCompare.UniqueIndicators2
+- contextPath: IndicatorsCompare.CompareList.UniqueIndicators
   description: Indicators that appear in the second indicators list only.
   type: String
 scripttarget: 0
