@@ -1472,7 +1472,11 @@ class Pack(object):
                 PackFolders.INDICATOR_TYPES.value: "reputation",
                 PackFolders.LAYOUTS.value: "layoutscontainer",
                 PackFolders.CLASSIFIERS.value: "classifier",
-                PackFolders.WIDGETS.value: "widget"
+                PackFolders.WIDGETS.value: "widget",
+                PackFolders.GENERIC_DEFINITIONS.value: "GenericDefinitions",
+                PackFolders.GENERIC_FIELDS.value: "GenericDefinitions",
+                PackFolders.GENERIC_MODULES.value: "GenericModules",
+                PackFolders.GENERIC_TYPES.value: "GenericType"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):

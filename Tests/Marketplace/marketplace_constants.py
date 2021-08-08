@@ -104,6 +104,10 @@ class PackFolders(enum.Enum):
     CLASSIFIERS = 'Classifiers'
     INDICATOR_TYPES = 'IndicatorTypes'
     CONNECTIONS = "Connections"
+    GENERIC_DEFINITIONS = "GenericDefinitions"
+    GENERIC_FIELDS = "GenericFields"
+    GENERIC_MODULES = "GenericModules"
+    GENERIC_TYPES = "GenericType"
 
     @classmethod
     def pack_displayed_items(cls):
@@ -111,7 +115,9 @@ class PackFolders(enum.Enum):
             PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
             PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
             PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
-            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value
+            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value,
+            PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value, PackFolders.GENERIC_MODULES.value,
+            PackFolders.GENERIC_TYPES.value
         }
 
     @classmethod
@@ -121,10 +127,13 @@ class PackFolders(enum.Enum):
 
     @classmethod
     def json_supported_folders(cls):
-        return {PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
-                PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
-                PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
-                PackFolders.WIDGETS.value}
+        return {
+            PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
+            PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
+            PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
+            PackFolders.WIDGETS.value, PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value,
+            PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value
+        }
 
 
 class PackIgnored(object):
