@@ -2398,3 +2398,178 @@ Move an issue in the project board to a different column.
 #### Command Example
 
 ```!GitHub-move-issue-to-project-board card_id=1111 column_id=1234 position="top"```
+
+### GitHub-get-path-data
+***
+Gets the data of the a given path.
+
+
+#### Base Command
+
+`GitHub-get-path-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| relative_path | Relative path to retrieve its data. | Required | 
+| branch_name | The branch name from which to get the file data. Default is master. | Optional | 
+| organization | The name of the organization containing the file. | Optional | 
+| repository | The repository of the file. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.PathData.name | String | Path name. | 
+| GitHub.PathData.path | String | Relative path for the given repository. | 
+| GitHub.PathData.sha | String | Path SHA. | 
+| GitHub.PathData.size | Number | Path size in bytes. Will be 0 if path to a dir was given. | 
+| GitHub.PathData.url | String | Path URL. | 
+| GitHub.PathData.html_url | String | Path HTML URL. | 
+| GitHub.PathData.git_url | String | Path Git URL. | 
+| GitHub.PathData.download_url | String | Path download URL. If a directory path was given will be empty. | 
+| GitHub.PathData.type | String | Path data, e.g file, dir. | 
+| GitHub.PathData.content | String | Content of the path if a file path was given. | 
+| GitHub.PathData.encoding | String | Encoding method if path to a file was given. | 
+| GitHub.PathData.entries.name | String | If dir was given in file_path, name of the dir entry. | 
+| GitHub.PathData.entries.path | String | If dir was given in file_path, path of the dir entry. | 
+| GitHub.PathData.entries.sha | String | If dir was given in file_path, SHA of the dir entry. | 
+| GitHub.PathData.entries.size | Number | If dir was given in file_path, size of the dir entry. Will be 0 if entry is also a dir. | 
+| GitHub.PathData.entries.url | String | If dir was given in file_path, URL of the dir entry. | 
+| GitHub.PathData.entries.html_url | String | If dir was given in file_path, HTML URL of the dir entry. | 
+| GitHub.PathData.entries.git_url | String | If dir was given in file_path, Git URL of the dir entry. | 
+| GitHub.PathData.entries.download_url | String | If dir was given in file_path, download URL of the dir entry. Will be empty if entry is also a dir. | 
+| GitHub.PathData.entries.type | String | If dir was given in file_path, type of the dir entry. | 
+
+
+#### Command Example
+```!GitHub-get-path-data organization=demisto repository=content relative_path=Packs/BitcoinAbuse/Integrations/BitcoinAbuse```
+
+#### Context Example
+```json
+{
+    "GitHub": {
+        "PathData": {
+            "download_url": null,
+            "entries": [
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/23b55cb33aadaa6753e3df1e1d90d3cdc951c745",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py",
+                    "name": "BitcoinAbuse.py",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py",
+                    "sha": "23b55cb33aadaa6753e3df1e1d90d3cdc951c745",
+                    "size": 14395,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/17bbcfd9270570727c2e0f48591fcb9a98a0711e",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml",
+                    "name": "BitcoinAbuse.yml",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml",
+                    "sha": "17bbcfd9270570727c2e0f48591fcb9a98a0711e",
+                    "size": 3929,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/7d969d68833e2424ba8411c93fb8110face60414",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md",
+                    "name": "BitcoinAbuse_description.md",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md",
+                    "sha": "7d969d68833e2424ba8411c93fb8110face60414",
+                    "size": 1305,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/52bef504f8dc4b58ddc6f200cdd135bcdfe9719a",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png",
+                    "name": "BitcoinAbuse_image.png",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png",
+                    "sha": "52bef504f8dc4b58ddc6f200cdd135bcdfe9719a",
+                    "size": 3212,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/dc2c4106cc3589461c7470a5c26e6e8927192d7f",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py",
+                    "name": "BitcoinAbuse_test.py",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py",
+                    "sha": "dc2c4106cc3589461c7470a5c26e6e8927192d7f",
+                    "size": 7150,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/3523d3b6b93bd611859c23e1f63a774d78a0363a",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile",
+                    "name": "Pipfile",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile",
+                    "sha": "3523d3b6b93bd611859c23e1f63a774d78a0363a",
+                    "size": 257,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/6bdb9313414e337e128df3715f17d372f5691608",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock",
+                    "name": "Pipfile.lock",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock",
+                    "sha": "6bdb9313414e337e128df3715f17d372f5691608",
+                    "size": 15993,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/fba823cddcc3637b2989598b7ae08731002f8feb",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md",
+                    "name": "README.md",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md",
+                    "sha": "fba823cddcc3637b2989598b7ae08731002f8feb",
+                    "size": 7188,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md?ref=master"
+                },
+                {
+                    "download_url": null,
+                    "git_url": "https://api.github.com/repos/demisto/content/git/trees/ed2025b734667dfde3b405f8a131b785e9d8fc9d",
+                    "html_url": "https://github.com/demisto/content/tree/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data",
+                    "name": "test_data",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data",
+                    "sha": "ed2025b734667dfde3b405f8a131b785e9d8fc9d",
+                    "size": 0,
+                    "type": "dir",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data?ref=master"
+                }
+            ],
+            "git_url": "https://api.github.com/repos/demisto/content/git/trees/1a0c49c84e7bcd02af5587082b6ed48634a20402",
+            "html_url": "https://github.com/demisto/content/tree/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse",
+            "name": "BitcoinAbuse",
+            "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse",
+            "sha": "1a0c49c84e7bcd02af5587082b6ed48634a20402",
+            "size": 0,
+            "type": "dir",
+            "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse?ref=master"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### File Data For File Packs/BitcoinAbuse/Integrations/BitcoinAbuse
+>|entries|git_url|html_url|name|path|sha|size|type|url|
+>|---|---|---|---|---|---|---|---|---|
+>| {'name': 'BitcoinAbuse.py', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py', 'sha': '23b55cb33aadaa6753e3df1e1d90d3cdc951c745', 'size': 14395, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/23b55cb33aadaa6753e3df1e1d90d3cdc951c745', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py', 'type': 'file'},<br/>{'name': 'BitcoinAbuse.yml', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml', 'sha': '17bbcfd9270570727c2e0f48591fcb9a98a0711e', 'size': 3929, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/17bbcfd9270570727c2e0f48591fcb9a98a0711e', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml', 'type': 'file'},<br/>{'name': 'BitcoinAbuse_description.md', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md', 'sha': '7d969d68833e2424ba8411c93fb8110face60414', 'size': 1305, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/7d969d68833e2424ba8411c93fb8110face60414', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md', 'type': 'file'},<br/>{'name': 'BitcoinAbuse_image.png', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png', 'sha': '52bef504f8dc4b58ddc6f200cdd135bcdfe9719a', 'size': 3212, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/52bef504f8dc4b58ddc6f200cdd135bcdfe9719a', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png', 'type': 'file'},<br/>{'name': 'BitcoinAbuse_test.py', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py', 'sha': 'dc2c4106cc3589461c7470a5c26e6e8927192d7f', 'size': 7150, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/dc2c4106cc3589461c7470a5c26e6e8927192d7f', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py', 'type': 'file'},<br/>{'name': 'Pipfile', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile', 'sha': '3523d3b6b93bd611859c23e1f63a774d78a0363a', 'size': 257, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/3523d3b6b93bd611859c23e1f63a774d78a0363a', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile', 'type': 'file'},<br/>{'name': 'Pipfile.lock', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock', 'sha': '6bdb9313414e337e128df3715f17d372f5691608', 'size': 15993, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/6bdb9313414e337e128df3715f17d372f5691608', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock', 'type': 'file'},<br/>{'name': 'README.md', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md', 'sha': 'fba823cddcc3637b2989598b7ae08731002f8feb', 'size': 7188, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/fba823cddcc3637b2989598b7ae08731002f8feb', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md', 'type': 'file'},<br/>{'name': 'test_data', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data', 'sha': 'ed2025b734667dfde3b405f8a131b785e9d8fc9d', 'size': 0, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/tree/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/trees/ed2025b734667dfde3b405f8a131b785e9d8fc9d', 'download_url': None, 'type': 'dir'} | https:<span>//</span>api.github.com/repos/demisto/content/git/trees/1a0c49c84e7bcd02af5587082b6ed48634a20402 | https:<span>//</span>github.com/demisto/content/tree/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse | BitcoinAbuse | Packs/BitcoinAbuse/Integrations/BitcoinAbuse | 1a0c49c84e7bcd02af5587082b6ed48634a20402 | 0 | dir | https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse?ref=master |
+
