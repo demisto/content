@@ -2431,7 +2431,7 @@ def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -
         recommended_actions=recommended_actions, rbac_group_names=rbac_group_names
     )
     if indicator:
-        indicator_value = indicator.get('indicatorValue')
+        indicator_value = indicator.get('indicatorValue')  # type:ignore
         dbot_indicator = get_indicator_dbot_object(indicator)
         human_readable = tableToMarkdown(f'Indicator {indicator_value} was updated successfully.',
                                          indicator, headers=SC_INDICATORS_HEADERS, removeNull=True)
@@ -2495,7 +2495,7 @@ def get_indicator_dbot_object(indicator):
     indicator_type = INDICATOR_TYPE_TO_DBOT_TYPE[indicator.get('indicatorType')]
     indicator_value = indicator.get('indicatorValue')
     dbot = Common.DBotScore(indicator=indicator_value, indicator_type=indicator_type,
-                            score=Common.DBotScore.NONE)
+                            score=Common.DBotScore.NONE)  # type:ignore
     return get_dbot_indicator(indicator_type, dbot, indicator_value)
 
 
