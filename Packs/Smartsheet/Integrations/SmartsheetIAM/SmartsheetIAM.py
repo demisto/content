@@ -125,6 +125,10 @@ class Client:
             transfer_sheets=self.transfer_sheets,
             remove_from_sharing=self.remove_from_sharing
         ).to_dict()
+
+        if res.get('resultCode') != 0:
+            raise DemistoException(res.get('message'), res=res)
+        
         return IAMUserAppData(user_id, None, False, res)
 
     def get_app_fields(self) -> Dict[str, Any]:
@@ -169,19 +173,14 @@ class Client:
         """
         if isinstance(e, DemistoException) and e.res is not None:
             error_code = e.res.get('result').get('statusCode')
-            error_message = e.res.get('result').get('message')
+            error_message = e.res.get('result', {}).get('message') or str(e)
 
             if action == IAMActions.DISABLE_USER and error_code in ERROR_CODES_TO_SKIP:
-                skip_message = 'Users is already disabled or does not exist in the system.'
+                skip_message = 'User does not exist in the system.'
                 user_profile.set_result(action=action,
                                         skip=True,
                                         skip_reason=skip_message)
-
-            try:
-                resp = e.res.json()
-                error_message = get_error_details(resp)
-            except ValueError:
-                error_message = str(e)
+                return
         else:
             error_code = ''
             error_message = str(e)
