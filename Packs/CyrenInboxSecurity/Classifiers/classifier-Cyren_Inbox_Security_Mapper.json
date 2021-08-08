@@ -1,0 +1,765 @@
+{
+    "brands": null,
+    "defaultIncidentType": "",
+    "description": "",
+    "feed": false,
+    "fromServerVersion": "",
+    "id": "e3d46dd9-faa3-4d6f-83f6-8021b4b3fa86",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "instanceIds": null,
+    "itemVersion": "",
+    "keyTypeMap": {},
+    "locked": false,
+    "logicalVersion": 29,
+    "mapping": {
+        "Cyren Inbox Security": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Cyren Case ID": {
+                    "complex": null,
+                    "simple": "case_id"
+                },
+                "Cyren Confidence": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "confidence",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "high"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "2"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "medium"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Connection ID": {
+                    "complex": null,
+                    "simple": "connection_id"
+                },
+                "Cyren Connection Name": {
+                    "complex": null,
+                    "simple": "connection_name"
+                },
+                "Cyren Email Subject": {
+                    "complex": null,
+                    "simple": "message_details.email_subject"
+                },
+                "Cyren External From": {
+                    "complex": {
+                        "accessor": "is_external_from",
+                        "filters": [],
+                        "root": "message_details",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "False"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren External Reply To": {
+                    "complex": {
+                        "accessor": "is_external_reply_to",
+                        "filters": [],
+                        "root": "message_details",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "True"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "False"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren External Reply To Address": {
+                    "complex": null,
+                    "simple": "message_details.reply_to.[0].address"
+                },
+                "Cyren External Sender": {
+                    "complex": {
+                        "accessor": "is_external_sender",
+                        "filters": [],
+                        "root": "message_details",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "True"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "False"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren From Address": {
+                    "complex": null,
+                    "simple": "message_details.from.address"
+                },
+                "Cyren From Name": {
+                    "complex": null,
+                    "simple": "message_details.from.name"
+                },
+                "Cyren Incident ID": {
+                    "complex": null,
+                    "simple": "incident_id"
+                },
+                "Cyren Internet Message ID": {
+                    "complex": null,
+                    "simple": "message_details.internet_message_id"
+                },
+                "Cyren Message Details": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "message_details",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyren Message Folder": {
+                    "complex": null,
+                    "simple": "message_details.folder"
+                },
+                "Cyren Message ID": {
+                    "complex": null,
+                    "simple": "message_details.message_id"
+                },
+                "Cyren Message Read State": {
+                    "complex": {
+                        "accessor": "is_read",
+                        "filters": [],
+                        "root": "message_details",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "read"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "unread"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Microsoft Tenant ID": {
+                    "complex": null,
+                    "simple": "tenant_id"
+                },
+                "Cyren Org ID": {
+                    "complex": null,
+                    "simple": "org_id"
+                },
+                "Cyren Remediation Status": {
+                    "complex": null,
+                    "simple": "remediation_data.remediation"
+                },
+                "Cyren Reported By": {
+                    "complex": null,
+                    "simple": "reported_by"
+                },
+                "Cyren Sender Address": {
+                    "complex": null,
+                    "simple": "message_details.sender.address"
+                },
+                "Cyren Sender Name": {
+                    "complex": null,
+                    "simple": "message_details.sender.name"
+                },
+                "Cyren Targeted Address": {
+                    "complex": null,
+                    "simple": "message_details.targeted_employee.address"
+                },
+                "Cyren Targeted User": {
+                    "complex": null,
+                    "simple": "message_details.targeted_employee.name"
+                },
+                "Cyren Threat Indicators": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "threat_indicators",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyren Threat Type": {
+                    "complex": null,
+                    "simple": "threat_type"
+                },
+                "Cyren URL Classification": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "urls_classification",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyren User Comment": {
+                    "complex": null,
+                    "simple": "feedback.[0].details"
+                },
+                "Cyren User Reported As": {
+                    "complex": null,
+                    "simple": "feedback.[0].feedback_type"
+                },
+                "Cyren User Selected Indicators": {
+                    "complex": null,
+                    "simple": "feedback.[0].threat_indicators_type"
+                }
+            }
+        },
+        "Cyren Inbox Security API": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Cyren Case ID": {
+                    "complex": null,
+                    "simple": "case_id"
+                },
+                "Cyren Confidence": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "confidence",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "high"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "2"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "medium"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Connection ID": {
+                    "complex": null,
+                    "simple": "connection_id"
+                },
+                "Cyren Connection Name": {
+                    "complex": null,
+                    "simple": "connection_name"
+                },
+                "Cyren Email Subject": {
+                    "complex": null,
+                    "simple": "message_details.email_subject"
+                },
+                "Cyren External From": {
+                    "complex": {
+                        "accessor": "is_external_from",
+                        "filters": [],
+                        "root": "message_details",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "False"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren External Reply To": {
+                    "complex": {
+                        "accessor": "is_external_reply_to",
+                        "filters": [],
+                        "root": "message_details",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "True"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "False"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren External Reply To Address": {
+                    "complex": null,
+                    "simple": "message_details.reply_to.[0].address"
+                },
+                "Cyren External Sender": {
+                    "complex": {
+                        "accessor": "is_external_sender",
+                        "filters": [],
+                        "root": "message_details",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "True"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "False"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren From Address": {
+                    "complex": null,
+                    "simple": "message_details.from.address"
+                },
+                "Cyren From Name": {
+                    "complex": null,
+                    "simple": "message_details.from.name"
+                },
+                "Cyren Incident ID": {
+                    "complex": null,
+                    "simple": "incident_id"
+                },
+                "Cyren Internet Message ID": {
+                    "complex": null,
+                    "simple": "message_details.internet_message_id"
+                },
+                "Cyren Message Folder": {
+                    "complex": null,
+                    "simple": "message_details.folder"
+                },
+                "Cyren Message ID": {
+                    "complex": null,
+                    "simple": "message_details.message_id"
+                },
+                "Cyren Message Read State": {
+                    "complex": {
+                        "accessor": "is_read",
+                        "filters": [],
+                        "root": "message_details",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "else": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "read"
+                                        }
+                                    },
+                                    "equals": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "then": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "unread"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Microsoft Tenant ID": {
+                    "complex": null,
+                    "simple": "tenant_id"
+                },
+                "Cyren Org ID": {
+                    "complex": null,
+                    "simple": "org_id"
+                },
+                "Cyren Remediation Status": {
+                    "complex": null,
+                    "simple": "remediation_data.remediation"
+                },
+                "Cyren Reported By": {
+                    "complex": null,
+                    "simple": "reported_by"
+                },
+                "Cyren Sender Address": {
+                    "complex": null,
+                    "simple": "message_details.sender.address"
+                },
+                "Cyren Sender Name": {
+                    "complex": null,
+                    "simple": "message_details.sender.name"
+                },
+                "Cyren Targeted Address": {
+                    "complex": null,
+                    "simple": "message_details.targeted_employee.address"
+                },
+                "Cyren Targeted User": {
+                    "complex": null,
+                    "simple": "message_details.targeted_employee.name"
+                },
+                "Cyren Threat Type": {
+                    "complex": null,
+                    "simple": "threat_type"
+                },
+                "Cyren URL Classification": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "urls_classification",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyren User Comment": {
+                    "complex": null,
+                    "simple": "feedback.[0].details"
+                },
+                "Cyren User Reported As": {
+                    "complex": null,
+                    "simple": "feedback.[0].feedback_type"
+                },
+                "Cyren User Selected Indicators": {
+                    "complex": null,
+                    "simple": "feedback.[0].threat_indicators_type"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Cyren Attachment Name": {
+                    "complex": null,
+                    "simple": "message_details.attachments.[0].file_name"
+                },
+                "Cyren Connection ID": {
+                    "complex": null,
+                    "simple": "connection_id"
+                },
+                "Cyren Connection Name": {
+                    "complex": null,
+                    "simple": "connection_name"
+                },
+                "Cyren Created Date": {
+                    "complex": null,
+                    "simple": "message_details.created_datetime"
+                },
+                "Cyren Email Message ID": {
+                    "complex": null,
+                    "simple": "message_details.internet_message_id"
+                },
+                "Cyren Email Subject": {
+                    "complex": null,
+                    "simple": "message_details.email_subject"
+                },
+                "Cyren External From": {
+                    "complex": null,
+                    "simple": "message_details.is_external_from"
+                },
+                "Cyren External From Address": {
+                    "complex": null,
+                    "simple": "message_details.is_external_from"
+                },
+                "Cyren External Reply To": {
+                    "complex": null,
+                    "simple": "message_details.is_external_reply_to"
+                },
+                "Cyren External Reply To Address": {
+                    "complex": null,
+                    "simple": "message_details.reply_to.address"
+                },
+                "Cyren External Sender": {
+                    "complex": null,
+                    "simple": "message_details.is_external_sender"
+                },
+                "Cyren File Category": {
+                    "complex": null,
+                    "simple": "message_details.attachments.[0].file_category"
+                },
+                "Cyren File Hash": {
+                    "complex": null,
+                    "simple": "message_details.attachments.[0].file_hash"
+                },
+                "Cyren File Name": {
+                    "complex": null,
+                    "simple": "message_details.attachments.[0].file_name"
+                },
+                "Cyren File Size": {
+                    "complex": null,
+                    "simple": "message_details.attachments.[0].file_size"
+                },
+                "Cyren From Address": {
+                    "complex": null,
+                    "simple": "message_details.from.address"
+                },
+                "Cyren From Name": {
+                    "complex": null,
+                    "simple": "message_details.from.name"
+                },
+                "Cyren HTML Test": {
+                    "complex": null,
+                    "simple": "updated_at"
+                },
+                "Cyren Mail State": {
+                    "complex": null,
+                    "simple": "message_details.is_read"
+                },
+                "Cyren Markdown": {
+                    "complex": null,
+                    "simple": "updated_at"
+                },
+                "Cyren Message Folder": {
+                    "complex": null,
+                    "simple": "message_details.folder"
+                },
+                "Cyren Message ID": {
+                    "complex": null,
+                    "simple": "message_details.message_id"
+                },
+                "Cyren Microsoft Tenant ID": {
+                    "complex": null,
+                    "simple": "tenant_id"
+                },
+                "Cyren Org ID": {
+                    "complex": null,
+                    "simple": "org_id"
+                },
+                "Cyren Remediation Status": {
+                    "complex": null,
+                    "simple": "remediation_data.remediation"
+                },
+                "Cyren Target User": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "message_details.targeted_employee",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyren Targeted Email Address": {
+                    "complex": null,
+                    "simple": "message_details.targeted_employee.address"
+                },
+                "Cyren Targeted User": {
+                    "complex": null,
+                    "simple": "message_details.targeted_employee.name"
+                },
+                "Cyren URL Classification": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "message_details.targeted_employee",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyren URL Screenshot": {
+                    "complex": null,
+                    "simple": "threat_indicators.[0].details.screenshot"
+                }
+            }
+        },
+        "idan": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Idan case ID": {
+                    "complex": null,
+                    "simple": "payload.case_id"
+                }
+            }
+        }
+    },
+    "name": "Cyren Inbox Security Mapper",
+    "nameRaw": "Cyren Inbox Security Mapper",
+    "packID": "",
+    "sortValues": null,
+    "sourceClassifierId": "",
+    "system": false,
+    "toServerVersion": "",
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "mapping-incoming",
+    "unclassifiedCases": null,
+    "version": -1
+}
