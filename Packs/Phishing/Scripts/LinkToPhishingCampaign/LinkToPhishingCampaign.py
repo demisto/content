@@ -8,8 +8,8 @@ html = ""
 
 
 try:
-    incident_id = demisto.incidents()[0].get('id', {})
     incident = demisto.incidents()
+    incident_id = incident[0].get('id', {})
     campaign_incident_id = str(incident[0].get('CustomFields', {}).get('partofcampaign', ''))
     urls = demisto.demistoUrls()
     server_url = urls.get('server', '')
