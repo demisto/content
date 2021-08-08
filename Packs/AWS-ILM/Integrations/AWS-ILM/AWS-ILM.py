@@ -24,17 +24,8 @@ class Client(BaseClient):
         """ Tests connectivity with the application. """
 
         uri = userUri
-        demisto_params = demisto.params()
-        params = {
-            "version": demisto_params.get('api_version', None)
-        }
 
-        res = self._http_request(method='GET', url_suffix=uri, params=params)
-
-        if res.status_code == 200:
-            demisto.results('ok')
-        else:
-            return_error(f'Error testing [{res.status_code}] - {res.text}')
+        self._http_request(method='GET', url_suffix=uri)
 
     def get_user(self, email: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
@@ -48,7 +39,7 @@ class Client(BaseClient):
         """
         uri = userUri
         params = {
-            'filter': f'userName eq "{email}"'
+            'filter': f'userName eq "{email}"'  # I'm not sure email is always the user name.
         }
 
         res = self._http_request(
@@ -57,15 +48,13 @@ class Client(BaseClient):
             params=params
         )
 
-        if res and res.status_code == 200:
-            res_json = res.json()
+        if res:
+            user_app_data = res.json()
+            if user_app_data.get('totalResults') > 0:
 
-            if res_json.get('totalResults') > 0:
-                user_app_data = res.get('result')[0]     # TODO: get the user_id, username, is_active and user_app_data
-
-                user_id = user_app_data.get('user_id')
-                is_active = user_app_data.get('active')
-                username = user_app_data.get('user_name')
+                user_id = user_app_data.get('Resources')[0].get('id')
+                username = user_app_data.get('Resources')[0].get('userName')
+                is_active = user_app_data.get('Resources')[0].get('active')
 
                 return IAMUserAppData(user_id, username, is_active, user_app_data)
         return None
@@ -274,6 +263,7 @@ def main():
     mapper_out = params.get('mapper_out')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    api_version = params.get('api_version', None)
     command = demisto.command()
     args = demisto.args()
 
@@ -297,7 +287,7 @@ def main():
         verify=verify_certificate,
         proxy=proxy,
         headers=headers,
-        ok_codes=(200, 201)
+        ok_codes=(200, 201),
     )
 
     demisto.debug(f'Command being called is {command}')
