@@ -2451,19 +2451,19 @@ class Common(object):
         def __init__(self, indicator_type, value, dbot_score, params, prefix_str):
             """
             :type indicator_type: ``Str``
-            :param indicator_type: type name of the indicator
+            :param indicator_type: The name of the indicator type.
 
             :type value: ``Any``
-            :param value: Value of the indicator
+            :param value: The value of the indicator.
 
             :type dbot_score: ``DBotScore``
             :param dbot_score: If custom indicator has a score then create and set a DBotScore object.
 
             :type params: ``Dict(Str,Any)``
-            :param params: A dictionary containing all the param names and their values
+            :param params: A dictionary containing all the param names and their values.
 
             :type prefix_str: ``Str``
-            :param prefix_str: Will be used as the context path prefix
+            :param prefix_str: Will be used as the context path prefix.
 
             :return: None
             :rtype: ``None``
@@ -2495,8 +2495,7 @@ class Common(object):
                 'Value': self.value
             }
 
-            for key in self.params:
-                custom_context[key] = self.params[key]
+            custom_context.update(self.params)
 
             ret_value = {
                 self.CONTEXT_PATH: custom_context
