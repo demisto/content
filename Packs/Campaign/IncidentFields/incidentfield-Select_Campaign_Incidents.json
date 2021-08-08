@@ -6,7 +6,7 @@
     "content": true,
     "description": "Select Campaign Incidents ",
     "editForm": true,
-    "fieldCalcScript": "7116d73d-106c-45d0-8e3c-baa2b8ecca9c",
+    "fieldCalcScript": "GetCampaignIncidentsIdsAsOptions",
     "group": 0,
     "hidden": false,
     "id": "incident_selectcampaignincidents",
@@ -17,7 +17,7 @@
     "ownerOnly": false,
     "placeholder": "Select one or more Incidents",
     "required": false,
-    "script": "1b687187-11bc-4145-8051-eddafd9d67d6",
+    "script": "CollectCampaignRecipients",
     "selectValues": [
         ""
     ],
