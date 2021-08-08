@@ -2605,6 +2605,7 @@ def main() -> None:
     """
 
     params = demisto.params()
+    args = demisto.args()
     command = demisto.command()
     api_key = params.get("apikey")
     base_url = urljoin(params.get("url", "").rstrip("/"), "/api")
@@ -2668,7 +2669,7 @@ def main() -> None:
 
         #  To be compatible with 6.1
         elif command == "get-modified-remote-data":
-            return_results(get_modified_remote_data_command(client, demisto.args()))
+            return_results(get_modified_remote_data_command(client, args))
 
         elif command == "get-remote-data":
             sync_owners = argToBoolean(params.get('sync_owners'))
@@ -2677,181 +2678,165 @@ def main() -> None:
             mirror_details = False
             # mirror_details = argToBoolean(params.get('mirror_details'))
             incoming_tags = argToList(params.get('incoming_tags'))
-            return_results(get_remote_data_command(client, demisto.args(), sync_owners, incoming_tags, mirror_details))
+            return_results(get_remote_data_command(client, args, sync_owners, incoming_tags, mirror_details))
 
         elif command == "update-remote-system":
             sync_owners = argToBoolean(params.get('sync_owners'))
-            return_results(update_remote_system_command(client, demisto.args(), sync_owners))
+            return_results(update_remote_system_command(client, args, sync_owners))
 
         elif command == "expanse-get-issues":
-            return_results(get_issues_command(client, demisto.args()))
+            return_results(get_issues_command(client, args))
 
         elif command == "expanse-get-issue":
-            return_results(get_issue_command(client, demisto.args()))
+            return_results(get_issue_command(client, args))
 
         elif command == "expanse-get-issue-updates":
-            return_results(get_issue_updates_command(client, demisto.args()))
+            return_results(get_issue_updates_command(client, args))
 
         elif command == "expanse-update-issue":
-            return_results(update_issue_command(client, demisto.args()))
+            return_results(update_issue_command(client, args))
 
         elif command == "expanse-get-issue-comments":
-            return_results(get_issue_comments_command(client, demisto.args()))
+            return_results(get_issue_comments_command(client, args))
 
         elif command == "expanse-list-businessunits":
-            return_results(list_businessunits_command(client, demisto.args()))
+            return_results(list_businessunits_command(client, args))
 
         elif command == "expanse-list-providers":
-            return_results(list_providers_command(client, demisto.args()))
+            return_results(list_providers_command(client, args))
 
         elif command == "expanse-list-tags":
-            return_results(list_tags_command(client, demisto.args()))
+            return_results(list_tags_command(client, args))
 
         elif command == "expanse-get-iprange":
-            return_results(get_iprange_command(client, demisto.args()))
+            return_results(get_iprange_command(client, args))
 
         elif command == "expanse-create-tag":
-            return_results(create_tag_command(client, demisto.args()))
+            return_results(create_tag_command(client, args))
 
         elif command == "expanse-assign-tags-to-asset":
-            args = demisto.args()
             args['operation_type'] = 'ASSIGN'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-unassign-tags-from-asset":
-            args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-assign-tags-to-iprange":
-            args = demisto.args()
             args['operation_type'] = 'ASSIGN'
             args['asset_type'] = 'IpRange'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-unassign-tags-from-iprange":
-            args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
             args['asset_type'] = 'IpRange'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-assign-tags-to-certificate":
-            args = demisto.args()
             args['operation_type'] = 'ASSIGN'
             args['asset_type'] = 'Certificate'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-unassign-tags-from-certificate":
-            args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
             args['asset_type'] = 'Certificate'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-assign-tags-to-domain":
-            args = demisto.args()
             args['operation_type'] = 'ASSIGN'
             args['asset_type'] = 'Domain'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-unassign-tags-from-domain":
-            args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
             args['asset_type'] = 'Domain'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-get-domain":
-            return_results(get_domain_command(client, demisto.args()))
+            return_results(get_domain_command(client, args))
 
         elif command == "expanse-get-certificate":
-            return_results(get_certificate_command(client, demisto.args()))
+            return_results(get_certificate_command(client, args))
 
         elif command == "expanse-get-associated-domains":
-            return_results(get_associated_domains_command(client, demisto.args()))
+            return_results(get_associated_domains_command(client, args))
 
         elif command == "certificate":
-            return_results(certificate_command(client, demisto.args()))
+            return_results(certificate_command(client, args))
 
         elif command == "domain":
-            return_results(domain_command(client, demisto.args()))
+            return_results(domain_command(client, args))
 
         elif command == "ip":
-            return_results(ip_command(client, demisto.args()))
+            return_results(ip_command(client, args))
 
         elif command == "cidr":
-            return_results(cidr_command(client, demisto.args()))
+            return_results(cidr_command(client, args))
 
         elif command == "expanse-get-cloud-resources":
-            return_results(get_cloud_resource_command(client, demisto.args()))
+            return_results(get_cloud_resource_command(client, args))
 
         elif command == "expanse-get-cloud-resource":
-            return_results(get_cloud_resource_command(client, demisto.args()))
+            return_results(get_cloud_resource_command(client, args))
 
         elif command == "expanse-get-risky-flows":
-            return_results(get_risky_flows_command(client, demisto.args()))
+            return_results(get_risky_flows_command(client, args))
 
         elif command == "expanse-list-risk-rules":
-            return_results(list_risk_rules_command(client, demisto.args()))
+            return_results(list_risk_rules_command(client, args))
 
         elif command == "expanse-get-services":
-            return_results(get_services_command(client, demisto.args()))
+            return_results(get_services_command(client, args))
 
         elif command == "expanse-get-service":
-            return_results(get_service_command(client, demisto.args()))
+            return_results(get_service_command(client, args))
 
         elif command == "expanse-list-pocs":
-            return_results(list_pocs_command(client, demisto.args()))
+            return_results(list_pocs_command(client, args))
 
         elif command == "expanse-create-poc":
-            return_results(create_poc_command(client, demisto.args()))
+            return_results(create_poc_command(client, args))
 
         elif command == "expanse-assign-pocs-to-asset":
-            args = demisto.args()
             args['operation_type'] = 'ASSIGN'
             return_results(manage_asset_pocs_command(client, args))
 
         elif command == "expanse-unassign-pocs-from-asset":
-            args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
             return_results(manage_asset_pocs_command(client, args))
 
         elif command == "expanse-assign-pocs-to-iprange":
-            args = demisto.args()
             args['operation_type'] = 'ASSIGN'
             args['asset_type'] = 'IpRange'
             return_results(manage_asset_pocs_command(client, args))
 
         elif command == "expanse-unassign-pocs-from-iprange":
-            args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
             args['asset_type'] = 'IpRange'
             return_results(manage_asset_pocs_command(client, args))
 
         elif command == "expanse-assign-pocs-to-certificate":
-            args = demisto.args()
             args['operation_type'] = 'ASSIGN'
             args['asset_type'] = 'Certificate'
             return_results(manage_asset_pocs_command(client, args))
 
         elif command == "expanse-unassign-pocs-from-certificate":
-            args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
             args['asset_type'] = 'Certificate'
             return_results(manage_asset_pocs_command(client, args))
 
         elif command == "expanse-assign-pocs-to-domain":
-            args = demisto.args()
             args['operation_type'] = 'ASSIGN'
             args['asset_type'] = 'Domain'
             return_results(manage_asset_pocs_command(client, args))
 
         elif command == "expanse-unassign-pocs-from-domain":
-            args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
             args['asset_type'] = 'Domain'
             return_results(manage_asset_pocs_command(client, args))
 
         elif command == 'expanse-get-domains-for-certificate':
-            return_results(domains_for_certificate_command(client, demisto.args()))
+            return_results(domains_for_certificate_command(client, args))
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
