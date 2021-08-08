@@ -77,16 +77,16 @@ def test_update_incident_command(mocker):
     assert mock_result.call_args.args[2] == expected_result
 
 
-def test_update_incident_command_with_wrong_json(mocker):
+def test_update_incident_command_with_invalid_json(mocker):
     """
     Given:
      - An incident should be updated.
 
     When:
-     - Running update_incident_command function with other-fields argument, the other-field is a wrong json.
+     - Running update_incident_command function with other-fields argument, the other-field is an invalid json.
 
     Then:
-     - Ensure the parsing before the request works well and that it is in IBM format.
+     - Ensure the parsing before the request fails and returns an JSONDecodeError.
     """
     mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True})
     args = {
