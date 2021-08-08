@@ -869,13 +869,13 @@ tasks:
             value:
               simple: http://www.bücher.de
       - - operator: containsString
-            left:
-              value:
-                simple: ${URL.Data}
-              iscontext: true
-            right:
-              value:
-                simple: http://165.225.225.99/3.com
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://165.225.225.99/3.com
       - - operator: containsString
           left:
             value:
