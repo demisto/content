@@ -1834,6 +1834,37 @@ def fetch_incidents_command_rec(start_time, last_time, page=1):
     return incidents, last_time
 
 
+def get_file_data():
+    """Gets the content of a file from GitHub.
+    """
+    args = demisto.args()
+
+    file_path: str = args.get('file_path', '')
+    repo: str = args.get('repository') or REPOSITORY
+    organization: str = args.get('organization') or USER
+    branch_name: Optional[str] = args.get('branch_name')
+
+    url_suffix = f'/repos/{organization}/{repo}/contents/{file_path}'
+    url_suffix = f'{url_suffix}/?ref={branch_name}' if branch_name else url_suffix
+
+    headers = {
+        'Authorization': "Bearer " + TOKEN,
+        'Accept': f'application/vnd.github.VERSION.object',
+    }
+
+    file_data = http_request(method="GET", url_suffix=url_suffix, headers=headers, is_raw_response=True)
+
+    results = CommandResults(
+        outputs_prefix='GitHub.FileContent',
+        outputs_key_field=['Path', 'Branch', 'MediaType'],
+        outputs=file_processed_data,
+        readable_output=f'File {file_path} successfully fetched.',
+        raw_response=file_data,
+    )
+
+    return_results(results)
+
+
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
