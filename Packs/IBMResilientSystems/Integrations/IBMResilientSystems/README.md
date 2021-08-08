@@ -899,115 +899,115 @@ Status:Closed
 <td style="width: 503px;"><strong>Description</strong></td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.type</td>
+<td style="width: 210px;">Resilient.IncidentNote.type</td>
 <td style="width: 503px;"> The type of the note (incident or task)</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.id</td>
+<td style="width: 210px;">Resilient.IncidentNote.id</td>
 <td style="width: 503px;">The note's ID</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.parent_id</td>
+<td style="width: 210px;">Resilient.IncidentNote.parent_id</td>
 <td style="width: 503px;">The ID of the parent note (null for top-level note)</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.user_id</td>
+<td style="width: 210px;">Resilient.IncidentNote.user_id</td>
 <td style="width: 503px;">The ID of the user who created the note</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.user_fname</td>
+<td style="width: 210px;">Resilient.IncidentNote.user_fname</td>
 <td style="width: 503px;">The user's first name</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.user_lname</td>
+<td style="width: 210px;">Resilient.IncidentNote.user_lname</td>
 <td style="width: 503px;">The user's last name</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.text</td>
+<td style="width: 210px;">Resilient.IncidentNote.text</td>
 <td style="width: 503px;">The note text</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.create_date</td>
+<td style="width: 210px;">Resilient.IncidentNote.create_date</td>
 <td style="width: 503px;">The date the note was created</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.modify_date</td>
+<td style="width: 210px;">Resilient.IncidentNote.modify_date</td>
 <td style="width: 503px;">The date the note was modified</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.is_deleted</td>
+<td style="width: 210px;">Resilient.IncidentNote.is_deleted</td>
 <td style="width: 503px;">The flag indicating if the note is deleted</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.modify_user.id</td>
+<td style="width: 210px;">Resilient.IncidentNote.modify_user.id</td>
 <td style="width: 503px;">The user that last modified the note</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.modify_user.first_name</td>
+<td style="width: 210px;">Resilient.IncidentNote.modify_user.first_name</td>
 <td style="width: 503px;">The user's last name that last modified the note</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.modify_user.last_name</td>
+<td style="width: 210px;">Resilient.IncidentNote.modify_user.last_name</td>
 <td style="width: 503px;">The user's first name that last modified the note</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.inc_id</td>
+<td style="width: 210px;">Resilient.IncidentNote.inc_id</td>
 <td style="width: 503px;">The ID of the incident to which this note belongs</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.inc_name</td>
+<td style="width: 210px;">Resilient.IncidentNote.inc_name</td>
 <td style="width: 503px;">The name of the incident to which this note belongs</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.task_id</td>
+<td style="width: 210px;">Resilient.IncidentNote.task_id</td>
 <td style="width: 503px;">The ID of the task to which this note belongs. Will be null on incident notes</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.task_name</td>
+<td style="width: 210px;">Resilient.IncidentNote.task_name</td>
 <td style="width: 503px;">The name of the task to which this note belongs. Will be null on incident notes</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.task_custom</td>
+<td style="width: 210px;">Resilient.IncidentNote.task_custom</td>
 <td style="width: 503px;">For task note, whether or not that task is custom. Null for incident notes</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.task_members</td>
+<td style="width: 210px;">Resilient.IncidentNote.task_members</td>
 <td style="width: 503px;">For task notes, the list of that task's members, if any. Null for incident notes</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.task_at_id</td>
+<td style="width: 210px;">Resilient.IncidentNote.task_at_id</td>
 <td style="width: 503px;">For task notes, whether or not that task is an automatic task</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.inc_owner</td>
+<td style="width: 210px;">Resilient.IncidentNote.inc_owner</td>
 <td style="width: 503px;">The owner of the incident to which this note belongs</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.user_name</td>
+<td style="width: 210px;">Resilient.IncidentNote.user_name</td>
 <td style="width: 503px;">The owner of the incident to which this note belongs</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.modify_principal.id</td>
+<td style="width: 210px;">Resilient.IncidentNote.modify_principal.id</td>
 <td style="width: 503px;">The ID of the principal</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.modify_principal.type</td>
+<td style="width: 210px;">Resilient.IncidentNote.modify_principal.type</td>
 <td style="width: 503px;">The type of the principal Currently only user or group</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.modify_principal.name</td>
+<td style="width: 210px;">Resilient.IncidentNote.modify_principal.name</td>
 <td style="width: 503px;">The name of the principal</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.modify_principal.display_name</td>
+<td style="width: 210px;">Resilient.IncidentNote.modify_principal.display_name</td>
 <td style="width: 503px;">The display name of the principal</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.comment_perms.update</td>
+<td style="width: 210px;">Resilient.IncidentNote.comment_perms.update</td>
 <td style="width: 503px;">The permission of the current user to update this note</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentNote.comment_perms.delete</td>
+<td style="width: 210px;">Resilient.IncidentNote.comment_perms.delete</td>
 <td style="width: 503px;">The permission of the current user to delete this note</td>
 </tr>
 </tbody>
@@ -1062,162 +1062,162 @@ Status:Closed
 <td style="width: 503px;"><strong>Description</strong></td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.id</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.id</td>
 <td style="width: 503px;">The id of the artifact</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.type</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.type</td>
 <td style="width: 503px;">The type of the artifact</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.value</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.value</td>
 <td style="width: 503px;">The value of the artifact, this would be for example the IP address for an IP address artifact</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.description</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.description</td>
 <td style="width: 503px;">The description of the artifact</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.attachment</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.attachment</td>
 <td style="width: 503px;">The files are attached to the artifact</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.parent_id</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.parent_id</td>
 <td style="width: 503px;">The parent artifact ID</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator.id</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator.id</td>
 <td style="width: 503px;">The ID of the artifact creator</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator.fname</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator.fname</td>
 <td style="width: 503px;">The first name of the artifact creator</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator.lname</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator.lname</td>
 <td style="width: 503px;">The last name of the artifact creator</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator.display_name</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator.display_name</td>
 <td style="width: 503px;">The display name of the artifact creator</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator.status</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator.status</td>
 <td style="width: 503px;">The status of the artifact creator</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator.email</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator.email</td>
 <td style="width: 503px;">The email of the artifact creator</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator.phone</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator.phone</td>
 <td style="width: 503px;">The phone number of the artifact creator</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator.cell</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator.cell</td>
 <td style="width: 503px;">The cellphone number of the artifact creator</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator.title</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator.title</td>
 <td style="width: 503px;">The user's job title (e.g. Incident Response Manager)</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator.locked</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator.locked</td>
 <td style="width: 503px;">The status of the creator's acount (true if locked false otherwise)</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator.password_changed</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator.password_changed</td>
 <td style="width: 503px;">The user's password has changed (true if changed false otherwise)</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator.is_external</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator.is_external</td>
 <td style="width: 503px;">The user's account is authenticated externally</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator.ui_theme</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator.ui_theme</td>
 <td style="width: 503px;">The UI theme the user has selected. The Resilient UI recognizes the following values (darkmode lightmode verydarkmode)</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.inc_id</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.inc_id</td>
 <td style="width: 503px;">The incident ID</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.inc_name</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.inc_name</td>
 <td style="width: 503px;">The incident name</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.inc_owner</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.inc_owner</td>
 <td style="width: 503px;">The incident owner</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.created</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.created</td>
 <td style="width: 503px;">The date when the artifact is created</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.last_modified_time</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.last_modified_time</td>
 <td style="width: 503px;">The last date on which the artifact changed</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.last_modified_by.id</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.last_modified_by.id</td>
 <td style="width: 503px;">The ID of the last who changed the artifact</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.last_modified_by.type</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.last_modified_by.type</td>
 <td style="width: 503px;">The type of the last who changed the artifact</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.last_modified_by.name</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.last_modified_by.name</td>
 <td style="width: 503px;">The name of the last who changed the artifact</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.last_modified_by.display_name</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.last_modified_by.display_name</td>
 <td style="width: 503px;">The display name of the last who changed the artifact</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.perms.read</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.perms.read</td>
 <td style="width: 503px;">The permission of the current user to read this artifact</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.perms.write</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.perms.write</td>
 <td style="width: 503px;">The permission of the current user to write this artifact</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.perms.delete</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.perms.delete</td>
 <td style="width: 503px;">The permission of the current user to delete this artifact</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.properties</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.properties</td>
 <td style="width: 503px;">The additional artifact properties</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.hash</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.hash</td>
 <td style="width: 503px;">The hash of the incident</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.relating</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.relating</td>
 <td style="width: 503px;">Whether or not this artifact should be used for relating to other incidents</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator_principal.id</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator_principal.id</td>
 <td style="width: 503px;">The ID of the principal</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator_principal.type</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator_principal.type</td>
 <td style="width: 503px;">The type of the principal. Currently only user or group</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator_principal.name</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator_principal.name</td>
 <td style="width: 503px;">The API name of the principal</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.creator_principal.display_name</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.creator_principal.display_name</td>
 <td style="width: 503px;">The display name of the principal</td>
 </tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.ip.source</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.ip.source</td>
 <td style="width: 503px;">The IP address is a source</tr>
 <tr>
-<td style="width: 210px;">Resilient.incidentArtifact.ip.destination</td>
+<td style="width: 210px;">Resilient.IncidentArtifact.ip.destination</td>
 <td style="width: 503px;">The IP address is a destination</td>
 </tr>
 </tbody>
