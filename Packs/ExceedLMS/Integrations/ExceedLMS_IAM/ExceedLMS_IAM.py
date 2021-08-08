@@ -114,7 +114,6 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the updated user in the application.
         :rtype: ``IAMUserAppData``
         """
-        demisto.results(str(user_id))
         uri = f'/api/v2/users/{user_id}'
         params = {'api_key': self.api_key}
         manager_id = self.get_manager_id(user_data)
@@ -143,9 +142,6 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the user in the application.
         :rtype: ``IAMUserAppData``
         """
-        # Note: ENABLE user API endpoints might vary between different APIs.
-        # In this example, we use the same endpoint as in update_user() method,
-        # But other APIs might have a unique endpoint for this request.
         user_data = {
             'is_active': 'true'
         }
@@ -160,10 +156,6 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the user in the application.
         :rtype: ``IAMUserAppData``
         """
-        # Note: DISABLE user API endpoints might vary between different APIs.
-        # In this example, we use the same endpoint as in update_user() method,
-        # But other APIs might have a unique endpoint for this request.
-
         user_data = {
             'is_active': 'false'
         }
@@ -216,13 +208,6 @@ class Client(BaseClient):
         """
         if isinstance(e, DemistoException) and e.res is not None:
             error_code = e.res.status_code
-
-            if action == IAMActions.DISABLE_USER and error_code in ERROR_CODES_TO_SKIP:
-                skip_message = 'Users is already disabled or does not exist in the system.'
-                user_profile.set_result(action=action,
-                                        skip=True,
-                                        skip_reason=skip_message)
-
             try:
                 resp = e.res.json()
                 error_message = get_error_details(resp)
@@ -346,9 +331,9 @@ def main():
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields(client))
 
-    except Exception:
+    except Exception as exc:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute {command} command.\nError: {exc}', error=traceback.format_exc())
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

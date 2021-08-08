@@ -17,50 +17,6 @@
 				"Username": {
 					"complex": null,
 					"simple": "email"
-				},
-				"Hire Date": {
-					"complex": null,
-					"simple": "hired_on"
-				},
-				"City": {
-					"complex": null,
-					"simple": "city"
-				},
-				"Country Name": {
-					"complex": null,
-					"simple": "custom_o"
-				},
-				"Title": {
-					"complex": null,
-					"simple": "custom_a"
-				},
-				"Employee ID": {
-					"complex": null,
-					"simple": "custom_c"
-				},
-				"Cost Center": {
-					"complex": null,
-					"simple": "custom_d"
-				},
-				"Department": {
-					"complex": null,
-					"simple": "custom_e"
-				},
-				"Job Code": {
-					"complex": null,
-					"simple": "custom_f"
-				},
-				"Location Region": {
-					"complex": null,
-					"simple": "custom_j"
-				},
-				"Employee Manager Email": {
-					"complex": null,
-					"simple": "custom_m"
-				},
-				"Employee Type": {
-					"complex": null,
-					"simple": "custom_r"
 				}
 			}
 		}

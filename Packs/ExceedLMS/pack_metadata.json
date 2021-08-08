@@ -1,6 +1,6 @@
 {
-    "name": "ExceedLMS",
-    "description": "ExceedLMS Identity and Access Management (IAM)",
+    "name": "Exceed LMS",
+    "description": "A specialized LMS and Phishing Simulator created to manage security awareness content for small, medium and large enterprise organizations.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

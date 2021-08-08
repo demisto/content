@@ -1,10 +1,9 @@
-An Identity and Access Management integration template.
-This integration was integrated and tested with version v2 of ExceedLMS
+Note: This integration should be used as part of our **Identity Lifecycle Management** premium pack. For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).This integration was integrated and tested with version v2 of ExceedLMS
 
-## Configure IAMExceedLMS on Cortex XSOAR
+## Configure ExceedLMS_IAM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for IAMExceedLMS.
+2. Search for ExceedLMS_IAM.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
@@ -176,28 +175,4 @@ Disable an active user.
 ```!iam-disable-user user-profile=`{"email": "john.doe@example.com", "givenname": "John"}` ```
 
 #### Human Readable Output
-
-
-
-### get-mapping-fields
-***
-Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
-
-
-#### Base Command
-
-`get-mapping-fields`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-```!get-mapping-fields using="IAMExceedLMS"```
-
-#### Human Readable Output
-
 

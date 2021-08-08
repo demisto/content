@@ -1,7 +1,7 @@
 beta: false
 category: Identity and Access Management
 commonfields:
-  id: IAMExceedLMS
+  id: ExceedLMS_IAM
   version: -1
 configuration:
 - display: Base URL
@@ -45,19 +45,19 @@ configuration:
   name: create_if_not_exists
   required: false
   type: 8
-- defaultvalue: User Profile - IAM Template (Incoming)
+- defaultvalue: User Profile - ExceedLMS (Incoming)
   display: Incoming Mapper
   name: mapper_in
   required: true
   type: 0
-- defaultvalue: User Profile - IAM Template (Outgoing)
+- defaultvalue: User Profile - ExceedLMS (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
   required: true
   type: 0
 description: An Identity and Access Management integration template.
-display: IAMExceedLMS
-name: IAMExceedLMS
+display: ExceedLMS_IAM
+name: ExceedLMS_IAM
 script:
   commands:
   - arguments:
