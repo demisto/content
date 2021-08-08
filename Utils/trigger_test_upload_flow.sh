@@ -59,7 +59,7 @@ function create_new_pack {
 
  rename_files_and_folders "$pack_name" "$new_pack_name"
 
-  for original_name in $names_array; do
+  for original_name in "${names_array[@]}"; do
     new_name="${original_name}${new_pack_suffix}"
     rename_files_and_folders $original_name $new_name
   done
@@ -487,7 +487,6 @@ if [[ -z ${existed_in_local} ]]; then
 fi
 
 git checkout -b "${new_content_branch}" || fail
-git commit --untracked-files=no -am "Initial commit"
 
 # Changes
 change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
