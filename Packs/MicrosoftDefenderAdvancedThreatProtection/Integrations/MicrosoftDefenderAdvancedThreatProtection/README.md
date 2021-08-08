@@ -4032,7 +4032,7 @@ Updates the specified indicator.
         "Indicator": "2.2.2.2",
         "Score": 0,
         "Type": "ip",
-        "Vendor": "Microsoft Defender Advanced Threat Protection test"
+        "Vendor": "Microsoft Defender Advanced Threat Protection"
     },
     "IP": {
         "Address": "2.2.2.2"
