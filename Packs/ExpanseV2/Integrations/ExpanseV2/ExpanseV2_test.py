@@ -1932,11 +1932,12 @@ def test_get_modified_remote_data_command(requests_mock):
     """
     from ExpanseV2 import get_modified_remote_data_command, Client
 
-    get_incidents_list_response = load_test_data('./test_data/expanse_get_issues.json')
+    get_incidents_list_response = util_load_json('./test_data/expanse_get_issues.json')
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
-    requests_mock.get(f"https://example.com/api/v1/issues/issues/", json=get_incidents_list_response)
+    requests_mock.get("https://example.com/api/v1/issues/issues?limit=100&modifiedAfter=2020-11-18T11%3A16%3A52.005381Z"
+                      , json=get_incidents_list_response)
     args = {
         'lastUpdate': '2020-11-18T13:16:52.005381+02:00'
     }
