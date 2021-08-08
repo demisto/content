@@ -1,4 +1,3 @@
-import base64
 # -*- coding: utf-8 -*-
 import codecs
 # -*- coding: utf-8 -*-
@@ -8,16 +7,11 @@ import codecs
 # ref:https://msdn.microsoft.com/en-us/library/cc463912(v=EXCHG.80).aspx
 import email
 import email.utils
-import os
 import quopri
-import re
-import sys
 import tempfile
-import traceback
 import unicodedata
 from base64 import b64decode
 # coding=utf-8
-from datetime import datetime, timedelta
 from email import encoders, message_from_string
 from email.header import Header, decode_header
 from email.mime.audio import MIMEAudio
@@ -30,9 +24,10 @@ from email.utils import getaddresses
 from struct import unpack
 
 import chardet
+from olefile import OleFileIO, isOleFile
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from olefile import OleFileIO, isOleFile
 
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=no-member
@@ -3307,6 +3302,8 @@ def extract_address_eml(eml, entry):
 
 
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False):
+    if email_data is None:
+        return 'No data extracted from email'
     email_data = recursive_convert_to_unicode(email_data)
     email_file_name = recursive_convert_to_unicode(email_file_name)
     parent_email_file = recursive_convert_to_unicode(parent_email_file)
@@ -3407,7 +3404,10 @@ def convert_to_unicode(s, is_msg_header=True):
             try:
                 word_mime_encoded = s and MIME_ENCODED_WORD.search(s)
                 if word_mime_encoded:
-                    return mime_decode(word_mime_encoded)
+                    word_mime_decoded = mime_decode(word_mime_encoded)
+                    if word_mime_decoded and not MIME_ENCODED_WORD.search(word_mime_decoded):
+                        # ensure decoding was successful
+                        return word_mime_decoded
             except Exception as e:
                 # in case we failed to mine-decode, we continue and try to decode
                 demisto.debug('Failed decoding mime-encoded string: {}. Will try regular decoding.'.format(str(e)))
@@ -3616,7 +3616,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attached_emails.extend(inner_attached_emails)
                             # if we are outter email is a singed attachment it is a wrapper and we don't return the output of
                             # this inner email as it will be returned as part of the main result
-                            if 'multipart/signed' not in eml.get_content_type():
+                            if 'multipart/signed' not in eml.get_content_type() and inner_eml:
                                 return_outputs(readable_output=data_to_md(inner_eml, attachment_file_name, file_name),
                                                outputs=None)
                         finally:
@@ -3683,7 +3683,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         # 1. it is 'multipart/signed' so it is probably a wrapper and we can ignore the outer "email"
         # 2. if it is 'multipart/signed' but has 'to' address so it is actually a real mail.
         if 'multipart/signed' not in eml.get_content_type() \
-                or ('multipart/signed' in eml.get_content_type() and extract_address_eml(eml, 'to')):
+                or ('multipart/signed' in eml.get_content_type()
+                    and (extract_address_eml(eml, 'to') or extract_address_eml(eml, 'from') or eml.get('subject'))):
             email_data = {
                 'To': extract_address_eml(eml, 'to'),
                 'CC': extract_address_eml(eml, 'cc'),
@@ -3770,7 +3771,7 @@ def main():
 
         elif any(eml_candidate in file_type_lower for eml_candidate in
                  ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'multipart/alternative', 'multipart/mixed', 'message/rfc822',
-                  'application/pkcs7-mime']):
+                  'application/pkcs7-mime', 'multipart/related']):
             if 'unicode (with bom) text' in file_type_lower:
                 email_data, attached_emails = handle_eml(
                     file_path, False, file_name, parse_only_headers, max_depth, bom=True
