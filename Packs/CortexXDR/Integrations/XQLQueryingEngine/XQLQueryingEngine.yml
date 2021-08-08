@@ -117,6 +117,7 @@ script:
     execution: false
     hidden: false
     name: xdr-get-xql-query-results
+    polling: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.XQL.Query.Status
       description: |-

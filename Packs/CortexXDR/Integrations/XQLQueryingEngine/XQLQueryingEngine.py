@@ -194,7 +194,7 @@ def get_xql_query_results_polling_command(client: Client, args: dict):
             **args
         }
         scheduled_command = ScheduledCommand(
-            command='xdr-start-xql-query',
+            command='xdr-get-xql-query-results',
             next_run_in_seconds=interval_in_secs,
             args=polling_args,
             timeout_in_seconds=600)
