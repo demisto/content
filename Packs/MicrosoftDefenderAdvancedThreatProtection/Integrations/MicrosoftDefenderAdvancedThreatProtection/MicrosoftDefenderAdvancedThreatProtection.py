@@ -28,15 +28,15 @@ NUMBER_TO_SEVERITY = {
     4: 'High',
     5: 'Informational'
 }
-SC_INDICATORS_HEADERS = [
+SC_INDICATORS_HEADERS = (
     'id',
     'action',
     'indicatorValue',
     'indicatorType',
     'severity',
     'title',
-    'description'
-]
+    'description',
+)
 
 INDICATOR_TYPE_TO_DBOT_TYPE = {
     'FileSha256': DBotScoreType.FILE,
@@ -2434,7 +2434,7 @@ def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -
         indicator_value = indicator.get('indicatorValue')  # type:ignore
         dbot_indicator = get_indicator_dbot_object(indicator)
         human_readable = tableToMarkdown(f'Indicator {indicator_value} was updated successfully.',
-                                         indicator, headers=SC_INDICATORS_HEADERS, removeNull=True)
+                                         indicator, headers=list(SC_INDICATORS_HEADERS), removeNull=True)
         return CommandResults(outputs=indicator, indicator=dbot_indicator,
                               readable_output=human_readable, outputs_key_field='id',
                               outputs_prefix='MicrosoftATP.Indicators')
@@ -2460,7 +2460,7 @@ def sc_list_indicators_command(client: MsClient, args: Dict[str, str]):
             indicator_value = indicator.get('indicatorValue')
             dbot_indicator = get_indicator_dbot_object(indicator)
             human_readable = tableToMarkdown(f'Results found in Microsoft Defender ATP SC for value: {indicator_value}',
-                                             indicator, headers=SC_INDICATORS_HEADERS, removeNull=True)
+                                             indicator, headers=list(SC_INDICATORS_HEADERS), removeNull=True)
             command_results.append(CommandResults(outputs=indicator, indicator=dbot_indicator,
                                                   readable_output=human_readable, outputs_key_field='id',
                                                   outputs_prefix='MicrosoftATP.Indicators'))
