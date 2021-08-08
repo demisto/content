@@ -3587,7 +3587,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attachment_name = part.get_payload()[0].get('Subject', "no_name_mail_attachment")
                             attachment_file_name = convert_to_unicode(attachment_name) + '.eml'
 
-                        file_content = part.get_payload()[0].as_string()
+                        file_content = part.get_payload()[0].as_string().strip()
                         if base64_encoded:
                             try:
                                 file_content = b64decode(file_content)
