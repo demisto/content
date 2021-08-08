@@ -81,6 +81,16 @@ create-instances:
     - section_start "Prepare Content Packs for Testing"
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
     - section_end "Prepare Content Packs for Testing"
+    - section_start "Zip Marketplace Packs"
+    - |
+      if [[ $CI_COMMIT_BRANCH != master ]] && [[ $CI_COMMIT_BRANCH != 21\.* ]] && [[ $CI_COMMIT_BRANCH != 22\.* ]]; then
+        echo "Skipping packs download to artifact on branch that is not master or a release branch"
+        echo "CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH"
+      else
+        ZIP_FOLDER=$(mktemp -d)
+        python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
+      fi
+    - section_end "Zip Marketplace Packs"
     - section_start "Create Instances"
     - |
       [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
