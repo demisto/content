@@ -44,7 +44,7 @@ To access the Security & Compliance Center, you need to be a global administrato
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 
-2. Search for SecurityAndCompliance.
+2. Search for O365 - Security And Compliance - Content Search.
 
 3. Authentication / Authorization methods:
 
