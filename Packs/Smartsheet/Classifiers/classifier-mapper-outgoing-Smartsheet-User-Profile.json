@@ -1,0 +1,93 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a User Profile data to a Smartsheet user data.",
+	"id": "User Profile - Smartsheet (Outgoing)",
+	"mapping": {
+		"User Profile - Create": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"department": {
+					"complex": null,
+					"simple": "department"
+				},
+				"email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"firstName": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"lastName": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"locale": {
+					"complex": null,
+					"simple": "locale"
+				},
+				"mobilePhone": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"workPhone": {
+					"complex": null,
+					"simple": "workphone"
+				},
+				"timeZone": {
+					"complex": null,
+					"simple": "timezone"
+				},
+				"title": {
+					"complex": null,
+					"simple": "title"
+				}
+			}
+		},
+		"User Profile - Update": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"department": {
+					"complex": null,
+					"simple": "department"
+				},
+				"email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"firstName": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"lastName": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"locale": {
+					"complex": null,
+					"simple": "locale"
+				},
+				"mobilePhone": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"workPhone": {
+					"complex": null,
+					"simple": "workphone"
+				},
+				"timeZone": {
+					"complex": null,
+					"simple": "timezone"
+				},
+				"title": {
+					"complex": null,
+					"simple": "title"
+				}
+			}
+		}
+	},
+	"name": "User Profile - Smartsheet (Outgoing)",
+	"type": "mapping-outgoing",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}
