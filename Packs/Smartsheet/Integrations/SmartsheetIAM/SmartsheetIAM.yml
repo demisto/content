@@ -3,12 +3,6 @@ commonfields:
   id: Smartsheet IAM
   version: -1
 configuration:
-- name: url
-  display: Base URL
-  required: true
-  defaultvalue:
-  type: 0
-  additionalinfo:
 - name: credentials
   display:
   required: true
@@ -17,18 +11,32 @@ configuration:
   additionalinfo:
   displaypassword: Access Token
   hiddenusername: true
-- name: insecure
-  display: Trust any certificate (not secure)
+- name: send_mail
+  display: Send a welcome email to newly created users
   required: false
-  defaultvalue: ''
+  defaultvalue:
   type: 8
-  additionalinfo:
-- name: proxy
-  display: Use system proxy settings
+- name: remove_from_sharing
+  display: Disable access to sheets for removed users
   required: false
-  defaultvalue: ''
+  defaultvalue:
+  additionalinfo: If true, when a user is removed, they will be removed from sharing
+    for all sheets/workspaces in the organization account.
   type: 8
-  additionalinfo:
+- name: transfer_sheets
+  display: Transfer sheets of removed users
+  additionalinfo: If true, a removed user's sheets are transferred to its manager
+    or to the default user specified below.
+  required: false
+  defaultvalue:
+  type: 8
+- name: default_transfer_to
+  display: Default user to transfer sheets of removed users
+  additionalinfo: Email of the default user to transfer sheets to, when the manager
+    of the removed user does not have a Smartsheet account.
+  required: false
+  defaultvalue:
+  type: 0
 - name: create_user_enabled
   display: Allow creating users
   required: false
@@ -47,27 +55,6 @@ configuration:
   defaultvalue: "true"
   type: 8
   additionalinfo:
-- name: remove_from_sharing
-  display: Remove from sharing
-  required: false
-  defaultvalue:
-  additionalinfo: If true, when a user is removed, removes the user from sharing for
-    all sheets/workspaces in the organization account.
-  type: 8
-- name: transfer_sheets
-  display: Transfer sheets when removing users
-  additionalinfo: If true, a removed user's sheets are transferred to its manager
-    or to the default user specified below.
-  required: false
-  defaultvalue:
-  type: 8
-- name: default_transfer_to
-  display: Default user to transfer sheets
-  additionalinfo: Default user email to transfer sheets to, if the removed user's
-    manager does not have an account.
-  required: false
-  defaultvalue:
-  type: 0
 - name: create_if_not_exists
   display: Automatically create user if not found in update command
   required: false
@@ -86,7 +73,20 @@ configuration:
   defaultvalue: User Profile - Smartsheet (Outgoing)
   type: 0
   additionalinfo:
-description: An Identity and Access Management integration template.
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  defaultvalue: ''
+  type: 8
+  additionalinfo:
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  defaultvalue: ''
+  type: 8
+  additionalinfo:
+description: Integrate with Smartsheet services to perform Identity Lifecycle Management
+  operations.
 display: Smartsheet IAM
 name: Smartsheet IAM
 script:
@@ -293,9 +293,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-    arguments: []
-    outputs: []
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/smartsheet:1.0.0.23423
   isfetch: false
   longRunning: false
   longRunningPort: false

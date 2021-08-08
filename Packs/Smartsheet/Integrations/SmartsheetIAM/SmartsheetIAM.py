@@ -17,20 +17,21 @@ ERROR_CODES_TO_SKIP = [
 
 
 class Client:
-    def __init__(self, user: Users, remove_from_sharing: bool, transfer_sheets: bool, transfer_to_email: Optional[str]) -> None:
+    def __init__(self, user: Users, remove_from_sharing: bool, transfer_sheets: bool,
+                 transfer_to_email: Optional[str], send_mail: bool) -> None:
         self.user = user
         self.remove_from_sharing = remove_from_sharing
         self.transfer_sheets = transfer_sheets
         self.transfer_to_email = transfer_to_email
+        self.send_mail = send_mail
 
     def test(self):
         """ Tests connectivity with the application. """
         res = self.user.get_current_user().to_dict()
-
         if res.get('id'):
             return 'ok'
         else:
-            return res.get('result').get('message') or res
+            return res.get('result', {}).get('message') or res
 
     def get_user(self, email: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using smartsheet SDK by its email, and returns an IAMUserAppData object
@@ -62,9 +63,8 @@ class Client:
         :return: An IAMUserAppData object that contains the data of the created user in the application.
         :rtype: ``IAMUserAppData``
         """
-        send_mail = user_data.get('send_email')
         data_obj = smartsheet.models.User(user_data)
-        res = self.user.add_user(data_obj, send_email=send_mail).to_dict()
+        res = self.user.add_user(data_obj, send_email=self.send_mail).to_dict()
 
         if res.get('resultCode') != 0:
             raise DemistoException(res.get('message'), res=res)
@@ -128,7 +128,7 @@ class Client:
 
         if res.get('resultCode') != 0:
             raise DemistoException(res.get('message'), res=res)
-        
+
         return IAMUserAppData(user_id, None, False, res)
 
     def get_app_fields(self) -> Dict[str, Any]:
@@ -234,7 +234,7 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
 
 
 def get_transfer_to_email(args: Dict[str, Any], default: Optional[str] = None):
-    user_profile = safe_load_json(args.get('user-profile'))
+    user_profile = safe_load_json(args.get('user-profile', {}))
     if not user_profile or not user_profile.get('manageremail'):
         return default
     return user_profile.get('manageremail')
@@ -258,6 +258,7 @@ def main():
     remove_from_sharing = params.get("remove_from_sharing")
     transfer_to_email = get_transfer_to_email(args, default=params.get("default_transfer_to"))
     transfer_sheets = params.get("transfer_sheets")
+    send_mail = params.get("send_mail")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
                              create_if_not_exists, mapper_in, mapper_out)
@@ -268,7 +269,8 @@ def main():
         user=Users(smartsheet_obj),
         remove_from_sharing=remove_from_sharing,
         transfer_sheets=transfer_sheets,
-        transfer_to_email=transfer_to_email
+        transfer_to_email=transfer_to_email,
+        send_mail=send_mail
     )
 
     demisto.debug(f'Command being called is {command}')
@@ -294,7 +296,7 @@ def main():
 
     try:
         if command == 'test-module':
-            test_module(client)
+            return_results(test_module(client))
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields(client))

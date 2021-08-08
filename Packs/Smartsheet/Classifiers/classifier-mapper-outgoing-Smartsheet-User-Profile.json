@@ -6,6 +6,28 @@
 		"User Profile - Create": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
+				"admin": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "admin"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
+				},
 				"department": {
 					"complex": null,
 					"simple": "department"
@@ -18,9 +40,53 @@
 					"complex": null,
 					"simple": "givenname"
 				},
+				"groupAdmin": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "groupAdmin"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
+				},
 				"lastName": {
 					"complex": null,
 					"simple": "surname"
+				},
+				"licensedSheetCreator": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "licensedSheetCreator"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
 				},
 				"locale": {
 					"complex": null,
@@ -30,9 +96,27 @@
 					"complex": null,
 					"simple": "mobilephone"
 				},
-				"workPhone": {
-					"complex": null,
-					"simple": "workphone"
+				"resourceViewer": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "resourceViewer"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
 				},
 				"timeZone": {
 					"complex": null,
@@ -41,12 +125,38 @@
 				"title": {
 					"complex": null,
 					"simple": "title"
+				},
+				"workPhone": {
+					"complex": null,
+					"simple": "workphone"
 				}
 			}
 		},
 		"User Profile - Update": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
+				"admin": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "admin"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
+				},
 				"department": {
 					"complex": null,
 					"simple": "department"
@@ -59,9 +169,53 @@
 					"complex": null,
 					"simple": "givenname"
 				},
+				"groupAdmin": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "groupAdmin"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
+				},
 				"lastName": {
 					"complex": null,
 					"simple": "surname"
+				},
+				"licensedSheetCreator": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "licensedSheetCreator"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
 				},
 				"locale": {
 					"complex": null,
@@ -71,9 +225,27 @@
 					"complex": null,
 					"simple": "mobilephone"
 				},
-				"workPhone": {
-					"complex": null,
-					"simple": "workphone"
+				"resourceViewer": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "resourceViewer"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
 				},
 				"timeZone": {
 					"complex": null,
@@ -82,6 +254,10 @@
 				"title": {
 					"complex": null,
 					"simple": "title"
+				},
+				"workPhone": {
+					"complex": null,
+					"simple": "workphone"
 				}
 			}
 		}

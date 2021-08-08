@@ -26,25 +26,9 @@
 					"complex": null,
 					"simple": "locale"
 				},
-				"Manager Name": {
-					"complex": null,
-					"simple": "manager"
-				},
 				"Mobile Phone": {
 					"complex": null,
 					"simple": "mobilePhone"
-				},
-				"Organization": {
-					"complex": null,
-					"simple": "organization"
-				},
-				"State": {
-					"complex": null,
-					"simple": "state"
-				},
-				"Street Address": {
-					"complex": null,
-					"simple": "streetAddress"
 				},
 				"Title": {
 					"complex": null,

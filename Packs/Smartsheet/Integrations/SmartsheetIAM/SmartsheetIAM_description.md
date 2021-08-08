@@ -1,2 +1,2 @@
 # Obtain an access token
-Click the "Account" button in the upper-right corner of the Smartsheet screen, and then click "Personal Settings". Click the "API Access" tab. Click the "Generate new access token" button to obtain an access token.
+Click the "Account" button in the bottom-left corner of the Smartsheet dashboard, and then click "Personal Settings". Click the "API Access" tab. Click the "Generate new access token" button to obtain an access token.
