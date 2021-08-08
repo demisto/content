@@ -1527,7 +1527,7 @@ def get_modified_remote_data_command(client, args):
     demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
 
     last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
-    modified_after =last_update_utc.strftime(DATE_FORMAT)
+    modified_after = last_update_utc.strftime(DATE_FORMAT)
 
     modified_incidents = client.get_issues(
         limit=100,

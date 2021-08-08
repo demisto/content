@@ -322,26 +322,26 @@ def test_get_remote_data_command_should_close_incident(requests_mock):
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
     mock_issue_updates = {
-            "data": [
-                {
-                    "created": "2020-11-10T16:14:46.754804Z",
-                    "id": "ef09680e-3134-4c2d-ab35-a35bdbb62bd9",
-                    "previousValue": "Investigating",
-                    "updateType": "ProgressStatus",
-                    "user": {
-                        "username": "Expanse Bot"
-                    },
-                    "value": "Resolved"
-                }
-            ],
-            "pagination": {
-                "next": None,
-                "pref": None
-            },
-            "meta": {
-                "totalCount": 9
+        "data": [
+            {
+                "created": "2020-11-10T16:14:46.754804Z",
+                "id": "ef09680e-3134-4c2d-ab35-a35bdbb62bd9",
+                "previousValue": "Investigating",
+                "updateType": "ProgressStatus",
+                "user": {
+                    "username": "Expanse Bot"
+                },
+                "value": "Resolved"
             }
+        ],
+        "pagination": {
+            "next": None,
+            "pref": None
+        },
+        "meta": {
+            "totalCount": 9
         }
+    }
     requests_mock.get(f"https://example.com/api/v1/issues/issues/{MOCK_ISSUE_ID}/updates?limit=100", json=mock_issue_updates)
 
     result = get_remote_data_command(client, args)
@@ -380,26 +380,26 @@ def test_get_remote_data_command_should_reopen_incident(requests_mock):
 
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
     mock_issue_updates = {
-            "data": [
-                {
-                    "created": "2020-11-10T16:14:46.754804Z",
-                    "id": "ef09680e-3134-4c2d-ab35-a35bdbb62bd9",
-                    "previousValue": "Resolved",
-                    "updateType": "ProgressStatus",
-                    "user": {
-                        "username": "Expanse Bot"
-                    },
-                    "value": "Investigating"
-                }
-            ],
-            "pagination": {
-                "next": None,
-                "pref": None
-            },
-            "meta": {
-                "totalCount": 9
+        "data": [
+            {
+                "created": "2020-11-10T16:14:46.754804Z",
+                "id": "ef09680e-3134-4c2d-ab35-a35bdbb62bd9",
+                "previousValue": "Resolved",
+                "updateType": "ProgressStatus",
+                "user": {
+                    "username": "Expanse Bot"
+                },
+                "value": "Investigating"
             }
+        ],
+        "pagination": {
+            "next": None,
+            "pref": None
+        },
+        "meta": {
+            "totalCount": 9
         }
+    }
     requests_mock.get(f"https://example.com/api/v1/issues/issues/{MOCK_ISSUE_ID}/updates?limit=100", json=mock_issue_updates)
 
     result = get_remote_data_command(client, args)
@@ -2053,7 +2053,7 @@ def test_get_modified_remote_data_command(requests_mock):
     client = Client(api_key="key", base_url="https://example.com/api/", verify=True, proxy=False)
 
     requests_mock.get("https://example.com/api/v1/issues/issues?limit=100&modifiedAfter=2020-11-18T11%3A16%3A52.005381Z"
-                      , json=get_incidents_list_response)
+                      ,json=get_incidents_list_response)
     args = {
         'lastUpdate': '2020-11-18T13:16:52.005381+02:00'
     }
