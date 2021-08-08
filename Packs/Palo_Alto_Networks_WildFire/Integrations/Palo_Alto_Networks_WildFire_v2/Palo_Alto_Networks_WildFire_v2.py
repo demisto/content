@@ -928,7 +928,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
 def wildfire_get_report_command(args):
     """
     Args:
-        args: the command arguments arguments from demisto.args(), including url or file hash (sha256 or md5) to query on
+        args: the command arguments from demisto.args(), including url or file hash (sha256 or md5) to query on
 
     Returns:
         A single or list of CommandResults, and the status of the reports of the url or file of interest.
