@@ -1646,6 +1646,12 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
                 incident_updates['closeNotes'] = None
 
             incident_updates[updated_field] = new_value
+            new_entries.append({
+                'Type': EntryType.NOTE,
+                'Contents': f'Mirroring: {update_user} updated field [{updated_field}] from [{previous_value}] to [{new_value}]',
+                'ContentsFormat': EntryFormat.TEXT,
+                'Note': False
+            })
 
         # handle everything else
         else:
