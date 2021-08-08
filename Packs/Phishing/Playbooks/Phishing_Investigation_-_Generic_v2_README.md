@@ -36,7 +36,7 @@ These task have the following names:
 - Configuring the optional configurations can greatly enhance the investigation.
 
 ## Dependencies
-This playbook uses the following sub-playbooks, integrations, and scripts.
+* Builtin
 
 ### Sub-playbooks
 * Calculate Severity - Generic v2
