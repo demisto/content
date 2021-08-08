@@ -2,7 +2,7 @@ id: PAN-OS - Block IP - Custom Block Rule Test
 version: -1
 name: PAN-OS - Block IP - Custom Block Rule Test
 starttaskid: "0"
-fromversion: "5.0.0"
+fromversion: "6.1.0"
 tasks:
   "0":
     id: "0"
