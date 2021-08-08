@@ -45,6 +45,9 @@ class Client:
         """
         res = self.user.list_users(email=email).to_dict()
 
+        if res.get('result', {}).get('statusCode') > 299:
+            raise DemistoException(res.get('result', {}).get('message'), res=res)
+
         if res and len(res.get('data', [])) == 1:
             user_app_data = res.get('data')[0]
 
@@ -66,8 +69,8 @@ class Client:
         data_obj = smartsheet.models.User(user_data)
         res = self.user.add_user(data_obj, send_email=self.send_mail).to_dict()
 
-        if res.get('resultCode') != 0:
-            raise DemistoException(res.get('message'), res=res)
+        if res.get('result', {}).get('statusCode') > 299:
+            raise DemistoException(res.get('result', {}).get('message'), res=res)
 
         user_app_data = res.get('result')
         user_id = user_app_data.get('id')
@@ -87,10 +90,11 @@ class Client:
         :return: An IAMUserAppData object that contains the data of the updated user in the application.
         :rtype: ``IAMUserAppData``
         """
-        res = self.user.update_user(user_id, smartsheet.models.User(user_data)).to_dict()
+        data_obj = smartsheet.models.User(user_data)
+        res = self.user.update_user(user_id, data_obj).to_dict()
 
-        if res.get('resultCode') != 0:
-            raise DemistoException(res.get('message'), res=res)
+        if res.get('result', {}).get('statusCode') > 299:
+            raise DemistoException(res.get('result', {}).get('message'), res=res)
 
         user_app_data = res.get('result')
         user_id = user_app_data.get('id')
@@ -126,8 +130,8 @@ class Client:
             remove_from_sharing=self.remove_from_sharing
         ).to_dict()
 
-        if res.get('resultCode') != 0:
-            raise DemistoException(res.get('message'), res=res)
+        if res.get('result', {}).get('statusCode') > 299:
+            raise DemistoException(res.get('result', {}).get('message'), res=res)
 
         return IAMUserAppData(user_id, None, False, res)
 
@@ -193,23 +197,6 @@ class Client:
         demisto.error(traceback.format_exc())
 
 
-'''HELPER FUNCTIONS'''
-
-
-def get_error_details(res: Dict[str, Any]) -> str:
-    """ Parses the error details retrieved from the application and outputs the resulted string.
-
-    :type res: ``Dict[str, Any]``
-    :param res: The error data retrieved from the application.
-
-    :return: The parsed error details.
-    :rtype: ``str``
-    """
-    message = res.get('error', {}).get('message')   # TODO: make sure you parse the error details correctly
-    details = res.get('error', {}).get('detail')
-    return f'{message}: {details}'
-
-
 '''COMMAND FUNCTIONS'''
 
 
@@ -235,9 +222,7 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
 
 def get_transfer_to_email(args: Dict[str, Any], default: Optional[str] = None):
     user_profile = safe_load_json(args.get('user-profile', {}))
-    if not user_profile or not user_profile.get('manageremail'):
-        return default
-    return user_profile.get('manageremail')
+    return user_profile.get('manageremail') or default
 
 
 def main():
@@ -277,20 +262,26 @@ def main():
 
     '''CRUD commands'''
 
-    if command == 'iam-get-user':
-        user_profile = iam_command.get_user(client, args)
+    try:
+        serr = sys.stderr
+        sys.stderr = StringIO()
 
-    elif command == 'iam-create-user':
-        user_profile = iam_command.create_user(client, args)
+        if command == 'iam-get-user':
+            user_profile = iam_command.get_user(client, args)
 
-    elif command == 'iam-update-user':
-        user_profile = iam_command.update_user(client, args)
+        elif command == 'iam-create-user':
+            user_profile = iam_command.create_user(client, args)
 
-    elif command == 'iam-disable-user':
-        user_profile = iam_command.disable_user(client, args)
+        elif command == 'iam-update-user':
+            user_profile = iam_command.update_user(client, args)
 
-    if user_profile:
-        return_results(user_profile)
+        elif command == 'iam-disable-user':
+            user_profile = iam_command.disable_user(client, args)
+
+        if user_profile:
+            return_results(user_profile)
+    finally:
+        sys.stderr = serr
 
     '''non-CRUD commands'''
 
