@@ -34,7 +34,7 @@ configuration:
   required: true
   type: 0
 - defaultvalue: "clientID"
-  display: Client_ID
+  display: ClientID
   additionalinfo: The given clientID to use for NucleonCyber API connection
   name: client_id
   required: true
