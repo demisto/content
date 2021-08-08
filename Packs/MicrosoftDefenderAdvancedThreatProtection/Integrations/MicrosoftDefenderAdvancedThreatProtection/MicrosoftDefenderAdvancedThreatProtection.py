@@ -31,7 +31,7 @@ NUMBER_TO_SEVERITY = {
 
 SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
 SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
-
+GRAPH_INDICATOR_ENDPOINT = 'https://graph.microsoft.com/beta/security/tiIndicators'
 
 def file_standard(observable: Dict) -> Common.File:
     """Gets a file observable and returns a context key
@@ -748,8 +748,7 @@ class MsClient:
             List of responses.
         """
         results = {}
-        indicators_endpoint = 'https://graph.microsoft.com/beta/security/tiIndicators'
-        cmd_url = urljoin(indicators_endpoint, indicator_id) if indicator_id else indicators_endpoint
+        cmd_url = urljoin(GRAPH_INDICATOR_ENDPOINT, indicator_id) if indicator_id else GRAPH_INDICATOR_ENDPOINT
         # For getting one indicator
         # TODO: check in the future if the filter is working. Then remove the filter function.
         # params = {'$filter': 'targetProduct=\'Microsoft Defender ATP\''}
@@ -792,9 +791,8 @@ class MsClient:
         Returns:
             A response from the API.
         """
-        indicators_endpoint = 'https://graph.microsoft.com/beta/security/tiIndicators'
         resp = self.indicators_http_request(False,
-                                            'POST', full_url=indicators_endpoint, json_data=body, url_suffix=None
+                                            'POST', full_url=GRAPH_INDICATOR_ENDPOINT, json_data=body, url_suffix=None
                                             )
         # A single object - should remove the '@odata.context' key.
         resp.pop('@odata.context')
@@ -861,8 +859,7 @@ class MsClient:
         Returns:
             A response from the API.
         """
-        indicators_endpoint = 'https://graph.microsoft.com/beta/security/tiIndicators'
-        cmd_url = urljoin(indicators_endpoint, indicator_id)
+        cmd_url = urljoin(GRAPH_INDICATOR_ENDPOINT, indicator_id)
         header = {'Prefer': 'return=representation'}
         body = {
             'targetProduct': 'Microsoft Defender ATP',
@@ -2374,8 +2371,7 @@ def delete_indicator_command(client: MsClient, args: dict) -> str:
         human readable
     """
     indicator_id = args.get('indicator_id', '')
-    indicators_endpoint = 'https://graph.microsoft.com/beta/security/tiIndicators'
-    client.delete_indicator(indicator_id, indicators_endpoint)
+    client.delete_indicator(indicator_id, GRAPH_INDICATOR_ENDPOINT)
     return f'Indicator ID: {indicator_id} was successfully deleted'
 
 
