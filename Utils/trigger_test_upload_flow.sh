@@ -38,7 +38,8 @@ function check_arguments {
 # copy_pack
 # Copies a pack and changing the name in the files to the new name.
 # :param $1: pack name
-# :param $2: copied pack name
+# :param $2: suffix for new pack name
+# :param $3: possible names for renaming array
 function create_new_pack {
   echo " Running - create_new_pack"
 
@@ -47,23 +48,23 @@ function create_new_pack {
   fi
 
   local pack_name=$1
-  local new_pack_name=$2
+  local new_pack_suffix=$2
+  local names_array=("$@")
 
-  original_path=$(pwd)
-  pack_path="${CONTENT_PATH}/Packs/${pack_name}"
-  new_pack_path="${CONTENT_PATH}/Packs/${new_pack_name}"
+  local new_pack_name="${pack_name}${new_pack_suffix}"
+  local original_path=$(pwd)
+  local pack_path="${CONTENT_PATH}/Packs/${pack_name}"
+  local new_pack_path="${CONTENT_PATH}/Packs/${new_pack_name}"
 
   cp -R "${pack_path}" "${new_pack_path}" || fail
   cd "${new_pack_path}" || fail
 
-  rename_files_and_folders "$pack_name" "$new_pack_name" "true"
+ rename_files_and_folders "$pack_name" "$new_pack_name" "true"
 
-  if [ "$pack_name" == "HelloWorld" ]; then
-    rename_files_and_folders "Hello_World" "Hello_World_New" "true"
-    rename_files_and_folders "Hello World" "Hello World New" "true"
-    rename_files_and_folders "helloworld" "helloworldnew" "true"
-    rename_files_and_folders "Sanity_Test" "Sanity_Test_New" "true"
-  fi
+  for original_name in names_array; do
+    new_name="${original_name}${new_pack_suffix}"
+    rename_files_and_folders $original_name $new_name
+  done
 
   cd "${original_path}" || fail
   git add "$new_pack_path"
@@ -85,7 +86,7 @@ function rename_files_and_folders {
   local pack_name=$1
   local new_pack_name=$2
   # Rename inside files
-  if [ $3 == "true" ]; then
+  if [ $3 != "false" ]; then
     find . -type f \( -name "*.py" -o -name "*.yml" -o -name "*.json" \) -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
   fi
 
@@ -469,7 +470,8 @@ cd "${CONTENT_PATH}" || fail
 check_arguments
 
 new_content_branch="${sdk_branch_name}_${content_branch_name}_UploadFlow_test"
-new_pack_name="${base_pack_name}New"
+new_suffix="New"
+new_pack_name="${base_pack_name}${new_suffix}"
 
 git checkout "$content_branch_name" || fail
 git pull || fail
@@ -493,7 +495,7 @@ git commit --untracked-files=no -am "Initial commit"
 change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
 
 # New Pack
-create_new_pack "${base_pack_name}" "${new_pack_name}"
+create_new_pack "${base_pack_name}" "${new_suffix}" ( "Hello_World" "Hello World" "helloworld" "Sanity_Test" )
 add_dependency "${new_pack_name}" "Viper"
 add_author_image "${new_pack_name}"
 add_1_0_0_release_note "${new_pack_name}"
