@@ -15,6 +15,8 @@ With this content pack, you can significantly reduce the time your security anal
 
 As part of this pack, you will also get out-of-the-box phishing incident views, a full layout and automation scripts. All of these are easily customizable to suit the needs of your organization.
 
-_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/phishing-investigation---generic-v2)_
+_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/phishing-investigation---generic-v2)._
 
-![Phishing_Investigation_Generic_v2](https://raw.githubusercontent.com/demisto/content/7a20daa4d3560df3be0d2f3f41c00d43ac1a1e23/Packs/Phishing/doc_files/Phishing_Investigation_Generic_v2.png)
+_If you're new to our Phishing Content Pack, check out our [Setting Up a Phishing Incident in Cortex XSOAR](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-tutorials/tutorials/phishing-use-case.html) tutorial._
+
+![Phishing_Investigation_Generic_v2](https://raw.githubusercontent.com/demisto/content/c0a50f50790859843596ac0c650433a8191c2b92/Packs/Phishing/doc_files/Phishing_Investigation_-_Generic_v2_-_6_0.png)
