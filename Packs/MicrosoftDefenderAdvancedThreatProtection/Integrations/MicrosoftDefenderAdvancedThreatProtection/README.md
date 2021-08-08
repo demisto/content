@@ -2874,7 +2874,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets a
 
 ### microsoft-atp-indicator-create-network
 ***
-Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a file indicator.
+Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a network indicator.
 
 
 #### Base Command

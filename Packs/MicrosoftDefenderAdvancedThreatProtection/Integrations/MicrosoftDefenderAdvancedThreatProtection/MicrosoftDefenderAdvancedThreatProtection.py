@@ -825,16 +825,16 @@ class MsClient:
         """creates or updates (if already exists) a given indicator
 
         Args:
-            indicator_value: Value of the indicator to update
-            expiration_date_time: Expiration time of the indicator
-            description: A Brief description of the indicator
-            severity: The severity of the indicator
-            indicator_type: The type of the indicator
-            action: The action that will be taken if the indicator will be discovered
+            indicator_value: Value of the indicator to update.
+            expiration_date_time: Expiration time of the indicator.
+            description: A Brief description of the indicator.
+            severity: The severity of the indicator.
+            indicator_type: The type of the indicator.
+            action: The action that will be taken if the indicator will be discovered.
             indicator_title: Indicator alert title.
             indicator_application: The application associated with the indicator.
             recommended_actions: TI indicator alert recommended actions.
-            rbac_group_names: Comma-separated list of RBAC group names the indicator would be
+            rbac_group_names: Comma-separated list of RBAC group names the indicator would be.
 
         Returns:
             A response from the API.
@@ -864,10 +864,10 @@ class MsClient:
         """Updates a given indicator
 
         Args:
-            indicator_id: ID of the indicator to update
-            expiration_date_time: Expiration time of the indicator
-            description: A Brief description of the indicator
-            severity: The severity of the indicator
+            indicator_id: ID of the indicator to update.
+            expiration_date_time: Expiration time of the indicator.
+            description: A Brief description of the indicator.
+            severity: The severity of the indicator.
 
         Returns:
             A response from the API.
@@ -2387,7 +2387,7 @@ def delete_indicator_command(client: MsClient, args: dict) -> str:
     return f'Indicator ID: {indicator_id} was successfully deleted'
 
 
-def sc_delete_indicator_command(client: MsClient, args: dict) -> CommandResults:
+def sc_delete_indicator_command(client: MsClient, args: Dict[str, str]) -> CommandResults:
     """Deletes an indicator
     https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/delete-ti-indicator-by-id?view=o365-worldwide
     Args:
@@ -2395,9 +2395,9 @@ def sc_delete_indicator_command(client: MsClient, args: dict) -> CommandResults:
         args: arguments from CortexSOAR.
             Must contains 'indicator_id'
     Returns:
-        human readable
+          An indication of whether the indicator was deleted successfully.
     """
-    indicator_id = args.get('indicator_id', '')
+    indicator_id = args.get('indicator_id')
     client.delete_indicator(indicator_id, SECURITY_CENTER_INDICATOR_ENDPOINT, use_security_center=True)
     return CommandResults(readable_output=f'Indicator ID: {indicator_id} was successfully deleted')
 
@@ -2409,9 +2409,8 @@ def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -
     Args:
         client: MsClient
         args: arguments from CortexSOAR.
-            Must contains 'indicator_id' and 'expiration_time'
-    Returns:
-        human readable, outputs
+           Must contains 'indicator_value', 'indicator_type','indicator_description', 'indicator_title', and 'action'.
+
     """
     indicator_value = args['indicator_value']
     indicator_type = args['indicator_type']
@@ -2442,7 +2441,7 @@ def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -
         return CommandResults(readable_output=f'Indicator {indicator_value} was NOT updated.')
 
 
-def sc_list_indicators_command(client: MsClient, args: Dict[str, str]):
+def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Union[CommandResults, List[CommandResults]]:
     """
     https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-ti-indicators-collection?view=o365-worldwide
     Args:

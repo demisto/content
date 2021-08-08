@@ -3348,7 +3348,7 @@ script:
       secret: false
     deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-create command instead.
-      Creates a file indicator.
+      Creates a network indicator.
     execution: false
     name: microsoft-atp-indicator-create-network
     outputs:
