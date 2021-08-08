@@ -37,7 +37,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 #### Command
 
-`nucleoncyber-get-ips` -prints ips to anyone.  
+`nucleoncyber-get-ips` - prints ips to anyone.  
 `nucleoncyber-get-urls` - prints urls to anyone.  
 `nucleoncyber-get-hashes` - prints hashes to anyone.
 #### Input
@@ -48,7 +48,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 #### Command Example
 ```!`nucleoncyber-get-ips limit=100```
-
+```!`nucleoncyber-get-ips```
+```!`nucleoncyber-get-urls```
+```!`nucleoncyber-get-hashes```
 
 
 

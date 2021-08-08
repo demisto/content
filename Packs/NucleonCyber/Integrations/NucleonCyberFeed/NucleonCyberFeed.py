@@ -75,12 +75,6 @@ class Client(BaseClient):
                 )
         return result
 
-    def fix_segment(self, segment) -> str:
-        if segment is None:
-            return "other"
-        else:
-            return segment
-
     def get_ips(self, params: Dict[str, str], limit: int) -> List:
         global_username = params.get('username')
         global_password = params.get('password')
@@ -97,7 +91,7 @@ class Client(BaseClient):
         all_data = json_payload.get("data")
 
         demisto.debug(all_data)
-        
+
         for data in all_data:
 
             if not data.get("attackDetails"):
@@ -114,19 +108,19 @@ class Client(BaseClient):
                     'value': data.get("ip"),
                     "exp": data.get("exp"),
                     'type': "IP",
-                    'segment': self.fix_segment(data.get("attackDetails").get("segment")),
-                    'targetCountry': data.get("attackDetails").get("targetCountry"),
-                    'os': data.get("attackDetails").get("remote").get("os"),
-                    'osVersion': data.get("attackDetails").get("remote").get("osVersion"),
-                    'governments': data.get("attackMeta").get("governments"),
-                    'port': data.get("attackMeta").get("port"),
-                    'darknet': data.get("attackMeta").get("darknet"),
-                    'bot': data.get("attackMeta").get("bot"),
-                    'cnc': data.get("attackMeta").get("cnc"),
-                    'proxy': data.get("attackMeta").get("proxy"),
-                    'automated': data.get("attackMeta").get("automated"),
-                    'bruteForce': data.get("attackMeta").get("bruteForce"),
-                    'sourceCountry': data.get("attackMeta").get("sourceCountry"),
+                    'segment': data.get("attackDetails").get("segment", "other"),
+                    'targetCountry': data.get("attackDetails").get("targetCountry", "unreconized"),
+                    'os': data.get("attackDetails").get("remote").get("os", "unreconized"),
+                    'osVersion': data.get("attackDetails").get("remote").get("osVersion", "unreconized"),
+                    'governments': data.get("attackMeta").get("governments", False),
+                    'port': data.get("attackMeta").get("port", False),
+                    'darknet': data.get("attackMeta").get("darknet", False),
+                    'bot': data.get("attackMeta").get("bot", False),
+                    'cnc': data.get("attackMeta").get("cnc", False),
+                    'proxy': data.get("attackMeta").get("proxy", False),
+                    'automated': data.get("attackMeta").get("automated", False),
+                    'bruteForce': data.get("attackMeta").get("bruteForce", False),
+                    'sourceCountry': data.get("attackMeta").get("sourceCountry", False),
                 }
             )
         return result

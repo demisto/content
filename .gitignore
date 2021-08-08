@@ -37,3 +37,13 @@ Scripts/**/__init__.py
 Integrations/**/__init__.py
 Packs/**/__init__.py
 .demisto-sdk-conf
+
+.hooks/bootstrap.Unix
+
+Packs/NucleonCyber/.git
+Packs/NucleonCyber/.gitignore
+Packs/NucleonCyber/Dockerfile
+Packs/NucleonCyber/docker-compose.yml
+Packs/NucleonCyber/requirements_docker.txt
+Packs/NucleonCyber/developer_guide.md
+Packs/NucleonCyber/images

@@ -1,1 +1,4 @@
 !helloworld-get-indicators limit=100
+!nucleoncyber-get-ips
+!nucleoncyber-get-urls
+!nucleoncyber-get-hashes
