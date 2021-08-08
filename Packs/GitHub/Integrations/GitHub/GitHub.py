@@ -1852,7 +1852,7 @@ def get_path_data():
 
     headers = {
         'Authorization': "Bearer " + TOKEN,
-        'Accept': f'application/vnd.github.VERSION.object',
+        'Accept': 'application/vnd.github.VERSION.object',
     }
     try:
         raw_response = http_request(method="GET", url_suffix=url_suffix, headers=headers)
