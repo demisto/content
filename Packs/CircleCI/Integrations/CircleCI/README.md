@@ -333,7 +333,7 @@ Triggers a new pipeline on the project.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| parameters | A json object containing pipeline parameters and their values. | Required | 
+| parameters | A JSON object containing pipeline parameters and their values. | Required | 
 
 
 #### Context Output
