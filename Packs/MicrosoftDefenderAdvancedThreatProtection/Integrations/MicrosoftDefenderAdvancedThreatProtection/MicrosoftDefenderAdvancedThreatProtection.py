@@ -33,6 +33,7 @@ SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
 SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
 GRAPH_INDICATOR_ENDPOINT = 'https://graph.microsoft.com/beta/security/tiIndicators'
 
+
 def file_standard(observable: Dict) -> Common.File:
     """Gets a file observable and returns a context key
 
@@ -169,20 +170,21 @@ class MsClient:
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
-            scope='https://securitycenter.onmicrosoft.com/windowsatpservice/.default')
+            scope=Scopes.security_center_apt_service)
         self.alert_severities_to_fetch = alert_severities_to_fetch,
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
 
-    def indicators_http_request(self, should_use_security_center: bool = False, *args, **kwargs):
+    def indicators_http_request(self, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
             should_use_security_center (bool): whether to use the security center's scope and resource
         """
-        if should_use_security_center:
+        if kwargs['should_use_security_center']:
             kwargs['scope'] = Scopes.security_center_apt_service
             kwargs['resource'] = SECURITY_CENTER_RESOURCE
         else:
             kwargs['scope'] = "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else Scopes.graph
+        kwargs.pop('should_use_security_center')
         return self.ms_client.http_request(*args, **kwargs)
 
     def isolate_machine(self, machine_id, comment, isolation_type):
@@ -704,14 +706,12 @@ class MsClient:
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def sc_list_indicators(self, indicator_id: Optional[str] = None, limit: Optional[int] = 50,
-                           should_use_security_center: bool = False) -> List:
+    def sc_list_indicators(self, indicator_id: Optional[str] = None, limit: Optional[int] = 50) -> List:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
                 Args:
                     indicator_id: if provided, will get only this specific id.
                     limit: Limit the returned results.
-                    should_use_security_center (bool): whether to use the security center's scope and resource.
 
                 Returns:
                     List of responses.
@@ -722,9 +722,9 @@ class MsClient:
                           indicator_id) if indicator_id else SECURITY_CENTER_INDICATOR_ENDPOINT
 
         params = {'$top': limit}
-        resp = self.indicators_http_request(should_use_security_center,
-                                            'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
-                                            ok_codes=(200, 204, 206, 404), resp_type='response')
+        resp = self.indicators_http_request(
+            'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
+            ok_codes=(200, 204, 206, 404), resp_type='response', should_use_security_center=True)
         # 404 - No indicators found, an empty list.
         if resp.status_code == 404:
             return []
@@ -753,9 +753,9 @@ class MsClient:
         # TODO: check in the future if the filter is working. Then remove the filter function.
         # params = {'$filter': 'targetProduct=\'Microsoft Defender ATP\''}
         params = {'$top': page_size}
-        resp = self.indicators_http_request(should_use_security_center,
-                                            'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
-                                            ok_codes=(200, 204, 206, 404), resp_type='response')
+        resp = self.indicators_http_request(
+            'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
+            ok_codes=(200, 204, 206, 404), resp_type='response', should_use_security_center=should_use_security_center)
         # 404 - No indicators found, an empty list.
         if resp.status_code == 404:
             return []
@@ -763,8 +763,8 @@ class MsClient:
         results.update(resp)
 
         while next_link := resp.get('@odata.nextLink'):
-            resp = self.indicators_http_request(should_use_security_center, 'GET', full_url=next_link, url_suffix=None,
-                                                timeout=1000)
+            resp = self.indicators_http_request('GET', full_url=next_link, url_suffix=None,
+                                                timeout=1000, should_use_security_center=should_use_security_center)
             results['value'].extend(resp.get('value'))
             if len(results['value']) >= limit:
                 break
@@ -791,9 +791,8 @@ class MsClient:
         Returns:
             A response from the API.
         """
-        resp = self.indicators_http_request(False,
-                                            'POST', full_url=GRAPH_INDICATOR_ENDPOINT, json_data=body, url_suffix=None
-                                            )
+        resp = self.indicators_http_request('POST', full_url=GRAPH_INDICATOR_ENDPOINT, json_data=body,
+                                            url_suffix=None, should_use_security_center=False)
         # A single object - should remove the '@odata.context' key.
         resp.pop('@odata.context')
         return assign_params(values_to_ignore=[None], **resp)
@@ -840,8 +839,8 @@ class MsClient:
             recommendedActions=recommended_actions,
             rbacGroupNames=rbac_group_names
         ))
-        resp = self.indicators_http_request(True, 'POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT, json_data=body,
-                                            url_suffix=None)
+        resp = self.indicators_http_request('POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT, json_data=body,
+                                            url_suffix=None, should_use_security_center=True)
         return assign_params(values_to_ignore=[None], **resp)
 
     def update_indicator(
@@ -869,9 +868,9 @@ class MsClient:
             description=description,
             severity=severity
         ))
-        resp = self.indicators_http_request(False, 'PATCH', full_url=cmd_url, json_data=body, url_suffix=None,
-                                            headers=header
-                                            )
+        resp = self.indicators_http_request('PATCH', full_url=cmd_url,
+                                            json_data=body, url_suffix=None, headers=header,
+                                            should_use_security_center=False)
         # A single object - should remove the '@odata.context' key.
         resp.pop('@odata.context')
         return assign_params(values_to_ignore=[None], **resp)
@@ -889,9 +888,8 @@ class MsClient:
             A response from the API.
         """
         cmd_url = urljoin(indicators_endpoint, indicator_id)
-        return self.indicators_http_request(use_security_center,
-                                            'DELETE', None, full_url=cmd_url, ok_codes=(204,),
-                                            resp_type='response')
+        return self.indicators_http_request('DELETE', None, full_url=cmd_url, ok_codes=(204,),
+                                            resp_type='response', should_use_security_center=use_security_center)
 
 
 ''' Commands '''
@@ -2446,7 +2444,7 @@ def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[
         human_readable, outputs.
     """
     limit = arg_to_number(args.get('limit', 50))
-    raw_response = client.sc_list_indicators(args.get('indicator_id'), limit, should_use_security_center=True)
+    raw_response = client.sc_list_indicators(args.get('indicator_id'), limit)
     if raw_response:
         indicators = list()
         for item in raw_response:
