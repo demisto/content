@@ -2922,13 +2922,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: Entry ID for the file to commit. Either "entry_id" or "file_text" must be provided.
+      description: Entry ID for the file to commit. Either "entry_id" or "file_text"
+        must be provided.
       isArray: false
       name: entry_id
       required: false
       secret: false
     - default: false
-      description: Plain text for the file to commit. Either "entry_id" or "file_text" must be provided.
+      description: Plain text for the file to commit. Either "entry_id" or "file_text"
+        must be provided.
       isArray: false
       name: file_text
       required: false
@@ -2940,8 +2942,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The blob SHA of the file being replaced. Use the Github-list-files command
-        to get the SHA value of the file.  Required if you are updating a file. 
+      description: The blob SHA of the file being replaced. Use the Github-list-files
+        command to get the SHA value of the file.  Required if you are updating a
+        file.
       isArray: false
       name: file_sha
       required: false
@@ -3011,8 +3014,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The repository for the pull request. Defaults to the repository parameter
-        if not provided.
+      description: The repository for the pull request. Defaults to the repository
+        parameter if not provided.
       isArray: false
       name: repository
       required: false
@@ -3881,7 +3884,8 @@ script:
       description: If dir was given in file_path, SHA of the dir entry.
       type: String
     - contextPath: GitHub.PathData.entries.size
-      description: If dir was given in file_path, size of the dir entry. Will be 0 if entry is also a dir.
+      description: If dir was given in file_path, size of the dir entry. Will be 0
+        if entry is also a dir.
       type: Number
     - contextPath: GitHub.PathData.entries.url
       description: If dir was given in file_path, URL of the dir entry.
@@ -3893,12 +3897,13 @@ script:
       description: If dir was given in file_path, Git URL of the dir entry.
       type: String
     - contextPath: GitHub.PathData.entries.download_url
-      description: If dir was given in file_path, download URL of the dir entry. Will be empty if entry is also a dir.
+      description: If dir was given in file_path, download URL of the dir entry. Will
+        be empty if entry is also a dir.
       type: String
     - contextPath: GitHub.PathData.entries.type
       description: If dir was given in file_path, type of the dir entry.
       type: String
-  dockerimage: demisto/pyjwt3:1.0.0.19327
+  dockerimage: demisto/pyjwt3:1.0.0.23674
   feed: false
   isfetch: true
   longRunning: false
