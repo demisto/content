@@ -57,9 +57,9 @@ function create_new_pack {
   cp -Rf "${pack_path}" "${new_pack_path}" || fail
   cd "${new_pack_path}" || fail
 
- rename_files_and_folders "$pack_name" "$new_pack_name" "true"
+ rename_files_and_folders "$pack_name" "$new_pack_name"
 
-  for original_name in names_array; do
+  for original_name in $names_array; do
     new_name="${original_name}${new_pack_suffix}"
     rename_files_and_folders $original_name $new_name
   done
