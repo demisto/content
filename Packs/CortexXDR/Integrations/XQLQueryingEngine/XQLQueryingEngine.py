@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
-from typing import Dict, Any
+from typing import Dict, Any, Callable
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -42,7 +42,7 @@ class Client(BaseClient):
         execution_id = res.get('reply', "")
         return execution_id
 
-    def get_xql_query_results(self, data: dict) -> str:
+    def get_xql_query_results(self, data: dict) -> dict:
         """Returns a simple python dict with the information provided
         in the input (dummy).
 
@@ -57,7 +57,7 @@ class Client(BaseClient):
         query_results = res.get('reply', "")
         return query_results
 
-    def get_query_result_stream(self, data: dict) -> str:
+    def get_query_result_stream(self, data: dict) -> bytes:
         """Returns a simple python dict with the information provided
         in the input (dummy).
 
@@ -68,9 +68,8 @@ class Client(BaseClient):
         :rtype: ``str``
         """
 
-        res = self._http_request(method='POST', url_suffix='/xql/get_query_results_stream', json_data=data)
-        return res
-
+        res = self._http_request(method='POST', url_suffix='/xql/get_query_results_stream', json_data=data, resp_type='response')
+        return res.content
 
     def get_xql_quota(self, data: dict) -> str:
         """Returns a simple python dict with the information provided
@@ -86,14 +85,22 @@ class Client(BaseClient):
         res = self._http_request(method='POST', url_suffix='/xql/get_quota', json_data=data)
         return res
 
+
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+def init_commands() -> dict:
+    return {
+        'test-module': test_module,
+        'xdr-start-xql-query': start_xql_query_command,
+        'xdr-get-xql-query-results': get_xql_query_results_polling_command,
+    }
+
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client,  args: Dict[str, Any]) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -109,15 +116,10 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        client._http_request(
-            method='POST',
-            url_suffix='/xql/get_quota',
-            json_data={'request_data': {}}
-        ),
         client.get_xql_quota({'request_data': {}})
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
@@ -125,74 +127,100 @@ def test_module(client: Client) -> str:
 
 
 def start_xql_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    query = args.get('query')
+    query = stringEscape(args.get('query', ''))
     if not query:
         raise ValueError('query is not specified')
     time_frame = args.get('time_frame', '')
-    tenant_ids = args.get('time_frame', [])
-    converted_time = arg_to_datetime(time_frame)
+    tenant_ids = args.get('tenant_ids', [])
+    converted_time = arg_to_datetime(time_frame) if time_frame else None
     data = {
         'request_data': {
             'query': query,
-            'tenants': tenant_ids
+            'tenants': tenant_ids,
             'timeframe': converted_time
         }
     }
     # Call the Client function and get the raw response
-    result = client.start_xql_query(data)
+    execution_id = client.start_xql_query(data)
 
     return CommandResults(
-        outputs_prefix='result',
-        outputs_key_field='',
-        outputs=result,
+        outputs_prefix='PaloAltoNetworksXDR.XQL.Query',
+        outputs_key_field='ExecutionID',
+        outputs={
+            'ExecutionID': execution_id
+        },
     )
 
-def get_xql_query_results_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
+def get_xql_query_results_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query_id = args.get('query_id')
     if not query_id:
         raise ValueError('query is not specified')
-    results_limit = args.get('Limit', 100)
-    pending_flag = args.get('pending_flag', True)
+    results_limit = int(args.get('limit', 100))
     format_method = args.get('format', 'json')
     data = {
         'request_data': {
             'query_id': query_id,
-            'pending_flag': pending_flag,
-            'Limit': results_limit,
+            'pending_flag': True,
+            'limit': results_limit,
             'format': format_method
         }
     }
-    # Call the Client function and get the raw response
-    result = client.get_xql_query_results(data)
 
+    # Call the Client function and get the raw response
+    response = client.get_xql_query_results(data)
+    stream_id = response.get('results', {}).get('stream_id')
+    if stream_id:
+        return xdr_get_query_result_stream(client, stream_id)
+    outputs = camelize(response, delim='_')
+    outputs['ExecutionID'] = query_id
     return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
+        outputs_prefix='PaloAltoNetworksXDR.XQL.Query',
+        outputs_key_field='ExecutionID',
+        outputs=outputs,
     )
 
-def xdr_get_query_result_stream_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    stream_id = args.get('stream_id')
+def get_xql_query_results_polling_command(client: Client, args: dict):
+    ScheduledCommand.raise_error_if_not_supported()
+    interval_in_secs = int(args.get('interval_in_seconds', 60))
+    command_results = get_xql_query_results_command(client, args)
+    outputs = command_results.outputs
+    return_warning('STATUS :' + outputs.get('Status'))
+    if outputs.get('Status') == 'PENDING':
+        polling_args = {
+            'interval_in_seconds': interval_in_secs,
+            'polling': True,
+            **args
+        }
+        scheduled_command = ScheduledCommand(
+            command='xdr-start-xql-query',
+            next_run_in_seconds=interval_in_secs,
+            args=polling_args,
+            timeout_in_seconds=600)
+        command_results.scheduled_command = scheduled_command
+    return command_results
+
+
+def xdr_get_query_result_stream(client: Client, stream_id: str) -> CommandResults:
+
     if not stream_id:
-        raise ValueError('query is not specified')
-    is_gzip_compressed = args.get('gzip_compressed', False)
+        raise ValueError('stream_id is not specified')
     data = {
         'request_data': {
             'stream_id': stream_id,
-            'is_gzip_compressed': is_gzip_compressed,
+            'is_gzip_compressed': True,
         }
     }
     # Call the Client function and get the raw response
-    result = client.get_get_query_result_stream(data)
+    result = client.get_query_result_stream(data)
 
     return CommandResults(
         outputs_prefix='BaseIntegration',
         outputs_key_field='',
         outputs=result,
     )
+
 
 def xdr_get_xql_quota_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
@@ -238,18 +266,10 @@ def main() -> None:
             verify=verify_cert,
             headers=headers,
             proxy=proxy)
-
-        if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
-
-        elif command == 'xdr-start-xql-query':
-            return_results(start_xql_query_command(client, demisto.args()))
-        elif command == 'xdr-get-xql-query-results ':
-            return_results(get-xql-query_command(client, demisto.args()))
-        elif command == 'xdr-get-query-result-stream':
-            return_results(get-query-result-stream_command(client, demisto.args()))
+        commands = init_commands()
+        if command not in commands:
+            raise DemistoException(f'Command {command} does not exist.')
+        return_results(commands[command](client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
