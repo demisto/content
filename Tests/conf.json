@@ -1212,7 +1212,8 @@
         {
             "integrations": "WildFire-v2",
             "playbookID": "Wildfire Test",
-            "is_mockable": false
+            "is_mockable": false,
+            "fromversion": "6.2.0"
         },
         {
             "integrations": "WildFire-v2",
