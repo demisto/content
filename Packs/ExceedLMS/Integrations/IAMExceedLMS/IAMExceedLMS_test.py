@@ -1,5 +1,5 @@
 from requests import Response, Session
-from ExceedLMS_IAM import Client, get_mapping_fields
+from IAMExceedLMS import Client, get_mapping_fields
 from IAMApiModule import *
 
 

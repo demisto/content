@@ -1,9 +1,9 @@
 Note: This integration should be used as part of our **Identity Lifecycle Management** premium pack. For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).This integration was integrated and tested with version v2 of ExceedLMS
 
-## Configure ExceedLMS_IAM on Cortex XSOAR
+## Configure ExceedLMS IAM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ExceedLMS_IAM.
+2. Search for ExceedLMS IAM.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
@@ -60,10 +60,10 @@ Creates a user.
 ```!iam-create-user user-profile=`{"email": "john.doe@example.com", "givenname": "test", "surname": "test", "username": "john8"}` ```
 
 #### Human Readable Output
-### Create User Results (ExceedLMS_IAM)
+### Create User Results
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
-| ExceedLMS_IAM | ExceedLMS_IAM_instance_1 | true | true | 111111 | john8 | john.doe@example.com | ... |
+| ExceedLMS IAM | ExceedLMS IAM_instance_1 | true | true | 111111 | john8 | john.doe@example.com | ... |
 
 
 
@@ -107,7 +107,7 @@ Updates an existing user with the data passed in the user-profile argument.
 ### Update User Results
 |brand|instanceName|success|id|username|email|details|
 |---|---|---|---|---|---|---|
-| ExceedLMS_IAM | ExceedLMS_IAM_instance_1 | true | 111111 | Johnny | john.doe@example.com | ... |
+| ExceedLMS IAM | ExceedLMS IAM_instance_1 | true | 111111 | Johnny | john.doe@example.com | ... |
 
 
 
@@ -146,10 +146,10 @@ Retrieves a single user resource.
 ```!iam-get-user user-profile=`{"email": "john.doe@example.com"}` ```
 
 #### Human Readable Output
-### Get User Results (ExceedLMS_IAM)
+### Get User Results
 |brand|instanceName|success|active|id|username|details|
 |---|---|---|---|---|---|---|
-| ExceedLMS_IAM | ExceedLMS_IAM_instance_1 | true | true | 111111 | john8 | ... |
+| ExceedLMS IAM | ExceedLMS IAM_instance_1 | true | true | 111111 | john8 | ... |
 
 
 ### iam-disable-user
@@ -187,7 +187,7 @@ Disable an active user.
 ```!iam-disable-user user-profile=`{"email": "john.doe@example.com", "givenname": "John"}` ```
 
 #### Human Readable Output
-### Disable User Results (ExceedLMS_IAM)
+### Disable User Results
 |brand|instanceName|success|active|id|email|details|
 |---|---|---|---|---|---|---|
-| ExceedLMS_IAM | ExceedLMS_IAM_instance_1 | true | false | 111111 | john.doe@example.com | ... |
+| ExceedLMS IAM | ExceedLMS IAM_instance_1 | true | false | 111111 | john.doe@example.com | ... |
