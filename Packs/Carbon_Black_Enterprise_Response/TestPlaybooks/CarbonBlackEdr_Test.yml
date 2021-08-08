@@ -484,24 +484,7 @@ tasks:
       - "31"
     scriptarguments:
       sensor_id:
-        complex:
-          root: CarbonBlackEDR.Sensor
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: CarbonBlackEDR.Sensor.status
-                iscontext: true
-              right:
-                value:
-                  simple: Online
-          accessor: id
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
+        simple: "15"
     separatecontext: false
     view: |-
       {
@@ -532,24 +515,7 @@ tasks:
       - "11"
     scriptarguments:
       sensor_id:
-        complex:
-          root: CarbonBlackEDR.Sensor
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: CarbonBlackEDR.Sensor.status
-                iscontext: true
-              right:
-                value:
-                  simple: Online
-          accessor: id
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
+        simple: "15"
     separatecontext: false
     view: |-
       {
