@@ -241,6 +241,28 @@ def azure_ad_identity_protection_risky_users_dismiss_command(client: AADClient, 
     return client.azure_ad_identity_protection_risky_users_dismiss(**kwargs)
 
 
+def create_incidents_from_input(input: List[Dict[str, str]], last_fetch_datetime: datetime) -> \
+    Tuple[List[Dict[str, str]], datetime]:
+
+    incidents: List[Dict[str, str]] = []
+    last_fetch = last_fetch_datetime
+
+    for current_input in input:
+        activityDateTime: str = current_input.get('activityDateTime', '')  # 'activityDateTime': '2021-07-15T11:02:54Z'
+        incident = {
+            'name': 'incident_name',
+            'occurred': activityDateTime,
+            'rawJSON': json.dumps(current_input)
+        }
+        incidents.append(incident)
+
+        timestamp = datetime.strptime(date_string=activityDateTime, format=DATE_FORMAT)
+        if timestamp > last_fetch:
+            last_fetch = timestamp
+
+    return incidents, last_fetch
+
+
 def fetch_incidents(client: AADClient, params: Dict[str, str]):
     demisto.info('\n\n*** fetch_incidents, params: ' + str(params) + '\n\n')
 
@@ -270,7 +292,7 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
     # demisto.info('\n\n*** fetch_incidents, values: ' + str(values) + '\n\n')
     demisto.debug('len(values): ' + str(len(values)))
 
-    incidents: List = []
+    incidents, last_item_time = create_incidents_from_input(values, last_fetch_datetime=last_fetch_datetime)
     # {'id': 'b7d9b782ed160b3000a9906be230ce91d1702949ddb49d326f3c2510576bdf13', 'requestId': 'e7a62d3b-8367-414b-8fd2-95fff3563801', 'correlationId': '1618d4b2-4a02-4f7a-a1e7-033b10b5313b', 'riskType': 'NewCountry', 'riskEventType': 'newCountry', 'riskState': 'dismissed', 'riskLevel': 'medium', 'riskDetail': 'adminDismissedAllRiskForUser', 'source': 'MicrosoftCloudAppSecurity', 'detectionTimingType': 'offline', 'activity': 'signin', 'tokenIssuerType': 'AzureAD', 'ipAddress': '84.207.227.14', 'activityDateTime': '2021-07-15T11:02:54Z', 'detectedDateTime': '2021-07-15T11:08:54Z', 'lastUpdatedDateTime': '2021-07-20T13:56:42.4023143Z', 'userId': '3fa9f28b-eb0e-463a-ba7b-8089fe9991e2', 'userDisplayName': 'Avishai Brandeis', 'userPrincipalName': 'avishai@demistodev.onmicrosoft.com', 'additionalInfo': '[{"Key":"userAgent","Value":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"},{"Key":"alertUrl","Value":"https://demistodev.portal.cloudappsecurity.com/#/alerts/60f01746cdbeaf0b87f69a30"}]', 'location': {'city': 'Amsterdam', 'state': 'Noord-Holland', 'countryOrRegion': None, 'geoCoordinates': {'latitude': 52.30905, 'longitude': 4.94019}}}
 
     for current_value in values:
@@ -283,7 +305,7 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
     if len(incidents) > 0:
         demisto.incidents(incidents)
         demisto.setLastRun({
-            'last_item_time': timestamp_to_datestring(incidents[-1]['time'])
+            'last_item_time': last_item_time.strftime(DATE_FORMAT)
         })
 
 
