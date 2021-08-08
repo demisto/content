@@ -1,21 +1,22 @@
-import builtins
-import collections
-import math
-from datetime import datetime
-from typing import Type, Tuple
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
-import dill as pickle
-import hdbscan
-import numpy as np
 import pandas as pd
+import numpy as np
+import collections
+import dill as pickle
+import builtins
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
 from sklearn import cluster
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.compose import ColumnTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.manifold import TSNE
-from sklearn.pipeline import Pipeline
-
-from CommonServerPython import *
+import hdbscan
+from datetime import datetime
+from typing import Type, Tuple
+import math
 
 GENERAL_MESSAGE_RESULTS = "#### - We succeeded to group **%s incidents into %s groups**.\n #### - The grouping was based on " \
                           "the **%s** field(s).\n #### - Each group name is based on the majority value of the **%s** field in " \
