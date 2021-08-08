@@ -3313,6 +3313,134 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 | MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
 | MicrosoftATP.Indicators.title | String | Indicator title. | 
 | MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. | 
+| MicrosoftATP.Indicators.historicalDetection | Boolean | Whether an historical detection exists. | 
+| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. | 
+| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. | 
+| MicrosoftATP.Indicators.category | Number | An number represents the indicator category. | 
+| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA1 hash of the file. | 
+| Domain.Name | String | The domain name, for example: "google.com". | 
+| IP.Address | String | IP address | 
+| URL.Data | String | The URL | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+
+
+#### Command Example
+```!microsoft-atp-sc-indicator-list limit=2```
+
+#### Context Example
+```json
+{
+    "DBotScore": [
+        {
+            "Indicator": "2.2.2.2",
+            "Score": 0,
+            "Type": "ip",
+            "Vendor": "Microsoft Defender Advanced Threat Protection"
+        },
+        {
+            "Indicator": "google.com",
+            "Score": 0,
+            "Type": "domain",
+            "Vendor": "Microsoft Defender Advanced Threat Protection"
+        }
+    ],
+    "Domain": {
+        "Name": "google.com"
+    },
+    "IP": {
+        "Address": "2.2.2.2"
+    },
+    "MicrosoftATP": {
+        "Indicators": [
+            {
+                "action": "Allowed",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-08T11:56:19.891181Z",
+                "description": "test",
+                "expirationTime": "2021-08-09T11:56:20Z",
+                "generateAlert": false,
+                "historicalDetection": false,
+                "id": "5072",
+                "indicatorType": "IpAddress",
+                "indicatorValue": "2.2.2.2",
+                "lastUpdateTime": "2021-08-08T11:56:21.6452736Z",
+                "lastUpdatedBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "severity": "Low",
+                "title": "title"
+            },
+            {
+                "action": "Alert",
+                "category": 1,
+                "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "createdByDisplayName": "MS Graph ATP",
+                "createdBySource": "PublicApi",
+                "creationTimeDateTimeUtc": "2021-08-08T11:47:11.8964459Z",
+                "description": "test",
+                "expirationTime": "2021-08-09T11:47:11Z",
+                "generateAlert": true,
+                "historicalDetection": false,
+                "id": "5070",
+                "indicatorType": "DomainName",
+                "indicatorValue": "google.com",
+                "lastUpdateTime": "2021-08-08T11:47:11.9067278Z",
+                "severity": "Informational",
+                "title": "test"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results found in Microsoft Defender ATP SC for value: google.com
+>|id|action|indicatorValue|indicatorType|severity|title|description|
+>|---|---|---|---|---|---|---|
+>| 5070 | Alert | google.com | DomainName | Informational | test | test |
+
+
+### Permissions
+`Ti.ReadWrite`
+
+#### Base Command
+
+`microsoft-atp-sc-indicator-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum amount of indicators to return. Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
+| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Values are Informational,Low, Medium ,High, where High is the most severe and Informational is not severe at all. | 
+| MicrosoftATP.Indicators.indicatorValue | String | The value of the Indicator. | 
+| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. | 
+| MicrosoftATP.Indicators.generateAlert | Boolean | Whether an altet was generated. | 
+| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list in case it exposed to all devices. | 
+| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of mitre techniques. | 
+| MicrosoftATP.Indicators.indicatorType | String | Type of the indicator. Possible values are "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
+| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. | 
+| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. | 
+| MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
+| MicrosoftATP.Indicators.title | String | Indicator title. | 
+| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. | 
 | MicrosoftATP.Indicators.historicalDetection | String | Whether an historical detection exists. | 
 | MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. | 
 | MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. | 
@@ -3399,7 +3527,115 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 
 ### microsoft-atp-sc-indicator-create
 ***
-Creates a new indicator. 
+Creates a new indicator.
+
+
+#### Base Command
+
+`microsoft-atp-sc-indicator-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_value | The value of the indicator to update. | Required | 
+| indicator_type | Type of the indicator. Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required | 
+| action | The action that will be taken if the indicator will be discovered in the organization. Possible values are: Alert, AlertAndBlock, Allowed. | Required | 
+| severity | The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, Medium, High, where High is the most severe and Informational is not severe at all. Possible values are: Informational, Low, Medium, High. | Optional | 
+| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 1 day. | Optional | 
+| indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required | 
+| indicator_title | Indicator alert title. | Required | 
+| indicator_application | The application associated with the indicator. | Optional | 
+| recommended_actions | TI indicator alert recommended actions. | Optional | 
+| rbac_group_names | Comma-separated list of RBAC group names the indicator would be applied to. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
+| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Values are Informational,Low, Medium ,High, where High is the most severe and Informational is not severe at all. | 
+| MicrosoftATP.Indicators.indicatorValue | String | The value of the Indicator. | 
+| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. | 
+| MicrosoftATP.Indicators.generateAlert | Boolean | Whether an altet was generated. | 
+| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list in case it exposed to all devices. | 
+| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of mitre techniques. | 
+| MicrosoftATP.Indicators.indicatorType | String | Type of the indicator. Possible values are "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
+| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. | 
+| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. | 
+| MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
+| MicrosoftATP.Indicators.title | String | Indicator title. | 
+| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. | 
+| MicrosoftATP.Indicators.historicalDetection | Boolean | Whether an historical detection exists. | 
+| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. | 
+| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. | 
+| MicrosoftATP.Indicators.category | Number | An number represents the indicator category. | 
+| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA1 hash of the file. | 
+| Domain.Name | String | The domain name, for example: "google.com". | 
+| IP.Address | String | IP address | 
+| URL.Data | String | The URL | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+
+
+#### Command Example
+```!microsoft-atp-sc-indicator-create action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Informational```
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "2.2.2.2",
+        "Score": 0,
+        "Type": "ip",
+        "Vendor": "Microsoft Defender Advanced Threat Protection test"
+    },
+    "IP": {
+        "Address": "2.2.2.2"
+    },
+    "MicrosoftATP": {
+        "Indicators": {
+            "@odata.context": "https://api.securitycenter.microsoft.com/api/$metadata#Indicators/$entity",
+            "action": "Allowed",
+            "category": 1,
+            "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+            "createdByDisplayName": "MS Graph ATP",
+            "createdBySource": "PublicApi",
+            "creationTimeDateTimeUtc": "2021-08-08T11:56:19.891181Z",
+            "description": "test",
+            "expirationTime": "2021-08-09T12:02:12Z",
+            "generateAlert": false,
+            "historicalDetection": false,
+            "id": "5072",
+            "indicatorType": "IpAddress",
+            "indicatorValue": "2.2.2.2",
+            "lastUpdateTime": "2021-08-08T12:02:12.9193339Z",
+            "lastUpdatedBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+            "mitreTechniques": [],
+            "rbacGroupIds": [],
+            "rbacGroupNames": [],
+            "severity": "Informational",
+            "title": "title"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Indicator 2.2.2.2 was updated successfully.
+>|id|action|indicatorValue|indicatorType|severity|title|description|
+>|---|---|---|---|---|---|---|
+>| 5072 | Allowed | 2.2.2.2 | IpAddress | Informational | title | test |
+
 
 ### Permissions
 `Ti.ReadWrite`
@@ -3507,6 +3743,116 @@ Creates a new indicator.
 ***
 Gets an indicator by its ID.
 
+
+#### Base Command
+
+`microsoft-atp-sc-indicator-get-by-id`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_id | The ID of the indicator to get. The ID can be retrieved by running the microsoft-atp-sc-indicator-list command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
+| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Values are Informational,Low, Medium ,High, where High is the most severe and Informational is not severe at all. | 
+| MicrosoftATP.Indicators.indicatorValue | String | The value of the Indicator. | 
+| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. | 
+| MicrosoftATP.Indicators.generateAlert | Boolean | Whether an altet was generated. | 
+| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list in case it exposed to all devices. | 
+| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of mitre techniques. | 
+| MicrosoftATP.Indicators.indicatorType | String | Type of the indicator. Possible values are "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
+| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. | 
+| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. | 
+| MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
+| MicrosoftATP.Indicators.title | String | Indicator title. | 
+| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. | 
+| MicrosoftATP.Indicators.historicalDetection | Boolean | Whether an historical detection exists. | 
+| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. | 
+| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. | 
+| MicrosoftATP.Indicators.category | Number | An number represents the indicator category. | 
+| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA1 hash of the file. | 
+| Domain.Name | String | The domain name, for example: "google.com". | 
+| IP.Address | String | IP address | 
+| URL.Data | String | The URL | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+
+
+#### Command Example
+```!microsoft-atp-sc-indicator-get-by-id indicator_id=5064```
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "8.8.4.4",
+        "Score": 0,
+        "Type": "ip",
+        "Vendor": "Microsoft Defender Advanced Threat Protection"
+    },
+    "IP": {
+        "Address": "8.8.4.4"
+    },
+    "MicrosoftATP": {
+        "Indicators": {
+            "@odata.context": "https://api.securitycenter.microsoft.com/api/$metadata#Indicators/$entity",
+            "action": "Allowed",
+            "additionalInfo": null,
+            "application": null,
+            "bypassDurationHours": null,
+            "category": 1,
+            "certificateInfo": null,
+            "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+            "createdByDisplayName": "MS Graph ATP",
+            "createdBySource": "PublicApi",
+            "creationTimeDateTimeUtc": "2021-08-08T07:46:52.2350289Z",
+            "description": "test",
+            "educateUrl": null,
+            "expirationTime": "2021-08-09T07:46:49Z",
+            "externalId": null,
+            "generateAlert": false,
+            "historicalDetection": false,
+            "id": "5064",
+            "indicatorType": "IpAddress",
+            "indicatorValue": "8.8.4.4",
+            "lastUpdateTime": "2021-08-08T07:46:52.2416394Z",
+            "lastUpdatedBy": null,
+            "lookBackPeriod": null,
+            "mitreTechniques": [],
+            "notificationBody": null,
+            "notificationId": null,
+            "rbacGroupIds": [],
+            "rbacGroupNames": [],
+            "recommendedActions": null,
+            "severity": "Informational",
+            "title": "title",
+            "version": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results found in Microsoft Defender ATP SC for value: 8.8.4.4
+>|id|action|indicatorValue|indicatorType|severity|title|description|
+>|---|---|---|---|---|---|---|
+>| 5064 | Allowed | 8.8.4.4 | IpAddress | Informational | title | test |
+
+
 ### Permissions
 `Ti.ReadWrite`
 
@@ -3568,6 +3914,28 @@ Gets an indicator by its ID.
 ***
 Deletes the specified indicator.
 
+
+#### Base Command
+
+`microsoft-atp-sc-indicator-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_id | The ID of the indicator to delete. The ID can be retreived by running the microsoft-atp-sc-indicator-list command. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!microsoft-atp-sc-indicator-delete indicator_id=5067```
+
+#### Human Readable Output
+
+>Indicator ID: 5067 was successfully deleted
+
 ### Permissions
 `Ti.ReadWrite`
 
@@ -3596,6 +3964,114 @@ There is no context output for this command.
 ### microsoft-atp-sc-indicator-update
 ***
 Updates the specified indicator.
+
+
+#### Base Command
+
+`microsoft-atp-sc-indicator-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_value | The value of the indicator to update. | Required | 
+| indicator_type | Type of the indicator. Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required | 
+| action | The action that will be taken if the indicator will be discovered in the organization. Possible values are: Alert, AlertAndBlock, Allowed. | Required | 
+| severity | The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, Medium, High, where High is the most severe and Informational is not severe at all. Possible values are: Informational, Low, Medium, High. | Optional | 
+| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 1 day. | Optional | 
+| indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required | 
+| indicator_title | Indicator alert title. | Required | 
+| indicator_application | The application associated with the indicator. | Optional | 
+| recommended_actions | TI indicator alert recommended actions. | Optional | 
+| rbac_group_names | Comma-separated list of RBAC group names the indicator would be applied to. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
+| MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
+| MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
+| MicrosoftATP.Indicators.expirationTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.severity | String | The severity of the malicious behavior identified by the data within the indicator. Values are Informational,Low, Medium ,High, where High is the most severe and Informational is not severe at all. | 
+| MicrosoftATP.Indicators.indicatorValue | String | The value of the Indicator. | 
+| MicrosoftATP.Indicators.recommendedActions | String | Recommended actions for the indicator. | 
+| MicrosoftATP.Indicators.generateAlert | Boolean | Whether an altet was generated. | 
+| MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list in case it exposed to all devices. | 
+| MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of mitre techniques. | 
+| MicrosoftATP.Indicators.indicatorType | String | Type of the indicator. Possible values are "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
+| MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. | 
+| MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. | 
+| MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
+| MicrosoftATP.Indicators.title | String | Indicator title. | 
+| MicrosoftATP.Indicators.createdBySource | String | Source of indicator creation. For example, PublicApi. | 
+| MicrosoftATP.Indicators.historicalDetection | Boolean | Whether an historical detection exists. | 
+| MicrosoftATP.Indicators.lastUpdatedBy | String | Identity of the user/application that last updated the indicator. | 
+| MicrosoftATP.Indicators.creationTimeDateTimeUtc | Date | The date and time when the indicator was created. | 
+| MicrosoftATP.Indicators.category | Number | An number represents the indicator category. | 
+| MicrosoftATP.Indicators.createdBy | String | Unique identity of the user/application that submitted the indicator. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA1 hash of the file. | 
+| Domain.Name | String | The domain name, for example: "google.com". | 
+| IP.Address | String | IP address | 
+| URL.Data | String | The URL | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+
+
+#### Command Example
+```!microsoft-atp-sc-indicator-update action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Low```
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "2.2.2.2",
+        "Score": 0,
+        "Type": "ip",
+        "Vendor": "Microsoft Defender Advanced Threat Protection test"
+    },
+    "IP": {
+        "Address": "2.2.2.2"
+    },
+    "MicrosoftATP": {
+        "Indicators": {
+            "@odata.context": "https://api.securitycenter.microsoft.com/api/$metadata#Indicators/$entity",
+            "action": "Allowed",
+            "category": 1,
+            "createdBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+            "createdByDisplayName": "MS Graph ATP",
+            "createdBySource": "PublicApi",
+            "creationTimeDateTimeUtc": "2021-08-08T11:56:19.891181Z",
+            "description": "test",
+            "expirationTime": "2021-08-09T12:02:14Z",
+            "generateAlert": false,
+            "historicalDetection": false,
+            "id": "5072",
+            "indicatorType": "IpAddress",
+            "indicatorValue": "2.2.2.2",
+            "lastUpdateTime": "2021-08-08T12:02:14.9820475Z",
+            "lastUpdatedBy": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+            "mitreTechniques": [],
+            "rbacGroupIds": [],
+            "rbacGroupNames": [],
+            "severity": "Low",
+            "title": "title"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Indicator 2.2.2.2 was updated successfully.
+>|id|action|indicatorValue|indicatorType|severity|title|description|
+>|---|---|---|---|---|---|---|
+>| 5072 | Allowed | 2.2.2.2 | IpAddress | Low | title | test |
+
 
 ### Permissions
 `Ti.ReadWrite`
