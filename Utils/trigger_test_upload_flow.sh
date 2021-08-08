@@ -54,14 +54,14 @@ function create_new_pack {
   local pack_path="${CONTENT_PATH}/Packs/${pack_name}"
   local new_pack_path="${CONTENT_PATH}/Packs/${new_pack_name}"
 
-  cp -Rf "${pack_path}" "${new_pack_path}" || fail
+  cp -R "${pack_path}" "${new_pack_path}" || fail
   cd "${new_pack_path}" || fail
 
  rename_files_and_folders "$pack_name" "$new_pack_name"
 
   for original_name in "${names_array[@]}"; do
     new_name="${original_name}${new_pack_suffix}"
-    rename_files_and_folders $original_name $new_name
+    rename_files_and_folders "$original_name" "$new_name"
   done
 
   cd "${original_path}" || fail
