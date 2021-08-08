@@ -7841,7 +7841,7 @@ class IndicatorsSearcher:
         self._total = None
         self._search_after_param = None
         self._page = self._original_page
-        self.limit = self._original_limit
+        self._next_limit = self._original_limit
         self._search_is_done = False
         return self
 
@@ -7852,17 +7852,17 @@ class IndicatorsSearcher:
     def __next__(self):
         if self._search_is_done:
             raise StopIteration
-        size = min(self._size, self.limit or self._size)
+        size = min(self._size, self._next_limit or self._size)
         res = self.search_indicators_by_version(from_date=self._from_date,
                                                 query=self._query,
                                                 size=size,
                                                 to_date=self._to_date,
                                                 value=self._value)
-        fetched_len = len(res.get('iocs', []) or [])
+        fetched_len = len(res.get('iocs') or [])
         if fetched_len == 0:
             raise StopIteration
-        if self.limit:
-            self.limit -= fetched_len
+        if self._next_limit:
+            self._next_limit -= fetched_len
         self._search_is_done = self._is_search_done()
         return res
 
@@ -7880,7 +7880,7 @@ class IndicatorsSearcher:
 
     @limit.setter
     def limit(self, value):
-        self._next_limit = value
+        self._next_limit = self._original_limit = value
 
     def _is_search_done(self):
         """
@@ -7892,7 +7892,7 @@ class IndicatorsSearcher:
         if self._search_is_done:
             return True
 
-        reached_limit = isinstance(self.limit, int) and self.limit <= 0
+        reached_limit = isinstance(self._next_limit, int) and self._next_limit <= 0
         if reached_limit:
             return True
 
@@ -7940,7 +7940,7 @@ class IndicatorsSearcher:
             page=self.page if use_paging else None
         )
         res = demisto.searchIndicators(**search_iocs_params)
-        if len(res.get('iocs', [])) > 0:
+        if len(res.get('iocs') or []) > 0:
             self._page += 1  # advance pages for search_after, as fallback
         else:
             self._search_is_done = True
