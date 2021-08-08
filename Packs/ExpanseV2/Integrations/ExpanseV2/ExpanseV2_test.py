@@ -2063,11 +2063,10 @@ def test_get_modified_remote_data_command(requests_mock):
 
     response = get_modified_remote_data_command(client, args)
 
-    assert response.modified_incident_ids == \
-           [
-               '62089967-7b41-3d49-a21d-d12753d8fd91',
-               '6295b21f-f2e5-3189-9d6d-338cb129014c',
-               '62a4bfb9-4107-3a9c-9c2f-e3bb9c2f27e9',
-               'a4091781-373c-36c4-b928-c57e55f514f0',
-               'a41ceb18-72f6-3335-a791-98afacd8da5b'
-           ]
+    assert response.modified_incident_ids == [
+        '62089967-7b41-3d49-a21d-d12753d8fd91',
+        '6295b21f-f2e5-3189-9d6d-338cb129014c',
+        '62a4bfb9-4107-3a9c-9c2f-e3bb9c2f27e9',
+        'a4091781-373c-36c4-b928-c57e55f514f0',
+        'a41ceb18-72f6-3335-a791-98afacd8da5b'
+    ]
