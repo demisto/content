@@ -3992,12 +3992,6 @@ script:
     - contextPath: MicrosoftATP.Indicators.createdBy
       description: Unique identity of the user/application that submitted the indicator.
       type: String
-    - contextPath: File.Name
-      description: The full file name (including file extension).
-      type: String
-    - contextPath: File.Size
-      description: The size of the file in bytes.
-      type: Number
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
@@ -4006,16 +4000,6 @@ script:
       type: String
     - contextPath: File.SHA256
       description: The SHA1 hash of the file.
-      type: String
-    - contextPath: File.SHA512
-      description: The SHA512 hash of the file.
-      type: String
-    - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in
-        file entries).
-      type: String
-    - contextPath: File.Path
-      description: The path where the file is located.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -4026,6 +4010,18 @@ script:
     - contextPath: URL.Data
       description: The URL
       type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
   - arguments:
     - default: false
       description: The value of the indicator to update.
@@ -4189,12 +4185,6 @@ script:
     - contextPath: MicrosoftATP.Indicators.createdBy
       description: Unique identity of the user/application that submitted the indicator.
       type: String
-    - contextPath: File.Name
-      description: The full file name (including file extension).
-      type: String
-    - contextPath: File.Size
-      description: The size of the file in bytes.
-      type: Number
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
@@ -4203,16 +4193,6 @@ script:
       type: String
     - contextPath: File.SHA256
       description: The SHA1 hash of the file.
-      type: String
-    - contextPath: File.SHA512
-      description: The SHA512 hash of the file.
-      type: String
-    - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in
-        file entries).
-      type: String
-    - contextPath: File.Path
-      description: The path where the file is located.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -4223,6 +4203,18 @@ script:
     - contextPath: URL.Data
       description: The URL
       type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
   - arguments:
     - default: false
       description: The ID of the indicator to delete. The ID can be retreived by running
@@ -4322,12 +4314,6 @@ script:
     - contextPath: MicrosoftATP.Indicators.createdBy
       description: Unique identity of the user/application that submitted the indicator.
       type: String
-    - contextPath: File.Name
-      description: The full file name (including file extension).
-      type: String
-    - contextPath: File.Size
-      description: The size of the file in bytes.
-      type: Number
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
@@ -4336,16 +4322,6 @@ script:
       type: String
     - contextPath: File.SHA256
       description: The SHA1 hash of the file.
-      type: String
-    - contextPath: File.SHA512
-      description: The SHA512 hash of the file.
-      type: String
-    - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in
-        file entries).
-      type: String
-    - contextPath: File.Path
-      description: The path where the file is located.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -4356,6 +4332,18 @@ script:
     - contextPath: URL.Data
       description: The URL
       type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
   - arguments:
     - default: true
       description: The ID of the indicator to get. The ID can be retreived by running
@@ -4443,12 +4431,6 @@ script:
     - contextPath: MicrosoftATP.Indicators.createdBy
       description: Unique identity of the user/application that submitted the indicator.
       type: String
-    - contextPath: File.Name
-      description: The full file name (including file extension).
-      type: String
-    - contextPath: File.Size
-      description: The size of the file in bytes.
-      type: Number
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
@@ -4457,16 +4439,6 @@ script:
       type: String
     - contextPath: File.SHA256
       description: The SHA1 hash of the file.
-      type: String
-    - contextPath: File.SHA512
-      description: The SHA512 hash of the file.
-      type: String
-    - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in
-        file entries).
-      type: String
-    - contextPath: File.Path
-      description: The path where the file is located.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -4477,6 +4449,18 @@ script:
     - contextPath: URL.Data
       description: The URL
       type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
   dockerimage: demisto/crypto:1.0.0.23151
   feed: false
   isfetch: true
