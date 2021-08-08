@@ -7,9 +7,9 @@ import urllib3
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-USER_NOT_FOUND = "User not found"
 userUri = '/scim/v2/Users/'
 groupUri = '/scim/v2/Groups/'
+patchSchema = "urn:ietf:params:scim:api:messages:2.0:PatchOp"
 ERROR_CODES_TO_SKIP = [
     404
 ]
@@ -76,12 +76,13 @@ class Client(BaseClient):
             json_data=user_data
         )
 
-        user_app_data = res.get('result')           # TODO: get the user_id, username, is_active and user_app_data
-        user_id = user_app_data.get('user_id')
-        is_active = user_app_data.get('active')
-        username = user_app_data.get('user_name')
+        if res:
+            user_app_data = res.json()
+            user_id = user_app_data.get('id')
+            is_active = user_app_data.get('active')
+            username = user_app_data.get('userName')
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+            return IAMUserAppData(user_id, username, is_active, user_app_data)
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
         """ Updates a user in the application using REST API.
@@ -103,12 +104,13 @@ class Client(BaseClient):
             json_data=user_data
         )
 
-        user_app_data = res.get('result')
-        user_id = user_app_data.get('user_id')
-        is_active = user_app_data.get('active')
-        username = user_app_data.get('user_name')
+        if res:
+            user_app_data = res.json()
+            user_id = user_app_data.get('id')
+            is_active = user_app_data.get('active')
+            username = user_app_data.get('userName')
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+            return IAMUserAppData(user_id, username, is_active, user_app_data)
 
     def enable_user(self, user_id: str) -> IAMUserAppData:
         """ Enables a user in the application using REST API.
@@ -123,7 +125,7 @@ class Client(BaseClient):
         # In this example, we use the same endpoint as in update_user() method,
         # But other APIs might have a unique endpoint for this request.
 
-        user_data = {'active': True}                # TODO: make sure you pass the correct query parameters
+        user_data = {'active': True}
         return self.update_user(user_id, user_data)
 
     def disable_user(self, user_id: str) -> IAMUserAppData:
@@ -139,7 +141,7 @@ class Client(BaseClient):
         # In this example, we use the same endpoint as in update_user() method,
         # But other APIs might have a unique endpoint for this request.
 
-        user_data = {'active': False}               # TODO: make sure you pass the correct query parameters
+        user_data = {'active': False}
         return self.update_user(user_id, user_data)
 
     def get_app_fields(self) -> Dict[str, Any]:
