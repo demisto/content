@@ -14,12 +14,16 @@ try:
     urls = demisto.demistoUrls()
     server_url = urls.get('server', '')
     if campaign_incident_id and campaign_incident_id != "None":
-        html = f"""<div style='text-align:center; padding: 40px; font-size:15px; {BLACK_COLOR};'>This incident is part of a <a href="{server_url}/#/Custom/vvoh19d1ue/{campaign_incident_id}">Phishing Campaign #{campaign_incident_id}</a></div>"""
+        html = f"""<div style='text-align:center; padding: 40px; font-size:15px; {BLACK_COLOR};'
+        >This incident is part of a <a href="{server_url}/#/Custom/vvoh19d1ue/{campaign_incident_id}"
+        >Phishing Campaign #{campaign_incident_id}</a></div>"""
     else:
-        html = f"""<div style='text-align:center; padding: 40px; font-size:15px; {BLACK_COLOR};'>This incident is not part of a phishing campaign.</div>"""
+        html = f"""<div style='text-align:center; padding: 40px; font-size:15px; {BLACK_COLOR};'
+        >This incident is not part of a phishing campaign.</div>"""
 
 except Exception:
-    html = f"""<div style='text-align:center; padding: 40px; font-size:15px; {BLACK_COLOR};'>This incident is part of a phishing campaign (incident #{campaign_incident_id}).</div>"""
+    html = f"""<div style='text-align:center; padding: 40px; font-size:15px; {BLACK_COLOR};'
+    >This incident is part of a phishing campaign (incident #{campaign_incident_id}).</div>"""
 
 
 demisto.results({
