@@ -24,6 +24,17 @@
 </li>
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
 </ol>
+<h2>Indicator Scores</h2>
+<ul>
+<li>The <code>!ip</code> and <code>!domain</code> DBbot scores are calculated according to the positive results in the response.</li>
+<li>Cortex XSOAR looks only at recent (last 30 days) downloaded samples with at least one positive result, then determines the score of the indicator by that count and threshold (integration parameters).</li>
+<li><strong>Score Calculation:</strong></li><ul>
+    <li><strong>Bad - </strong>If the number of positive results exceeds the specified thresholds.</li>
+    <li><strong>Suspicious - </strong>If the number of positive results divided by 2 exceeds the specified thresholds.</li>
+    <li><strong>Good - </strong>If the number of positive results divided by 2 does not exceed the specified thresholds.</li></ul>
+<li>In the VT API (as opposed to the VT UI), domain and ip are analyzed according to the files downloaded from them.</li>
+<li>We take detected samples (files that were marked malicious by VT engines) into consideration when calculating the DBot score.</li></ul>
+
 <h2>Commands</h2>
 <p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
@@ -3291,12 +3302,5 @@
 <p> </p>
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
-<h3>Notes</h3>
-<p>The <code>!ip</code> and <code>!domain</code> DBbot scores are calculated according to the positives result in the response.</p>
-<p>In the VT API (as opposed to the VT UI), domain and ip are analyzed according to the files downloaded from them.</p>
-<p>We take detected samples (files that was marked malicious by VT engines) into consideration when calculating the DBot score.</p>
-<h5>How DBot score is calculated:</h5>
-<p>Bad - If the number of positives downloads exceeds the specified thresholds.</p>
-<p>Suspicious - If the number of positives downloads divided by 2 exceeds the specified thresholds,</p>
-<p>otherwise the DBot score will be marked as good.</p>
+
 
