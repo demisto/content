@@ -281,7 +281,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves jobs list from the CircleCI workflow.
+    description: Retrieves the jobs list from the CircleCI workflow.
     execution: false
     name: circleci-workflow-last-runs
     outputs:
@@ -308,7 +308,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: A json object containing pipeline parameters and their values.
+      description: A JSON object containing pipeline parameters and their values.
       isArray: false
       name: parameters
       required: true
