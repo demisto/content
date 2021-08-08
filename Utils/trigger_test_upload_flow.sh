@@ -495,7 +495,8 @@ git commit --untracked-files=no -am "Initial commit"
 change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
 
 # New Pack
-create_new_pack "${base_pack_name}" "${new_suffix}" ( "Hello_World" "Hello World" "helloworld" "Sanity_Test" )
+array=("Hello_World" "Hello World" "helloworld" "Sanity_Test")
+create_new_pack "${base_pack_name}" "${new_suffix}" "${array[@]}"
 add_dependency "${new_pack_name}" "Viper"
 add_author_image "${new_pack_name}"
 add_1_0_0_release_note "${new_pack_name}"
