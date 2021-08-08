@@ -74,7 +74,7 @@ function create_new_pack {
 # Change all files and folder to the new name.
 # :param $1: pack name.
 # :param $2: new pack name.
-# :param $3: change occurrence inside files
+# :param $3: change occurrence inside files flag
 function rename_files_and_folders {
 
   if [ "$#" -ne 3 ] && [ "$#" -ne 2 ]; then
@@ -84,7 +84,7 @@ function rename_files_and_folders {
   local pack_name=$1
   local new_pack_name=$2
   # Rename inside files
-  if [ $3 != "false" ]; then
+  if [ -z $3 ]; then
     find . -type f \( -name "*.py" -o -name "*.yml" -o -name "*.json" \) -exec sed -i "" "s/${pack_name}/${new_pack_name}/g" {} \;
   fi
 
@@ -93,7 +93,7 @@ function rename_files_and_folders {
   do
     cd "$folder" || continue ;
     find . -type f -maxdepth 1 -name  "*${pack_name}*" -exec sh -c 'mv $1 "${1//$2/$3}"' sh {} "$pack_name" "$new_pack_name"  \;
-    rename_files_and_folders "$pack_name" "$new_pack_name" "false";
+    rename_files_and_folders "$pack_name" "$new_pack_name" "true";
     cd ../;
     if [ "$folder" != "${folder//$pack_name/$new_pack_name}" ]; then
       mv "$folder" "${folder//$pack_name/$new_pack_name}"
