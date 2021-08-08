@@ -729,8 +729,8 @@ def panorama_push_status_command(job_id: str):
         for device in devices:
             device_warnings = safeget(device, ["details", "msg", "warnings", "line"])
             status_warnings.extend([] if not device_warnings else device_warnings)
-            status_errors = safeget(device, ["details", "msg", "errors", "line"])
-            status_errors.extend([] if not status_errors else status_errors)
+            device_errors = safeget(device, ["details", "msg", "errors", "line"])
+            status_errors.extend([] if not device_errors else device_errors)
     push_status_output["Warnings"] = status_warnings
     push_status_output["Errors"] = status_errors
 
@@ -2460,18 +2460,20 @@ def panorama_create_url_filter(
         override_allow_list: Optional[str] = None,
         override_block_list: Optional[str] = None,
         description: Optional[str] = None):
-    element = add_argument_list(url_category_list, action, True) + add_argument_list(override_allow_list, 'allow-list',
-                                                                                     True) + add_argument_list(
-        override_block_list, 'block-list', True) + add_argument(description, 'description',
-                                                                False) + "<action>block</action>"
+
+    element = add_argument_list(url_category_list, action, True) + \
+              add_argument_list(override_allow_list, 'allow-list', True) + \
+              add_argument_list(override_block_list, 'block-list', True) + \
+              add_argument(description, 'description', False)
 
     params = {
         'action': 'set',
         'type': 'config',
-        'xpath': XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']",
+        'xpath': f'{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']',
         'element': element,
         'key': API_KEY
     }
+
     result = http_request(
         URL,
         'POST',
