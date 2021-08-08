@@ -35,7 +35,7 @@ PREFIXES_TO_REMOVE = ['incident.']
 REGEX_DATE_PATTERN = [re.compile(r"^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),  # guardrails-disable-line
                       re.compile(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]  # guardrails-disable-line
 REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "", }
-TFIDF_PARAMS = {'analyzer': 'char', 'max_features': 500, 'ngram_range': (2, 4)}
+TFIDF_PARAMS = {'max_features': 500, 'ngram_range': (2, 4)}
 
 HDBSCAN_PARAMS = {
     'algorithm': 'best',
@@ -299,6 +299,7 @@ def get_args():  # type: ignore
     display_fields = list(set(['id', 'created', 'name'] + display_fields))
 
     number_feature_per_field = int(demisto.args().get('numberOfFeaturesPerField'))
+    analyzer = demisto.args().get('analyzer')
 
     min_homogeneity_cluster = float(demisto.args().get('minHomogeneityCluster'))
 
@@ -321,7 +322,7 @@ def get_args():  # type: ignore
     return fields_for_clustering, field_for_cluster_name, display_fields, from_date, to_date, limit, query, \
         incident_type, min_number_of_incident_in_cluster, model_name, store_model, min_homogeneity_cluster, \
         model_override, max_percentage_of_missing_value, debug, force_retrain, model_expiration, model_hidden, \
-        number_feature_per_field
+        number_feature_per_field, analyzer
 
 
 def get_all_incidents_for_time_window_and_type(populate_fields: List[str], from_date: str, to_date: str,
@@ -863,12 +864,13 @@ def main():
     fields_for_clustering, field_for_cluster_name, display_fields, from_date, to_date, limit, query, incident_type, \
         min_number_of_incident_in_cluster, model_name, store_model, min_homogeneity_cluster, model_override, \
         max_percentage_of_missing_value, debug, force_retrain, model_expiration, model_hidden, \
-        number_feature_per_field = get_args()
+        number_feature_per_field, analyzer = get_args()
 
     HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
                            'min_samples': min_number_of_incident_in_cluster})
 
     TFIDF_PARAMS.update({'max_features': number_feature_per_field})
+    TFIDF_PARAMS.update({'analyzer': analyzer})
 
     # Check if need to retrain
     model_processed, retrain = is_model_needs_retrain(force_retrain, model_expiration, model_name)

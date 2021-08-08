@@ -162,9 +162,20 @@ args:
   secret: false
 - default: false
   defaultValue: '500'
-  description: Number of features per field
+  description: Number of features per field.
   isArray: false
   name: numberOfFeaturesPerField
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: char
+  description: Whether the feature should be made of word or character n-grams.
+  isArray: false
+  name: analyzer
+  predefined:
+  - char
+  - word
   required: false
   secret: false
 comment: Train clustering model on any incident type.
