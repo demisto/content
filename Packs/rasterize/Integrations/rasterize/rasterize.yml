@@ -70,6 +70,10 @@ script:
       description: The file type to which to convert the contents of the URL. Can be "pdf" or "png". Default is "png".
       isArray: false
       name: type
+      predefined:
+        - pdf
+        - png
+        - json
       required: false
       secret: false
     deprecated: false
@@ -173,7 +177,7 @@ script:
     description: Converts a PDF file to an image file.
     execution: false
     name: rasterize-pdf
-  dockerimage: demisto/chromium:1.0.0.19696
+  dockerimage: demisto/chromium:1.0.0.23161
   isfetch: false
   runonce: false
   script: ''
