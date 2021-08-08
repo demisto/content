@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * GenericPolling
 
 ### Integrations
-* EWSv2
+* EWS v2
 
 ### Scripts
 This playbook does not use any scripts.
