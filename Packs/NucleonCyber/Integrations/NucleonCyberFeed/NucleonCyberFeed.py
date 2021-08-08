@@ -433,7 +433,7 @@ def get_urls_command(client: Client,
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='NucleonCyber.Indicators.url',
-        outputs_key_field='url', 
+        outputs_key_field='url',
         raw_response=urls,
         outputs=urls,
     )
@@ -485,10 +485,10 @@ def main():
             return_results(get_indicators_command(client, params, args))
 
         elif command == 'nucleoncyber-get-urls':
-            return_results(get_urls_command(client, params, args))
+            return_results(get_urls_command(client, args))
 
         elif command == 'nucleoncyber-get-hashes':
-            return_results(get_hashes_command(client, params, args))
+            return_results(get_hashes_command(client, args))
 
         elif command == 'fetch-indicators':
             # This is the command that initiates a request to the feed endpoint and create new indicators objects from
