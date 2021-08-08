@@ -1111,7 +1111,7 @@ Gets compliance search action from the Security & Compliance Center.
 )
 * Preview the search results to verify that the search returned only the message (or messages) that you want to delete.
 * Use the search estimate statistics (displayed by using the `o365-sc-get-search` command) to get a count of the total number of results.
-For more
+
 ## Known Limitations
 
 * Security and compliance integrations do not support Security and compliance on-premise.
