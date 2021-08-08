@@ -6,6 +6,7 @@ from CommonServerPython import *  # noqa: F401
 # disable insecure warnings
 urllib3.disable_warnings()
 
+
 class Client(BaseClient):
     """Client class to interact with the service API
 
@@ -46,9 +47,8 @@ class Client(BaseClient):
         return result
 
     def get_hashes(self, params: Dict[str, str], limit: int) -> List:
-        json_payload = self._http_request( 'GET', full_url="http://api.cybercure.ai/feed/get_hash" )
+        json_payload = self._http_request('GET', full_url="http://api.cybercure.ai/feed/get_hash")
         result = []
-        
         all_urls = json_payload.get("data").get("hash")
         for data in all_urls:
             result.append(
@@ -88,20 +88,14 @@ class Client(BaseClient):
         )
         result = []
         all_data = json_payload.get("data")
-
         demisto.debug(all_data)
-
         for data in all_data:
-
             if not data.get("attackDetails"):
                 continue
-            
             if not data.get("attackDetails").get('remote'):
                 continue
-
             if not data.get("attackMeta"):
                 continue
-
             result.append(
                 {
                     'value': data.get("ip"),
@@ -124,6 +118,7 @@ class Client(BaseClient):
             )
         return result
 
+
 def test_module(client: Client) -> str:
     """Builds the iterator to check that the feed is accessible.
     Args:
@@ -133,6 +128,7 @@ def test_module(client: Client) -> str:
     """
     client.build_iterator()
     return 'ok'
+
 
 def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags: List = [], limit: int = -1) \
         -> List[Dict]:
@@ -249,6 +245,7 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
 
     return indicators
 
+
 def fetch_hashes(client: Client, limit: int = -1) \
         -> List[Dict]:
     """Retrieves indicators from the feed
@@ -298,6 +295,7 @@ def fetch_hashes(client: Client, limit: int = -1) \
 
     return indicators
 
+
 def fetch_urls(client: Client, limit: int = -1) \
         -> List[Dict]:
     """Retrieves indicators from the feed
@@ -346,6 +344,7 @@ def fetch_urls(client: Client, limit: int = -1) \
 
     return indicators
 
+
 def get_indicators_command(client: Client,
                            params: Dict[str, str],
                            args: Dict[str, str]
@@ -373,6 +372,7 @@ def get_indicators_command(client: Client,
         outputs=indicators,
     )
 
+
 def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
@@ -387,6 +387,7 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List:
     urls = fetch_urls(client)
     hashes = fetch_hashes(client)
     return [ips, urls, hashes]
+
 
 def get_hashes_command(client: Client,
                        args: Dict[str, Any]
@@ -412,6 +413,7 @@ def get_hashes_command(client: Client,
         outputs=hashes,
     )
 
+
 def get_urls_command(client: Client,
                      args: Dict[str, Any]
                      ) -> CommandResults:
@@ -435,6 +437,7 @@ def get_urls_command(client: Client,
         raw_response=urls,
         outputs=urls,
     )
+
 
 def main():
     """
@@ -506,6 +509,7 @@ def main():
     except Exception as e:
         demisto.error(traceback.format_exc())  # Print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
