@@ -43,12 +43,10 @@ function check_arguments {
 function create_new_pack {
   echo " Running - create_new_pack"
 
-  if [ "$#" -ne 3 ]; then
-    fail " Illegal number of parameters "
-  fi
-
   local pack_name=$1
   local new_pack_suffix=$2
+  shift
+  shift
   local names_array=("$@")
 
   local new_pack_name="${pack_name}${new_pack_suffix}"
