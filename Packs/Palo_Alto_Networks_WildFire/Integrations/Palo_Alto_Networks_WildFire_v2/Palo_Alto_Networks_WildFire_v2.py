@@ -126,8 +126,8 @@ def http_request(url: str, method: str, headers: dict = None, body=None, params=
         json_res = json.loads(xml2json(result.text))
         return json_res
     except Exception:
-        raise Exception(f'Failed to parse response to json. response: {result.text}')
         demisto.debug('Failed to parse response to json')
+        raise Exception(f'Failed to parse response to json. response: {result.text}')
 
 
 def prettify_upload(upload_body):
