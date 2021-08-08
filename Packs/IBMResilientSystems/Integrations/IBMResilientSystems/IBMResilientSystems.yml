@@ -296,12 +296,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A json object of the form: {field_name: new_field_value}. for example
-        {"description": {"textarea": {"format": "html", "content": "The new description"}},
-        "name": {"text": "The new name"}}. Because of API limitations we currently
-        support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea
-        as you can see in the README.md file.
-        In case of conflicts refer to other-fields.'
+      description: 'A json object of the form: {field_name: new_field_value}. For example: `{"description": {"textarea": {"format": "html", "content": "The new description"}},
+              "name": {"text": "The new name"}}`. Because of API limitations we currently
+              support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea.
+              For more information, please refer to the README.md file.
+              In case of conflicts between the other-fields argument and the regular fields arguments, the other-fields will be taken.'
       isArray: false
       name: other-fields
       required: false

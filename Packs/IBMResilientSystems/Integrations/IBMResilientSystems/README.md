@@ -23,9 +23,6 @@
 <li>Click <strong>Test</strong> to validate the URLs and token.</li>
 </ol>
 <hr>
-<h2>Fetched Incidents Data</h2>
-<p>Need more information.</p>
-<hr>
 <h2>Commands</h2>
 <p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
@@ -209,7 +206,7 @@ Severity:Low</pre>
 </tr>
 <tr>
 <td style="width: 211px;">other-fields</td>
-<td style="width: 503px;">A json object of the form: {field_name: new_field_value} currently we support the following field types<br /><img src="https://github.com/demisto/content/raw/3322c5933388f2ea9c52dc9fe31a5feb52bc1050/Packs/IBMResilientSystems/doc_files/support_field_types.png" /></td>
+<td style="width: 503px;">A json object of the form: {field_name: new_field_value}. For example: {"description": {"textarea": {"format": "html", "content": "The new description"}}, "name": {"text": "The new name"}}. Because of API limitations we currently support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea. In case of conflicts between the other-fields argument and the regular fields arguments, the other-fields will be taken.'<br /><img src="https://github.com/demisto/content/raw/3322c5933388f2ea9c52dc9fe31a5feb52bc1050/Packs/IBMResilientSystems/doc_files/support_field_types.png" /></td>
 </tr>
 </tbody>
 </table>
@@ -869,7 +866,7 @@ Status:Closed
 ]</pre></div></div></section>
 <hr>
 <h3 id="h_9184065563181528813233520">Add a note to an incident: rs-add-note</h3>
-<p>Add a note to an incident</p>
+<p>Add a note to an incident.</p>
 <h5>Command Example</h5>
 <p><code>!rs-add-note incident-id=2111 note="This is a note"</code></p>
 <h5>Input</h5>

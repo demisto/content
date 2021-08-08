@@ -1,4 +1,5 @@
 import demistomock as demisto
+import pytest
 
 
 class MockClient:
@@ -30,7 +31,7 @@ def test_update_incident_command(mocker):
      - Running update_incident_command function with other-fields argument.
 
     Then:
-     - Ensure the function runs as expected.
+     - Ensure the parsing before the request works well and json data is in IBM format.
     """
     mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True})
     args = {
@@ -74,6 +75,29 @@ def test_update_incident_command(mocker):
     update_incident_command(MockClient, args)
 
     assert mock_result.call_args.args[2] == expected_result
+
+
+def test_update_incident_command_with_wrong_json(mocker):
+    """
+    Given:
+     - An incident should be updated.
+
+    When:
+     - Running update_incident_command function with other-fields argument, the other-field is a wrong json.
+
+    Then:
+     - Ensure the parsing before the request works well and that it is in IBM format.
+    """
+    mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True})
+    args = {
+        "incident-id": "1234",
+        "other-fields": 'Wrong json'
+    }
+    from IBMResilientSystems import update_incident_command
+
+    with pytest.raises(Exception) as exception:
+        update_incident_command(MockClient, args)
+    assert exception.typename == 'JSONDecodeError'
 
 
 def test_add_note(mocker):
