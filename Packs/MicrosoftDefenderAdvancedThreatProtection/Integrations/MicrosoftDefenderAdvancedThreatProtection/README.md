@@ -3922,7 +3922,7 @@ Deletes the specified indicator.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_id | The ID of the indicator to delete. The ID can be retreived by running the microsoft-atp-sc-indicator-list command. | Required | 
+| indicator_id | The ID of the indicator to delete. The ID can be retrieved by running the microsoft-atp-sc-indicator-list command. | Required | 
 
 
 #### Context Output

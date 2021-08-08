@@ -4217,7 +4217,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The ID of the indicator to delete. The ID can be retreived by running
+      description: The ID of the indicator to delete. The ID can be retrieved by running
         the microsoft-atp-sc-indicator-list command.
       isArray: false
       name: indicator_id
@@ -4346,7 +4346,7 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: The ID of the indicator to get. The ID can be retreived by running
+      description: The ID of the indicator to get. The ID can be retrieved by running
         the microsoft-atp-sc-indicator-list command.
       isArray: false
       name: indicator_id
