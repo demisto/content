@@ -257,7 +257,7 @@ def _parse_field(raw_field: str, sep: str = ',', index_after_split: int = 0, cha
     This function allows getting a specific complex sub-string. "example,example2|" -> 'example2'
     '''
     if not raw_field:
-        demisto.debug(f'Got empty raw to parse.')
+        demisto.debug('Got empty raw field to parse.')
         return ''
     try:
         new_field = raw_field.split(sep)[index_after_split]
@@ -543,9 +543,9 @@ def binary_search_command(client: Client, md5: str = None, product_name: str = N
         })
 
     md = f'{INTEGRATION_NAME} - Binary Search Results'
-    md += tableToMarkdown(f"\nShowing {start} - {len(res.get('results', []))} out of "
-                          f"{res.get('total_results', '0')} results.", human_readable_data, headers=[
-        'md5', 'Group', 'OS Type', 'Host Count', 'Last Seen', 'Is Executable Image', 'Timestamp'])
+    md += tableToMarkdown(f"\nShowing {start} - {len(res.get('results', []))} out of {res.get('total_results', '0')} "
+                          f"results.", human_readable_data, headers=['md5', 'Group', 'OS Type', 'Host Count',
+                                                                     'Last Seen', 'Is Executable Image', 'Timestamp'])
     return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.BinarySearch',
                           outputs_key_field='md5',
                           readable_output=md)
@@ -775,7 +775,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     return next_run, incidents
 
 
-def test_module(client: Client, params) -> str:
+def test_module(client: Client, params: dict) -> str:
     try:
         client.get_processes(limit='5', allow_empty=True)
         if params['isFetch']:
