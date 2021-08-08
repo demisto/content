@@ -69,6 +69,9 @@ script: >-
                   url = url.replace(/http:/i, 'http://')
               }
           }
+          if (url.search(/http/i) !== 0 && url.search(/ftp/i) !== 0) {
+              return 'http://' + url;
+          }
           return url;
       }
       // If proofpoint type v3
