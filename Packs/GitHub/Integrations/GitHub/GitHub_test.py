@@ -5,7 +5,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import CommandResults
 from GitHub import main, BASE_URL, list_branch_pull_requests, list_all_projects_command, \
-    add_issue_to_project_board_command, get_file_data
+    add_issue_to_project_board_command, get_path_data
 import GitHub
 
 MOCK_PARAMS = {
@@ -228,13 +228,13 @@ def test_add_issue_to_project_board_command(mocker, requests_mock, response_code
     assert mocker_results.call_args[0][0] == expected_result
 
 
-def test_get_file_data_command(requests_mock, mocker):
+def test_get_path_data_command(requests_mock, mocker):
     """
     Given:
     - Demisto args
 
     When:
-    - Calling 'GitHub-get-file-data' command.
+    - Calling 'GitHub-get-path-data' command.
 
     Then:
     - Ensure expected CommandResults object is returned.
@@ -242,18 +242,18 @@ def test_get_file_data_command(requests_mock, mocker):
     """
     mocker.patch.object(demisto, 'args', return_value={'branch_name': 'Update-Docker-Image', 'repository': 'content',
                                                        'organization': 'demisto',
-                                                       'file_path': 'Packs/BitcoinAbuse/pack_metadata.json'})
+                                                       'relative_path': 'Packs/BitcoinAbuse/pack_metadata.json'})
     GitHub.TOKEN, GitHub.USE_SSL = '', ''
-    test_test_get_file_data_command_response = load_test_data(
-        './test_data/get_file_data_response.json')
+    test_get_file_data_command_response = load_test_data(
+        './test_data/get_path_data_response.json')
     requests_mock.get('https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/pack_metadata.json?ref'
                       '=Update-Docker-Image',
-                      json=test_test_get_file_data_command_response['response'])
+                      json=test_get_file_data_command_response['response'])
     mocker_results = mocker.patch('GitHub.return_results')
-    get_file_data()
+    get_path_data()
 
     command_results: CommandResults = mocker_results.call_args[0][0]
     assert command_results.outputs_prefix == 'GitHub.PathData'
     assert command_results.outputs_key_field == 'url'
-    assert command_results.raw_response == test_test_get_file_data_command_response['response']
-    assert command_results.outputs == test_test_get_file_data_command_response['expected']
+    assert command_results.raw_response == test_get_file_data_command_response['response']
+    assert command_results.outputs == test_get_file_data_command_response['expected']
