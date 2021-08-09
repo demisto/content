@@ -805,7 +805,8 @@
         {
             "integrations": "MISP V3",
             "playbookID": "MISP V3 Test",
-            "timeout": 300
+            "timeout": 300,
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "test-LinkIncidentsWithRetry"
@@ -940,14 +941,14 @@
             "instance_names": "palo_alto_panorama",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "6.1.0",
-            "timeout": 2000
+            "timeout": 3600
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "6.1.0",
-            "timeout": 2000
+            "timeout": 3600
         },
         {
             "integrations": "Panorama",
@@ -3627,7 +3628,6 @@
         "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
         "Salesforce": "Issue 15901",
-        "Zscaler": "Issue 17784",
         "RedCanary": "License expired",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
