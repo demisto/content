@@ -16,9 +16,6 @@ REQUIRED_PERMISSIONS = (
 )
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
-params = demisto.params()
-FETCH_TIME = params.get('fetch_time', '1 days')
-
 
 def __reorder_first_headers(headers: List[str], first_headers: List[str]) -> None:
     """
@@ -134,7 +131,6 @@ class AADClient(MicrosoftClient):
         if country:
             filter_arguments.append(f"location/countryOrRegion eq '{country}'")
 
-        demisto.info('\n\n*** azure_ad_identity_protection_risk_detection_list_raw, filter_arguments: ' + str(filter_arguments) + '\n\n')
         return self.query_list(url_suffix='riskDetections',
                                filter_arguments=filter_arguments,
                                limit=limit,
@@ -242,7 +238,7 @@ def azure_ad_identity_protection_risky_users_dismiss_command(client: AADClient, 
 
 
 def create_incidents_from_input(input: List[Dict[str, str]], last_fetch_datetime: datetime) -> \
-    Tuple[List[Dict[str, str]], datetime]:
+        Tuple[List[Dict[str, str]], datetime]:
 
     incidents: List[Dict[str, str]] = []
     last_fetch = last_fetch_datetime
@@ -264,7 +260,6 @@ def create_incidents_from_input(input: List[Dict[str, str]], last_fetch_datetime
 
 
 def fetch_incidents(client: AADClient, params: Dict[str, str]):
-    demisto.info('\n\n*** fetch_incidents, params: ' + str(params) + '\n\n')
 
     last_run: Dict[str, str] = demisto.getLastRun()
     demisto.info('\n\n*** fetch_incidents, last_run: ' + str(last_run) + '\n\n')
@@ -273,6 +268,7 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
     last_fetch = last_run.get('last_item_time', '')
     if not last_fetch:
         # handle first time fetch
+        FETCH_TIME = params.get('fetch_time', '1 days')
         default_fetch_datetime, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
         last_fetch = str(default_fetch_datetime.isoformat(timespec='seconds')) + 'Z'
 
@@ -289,24 +285,15 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
         country=params.get('', ''),
     )
     values: list = risk_detection_list_raw.get('value', [])
-    # demisto.info('\n\n*** fetch_incidents, values: ' + str(values) + '\n\n')
     demisto.debug('len(values): ' + str(len(values)))
 
     incidents, last_item_time = create_incidents_from_input(values, last_fetch_datetime=last_fetch_datetime)
     # {'id': 'b7d9b782ed160b3000a9906be230ce91d1702949ddb49d326f3c2510576bdf13', 'requestId': 'e7a62d3b-8367-414b-8fd2-95fff3563801', 'correlationId': '1618d4b2-4a02-4f7a-a1e7-033b10b5313b', 'riskType': 'NewCountry', 'riskEventType': 'newCountry', 'riskState': 'dismissed', 'riskLevel': 'medium', 'riskDetail': 'adminDismissedAllRiskForUser', 'source': 'MicrosoftCloudAppSecurity', 'detectionTimingType': 'offline', 'activity': 'signin', 'tokenIssuerType': 'AzureAD', 'ipAddress': '84.207.227.14', 'activityDateTime': '2021-07-15T11:02:54Z', 'detectedDateTime': '2021-07-15T11:08:54Z', 'lastUpdatedDateTime': '2021-07-20T13:56:42.4023143Z', 'userId': '3fa9f28b-eb0e-463a-ba7b-8089fe9991e2', 'userDisplayName': 'Avishai Brandeis', 'userPrincipalName': 'avishai@demistodev.onmicrosoft.com', 'additionalInfo': '[{"Key":"userAgent","Value":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"},{"Key":"alertUrl","Value":"https://demistodev.portal.cloudappsecurity.com/#/alerts/60f01746cdbeaf0b87f69a30"}]', 'location': {'city': 'Amsterdam', 'state': 'Noord-Holland', 'countryOrRegion': None, 'geoCoordinates': {'latitude': 52.30905, 'longitude': 4.94019}}}
 
-    for current_value in values:
-        demisto.info('\n\n*** , current_value: ' + str(current_value) + '\n\n')
-
-    # TODO Implement
-    # if error_fetching:
-    #     finished_fetch_ok = False
-
-    if len(incidents) > 0:
-        demisto.incidents(incidents)
-        demisto.setLastRun({
-            'last_item_time': last_item_time.strftime(DATE_FORMAT)
-        })
+    demisto.incidents(incidents)
+    demisto.setLastRun({
+        'last_item_time': last_item_time.strftime(DATE_FORMAT)
+    })
 
 
 def start_auth(client: AADClient) -> CommandResults:
