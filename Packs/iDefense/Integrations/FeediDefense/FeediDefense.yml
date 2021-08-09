@@ -97,7 +97,8 @@ configuration:
   - URL
   required: true
   type: 16
-- additionalinfo: Severity of the indicator. The value to start fetching indicators from.
+- additionalinfo: Severity of the indicator. The value to start fetching indicators
+    from.
   defaultvalue: '1'
   display: Indicator Severity
   name: severity
@@ -121,8 +122,8 @@ configuration:
   - Hacktivism
   required: false
   type: 16
-- additionalinfo: Confidence about the indicator details. The value
-    of confidence to fetch indicators from. The value between 0-100
+- additionalinfo: Confidence about the indicator details. The value of confidence
+    to fetch indicators from. The value between 0-100
   display: Confidence
   hidden: false
   name: confidence_from
@@ -156,7 +157,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Fetches indicators from a iDefense feed. You can filter returned indicators by indicator type, indicator severity, threat type, confidence, and malware family (each of these are an integration parameter). 
+description: Fetches indicators from a iDefense feed. You can filter returned indicators
+  by indicator type, indicator severity, threat type, confidence, and malware family
+  (each of these are an integration parameter).
 display: iDefense Feed
 name: iDefense Feed
 script:
@@ -173,7 +176,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: idefense-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.12410
+  dockerimage: demisto/jmespath:1.0.0.23290
   feed: true
   isfetch: false
   longRunning: false

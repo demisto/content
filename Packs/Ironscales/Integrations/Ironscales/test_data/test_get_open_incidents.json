@@ -1,0 +1,278 @@
+{
+  "company_id": "1",
+  "company_name": "IRONSCALES-Test",
+  "incident_id": "1",
+  "classification": "Report",
+  "first_reported_by": "Unitests first_name",
+  "first_reported_date": "2021-07-06T06:34:00.070Z",
+  "affected_mailbox_count": 1,
+  "sender_reputation": "medium",
+  "banner_displayed": null,
+  "sender_email": "unitests@ironscales.com",
+  "reply_to": null,
+  "spf_result": null,
+  "sender_is_internal": true,
+  "themis_proba": 0.52,
+  "themis_verdict": "Phishing",
+  "mail_server": {
+    "host": "tests",
+    "ip": "tests"
+  },
+  "federation": {
+    "companies_affected": 0,
+    "companies_marked_phishing": 0,
+    "companies_marked_spam": 0,
+    "companies_marked_fp": 0,
+    "companies_unclassified": 0,
+    "phishing_ratio": null
+  },
+  "reports": [
+    {
+      "name": "Unitests first_name",
+      "email": "unitests@ironscales.com",
+      "subject": "Unitests",
+      "sender_email": "unitests@ironscales.com",
+      "mail_server": {
+        "host": "VI1PR02MB4511.eurprd02.prod.outlook.com",
+        "ip": "2603:10a6:803:a1::18"
+      },
+      "headers": [
+        {
+          "name": "Received",
+          "value": "tests"
+        },
+        {
+          "name": "Received",
+          "value": "tests"
+        },
+        {
+          "name": "Received",
+          "value": "tests"
+        },
+        {
+          "name": "Authentication-Results",
+          "value": "tests"
+        },
+        {
+          "name": "Content-Type",
+          "value": "tests"
+        },
+        {
+          "name": "Content-Transfer-Encoding",
+          "value": "tests"
+        },
+        {
+          "name": "Subject",
+          "value": "tests"
+        },
+        {
+          "name": "Thread-Topic",
+          "value": "tests"
+        },
+        {
+          "name": "Thread-Index",
+          "value": "tests"
+        },
+        {
+          "name": "Date",
+          "value": "tests"
+        },
+        {
+          "name": "Message-ID",
+          "value": "tests"
+        },
+        {
+          "name": "Accept-Language",
+          "value": "tests"
+        },
+        {
+          "name": "Content-Language",
+          "value": "tests"
+        },
+        {
+          "name": "X-Mentions",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Has-Attach",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-Organization-SCL",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-TNEF-Correlator",
+          "value": "tests"
+        },
+        {
+          "name": "MIME-Version",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-Organization-MessageDirectionality",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-Organization-AuthSource",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-Organization-AuthAs",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-Organization-AuthMechanism",
+          "value": "tests"
+        },
+        {
+          "name": "X-Originating-IP",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-Organization-Network-Message-Id",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-PublicTrafficType",
+          "value": "tests"
+        },
+        {
+          "name": "Return-Path",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-Organization-ExpirationStartTime",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-Organization-ExpirationStartTimeReason",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-Organization-ExpirationInterval",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-Organization-ExpirationIntervalReason",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Office365-Filtering-Correlation-Id",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-TrafficTypeDiagnostic",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-Transport-Forked",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Oob-TLC-OOBClassifiers",
+          "value": "tests"
+        },
+        {
+          "name": "X-Microsoft-Antispam",
+          "value": "tests"
+        },
+        {
+          "name": "X-Forefront-Antispam-Report",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-AntiSpam-MessageData-ChunkCount",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-AntiSpam-MessageData-0",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-CrossTenant-OriginalArrivalTime",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-CrossTenant-FromEntityHeader",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-CrossTenant-Id",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-CrossTenant-AuthSource",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-CrossTenant-AuthAs",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-CrossTenant-Network-Message-Id",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-CrossTenant-MailboxType",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-CrossTenant-UserPrincipalName",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-Transport-CrossTenantHeadersStamped",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-Transport-EndToEndLatency",
+          "value": "tests"
+        },
+        {
+          "name": "X-MS-Exchange-Processed-By-BccFoldering",
+          "value": "tests"
+        },
+        {
+          "name": "X-Microsoft-Antispam-Mailbox-Delivery",
+          "value": "tests"
+        },
+        {
+          "name": "X-Microsoft-Antispam-Message-Info",
+          "value": "tests"
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "url": "http://www.ironscales.com/",
+      "name": "tests"
+    },
+    {
+      "url": "https://ironscales.com/",
+      "name": "tests"
+    },
+    {
+      "url": "https://www.linkedin.com/company/ironscales",
+      "name": "tests"
+    },
+    {
+      "url": "https://twitter.com/IRONSCALES?s=20",
+      "name": "tests"
+    },
+    {
+      "url": "https://www.facebook.com/ironscalesltd/",
+      "name": "tests"
+    },
+    {
+      "url": "https://www.facebook.com/login/?next=https://www.facebook.com/ironscalesltd/",
+      "name": "tests"
+    },
+    {
+      "url": "https://www.youtube.com/channel/UCz14RKHtm4sKmfz8-Nw6A1A",
+      "name": "tests"
+    }
+  ],
+  "attachments": []
+}

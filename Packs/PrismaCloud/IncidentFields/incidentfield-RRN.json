@@ -9,7 +9,8 @@
 		"AWS EC2 Instance Misconfiguration",
 		"Azure AKS Misconfiguration",
 		"Azure SQL Misconfiguration",
-		"Azure Network Misconfiguration"
+		"Azure Network Misconfiguration",
+		"Azure Storage Misconfiguration"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

@@ -1564,7 +1564,7 @@ def get_alarm_events(data_args):
     human_readable = tableToMarkdown('Events information for alarm ' + id, events)
 
     if fields:
-        fields = string.split(fields, ',')
+        fields = fields.split(',')
         for event in events:
             for key in event.keys():
                 if key not in fields:

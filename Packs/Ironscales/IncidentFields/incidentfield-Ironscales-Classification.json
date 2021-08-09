@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Ironscales"
+    ],
+    "caseInsensitive": true,
+    "cliName": "ironscalesclassification",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_ironscalesclassification",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Ironscales-Classification",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
