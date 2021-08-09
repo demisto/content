@@ -122,12 +122,37 @@ class Client(BaseClient):
 
         return okta_fields
 
+    def http_request(self, method, url_suffix, full_url=None, params=None, data=None, headers=None):
+        if headers is None:
+            headers = self._headers
+        full_url = full_url if full_url else urljoin(self._base_url, url_suffix)
+
+        res = requests.request(
+            method,
+            full_url,
+            verify=self._verify,
+            headers=headers,
+            params=params,
+            json=data
+        )
+        return res
+
+    def search_group(self, group_name):
+        uri = 'groups'
+        query_params = {
+            'q': encode_string_results(group_name)
+        }
+        return self.http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params
+        )
+
     def get_group_by_id(self, group_id):
         uri = f'groups/{group_id}'
-        return self._http_request(
+        return self.http_request(
             method='GET',
-            url_suffix=uri,
-            resp_type='response'
+            url_suffix=uri
         )
 
     def get_group_members(self, group_id):
@@ -135,11 +160,10 @@ class Client(BaseClient):
         return self.get_paged_results(uri)
 
     def get_paged_results(self, uri, query_param=None):
-        response = self._http_request(
+        response = self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_param,
-            resp_type='response',
+            params=query_param
         )
         paged_results = response.json()
         if response.status_code != 200:

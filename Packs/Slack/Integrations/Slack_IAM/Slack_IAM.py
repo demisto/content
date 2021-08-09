@@ -126,13 +126,26 @@ class GroupClient(BaseClient):
     Should only do requests and return data.
     """
     def __init__(self, base_url, verify=True, proxy=False, headers=None):
-        self.base_url = base_url
-        self.verify = verify
-        self.headers = headers
+        super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
+
+    def http_request(self, method, url_suffix, params=None, data=None, headers=None):
+        if headers is None:
+            headers = self._headers
+        full_url = self._base_url + url_suffix
+        res = requests.request(
+            method,
+            full_url,
+            verify=self._verify,
+            headers=headers,
+            params=params,
+            json=data
+        )
+
+        return res
 
     def get_group_by_id(self, group_id):
         uri = f'/Groups/{group_id}'
-        return self._http_request(
+        return self.http_request(
             method="GET",
             url_suffix=uri
         )
@@ -142,7 +155,7 @@ class GroupClient(BaseClient):
         query_params = {
             'filter': f'displayName eq "{group_name}"'
         }
-        return self._http_request(
+        return self.http_request(
             method="GET",
             url_suffix=uri,
             params=query_params
@@ -150,7 +163,7 @@ class GroupClient(BaseClient):
 
     def create_group(self, data):
         uri = '/Groups'
-        return self._http_request(
+        return self.http_request(
             method="POST",
             url_suffix=uri,
             data=data
@@ -158,7 +171,7 @@ class GroupClient(BaseClient):
 
     def update_group(self, group_id, data):
         uri = f'/Groups/{group_id}'
-        return self._http_request(
+        return self.http_request(
             method="PATCH",
             url_suffix=uri,
             data=data
@@ -166,7 +179,7 @@ class GroupClient(BaseClient):
 
     def delete_group(self, group_id):
         uri = f'/Groups/{group_id}'
-        return self._http_request(
+        return self.http_request(
             method="DELETE",
             url_suffix=uri
         )
@@ -260,11 +273,9 @@ class OutputContext:
 
 def get_group_id_by_name(client, group_name):
     res = client.search_group(group_name)
-    res_json = res.json()
 
-    if res.status_code == 200:
-        if res_json.get('totalResults') >= 1:
-            return res_json['Resources'][0].get('id')
+    if res.get('totalResults') >= 1:
+        return res['Resources'][0].get('id')
     return None
 
 
