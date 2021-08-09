@@ -65,7 +65,7 @@ def test_create_user_command(mocker):
 
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=SALESFORCE_CREATE_USER_OUTPUT)
-    mocker.patch.object(client, 'get_user_id_and_activity_by_mail', return_value=(None, None))
+    mocker.patch.object(client, 'get_user_id_and_activity', return_value=(None, None))
 
     iam_user_profile = create_user_command(client, args, 'mapper_out', True, True, True)
     outputs = get_outputs_from_user_profile(iam_user_profile)
@@ -82,7 +82,7 @@ def test_get_user_command__existing_user(mocker):
     client = mock_client()
 
     mocker.patch.object(client, 'get_user', return_value=SALESFORCE_GET_USER_OUTPUT)
-    mocker.patch.object(client, 'get_user_id_and_activity_by_mail', return_value=("id", None))
+    mocker.patch.object(client, 'get_user_id_and_activity', return_value=("id", None))
     mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
 
     iam_user_profile = get_user_command(client, args, 'mapper_in')
@@ -100,7 +100,7 @@ def test_get_user_command__non_existing_user(mocker):
     mocker.patch.object(Client, 'get_access_token_', return_value='')
     client = mock_client()
 
-    mocker.patch.object(client, 'get_user_id_and_activity_by_mail', return_value=(None, None))
+    mocker.patch.object(client, 'get_user_id_and_activity', return_value=(None, None))
     mocker.patch.object(client, 'get_user', return_value={})
 
     iam_user_profile = get_user_command(client, args, 'mapper_in')
@@ -117,7 +117,7 @@ def test_create_user_command__user_already_exists(mocker):
     mocker.patch.object(Client, 'get_access_token_', return_value='')
     client = mock_client()
 
-    mocker.patch.object(client, 'get_user_id_and_activity_by_mail', return_value=("mock@mock.com", ""))
+    mocker.patch.object(client, 'get_user_id_and_activity', return_value=("mock@mock.com", ""))
     mocker.patch.object(client, 'update_user', return_value="")
 
     iam_user_profile = create_user_command(client, args, 'mapper_out', True, True, True)
@@ -132,7 +132,7 @@ def test_update_user_command__non_existing_user(mocker):
     mocker.patch.object(Client, 'get_access_token_', return_value='')
     client = mock_client()
 
-    mocker.patch.object(client, 'get_user_id_and_activity_by_mail', return_value=(None, None))
+    mocker.patch.object(client, 'get_user_id_and_activity', return_value=(None, None))
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=SALESFORCE_CREATE_USER_OUTPUT)
 
@@ -151,7 +151,7 @@ def test_update_user_command__command_is_disabled(mocker):
     mocker.patch.object(Client, 'get_access_token_', return_value='')
     client = mock_client()
 
-    mocker.patch.object(client, 'get_user_id_and_activity_by_mail', return_value=(None, None))
+    mocker.patch.object(client, 'get_user_id_and_activity', return_value=(None, None))
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'update_user')
 

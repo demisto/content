@@ -425,7 +425,7 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
                                             skip_reason=error_message)
             else:
                 salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out,
-                                                              incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
+                                                              incident_type='User Profile - Disable')
                 salesforce_user['IsActive'] = False
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
                 res = client.update_user_profile(user_term=user_id, data=salesforce_user)
@@ -465,6 +465,7 @@ def get_all_user_attributes(client):
 
     if user_id:
         user_data = client.get_user(user_id)
+        user_data.pop('IsActive')  # hard-coded in the CRUD commands
         attributes = list(user_data.keys())
     return attributes
 
