@@ -362,7 +362,7 @@ def get_employee_information_command(client, args):
 
     response = client.get_employee_information_request(email_address)
     command_results = CommandResults(
-        outputs_prefix='AbnormalSecurity.EmployeeDetails',
+        outputs_prefix='AbnormalSecurity.Employee',
         outputs_key_field='',
         outputs=response,
         raw_response=response
