@@ -12,7 +12,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalInfo: Reliability of the source providing the intelligence data.
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
   name: integration_reliability
@@ -26,7 +26,7 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
-- additionalInfo: Threshold for IP related threats' severity.
+- additionalinfo: Threshold for IP related threats' severity.
   defaultvalue: Major
   display: IP Threshold
   name: ip_threshold
@@ -37,7 +37,7 @@ configuration:
   - Major
   required: false
   type: 15
-- additionalInfo: Threshold for file related threats' severity.
+- additionalinfo: Threshold for file related threats' severity.
   defaultvalue: Major
   display: File Threshold
   name: file_threshold
@@ -48,7 +48,7 @@ configuration:
   - Major
   required: false
   type: 15
-- additionalInfo: Threshold for URL related threats' severity.
+- additionalinfo: Threshold for URL related threats' severity.
   defaultvalue: Major
   display: URL Threshold
   name: url_threshold
@@ -59,7 +59,7 @@ configuration:
   - Major
   required: false
   type: 15
-- additionalInfo: Threshold for email related threats' severity.
+- additionalinfo: Threshold for email related threats' severity.
   defaultvalue: Major
   display: Email Threshold
   name: email_threshold
@@ -70,7 +70,7 @@ configuration:
   - Major
   required: false
   type: 15
-- additionalInfo: The maximum number of days from which to start returning data. 90
+- additionalinfo: The maximum number of days from which to start returning data. 90
     days is recomended by Cofense.
   defaultvalue: '90'
   display: Time limit for collecting data
