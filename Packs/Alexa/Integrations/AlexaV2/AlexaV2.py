@@ -80,18 +80,18 @@ class Client(BaseClient):
 def rank_to_score(domain: str, rank: Optional[int], threshold: int, benign: int, reliability: DBotScoreReliability):
     if rank is None:
         score = Common.DBotScore.SUSPICIOUS
-        score_text = 'suspicious'
+        # score_text = 'suspicious'
     elif rank < 0:
         raise DemistoException('Rank should be positive')
     elif 0 < rank <= benign:
         score = Common.DBotScore.GOOD
-        score_text = 'good'
+        # score_text = 'good'
     elif rank > threshold:
-        score = Common.DBotScore.SUSPICIOUS #todo maybe it should be bad?
-        score_text = 'suspicious'
+        score = Common.DBotScore.SUSPICIOUS  # todo maybe it should be bad?
+        # score_text = 'suspicious'
     else:  # alexa_rank < client.threshold:
         score = Common.DBotScore.NONE
-        score_text = 'Unkown'
+        # score_text = 'Unkown'
     # else: # Should never be here
     #     score = 2
     #     score_text = 'suspicious'
@@ -119,15 +119,13 @@ def test_module(client: Client) -> str:
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
 
-    :type client: ``Client``
-    :param Client: client to use
+    Args (Client): a client to use
 
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    Return: 'ok' if test passed, anything else will fail the test.
     """
 
     try:
-        res = client.alexa_rank('google.com')
+        client.alexa_rank('google.com')
         return 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e):
@@ -138,12 +136,12 @@ def test_module(client: Client) -> str:
 def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     domains = argToList(args.get('domain'))
     if not domains:
-        raise ValueError('domain doesn\'t exists')
+        raise ValueError('AlexaV2: domain doesn\'t exists')
     command_results: List[CommandResults] = []
     for domain in domains:
         result = client.alexa_rank(domain)
         rank = demisto.get(result,
-                           'Awis.Results.Result.Alexa.TrafficData.Rank')  # todo check what happens with a key does not exist
+                           'Awis.Results.Result.Alexa.TrafficData.Rank')
         domain_standard_context: Common.Domain = rank_to_score(domain=domain,
                                                                rank=arg_to_number(rank),
                                                                threshold=client.threshold,
@@ -154,10 +152,12 @@ def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         result = {'Name': domain,
                   'Indicator': domain,
                   'Rank': alexa_rank}
-        readable = f'The Alexa rank of {domain} is {alexa_rank} and has been marked as {domain_standard_context.dbot_score.score}.' \
-                   f' The benign threshold is {client.benign} while the suspicious threshold is {client.threshold}.'
+        readable = f'The Alexa rank of {domain} is {alexa_rank} and has been marked as ' \
+                   f'{domain_standard_context.dbot_score.score}.' \
+                   f' The benign threshold is {client.benign} ' \
+                   f'while the suspicious threshold is {client.threshold}.'
         command_results.append(CommandResults(
-            outputs_prefix='AlexaV2.Domain',
+            outputs_prefix='Alexa.Domain',
             outputs_key_field='Name',
             outputs=result,
             readable_output=readable,
@@ -185,15 +185,15 @@ def main() -> None:
     try:
         threshold = arg_to_number(params.get('threshold'), required=True, arg_name='threshold')
         benign = arg_to_number(params.get('benign'), required=True, arg_name='benign')
-        if threshold < 0 or benign < 0:
+        if threshold < 0 or benign < 0:  # type: ignore
             raise DemistoException('threshold and benign should be above 0')
         client = Client(
             base_url=base_api,
             verify=verify_certificate,
             proxy=proxy,
             api_key=api_key,
-            threshold=threshold,
-            benign=benign,
+            threshold=threshold,  # type: ignore
+            benign=benign,  # type: ignore
             reliability=reliability)
         if demisto.command() == 'test-module':
             return_results(test_module(client))

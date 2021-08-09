@@ -1,5 +1,6 @@
 import pytest
-from AlexaV2 import Client, DBotScoreReliability, alexa_domain, rank_to_score, argToList, demisto, DemistoException, json, Dict
+from AlexaV2 import Client, rank_to_score, alexa_domain
+from CommonServerPython import *  # noqa
 
 
 def create_client(proxy: bool = False, verify: bool = False, benign: int = 0, threshold: int = 200,
@@ -45,7 +46,7 @@ DOMAINS_BAD_RESULTS = [('xsoar.com', file_to_dct('negative_rank_response.json'))
 
 
 def test_multi_domains(mocker):
-        """
+    """
     Given:
         - A list of domains to be ranked by Alexa API
 
@@ -121,3 +122,4 @@ def test_rank_to_score_invalid():
 
     with pytest.raises(DemistoException):
         rank_to_score('google.com', -1, 0, 200, DBotScoreReliability.A_PLUS)
+

@@ -50,7 +50,7 @@ configuration:
   type: 4
 description: Alexa provides website ranking information that can be useful in determining
   if the domain in question has a strong web presence. V2
-display: Alexa Rank Indicator V2
+display: Alexa V2 Rank Indicator
 name: Alexa Rank Indicator V2
 script:
   commands:
@@ -68,28 +68,28 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: The Domain being checked
-      type: string
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
-      type: string
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
-      type: string
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
-      type: string
+      type: String
     - contextPath: Alexa.Domain.Indicator
       description: The Domain being checked
-      type: string
+      type: String
     - contextPath: Alexa.Domain.Name
       description: The Domain being checked
-      type: string
+      type: String
     - contextPath: Alexa.Domain.Rank
       description: Alexa rank as determined by Amazon
-      type: string
+      type: String
   dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
@@ -100,5 +100,5 @@ script:
   subtype: python3
   type: python
 tests:
-- Alexa Test Playbook
-fromversion: 5.0.0
+- AlexaV2 Test Playbook
+fromversion: 5.5.0
