@@ -199,7 +199,7 @@ def map_guardicore_os(os: int) -> str:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, is_fetch: bool = False) -> str:
     message: str = ''
     try:
         from_time = int(
@@ -208,7 +208,7 @@ def test_module(client: Client) -> str:
             parse("now").replace(tzinfo=utc).timestamp()) * 1000
         client.get_incidents({"from_time": from_time, "to_time": to_time})
 
-        if demisto.params().get('isFetch'):
+        if is_fetch:
             fetch_incidents(client, {
                 'limit': 10,
             })
@@ -349,6 +349,7 @@ def get_indicent(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Incident',
         outputs_key_field=incident_id,
         readable_output=md,
+        raw_response=result,
         outputs=result,
     )
 
@@ -470,7 +471,7 @@ def main() -> None:
     try:
         args = demisto.args()
         if demisto.command() == 'test-module':
-            return_results(test_module(client))
+            return_results(test_module(client, demisto.params().get('isFetch')))
         elif demisto.command() == 'fetch-incidents':
             incidents, last_fetch = fetch_incidents(client, {
                 'severity': severity,

@@ -111,6 +111,7 @@ def test_calculate_fetch_start_time_dynamic():
     out = int(parse('4 days').replace(tzinfo=utc).timestamp()) * 1000
     assert calculate_fetch_start_time(None, '4 days') - out < 1000
 
+
 @pytest.mark.parametrize(
     'guardicore_severity, dbot_score',
     [
