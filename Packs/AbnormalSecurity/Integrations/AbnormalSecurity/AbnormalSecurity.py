@@ -235,7 +235,7 @@ def get_a_list_of_campaigns_submitted_to_abuse_mailbox_command(client, args):
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix='AbnormalSecurity.inline_response_200_3',
-        outputs_key_field='',
+        outputs_key_field='campaignId',
         outputs=response,
         raw_response=response
     )
