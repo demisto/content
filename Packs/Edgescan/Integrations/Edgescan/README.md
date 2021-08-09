@@ -1889,8 +1889,12 @@ Rish accept a vulnerability
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AnnotationAdd | Unknown | The annotation creation output |
-
+| Edgescan.AnnotationAdd.id | Number | The ID of the added annotation |
+| Edgescan.AnnotationAdd.category | String | The category of the added annotation |
+| Edgescan.AnnotationAdd.text | String | The text of the added annotation |
+| Edgescan.AnnotationAdd.user | String | The user that has added annotation |
+| Edgescan.AnnotationAdd.user_id | Number | The user ID of the added annotation |
+| Edgescan.AnnotationAdd.created_at | Date | The date when the annoation was added |
 
 #### Command Example
 ```!edgescan-vulnerabilities-add-annotation id="52492" text="anotherTEST"```
