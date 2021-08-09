@@ -2448,7 +2448,7 @@ class Common(object):
 
     class CustomIndicator(Indicator):
 
-        def __init__(self, indicator_type, value, dbot_score, params, prefix_str):
+        def __init__(self, indicator_type, value, dbot_score, data, context_prefix):
             """
             :type indicator_type: ``Str``
             :param indicator_type: The name of the indicator type.
@@ -2459,11 +2459,11 @@ class Common(object):
             :type dbot_score: ``DBotScore``
             :param dbot_score: If custom indicator has a score then create and set a DBotScore object.
 
-            :type params: ``Dict(Str,Any)``
-            :param params: A dictionary containing all the param names and their values.
+            :type data: ``Dict(Str,Any)``
+            :param data: A dictionary containing all the param names and their values.
 
-            :type prefix_str: ``Str``
-            :param prefix_str: Will be used as the context path prefix.
+            :type context_prefix: ``Str``
+            :param context_prefix: Will be used as the context path prefix.
 
             :return: None
             :rtype: ``None``
@@ -2472,10 +2472,11 @@ class Common(object):
                 raise ValueError('Creating a custom indicator type with an existing type name is not allowed')
             if not value:
                 raise ValueError('value is mandatory for creating the indicator')
-            if not prefix_str:
-                raise ValueError('prefix_str is mandatory for creating the indicator')
+            if not context_prefix:
+                raise ValueError('context_prefix is mandatory for creating the indicator')
 
-            self.CONTEXT_PATH = '{prefix_str}(val.value && val.value == obj.value)'.format(prefix_str=prefix_str)
+            self.CONTEXT_PATH = '{context_prefix}(val.value && val.value == obj.value)'.\
+                format(context_prefix=context_prefix)
 
             self.value = value
 
@@ -2484,18 +2485,18 @@ class Common(object):
 
             self.dbot_score = dbot_score
             self.indicator_type = indicator_type
-            self.params = params
+            self.data = data
             INDICATOR_TYPE_TO_CONTEXT_KEY[indicator_type.lower()] = indicator_type.capitalize()
 
-            for key in self.params:
-                setattr(self, key, params[key])
+            for key in self.data:
+                setattr(self, key, data[key])
 
         def to_context(self):
             custom_context = {
                 'Value': self.value
             }
 
-            custom_context.update(self.params)
+            custom_context.update(self.data)
 
             ret_value = {
                 self.CONTEXT_PATH: custom_context
