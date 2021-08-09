@@ -257,12 +257,12 @@ def _parse_field(raw_field: str, sep: str = ',', index_after_split: int = 0, cha
     This function allows getting a specific complex sub-string. "example,example2|" -> 'example2'
     '''
     if not raw_field:
-        demisto.debug('{INTEGRATION_NAME} - Got empty raw field to parse.')
+        demisto.debug(f'{INTEGRATION_NAME} - Got empty raw field to parse.')
         return ''
     try:
         new_field = raw_field.split(sep)[index_after_split]
     except IndexError:
-        demisto.error(f'raw: {raw_field}, split by {sep} has no index {index_after_split}')
+        demisto.error(f'{INTEGRATION_NAME} - raw: {raw_field}, split by {sep} has no index {index_after_split}')
         return ''
     chars_to_remove = set(chars_to_remove)
     for char in chars_to_remove:
@@ -671,19 +671,20 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
     try:
         ips = argToList(ip)
         res = []
-        for current_ip in ips:
-            res += client.get_sensors(id=id, ipaddr=current_ip, hostname=hostname)[1]
-
+        if ips:
+            for current_ip in ips:
+                res += client.get_sensors(id=id, ipaddr=current_ip, hostname=hostname)[1]
+        else:
+            res += client.get_sensors(id=id, hostname=hostname)[1]
         endpoints = []
         command_results = []
         for sensor in res:
-            demisto.debug(f"{INTEGRATION_NAME} - Got sensor: {sensor}")
             is_isolated = _get_isolation_status_field(sensor['network_isolation_enabled'],
                                                       sensor['is_isolating'])
             endpoint = Common.Endpoint(
-                id=id,
-                hostname=hostname,
-                ip_address=ip,
+                id=sensor.get('id'),
+                hostname=sensor.get('computer_name'),
+                ip_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=0, chars_to_remove='|'),
                 mac_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=1, chars_to_remove='|'),
                 os_version=sensor.get('os_environment_display_string'),
                 memory=sensor.get('physical_memory_size'),
@@ -693,7 +694,7 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
             endpoints.append(endpoint)
 
             endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
-            md = tableToMarkdown(f'{INTEGRATION_NAME} -  Endpoint: {id}', endpoint_context)
+            md = tableToMarkdown(f'{INTEGRATION_NAME} -  Endpoint: {sensor.get("id")}', endpoint_context)
 
             command_results.append(CommandResults(
                 readable_output=md,
