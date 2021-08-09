@@ -1056,7 +1056,7 @@ script:
     - contextPath: Edgescan.AnnotationAdd.user
       description: The user that has added the annotation
       type: String
-    - contextPath: Edgescan.AnnoationAdd.user_id
+    - contextPath: Edgescan.AnnotationAdd.user_id
       description: The user ID of the added annotation
       type: Number
     - contextPath: Edgescan.AnnotationAdd.created_at
