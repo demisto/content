@@ -1577,9 +1577,11 @@ def get_file_content_from_repo():
     file_path = args.get('file_path')
     branch_name = args.get('branch_name')
     media_type = args.get('media_type', 'raw')
+    organization = args.get('organization') or USER
+    repository = args.get('repository') or REPOSITORY
     create_file_from_content = argToBoolean(args.get('create_file_from_content', False))
 
-    url_suffix = f'/repos/{USER}/{REPOSITORY}/contents/{file_path}'
+    url_suffix = f'/repos/{organization}/{repository}/contents/{file_path}'
     if branch_name:
         url_suffix += f'?ref={branch_name}'
 
