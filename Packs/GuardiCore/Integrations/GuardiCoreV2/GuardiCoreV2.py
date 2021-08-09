@@ -162,7 +162,7 @@ def calculate_fetch_start_time(last_fetch: Optional[str],
         return int(last_fetch)
 
 
-def filter_human_readable(results: dict, human_columns=List[str]) -> dict:
+def filter_human_readable(results: dict, human_columns: List[str]) -> dict:
     # Takes in results dict and filters out relevant human_columns.
     filtered = {}
     for hc in human_columns:
