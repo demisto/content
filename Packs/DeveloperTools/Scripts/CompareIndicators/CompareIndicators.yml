@@ -12,14 +12,16 @@ args:
 - name: base_list
   required: true
   description: Either a list of Indicators of Compromise or an EntryID to a File containing a list.
+  isArray: true
 - name: compare_to_list
   required: true
   description: Either a list of Indicators of Compromise or an EntryID to a File containing a list.
+  isArray: true
 outputs:
-- contextPath: IndicatorsCompare.BaseList.UniqueIndicators
+- contextPath: IndicatorsCompare.BaseList
   description: Indicators that appear in the first indicators list only.
   type: String
-- contextPath: IndicatorsCompare.CompareList.UniqueIndicators
+- contextPath: IndicatorsCompare.CompareList
   description: Indicators that appear in the second indicators list only.
   type: String
 scripttarget: 0

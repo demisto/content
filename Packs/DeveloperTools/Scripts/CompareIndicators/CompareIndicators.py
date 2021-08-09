@@ -78,11 +78,10 @@ def main():
     ioc_list2 = extract_list_from_args(args, 'compare_to_list')
     diff1, diff2 = collect_unique_indicators_from_lists(ioc_list1, ioc_list2)
     outputs = {
-        'BaseList': {'UniqueIndicators': diff1},
-        'CompareList': {'UniqueIndicators': diff2}
+        'BaseList': diff1,
+        'CompareList': diff2
     }
-    readable = tableToMarkdown("Differences", {'BaseList': diff1, 'CompareList': diff2})
-    return_results(CommandResults(outputs=outputs, outputs_prefix='IndicatorCompare', readable_output=readable))
+    return_results(CommandResults(outputs=outputs, outputs_prefix='IndicatorCompare'))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
