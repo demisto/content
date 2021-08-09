@@ -1602,6 +1602,8 @@ Gets the content of a file from GitHub.
 | branch_name | The branch name from which to get the file. | Optional | 
 | media_type | The media type in which the file contents will be fetched. Possible values are: "raw" and "html". Default value is "raw". Possible values are: raw, html. Default is raw. | Optional | 
 | create_file_from_content | Whether to create a file entry in the War Room with the file contents. Possible values are: "true" and "false". Default value is "false". | Optional | 
+| organization | The name of the organization. | Optional | 
+| repository | The name of the repository. | Optional | 
 
 #### Context Output
 
