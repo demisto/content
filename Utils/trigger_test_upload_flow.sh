@@ -489,7 +489,7 @@ fi
 git checkout -b "${new_content_branch}" || fail
 
 # Changes
-change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
+#change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
 
 # New Pack
 array=("Hello_World" "Hello World" "helloworld" "Sanity_Test")
