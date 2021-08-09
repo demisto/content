@@ -1,4 +1,7 @@
 ''' IMPORTS '''
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 import tweepy
 import json
 import urllib
