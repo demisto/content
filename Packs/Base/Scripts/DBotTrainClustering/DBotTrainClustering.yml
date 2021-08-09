@@ -170,7 +170,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: char
-  description: Whether the feature should be made of word or character n-grams.
+  description: 'Whether the feature should be made of word or character n-grams. Possible values: "char" and "word".'
   isArray: false
   name: analyzer
   predefined:
