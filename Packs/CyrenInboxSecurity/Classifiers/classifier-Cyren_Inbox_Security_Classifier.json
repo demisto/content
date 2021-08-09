@@ -1,0 +1,32 @@
+{
+    "brands": null,
+    "defaultIncidentType": "",
+    "description": "",
+    "feed": false,
+    "fromServerVersion": "",
+    "id": "2b2c9b9d-cfb4-46d6-8b0c-55e02bf9f62c",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "instanceIds": null,
+    "itemVersion": "",
+    "keyTypeMap": {
+        "office365": "Cyren Inbox Security"
+    },
+    "locked": false,
+    "logicalVersion": 3,
+    "mapping": null,
+    "name": "Cyren Inbox Security Classifier",
+    "nameRaw": "Cyren Inbox Security Classifier",
+    "packID": "",
+    "sortValues": null,
+    "sourceClassifierId": "",
+    "system": false,
+    "toServerVersion": "",
+    "transformer": {
+        "complex": null,
+        "simple": "application"
+    },
+    "type": "classification",
+    "unclassifiedCases": null,
+    "version": -1
+}

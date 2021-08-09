@@ -1,0 +1,123 @@
+category: Utilities
+commonfields:
+  id: Cyren Inbox Security
+  version: -1
+configuration:
+- additionalinfo: The endpoint  provided by your Cyren Representative. (use "sample"
+    to test)
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: The client iD provided by your Cyren Representative. (use "sample"
+    to test)
+  display: Client ID
+  name: client_id
+  required: true
+  type: 0
+- additionalinfo: The client secret provided by your Cyren Representative. (use "sample"
+    to test)
+  display: Client Secret
+  name: client_secret
+  required: true
+  type: 4
+- additionalinfo: 1 day, 2 days, etc...
+  defaultvalue: 3 days
+  display: First fetch time
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+defaultMapperIn: 'null'
+defaultMapperOut: 'null'
+defaultclassifier: 'null'
+description: Cyren Inbox Security is an innovative solution that safeguards Office
+  365 mailboxes in your organization against evasive phishing, business email compromise
+  (BEC), and fraud. This integration imports incidents from Cyren Inbox Security into
+  XSOAR, and includes a playbook for incident resolution.
+display: Cyren Inbox Security
+name: Cyren Inbox Security
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: case ID
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      description: resolution
+      isArray: false
+      name: resolution
+      predefined:
+      - phishing
+      - malware
+      - clean
+      - other
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      description: the reason of the resolution
+      isArray: false
+      name: resolution_reason
+      predefined:
+      - Identified phishing URL
+      - Identified suspicious sender
+      - Other
+      - Scam
+      - Spam
+      required: false
+      secret: false
+    - default: false
+      description: free text for resolution reason
+      isArray: false
+      name: resolution_reason_text
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: remediation actions to perform
+      isArray: true
+      name: actions
+      predefined:
+      - MOVE_TO_SPAM
+      - MOVE_TO_DELETED
+      - ADD_BANNER
+      - SOFT_DELETE
+      - MOVE_TO_INBOX
+      - REMOVE_BANNER
+      required: false
+      secret: false
+    - default: false
+      description: The name of the integration instance you want to apply the command
+      isArray: false
+      name: instance_name
+      required: false
+      secret: false
+    deprecated: false
+    description: resolve a case and remediate incidents
+    execution: false
+    name: cyren-resolve-and-remediate
+    outputs:
+    - contextPath: data.status
+      description: status of actions performed
+      type: string
+  dockerimage: demisto/python3:3.8.6.13358
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+sourcemoduleid: HelloWorld

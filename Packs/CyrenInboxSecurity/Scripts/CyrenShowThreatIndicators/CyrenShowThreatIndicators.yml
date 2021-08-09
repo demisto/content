@@ -1,0 +1,19 @@
+comment: Displays threat indicators in readable format
+commonfields:
+  id: 2702589a-c10b-4642-83d0-a2b98badd6c7
+  version: -1
+dockerimage: demisto/python3:3.9.1.15759
+enabled: true
+name: Cyren-Show-Threat-Indicators
+pswd: ""
+runas: DBotRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- incidents
+- dynamic-section
+- transformer
+timeout: 300ns
+type: python
