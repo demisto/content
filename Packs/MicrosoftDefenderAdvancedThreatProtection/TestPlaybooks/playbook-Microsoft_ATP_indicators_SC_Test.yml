@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6b20b540-3a19-4552-8faa-caa3a82db627
+    taskid: 06d234a6-8925-4e80-86c2-1df560ae66f6
     type: start
     task:
-      id: 6b20b540-3a19-4552-8faa-caa3a82db627
+      id: 06d234a6-8925-4e80-86c2-1df560ae66f6
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: c4d37754-1223-4b3b-887f-d44e5f661d8c
+    taskid: cdf5fd3c-e384-4351-8669-c057ab58e79b
     type: regular
     task:
-      id: c4d37754-1223-4b3b-887f-d44e5f661d8c
+      id: cdf5fd3c-e384-4351-8669-c057ab58e79b
       version: -1
       name: Get indicators by ID
       description: Gets an indicator by its ID.
@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1535
+          "y": 1710
         }
       }
     note: false
@@ -69,10 +69,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: a96f80b9-1f18-41d9-862e-f65309cd6946
+    taskid: edd37ec8-f32f-419d-8cd5-07fdf9475315
     type: regular
     task:
-      id: a96f80b9-1f18-41d9-862e-f65309cd6946
+      id: edd37ec8-f32f-419d-8cd5-07fdf9475315
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -103,10 +103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 117673d2-59e1-4999-8d46-3d079f707bbd
+    taskid: 8c61d36a-6caf-4023-896e-52e4da7c3577
     type: regular
     task:
-      id: 117673d2-59e1-4999-8d46-3d079f707bbd
+      id: 8c61d36a-6caf-4023-896e-52e4da7c3577
       version: -1
       name: List indicators
       description: Lists all indicators by the ID that the system creates when the
@@ -135,10 +135,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 04712c85-af44-48ed-8185-11ca4f34c976
+    taskid: e57063ff-ab06-4bf4-899a-5d55a944499c
     type: condition
     task:
-      id: 04712c85-af44-48ed-8185-11ca4f34c976
+      id: e57063ff-ab06-4bf4-899a-5d55a944499c
       version: -1
       name: Check number of indicators
       type: condition
@@ -179,10 +179,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 23bc2f37-f127-4770-8614-0d069d151f12
+    taskid: 635c2b03-d3f1-46b1-8880-71e10bf5d7eb
     type: title
     task:
-      id: 23bc2f37-f127-4770-8614-0d069d151f12
+      id: 635c2b03-d3f1-46b1-8880-71e10bf5d7eb
       version: -1
       name: Continue the test
       type: title
@@ -208,10 +208,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 230baf6c-991a-477b-867b-e4247ed62710
+    taskid: b470b2cf-c18d-4585-87c8-8aacac9011e1
     type: regular
     task:
-      id: 230baf6c-991a-477b-867b-e4247ed62710
+      id: b470b2cf-c18d-4585-87c8-8aacac9011e1
       version: -1
       name: Update indicators description and severity
       description: Updates the specified indicator.
@@ -221,7 +221,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
+      - "31"
     scriptarguments:
       action:
         simple: Allowed
@@ -242,7 +242,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1710
+          "y": 1885
         }
       }
     note: false
@@ -254,10 +254,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: a7b87594-6c16-4a4a-8a75-cb2f34d848b2
+    taskid: 9e35dbaf-dd91-459e-8952-fc332b08c78c
     type: title
     task:
-      id: a7b87594-6c16-4a4a-8a75-cb2f34d848b2
+      id: 9e35dbaf-dd91-459e-8952-fc332b08c78c
       version: -1
       name: Done
       type: title
@@ -268,7 +268,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2410
+          "y": 2760
         }
       }
     note: false
@@ -280,10 +280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 203ae72d-b7f0-41d8-83f4-4ed38cc646a7
+    taskid: 484528ff-01f6-4116-8c7a-c3924b2987c0
     type: regular
     task:
-      id: 203ae72d-b7f0-41d8-83f4-4ed38cc646a7
+      id: 484528ff-01f6-4116-8c7a-c3924b2987c0
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -314,10 +314,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 79595339-5159-459a-8401-b81e47163b77
+    taskid: 3571585f-95e3-4fbf-858d-60d91f9ee263
     type: title
     task:
-      id: 79595339-5159-459a-8401-b81e47163b77
+      id: 3571585f-95e3-4fbf-858d-60d91f9ee263
       version: -1
       name: Setup
       type: title
@@ -343,10 +343,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 1d47c61b-db40-48dc-833c-e46e84017da8
+    taskid: 68bf7d89-aff8-441b-860e-fa998d4c67b5
     type: regular
     task:
-      id: 1d47c61b-db40-48dc-833c-e46e84017da8
+      id: 68bf7d89-aff8-441b-860e-fa998d4c67b5
       version: -1
       name: microsoft-atp-sc-indicator-create
       description: Creates a new indicator.
@@ -389,10 +389,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: d8ab056d-59e5-4f2e-884b-0afc82876e91
+    taskid: 3602d328-0d7e-476a-84dc-e27884ca5b57
     type: condition
     task:
-      id: d8ab056d-59e5-4f2e-884b-0afc82876e91
+      id: 3602d328-0d7e-476a-84dc-e27884ca5b57
       version: -1
       name: Check the indicators returned with the High severity
       type: condition
@@ -400,7 +400,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "2"
+      - "32"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -474,10 +474,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 4e7ad983-51e4-453d-8df5-c72f059f06d2
+    taskid: 65578675-2c1f-4a16-8478-eafda2abe4de
     type: regular
     task:
-      id: 4e7ad983-51e4-453d-8df5-c72f059f06d2
+      id: 65578675-2c1f-4a16-8478-eafda2abe4de
       version: -1
       name: Get indicators by ID
       description: Gets an indicator by its ID.
@@ -498,7 +498,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1885
+          "y": 2235
         }
       }
     note: false
@@ -510,10 +510,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: f7f4fb05-b56e-423f-87ce-a1090fcd2880
+    taskid: b7772983-559c-4d30-84e1-43b777137c1a
     type: condition
     task:
-      id: f7f4fb05-b56e-423f-87ce-a1090fcd2880
+      id: b7772983-559c-4d30-84e1-43b777137c1a
       version: -1
       name: Check the indicators returned with the Low severity and updated fields
       type: condition
@@ -583,7 +583,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2060
+          "y": 2410
         }
       }
     note: false
@@ -595,10 +595,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: b947e2c0-f233-4e9f-8960-5f2b513d598e
+    taskid: 566dbcba-e036-4f16-805a-1337df146a59
     type: regular
     task:
-      id: b947e2c0-f233-4e9f-8960-5f2b513d598e
+      id: 566dbcba-e036-4f16-805a-1337df146a59
       version: -1
       name: Delete Indicator
       description: Deletes the specified indicator.
@@ -617,7 +617,75 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2235
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 9074f485-4c3a-4500-8694-fe61773d29e2
+    type: regular
+    task:
+      id: 9074f485-4c3a-4500-8694-fe61773d29e2
+      version: -1
+      name: sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: bfc29cbe-72f9-417d-8a4e-b0cf51b94753
+    type: regular
+    task:
+      id: bfc29cbe-72f9-417d-8a4e-b0cf51b94753
+      version: -1
+      name: sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
         }
       }
     note: false
@@ -632,7 +700,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2425,
+        "height": 2775,
         "width": 380,
         "x": 50,
         "y": 50
