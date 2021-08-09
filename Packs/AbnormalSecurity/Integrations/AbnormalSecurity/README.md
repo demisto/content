@@ -460,7 +460,7 @@ Get details of an Abnormal case
 
 
 #### Command Example
-```!abnormal-security-get-abnormal-case case_id=12805```
+```!abnormal-security-get-abnormal-case case_id=1234```
 
 #### Context Example
 ```json
@@ -1042,4 +1042,3 @@ Submit an Inquiry to request a report on misjudgement by Abnormal Security
 >|detail|
 >|---|
 >| Thank you for your feedback! We have sent your inquiry to our support staff. |
-
