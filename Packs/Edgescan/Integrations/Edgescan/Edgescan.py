@@ -3,8 +3,6 @@ from typing import Tuple, cast
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# noqa: F401
-# noqa: F401
 from dateutil import parser
 
 MAX_INCIDENTS_TO_FETCH = 250
@@ -781,6 +779,10 @@ def main():
             )
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
+
+            if cvss_score and cvss_score_greater_than:
+                raise DemistoException('Both cvss_score and cvs_score_greater_than have been provided. Please provide '
+                                       'at most one.')
 
             next_run, incidents = fetch_incidents(
                 client=client,
