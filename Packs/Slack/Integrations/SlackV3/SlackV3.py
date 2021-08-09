@@ -8,6 +8,7 @@ import asyncio
 import concurrent
 import slack_sdk
 import threading
+import aiohttp
 
 from distutils.util import strtobool
 from slack_sdk.web.async_client import AsyncWebClient
@@ -74,6 +75,7 @@ BOT_ICON_URL: str
 MAX_LIMIT_TIME: int
 PAGINATED_COUNT: int
 ENABLE_DM: bool
+THREAD_LOCK: threading.Lock()
 
 
 ''' HELPER FUNCTIONS '''
@@ -592,8 +594,8 @@ async def long_running_loop():
     while True:
         error = ''
         try:
-            integration_context = check_for_mirrors()
-            check_for_unanswered_questions(integration_context)
+            check_for_mirrors()
+            check_for_unanswered_questions()
         except requests.exceptions.ConnectionError as e:
             error = f'Could not connect to the Slack endpoint: {str(e)}'
         except Exception as e:
@@ -641,7 +643,8 @@ def answer_question(text: str, question: dict, email: str = ''):
     question['remove'] = True
 
 
-def check_for_unanswered_questions(integration_context):
+def check_for_unanswered_questions():
+    integration_context = get_integration_context(SYNC_CONTEXT)
     questions = integration_context.get('questions', [])
     users = integration_context.get('users', [])
     if questions:
@@ -715,12 +718,14 @@ def check_for_mirrors():
                     demisto.info(f'Could not mirror {investigation_id}')
 
         if updated_mirrors:
-            context = {'mirrors': updated_mirrors}
+            THREAD_LOCK.acquire()
+            integration_context = get_integration_context(SYNC_CONTEXT)
+            integration_context.update({'mirrors': updated_mirrors})
             if updated_users:
-                context['users'] = updated_users
-
-            set_to_integration_context_with_retries(context, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-    return integration_context
+                integration_context['users'].update(updated_users)
+            set_to_integration_context_with_retries(integration_context, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+            THREAD_LOCK.release()
+    return
 
 
 def invite_to_mirrored_channel(channel_id: str, users: List[Dict]) -> list:
@@ -815,12 +820,16 @@ class SlackLogger:
 
 async def slack_loop():
     while True:
+        # SocketModeClient does not respect environment variables for ssl verification.
+        # Instead we use a custom session.
+        session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=VERIFY_CERT))
         slack_logger = SlackLogger()
         client = SocketModeClient(
             app_token=APP_TOKEN,
             web_client=ASYNC_CLIENT,
             logger=slack_logger  # type: ignore
         )
+        client.aiohttp_client_session = session
         client.socket_mode_request_listeners.append(listen)  # type: ignore
         try:
             await client.connect()
@@ -844,6 +853,8 @@ async def start_listening():
     """
     Starts a Slack SocketMode client and checks for mirrored incidents.
     """
+    global THREAD_LOCK
+    THREAD_LOCK = threading.Lock()
     await slack_loop()
     long_loop_task = asyncio.create_task(long_running_loop(), name="Unanswered loop")
     await asyncio.gather(long_loop_task)
@@ -1019,7 +1030,6 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             f'Slack API has thrown an error. Code: {error_code}, Message: {error_msg}.')
         return
     try:
-        integration_context = get_integration_context(SYNC_CONTEXT)
         data: dict = req.payload
         event: dict = data.get('event', {})
         subtype = data.get('subtype', '')
@@ -1053,8 +1063,8 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))
 
         else:
-            user = await get_user_by_id_async(ASYNC_CLIENT, user_id, integration_context)  # type: ignore
-            entitlement_reply = await check_and_handle_entitlement(text, user, thread, integration_context)  # type: ignore
+            user = await get_user_by_id_async(ASYNC_CLIENT, user_id)  # type: ignore
+            entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
 
         if entitlement_reply:
             await send_slack_request_async(client=ASYNC_CLIENT, method='chat.postMessage',
@@ -1069,7 +1079,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             await handle_dm(user, text, ASYNC_CLIENT)  # type: ignore
         else:
             channel_id = channel
-
+            integration_context = get_integration_context(SYNC_CONTEXT)
             if not integration_context or 'mirrors' not in integration_context:
                 return
 
@@ -1098,9 +1108,13 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                         demisto.mirrorInvestigation(investigation_id,
                                                     f'{mirror_type}:{direction}', auto_close)
                         mirror['mirrored'] = True
+                        THREAD_LOCK.acquire()
+                        integration_context = get_integration_context(SYNC_CONTEXT)
+                        mirrors = json.loads(integration_context['mirrors'])
                         mirrors.append(mirror)
                         set_to_integration_context_with_retries({'mirrors': mirrors},
                                                                 OBJECTS_TO_KEYS, SYNC_CONTEXT)
+                        THREAD_LOCK.release()
 
                 investigation_id = mirror['investigation_id']
                 await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
@@ -1112,7 +1126,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         await handle_listen_error(f'Error occurred while listening to Slack: {e}')
 
 
-async def get_user_by_id_async(client: AsyncWebClient, user_id: str, integration_context: dict) -> dict:
+async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:
     """
     Get the details of a slack user by id asynchronously.
     Args:
@@ -1124,6 +1138,7 @@ async def get_user_by_id_async(client: AsyncWebClient, user_id: str, integration
     """
     user: dict = {}
     users: list = []
+    integration_context = get_integration_context(SYNC_CONTEXT)
     if integration_context.get('users'):
         users = json.loads(integration_context['users'])
         user_filter = list(filter(lambda u: u['id'] == user_id, users))
@@ -1136,8 +1151,12 @@ async def get_user_by_id_async(client: AsyncWebClient, user_id: str, integration
         user = (
             await send_slack_request_async(client, 'users.info', http_verb='GET', body=body)).get(
             'user', {})
+        THREAD_LOCK.acquire()
+        integration_context = demisto.getIntegrationContext()
+        users = json.loads(integration_context['users'])
         users.append(user)
         set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        THREAD_LOCK.release()
 
     return user
 
@@ -1163,7 +1182,7 @@ async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, 
         demisto.info("SlackV3 - Text handled successfully.")
 
 
-async def check_and_handle_entitlement(text: str, user: dict, thread_id: str, integration_context: dict) -> str:
+async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) -> str:
     """
     Handles an entitlement message (a reply to a question)
     Args:
@@ -1184,6 +1203,7 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str, in
 
         return 'Thank you for your response.'
     else:
+        integration_context = get_integration_context(SYNC_CONTEXT)
         questions = integration_context.get('questions', [])
         if questions and thread_id:
             questions = json.loads(questions)
@@ -1197,7 +1217,12 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str, in
                 demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content,
                                                  task_id)
                 question['remove'] = True
+                THREAD_LOCK.acquire()
+                integration_context = get_integration_context(SYNC_CONTEXT)
+                questions = integration_context.get('questions', [])
+                questions = json.loads(questions)
                 set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+                THREAD_LOCK.release()
 
                 return reply
 
@@ -1913,8 +1938,11 @@ def long_running_main():
         demisto.error(f"The Loop has failed to run {str(e)}")
     finally:
         loop = asyncio.get_running_loop()
-        loop.stop()
-        loop.close()
+        try:
+            loop.stop()
+            loop.close()
+        except Exception as e_:
+            demisto.error(f'Failed to gracefully close the loop - {e_}')
 
 
 def init_globals(command_name: str = ''):
@@ -1924,6 +1952,7 @@ def init_globals(command_name: str = ''):
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
+    global THREAD_LOCK
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
