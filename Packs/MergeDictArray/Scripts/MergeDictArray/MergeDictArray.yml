@@ -26,7 +26,7 @@ args:
   predefined:
   - "true"
   - "false"
-comment: Each of entry in an array is merged into the existing array if the keyed-value
+comment: Each entry in an array is merged into the existing array if the keyed-value
   matches.
 commonfields:
   id: MergeDictArray
