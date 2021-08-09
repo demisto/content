@@ -322,7 +322,7 @@ def get_details_of_an_abuse_mailbox_campaign_command(client, args):
 
     response = client.get_details_of_an_abuse_mailbox_campaign_request(campaign_id, subtenant)
     command_results = CommandResults(
-        outputs_prefix='AbnormalSecurity.AbuseCampaignDetails',
+        outputs_prefix='AbnormalSecurity.AbuseCampaign',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -336,19 +336,14 @@ def get_employee_identity_analysis_genome_data_command(client, args):
 
     response = client.get_employee_identity_analysis_genome_data_request(email_address)
 
-    headers = [
-        'description',
-        'key',
-        'name',
-        'values',
-    ]
+    headers = ['description', 'key', 'name', 'values']
 
     markdown = tableToMarkdown(
         f"Analysis of {email_address}", response.get('histograms', []), headers=headers)
 
     command_results = CommandResults(
         readable_output=markdown,
-        outputs_prefix='AbnormalSecurity.EmployeeIdentityDetails',
+        outputs_prefix='AbnormalSecurity.Employee',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -455,7 +450,7 @@ def provides_the_analysis_and_timeline_details_of_a_case_command(client, args):
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix='AbnormalSecurity.CaseAnalysis',
-        outputs_key_field='',
+        outputs_key_field='caseId',
         outputs=response,
         raw_response=response
     )
