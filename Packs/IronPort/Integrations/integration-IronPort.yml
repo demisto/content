@@ -79,8 +79,6 @@ script:
         delete args.report_type;
         requestURL = host+'/api/v1.0/stats/'+command;
 
-        var max = args.max;
-        delete args.max;
         var time_range = args.time_range;
         delete args.time_range;
         var attributes = encodeToURLQuery(args);

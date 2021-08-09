@@ -1,5 +1,4 @@
 Cisco Email Security protects against ransomware, business email compromise, spoofing, and phishing
-This integration was integrated and tested with version xx of Cisco Email Security Appliance (IronPort)
 ## Configure Cisco Email Security Appliance (IronPort) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
