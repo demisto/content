@@ -230,14 +230,13 @@ def calculate_fetch_start_time(last_fetch: str = None, first_fetch: str = FETCH_
 
 def parse_alerts(alerts: List[Dict[str, Any]], max_fetch: int, last_fetch: datetime):
     incidents: List[Dict[str, Any]] = []
-    count = 0
     updated_last_fetch = last_fetch
 
     # sorting alerts by newStateDate so the fetch will work by date and not by id
     alerts.sort(key=lambda a: dateparser.parse(a['newStateDate']).replace(tzinfo=utc))
 
     for alert in alerts:
-        if count >= max_fetch:
+        if len(incidents) >= max_fetch:
             break
         # ignoring microsecond because date_to_timestamp doesn't know how to handle it
         # which causes the last alert to be fetched every time the function is called
@@ -245,9 +244,7 @@ def parse_alerts(alerts: List[Dict[str, Any]], max_fetch: int, last_fetch: datet
         incident = parse_alert(alert, new_state_date, last_fetch)
         if incident:
             incidents.append(incident)
-            count += 1
-            if new_state_date > updated_last_fetch:
-                updated_last_fetch = new_state_date
+            updated_last_fetch = max(updated_last_fetch, new_state_date)
 
     return updated_last_fetch, incidents
 
@@ -277,8 +274,7 @@ def alerts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get('query')
 
     state = argToList(args.get('state', ''))
-    if state:
-        if state not in ALERT_STATES:
+    if state and state not in ALERT_STATES:
             raise DemistoException("State must be of: all, no_data, paused, alerting, ok, pending.")
 
     limit = args.get('limit')
@@ -698,7 +694,7 @@ def main():
     """
     params = demisto.params()
     args = demisto.args()
-    url = params.get('url')
+    url = params['url']
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
@@ -742,16 +738,16 @@ def main():
         if command == 'fetch-incidents':
             first_fetch = params.get('first_fetch', FETCH_DEFAULT_TIME)
 
-            dashboard_id = params.get('dashboard_id', None)
-            panel_id = params.get('panel_id', None)
-            alert_name = params.get('alert_name', None)
-            state = params.get('state', None)
+            dashboard_id = params.get('dashboard_id')
+            panel_id = params.get('panel_id')
+            alert_name = params.get('alert_name')
+            state = params.get('state')
 
-            max_results = arg_to_number(arg=params.get('max_fetch'), arg_name='max_fetch', required=False)
-            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
-                max_results = MAX_INCIDENTS_TO_FETCH
+            limit = arg_to_number(params.get('max_fetch'))
+            if not limit or limit > MAX_INCIDENTS_TO_FETCH:
+                limit = MAX_INCIDENTS_TO_FETCH
 
-            incidents = fetch_incidents(client, first_fetch, dashboard_id, panel_id, alert_name, state, max_results)
+            incidents = fetch_incidents(client, first_fetch, dashboard_id, panel_id, alert_name, state, limit)
             demisto.incidents(incidents)
 
         elif command == 'test-module':
