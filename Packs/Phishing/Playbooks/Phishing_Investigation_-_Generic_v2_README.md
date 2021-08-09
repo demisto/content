@@ -25,6 +25,7 @@ A mail listener can be one of the following integrations:
 These task have the following names:
   - Acknowledge incident was received (task #13)
   - Update the user that the reported email is safe (task #16)
+  - Update the user that the reported email is malicious (task #17)
   - Update the user that the reported email is malicious (task #17
 - Optional - Configure the `ExchangeLocation` input of the `Search And Delete Emails - Generic v2` playbook.
 - Optional - Personalize the inputs of the `Detect & Manage Phishing Campaigns` playbook.
@@ -55,6 +56,7 @@ This playbook does not use any integrations.
 ### Scripts
 * DBotPredictPhishingWords
 * CheckEmailAuthenticity
+* FindEmailCampaign
 * Set
 * AssignAnalystToIncident
 
