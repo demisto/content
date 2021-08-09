@@ -7,14 +7,6 @@ category: Utilities
 description: 'The TwitterSOARx Integration allows users to parse Twitter for Users,
   Tweets, and additional info about users. Perform enhanced searches with additional
   search arguments. TwitterSOARx returns search results as a markdown table. '
-detaileddescription: "### Community Contributed Integration\n #### Integration Author:\
-  \ Christian Brake\n No support or maintenance is provided by the author. Customers\
-  \ are encouraged to engage with the user community for questions and guidance at\
-  \ the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).\n\
-  ***\nUsers must have a valid Twitter Dev Account in order to obtain their own API\
-  \ (Consumer) Key,  API Secret, Access token, Access Token Secret, and Bearer Token.\
-  \ Users can apply for a Twitter Dev Account here: \nhttps://developer.twitter.com/en/apply-for-access\n\
-  [View Integration Documentation]()"
 configuration:
 - display: API Key
   name: apikey
