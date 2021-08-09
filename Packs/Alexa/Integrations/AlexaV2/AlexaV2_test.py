@@ -45,6 +45,19 @@ DOMAINS_BAD_RESULTS = [('xsoar.com', file_to_dct('negative_rank_response.json'))
 
 
 def test_multi_domains(mocker):
+        """
+    Given:
+        - A list of domains to be ranked by Alexa API
+
+    When:
+        - running the domain command on the input
+
+    Then:
+        - Ensure that:
+          1. The length of the result is the same as the length of the domains list
+          2. Valid responses for both of the domains
+    """
+
     domains = 'google.com,xsoar.com'
     raw_res = file_to_dct('google_response.json')
     mocker.patch.object(client, 'alexa_rank', return_value=raw_res)
@@ -58,13 +71,14 @@ def test_multi_domains(mocker):
 def test_domain_invalid_rank(mocker, domain, raw_result):
     """
     Given:
-        - domains, which received invalid rank (which we shouldn't receive)
+        - A domain to be ranked by Alexa API
+
 
     When:
-        - In the beginning of the domain command
+        - The API responds with an invalid rank
 
     Then:
-        - Wait for demisto Exception or Value Error
+        - Ensure there is an exception
     """
     mocker.patch.object(client, 'alexa_rank', return_value=raw_result)
     with pytest.raises((DemistoException, ValueError)):
@@ -81,13 +95,13 @@ SCORE_TESTS = [(1, 0, 200, DBotScoreReliability.A_PLUS, 1),
 def test_rank_to_score(rank, threshold, benign, reliability, score):
     """
     Given:
-        - parameters for rank to score conversion
+        - The parameters for the integration, with the rank from the API
 
     When:
-        - In the middle of the domain command, rank_to_score function
+        - After getting the rank, calling the rank_to_Score to get the score based on the parameters and the rank
 
     Then:
-        - Returns the context of the dbot and the score text
+        - Ensure that the score returned corresponds to the algorithm
     """
     context = rank_to_score('google.com', rank, threshold, benign, reliability)
     assert context.dbot_score.score == score
@@ -96,13 +110,13 @@ def test_rank_to_score(rank, threshold, benign, reliability, score):
 def test_rank_to_score_invalid():
     """
     Given:
-        - parameters for rank to score conversion, which is invalid
+        - The parameters for the integration, with the rank from the API
 
     When:
-        - In the middle of the domain command, rank_to_score function
+        - After getting the rank, calling the rank_to_Score to get the score based on the parameters and a rank with is invalid
 
     Then:
-        - Get a demisto exception
+        - Ensure that Exception is being raised
     """
 
     with pytest.raises(DemistoException):
