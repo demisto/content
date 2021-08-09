@@ -240,7 +240,8 @@ class MicrosoftClient(BaseClient):
                 'app_name': self.app_name,
                 'registration_id': self.auth_id,
                 'encrypted_token': self.get_encrypted(content, self.enc_key),
-                'scope': scope
+                'scope': scope,
+                'resource': resource
             },
             verify=self.verify
         )
