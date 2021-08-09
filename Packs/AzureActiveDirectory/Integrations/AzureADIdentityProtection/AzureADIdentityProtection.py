@@ -244,15 +244,20 @@ def create_incidents_from_input(input: List[Dict[str, str]], last_fetch_datetime
     last_fetch = last_fetch_datetime
 
     for current_input in input:
-        activityDateTime: str = current_input.get('activityDateTime', '')  # 'activityDateTime': '2021-07-15T11:02:54Z'
+        activity_date_time: str = current_input.get('activityDateTime', '')  # 'activityDateTime': '2021-07-15T11:02:54Z' / 'activityDateTime': '2021-07-15T11:02:54.12345Z'
         incident = {
             'name': 'incident_name',
-            'occurred': activityDateTime,
+            'occurred': activity_date_time,
             'rawJSON': json.dumps(current_input)
         }
         incidents.append(incident)
 
-        timestamp = datetime.strptime(date_string=activityDateTime, format=DATE_FORMAT)
+        activity_date_time = activity_date_time.split(".")[0]
+        if not activity_date_time.endswith("Z"):
+            # microseconds, 'activityDateTime': '2021-07-15T11:02:54.12345Z'
+            activity_date_time += "Z"
+
+        timestamp = datetime.strptime(activity_date_time, DATE_FORMAT)
         if timestamp > last_fetch:
             last_fetch = timestamp
 
@@ -262,7 +267,6 @@ def create_incidents_from_input(input: List[Dict[str, str]], last_fetch_datetime
 def fetch_incidents(client: AADClient, params: Dict[str, str]):
 
     last_run: Dict[str, str] = demisto.getLastRun()
-    demisto.info('\n\n*** fetch_incidents, last_run: ' + str(last_run) + '\n\n')
     demisto.debug(f'last run: {last_run}')
 
     last_fetch = last_run.get('last_item_time', '')
@@ -272,8 +276,8 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
         default_fetch_datetime, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
         last_fetch = str(default_fetch_datetime.isoformat(timespec='seconds')) + 'Z'
 
-    # use replace(tzinfo) to make the datetime aware of the timezone as all other dates we use are aware
-    last_fetch_datetime: datetime = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+    last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT)
+
     demisto.debug(f'last_fetch_datetime: {last_fetch_datetime}')
 
     risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(
