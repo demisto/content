@@ -910,7 +910,7 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query):
     """
     # try to adjust start_offense_id to user_query start offense id
     try:
-        if isinstance(user_query, str) and "id>" in user_query:
+        if isinstance(user_query, str) and "id>" in user_query.replace(' ', ''):
             user_offense_id = int(user_query.split("id>")[1].split(" ")[0])
             if user_offense_id > offense_id:
                 offense_id = user_offense_id
@@ -933,17 +933,16 @@ def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
     fetch_query = ""
     lim_id = None
     latest_offense_fnd = False
+    tries = 1
     while not latest_offense_fnd:
-        end_offense_id = int(start_offense_id) + client.offenses_per_fetch + 1
+        end_offense_id = int(start_offense_id) + (client.offenses_per_fetch * tries) + 1
         fetch_query = "id>{0} AND id<{1} {2}".format(
             start_offense_id,
             end_offense_id,
             "AND ({})".format(user_query) if user_query else "",
         )
         print_debug_msg(f"Fetching {fetch_query}.")
-        raw_offenses = client.get_offenses(
-            _range="0-{0}".format(client.offenses_per_fetch - 1), _filter=fetch_query
-        )
+        raw_offenses = client.get_offenses(_filter=fetch_query)
         if raw_offenses:
             latest_offense_fnd = True
         else:
@@ -956,10 +955,17 @@ def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
                     )
                 lim_id = lim_offense[0]["id"]  # if there's no id, raise exception
             if lim_id >= end_offense_id:  # increment the search until we reach limit
-                start_offense_id += client.offenses_per_fetch
+                start_offense_id += (client.offenses_per_fetch * tries)
+                tries += 1
+                if tries % 10 == 0:
+                    last_run = get_integration_context(SYNC_CONTEXT)
+                    last_run["id"] = end_offense_id
+                    set_integration_context(last_run, SYNC_CONTEXT)
             else:
                 latest_offense_fnd = True
-    return raw_offenses, fetch_query
+    if isinstance(raw_offenses, list):
+        raw_offenses.reverse()
+    return raw_offenses[:client.offenses_per_fetch], fetch_query
 
 
 def fetch_incidents_long_running_samples():
@@ -1002,8 +1008,6 @@ def fetch_incidents_long_running_events(
 
     if len(raw_offenses) == 0:
         return
-    if isinstance(raw_offenses, list):
-        raw_offenses.reverse()
     for offense in raw_offenses:
         offense_id = max(offense_id, offense["id"])
     enriched_offenses = []
@@ -1061,8 +1065,6 @@ def fetch_incidents_long_running_no_events(
     raw_offenses = fetch_raw_offenses(client, offense_id, user_query)
     if len(raw_offenses) == 0:
         return
-    if isinstance(raw_offenses, list):
-        raw_offenses.reverse()
 
     for offense in raw_offenses:
         offense_id = max(offense_id, offense["id"])
