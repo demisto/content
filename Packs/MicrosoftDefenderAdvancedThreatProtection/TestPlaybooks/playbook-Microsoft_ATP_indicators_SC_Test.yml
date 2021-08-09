@@ -234,7 +234,7 @@ tasks:
       indicator_type:
         simple: IpAddress
       indicator_value:
-        simple: 1.2.3.4
+        simple: 3.5.6.7
       severity:
         simple: Low
     separatecontext: false
@@ -369,7 +369,7 @@ tasks:
       indicator_type:
         simple: IpAddress
       indicator_value:
-        simple: 1.2.3.4
+        simple: 3.5.6.7
       severity:
         simple: Informational
     separatecontext: false
@@ -457,7 +457,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 1.2.3.4
+              simple: 3.5.6.7
     view: |-
       {
         "position": {
@@ -578,7 +578,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 1.2.3.4
+              simple: 3.5.6.7
     view: |-
       {
         "position": {
