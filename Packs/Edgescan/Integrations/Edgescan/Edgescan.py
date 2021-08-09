@@ -3,6 +3,8 @@ from typing import Tuple, cast
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+# noqa: F401
+# noqa: F401
 from dateutil import parser
 
 MAX_INCIDENTS_TO_FETCH = 250
@@ -165,6 +167,18 @@ class Client(BaseClient):
         data = {"value": value}
         headers = self._headers
         response = self._http_request('POST', 'api/v1/vulnerabilities/' + id + '/risk_accept.json',
+                                      json_data=data, headers=headers)
+        return response
+
+    def vulnerabilities_add_annotation_request(self, id, text):
+        annotation = {
+            "text": text
+        }
+        data = {
+            "annotation": annotation
+        }
+        headers = self._headers
+        response = self._http_request('POST', 'api/v1/vulnerabilities/' + id + '/annotations.json',
                                       json_data=data, headers=headers)
         return response
 
@@ -675,6 +689,22 @@ def vulnerabilities_risk_accept_command(client, args):
     return command_results
 
 
+def vulnerabilities_add_annotation_command(client, args):
+    text = args.get('text')
+    id = args.get('id')
+    response = client.vulnerabilities_add_annotation_request(text=text, id=id)['annotation']
+    readable_output = tableToMarkdown('Annotation added:' + id, response)
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Edgescan.AnnotationAdd',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -731,6 +761,7 @@ def main():
             'edgescan-vulnerabilities-get-query': vulnerabilities_get_query_command,
             'edgescan-vulnerabilities-retest': vulnerabilities_retest_command,
             'edgescan-vulnerabilities-risk-accept': vulnerabilities_risk_accept_command,
+            'edgescan-vulnerabilities-add-annotation': vulnerabilities_add_annotation_command,
         }
 
         if command == 'test-module':
@@ -750,10 +781,6 @@ def main():
             )
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
-
-            if cvss_score and cvss_score_greater_than:
-                raise DemistoException('Both cvss_score and cvs_score_greater_than have been provided. Please provide '
-                                       'at most one.')
 
             next_run, incidents = fetch_incidents(
                 client=client,
