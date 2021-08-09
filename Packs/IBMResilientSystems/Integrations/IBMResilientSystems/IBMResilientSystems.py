@@ -344,13 +344,13 @@ def search_incidents(client, args):
     return response
 
 
-def extract_data_form_other_fields_argument(other_fields: str, incident, changes):
-    """Example function with types documented in the docstring.
+def extract_data_form_other_fields_argument(other_fields: str, incident: dict, changes: list):
+    """Extracts the values from other-field argument and build a json object in ibm format to update an incident.
 
     Args:
-        other_fields: Contains the field that should change and the new value ({"name": {"text": "The new name"}}).
-        incident (dict): Contains the old value of the field that should change ({"name": "The old name"}).
-        changes (list): Contains the fields that should change with the old and new values in IBM format
+        other_fields: Contains the field that should be changed and the new value ({"name": {"text": "The new name"}}).
+        incident: Contains the old value of the field that should be changed ({"name": "The old name"}).
+        changes: Contains the fields that should be changed with the old and new values in IBM format
             ([{'field': {'name': 'confirmed'}, 'old_value': {'boolean': 'false'}, 'new_value': {'boolean': 'true'},
             {'field': {'name': 'name'}, 'old_value': {'text': 'The old name'}, 'new_value': {'text': 'The new name'}}]).
 
@@ -359,13 +359,14 @@ def extract_data_form_other_fields_argument(other_fields: str, incident, changes
     try:
         other_fields_json = json.loads(other_fields)
     except Exception as e:
-        raise e
+        raise Exception(f'The other_fields argument is not a valid json. {e}')
+
     for field_name, field_value in other_fields_json.items():
         changes.append(
             {
                 'field': {'name': field_name},
-                # The format should be {type: value}. Because the type does not return from the api we take the type
-                # from the new value
+                # The format should be {type: value}.
+                # Because the type is not returned from the API we take the type from the new value.
                 'old_value': {list(field_value.keys())[0]: incident[field_name]},
                 'new_value': field_value
             }

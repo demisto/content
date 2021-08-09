@@ -86,18 +86,18 @@ def test_update_incident_command_with_invalid_json(mocker):
      - Running update_incident_command function with other-fields argument, the other-field is an invalid json.
 
     Then:
-     - Ensure the parsing before the request fails and returns an JSONDecodeError.
+     - Ensure the parsing before the request fails and returns a JSONDecodeError.
     """
     mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True})
     args = {
         "incident-id": "1234",
-        "other-fields": 'Wrong json'
+        "other-fields": 'Invalid json'
     }
     from IBMResilientSystems import update_incident_command
 
     with pytest.raises(Exception) as exception:
         update_incident_command(MockClient, args)
-    assert exception.typename == 'JSONDecodeError'
+    assert 'The other_fields argument is not a valid json.' in exception.value.args[0]
 
 
 def test_add_note(mocker):
