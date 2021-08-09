@@ -1414,5 +1414,5 @@ script:
   runonce: false
   subtype: python2
 tests:
-- d5cb69b1-c81c-4f27-8a40-3106c0cb2620
+- AWS - IAM Test Playbook
 fromversion: 5.0.0
