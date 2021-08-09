@@ -761,8 +761,8 @@ def main():
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
-    mapper_in = params.get('mapper-in', DEFAULT_INCOMING_MAPPER)
-    mapper_out = params.get('mapper-out', DEFAULT_OUTGOING_MAPPER)
+    mapper_in = params.get('mapper_in', DEFAULT_INCOMING_MAPPER)
+    mapper_out = params.get('mapper_out', DEFAULT_OUTGOING_MAPPER)
 
     is_create_enabled = params.get("create_user_enabled")
     is_update_enabled = demisto.params().get("update_user_enabled")
