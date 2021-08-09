@@ -14,7 +14,7 @@ args:
   description: Either a list of Indicators of Compromise or an EntryID to a File containing a list.
 - name: compare_to_list
   required: true
-  description: Indicators of Compromise list.
+  description: Either a list of Indicators of Compromise or an EntryID to a File containing a list.
 outputs:
 - contextPath: IndicatorsCompare.BaseList.UniqueIndicators
   description: Indicators that appear in the first indicators list only.
