@@ -257,7 +257,7 @@ def _parse_field(raw_field: str, sep: str = ',', index_after_split: int = 0, cha
     This function allows getting a specific complex sub-string. "example,example2|" -> 'example2'
     '''
     if not raw_field:
-        demisto.debug('Got empty raw field to parse.')
+        demisto.debug('{INTEGRATION_NAME} - Got empty raw field to parse.')
         return ''
     try:
         new_field = raw_field.split(sep)[index_after_split]
@@ -677,7 +677,7 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
         endpoints = []
         command_results = []
         for sensor in res:
-            demisto.debug(f"Got sensor: {sensor}")
+            demisto.debug(f"{INTEGRATION_NAME} - Got sensor: {sensor}")
             is_isolated = _get_isolation_status_field(sensor['network_isolation_enabled'],
                                                       sensor['is_isolating'])
             endpoint = Common.Endpoint(
@@ -723,7 +723,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         last_fetch = int(last_fetch)
 
     latest_created_time = last_fetch
-    demisto.debug(f'last fetch: {last_fetch}')
+    demisto.debug(f'{INTEGRATION_NAME} - last fetch: {last_fetch}')
     incidents: List[Dict[str, Any]] = []
 
     # multiple statuses are not supported by api. If multiple statuses provided, gets the incidents for each status.
@@ -731,16 +731,16 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     alerts = []
     if status:
         for current_status in argToList(status):
-            demisto.debug(f'Fetching incident from Server with status: {current_status}')
+            demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {current_status}')
             res = client.get_alerts(status=current_status, feedname=feedname)
             alerts += res.get('results', [])
-            demisto.debug(f'fetched {len(alerts)} so far.')
+            demisto.debug(f'{INTEGRATION_NAME} - fetched {len(alerts)} so far.')
     else:
-        demisto.debug(f'Fetching incident from Server with status: {status}')
+        demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {status}')
         res = client.get_alerts(feedname=feedname, query=query)
         alerts += res.get('results', [])
 
-    demisto.debug(f'Got total of {len(alerts)} alerts from CB server.')
+    demisto.debug(f'{INTEGRATION_NAME} - Got total of {len(alerts)} alerts from CB server.')
     for alert in alerts[:max_results]:
         incident_created_time = dateparser.parse(alert.get('created_time'))
         incident_created_time_ms = int(incident_created_time.timestamp()) if incident_created_time else '0'
@@ -748,14 +748,15 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
         if last_fetch:
             if incident_created_time_ms <= last_fetch:
-                demisto.debug(f'alert {str(alert)} created at {incident_created_time_ms}. Skipping.')
+                demisto.debug(f'{INTEGRATION_NAME} - alert {str(alert)} created at {incident_created_time_ms}.'
+                              f' Skipping.')
                 continue
 
         alert_id = alert.get('unique_id', '')
         alert_name = alert.get('process_name', '')
         incident_name = f'{INTEGRATION_NAME}: {alert_id} {alert_name}'
         if not alert_id or not alert_name:
-            demisto.debug(f'Alert details are missing. {str(alert)}')
+            demisto.debug(f'{INTEGRATION_NAME} - Alert details are missing. {str(alert)}')
 
         incident = {
             'name': incident_name,
