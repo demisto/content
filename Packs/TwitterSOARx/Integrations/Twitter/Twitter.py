@@ -8,7 +8,7 @@ import urllib
 import requests
 class Client(BaseClient):
 
-    def auth():
+    def auth(self):
         auth = tweepy.OAuthHandler(demisto.params().get('apikey'), demisto.params().get('apikey_secret'))
         auth.set_access_token(demisto.params().get('access_token'), demisto.params().get('access_token_secret'))
         api = tweepy.API(auth)
@@ -18,18 +18,18 @@ class Client(BaseClient):
 # Link to Twitter reference under Apache 2.0: https://github.com/twitterdev/Twitter-API-v2-sample-code/blob/master/User-Lookup/get_users_with_bearer_token.py
 # Changes made: changed function name to "create_users_info_url", added extra user fields and made user_fields a constant, 
 # usernames is no longer a static variable, removed the print statement from connect_to_endpoint
-    def create_users_info_url():
+    def create_users_info_url(self):
         usernames = "usernames=" + demisto.args().get('usernames')
         USER_FIELDS = "&user.fields=description,pinned_tweet_id,protected,created_at,id,location,name,url,public_metrics,profile_image_url,username,verified,withheld"
         TWITTER_APIV2_URL = "https://api.twitter.com/2/users/by?{}&{}"
         url = TWITTER_APIV2_URL.format(usernames, USER_FIELDS)
         return url
 
-    def create_headers(bearer_token):
+    def create_headers(self, bearer_token):
         headers = {"Authorization": "Bearer {}".format(bearer_token)}
         return headers
 
-    def connect_to_endpoint(url, headers):
+    def connect_to_endpoint(self, url, headers):
         response = requests.request("GET", url, headers=headers)
         if response.status_code != 200:
             raise Exception(
@@ -39,7 +39,7 @@ class Client(BaseClient):
             )
         return response.json()
 
-    def get_tweets():
+    def get_tweets(self):
         TWITTER_APIV1_TWEETS_URL = "https://api.twitter.com/1.1/search/tweets.json?q="
         if demisto.args().get('q')[0] == '#':
             q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
@@ -120,7 +120,7 @@ class Client(BaseClient):
 
 #Documentation for the tweepy search_users api call: https://docs.tweepy.org/en/stable/api.html#API.search_users
 
-    def get_users():
+    def get_users(self):
         table = []
         try:
             int(demisto.args().get('count'))
@@ -151,7 +151,7 @@ class Client(BaseClient):
 
 # Documentation on the user class used: https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user
 
-    def get_user_info():
+    def get_user_info(self):
         url = Client.create_users_info_url()
         headers = Client.create_headers(demisto.params().get('bearer_token'))
         json_response = Client.connect_to_endpoint(url, headers)
