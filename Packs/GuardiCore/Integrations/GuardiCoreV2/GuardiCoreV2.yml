@@ -63,7 +63,7 @@ configuration:
       - High
       - All
   - name: max_fetch
-    display: Maximum alerts to fetch
+    display: Maximum incidents to fetch
     required: false
     defaultvalue: "50"
     type: 0
@@ -71,7 +71,7 @@ configuration:
   - name: first_fetch
     display: First fetch time
     required: false
-    defaultvalue: null
+    defaultvalue: "7 days"
     type: 0
     additionalinfo: Fetch incidents - First fetch timestamp (<number> <time unit>,
       e.g., 12 hours, 7 days)

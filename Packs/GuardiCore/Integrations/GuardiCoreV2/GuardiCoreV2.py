@@ -318,7 +318,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> \
             continue
 
         incident = {
-            'name': f"INC-{id.split('-')[0].upper()}",
+            'name': f"({INTEGRATION_CONTEXT_NAME}) INC-{id.split('-')[0].upper()}",
             'occurred': timestamp_to_datestring(start_time, DATE_FORMAT),
             'severity': incident_severity_to_dbot_score(severity),
             'rawJSON': json.dumps(inc)
