@@ -3390,7 +3390,8 @@ def get_utf_string(text, field):
     return utf_string
 
 
-def mime_decode(word_mime_encoded):
+def mime_decode(encoded_string):
+    word_mime_encoded = MIME_ENCODED_WORD.search(encoded_string)
     prefix, charset, encoding, encoded_text, suffix = word_mime_encoded.groups()
     if encoding.lower() == 'b':
         byte_string = base64.b64decode(encoded_text)
@@ -3404,13 +3405,19 @@ def convert_to_unicode(s, is_msg_header=True):
     try:
         res = ''  # utf encoded result
         if is_msg_header:  # Mime encoded words used on message headers only
+            encode_decode_phrase = s
             try:
-                word_mime_encoded = s and MIME_ENCODED_WORD.search(s)
+                word_mime_encoded = MIME_ENCODED_WORD.search(encode_decode_phrase)
                 if word_mime_encoded:
-                    word_mime_decoded = mime_decode(word_mime_encoded)
-                    if word_mime_decoded and not MIME_ENCODED_WORD.search(word_mime_decoded):
-                        # ensure decoding was successful
-                        return word_mime_decoded
+                    while word_mime_encoded:
+                        start_encoding_index = encode_decode_phrase.index("=?")
+                        end_encoding_index = encode_decode_phrase.index("?=")
+                        encoded_substring = encode_decode_phrase[start_encoding_index:end_encoding_index+2]  # index return the index where ?= starts, need to include him
+                        word_mime_decoded = mime_decode(encoded_substring)
+                        encode_decode_phrase = encode_decode_phrase[:start_encoding_index] + str(word_mime_decoded) + encode_decode_phrase[end_encoding_index+2:]
+                        word_mime_encoded = MIME_ENCODED_WORD.search(encode_decode_phrase)
+                    return encode_decode_phrase
+
             except Exception as e:
                 # in case we failed to mine-decode, we continue and try to decode
                 demisto.debug('Failed decoding mime-encoded string: {}. Will try regular decoding.'.format(str(e)))
@@ -3448,7 +3455,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         'To': msg_dict['To'],
         'CC': msg_dict['CC'],
         'From': msg_dict['From'],
-        'Subject': headers_map.get('Subject'),
+        'Subject': convert_to_unicode(headers_map.get('Subject')),
         'HTML': msg_dict['HTML'],
         'Text': msg_dict['Text'],
         'Headers': headers,
