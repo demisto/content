@@ -1,5 +1,5 @@
 {
-    "name": "TwitterSOARx",
+    "name": "Twitter",
     "description": "A simple integration that uses Twitter's API to perform searches on twitter for tweets, users, and user information.",
     "support": "community",
     "certification": "verified",
