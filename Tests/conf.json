@@ -805,7 +805,8 @@
         {
             "integrations": "MISP V3",
             "playbookID": "MISP V3 Test",
-            "timeout": 300
+            "timeout": 300,
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "test-LinkIncidentsWithRetry"
