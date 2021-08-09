@@ -13,7 +13,6 @@ This is an empty structure file. Check an example at;
 https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
 
 """
-import CommonServerPython
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -63,7 +62,7 @@ class Client(BaseClient):
 
     def http_request(self, params: Dict):
         return self._http_request(method='GET',
-                                  url_suffix='api',
+                                  url_suffix='',
                                   headers={'x-api-key': self.api_key},
                                   params=params)
 
@@ -81,17 +80,18 @@ class Client(BaseClient):
 def rank_to_score(domain: str, rank: Optional[int], threshold: int, benign: int, reliability: DBotScoreReliability):
     if rank is None:
         score = Common.DBotScore.SUSPICIOUS
+        score_text = 'suspicious'
     elif rank < 0:
         raise DemistoException('Rank should be positive')
     elif 0 < rank <= benign:
         score = Common.DBotScore.GOOD
         score_text = 'good'
     elif rank > threshold:
-        score = 2
+        score = Common.DBotScore.SUSPICIOUS #todo maybe it should be bad?
         score_text = 'suspicious'
     else:  # alexa_rank < client.threshold:
-        score = 0
-        score_text = 'unknown'
+        score = Common.DBotScore.NONE
+        score_text = 'Unkown'
     # else: # Should never be here
     #     score = 2
     #     score_text = 'suspicious'
@@ -108,8 +108,6 @@ def rank_to_score(domain: str, rank: Optional[int], threshold: int, benign: int,
     )
     return domain_standard_context
 
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
 
 ''' COMMAND FUNCTIONS '''
 
@@ -128,21 +126,17 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
     try:
         res = client.alexa_rank('google.com')
-        print(res)
-        message = 'ok'
+        return 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+        if 'Forbidden' in str(e):
+            return 'Authorization Error: make sure API Key is correctly set'
+        raise e
 
 
 def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    domains = argToList(args.get('domains'))
+    domains = argToList(args.get('domain'))
     if not domains:
         raise ValueError('domain doesn\'t exists')
     command_results: List[CommandResults] = []
@@ -160,7 +154,7 @@ def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         result = {'Name': domain,
                   'Indicator': domain,
                   'Rank': alexa_rank}
-        readable = f'The Alexa rank of {domain} is {alexa_rank} and has been marked as {domain_standard_context.dbot_score}.' \
+        readable = f'The Alexa rank of {domain} is {alexa_rank} and has been marked as {domain_standard_context.dbot_score.score}.' \
                    f' The benign threshold is {client.benign} while the suspicious threshold is {client.threshold}.'
         command_results.append(CommandResults(
             outputs_prefix='AlexaV2.Domain',
@@ -183,19 +177,10 @@ def main() -> None:
     """
     params = demisto.params()
     api_key = params.get('api_key')
-    # get the service API url
     base_api = params.get('base_url')
     reliability = demisto.params().get('integrationReliability')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     verify_certificate = not params.get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get('proxy', False)
-
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         threshold = arg_to_number(params.get('threshold'), required=True, arg_name='threshold')
@@ -210,18 +195,13 @@ def main() -> None:
             threshold=threshold,
             benign=benign,
             reliability=reliability)
-
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
-
+            return_results(test_module(client))
         elif demisto.command() == 'domain':
             return_results(alexa_domain(client, demisto.args()))
         else:
             raise NotImplementedError('not implemented...')
 
-    # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

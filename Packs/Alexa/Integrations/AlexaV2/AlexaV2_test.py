@@ -1,11 +1,11 @@
 import pytest
-from AlexaV2 import *  # noqa
+from AlexaV2 import Client, DBotScoreReliability, alexa_domain, rank_to_score, argToList, demisto, DemistoException, json, Dict
 
 
 def create_client(proxy: bool = False, verify: bool = False, benign: int = 0, threshold: int = 200,
                   reliability: str = DBotScoreReliability.A_PLUS):
     return Client(proxy=proxy, verify=verify, benign=benign, threshold=threshold,
-                  reliability=reliability, api_key='', base_url='')
+                  reliability=reliability, api_key='', base_url='https://awis.api.alexa.com/api')
 
 
 def file_to_dct(file: str) -> Dict:
@@ -35,8 +35,9 @@ def test_domain_rank(mocker, domain, raw_result):
         - Ensure the context data is valid with the expected outputs.
     """
     mocker.patch.object(client, 'alexa_rank', return_value=raw_result)
-    result = alexa_domain(client, {'domains': domain})[0]
-    assert result.outputs.get('Rank') == demisto.get(raw_result, 'Awis.Results.Result.Alexa.TrafficData.Rank')
+    result = alexa_domain(client, {'domain': domain})[0]
+    rank_result = result.outputs.get('Rank') if result.outputs.get('Rank') != 'Unknown' else None
+    assert demisto.get(raw_result, 'Awis.Results.Result.Alexa.TrafficData.Rank') == rank_result
 
 
 DOMAINS_BAD_RESULTS = [('xsoar.com', file_to_dct('negative_rank_response.json')),
@@ -47,7 +48,7 @@ def test_multi_domains(mocker):
     domains = 'google.com,xsoar.com'
     raw_res = file_to_dct('google_response.json')
     mocker.patch.object(client, 'alexa_rank', return_value=raw_res)
-    result = alexa_domain(client, {'domains': domains})
+    result = alexa_domain(client, {'domain': domains})
     assert len(result) == len(argToList(domains))
     for res in result:
         assert res.outputs.get('Rank') == demisto.get(raw_res, 'Awis.Results.Result.Alexa.TrafficData.Rank')
@@ -66,16 +67,18 @@ def test_domain_invalid_rank(mocker, domain, raw_result):
         - Wait for demisto Exception or Value Error
     """
     mocker.patch.object(client, 'alexa_rank', return_value=raw_result)
-    with pytest.raises(DemistoException, ValueError):
+    with pytest.raises((DemistoException, ValueError)):
         alexa_domain(client, {'domain': domain})
 
 
-SCORE_TESTS = [(1, 0, 200, DBotScoreReliability.A_PLUS, 1, 'good'),
-               (None, 0, 200, DBotScoreReliability.A_PLUS, 2, 'suspicious')]
+SCORE_TESTS = [(1, 0, 200, DBotScoreReliability.A_PLUS, 1),
+               (None, 0, 200, DBotScoreReliability.A_PLUS, 2),
+               (0, 0, 200, DBotScoreReliability.A_PLUS, 0),
+               (4000, 0, 200, DBotScoreReliability.A_PLUS, 2)]
 
 
-@pytest.mark.parametrize('rank, threshold, benign, reliability, score, score_text', SCORE_TESTS)
-def test_rank_to_score(rank, threshold, benign, reliability, score, score_text):
+@pytest.mark.parametrize('rank, threshold, benign, reliability, score', SCORE_TESTS)
+def test_rank_to_score(rank, threshold, benign, reliability, score):
     """
     Given:
         - parameters for rank to score conversion
@@ -86,9 +89,8 @@ def test_rank_to_score(rank, threshold, benign, reliability, score, score_text):
     Then:
         - Returns the context of the dbot and the score text
     """
-    #todo check all the conditions
-    context, score_text_res = rank_to_score('google.com', rank, threshold, benign, reliability)
-    assert context.dbot_score.score == score and score_text == score_text_res
+    context = rank_to_score('google.com', rank, threshold, benign, reliability)
+    assert context.dbot_score.score == score
 
 
 def test_rank_to_score_invalid():

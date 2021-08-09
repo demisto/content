@@ -17,13 +17,14 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- defaultvalue: '2000000'
-  display: Sensitivity threshold for configuring which domains are suspicious versus
+- additionalinfo: Sensitivity threshold for configuring which domains are suspicious versus
     trusted.
+  defaultvalue: '2000000'
+  display: Sensitivity threshold
   name: threshold
   required: true
   type: 0
-- defaultvalue: 'https://awis.api.alexa.com'
+- defaultvalue: 'https://awis.api.alexa.com/api'
   display: Base API URL
   name: base_url
   required: true
@@ -55,7 +56,7 @@ script:
   commands:
   - arguments:
     - default: true
-      description: Domain to search.
+      description: Domain(s) to search.
       isArray: true
       name: domain
       required: true
@@ -74,9 +75,6 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
-    - contextPath: DBotScore.Domain
-      description: Domain being reported
-      type: string
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: string
@@ -93,7 +91,7 @@ script:
       description: Alexa rank as determined by Amazon
       type: string
   dockerimage: demisto/python3:3.9.6.22912
-  feed: true
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false

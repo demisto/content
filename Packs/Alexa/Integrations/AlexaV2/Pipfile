@@ -13,6 +13,7 @@ pytest-asyncio = "*"
 [packages]
 pytest = "*"
 requests = "*"
+pipenv = "*"
 
 [requires]
 python_version = "3.7"

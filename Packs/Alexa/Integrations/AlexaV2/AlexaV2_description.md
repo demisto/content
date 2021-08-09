@@ -1,8 +1,3 @@
-## BaseIntegration Help
-
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
-
+To use this integration, simply call ```!domain```. !domain accepts
+  "domain" as a parameter to query. Threshold is the point where a domain will be
+  considered unknown versus suspicious.
