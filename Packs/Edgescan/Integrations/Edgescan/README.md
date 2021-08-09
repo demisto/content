@@ -1874,4 +1874,46 @@ Rish accept a vulnerability
 #### Command Example
 ```!edgescan-vulnerabilities-risk-accept id=52496 value=true```
 
+#### Base Command
 
+`edgescan-vulnerabilities-add-annotation`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the vulnerability to add the annotation to. | Required |
+| text | The text of the annotation to add. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AnnotationAdd | Unknown | The annotation creation output |
+
+
+#### Command Example
+```!edgescan-vulnerabilities-add-annotation id="52492" text="anotherTEST"```
+
+#### Context Example
+```json
+{
+    "Edgescan": {
+        "AnnotationAdd": {
+            "category": "default",
+            "created_at": "2021-08-09T06:49:30.743Z",
+            "id": 272,
+            "text": "anotherTEST",
+            "user": "user@example.com.8494",
+            "user_id": 586
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Annotation added:52492
+>|category|created_at|id|text|user|user_id|
+>|---|---|---|---|---|---|
+>| default | 2021-08-09T06:49:30.743Z | 272 | anotherTEST | user@example.com.8494 | 586 |
