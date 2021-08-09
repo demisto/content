@@ -2450,6 +2450,10 @@ def panorama_create_url_filter(
               add_argument_list(override_block_list, 'block-list', True) + \
               add_argument(description, 'description', False)
 
+    major_version = get_pan_os_major_version()
+    if major_version <= 8:  # up to version 8.X included, the action xml tag needs to be added
+        element += "<action>block</action>"
+
     params = {
         'action': 'set',
         'type': 'config',
