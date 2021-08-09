@@ -8,7 +8,7 @@ def util_load_json(path) -> dict:
 
 
 def test_cisco_stealthwatch_query_flows_initialize_command(requests_mock):
-    from cisco_stealthwatch import Client, cisco_stealthwatch_query_flows_initialize_command
+    from CiscoStealthwatch import Client, cisco_stealthwatch_query_flows_initialize_command
     mock_response = util_load_json('test_data/query_flow_initialize.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.post('https://sw-reporting/v2/tenants//flows/queries', json=mock_response)
@@ -22,7 +22,7 @@ def test_cisco_stealthwatch_query_flows_initialize_command(requests_mock):
 
 
 def test_cisco_stealthwatch_query_flows_status_command(requests_mock):
-    from cisco_stealthwatch import Client, cisco_stealthwatch_query_flows_status_command
+    from CiscoStealthwatch import Client, cisco_stealthwatch_query_flows_status_command
     mock_response = util_load_json('test_data/query_flow_status.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.get('https://sw-reporting/v2/tenants//flows/queries/602a96e7e4b0d6d2a200ea94',
@@ -36,7 +36,7 @@ def test_cisco_stealthwatch_query_flows_status_command(requests_mock):
 
 
 def test_cisco_stealthwatch_query_flows_results_command(requests_mock):
-    from cisco_stealthwatch import Client, cisco_stealthwatch_query_flows_results_command
+    from CiscoStealthwatch import Client, cisco_stealthwatch_query_flows_results_command
     mock_response = util_load_json('test_data/query_flow_results.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.get('https://sw-reporting/v2/tenants//flows/queries//results',
@@ -51,7 +51,7 @@ def test_cisco_stealthwatch_query_flows_results_command(requests_mock):
 
 
 def test_cisco_stealthwatch_list_tags_command(requests_mock):
-    from cisco_stealthwatch import Client, cisco_stealthwatch_list_tags_command
+    from CiscoStealthwatch import Client, cisco_stealthwatch_list_tags_command
     mock_response = util_load_json('test_data/list_tags.json')
     requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.get('https://sw-reporting/v1/tenants//internalHosts/tags',
