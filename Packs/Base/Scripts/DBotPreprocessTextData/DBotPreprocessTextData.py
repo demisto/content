@@ -12,6 +12,7 @@ from html import unescape
 from re import compile as _Re
 import pandas as pd
 from langdetect import detect
+from langdetect.lang_detect_exception import LangDetectException
 
 ANY_LANGUAGE = 'Any'
 OTHER_LANGUAGE = 'Other'
@@ -366,7 +367,10 @@ def is_text_in_input_language(text, input_language):
         return True, 'UNK'
     if '<html' in text:
         text = clean_html_from_text(text)
-    actual_language = detect(text)
+    try:
+        actual_language = detect(text)
+    except LangDetectException:
+        return True, 'UNK'
     is_correct_lang = actual_language in CODES_TO_LANGUAGES and CODES_TO_LANGUAGES[actual_language] == input_language
     return is_correct_lang, actual_language
 
