@@ -122,4 +122,3 @@ def test_rank_to_score_invalid():
 
     with pytest.raises(DemistoException):
         rank_to_score('google.com', -1, 0, 200, DBotScoreReliability.A_PLUS)
-

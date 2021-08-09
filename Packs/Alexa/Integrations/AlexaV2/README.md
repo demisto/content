@@ -1,5 +1,5 @@
 Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence. V2
-This integration was integrated and tested with version 0.1.8 of Alexa Rank Indicator V2
+This integration was integrated and tested on Alexa Rank Indicator V2
 
 ## Configure Alexa Rank Indicator V2 on Cortex XSOAR
 
