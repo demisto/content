@@ -2808,6 +2808,18 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      description: The name of the organization.
+      isArray: false
+      name: organization
+      required: false
+      secret: false
+    - default: false
+      description: The name of the repository.
+      isArray: false
+      name: repository
+      required: false
+      secret: false
     deprecated: false
     description: Gets the content of a file from GitHub.
     execution: false
