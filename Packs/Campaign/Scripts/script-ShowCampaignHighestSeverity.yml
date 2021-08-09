@@ -13,11 +13,10 @@ script: |-
   html = ""
   severities = ""
 
-
-  # Getting incident context:
-  incident_id = demisto.incidents()[0].get('id', {})
-  context = demisto.executeCommand("getContext", {'id': incident_id})
   try:
+      # Getting incident context:
+      incident_id = demisto.incidents()[0].get('id', {})
+      context = demisto.executeCommand("getContext", {'id': incident_id})
       incidents = demisto.get(context[0], "Contents.context.EmailCampaign.incidents")
       severities = [incident.get("severity") for incident in incidents]
       current_severity = demisto.incidents()[0].get('severity', {})
@@ -54,7 +53,7 @@ enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.9.6.22912
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

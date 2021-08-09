@@ -1,0 +1,67 @@
+{
+    "defaultIncidentType": "SOCRadar Generic",
+    "description": "Classifies SOCRadar incidents.",
+    "feed": false,
+    "id": "SOCRadar Incident Classifier",
+    "keyTypeMap": {
+        "Company \u003e Suspicious Content": "SOCRadar Generic",
+        "Company \u003e Suspicious Content On Github": "SOCRadar Generic",
+        "IP \u003e Internal IP Exposure": "SOCRadar Generic",
+        "Internet \u003e News": "SOCRadar Generic",
+        "PII \u003e Creditcard Leak": "SOCRadar Generic",
+        "PII \u003e Source Code Leakage": "SOCRadar Generic",
+        "Phishing Domain \u003e Content Change": "SOCRadar Generic",
+        "SSL \u003e SSL Grade": "SOCRadar Generic",
+        "Vulnerability \u003e Network Services": "SOCRadar Generic",
+        "Website \u003e Title Control": "SOCRadar Generic"
+    },
+    "name": "SOCRadar Incident Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "accessor": "alarm_main_type",
+            "filters": [],
+            "root": "alarm_type_details",
+            "transformers": [
+                {
+                    "args": {
+                        "prefix": {
+                            "isContext": false,
+                            "value": null
+                        },
+                        "suffix": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": " \u003e "
+                            }
+                        }
+                    },
+                    "operator": "concat"
+                },
+                {
+                    "args": {
+                        "prefix": {
+                            "isContext": false,
+                            "value": null
+                        },
+                        "suffix": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "alarm_type_details.alarm_sub_type"
+                            }
+                        }
+                    },
+                    "operator": "concat"
+                }
+            ]
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
