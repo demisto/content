@@ -1,5 +1,3 @@
-# TwitterSOARx
-
 twitter-get-users
 This command executes a search for users given a specified query. It will then return the results of the search in markdown format in the war room. This command uses Tweepy’s API to authenticate using OAuth 1.0 and then to perform the search function.
 
