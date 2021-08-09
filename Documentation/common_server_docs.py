@@ -5,7 +5,7 @@ import yaml
 import os
 import re
 from parinx import parser
-from demisto_sdk.commands.unify.unifier import Unifier
+from demisto_sdk.commands.unify.yml_unifier import YmlUnifier
 import logging
 
 from Tests.scripts.utils.log_util import install_logging
@@ -140,7 +140,7 @@ def create_py_documentation(path, origin, language):
     is_error_py = False
 
     with open(path, 'r') as file:
-        py_script = Unifier.clean_python_code(file.read(), remove_print_future=False)
+        py_script = YmlUnifier.clean_python_code(file.read(), remove_print_future=False)
 
     code = compile(py_script, '<string>', 'exec')
     ns = {'demisto': demistomock}
