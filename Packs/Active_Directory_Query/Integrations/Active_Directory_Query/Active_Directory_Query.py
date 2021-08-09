@@ -51,6 +51,10 @@ DEFAULT_COMPUTER_ATTRIBUTES = [
     'name',
     'memberOf'
 ]
+DEFAULT_GROUP_ATTRIBUTES = [
+    'name',
+    'memberOf'
+]
 FIELDS_THAT_CANT_BE_MODIFIED = [
     "dn", "cn", "ou"
 ]
@@ -74,10 +78,17 @@ def initialize_server(host, port, secure_connection, unsecure):
     :rtype: Server
     """
 
+    if secure_connection == "TLS":
+        demisto.debug(f"initializing sever with TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
+        tls = Tls(validate=ssl.CERT_NONE)
+        if port:
+            return Server(host, port=port, use_ssl=unsecure, tls=tls)
+        return Server(host, use_ssl=unsecure, tls=tls)
+
     if secure_connection == "SSL":
         # intialize server with ssl
         # port is configured by default as 389 or as 636 for LDAPS if not specified in configuration
-        demisto.debug("initializing sever with ssl (unsecure: {}). port: {}". format(unsecure, port or 'default(636)'))
+        demisto.debug(f"initializing sever with SSL (unsecure: {unsecure}). port: {port or 'default(636)'}")
         if not unsecure:
             demisto.debug("will require server certificate.")
             tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'))
@@ -87,7 +98,7 @@ def initialize_server(host, port, secure_connection, unsecure):
         if port:
             return Server(host, port=port, use_ssl=True)
         return Server(host, use_ssl=True)
-    demisto.debug("initializing server without secure connection. port: {}". format(port or 'default(389)'))
+    demisto.debug(f"initializing server without secure connection. port: {port or 'default(389)'}")
     if port:
         return Server(host, port=port)
     return Server(host)
@@ -151,6 +162,35 @@ def endpoint_entry(computer_object, custom_attributes):
                 demisto.error(f'Failed parsing custom attribute {attr}, error: {e}')
 
     return endpoint
+
+
+def group_entry(group_object, custom_attributes):
+    # create an group entry from a group object
+    group = {
+        'Type': 'AD',
+        'ID': group_object.get('dn'),
+        'Name': group_object.get('name'),
+        'Groups': group_object.get('memberOf'),
+    }
+
+    lower_cased_person_object_keys = {
+        person_object_key.lower(): person_object_key for person_object_key in group_object.keys()
+    }
+
+    for attr in custom_attributes:
+        if attr == '*':
+            continue
+        try:
+            group[attr] = group_object[attr]
+        except KeyError as e:
+            lower_cased_custom_attr = attr.lower()
+            if lower_cased_custom_attr in lower_cased_person_object_keys:
+                cased_custom_attr = lower_cased_person_object_keys.get(lower_cased_custom_attr, '')
+                group[cased_custom_attr] = group_object[cased_custom_attr]
+            else:
+                demisto.error(f'Failed parsing custom attribute {attr}, error: {e}')
+
+    return group
 
 
 def base_dn_verified(base_dn):
@@ -684,16 +724,28 @@ def search_group_members(default_base_dn, page_size):
     group_dn = args.get('group-dn')
     nested_search = '' if args.get('disable-nested-search') == 'true' else ':1.2.840.113556.1.4.1941:'
     time_limit = int(args.get('time_limit', 180))
+    account_name = args.get('sAMAccountName')
 
     custom_attributes: List[str] = []
-    default_attributes = DEFAULT_PERSON_ATTRIBUTES if member_type == 'person' else DEFAULT_COMPUTER_ATTRIBUTES
+
+    default_attribute_mapping = {
+        'person': DEFAULT_PERSON_ATTRIBUTES,
+        'group': DEFAULT_GROUP_ATTRIBUTES,
+        'computer': DEFAULT_COMPUTER_ATTRIBUTES,
+    }
+    default_attributes = default_attribute_mapping.get(member_type, DEFAULT_COMPUTER_ATTRIBUTES)
 
     if args.get('attributes'):
         custom_attributes = args['attributes'].split(",")
 
     attributes = list(set(custom_attributes + default_attributes))
 
-    query = "(&(objectCategory={})(objectClass=user)(memberOf{}={}))".format(member_type, nested_search, group_dn)
+    if member_type == 'group':
+        query = "(&(objectCategory={})(memberOf{}={})(sAMAccountName={}))".format(member_type, nested_search, group_dn,
+                                                                                  account_name)
+    else:
+        query = "(&(objectCategory={})(objectClass=user)(memberOf{}={})(sAMAccountName={}))"\
+            .format(member_type, nested_search, group_dn, account_name)
 
     entries = search_with_paging(
         query,
@@ -723,9 +775,13 @@ def search_group_members(default_base_dn, page_size):
         demisto_entry['EntryContext']['ActiveDirectory.Users(obj.dn == val.dn)'] = entries['flat']
         demisto_entry['EntryContext']['Account'] = [account_entry(
             entry, custom_attributes) for entry in entries['flat']]
-    else:
+    elif member_type == 'computer':
         demisto_entry['EntryContext']['ActiveDirectory.Computers(obj.dn == val.dn)'] = entries['flat']
         demisto_entry['EntryContext']['Endpoint'] = [endpoint_entry(
+            entry, custom_attributes) for entry in entries['flat']]
+    elif member_type == 'group':
+        demisto_entry['EntryContext']['ActiveDirectory.Groups(obj.dn == val.dn)'] = entries['flat']
+        demisto_entry['EntryContext']['Group'] = [group_entry(
             entry, custom_attributes) for entry in entries['flat']]
 
     demisto.results(demisto_entry)
@@ -1513,6 +1569,10 @@ def main():
         else:
             # here username should be the user dn
             conn = Connection(server, user=USERNAME, password=PASSWORD)
+
+        if SECURE_CONNECTION == 'TLS':
+            conn.open()
+            conn.start_tls()
 
         # bind operation is the “authenticate” operation.
         try:
