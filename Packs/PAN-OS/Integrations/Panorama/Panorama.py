@@ -286,17 +286,18 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
                                  category: List[str] = None, from_: str = None, to: str = None, description: str = None,
                                  target: str = None, log_forwarding: str = None,
                                  disable_server_response_inspection: str = None, tags: List[str] = None,
-                                 profile_setting: str = None) -> Dict:
+                                 profile_setting: str = None, where: str = 'bottom', dst: str = None) -> Dict:
     if application is None or len(application) == 0:
         # application always must be specified and the default should be any
         application = ['any']
 
     # flake8: noqa
-    rulename = rulename if rulename else ('demisto-' + (str(uuid.uuid4()))[:8])
+    rulename = rulename if rulename else f'demisto-{str(uuid.uuid4())[:8]}'
     params = {
         'type': 'config',
         'action': api_action,
         'key': API_KEY,
+        'where': where,  # default where will be bottom for BC purposes
         'element': add_argument_open(action, 'action', False)
                    + add_argument_target(target, 'target')
                    + add_argument_open(description, 'description', False)
@@ -316,14 +317,21 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
                    + add_argument_list(tags, 'tag', True)
                    + add_argument_profile_setting(profile_setting, 'profile-setting')
     }
+    if dst:
+        if where not in ('before', 'after'):
+            raise DemistoException('Please provide a dst rule only when the where argument is before or after.')
+        else:
+            params['dst'] = dst
+
     if DEVICE_GROUP:
         if not PRE_POST:
-            raise Exception('Please provide the pre_post argument when configuring'
-                            ' a security rule in Panorama instance.')
+            raise Exception('Please provide the pre_post argument when configuring '
+                            'a security rule in Panorama instance.')
         else:
-            params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+            params['xpath'] = f"{XPATH_SECURITY_RULES}{PRE_POST}/security/rules/entry[@name='{rulename}']"
     else:
-        params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
+        params['xpath'] = f"{XPATH_SECURITY_RULES}[@name='{rulename}']"
+
     return params
 
 
@@ -2789,6 +2797,8 @@ def panorama_create_rule_command(args: dict):
     log_forwarding = args.get('log_forwarding', None)
     tags = argToList(args['tags']) if 'tags' in args else None
     profile_setting = args.get('profile_setting')
+    where = args.get('where', 'bottom')
+    dst = args.get('dst')
 
     if not DEVICE_GROUP:
         if target:
@@ -2803,7 +2813,8 @@ def panorama_create_rule_command(args: dict):
                                           disable_server_response_inspection=disable_server_response_inspection,
                                           description=description, target=target,
                                           log_forwarding=log_forwarding, tags=tags, category=categories,
-                                          from_=source_zone, to=destination_zone, profile_setting=profile_setting)
+                                          from_=source_zone, to=destination_zone, profile_setting=profile_setting,
+                                          where=where, dst=dst)
     result = http_request(
         URL,
         'POST',
@@ -3021,6 +3032,8 @@ def panorama_custom_block_rule_command(args: dict):
     target = argToList(args.get('target')) if 'target' in args else None
     log_forwarding = args.get('log_forwarding', None)
     tags = argToList(args['tags']) if 'tags' in args else None
+    where = args.get('where', 'bottom')
+    dst = args.get('dst')
 
     if not DEVICE_GROUP:
         if target:
@@ -3046,12 +3059,12 @@ def panorama_custom_block_rule_command(args: dict):
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination=['any'], rulename=rulename + '-from', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags)
+                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
             result = http_request(URL, 'POST', body=params)
         if block_destination:
             params = prepare_security_rule_params(api_action='set', action='drop', destination=object_value,
                                                   source=['any'], rulename=rulename + '-to', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags)
+                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
             result = http_request(URL, 'POST', body=params)
         custom_block_output['IP'] = object_value
 
@@ -3059,26 +3072,26 @@ def panorama_custom_block_rule_command(args: dict):
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination=['any'], rulename=rulename + '-from', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags)
+                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
             result = http_request(URL, 'POST', body=params)
         if block_destination:
             params = prepare_security_rule_params(api_action='set', action='drop', destination=object_value,
                                                   source=['any'], rulename=rulename + '-to', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags)
+                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
             result = http_request(URL, 'POST', body=params)
         custom_block_output['AddressGroup'] = object_value
 
     elif object_type == 'url-category':
         params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               category=object_value, rulename=rulename, target=target,
-                                              log_forwarding=log_forwarding, tags=tags)
+                                              log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
         result = http_request(URL, 'POST', body=params)
         custom_block_output['CustomURLCategory'] = object_value
 
     elif object_type == 'application':
         params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               application=object_value, rulename=rulename, target=target,
-                                              log_forwarding=log_forwarding, tags=tags)
+                                              log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
         result = http_request(URL, 'POST', body=params)
         custom_block_output['Application'] = object_value
 

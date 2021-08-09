@@ -1,4 +1,5 @@
 import pytest
+
 import demistomock as demisto
 from CommonServerPython import DemistoException
 
@@ -244,6 +245,31 @@ def test_prettify_logs():
                 {'Action': 'my_action2', 'CategoryOrVerdict': 'my_category2', 'Rule': 'my_rule2',
                  'NATDestinationPort': '101', 'BytesSent': '11'}]
     assert response == expected
+
+
+prepare_security_rule_inputs = [
+    ('top', 'test_rule_name'),
+    ('bottom', 'test_rule_name'),
+]
+
+
+@pytest.mark.parametrize('where, dst', prepare_security_rule_inputs)
+def test_prepare_security_rule_params(where, dst):
+    """
+    Given:
+     - a non valid arguments for the prepare_security_rule_params function
+
+    When:
+     - running the prepare_security_rule_params utility function
+
+    Then:
+     - a proper exception is raised
+    """
+    from Panorama import prepare_security_rule_params
+    err_msg = 'Please provide a dst rule only when the where argument is before or after.'
+    with pytest.raises(DemistoException, match=err_msg):
+        prepare_security_rule_params(api_action='set', action='drop', destination=['any'], source=['any'],
+                                     rulename='test', where=where, dst=dst)
 
 
 def test_build_policy_match_query():
