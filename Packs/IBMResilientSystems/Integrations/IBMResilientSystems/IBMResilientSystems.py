@@ -359,7 +359,7 @@ def extract_data_form_other_fields_argument(other_fields, incident, changes):
     try:
         other_fields_json = json.loads(other_fields)
     except Exception as e:
-        raise Exception(f'The other_fields argument is not a valid json. {e}')
+        raise Exception('The other_fields argument is not a valid json. ' + str(e))
 
     for field_name, field_value in other_fields_json.items():
         changes.append(
