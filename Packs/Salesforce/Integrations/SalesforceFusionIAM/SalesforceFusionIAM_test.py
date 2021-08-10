@@ -14,8 +14,6 @@ APP_USER_OUTPUT = {
     "email": "testdemisto@paloaltonetworks.com"
 }
 
-# USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=True, app_data=APP_USER_OUTPUT)
-
 APP_DISABLED_USER_OUTPUT = {
     "id": "mock_id",
     "Work_Email__c": "mock_user_name",
@@ -36,10 +34,6 @@ APP_UPDATED_USER_OUTPUT = {
     "email": "testdemisto@paloaltonetworks.com"
 }
 
-DISABLED_USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=False, app_data=APP_DISABLED_USER_OUTPUT)
-
-demisto.callingContext = {'context': {'IntegrationInstance': 'Test', 'IntegrationBrand': 'Test'}}
-
 
 def mock_client():
     client = Client(base_url='https://test.com')
@@ -52,7 +46,7 @@ def get_outputs_from_user_profile(user_profile):
     return outputs
 
 
-class TestCRUDCommands:
+class TestSalesforceFusionIAM:
     def test_get_user_command__existing_user(self, mocker):
         """
         Given:
