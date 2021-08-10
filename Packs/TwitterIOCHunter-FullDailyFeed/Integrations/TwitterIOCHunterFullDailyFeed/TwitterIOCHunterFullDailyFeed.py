@@ -2,10 +2,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-
 def test_module(client, url):
     result = client._http_request('GET', full_url=url)
-    if isinstance(result,list):
+    if isinstance(result, list):
         return 'ok'
     else:
         return 'Test failed: ' + str(result)
