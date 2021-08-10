@@ -3416,7 +3416,7 @@ def convert_to_unicode(s, is_msg_header=True):
                         # index return the index where "?=" starts, need to include it on the substring
                         encoded_substring = encode_decode_phrase[start_encoding_index:end_encoding_index]
                         decoded_substring = mime_decode(encoded_substring)
-                        encode_decode_phrase = encode_decode_phrase[:start_encoding_index] + decoded_substring +\
+                        encode_decode_phrase = encode_decode_phrase[:start_encoding_index] + decoded_substring + \
                                                encode_decode_phrase[end_encoding_index:]
 
                         word_mime_encoded = MIME_ENCODED_WORD.search(encode_decode_phrase)
