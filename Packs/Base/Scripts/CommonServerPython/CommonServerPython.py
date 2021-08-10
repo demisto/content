@@ -598,10 +598,13 @@ def add_http_prefix_if_missing(address=''):
         :rtype: ``string``
         :return: proxy address after the 'http://' prefix was added, if needed.
     """
-    if address and not \
-            (address.startswith('http://') or address.startswith('https://') or address.startswith('socks5://')):
-        return 'http://' + address
-    return address
+    PROXY_PREFIXES = ['http://', 'https://', 'socks5://','socks5h://', 'socks4://', 'socks4a://']
+    if not address:
+        return ''
+    for prefix in PROXY_PREFIXES:
+        if address.startswith(prefix):
+            return address
+    return 'http://' + address
 
 
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
