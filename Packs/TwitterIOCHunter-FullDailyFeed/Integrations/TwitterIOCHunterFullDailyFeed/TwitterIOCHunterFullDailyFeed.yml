@@ -92,7 +92,7 @@ configuration:
   - Full
   - Username
   - Hashtag
-  required: true
+  required: false
   type: 15
 - additionalinfo: Input the Username or Hashtag you want to use as a filter
   display: Filter to Use
