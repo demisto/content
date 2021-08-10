@@ -1,5 +1,5 @@
 {
-    "description": "",
+    "description": "Maps Grafana's alert fields",
     "feed": false,
     "id": "Grafana Alert Mapper",
     "mapping": {

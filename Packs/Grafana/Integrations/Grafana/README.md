@@ -14,7 +14,7 @@ This integration was integrated and tested with version 8.0.0 of Grafana
     | Trust any certificate (not secure) |  | False |
     | Username |  | True |
     | Password |  | True |
-    | Maximum number of incidents to fetch | max -&amp;gt; 50 | False |
+    | Maximum number of incidents to fetch | maximum is limited to 200 | False |
     | Fetch incidents |  | False |
     | First Fetch Time of Alerts |  | False |
     | Dashboard Id to fetch |  | False |
@@ -40,10 +40,10 @@ Gets alerts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | dashboard_id | A comma-separated list of dashboard ids by which to filter the results. | Optional | 
-| panel_id | Panel ids by which to filter the results. | Optional | 
-| query | Contained in the name of an alert. | Optional | 
+| panel_id | Panel id by which to filter the results. | Optional | 
+| query | Limit response to alerts having a name like this value. | Optional | 
 | state | A comma-separated list of states by which to filter the results. The options are: all, no_data, paused, alerting, ok, pending. | Optional | 
-| limit | Limit response to X number of alerts. | Optional | 
+| limit | The maximum number of alerts to return. | Optional | 
 | folder_id | A comma-separated list of folder ids by which to filter the results. | Optional | 
 | dashboard_query | Dashboard's name by which to filter the results. | Optional | 
 | dashboard_tag | A comma-separated list of dashboard tags by which to filter the results. | Optional | 
@@ -65,7 +65,6 @@ Gets alerts.
 | Grafana.Alert.evalData | Unknown | Alert eval data | 
 | Grafana.Alert.executionError | String | Alert execution error | 
 | Grafana.Alert.url | String | Alert url | 
-| Grafana.Alert.evalData.noData | Boolean | Alert eval data - has data? | 
 
 
 #### Command Example
@@ -348,7 +347,7 @@ Gets the user's teams by user id.
 | Grafana.User.teams.email | String | Team email | 
 | Grafana.User.teams.avatarUrl | String | Team avatar url | 
 | Grafana.User.teams.memberCount | Number | Team member count | 
-| Grafana.User.teams.permission | Number | Team permission | 
+| Grafana.User.teams.permission | Number | Number of team permissions. | 
 
 
 #### Command Example
@@ -557,7 +556,7 @@ Gets teams.
 | Grafana.Team.email | String | Team email | 
 | Grafana.Team.avatarUrl | String | Team avatar url | 
 | Grafana.Team.memberCount | Number | Team member count | 
-| Grafana.Team.permission | Number | Team permission | 
+| Grafana.Team.permission | Number | Number of team permissions | 
 
 
 #### Command Example
@@ -891,7 +890,7 @@ Searchs dashboards.
 | dashboard_ids | A comma-separated list of dashboard IDs by which to filter the results. | Optional | 
 | folder_ids | A comma-separated list of folder IDs by which to filter the results. | Optional | 
 | starred | Indices if only starred dashboards should be returned. Possible values are: true, false. | Optional | 
-| limit | Limit. | Optional | 
+| limit | The maximum number of dashboards to return. | Optional | 
 | page | Page. | Optional | 
 
 
@@ -1049,7 +1048,7 @@ Gets a team by id.
 | Grafana.Team.email | String | Team email | 
 | Grafana.Team.avatarUrl | String | Team avatar url | 
 | Grafana.Team.memberCount | Number | Team member count | 
-| Grafana.Team.permission | Number | Team permission | 
+| Grafana.Team.permission | Number | Number of team permissions | 
 
 
 #### Command Example
@@ -1114,7 +1113,6 @@ Gets an alert by id.
 | Grafana.Alert.frequency | Number | Alert frequency | 
 | Grafana.Alert.for | Number | Alert for | 
 | Grafana.Alert.evalData | Unknown | Alert eval data | 
-| Grafana.Alert.evalData.noData | Boolean | Alert eval data - has data? | 
 | Grafana.Alert.newStateDate | Date | Alert new state date | 
 | Grafana.Alert.stateChanges | Number | Alert state changes | 
 | Grafana.Alert.created | Date | Alert created | 

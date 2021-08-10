@@ -20,7 +20,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: max -> 50
+- additionalinfo: maximum is limited to 200.
   defaultvalue: '20'
   display: Maximum number of incidents to fetch
   hidden: false
@@ -82,13 +82,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Panel ids by which to filter the results.
+      description: Panel id by which to filter the results.
       isArray: false
       name: panel_id
       required: false
       secret: false
     - default: false
-      description: Contained in the name of an alert.
+      description: Limit response to alerts having a name like this value.
       isArray: false
       name: query
       required: false
@@ -101,7 +101,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Limit response to X number of alerts.
+      description: The maximum number of alerts to return.
       isArray: false
       name: limit
       required: false
@@ -166,9 +166,6 @@ script:
     - contextPath: Grafana.Alert.url
       description: Alert url
       type: String
-    - contextPath: Grafana.Alert.evalData.noData
-      description: Alert eval data - has data?
-      type: Boolean
   - arguments:
     - default: false
       description: Alert id to pause.
@@ -290,7 +287,7 @@ script:
       description: Team member count
       type: Number
     - contextPath: Grafana.User.teams.permission
-      description: Team permission
+      description: Number of team permissions.
       type: Number
   - arguments:
     - default: false
@@ -450,7 +447,7 @@ script:
       description: Team member count
       type: Number
     - contextPath: Grafana.Team.permission
-      description: Team permission
+      description: Number of team permissions.
       type: Number
   - arguments:
     - default: false
@@ -631,7 +628,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Limit
+      description: The maximum number of dashboards to return.
       isArray: false
       name: limit
       required: false
@@ -756,7 +753,7 @@ script:
       description: Team member count
       type: Number
     - contextPath: Grafana.Team.permission
-      description: Team permission
+      description: Number of team permissions.
       type: Number
   - arguments:
     - default: false
@@ -815,9 +812,6 @@ script:
     - contextPath: Grafana.Alert.evalData
       description: Alert eval data
       type: Unknown
-    - contextPath: Grafana.Alert.evalData.noData
-      description: Alert eval data - has data?
-      type: Boolean
     - contextPath: Grafana.Alert.newStateDate
       description: Alert new state date
       type: Date

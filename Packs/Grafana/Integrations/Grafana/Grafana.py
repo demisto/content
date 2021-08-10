@@ -16,7 +16,7 @@ HEADERS = {
 # In the documentation, the state 'all' is written as 'ALL'. As the latter doesn't work, we use 'all''.
 ALERT_STATES = {'all', 'no_data', 'paused', 'alerting', 'ok', 'pending'}
 
-MAX_INCIDENTS_TO_FETCH = 50
+MAX_INCIDENTS_TO_FETCH = 200
 
 FETCH_DEFAULT_TIME = '3 days'
 
@@ -191,7 +191,7 @@ def change_key(response: dict, prev_key: str, new_key: str):
     return response
 
 
-def lower_keys(response: dict):
+def keys_to_lowercase(response: dict):
     """
     Lowers firsts letter of all keys in the dictionary given and returns the new dictionary.
     """
@@ -214,18 +214,17 @@ def url_encode(query: Optional[str]):
     Query values with spaces need to be URL encoded e.g. query=Jane%20Doe.
     """
     if query:
-        demisto.debug(f'url-encoding query {query}')
         return query.replace(' ', '%20')
     return None
 
 
 def calculate_fetch_start_time(last_fetch: str = None, first_fetch: str = FETCH_DEFAULT_TIME):
-    first_fetch_dt = dateparser.parse(first_fetch).replace(tzinfo=utc, microsecond=0)
+    first_fetch_datetime = dateparser.parse(first_fetch).replace(tzinfo=utc, microsecond=0)
     if last_fetch is None:
-        return first_fetch_dt
+        return first_fetch_datetime
 
     last_fetch = dateparser.parse(last_fetch).replace(tzinfo=utc, microsecond=0)
-    return max(last_fetch, first_fetch_dt)
+    return max(last_fetch, first_fetch_datetime)
 
 
 def parse_alerts(alerts: List[Dict[str, Any]], max_fetch: int, last_fetch: datetime):
@@ -275,7 +274,7 @@ def alerts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     state = argToList(args.get('state', ''))
     if state and state not in ALERT_STATES:
-            raise DemistoException("State must be of: all, no_data, paused, alerting, ok, pending.")
+        raise DemistoException("State must be of: all, no_data, paused, alerting, ok, pending.")
 
     limit = args.get('limit')
     folder_id = argToList(args.get('folder_id', ''))
@@ -339,7 +338,7 @@ def alert_get_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     response = client.alert_get_by_id_request(alert_id)
     # output returns keys capitalized rather then with first lower case letter (as stated and should be)
-    response = lower_keys(response)
+    response = keys_to_lowercase(response)
 
     command_results = CommandResults(
         outputs_prefix='Grafana.Alert',
@@ -676,11 +675,11 @@ def test_module(client: Client) -> None:
 def fetch_incidents(client: Client, first_fetch: str, dashboard_id: str = None, panel_id: str = None,
                     alert_name: str = None, state: str = None, max_fetch: int = MAX_INCIDENTS_TO_FETCH) -> List[dict]:
     last_fetch = demisto.getLastRun().get('last_fetch', None)
-    fetch_time = calculate_fetch_start_time(last_fetch, first_fetch)
-    demisto.debug(f'last fetch was at: {last_fetch}, time to fetch from is: {fetch_time}')
+    fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
+    demisto.debug(f'last fetch was at: {last_fetch}, time to fetch from is: {fetch_start_time}')
     alerts = client.alerts_list_request(dashboard_id=argToList(dashboard_id), panel_id=panel_id, query=alert_name,
                                         state=argToList(state))
-    last_fetch, incidents = parse_alerts(alerts, max_fetch, fetch_time)
+    last_fetch, incidents = parse_alerts(alerts, max_fetch, fetch_start_time)
     demisto.debug(f'last fetch now is: {last_fetch}, number of incidents fetched is {len(incidents)}')
     demisto.setLastRun({'last_fetch': str(date_to_timestamp(last_fetch, DATE_FORMAT))})
     return incidents

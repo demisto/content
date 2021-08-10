@@ -1,8 +1,8 @@
 {
     "defaultIncidentType": "Grafana Alert",
-    "description": "",
+    "description": "Classifies Grafana's alerts",
     "feed": false,
-    "id": "63460894-c18b-4332-88fd-d5986a9b6904",
+    "id": "Grafana Alert",
     "keyTypeMap": {
         "Grafana Alert": "Grafana Alert"
     },

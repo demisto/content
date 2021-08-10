@@ -2,7 +2,7 @@ import dateparser
 import pytest
 from pytz import utc
 
-from Grafana import Client, change_key, lower_keys, decapitalize, url_encode, calculate_fetch_start_time, \
+from Grafana import Client, change_key, keys_to_lowercase, decapitalize, url_encode, calculate_fetch_start_time, \
     parse_alerts, parse_alert
 from freezegun import freeze_time
 from CommonServerPython import urljoin
@@ -226,7 +226,7 @@ def test_lower_keys():
             "notifications": []
         }
     }
-    assert lower_keys(dict_input) == expected_result
+    assert keys_to_lowercase(dict_input) == expected_result
 
 
 DECAPITALIZE_VALUES = {
