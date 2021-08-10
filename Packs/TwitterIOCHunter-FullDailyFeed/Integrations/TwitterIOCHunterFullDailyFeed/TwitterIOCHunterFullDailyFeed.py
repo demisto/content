@@ -64,7 +64,6 @@ def main():
     feed_tags = demisto.params().get('feedTags')
     tlp_color = demisto.params().get('tlp_color')
     filter_to_use = demisto.params().get('filtertouse')
-    type_of_feed = demisto.params().get('typeoffeed')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     demisto.info(f'Command being called is {demisto.command()}')
