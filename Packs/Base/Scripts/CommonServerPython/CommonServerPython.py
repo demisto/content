@@ -7044,10 +7044,12 @@ if 'requests' in sys.modules:
                         return res.content
                     if resp_type == 'xml':
                         ET.parse(res.text)
+                    if resp_type == 'response':
+                        return res
                     return res
                 except ValueError as exception:
                     raise DemistoException('Failed to parse json object from response: {}'
-                                           .format(res.content), exception)
+                                           .format(res.content), exception, res)
             except requests.exceptions.ConnectTimeout as exception:
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                           ' is incorrect or that the Server is not accessible from your host.'
