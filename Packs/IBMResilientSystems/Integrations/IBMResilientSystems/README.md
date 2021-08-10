@@ -28,22 +28,22 @@ Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1.  [Search for incidents: rs-search-incidents](#searchforincidents:rs-search-incidents)
-2.  [Update an incident: rs-update-incident](#update-an-incident:-rs-update-incident)
-3.  [Get a list of incident members: rs-incident-get-members](#get-a-list-of-incident-members:-rs-incident-get-members)
-4.  [Get incident information: rs-get-incident](#get-incident-information:-rs-get-incident)
-5.  [Update information for an incident member: rs-incidents-update-member](#update-information-for-an-incident-member:-rs-incidents-update-member)
-6.  [Get a list of users: rs-get-users](#get-a-list-of-users:-rs-get-users)
-7.  [Close an incident: rs-close-incident](#close-an-incident:-rs-close-incident)
-8.  [Create an incident: rs-create-incident](#create-an-incident:-rs-create-incident)
-9.  [Get artifacts for an incident: rs-incident-artifacts](#get-artifacts-for-an-incident:-rs-incident-artifacts)
-10. [Get attachments of an incident: rs-incident-attachments](#get-attachments-of-an-incident:-rs-incident-attachments)
-11. [Get related incidents: rs-related-incidents](#get-related-incidents:-rs-related-incidents)
-12. [Get tasks for an incident: rs-incidents-get-tasks](#get-tasks-for-an-incident:-rs-incidents-get-tasks)
-13. [Add a note to an incident: rs-add-note](#add-a-note-to-an-incident:-rs-add-note)
-14. [Add an artifact to an incident: rs-add-artifact](#add-an-artifact-to-an-incident:-rs-add-artifact)
+1.  [Search for incidents: rs-search-incidents](#rs-search-incidents)
+2.  [Update an incident: rs-update-incident](#rs-update-incident)
+3.  [Get a list of incident members: rs-incident-get-members](#rs-incident-get-members)
+4.  [Get incident information: rs-get-incident](#rs-get-incident)
+5.  [Update information for an incident member: rs-incidents-update-member](#rs-incidents-update-member)
+6.  [Get a list of users: rs-get-users](#rs-get-users)
+7.  [Close an incident: rs-close-incident](#rs-close-incident)
+8.  [Create an incident: rs-create-incident](#rs-create-incident)
+9.  [Get artifacts for an incident: rs-incident-artifacts](#rs-incident-artifacts)
+10. [Get attachments of an incident: rs-incident-attachments](#rs-incident-attachments)
+11. [Get related incidents: rs-related-incidents](#rs-related-incidents)
+12. [Get tasks for an incident: rs-incidents-get-tasks](#rs-incidents-get-tasks)
+13. [Add a note to an incident: rs-add-note](#rs-add-note)
+14. [Add an artifact to an incident: rs-add-artifact](#rs-add-artifact)
 
-### Search for incidents: rs-search-incidents
+### rs-search-incidents
 
 Search for incidents in your IBM Resilient system.
 
@@ -91,7 +91,7 @@ Search for incidents in your IBM Resilient system.
 
 * * *
 
-### Update an incident: rs-update-incident
+### rs-update-incident
 
 Updater an incident in your IBM Resilient system.
 
@@ -124,7 +124,7 @@ There is no context output for this command.
 
 * * *
 
-### Get a list of incident members: rs-incident-get-members
+### rs-incident-get-members
 
 Get a list of members associated with the incident.
 
@@ -167,7 +167,7 @@ Get a list of members associated with the incident.
 
 * * *
 
-### Get incident information: rs-get-incident
+### rs-get-incident
 
 Get information for an incident.
 
@@ -224,7 +224,7 @@ Get information for an incident.
 
 * * *
 
-### Update information for an incident member: rs-incidents-update-member
+### rs-incidents-update-member
 
 Update information for a member associated with an incident.
 
@@ -252,7 +252,7 @@ There is no context output for this command.
 
 * * *
 
-### Get a list of users: rs-get-users
+### rs-get-users
 
 Returns a list of users in the IBM Resilient system.
 
@@ -287,7 +287,7 @@ There is no context output for this command.
 
 * * *
 
-### Close an incident: rs-close-incident
+### rs-close-incident
 
 Close an incident in the IBM Resilient system.
 
@@ -311,7 +311,7 @@ There is no context output for this command.
 
 * * *
 
-### Create an incident: rs-create-incident
+### rs-create-incident
 
 Create an incident in the IBM Resilient system.
 
@@ -335,7 +335,7 @@ There is no context output for this command.
 
 * * *
 
-### Get artifacts for an incident: rs-incident-artifacts
+### rs-incident-artifacts
 
 Return artifacts for an incident in the IBM Resilient system.
 
@@ -391,7 +391,7 @@ Return artifacts for an incident in the IBM Resilient system.
 
 * * *
 
-### Get attachments of an incident: rs-incident-attachments
+### rs-incident-attachments
 
 Return attachments for an incident in the IBM Resilient system.
 
@@ -432,7 +432,7 @@ Return attachments for an incident in the IBM Resilient system.
 
 * * *
 
-### Get related incidents: rs-related-incidents
+### rs-related-incidents
 
 Get incidents related to a specified incident in the IBM Resilient system.
 
@@ -488,7 +488,7 @@ Get incidents related to a specified incident in the IBM Resilient system.
 
 * * *
 
-### Get tasks for an incident: rs-incidents-get-tasks
+### rs-incidents-get-tasks
 
 Get tasks for an incident in the IBM Resilient system.
 
@@ -544,7 +544,7 @@ Get tasks for an incident in the IBM Resilient system.
 
 * * *
 
-### Add a note to an incident: rs-add-note
+### rs-add-note
 
 Add a note to an incident.
 
@@ -598,7 +598,7 @@ Add a note to an incident.
 
 * * *
 
-### Add an artifact to an incident: rs-add-artifact
+### rs-add-artifact
 
 Add an artifact to an incident.
 
