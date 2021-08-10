@@ -543,8 +543,9 @@ def fetch_incidents():
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
     last_run_object = demisto.getLastRun()
     last_run = last_run_object and last_run_object['time']
-    if not last_run:
-        last_run = now - 24 * 60 * 60 * 1000
+    if not last_run:  # first time fetch
+        last_run = now - parse_date_range(demisto.params().get('fetch_time', '3 days').strip(), to_timestamp=True)[0]
+
     payload = {'timeRange': {
         'type': 'absolute',
         'value': {
@@ -569,8 +570,8 @@ def fetch_incidents():
             'severity': translate_severity(alert),
             'rawJSON': json.dumps(alert)
         })
-    demisto.incidents(incidents)
-    demisto.setLastRun({'time': now})
+
+    return incidents, now
 
 
 try:
@@ -594,7 +595,9 @@ try:
     elif demisto.command() == 'redlock-search-config':
         redlock_search_config()
     elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
+        incidents, now = fetch_incidents()
+        demisto.incidents(incidents)
+        demisto.setLastRun({'time': now})
     else:
         raise Exception('Unrecognized command: ' + demisto.command())
 except Exception as err:
