@@ -1,7 +1,7 @@
 Find a campaign of emails based on their textual similarity.
 
 This script can be executed upon each new incoming Phishing incident.
-The script would search among past incidents whether past incidents with high text similarity to the current one exist. The script uses NLP techniques for calculating text similarity. 
+The script would search among past incidents whether past incidents with high text similarity to the current one exist. The script uses NLP techniques for calculating text similarity. The text similarity is calculated based on the email body and email subject fields of the phishing incident.
 If such incidents were found, the script would aggregate details regarding them, such as their senders, recipients, dates, mutual indicators, snippets from the email, etc.
 This script's purpose is to provide you an immediate background for phishing incidents when similar incidents exist, and furthermore, help you to detect phishing campaigns more  easily.
 
