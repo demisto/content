@@ -5,6 +5,7 @@ THRESHOLDS = {
     'relatedIndicatorCount': 1000,
 }
 
+
 def build_body(tenant_name):
     query = f"account:{tenant_name}" if tenant_name != "" else ""
     body = {
@@ -18,11 +19,9 @@ def build_body(tenant_name):
         'period': {
             'by': 'day',
             'fromValue': 90,
-        },
+        }
     }
     return body
-
-
 
 
 def main(args):
