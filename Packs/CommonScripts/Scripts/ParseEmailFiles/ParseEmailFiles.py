@@ -3389,12 +3389,14 @@ def get_utf_string(text, field):
 
 def mime_decode(encoded_string):
     word_mime_encoded = MIME_ENCODED_WORD.search(encoded_string)
-    prefix, charset, encoding, encoded_text, suffix = word_mime_encoded.groups()
-    if encoding.lower() == 'b':
-        byte_string = base64.b64decode(encoded_text)
-    elif encoding.lower() == 'q':
-        byte_string = quopri.decodestring(encoded_text)
-    return prefix + byte_string.decode(charset) + suffix
+    if word_mime_encoded:
+        prefix, charset, encoding, encoded_text, suffix = word_mime_encoded.groups()
+        if encoding.lower() == 'b':
+            byte_string = base64.b64decode(encoded_text)
+        elif encoding.lower() == 'q':
+            byte_string = quopri.decodestring(encoded_text)
+        return prefix + byte_string.decode(charset) + suffix
+    return ''
 
 
 def convert_to_unicode(s, is_msg_header=True):
@@ -3407,11 +3409,16 @@ def convert_to_unicode(s, is_msg_header=True):
                 word_mime_encoded = MIME_ENCODED_WORD.search(encode_decode_phrase)
                 if word_mime_encoded:
                     while word_mime_encoded:
+                        # encoded-word" is a sequence of printable ASCII characters that begins with "=?",
+                        # ends with "?=", and has two "?"s in between.
                         start_encoding_index = encode_decode_phrase.index("=?")
-                        end_encoding_index = encode_decode_phrase.index("?=")
-                        encoded_substring = encode_decode_phrase[start_encoding_index:end_encoding_index+2]  # index return the index where ?= starts, need to include him
-                        word_mime_decoded = mime_decode(encoded_substring)
-                        encode_decode_phrase = encode_decode_phrase[:start_encoding_index] + str(word_mime_decoded) + encode_decode_phrase[end_encoding_index+2:]
+                        end_encoding_index = encode_decode_phrase.index("?=") + 2
+                        # index return the index where "?=" starts, need to include it on the substring
+                        encoded_substring = encode_decode_phrase[start_encoding_index:end_encoding_index]
+                        decoded_substring = mime_decode(encoded_substring)
+                        encode_decode_phrase = encode_decode_phrase[:start_encoding_index] + decoded_substring +\
+                                               encode_decode_phrase[end_encoding_index:]
+
                         word_mime_encoded = MIME_ENCODED_WORD.search(encode_decode_phrase)
                     return encode_decode_phrase
 
@@ -3452,7 +3459,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         'To': msg_dict['To'],
         'CC': msg_dict['CC'],
         'From': msg_dict['From'],
-        'Subject': convert_to_unicode(headers_map.get('Subject')),
+        'Subject': headers_map.get('Subject'),
         'HTML': msg_dict['HTML'],
         'Text': msg_dict['Text'],
         'Headers': headers,
@@ -3777,7 +3784,8 @@ def main():
             output = create_email_output(email_data, attached_emails)
 
         elif any(eml_candidate in file_type_lower for eml_candidate in
-                 ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'multipart/alternative', 'multipart/mixed', 'message/rfc822',
+                 ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'multipart/alternative', 'multipart/mixed',
+                  'message/rfc822',
                   'application/pkcs7-mime', 'multipart/related']):
             if 'unicode (with bom) text' in file_type_lower:
                 email_data, attached_emails = handle_eml(
