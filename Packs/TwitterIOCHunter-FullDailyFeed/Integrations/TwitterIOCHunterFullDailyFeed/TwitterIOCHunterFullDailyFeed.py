@@ -45,7 +45,6 @@ def get_indicators_command(client, url, feed_tags=None, tlp_color=None):
                     'fields': {
                         'firstseenbysource': item.get('tweet').get('timestamp'),
                         'tags': feed_tags,
-                        'tweet': item.get('tweet').get('tweet'),
                         'reportedby': item.get('tweet').get('user')},
                     'rawJSON': item,
                     'score': 3
