@@ -402,6 +402,15 @@
                 "index": 8,
                 "sectionItemType": "field",
                 "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "associatedincidentgroups",
+                "height": 22,
+                "id": "9c15f300-f9f5-11eb-a64d-311eb0456683",
+                "index": 9,
+                "sectionItemType": "field",
+                "startCol": 0
               }
             ],
             "maxW": 3,

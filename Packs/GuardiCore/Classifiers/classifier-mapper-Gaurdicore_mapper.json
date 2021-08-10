@@ -7,6 +7,10 @@
     "Guardicore Incident": {
       "dontMapEventToLabels": false,
       "internalMapping": {
+        "Associated Incident Groups": {
+          "complex": null,
+          "simple": "incident_group.gname"
+        },
         "Close Time": {
           "complex": {
             "accessor": "",
