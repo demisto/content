@@ -103,6 +103,6 @@ tags:
 - file
 type: python
 fromversion: 5.0.0
+dockerimage: demisto/python:1.3-alpine
 tests:
 - No tests (auto formatted)
-dockerimage: demisto/python:1.3-alpine
