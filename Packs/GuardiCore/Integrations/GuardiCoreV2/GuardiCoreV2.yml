@@ -142,7 +142,7 @@ script:
       deprecated: false
       description: Display information about assets.
       execution: false
-      name: guardicore-search-endpoint
+      name: guardicore-search-asset
       outputs:
         - contextPath: Guardicore.Endpoint._id
           description: Guardicore Endpoint ID
@@ -1246,7 +1246,7 @@ script:
           required: false
           secret: false
       deprecated: false
-      description: Endpoint command (uses `guardicore-search-endpoint` internally).
+      description: Endpoint command (uses `guardicore-search-asset` internally).
       execution: false
       name: endpoint
       outputs:

@@ -501,7 +501,7 @@ def main() -> None:
             return_results(get_indicent(client, args))
         elif demisto.command() == 'guardicore-get-incidents':
             return_results(get_incidents(client, args))
-        elif demisto.command() == 'guardicore-search-endpoint':
+        elif demisto.command() == 'guardicore-search-asset':
             return_results(get_assets(client, args))
         elif demisto.command() == 'endpoint':
             return_results(endpoint_command(client, args))

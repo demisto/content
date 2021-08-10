@@ -28,14 +28,14 @@ This integration was integrated and tested with version 3.0.0 of the GuardiCore 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### guardicore-search-endpoint
+### guardicore-search-asset
 ***
 Display information about assets.
 
 
 #### Base Command
 
-`guardicore-search-endpoint`
+`guardicore-search-asset`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -111,7 +111,7 @@ Display information about assets.
 
 
 #### Command Example
-```!guardicore-search-endpoint ip_address=1.1.1.1```
+```!guardicore-search-asset ip_address=1.1.1.1```
 
 #### Context Example
 ```json
@@ -1122,7 +1122,7 @@ Display information about incidents.
 
 ### endpoint
 ***
-Endpoint command (uses `guardicore-search-endpoint` internally).
+Endpoint command (uses `guardicore-search-asset` internally).
 
 
 #### Base Command

@@ -74,8 +74,8 @@ tasks:
     task:
       id: 649f81cc-c539-4656-8c66-e4e3b2abf0f8
       version: -1
-      name: guardicore-search-endpoint
-      script: '|||guardicore-search-endpoint'
+      name: guardicore-search-asset
+      script: '|||guardicore-search-asset'
       type: regular
       iscommand: true
       brand: ""
