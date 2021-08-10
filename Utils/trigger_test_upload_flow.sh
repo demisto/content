@@ -6,10 +6,13 @@
 # fail
 # show fail message and quit
 # :param $1: message
-function fail() {
+# :param $2: Skip deleting branch
+function fail {
   echo "$1"
-  git checkout "${content_branch_name}"
-  git branch -D "${new_content_branch}" # delete local branch
+  if [ -z $2 ]; then
+    git checkout "${content_branch_name}"
+    git branch -D "${new_content_branch}" # delete local branch
+  fi
   exit 1
 }
 
@@ -23,12 +26,13 @@ function check_arguments {
   fi
 
   if [ -z "$gitlab_token" ] && [ -z "$circle_token" ]; then
-    fail "At least one token [-gt, --gitlab-ci-token] or [-ct, --circle-ci-token] is required."
+    fail "At least one token [-gt, --gitlab-ci-token] or [-ct, --circle-ci-token] is required." "skip"
   fi
 
   if [ -n "$force" ] && [ -z "$packs" ]; then
-    fail "You must provide a csv list of packs to force upload."
+    fail "You must provide a csv list of packs to force upload." "skip"
   fi
+
 }
 
 # copy_pack
@@ -333,6 +337,7 @@ function add_pack_to_landing_page {
 
 # trigger_circle_ci
 # Trigger Circleci uploading packs workflow.
+# :param 1: content branch
 # :circle_token: The ci token for circle.
 # :content_branch: Content branch to upload from.
 # :bucket: The name of the bucket to upload the packs to.
@@ -344,13 +349,14 @@ function trigger_circle_ci {
 
   post_data=$(cat <<-EOF
   {
-    "branch": "${new_content_branch}",
+    "branch": "$1",
     "parameters": {
       "gcs_market_bucket": "${bucket}",
       "bucket_upload": "${bucket_upload}",
       "force_pack_upload": "${force}",
       "packs_to_upload": "${packs}",
       "slack_channel": "${slack_channel}"
+
     }
   }
   EOF
@@ -366,28 +372,29 @@ function trigger_circle_ci {
 
 # trigger_gitlab_ci
 # Trigger GitLabci uploading packs workflow.
+# :param 1: content branch
 # :gitlab_token: The ci token for gitlab.
 # :new_content_branch: Content branch to upload from.
 # :bucket: The name of the bucket to upload the packs to.
 # :packs: CSV list of pack IDs.
 # :slack_channel: A slack channel to send notifications to.
 function trigger_gitlab_ci {
+  trigger_build_url="https://code.pan.run/api/v4/projects/2596/trigger/pipeline"  # disable-secrets-detection
+
   variables="variables[BUCKET_UPLOAD]=true"
   if [ -n "$_force" ]; then
     variables="variables[FORCE_BUCKET_UPLOAD]=true"
   fi
 
-  source Utils/gitlab_triggers/trigger_build_url.sh
-
   curl --request POST \
     --form token="${gitlab_token}" \
-    --form ref="${new_content_branch}" \
+    --form ref="$1" \
     --form "${variables}" \
     --form "variables[SLACK_CHANNEL]=${slack_channel}" \
     --form "variables[PACKS_TO_UPLOAD]=${packs}" \
     --form "variables[GCS_MARKET_BUCKET]=${bucket}" \
     --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
-    "$BUILD_TRIGGER_URL"
+    "$trigger_build_url"
 
 }
 
@@ -406,11 +413,13 @@ if [ "$#" -lt "1" ]; then
   [-cb, --content-branch]       The content branch name, if empty will run on master branch.
   [-gt, --gitlab-ci-token]      The ci token for gitlab, if provided wil run gitlab pipeline.
   [-ct, --circle-ci-token]      The ci token for circle, if provided wil run circle pipeline.
-  [-p, --path]                  The path of content, default is ~/dev/demistio/content
   [-gb, --bucket]               The name of the bucket to upload the packs to. Default is marketplace-dist-dev.
   [-f, --force]                 Whether to trigger the force upload flow.
   [-p, --packs]                 CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]        A slack channel to send notifications to. Default is dmst-bucket-upload.
+  [-p, --packs]                 CSV list of pack IDs. Mandatory when the --force flag is on.
+  [-cp, --content-path]         The path of content, default is ~/dev/demistio/content
+  [-pr, --production]           Whether to trigger the production upload flow.
   "
 fi
 
@@ -454,6 +463,14 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
+  -cp|--content-path) CONTENT_PATH="$2"
+    shift
+    shift;;
+
+  -pr|--production) production="$2"
+    shift
+    shift;;
+
   *)    # unknown option.
     shift;;
   esac
@@ -462,6 +479,15 @@ done
 # Setup
 cd "${CONTENT_PATH}" || fail
 check_arguments
+
+# If production flag is set - upload master branch
+if [ -n "$production" ]; then
+  trigger_circle_ci "master"
+  exit 1
+fi
+
+echo Not prod
+exit 0
 
 new_content_branch="${sdk_branch_name}_${content_branch_name}_UploadFlow_test"
 new_suffix="New"
@@ -474,15 +500,15 @@ existed_in_remote=$(git ls-remote --heads origin "${new_content_branch}")
 existed_in_local=$(git branch --list "${new_content_branch}")
 
 # Deletes the remote branch if exists
-if [[ -z ${existed_in_remote} ]]; then
+if [ -z "${existed_in_remote}" ]; then
   git push origin --delete "${new_content_branch}"
 fi
 # Deletes the local branch if exists
-if [[ -z ${existed_in_local} ]]; then
+if [ -z "${existed_in_local}" ]; then
   git branch -D "${new_content_branch}" # delete local branch
 fi
 
-git checkout -b "${new_content_branch}" || fail
+git checkout -b "${new_content_branch}" || fail "" "skip"
 
 # Changes
 if [ -n "$sdk_branch_name" ]; then
@@ -514,11 +540,11 @@ add_pack_to_landing_page "${new_pack_name}"
 git push origin "${new_content_branch}"
 
 if [ -n "$circle_token" ]; then
-  trigger_circle_ci
+  trigger_circle_ci "${new_content_branch}"
 fi
 
 if [ -n "$gitlab_token" ]; then
-  trigger_gitlab_ci
+  trigger_gitlab_ci "${new_content_branch}"
 fi
 echo ""
 
