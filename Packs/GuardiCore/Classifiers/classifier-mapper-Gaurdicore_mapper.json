@@ -8,34 +8,106 @@
       "dontMapEventToLabels": false,
       "internalMapping": {
         "Close Time": {
-          "complex": null,
-          "simple": "closed_time"
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "closed_time",
+            "transformers": [
+              {
+                "args": {},
+                "operator": "TimeStampToDate"
+              }
+            ]
+          },
+          "simple": ""
         },
         "End Time": {
-          "complex": null,
-          "simple": "end_time"
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "end_time",
+            "transformers": [
+              {
+                "args": {},
+                "operator": "TimeStampToDate"
+              }
+            ]
+          },
+          "simple": ""
         },
         "Last Update Time": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "last_updated_time",
+            "transformers": [
+              {
+                "args": {},
+                "operator": "TimeStampToDate"
+              }
+            ]
+          },
+          "simple": ""
+        },
+        "Source Hostname": {
           "complex": null,
-          "simple": "last_updated_time"
+          "simple": "source_asset.vm.name"
         },
         "Source IP": {
           "complex": null,
           "simple": "source_asset.ip"
         },
         "Start Time": {
-          "complex": null,
-          "simple": "start_time"
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "start_time",
+            "transformers": [
+              {
+                "args": {},
+                "operator": "TimeStampToDate"
+              }
+            ]
+          },
+          "simple": ""
         },
         "severity": {
           "complex": null,
           "simple": "severity"
+        },
+        "Tags": {
+          "complex": null,
+          "simple": "concatenated_tags.display_name"
+        },
+        "Destination Hostname": {
+          "complex": null,
+          "simple": "destination_asset.vm.name"
+        },
+        "Destination IP": {
+          "complex": null,
+          "simple": "destination_asset.ip"
         }
       }
     },
     "dbot_classification_incident_type_all": {
       "dontMapEventToLabels": true,
       "internalMapping": {
+        "Destination Hostname": {
+          "complex": null,
+          "simple": "destination_asset.vm.name"
+        },
+        "Destination IP": {
+          "complex": null,
+          "simple": "destination_asset.ip"
+        },
+        "Source Hostname": {
+          "complex": null,
+          "simple": "source_asset.vm.name"
+        },
+        "Source IP": {
+          "complex": null,
+          "simple": "source_asset.ip"
+        },
         "severity": {
           "complex": null,
           "simple": "severity"

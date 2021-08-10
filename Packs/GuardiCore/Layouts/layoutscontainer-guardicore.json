@@ -318,19 +318,19 @@
               },
               {
                 "endCol": 2,
-                "fieldId": "guardicoreendtime",
+                "fieldId": "lastupdatetime",
                 "height": 22,
-                "id": "109b5dc0-ed56-11eb-b6cc-d9d8af995038",
+                "id": "1631e0b0-ed56-11eb-b6cc-d9d8af995038",
                 "index": 1,
                 "sectionItemType": "field",
                 "startCol": 0
               },
               {
                 "endCol": 2,
-                "fieldId": "lastupdatetime",
+                "fieldId": "guardicoreendtime",
                 "height": 22,
-                "id": "1631e0b0-ed56-11eb-b6cc-d9d8af995038",
-                "index": 1,
+                "id": "109b5dc0-ed56-11eb-b6cc-d9d8af995038",
+                "index": 2,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -356,19 +356,50 @@
               },
               {
                 "endCol": 2,
-                "fieldId": "severity",
+                "fieldId": "sourceip",
                 "height": 22,
-                "id": "21b7dc00-ed56-11eb-b6cc-d9d8af995038",
+                "id": "2a5388a0-ed56-11eb-b6cc-d9d8af995038",
                 "index": 4,
                 "sectionItemType": "field",
                 "startCol": 0
               },
               {
+                "dropEffect": "move",
                 "endCol": 2,
-                "fieldId": "sourceip",
+                "fieldId": "sourcehostname",
                 "height": 22,
-                "id": "2a5388a0-ed56-11eb-b6cc-d9d8af995038",
+                "id": "cfd96810-f9c4-11eb-acfd-4543cef9e100",
                 "index": 5,
+                "listId": "caseinfoid-field-changed-caseinfoid-fe428ef0-ed55-11eb-b6cc-d9d8af995038",
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "destinationip",
+                "height": 22,
+                "id": "e2cc29c0-f9c0-11eb-acfd-4543cef9e100",
+                "index": 6,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "destinationhostname",
+                "height": 22,
+                "id": "cd8d5530-f9c4-11eb-acfd-4543cef9e100",
+                "index": 7,
+                "listId": "caseinfoid-field-changed-caseinfoid-fe428ef0-ed55-11eb-b6cc-d9d8af995038",
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "tags",
+                "height": 22,
+                "id": "f465a030-f9c0-11eb-acfd-4543cef9e100",
+                "index": 8,
                 "sectionItemType": "field",
                 "startCol": 0
               }
