@@ -67,6 +67,8 @@ MIRROR_DIRECTION: Dict[str, Optional[str]] = {
     'Mirror Offense': 'In',
     MIRROR_OFFENSE_AND_EVENTS: 'In'
 }
+MIRRORED_OFFENSES_CTX_KEY = 'mirrored_offenses'
+UPDATED_MIRRORED_OFFENSES_CTX_KEY = 'updated_mirrored_offenses'
 UTC_TIMEZONE = pytz.timezone('utc')
 ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
 ASCENDING_ID_ORDER = '+id'
@@ -1420,23 +1422,27 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     return incidents, new_highest_offense_id
 
 
-def update_mirrored_events_from_long_running(offenses: List,
-                                             client: Client,
+def update_mirrored_events_from_long_running(client: Client,
                                              events_columns: str,
-                                             events_limit: int):
+                                             events_limit: int,
+                                             context_data: dict,
+                                             mirror_options: str) -> list:
 
-    # get offenses from entries and offenses_ids
-    futures = []
-    for offense in offenses:
-        futures.append(EXECUTOR.submit(
-            enrich_offense_with_events,
-            client=client,
-            offense=offense,
-            fetch_mode=FetchMode.correlations_events_only.value,
-            events_columns=events_columns,
-            events_limit=events_limit,
-        ))
-    updated_offenses = [future.result() for future in futures]
+    offenses = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
+    updated_offenses = []
+    if len(offenses) > 0 and mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+        # get offenses from entries and offenses_ids
+        futures = []
+        for offense in offenses:
+            futures.append(EXECUTOR.submit(
+                enrich_offense_with_events,
+                client=client,
+                offense=offense,
+                fetch_mode=FetchMode.correlations_events_only.value,
+                events_columns=events_columns,
+                events_limit=events_limit,
+            ))
+        updated_offenses = [future.result() for future in futures]
 
     return updated_offenses
 
@@ -1473,7 +1479,6 @@ def long_running_execution_command(client: Client, params: Dict):
         params (Dict): Demisto params.
 
     """
-    context_data = get_integration_context()
     validate_long_running_params(params)
     fetch_mode = params.get('fetch_mode', '')
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
@@ -1503,22 +1508,22 @@ def long_running_execution_command(client: Client, params: Dict):
                 mirror_direction=mirror_direction
             )
 
-            evented_mirrored_offenses = context_data.get('mirrored_offenses', [])
-            if len(evented_mirrored_offenses) > 0 and mirror_options == MIRROR_OFFENSE_AND_EVENTS:
-                updated_mirrored_offenses = update_mirrored_events_from_long_running(client=client,
-                                                                                     offenses=evented_mirrored_offenses,
-                                                                                     events_columns=events_columns,
-                                                                                     events_limit=events_limit)
+            updated_mirrored_offenses = update_mirrored_events_from_long_running(client=client,
+                                                                                 events_columns=events_columns,
+                                                                                 events_limit=events_limit,
+                                                                                 context_data=ctx,
+                                                                                 mirror_options=mirror_options)
 
             # Reset was called during execution, skip creating incidents.
             if not incidents and not new_highest_id:
                 continue
 
             incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
+            print_debug_msg(f"DDDD: creating incidents after fetch: {True if incidents else False}")
             set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
                                      'last_mirror_update': ctx.get('last_mirror_update'),
-                                     'updated_mirrored_offenses': updated_mirrored_offenses,
-                                     'mirrored_offenses': []})
+                                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: updated_mirrored_offenses,
+                                     MIRRORED_OFFENSES_CTX_KEY: []})
 
             demisto.createIncidents(incidents)
 
@@ -2700,7 +2705,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
             'ContentsFormat': EntryFormat.JSON
         })
 
-    offenses_with_updated_events = context_data.get('updated_mirrored_offenses', [])
+    offenses_with_updated_events = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
     evented_offense = [evented_offense for evented_offense in offenses_with_updated_events
                        if evented_offense.get('id') == remote_args.remote_incident_id]
 
@@ -2708,9 +2713,10 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         if evented_offense[0].get('events'):
             offense['events'] = evented_offense[0].get('events')
 
-        offenses_with_updated_events.remove(evented_offense)
+        offenses_with_updated_events.remove(evented_offense[0])
 
-    set_integration_context({'updated_mirrored_offenses': offenses_with_updated_events})
+    context_data[UPDATED_MIRRORED_OFFENSES_CTX_KEY] = offenses_with_updated_events
+    set_integration_context(context_data)
 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
     final_offense_data = sanitize_outputs(enriched_offense)[0]
@@ -2741,6 +2747,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
         last_update_time = remote_args.last_update
     last_update = get_time_parameter(last_update_time, epoch_format=True)
 
+    demisto.debug("DDDD1: Getting offenses with get_modified_remote_data_command")
     offenses = client.offenses_list(range_=range_,
                                     filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}',
                                     sort='+last_persisted_time',
@@ -2750,7 +2757,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     current_last_update = ctx.get('last_mirror_update') if not offenses else offenses[-1].get('last_persisted_time')
     set_integration_context({'samples': ctx.get('samples', []), 'last_mirror_update': current_last_update,
                              LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY, 0),
-                             'mirrored_offenses': offenses})
+                             MIRRORED_OFFENSES_CTX_KEY: offenses})
 
     return GetModifiedRemoteDataResponse(new_modified_records_ids)
 
