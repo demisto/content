@@ -7,7 +7,7 @@
     "Guardicore Incident": {
       "dontMapEventToLabels": false,
       "internalMapping": {
-        "Associated Incident Groups": {
+        "GuardiCore Associated Incident Groups": {
           "complex": null,
           "simple": "incident_group.gname"
         },
