@@ -100,7 +100,7 @@ configuration:
   required: false
   type: 0
 description: Fetch the full daily feed from www.tweettioc.com/v1/tweets/daily/full
-display: TwitterIOCHunter - Full Daily Feed
+display: TwitterIOCHunter Feed
 name: TwitterIOCHunter - Full Daily Feed
 script:
   commands:
