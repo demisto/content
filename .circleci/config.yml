@@ -405,7 +405,7 @@ references:
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
+          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
@@ -1351,6 +1351,11 @@ jobs:
           name: Create and upload incident type, incident field, mapper and a layout to Cortex XSOAR
           command: python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $CIRCLE_ARTIFACTS
       - *upload_entities_to_cortex_xsoar
+      - run:
+          name: Zip and upload a pack to the Cortex XSOAR's marketpalce
+          command: |
+            printf "y\nZipPackTest\nZipPackTest\n1\n1\ny\ny\nZipPackTest\ny\n6.0.0" | demisto-sdk init -n ZipPackTest
+            demisto-sdk upload -i Packs/ZipPackTest -z --insecure
       - run:
           name: Download entities from Cortex XSOAR
           command: |
