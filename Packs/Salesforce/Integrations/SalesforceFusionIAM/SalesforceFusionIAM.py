@@ -1,3 +1,4 @@
+from CommonServerPython import *
 import traceback
 import urllib3
 
@@ -23,7 +24,7 @@ class Client(BaseClient):
         uri = URI_PREFIX + 'sobjects/User/testid'
         self._http_request(method='GET', url_suffix=uri)
 
-    def get_user_by_id(self, user_id: str) -> Optional[IAMUserAppData]:
+    def get_user_by_id(self, user_id: str) -> Optional['IAMUserAppData']:
         """ Queries the user in the application using REST API by its ID, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
@@ -47,7 +48,7 @@ class Client(BaseClient):
             return IAMUserAppData(user_id, username, is_active, res)
         return None
 
-    def get_user(self, email: str) -> Optional[IAMUserAppData]:
+    def get_user(self, email: str) -> Optional['IAMUserAppData']:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
@@ -78,7 +79,7 @@ class Client(BaseClient):
             return self.get_user_by_id(user_id)
         return None
 
-    def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
+    def create_user(self, user_data: Dict[str, Any]) -> 'IAMUserAppData':
         """ Creates a user in the application using REST API.
 
         :type user_data: ``Dict[str, Any]``
@@ -137,7 +138,7 @@ class Client(BaseClient):
 
         return self.get_user_by_id(user_id)
 
-    def disable_user(self, user_id: str) -> IAMUserAppData:
+    def disable_user(self, user_id: str) -> 'IAMUserAppData':
         """ Removes a user in the application using REST API.
 
         :type user_id: ``str``
@@ -173,9 +174,7 @@ class Client(BaseClient):
         return {field.get('name'): field.get('label') for field in fields}
 
     @staticmethod
-    def handle_exception(user_profile: IAMUserProfile,
-                         e: Union[DemistoException, Exception],
-                         action: IAMActions):
+    def handle_exception(user_profile, e, action):
         """ Handles failed responses from the application API by setting the User Profile object with the result.
             The result entity should contain the following data:
             1. action        (``IAMActions``)       The failed action                       Required
@@ -336,9 +335,7 @@ def main():
                      error=f'Traceback: {traceback.format_exc()}')
 
 
-import demistomock as demisto # noqa
-from CommonServerPython import * # noqa
-from IAMApiModule import * # noqa
+from IAMApiModule import * # noqa E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

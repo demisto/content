@@ -1,4 +1,4 @@
-from SalesforceFusionIAM import Client, get_mapping_fields
+from SalesforceFusionIAM import Client, main
 from IAMApiModule import *
 import requests_mock
 
@@ -142,7 +142,7 @@ class TestCRUDCommands:
         assert outputs.get('errorCode') == 500
         assert outputs.get('errorMessage') == 'INTERNAL SERVER ERROR: something has gone wrong on the website\'s server'
 
-    def test_create_user_command__success(self, mocker):
+    def test_create_user_command__success(self):
         """
         Given:
             - An app client object
@@ -174,7 +174,7 @@ class TestCRUDCommands:
         assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
         assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
 
-    def test_create_user_command__user_already_exists(self, mocker):
+    def test_create_user_command__user_already_exists(self):
         """
         Given:
             - An app client object
@@ -209,7 +209,7 @@ class TestCRUDCommands:
         assert outputs.get('details', {}).get('first_name') == 'mock_update_first_name'
         assert outputs.get('details', {}).get('last_name') == 'mock_update_last_name'
 
-    def test_update_user_command__non_existing_user(self, mocker):
+    def test_update_user_command__non_existing_user(self):
         """
         Given:
             - An app client object
@@ -270,7 +270,7 @@ class TestCRUDCommands:
         assert outputs.get('skipped') is True
         assert outputs.get('reason') == 'Command is disabled.'
 
-    def test_update_user_command__allow_enable(self, mocker):
+    def test_update_user_command__allow_enable(self):
         """
         Given:
             - An app client object
@@ -303,7 +303,7 @@ class TestCRUDCommands:
         assert outputs.get('details', {}).get('first_name') == 'mock_update_first_name'
         assert outputs.get('details', {}).get('last_name') == 'mock_update_last_name'
 
-    def test_disable_user_command__non_existing_user(self, mocker):
+    def test_disable_user_command__non_existing_user(self):
         """
         Given:
             - An app client object
@@ -332,29 +332,34 @@ class TestCRUDCommands:
         assert outputs.get('skipped') is True
         assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
 
-    def test_get_mapping_fields_command(self, mocker):
+    def test_get_mapping_fields_command__runs_the_all_integration_flow(self, mocker):
         """
         Given:
             - An app client object
         When:
             - User schema in the application contains the fields 'field1' and 'field2'
-            - Calling function get_mapping_fields_command
+            - Calling the main function with the get-mapping-fields command
         Then:
             - Ensure a GetMappingFieldsResponse object that contains the application fields is returned
         """
-        client = mock_client()
+        import demistomock as demisto
+        mocker.patch.object(demisto, 'command', return_value='get-mapping-fields')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'http://salesforcefusion.com'})
+        mock_result = mocker.patch('SalesforceFusionIAM.return_results')
+
         schema = {
             'result': [
                 {'name': 'field1', 'label': 'desc1'},
                 {'name': 'field2', 'label': 'desc2'},
             ]
         }
+
         with requests_mock.Mocker() as m:
-            m.get(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/describe/', json=schema)
+            m.get(f'http://salesforcefusion.com/api/now{URI_PREFIX}sobjects/FF__Key_Contact__c/describe/', json=schema)
 
-            mapping_response = get_mapping_fields(client)
+            main()
 
-        mapping = mapping_response.extract_mapping()
+        mapping = mock_result.call_args.args[0].extract_mapping()
 
         assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field1') == 'desc1'
         assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field2') == 'desc2'
