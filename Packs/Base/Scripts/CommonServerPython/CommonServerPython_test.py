@@ -2090,9 +2090,12 @@ class TestBaseClient:
 
     def test_http_request_json_negative(self, requests_mock):
         from CommonServerPython import DemistoException
-        requests_mock.get('http://example.com/api/v2/event', text='notjson')
-        with raises(DemistoException, match="Failed to parse json"):
+        text = 'notjson'
+        requests_mock.get('http://example.com/api/v2/event', text=text)
+        with raises(DemistoException, match="Failed to parse json") as exception:
             self.client._http_request('get', 'event')
+        assert exception.value.res
+        assert exception.value.res.text == text
 
     def test_http_request_text(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
