@@ -799,7 +799,7 @@ script:
         type: String
       - contextPath: Resilient.IncidentArtifact.description
         description: The description of the artifact.
-        type: Unknown
+        type: String
       - contextPath: Resilient.IncidentArtifact.attachment
         description: The files are attached to the artifact.
         type: Unknown
