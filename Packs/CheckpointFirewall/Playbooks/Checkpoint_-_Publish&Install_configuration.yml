@@ -65,7 +65,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: CheckPoint_FW
+                        simple: CheckPointFirewall_v2
                 - - operator: isEqualString
                     left:
                       value:
