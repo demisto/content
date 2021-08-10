@@ -42,7 +42,7 @@
                 "prevName": "Test 2",
                 "dataType": "indicators",
                 "widgetType": "bar",
-                "query": "type:\"Attack Pattern\" and investigationsCount:\u003e0",
+                "query": "type:\"Attack Pattern\" and investigationsCount:\u003e0 and -incident.type:\"MITRE ATT&CK CoA\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -167,7 +167,7 @@
                 "prevName": "",
                 "dataType": "indicators",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Initial Access\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Initial Access\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -287,7 +287,7 @@
                 "prevName": "",
                 "dataType": "indicators",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Execution\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Execution\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -407,7 +407,7 @@
                 "prevName": "",
                 "dataType": "indicators",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Persistence\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Persistence\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -527,7 +527,7 @@
                 "prevName": "",
                 "dataType": "indicators",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Privilege Escalation\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Privilege Escalation\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -647,7 +647,7 @@
                 "prevName": "",
                 "dataType": "indicators",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Defense Evasion\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Defense Evasion\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -767,7 +767,7 @@
                 "prevName": "",
                 "dataType": "indicators",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Discovery\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Discovery\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -887,7 +887,7 @@
                 "prevName": "",
                 "dataType": "indicators",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Lateral Movement\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Lateral Movement\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -1007,7 +1007,7 @@
                 "prevName": "",
                 "dataType": "indicators",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Collection\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Collection\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -1127,7 +1127,7 @@
                 "prevName": "",
                 "dataType": "indicators",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Command \u0026 Control\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Command \u0026 Control\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -1247,7 +1247,7 @@
                 "prevName": "",
                 "dataType": "indicators",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Exfiltration\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Exfiltration\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -1367,7 +1367,7 @@
                 "prevName": "",
                 "dataType": "indicators",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Impact\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Impact\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -1539,7 +1539,7 @@
                 "prevName": "",
                 "dataType": "indicators",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Credential Access\"",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Credential Access\" -incident.type:\"MITRE ATT&CK CoA\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
