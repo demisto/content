@@ -764,7 +764,7 @@ def main() -> None:
             result = mitigation_template_list_command(client, args)
         elif command == 'na-sightline-router-list':
             result = router_list_command(client, args)
-        elif command == 'na-sightline-managed-object-list':
+        elif command == 'na-sightline-managed-object':
             result = managed_object_list_command(client, args)
         elif command == 'na-sightline-tms-group-list':
             result = tms_group_list_command(client, args)
