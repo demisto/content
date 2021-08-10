@@ -265,8 +265,6 @@ def get_incidents(client: Client, args: Dict[str, Any]):
 
     raw_results = result.get("objects")
 
-    results = [ ]
-
     results = []
     for res in raw_results:
         row = filter_human_readable(res, human_columns=INCIDENT_COLUMNS)
