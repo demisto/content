@@ -478,16 +478,15 @@ done
 
 # Setup
 cd "${CONTENT_PATH}" || fail
+
 check_arguments
 
 # If production flag is set - upload master branch
 if [ -n "$production" ]; then
   trigger_circle_ci "master"
-  exit 1
+  exit 0
 fi
 
-echo Not prod
-exit 0
 
 new_content_branch="${sdk_branch_name}_${content_branch_name}_UploadFlow_test"
 new_suffix="New"
