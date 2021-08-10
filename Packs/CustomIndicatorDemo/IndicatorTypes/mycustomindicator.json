@@ -1,0 +1,28 @@
+{
+    "id": "MyCustomIndicator",
+    "version": -1,
+    "modified": "2021-08-09T15:19:50.306938+03:00",
+    "shouldCommit": false,
+    "regex": "custom_value",
+    "details": "MyCustomIndicator",
+    "prevDetails": "MyCustomIndicator",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "manualMapping": {
+        "param1": {
+            "simple": "custom.param1",
+            "complex": null
+        },
+        "param2": {
+            "simple": "custom.param2",
+            "complex": null
+        }
+    },
+    "expiration": 0,
+    "layout": "cfbb8100-4832-4f58-8b7e-094c3d1b443c",
+    "fromVersion": "5.5.0"
+}
