@@ -53,9 +53,8 @@ Search for incidents in your IBM Resilient system.
 
 ##### Input
 
-|     |     |
+| **Parameter** | **Description** |
 | --- | --- |
-| ** Parameter** | **Description** |
 | severity | Incident severity (comma separated)<br><br>* Low<br>* Medium<br>* High |
 | date-created-before | Created date of the incident before a specified date (YYYY-MM-DDTHH:MM:SSZ, for example, 2018-05-07T10:59:07Z) |
 | date-created-after | Created date of the incident after a specified (format YYYY-MM-DDTHH:MM:SSZ, for example, 2018-05-07T10:59:07Z) |
@@ -71,9 +70,8 @@ Search for incidents in your IBM Resilient system.
 
 ##### Context Output
 
-|     |     |
-| --- | --- |
 | **Path** | **Description** |
+| --- | --- |
 | Resilient.Incidents.CreateDate | Created date of the incident |
 | Resilient.Incidents.Name | Incident name |
 | Resilient.Incidents.DiscoveredDate | Discovered date of the incident |
@@ -84,12 +82,12 @@ Search for incidents in your IBM Resilient system.
 
 ##### Raw Output
 
-DiscoveredDate:2018-05-18T08:49:38Z
-Id:2112
-Name:Incident Name
-Owner:Owner Name
-Phase:Respond
-Severity:Low
+    DiscoveredDate:2018-05-18T08:49:38Z
+    Id:2112
+    Name:Incident Name
+    Owner:Owner Name
+    Phase:Respond
+    Severity:Low
 
 * * *
 
@@ -103,9 +101,8 @@ Updater an incident in your IBM Resilient system.
 
 ##### Input
 
-|     |     |
+| **Parameter** | **Description** |
 | --- | --- |
-| ** Parameter** | **Description** |
 | incident-id | Incident ID to update |
 | severity | Severity to update |
 | owner | User's full name set as the incident owner |
@@ -115,7 +112,7 @@ Updater an incident in your IBM Resilient system.
 | description | Incident description |
 | name | Incident name |
 | nist | NIST Attack Vectors (added to the current list of NIST attack vendors) |
-| other-fields | A json object of the form: {field\_name: new\_field_value}. For example: {"description": {"textarea": {"format": "html", "content": "The new description"}}, "name": {"text": "The new name"}}. Because of API limitations we currently support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea. In case of conflicts between the other-fields argument and the regular fields arguments, the other-fields will be taken.'  <br>![](https://github.com/demisto/content/raw/3322c5933388f2ea9c52dc9fe31a5feb52bc1050/Packs/IBMResilientSystems/doc_files/support_field_types.png) |
+| other-fields | A json object of the form: {field\_name: new\_field_value}. For example: {"description": {"textarea": {"format": "html", "content": "The new description"}}, "name": {"text": "The new name"}}. Because of API limitations we currently support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea. In case of conflicts between the other-fields argument and the regular fields arguments, the other-fields will be taken.  <br>![](https://github.com/demisto/content/raw/3322c5933388f2ea9c52dc9fe31a5feb52bc1050/Packs/IBMResilientSystems/doc_files/support_field_types.png) |
 
 ##### Context Output
 
@@ -123,7 +120,7 @@ There is no context output for this command.
 
 ##### Raw Output
 
-Incident was updated successfully.
+    Incident was updated successfully.
 
 * * *
 
@@ -137,16 +134,14 @@ Get a list of members associated with the incident.
 
 ##### Input
 
-|     |     |
+| **Parameter** | **Description** |
 | --- | --- |
-| ** Parameter** | **Description** |
 | incident-id | Incident ID to get members of |
 
 ##### Context Output
 
-|     |     |
-| --- | --- |
 | **Path** | **Description** |
+| --- | --- |
 | Resilient.Incidents.Id | Incident ID |
 | Resilient.Incidents.Members.FirstName | Member's first name |
 | Resilient.Incidents.Members.LastName | Member's last name |
@@ -155,20 +150,20 @@ Get a list of members associated with the incident.
 
 ##### Raw Output
 
-\[  
-   {  
-     Email:user1@mail.com 
-     FirstName:User1First 
-     ID:4      
-     LastName:User1Last
-   },
-   {  
-      Email:demisto@demisto.com 
-      FirstName:Demisto 
-      ID:1
-      LastName:Demisto
-   }
-\]
+    [  
+       {  
+         Email:user1@mail.com 
+         FirstName:User1First 
+         ID:4      
+         LastName:User1Last
+       },
+       {  
+          Email:demisto@demisto.com 
+          FirstName:Demisto 
+          ID:1
+          LastName:Demisto
+       }
+    ]
 
 * * *
 
@@ -182,16 +177,14 @@ Get information for an incident.
 
 ##### Input
 
-|     |     |
+| **Parameter** | **Description** |
 | --- | --- |
-| ** Parameter** | **Description** |
 | incident-id | Incident ID to get information for |
 
 ##### Context Output
 
-|     |     |
-| --- | --- |
 | **Path** | **Description** |
+| --- | --- |
 | Resilient.Incidents.CreateDate | Created date of the incident |
 | Resilient.Incidents.Name | Incident name |
 | Resilient.Incidents.Resolution | Incident resolution |
@@ -209,25 +202,25 @@ Get information for an incident.
 
 ##### Raw Output
 
-{
-    Confirmed:false
-    CreatedDate:2018-05-22T23:47:25Z
-    DateOccurred:2018-03-30T04:00:00Z
-    Description:Desciprion
-    DiscoveredDate:2018-05-01T04:00:00Z
-    DueDate:2018-05-31T04:00:00Z
-    ExposureType:Individual
-    Id:2111
-    Name:Incident name
-    NegativePr:true
-    NistAttackVectors:External/RemovableMedia
-    Owner:Owner name
-    Phase:Initial
-    Reporter:Reporter name
-    Resolution:Unresolved
-    ResolutionSummary:summary
-    Severity:Low
-}
+    {
+        Confirmed:false
+        CreatedDate:2018-05-22T23:47:25Z
+        DateOccurred:2018-03-30T04:00:00Z
+        Description:Desciprion
+        DiscoveredDate:2018-05-01T04:00:00Z
+        DueDate:2018-05-31T04:00:00Z
+        ExposureType:Individual
+        Id:2111
+        Name:Incident name
+        NegativePr:true
+        NistAttackVectors:External/RemovableMedia
+        Owner:Owner name
+        Phase:Initial
+        Reporter:Reporter name
+        Resolution:Unresolved
+        ResolutionSummary:summary
+        Severity:Low
+    }
 
 * * *
 
@@ -241,9 +234,8 @@ Update information for a member associated with an incident.
 
 ##### Input
 
-|     |     |
+| **Parameter** | **Description** |
 | --- | --- |
-| ** Parameter** | **Description** |
 | incident-id | Incident ID to get information for |
 | members | Members' IDs to set (comma separated) |
 
@@ -253,10 +245,10 @@ There is no context output for this command.
 
 ##### Raw Output
 
-Email:demisto@demisto.com
-FirstName:Demisto
-ID:1
-LastName:Demisto
+    Email:demisto@demisto.com
+    FirstName:Demisto
+    ID:1
+    LastName:Demisto
 
 * * *
 
@@ -278,20 +270,20 @@ There is no context output for this command.
 
 ##### Raw Output
 
-\[
-  {
-    Email:demistodev@demisto.com
-    FirstName:Demisto
-    ID:3
-    LastName:Developer
-  },
-  {
-    Email:demisto@demisto.com
-    FirstName:Demisto
-    ID:1
-    LastName:Demisto
-  }
-\]
+    [
+      {
+        Email:demistodev@demisto.com
+        FirstName:Demisto
+        ID:3
+        LastName:Developer
+      },
+      {
+        Email:demisto@demisto.com
+        FirstName:Demisto
+        ID:1
+        LastName:Demisto
+      }
+    ]
 
 * * *
 
@@ -305,9 +297,8 @@ Close an incident in the IBM Resilient system.
 
 ##### Input
 
-|     |     |
+| **Parameter** | **Description** |
 | --- | --- |
-| ** Parameter** | **Description** |
 | incident-id | ID of the incident to close |
 
 ##### Context Output
@@ -316,7 +307,7 @@ There is no context output for this command.
 
 ##### Raw Output
 
-Incident 2111 was closed.
+    Incident 2111 was closed.
 
 * * *
 
@@ -330,9 +321,8 @@ Create an incident in the IBM Resilient system.
 
 ##### Input
 
-|     |     |
+| **Parameter** | **Description** |
 | --- | --- |
-| ** Parameter** | **Description** |
 | name | Incident name |
 
 ##### Context Output
@@ -341,7 +331,7 @@ There is no context output for this command.
 
 ##### Raw Output
 
-Incident  was created.
+    Incident  was created.
 
 * * *
 
@@ -355,16 +345,14 @@ Return artifacts for an incident in the IBM Resilient system.
 
 ##### Input
 
-|     |     |
+| **Parameter** | **Description** |
 | --- | --- |
-| ** Parameter** | **Description** |
 | incident-id | Incident ID to get artifacts for |
 
 ##### Context Output
 
-|     |     |
-| --- | --- |
 | **Path** | **Description** |
+| --- | --- |
 | Resilient.Incidents.Id | Incident ID |
 | Resilient.Incidents.Name | Incident name |
 | Resilient.Incidents.Artifacts.CreatedDate | Artifact created date |
@@ -382,24 +370,24 @@ Return artifacts for an incident in the IBM Resilient system.
 
 ##### Raw Output
 
-{
-  "Attachments":
     {
-       "ContentType":"application/json",
-       "CreatedDate":"2018-05-27T06:54:53Z",
-       "Creator":"CreatorName",
-       "ID":"4",
-       "Name":"artifact.json",
-       "Size":"3627"
-    },
-    {
-       "CreatedDate":"2018-05-27T06:54:53Z",
-       "Creator":"CreatorName",
-       "ID":"5",
-       "Type":"Email Attachment",
-       "Value":"artifact.json"
+      "Attachments":
+        {
+           "ContentType":"application/json",
+           "CreatedDate":"2018-05-27T06:54:53Z",
+           "Creator":"CreatorName",
+           "ID":"4",
+           "Name":"artifact.json",
+           "Size":"3627"
+        },
+        {
+           "CreatedDate":"2018-05-27T06:54:53Z",
+           "Creator":"CreatorName",
+           "ID":"5",
+           "Type":"Email Attachment",
+           "Value":"artifact.json"
+        }
     }
-}
 
 * * *
 
@@ -413,16 +401,14 @@ Return attachments for an incident in the IBM Resilient system.
 
 ##### Input
 
-|     |     |
+| **Parameter** | **Description** |
 | --- | --- |
-| ** Parameter** | **Description** |
 | incident-id | Incident ID to get attachments for |
 
 ##### Context Output
 
-|     |     |
-| --- | --- |
 | **Path** | **Description** |
+| --- | --- |
 | Resilient.Incidents.Id | Incident ID |
 | Resilient.Incidents.Name | Incident name |
 | Resilient.Incidents.Owner | Incident owner |
@@ -435,14 +421,14 @@ Return attachments for an incident in the IBM Resilient system.
 
 ##### Raw Output
 
-{
-  "ContentType":"image/png",
-  "CreatedDate":"2018-05-28T06:40:28Z",
-  "Creator":"CreatorName",
-  "ID":"7",
-  "Name":"image.png",
-  "Size":"4491"
-}
+    {
+      "ContentType":"image/png",
+      "CreatedDate":"2018-05-28T06:40:28Z",
+      "Creator":"CreatorName",
+      "ID":"7",
+      "Name":"image.png",
+      "Size":"4491"
+    }
 
 * * *
 
@@ -456,16 +442,14 @@ Get incidents related to a specified incident in the IBM Resilient system.
 
 ##### Input
 
-|     |     |
+| **Parameter** | **Description** |
 | --- | --- |
-| ** Parameter** | **Description** |
 | incident-id | Incident ID to get related incidents for |
 
 ##### Context Output
 
-|     |     |
-| --- | --- |
 | **Path** | **Description** |
+| --- | --- |
 | Resilient.Incidents.Id | Incident ID |
 | Resilient.Incidents.Related.CreatedDate | Created date of related incident |
 | Resilient.Incidents.Related.Name | Name of related incident |
@@ -477,28 +461,30 @@ Get incidents related to a specified incident in the IBM Resilient system.
 
 ##### Raw Output
 
-\[
-{
-"Artifacts":\[
-{
-   "CreatedDate":"2018-05-27T06:26:37Z",
-   "Creator":"v",
-   "ID":3
-},
-{
-   "CreatedDate":"2018-05-27T06:29:49Z",
-   "Creator":"CreatorName",
-   "Description":"atta",
-   "ID":"4"
-},
-{
-"CreatedDate":"2018-04-27T23:01:10Z",
-"ID":2095,
-"Name":"test Incident 1 - Email",
-"Status":"Active"
-}
-\]
-\]
+    [
+        {
+            "artifacts": [
+                {
+                    "CreatedDate":"2018-05-27T06:26:37Z",
+                    "Creator":"v",
+                    "ID":3
+                },
+                {
+                    "CreatedDate":"2018-05-27T06:29:49Z",
+                    "Creator":"CreatorName",
+                    "Description":"atta",
+                    "ID":"4"
+                },
+                {
+                    "CreatedDate":"2018-04-27T23:01:10Z",
+                    "ID":2095,
+                    "Name":"test Incident 1 - Email",
+                    "Status":"Active"
+                }
+            ],
+        }
+    ]
+
 
 * * *
 
@@ -512,16 +498,14 @@ Get tasks for an incident in the IBM Resilient system.
 
 ##### Input
 
-|     |     |
+| **Parameter** | **Description** |
 | --- | --- |
-| ** Parameter** | **Description** |
 | incident-id | Incident ID to get tasks for |
 
 ##### Context Output
 
-|     |     |
-| --- | --- |
 | **Path** | **Description** |
+| --- | --- |
 | Resilient.Incidents.Id | Incident ID |
 | Resilient.Incidents.Name | Incident name |
 | Resilient.Incidents.Tasks.Category | Task category |
@@ -535,28 +519,28 @@ Get tasks for an incident in the IBM Resilient system.
 
 ##### Raw Output
 
-\[
-{
-"Category":"Initial"
-"Creator":"CreatorName"
-DueDate:2018-05-31T04:00:00Z
-ID:2251303
-Name:task
-Required:true
-Status:Open
-},
-{
-Category:Respond
-Creator:CreatorName
-DueDate:2018-05-15T04:00:00Z
-Form:data_compromised
-ID:2251302
-Instructions:It is critical to determine whether personal information was foreseeably compromised or exposed. If so, this will drive a series of activities based on a myriad of breach notification regulations. Perform the necessary research to determine whether any personal information was possibly exposed to unauthorized individuals and update the value of the Data Compromised field and the information on the Incident Breach Information tab above or on the Details tab on the incident.
-Name:Investigate exposure of PI
-Required:true
-Status:Closed
-}
-\]
+    [
+        {
+            "Category":"Initial"
+            "Creator":"CreatorName"
+            DueDate:2018-05-31T04:00:00Z
+            ID:2251303
+            Name:task
+            Required:true
+            Status:Open
+        },
+        {
+            Category:Respond
+            Creator:CreatorName
+            DueDate:2018-05-15T04:00:00Z
+            Form:data_compromised
+            ID:2251302
+            Instructions:It is critical to determine whether personal information was foreseeably compromised or exposed. If so, this will drive a series of activities based on a myriad of breach notification regulations. Perform the necessary research to determine whether any personal information was possibly exposed to unauthorized individuals and update the value of the Data Compromised field and the information on the Incident Breach Information tab above or on the Details tab on the incident.
+            Name:Investigate exposure of PI
+            Required:true
+            Status:Closed
+        }
+    ]
 
 * * *
 
@@ -570,17 +554,15 @@ Add a note to an incident.
 
 ##### Input
 
-|     |     |
+| **Parameter** | **Description** |
 | --- | --- |
-| ** Parameter** | **Description** |
 | incident-id | Incident ID to add the note there |
 | note | The text of the note |
 
 ##### Context Output
 
-|     |     |
-| --- | --- |
 | **Path** | **Description** |
+| --- | --- |
 | Resilient.IncidentNote.type | The type of the note (incident or task) |
 | Resilient.IncidentNote.id | The note's ID |
 | Resilient.IncidentNote.parent_id | The ID of the parent note (null for top-level note) |
@@ -612,7 +594,7 @@ Add a note to an incident.
 
 ##### Raw Output
 
-The note was added successfully to incident 2111.
+    The note was added successfully to incident 2111.
 
 * * *
 
@@ -626,9 +608,8 @@ Add an artifact to an incident.
 
 ##### Input
 
-|     |     |
+| **Parameter** | **Description** |
 | --- | --- |
-| ** Parameter** | **Description** |
 | incident-id | Incident ID to add the artifact there |
 | artifact-type | The type of the artifact |
 | artifact-value | The value of the artifact |
@@ -636,9 +617,8 @@ Add an artifact to an incident.
 
 ##### Context Output
 
-|     |     |
-| --- | --- |
 | **Path** | **Description** |
+| --- | --- |
 | Resilient.IncidentArtifact.id | The id of the artifact |
 | Resilient.IncidentArtifact.type | The type of the artifact |
 | Resilient.IncidentArtifact.value | The value of the artifact, this would be for example the IP address for an IP address artifact |
@@ -682,4 +662,4 @@ Add an artifact to an incident.
 
 ##### Raw Output
 
-The artifact was added successfully to incident 2111.
+    The artifact was added successfully to incident 2111.
