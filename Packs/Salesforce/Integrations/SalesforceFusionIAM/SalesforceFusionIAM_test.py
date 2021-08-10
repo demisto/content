@@ -1,4 +1,3 @@
-from requests import Response, Session
 from SalesforceFusionIAM import Client, get_mapping_fields
 from IAMApiModule import *
 import requests_mock

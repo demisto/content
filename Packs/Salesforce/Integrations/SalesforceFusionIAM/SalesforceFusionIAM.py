@@ -1,6 +1,5 @@
 import traceback
 import urllib3
-from IAMApiModule import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -46,6 +45,7 @@ class Client(BaseClient):
             is_active = True
 
             return IAMUserAppData(user_id, username, is_active, res)
+        return None
 
     def get_user(self, email: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
@@ -71,12 +71,12 @@ class Client(BaseClient):
             params=params
         )
 
-        if res:
-            user_app_data = res.get('searchRecords', [])
+        user_app_data = res.get('searchRecords', [])
 
-            if user_app_data:
-                user_id = user_app_data[0].get('Id')
-                return self.get_user_by_id(user_id)
+        if user_app_data:
+            user_id = user_app_data[0].get('Id')
+            return self.get_user_by_id(user_id)
+        return None
 
     def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
         """ Creates a user in the application using REST API.
@@ -336,8 +336,9 @@ def main():
                      error=f'Traceback: {traceback.format_exc()}')
 
 
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto # noqa
+from CommonServerPython import * # noqa
+from IAMApiModule import * # noqa
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
