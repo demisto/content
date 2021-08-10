@@ -27,7 +27,6 @@ def get_non_contributor_stale_branch_names(repo: Repository) -> List[str]:  # no
     """
     # set now with GMT timezone
     now = datetime.now(timezone.min)
-    organization = 'demisto'
     branch_names = []
     all_branches = repo.get_branches()
     print(f'{all_branches.totalCount=}')
