@@ -1,14 +1,11 @@
 import demistomock as demisto  # noqa: F401
-import requests
 from CommonServerPython import *  # noqa: F401
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
 
 
-def test_module(url):
-    result = requests.get(url)
-    if result.status_code == 200:
+def test_module(client, url):
+    result = client._http_request('GET', full_url=url)
+    if isinstance(result,list):
         return 'ok'
     else:
         return 'Test failed: ' + str(result)
@@ -79,7 +76,7 @@ def main():
             proxy=proxy)
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(url)
+            result = test_module(client, url)
             demisto.results(result)
         elif demisto.command() == 'fetch-indicators':
             indicators = get_indicators_command(client, url, feed_tags, tlp_color)
