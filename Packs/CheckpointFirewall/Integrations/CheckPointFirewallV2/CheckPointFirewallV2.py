@@ -66,7 +66,7 @@ class Client(BaseClient):
     def logout(self) -> str:
         """logout from current session, returning the response message"""
         response = self._http_request(method='POST', url_suffix='logout', headers=self.headers)
-        self.sid: Optional[str] = None
+        self.sid = None
         demisto.setIntegrationContext({})
         return response.get('message')
 
@@ -1957,6 +1957,9 @@ def main():
         elif command == 'checkpoint-package-list':
             return_results(checkpoint_list_package_command(client, **demisto.args()))
 
+        else:
+            raise NotImplementedError(f"Unknown command {demisto.command()}.")
+
         if not stay_logged_in:
             client.logout()
 
@@ -1968,12 +1971,12 @@ def main():
             status = e.res.http_status
             if status == 401:
                 error_text_parts.extend(
-                    (f'The current session is unreachable.  All changes done after last publish are saved.',
+                    ('The current session is unreachable.  All changes done after last publish are saved.',
                      'Please contact IT for more information.'))
                 demisto.setIntegrationContext({})
 
             elif status == 500:
-                error_text_parts.append(f'Server Error: make sure Server URL and Server Port are correctly set')
+                error_text_parts.append('Server Error: make sure Server URL and Server Port are correctly set')
                 demisto.setIntegrationContext({})
 
         elif 'Missing header: [X-chkp-sid]' in e_message \
