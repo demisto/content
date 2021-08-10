@@ -356,7 +356,7 @@ def rasterize_pdf_command():
     password = demisto.args().get('pdfPassword')
     max_pages = int(demisto.args().get('maxPages', 30))
     horizontal = demisto.args().get('horizontal', 'false') == 'true'
-    filename = demisto.args.get('filename', 'image')
+    filename = demisto.args().get('filename', 'image')
 
     file_path = demisto.getFilePath(entry_id).get('path')
 
