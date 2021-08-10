@@ -213,7 +213,7 @@ def unite_all_tweets_into_dict(twitter_response: Dict[str, Any]) -> None:
 
     if is_empty_response(twitter_response):
         raise ValueError('The response from the API is empty.')
-    response_data = twitter_response.setdefault('data', [])
+    response_data = twitter_response.get('data', [])
     united_data: Dict[str, List[str]] = {}
     for tweet in response_data:
         for ioc_type, iocs in tweet.get('data').items():
