@@ -25,7 +25,7 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
-  display: ""
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -34,12 +34,12 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- defaultvalue: "20160"
-  display: ""
+- defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: "240"
+- defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
@@ -54,19 +54,19 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
+  required: false
   type: 8
-  required: false
-- display: Indicator Reputation
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  display: Indicator Reputation
   name: feedReputation
-  type: 18
-  required: false
   options:
   - None
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  required: false
+  type: 18
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
@@ -91,7 +91,7 @@ script:
   - arguments: []
     description: Get Indicators from TwitterIOCHunter
     name: twitteriochunter-get-indicators
-  dockerimage: demisto/python3:3.9.5.20958
+  dockerimage: demisto/python3:3.9.6.22912
   feed: true
   isFetchSamples: true
   runonce: false
