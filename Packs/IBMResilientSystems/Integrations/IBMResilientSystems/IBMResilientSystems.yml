@@ -909,17 +909,6 @@ script:
       - contextPath: Resilient.IncidentArtifact.ip.destination
         description: The IP address is a destination.
         type: Boolean
-  - arguments:
-    - default: false
-      description: The ID of the incident.
-      isArray: false
-      name: incident-id
-      required: true
-      secret: false
-    deprecated: false
-    description: Delete an incident.
-    execution: false
-    name: rs-delete-incident
   dockerimage: demisto/resilient:1.0.0.23135
   feed: false
   isfetch: true
