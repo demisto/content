@@ -22,10 +22,6 @@ function check_arguments {
     content_branch_name=$(git branch --show-current)
   fi
 
-  if [ -z "$sdk_branch_name" ]; then
-    sdk_branch_name="master"
-  fi
-
   if [ -z "$gitlab_token" ] && [ -z "$circle_token" ]; then
     fail "At least one token [-gt, --gitlab-ci-token] or [-ct, --circle-ci-token] is required."
   fi
@@ -489,7 +485,9 @@ fi
 git checkout -b "${new_content_branch}" || fail
 
 # Changes
-change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
+if [ -n "$sdk_branch_name" ]; then
+  change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
+fi
 
 # New Pack
 array=("Hello_World" "Hello World" "helloworld" "Sanity_Test")
