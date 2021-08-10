@@ -43,7 +43,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 13. [Add a note to an incident: rs-add-note](#add-a-note-to-an-incident-rs-add-note)
 14. [Add an artifact to an incident: rs-add-artifact](#add-an-artifact-to-an-incident-rs-add-artifact)
 
-### search for incidents: rs-search-incidents
+### Search for incidents: rs-search-incidents
 
 Search for incidents in your IBM Resilient system.
 
