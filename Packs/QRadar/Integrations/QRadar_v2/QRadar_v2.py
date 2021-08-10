@@ -57,6 +57,7 @@ API_USERNAME = "_api_token_key"
 TERMINATING_SEARCH_STATUSES = {"CANCELED", "ERROR", "COMPLETED"}
 EVENT_TIME_FIELDS = ["starttime"]
 ASSET_TIME_FIELDS = ['created', 'last_reported', 'first_seen_scanner', 'last_seen_scanner']
+ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
 EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 
 
@@ -898,6 +899,31 @@ def try_create_search_with_retry(client, events_query, offense, max_retries=None
     return query_status, search_id
 
 
+def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) -> int:
+    """
+    Receives the highest offense ID saved from last run, and user query.
+    Checks if user query has a limitation for a minimum ID.
+    If such ID exists, returns the maximum between 'highest_offense_id' and the minimum ID
+    limitation received by the user query.
+    Args:
+        highest_offense_id (int): Minimum ID to fetch offenses by from last run.
+        user_query (Optional[str]): User query for QRadar service.
+
+    Returns:
+        (int): The Minimum ID to fetch offenses by.
+    """
+    if user_query:
+        id_query = ID_QUERY_REGEX.search(user_query)
+        if id_query:
+            id_query_raw = id_query.group(0)
+            operator = '>=' if '>=' in id_query_raw else '>'
+            # safe to int parse without catch because regex checks for number
+            user_offense_id = int(id_query.group(0).split(operator)[1].strip())
+            user_lowest_offense_id = user_offense_id if operator == '>' else user_offense_id - 1
+            return max(highest_offense_id, user_lowest_offense_id)
+    return highest_offense_id
+
+
 def fetch_raw_offenses(client: QRadarClient, offense_id, user_query):
     """
     Use filter frames based on id ranges: "id>offense_id AND id<(offense_id+incidents_per_fetch)"
@@ -908,16 +934,7 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query):
              yes - fetch with increments until manage to fetch (or until limit is reached - dead condition)
              no  - finish fetch-incidents
     """
-    # try to adjust start_offense_id to user_query start offense id
-    try:
-        if isinstance(user_query, str) and "id>" in user_query.replace(' ', ''):
-            user_offense_id = int(user_query.split("id>")[1].split(" ")[0])
-            if user_offense_id > offense_id:
-                offense_id = user_offense_id
-    except ValueError:
-        pass
-
-    # fetch offenses
+    offense_id = get_minimum_id_to_fetch(offense_id, user_query)
     raw_offenses, fetch_query = seek_fetchable_offenses(client, offense_id, user_query)
     if raw_offenses:
         print_debug_msg(f"Fetched {fetch_query}successfully.", client.lock)
