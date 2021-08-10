@@ -338,7 +338,7 @@ class TestSalesforceFusionIAM:
         """
         import demistomock as demisto
         mocker.patch.object(demisto, 'command', return_value='get-mapping-fields')
-        mocker.patch.object(demisto, 'params', return_value={'url': 'http://salesforcefusion.com'})
+        mocker.patch.object(demisto, 'params', return_value={'url': 'http://example.com'})
         mock_result = mocker.patch('SalesforceFusionIAM.return_results')
 
         schema = {
@@ -349,7 +349,7 @@ class TestSalesforceFusionIAM:
         }
 
         with requests_mock.Mocker() as m:
-            m.get(f'http://salesforcefusion.com/api/now{URI_PREFIX}sobjects/FF__Key_Contact__c/describe/', json=schema)
+            m.get(f'http://example.com/api/now{URI_PREFIX}sobjects/FF__Key_Contact__c/describe/', json=schema)
 
             main()
 
