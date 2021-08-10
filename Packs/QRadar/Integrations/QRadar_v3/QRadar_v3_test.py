@@ -1089,10 +1089,10 @@ class MockResults:
                             'with_updated_removed': [{'samples': [], 'last_mirror_update': 2,
                                                      LAST_FETCH_KEY: 0,
                                                      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '11',
-                                                                                         'last_persisted_time': 3,
-                                                                                         'events': [{'event_id': '22'},
-                                                                                                    {'event_id': '33'}]
-                                                                                         }],
+                                                                                          'last_persisted_time': 3,
+                                                                                          'events': [{'event_id': '22'},
+                                                                                                     {'event_id': '33'}]
+                                                                                          }],
                                                      MIRRORED_OFFENSES_CTX_KEY: []},
                                                      {'samples': [], 'last_mirror_update': 2,
                                                      LAST_FETCH_KEY: 0,
