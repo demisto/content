@@ -1615,18 +1615,17 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
         elif update_type == 'ProgressStatus':
             # handle issue closure
             if previous_value not in ISSUE_PROGRESS_STATUS_CLOSED and new_value in ISSUE_PROGRESS_STATUS_CLOSED:
-                close_reason = EXPANSE_RESOLVEDSTATUS_TO_XSOAR[
-                    new_value] if new_value in EXPANSE_RESOLVEDSTATUS_TO_XSOAR else 'Other'
-                resolve_comment = latest_comment['value'] if 'value' in latest_comment else ''
+                close_reason = EXPANSE_RESOLVEDSTATUS_TO_XSOAR.get(new_value, 'Other')
+                resolve_comment = latest_comment.get('value', '')
                 demisto.debug(f'Closing Expanse issue {parsed_args.remote_incident_id}')
                 new_entries.append({
                     'Type': EntryType.NOTE,
                     'Contents': {
                         'dbotIncidentClose': True,
                         'closeReason': close_reason,
-                        'closeNotes': resolve_comment
+                        'closeNotes': resolve_comment,
                     },
-                    'ContentsFormat': EntryFormat.JSON
+                    'ContentsFormat': EntryFormat.JSON,
                 })
                 incident_updates['closeReason'] = close_reason
                 incident_updates['closeNotes'] = resolve_comment
@@ -1637,9 +1636,9 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
                 new_entries.append({
                     'Type': EntryType.NOTE,
                     'Contents': {
-                        'dbotIncidentReopen': True
+                        'dbotIncidentReopen': True,
                     },
-                    'ContentsFormat': EntryFormat.JSON
+                    'ContentsFormat': EntryFormat.JSON,
                 })
 
                 incident_updates['closeReason'] = None
