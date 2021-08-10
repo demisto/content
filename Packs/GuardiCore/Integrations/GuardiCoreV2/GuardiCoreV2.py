@@ -437,7 +437,7 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> \
             id=res.get("_id"),
             os_version=res.get("guest_agent_details", {}).get(
                 "os_details", {}).get("os_display_name"),
-            ip_address=", ".join(res.get("ip_addresses", [])),
+            ip_address=res.get("ip_addresses", []),
             mac_address=", ".join(res.get("mac_addresses", [])),
             os=map_guardicore_os(res.get("guest_agent_details", {}).get("os")),
             status='Online' if res.get('status') == "on" else 'Offline',
