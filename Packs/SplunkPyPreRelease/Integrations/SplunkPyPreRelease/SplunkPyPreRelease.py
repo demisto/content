@@ -1,13 +1,9 @@
 import hashlib
 import io
-import json
-import re
 import ssl
-from datetime import timedelta, datetime
 
 import dateparser
 import pytz
-import requests
 import splunklib.client as client
 import splunklib.results as results
 import urllib2
@@ -328,7 +324,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
         extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - '
                       'Next run time with too many incidents:  {}'.format(last_run_time))
         new_last_run = {
-            'time': last_run_time,
+            'time': occured_start_time,
             'offset': search_offset + FETCH_LIMIT,
             'found_incidents_ids': last_run_fetched_ids
         }
