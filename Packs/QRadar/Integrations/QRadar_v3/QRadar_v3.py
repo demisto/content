@@ -1427,11 +1427,20 @@ def update_mirrored_events_from_long_running(client: Client,
                                              events_limit: int,
                                              context_data: dict,
                                              mirror_options: str) -> list:
+    """Update mirrored offenses' events assuming a long running container.
 
+    Args:
+        client: Client to perform the API calls.
+        events_columns: Events columns to extract by search query for each offense.
+        events_limit: Number of events to be fetched for each offense.
+        context_data: The integration's current context data. Extract the relevant offenses to update from it.
+        mirror_options: Integration's mirror_options. Run only if mirror_options is MIRROR_OFFENSE_AND_EVENTS.
+
+    Returns: A list of updated offenses with their events.
+    """
     offenses = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
     updated_offenses = []
     if len(offenses) > 0 and mirror_options == MIRROR_OFFENSE_AND_EVENTS:
-        # get offenses from entries and offenses_ids
         futures = []
         for offense in offenses:
             futures.append(EXECUTOR.submit(
@@ -2665,6 +2674,7 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
 def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) -> GetRemoteDataResponse:
     """
     get-remote-data command: Returns an updated incident and entries
+    If offense's events were updated in the long running container, update the demisto incident.
 
     Args:
         client (Client): QRadar client to perform the API calls.

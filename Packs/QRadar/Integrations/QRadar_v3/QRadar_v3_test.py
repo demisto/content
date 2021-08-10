@@ -1101,9 +1101,16 @@ class MockResults:
                           ])
 def test_mirroring_offenses_with_events(mocker, offenses, context_data):
     """
+    Given:
+        offenses ids to mirror.
+        Context data.
 
-    Returns:
+    When:
+        Mirroring offenses with events.
 
+    Then:
+        Ensure the communication between the mirroring commands and the long running container works as expected.
+        Ensure offenses are updated with events.
     """
     # Get a list of offenses to update their events
     mocker.patch.object(client, 'offenses_list', return_value=offenses.get('ids'))
