@@ -327,8 +327,15 @@ def test_get_incidents(mocker, requests_mock):
     mock_response = util_load_json('test_data/get_incidents_response.json')
     mocker.patch.object(client, '_http_request', return_value=mock_response)
     response = get_incidents(client, args)
-    hr = [filter_human_readable(res, human_columns=INCIDENT_COLUMNS) for
-          res in response.raw_response]
+
+    # Transform the raw results to be more readable
+    hr = []
+    for res in response.raw_response:
+        row = filter_human_readable(res, human_columns=INCIDENT_COLUMNS)
+        row['start_time'] = timestamp_to_datestring(row['start_time'])
+        row['end_time'] = timestamp_to_datestring(row['end_time'])
+        hr.append(row)
+
     assert response.outputs == hr
     assert response.raw_response == mock_response.get('objects')
 
@@ -392,7 +399,7 @@ def test_fetch_incidents(mocker, requests_mock):
         'first_fetch': '40 years'})  # if xsoar is still here when this is a bug then we have a good problem on our hands :)
     # Fetch first time, then change last fetch
     assert last_fetch == 1611322222222
-    assert incidents[0].get('name') == 'INC-ADB636B7'
+    assert incidents[0].get('name') == 'Guardicore Incident (INC-ADB636B7)'
     assert len(incidents) == 2
 
     mocker.patch.object(demisto, 'getLastRun',

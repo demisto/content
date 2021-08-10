@@ -15,9 +15,9 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-INCIDENT_COLUMNS = ['start_time', 'end_time', 'id', 'incident_type', 'severity',
+INCIDENT_COLUMNS = ['id', 'incident_type', 'severity', 'start_time', 'end_time',
                     'ended', 'affected_assets']
-ASSET_COLUMNS = ['status', 'name', 'asset_id', 'last_seen', 'ip_addresses',
+ASSET_COLUMNS = ['asset_id', 'name', 'status', 'last_seen', 'ip_addresses',
                  'tenant_name']
 INCIDENT_TYPE = 'GuardiCore Incident'
 ''' CLIENT CLASS '''
@@ -265,11 +265,20 @@ def get_incidents(client: Client, args: Dict[str, Any]):
 
     raw_results = result.get("objects")
 
-    results = [filter_human_readable(res, human_columns=INCIDENT_COLUMNS) for
-               res in raw_results]
+    results = [ ]
+
+    results = []
+    for res in raw_results:
+        row = filter_human_readable(res, human_columns=INCIDENT_COLUMNS)
+
+        # Make the values more readable
+        row['start_time'] = timestamp_to_datestring(row['start_time'])
+        row['end_time'] = timestamp_to_datestring(row['end_time'])
+
+        results.append(row)
 
     md = tableToMarkdown(f'{INTEGRATION_NAME} - Incidents: {len(results)}',
-                         results)
+                         results, headers=INCIDENT_COLUMNS)
 
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Incident',
@@ -343,7 +352,13 @@ def get_indicent(client: Client, args: Dict[str, Any]) -> CommandResults:
     result = client.get_incident(incident_id)
 
     hr = filter_human_readable(result, human_columns=INCIDENT_COLUMNS)
-    md = tableToMarkdown(f'{INTEGRATION_NAME} - Incident: {incident_id}', hr)
+
+    # Make the values more readable
+    hr['start_time'] = timestamp_to_datestring(hr['start_time'])
+    hr['end_time'] = timestamp_to_datestring(hr['end_time'])
+
+    md = tableToMarkdown(f'{INTEGRATION_NAME} - Incident: {incident_id}', hr,
+                         headers=INCIDENT_COLUMNS)
 
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Incident',
@@ -384,7 +399,7 @@ def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
         res = filter_human_readable(res, human_columns=ASSET_COLUMNS)
         md = tableToMarkdown(f'{INTEGRATION_NAME} - Asset: {hostname}',
-                             res)
+                             res, headers=ASSET_COLUMNS)
 
         endpoints.append(CommandResults(
             readable_output=md,
