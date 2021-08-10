@@ -1,11 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *
-from IAMApiModule import *
 import traceback
 import urllib3
+from IAMApiModule import *
+
 # Disable insecure warnings
 urllib3.disable_warnings()
-
 
 ERROR_CODES_TO_SKIP = [
     404
@@ -36,7 +34,7 @@ class Client(BaseClient):
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        uri = URI_PREFIX + f'sobjects/FF__Key_Contact__c/{user_id}'
+        uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/{user_id}'
 
         res = self._http_request(
             method='GET',
@@ -44,12 +42,10 @@ class Client(BaseClient):
         )
 
         if res:
-            user_app_data = res.json()
-            username = user_app_data.get('Work_Email__c')
+            username = res.get('Work_Email__c')
             is_active = True
 
-            IAMUserAppData(user_id, username, is_active, user_app_data)
-        return None
+            return IAMUserAppData(user_id, username, is_active, res)
 
     def get_user(self, email: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
@@ -61,7 +57,7 @@ class Client(BaseClient):
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        uri = URI_PREFIX + 'parameterizedSearch/'
+        uri = f'{URI_PREFIX}parameterizedSearch/'
         params = {
             "q": email,
             "sobject": "FF__Key_Contact__c",
@@ -76,14 +72,11 @@ class Client(BaseClient):
         )
 
         if res:
-            res_json = res.json()
-            user_app_data = res_json.get('searchRecords', [])
+            user_app_data = res.get('searchRecords', [])
 
-            if len(user_app_data) > 0:
+            if user_app_data:
                 user_id = user_app_data[0].get('Id')
                 return self.get_user_by_id(user_id)
-
-        return None
 
     def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
         """ Creates a user in the application using REST API.
@@ -94,18 +87,19 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the created user in the application.
         :rtype: ``IAMUserAppData``
         """
-        uri = URI_PREFIX + 'sobjects/FF__Key_Contact__c'
+        uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c'
+
         res = self._http_request(
             method='POST',
             url_suffix=uri,
             json_data=user_data
         )
-        user_app_data = res.json()
-        user_id = user_app_data.get('id')
-        username = user_app_data.get('userName')
+
+        user_id = res.get('id')
+        username = res.get('userName')
         is_active = True
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, res)
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]):
         """ Updates a user in the application using REST API.
@@ -119,7 +113,7 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the updated user in the application.
         :rtype: ``IAMUserAppData``
         """
-        uri = URI_PREFIX + f'sobjects/FF__Key_Contact__c/{user_id}'
+        uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/{user_id}'
         params = {"_HttpMethod": "PATCH"}
         self._http_request(
             method='POST',
@@ -153,7 +147,7 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
 
-        uri = URI_PREFIX + f'sobjects/FF__Key_Contact__c/{user_id}'
+        uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/{user_id}'
 
         self._http_request(
             method='DELETE',
@@ -243,7 +237,7 @@ def get_error_details(res: Dict[str, Any]) -> str:
     :rtype: ``str``
     """
     message = res.get('message')
-    details = res
+    details = res.get('detail')
     return f'{message}: {details}'
 
 
@@ -296,7 +290,7 @@ def main():
 
     headers = {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
     }
 
     client = Client(
@@ -336,10 +330,14 @@ def main():
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields(client))
 
-    except Exception:
+    except Exception as exc:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute the {command} command.Error: {exc}',
+                     error=f'Traceback: {traceback.format_exc()}')
 
+
+import demistomock as demisto
+from CommonServerPython import *
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

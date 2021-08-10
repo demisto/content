@@ -1,4 +1,4 @@
-Integrate with Saleforce Fusion Identity Access Management service to execute CRUD operations to employee lifecycle processes.
+Integrate with Salesforce Fusion Identity Access Management service to execute CRUD operations to employee lifecycle processes.
 For more information, refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 
 ## Configure Salesforce Fusion IAM on Cortex XSOAR
@@ -63,10 +63,10 @@ Creates a user.
 ```!iam-create-user user-profile={\"email\": \"john.doe@example.com\", \"givenname\": \"John\", \"surname\": \"Doe\"}```
 
 #### Human Readable Output
-### Create User Results (Saleforce Fusion IAM)
+### Create User Results (Salesforce Fusion IAM)
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
-| Saleforce Fusion IAM | Saleforce Fusion IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:54:30.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Saleforce Fusion", "name": "Saleforce Fusion"}}|
+| Salesforce Fusion IAM | Salesforce Fusion IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:54:30.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Salesforce Fusion", "name": "Salesforce Fusion"}}|
 
 
 ### iam-update-user
@@ -105,10 +105,10 @@ Updates an existing user with the data passed in the user-profile argument.
 ```!iam-update-user user-profile={\"email\": \"john.doe@example.com\", \"givenname\": \"John\"}```
 
 #### Human Readable Output
-### Update User Results (Saleforce Fusion IAM)
+### Update User Results (Salesforce Fusion IAM)
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
-| Saleforce Fusion IAM | Saleforce Fusion IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Saleforce Fusion", "name": "Saleforce Fusion"}} |
+| Salesforce Fusion IAM | Salesforce Fusion IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Salesforce Fusion", "name": "Salesforce Fusion"}} |
 
 
 ### iam-get-user
@@ -146,10 +146,10 @@ Retrieves a single user resource.
 ```!iam-get-user user-profile=`{\"email\": \"john.doe@example.com\"}````
 
 #### Human Readable Output
-### Get User Results (Saleforce Fusion IAM)
+### Get User Results (Salesforce Fusion IAM)
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
-| Saleforce Fusion IAM | Saleforce Fusion IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Saleforce Fusion", "name": "Saleforce Fusion"}} |
+| Salesforce Fusion IAM | Salesforce Fusion IAM_instance_1 | true | true | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Salesforce Fusion", "name": "Salesforce Fusion"}} |
 
 
 ### iam-disable-user
@@ -187,7 +187,7 @@ Disable an active user.
 ```!iam-disable-user user-profile={\"email\": \"john.doe@example.com\", \"givenname\": \"John\"}```
 
 #### Human Readable Output
-### Disable User Results (Saleforce Fusion IAM)
+### Disable User Results (Salesforce Fusion IAM)
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
-| Saleforce Fusion IAM | Saleforce Fusion IAM_instance_1 | true | false | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Saleforce Fusion", "name": "Saleforce Fusion"}} |
+| Salesforce Fusion IAM | Salesforce Fusion IAM_instance_1 | true | false | 00uujxnbh3uJw4tWA0h7 | john.doe@example.com | john.doe@example.com | id: 00uujxnbh3uJw4tWA0h7<br/>status: PROVISIONED<br/>created: 2020-10-18T17:54:30.000Z<br/>activated: 2020-10-18T17:54:30.000Z<br/>statusChanged: 2020-10-18T17:54:30.000Z<br/>lastLogin: null<br/>lastUpdated: 2020-10-18T17:56:53.000Z<br/>passwordChanged: null<br/>type: {"id": "oty8zfz6plq7b0r830h7"}<br/>profile: {"firstName": "John", "lastName": "Doe", "mobilePhone": null, "secondEmail": null, "login": "john.doe@example.com", "email": "john.doe@example.com"}<br/>credentials: {"provider": {"type": "Salesforce Fusion", "name": "Salesforce Fusion"}} |
