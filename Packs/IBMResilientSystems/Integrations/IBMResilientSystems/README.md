@@ -1,274 +1,161 @@
-<!-- HTML_DOC -->
-<section class="article-info">
-        <div class="article-content">
-          <div class="article-body"><h2>Overview</h2>
-<p>Use this integration to manage and orchestrate your IBM Resilient Systems incident response from Cortex XSOAR.</p>
-<hr>
-<h2>Configure the IBM Resilient Systems Integration on Cortex XSOAR</h2>
-<ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for IBM&nbsp;Resilient Systems.</li>
-<li>Click&nbsp;<strong>Add instance</strong> to create and configure a new integration instance.
-<ul>
-<li><strong>Name</strong>: a textual name for the integration instance</li>
-<li><strong>Server URL</strong></li>
-<li><strong>Credentials (either username and password or API key ID and API key secret, see <a href="https://www.ibm.com/support/knowledgecenter/SSBRUQ_35.0.0/com.ibm.resilient.doc/admin/API_accounts.htm">here</a> for more details about API key ID and secret)</strong></li>
-<li><strong>Organization name</strong></li>
-<li><strong>Do not validate server certificate (not secure)</strong></li>
-<li><strong>Use system proxy settings</strong></li>
-<li><strong>Fetch incidents</strong></li>
-<li><strong>Incident type</strong></li>
-</ul>
-</li>
-<li>Click <strong>Test</strong> to validate the URLs and token.</li>
-</ol>
-<hr>
-<h2>Commands</h2>
-<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
-<ol>
-<li><a href="#h_43150070651528808250950">Search for incidents: rs-search-incidents</a></li>
-<li><a href="#h_736120856181528808732843">Update an incident: rs-update-incident</a></li>
-<li><a href="#h_822352343351528809805787">Get a list of incident members: rs-incident-get-members</a></li>
-<li><a href="#h_77974582581528810221337">Get incident information: rs-get-incident</a></li>
-<li><a href="#h_672396217841528810416196">Update information for an incident member: rs-incidents-update-member</a></li>
-<li><a href="#h_2927197521131528810601114">Get a list of users: rs-get-users</a></li>
-<li><a href="#h_2792064041461528810768909">Close an incident: rs-close-incident</a></li>
-<li><a href="#h_3906354711831528810903159">Create an incident: rs-create-incident</a></li>
-<li><a href="#h_9611617552241528811470715">Get artifacts for an incident: rs-incident-artifacts</a></li>
-<li><a href="#h_1823709132691528812526569">Get attachments of an incident: rs-incident-attachments</a></li>
-<li><a href="#h_9184065563181528813233519">Get related incidents: rs-related-incidents</a></li>
-<li><a href="#h_7077667663711528814261115">Get tasks for an incident: rs-incidents-get-tasks</a></li>
-<li><a href="#h_9184065563181528813233520">Add a note to an incident: rs-add-note</a></li>
-<li><a href="#h_7077667663711528814261121">Add an artifact to an incident: rs-add-artifact</a></li>
-</ol>
-<p>&nbsp;</p>
-<h3 id="h_43150070651528808250950">Search for incidents: rs-search-incidents</h3>
-<p>Search for incidents in your IBM Resilient system.</p>
-<h5>Command Example</h5>
-<p><code>!rs-search-incidents severity=Low,Medium incident-type=CommunicationError</code></p>
-<h5>Input</h5>
-<table style="height: 287px; width: 737px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 211px;"><strong>&nbsp;Parameter</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 211px;">severity</td>
-<td style="width: 503px;">
-<p>Incident severity (comma separated)</p>
-<ul>
-<li>Low</li>
-<li>Medium</li>
-<li>High</li>
-</ul>
-</td>
-</tr>
-<tr>
-<td style="width: 211px;">date-created-before</td>
-<td style="width: 503px;">Created date of the incident before a specified date (YYYY-MM-DDTHH:MM:SSZ, for example, 2018-05-07T10:59:07Z)</td>
-</tr>
-<tr>
-<td style="width: 211px;">date-created-after</td>
-<td style="width: 503px;">Created date of the incident after a specified (format YYYY-MM-DDTHH:MM:SSZ, for example, 2018-05-07T10:59:07Z)</td>
-</tr>
-<tr>
-<td style="width: 211px;">date-created-within-the-last</td>
-<td style="width: 503px;">Created date of the incident within the last time frame (days/hours/minutes). Should be entered as a number, and used with the timeframe argument.</td>
-</tr>
-<tr>
-<td style="width: 211px;">timeframe</td>
-<td style="width: 503px;">Time frame to search within for incident. Should be used with within-the-last/due-in argument.</td>
-</tr>
-<tr>
-<td style="width: 211px;">date-occurred-within-the-last</td>
-<td style="width: 503px;">Occurred date of the incident within the last time frame (days/hours/minutes). Should be entered as a number, and used with with the timeframe argument.</td>
-</tr>
-<tr>
-<td style="width: 211px;">date-occurred-before</td>
-<td style="width: 503px;">Occurred date of the incident before given date (YYYY-MM-DDTHH:MM:SSZ, for example, 2018-05-07T10:59:07Z)</td>
-</tr>
-<tr>
-<td style="width: 211px;">date-occurred-after</td>
-<td style="width: 503px;">Occurred date of the incident after a specified date (YYYY-MM-DDTHH:MM:SSZ, for example, 2018-05-07T10:59:07Z)</td>
-</tr>
-<tr>
-<td style="width: 211px;">incident-type</td>
-<td style="width: 503px;">Incident type</td>
-</tr>
-<tr>
-<td style="width: 211px;">nist</td>
-<td style="width: 503px;">NIST Attack Vectors</td>
-</tr>
-<tr>
-<td style="width: 211px;">status</td>
-<td style="width: 503px;">Incident status</td>
-</tr>
-<tr>
-<td style="width: 211px;">due-in</td>
-<td style="width: 503px;">Due date of the incident in a specific timeframe (days/hours/minutes). Should be entered as a number, along with with the timeframe argument.</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="height: 63px; width: 740px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Path</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.CreateDate</td>
-<td style="width: 503px;">Created date of the incident</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Name</td>
-<td style="width: 503px;">Incident name</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.DiscoveredDate</td>
-<td style="width: 503px;">Discovered date of the incident</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Id</td>
-<td style="width: 503px;">Incident ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Phase</td>
-<td style="width: 503px;">Incident phase</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Severity</td>
-<td style="width: 503px;">Incident severity</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Description</td>
-<td style="width: 503px;">Incident description</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Raw Output</h5>
-<pre>DiscoveredDate:2018-05-18T08:49:38Z
+Overview
+--------
+
+Use this integration to manage and orchestrate your IBM Resilient Systems incident response from Cortex XSOAR.
+
+* * *
+
+Configure the IBM Resilient Systems Integration on Cortex XSOAR
+---------------------------------------------------------------
+
+1.  Navigate to **Settings** \> **Integrations** \> **Servers & Services**.
+2.  Search for IBM Resilient Systems.
+3.  Click **Add instance** to create and configure a new integration instance.
+    * **Name**: a textual name for the integration instance
+    * **Server URL**
+    * **Credentials (either username and password or API key ID and API key secret, see [here](https://www.ibm.com/support/knowledgecenter/SSBRUQ_35.0.0/com.ibm.resilient.doc/admin/API_accounts.htm) for more details about API key ID and secret)**
+    * **Organization name**
+    * **Do not validate server certificate (not secure)**
+    * **Use system proxy settings**
+    * **Fetch incidents**
+    * **Incident type**
+4.  Click **Test** to validate the URLs and token.
+
+* * *
+
+Commands
+--------
+
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+1.  [Search for incidents: rs-search-incidents](#h_43150070651528808250950)
+2.  [Update an incident: rs-update-incident](#h_736120856181528808732843)
+3.  [Get a list of incident members: rs-incident-get-members](#h_822352343351528809805787)
+4.  [Get incident information: rs-get-incident](#h_77974582581528810221337)
+5.  [Update information for an incident member: rs-incidents-update-member](#h_672396217841528810416196)
+6.  [Get a list of users: rs-get-users](#h_2927197521131528810601114)
+7.  [Close an incident: rs-close-incident](#h_2792064041461528810768909)
+8.  [Create an incident: rs-create-incident](#h_3906354711831528810903159)
+9.  [Get artifacts for an incident: rs-incident-artifacts](#h_9611617552241528811470715)
+10. [Get attachments of an incident: rs-incident-attachments](#h_1823709132691528812526569)
+11. [Get related incidents: rs-related-incidents](#h_9184065563181528813233519)
+12. [Get tasks for an incident: rs-incidents-get-tasks](#h_7077667663711528814261115)
+13. [Add a note to an incident: rs-add-note](#h_9184065563181528813233520)
+14. [Add an artifact to an incident: rs-add-artifact](#h_7077667663711528814261121)
+
+### Search for incidents: rs-search-incidents
+
+Search for incidents in your IBM Resilient system.
+
+##### Command Example
+
+`!rs-search-incidents severity=Low,Medium incident-type=CommunicationError`
+
+##### Input
+
+|     |     |
+| --- | --- |
+| ** Parameter** | **Description** |
+| severity | Incident severity (comma separated)<br><br>* Low<br>* Medium<br>* High |
+| date-created-before | Created date of the incident before a specified date (YYYY-MM-DDTHH:MM:SSZ, for example, 2018-05-07T10:59:07Z) |
+| date-created-after | Created date of the incident after a specified (format YYYY-MM-DDTHH:MM:SSZ, for example, 2018-05-07T10:59:07Z) |
+| date-created-within-the-last | Created date of the incident within the last time frame (days/hours/minutes). Should be entered as a number, and used with the timeframe argument. |
+| timeframe | Time frame to search within for incident. Should be used with within-the-last/due-in argument. |
+| date-occurred-within-the-last | Occurred date of the incident within the last time frame (days/hours/minutes). Should be entered as a number, and used with with the timeframe argument. |
+| date-occurred-before | Occurred date of the incident before given date (YYYY-MM-DDTHH:MM:SSZ, for example, 2018-05-07T10:59:07Z) |
+| date-occurred-after | Occurred date of the incident after a specified date (YYYY-MM-DDTHH:MM:SSZ, for example, 2018-05-07T10:59:07Z) |
+| incident-type | Incident type |
+| nist | NIST Attack Vectors |
+| status | Incident status |
+| due-in | Due date of the incident in a specific timeframe (days/hours/minutes). Should be entered as a number, along with with the timeframe argument. |
+
+##### Context Output
+
+|     |     |
+| --- | --- |
+| **Path** | **Description** |
+| Resilient.Incidents.CreateDate | Created date of the incident |
+| Resilient.Incidents.Name | Incident name |
+| Resilient.Incidents.DiscoveredDate | Discovered date of the incident |
+| Resilient.Incidents.Id | Incident ID |
+| Resilient.Incidents.Phase | Incident phase |
+| Resilient.Incidents.Severity | Incident severity |
+| Resilient.Incidents.Description | Incident description |
+
+##### Raw Output
+
+DiscoveredDate:2018-05-18T08:49:38Z
 Id:2112
 Name:Incident Name
 Owner:Owner Name
 Phase:Respond
-Severity:Low</pre>
-<hr>
-<h3 id="h_736120856181528808732843">Update an incident: rs-update-incident</h3>
-<p>Updater an incident in your IBM Resilient system.</p>
-<h5>Command Example</h5>
-<p><code>!rs-update-incident incident-id=2222 severity=High incident-type=Malware</code></p>
-<h5>Input</h5>
-<table style="height: 287px; width: 737px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 211px;"><strong>&nbsp;Parameter</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 211px;">incident-id</td>
-<td style="width: 503px;">Incident ID to update</td>
-</tr>
-<tr>
-<td style="width: 211px;">severity</td>
-<td style="width: 503px;">Severity to update</td>
-</tr>
-<tr>
-<td style="width: 211px;">owner</td>
-<td style="width: 503px;">User's full name set as the incident owner</td>
-</tr>
-<tr>
-<td style="width: 211px;">incident-type</td>
-<td style="width: 503px;">Incident type (added to the current incident types list)</td>
-</tr>
-<tr>
-<td style="width: 211px;">resolution</td>
-<td style="width: 503px;">Incident resolution</td>
-</tr>
-<tr>
-<td style="width: 211px;">resolution-summary</td>
-<td style="width: 503px;">Incident resolution summary</td>
-</tr>
-<tr>
-<td style="width: 211px;">description</td>
-<td style="width: 503px;">Incident description</td>
-</tr>
-<tr>
-<td style="width: 211px;">name</td>
-<td style="width: 503px;">Incident name</td>
-</tr>
-<tr>
-<td style="width: 211px;">nist</td>
-<td style="width: 503px;">NIST Attack Vectors (added to the current list of NIST attack vendors)</td>
-</tr>
-<tr>
-<td style="width: 211px;">other-fields</td>
-<td style="width: 503px;">A json object of the form: {field_name: new_field_value}. For example: {"description": {"textarea": {"format": "html", "content": "The new description"}}, "name": {"text": "The new name"}}. Because of API limitations we currently support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea. In case of conflicts between the other-fields argument and the regular fields arguments, the other-fields will be taken.'<br /><img src="https://github.com/demisto/content/raw/3322c5933388f2ea9c52dc9fe31a5feb52bc1050/Packs/IBMResilientSystems/doc_files/support_field_types.png" /></td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<p>There is no context output for this command.</p>
-<p>&nbsp;</p>
-<h5>Raw Output</h5>
-<pre>Incident was updated successfully.</pre>
-<hr>
-<h3 id="h_822352343351528809805787">Get a list of incident members: rs-incident-get-members</h3>
-<p>Get a list of members associated with the incident.</p>
-<h5>Command Example</h5>
-<p><code>!rs-incidents-get-members incident-id=2111</code></p>
-<h5>Input</h5>
-<table style="height: 287px; width: 737px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 211px;"><strong>&nbsp;Parameter</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 211px;">incident-id</td>
-<td style="width: 503px;">
-<p>Incident ID to get members of</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="height: 63px; width: 740px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Path</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Id</td>
-<td style="width: 503px;">Incident ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Members.FirstName</td>
-<td style="width: 503px;">Member's first name</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Members.LastName</td>
-<td style="width: 503px;">Member's last name</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Members.ID</td>
-<td style="width: 503px;">Member's ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Members.Email</td>
-<td style="width: 503px;">Member's email address</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Raw Output</h5>
-<pre>[  
+Severity:Low
+
+* * *
+
+### Update an incident: rs-update-incident
+
+Updater an incident in your IBM Resilient system.
+
+##### Command Example
+
+`!rs-update-incident incident-id=2222 severity=High incident-type=Malware`
+
+##### Input
+
+|     |     |
+| --- | --- |
+| ** Parameter** | **Description** |
+| incident-id | Incident ID to update |
+| severity | Severity to update |
+| owner | User's full name set as the incident owner |
+| incident-type | Incident type (added to the current incident types list) |
+| resolution | Incident resolution |
+| resolution-summary | Incident resolution summary |
+| description | Incident description |
+| name | Incident name |
+| nist | NIST Attack Vectors (added to the current list of NIST attack vendors) |
+| other-fields | A json object of the form: {field\_name: new\_field_value}. For example: {"description": {"textarea": {"format": "html", "content": "The new description"}}, "name": {"text": "The new name"}}. Because of API limitations we currently support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea. In case of conflicts between the other-fields argument and the regular fields arguments, the other-fields will be taken.'  <br>![](https://github.com/demisto/content/raw/3322c5933388f2ea9c52dc9fe31a5feb52bc1050/Packs/IBMResilientSystems/doc_files/support_field_types.png) |
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Raw Output
+
+Incident was updated successfully.
+
+* * *
+
+### Get a list of incident members: rs-incident-get-members
+
+Get a list of members associated with the incident.
+
+##### Command Example
+
+`!rs-incidents-get-members incident-id=2111`
+
+##### Input
+
+|     |     |
+| --- | --- |
+| ** Parameter** | **Description** |
+| incident-id | Incident ID to get members of |
+
+##### Context Output
+
+|     |     |
+| --- | --- |
+| **Path** | **Description** |
+| Resilient.Incidents.Id | Incident ID |
+| Resilient.Incidents.Members.FirstName | Member's first name |
+| Resilient.Incidents.Members.LastName | Member's last name |
+| Resilient.Incidents.Members.ID | Member's ID |
+| Resilient.Incidents.Members.Email | Member's email address |
+
+##### Raw Output
+
+\[  
    {  
      Email:user1@mail.com 
      FirstName:User1First 
@@ -281,96 +168,48 @@ Severity:Low</pre>
       ID:1
       LastName:Demisto
    }
-]</pre>
-<hr>
-<h3 id="h_77974582581528810221337">Get incident information: rs-get-incident</h3>
-<p>Get information for an incident.</p>
-<h5>Command Example</h5>
-<p><code>!rs-get-incident incident-id=2111</code></p>
-<h5>Input</h5>
-<table style="height: 287px; width: 737px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 211px;"><strong>&nbsp;Parameter</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 211px;">incident-id</td>
-<td style="width: 503px;">
-<p>Incident ID to get information for</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="height: 63px; width: 740px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Path</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.CreateDate</td>
-<td style="width: 503px;">Created date of the incident</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Name</td>
-<td style="width: 503px;">Incident name</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Resolution</td>
-<td style="width: 503px;">Incident resolution</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.DiscoveredDate</td>
-<td style="width: 503px;">Discovered date of the incident</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.ResolutionSummary</td>
-<td style="width: 503px;">Incident resolution summary</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Id</td>
-<td style="width: 503px;">Incident ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Phase</td>
-<td style="width: 503px;">Incident phase</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Severity</td>
-<td style="width: 503px;">Incident severity</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Description</td>
-<td style="width: 503px;">Incident description</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Confirmed</td>
-<td style="width: 503px;">Incident confirmation</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.NegativePr</td>
-<td style="width: 503px;">Negative PR likellihood</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.DateOccurred</td>
-<td style="width: 503px;">Date occurred of incident</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Reporter</td>
-<td style="width: 503px;">Name of reporting individual</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.NistAttackVectors</td>
-<td style="width: 503px;">Incident NIST attack vectors</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Raw Output</h5>
-<pre>{
+\]
+
+* * *
+
+### Get incident information: rs-get-incident
+
+Get information for an incident.
+
+##### Command Example
+
+`!rs-get-incident incident-id=2111`
+
+##### Input
+
+|     |     |
+| --- | --- |
+| ** Parameter** | **Description** |
+| incident-id | Incident ID to get information for |
+
+##### Context Output
+
+|     |     |
+| --- | --- |
+| **Path** | **Description** |
+| Resilient.Incidents.CreateDate | Created date of the incident |
+| Resilient.Incidents.Name | Incident name |
+| Resilient.Incidents.Resolution | Incident resolution |
+| Resilient.Incidents.DiscoveredDate | Discovered date of the incident |
+| Resilient.Incidents.ResolutionSummary | Incident resolution summary |
+| Resilient.Incidents.Id | Incident ID |
+| Resilient.Incidents.Phase | Incident phase |
+| Resilient.Incidents.Severity | Incident severity |
+| Resilient.Incidents.Description | Incident description |
+| Resilient.Incidents.Confirmed | Incident confirmation |
+| Resilient.Incidents.NegativePr | Negative PR likellihood |
+| Resilient.Incidents.DateOccurred | Date occurred of incident |
+| Resilient.Incidents.Reporter | Name of reporting individual |
+| Resilient.Incidents.NistAttackVectors | Incident NIST attack vectors |
+
+##### Raw Output
+
+{
     Confirmed:false
     CreatedDate:2018-05-22T23:47:25Z
     DateOccurred:2018-03-30T04:00:00Z
@@ -388,55 +227,58 @@ Severity:Low</pre>
     Resolution:Unresolved
     ResolutionSummary:summary
     Severity:Low
-}</pre>
-<hr>
-<h3 id="h_672396217841528810416196">Update information for an incident member: rs-incidents-update-member</h3>
-<p>Update information for a member associated with an incident.</p>
-<h5>Command Example</h5>
-<p><code>!rs-incidents-update-member incident-id=2111 members=1</code></p>
-<h5>Input</h5>
-<table style="height: 287px; width: 737px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 211px;"><strong>&nbsp;Parameter</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 211px;">incident-id</td>
-<td style="width: 503px;">
-<p>Incident ID to get information for</p>
-</td>
-</tr>
-<tr>
-<td style="width: 211px;">members</td>
-<td style="width: 503px;">
-<p>Members' IDs to set (comma separated)</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<p>There is no context output for this command.</p>
-<p>&nbsp;</p>
-<h5>Raw Output</h5>
-<pre>Email:demisto@demisto.com
+}
+
+* * *
+
+### Update information for an incident member: rs-incidents-update-member
+
+Update information for a member associated with an incident.
+
+##### Command Example
+
+`!rs-incidents-update-member incident-id=2111 members=1`
+
+##### Input
+
+|     |     |
+| --- | --- |
+| ** Parameter** | **Description** |
+| incident-id | Incident ID to get information for |
+| members | Members' IDs to set (comma separated) |
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Raw Output
+
+Email:demisto@demisto.com
 FirstName:Demisto
 ID:1
-LastName:Demisto</pre>
-<hr>
-<h3 id="h_2927197521131528810601114">Get a list of users: rs-get-users</h3>
-<p>Returns a list of users in the IBM Resilient system.</p>
-<h5>Command Example</h5>
-<p><code>!rs-get-users</code></p>
-<h5>Input</h5>
-<p>There is no input for this command.</p>
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<p>There is no context output for this command.</p>
-<p>&nbsp;</p>
-<h5>Raw Output</h5>
-<pre>[
+LastName:Demisto
+
+* * *
+
+### Get a list of users: rs-get-users
+
+Returns a list of users in the IBM Resilient system.
+
+##### Command Example
+
+`!rs-get-users`
+
+##### Input
+
+There is no input for this command.
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Raw Output
+
+\[
   {
     Email:demistodev@demisto.com
     FirstName:Demisto
@@ -449,148 +291,98 @@ LastName:Demisto</pre>
     ID:1
     LastName:Demisto
   }
-]</pre>
-<hr>
-<h3 id="h_2792064041461528810768909">Close an incident: rs-close-incident</h3>
-<p>Close an incident in the IBM Resilient system.</p>
-<h5>Command Example</h5>
-<p><code>!rs-close-incident incident-id=2111</code></p>
-<h5>Input</h5>
-<table style="height: 287px; width: 737px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 211px;"><strong>&nbsp;Parameter</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 211px;">incident-id</td>
-<td style="width: 503px;">
-<p>ID of the incident to close</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<p>There is no context output for this command.</p>
-<p>&nbsp;</p>
-<h5>Raw Output</h5>
-<pre>Incident 2111 was closed.</pre>
-<hr>
-<h3 id="h_3906354711831528810903159">Create an incident: rs-create-incident</h3>
-<p>Create an incident in the IBM Resilient system.</p>
-<h5>Command Example</h5>
-<p><code>!rs-create-incident name=IncidentName</code></p>
-<h5>Input</h5>
-<table style="height: 287px; width: 737px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 211px;"><strong>&nbsp;Parameter</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 211px;">name</td>
-<td style="width: 503px;">
-<p>Incident name</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<p>There is no context output for this command.</p>
-<p>&nbsp;</p>
-<h5>Raw Output</h5>
-<pre>Incident  was created.</pre>
-<hr>
-<h3 id="h_9611617552241528811470715">Get artifacts for an incident: rs-incident-artifacts</h3>
-<p>Return artifacts for an incident in the IBM Resilient system.</p>
-<h5>Command Example</h5>
-<p><code>!rs-incident-artifacts incident-id=2111</code></p>
-<h5>Input</h5>
-<table style="height: 287px; width: 737px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 211px;"><strong>&nbsp;Parameter</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 211px;">incident-id</td>
-<td style="width: 503px;">
-<p>Incident ID to get artifacts for</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="height: 63px; width: 740px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Path</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Id</td>
-<td style="width: 503px;">Incident ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Name</td>
-<td style="width: 503px;">Incident name</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Artifacts.CreatedDate</td>
-<td style="width: 503px;">Artifact created date</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Artifacts.Creator</td>
-<td style="width: 503px;">Artifact creator</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Artifacts.Description</td>
-<td style="width: 503px;">Artifact description</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Artifacts.ID</td>
-<td style="width: 503px;">Artifact ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Artifacts.Type</td>
-<td style="width: 503px;">Artifact type</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Artifacts.Value</td>
-<td style="width: 503px;">Artifact value</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Artifacts.Attachments.ContentType</td>
-<td style="width: 503px;">Attachment content type</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Artifacts.Attachments.CreatedDate</td>
-<td style="width: 503px;">Attachment created date</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Artifacts.Attachments.Creator</td>
-<td style="width: 503px;">Attachment creator</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Artifacts.Attachments.ID</td>
-<td style="width: 503px;">Attachment ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Artifacts.Attachments.Name</td>
-<td style="width: 503px;">Attachment name</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Artifacts.Attachments.Size</td>
-<td style="width: 503px;">Attachment size</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Raw Output</h5>
-<pre>{
+\]
+
+* * *
+
+### Close an incident: rs-close-incident
+
+Close an incident in the IBM Resilient system.
+
+##### Command Example
+
+`!rs-close-incident incident-id=2111`
+
+##### Input
+
+|     |     |
+| --- | --- |
+| ** Parameter** | **Description** |
+| incident-id | ID of the incident to close |
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Raw Output
+
+Incident 2111 was closed.
+
+* * *
+
+### Create an incident: rs-create-incident
+
+Create an incident in the IBM Resilient system.
+
+##### Command Example
+
+`!rs-create-incident name=IncidentName`
+
+##### Input
+
+|     |     |
+| --- | --- |
+| ** Parameter** | **Description** |
+| name | Incident name |
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Raw Output
+
+Incident  was created.
+
+* * *
+
+### Get artifacts for an incident: rs-incident-artifacts
+
+Return artifacts for an incident in the IBM Resilient system.
+
+##### Command Example
+
+`!rs-incident-artifacts incident-id=2111`
+
+##### Input
+
+|     |     |
+| --- | --- |
+| ** Parameter** | **Description** |
+| incident-id | Incident ID to get artifacts for |
+
+##### Context Output
+
+|     |     |
+| --- | --- |
+| **Path** | **Description** |
+| Resilient.Incidents.Id | Incident ID |
+| Resilient.Incidents.Name | Incident name |
+| Resilient.Incidents.Artifacts.CreatedDate | Artifact created date |
+| Resilient.Incidents.Artifacts.Creator | Artifact creator |
+| Resilient.Incidents.Artifacts.Description | Artifact description |
+| Resilient.Incidents.Artifacts.ID | Artifact ID |
+| Resilient.Incidents.Artifacts.Type | Artifact type |
+| Resilient.Incidents.Artifacts.Value | Artifact value |
+| Resilient.Incidents.Artifacts.Attachments.ContentType | Attachment content type |
+| Resilient.Incidents.Artifacts.Attachments.CreatedDate | Attachment created date |
+| Resilient.Incidents.Artifacts.Attachments.Creator | Attachment creator |
+| Resilient.Incidents.Artifacts.Attachments.ID | Attachment ID |
+| Resilient.Incidents.Artifacts.Attachments.Name | Attachment name |
+| Resilient.Incidents.Artifacts.Attachments.Size | Attachment size |
+
+##### Raw Output
+
+{
   "Attachments":
     {
        "ContentType":"application/json",
@@ -607,150 +399,87 @@ LastName:Demisto</pre>
        "Type":"Email Attachment",
        "Value":"artifact.json"
     }
-}</pre>
-<hr>
-<h3 id="h_1823709132691528812526569">Get attachments of an incident: rs-incident-attachments</h3>
-<p>Return attachments for an incident in the IBM Resilient system.</p>
-<h5>Command Example</h5>
-<p><code>!rs-incident-attachments incident-id=2111</code></p>
-<h5>Input</h5>
-<table style="height: 287px; width: 737px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 211px;"><strong>&nbsp;Parameter</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 211px;">incident-id</td>
-<td style="width: 503px;">
-<p>Incident ID to get attachments for</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="height: 63px; width: 740px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Path</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Id</td>
-<td style="width: 503px;">Incident ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Name</td>
-<td style="width: 503px;">Incident name</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Owner</td>
-<td style="width: 503px;">Incident owner</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Attachments.ContentType</td>
-<td style="width: 503px;">Attachment content type</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Attachments.CreatedDate</td>
-<td style="width: 503px;">Attachment created date</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Attachments.Creator</td>
-<td style="width: 503px;">Attachment creator</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Attachments.ID</td>
-<td style="width: 503px;">Attachment ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Attachments.Name</td>
-<td style="width: 503px;">Attachment name</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Attachments.Size</td>
-<td style="width: 503px;">Attachment size</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Raw Output</h5>
-<pre>{
+}
+
+* * *
+
+### Get attachments of an incident: rs-incident-attachments
+
+Return attachments for an incident in the IBM Resilient system.
+
+##### Command Example
+
+`!rs-incident-attachments incident-id=2111`
+
+##### Input
+
+|     |     |
+| --- | --- |
+| ** Parameter** | **Description** |
+| incident-id | Incident ID to get attachments for |
+
+##### Context Output
+
+|     |     |
+| --- | --- |
+| **Path** | **Description** |
+| Resilient.Incidents.Id | Incident ID |
+| Resilient.Incidents.Name | Incident name |
+| Resilient.Incidents.Owner | Incident owner |
+| Resilient.Incidents.Attachments.ContentType | Attachment content type |
+| Resilient.Incidents.Attachments.CreatedDate | Attachment created date |
+| Resilient.Incidents.Attachments.Creator | Attachment creator |
+| Resilient.Incidents.Attachments.ID | Attachment ID |
+| Resilient.Incidents.Attachments.Name | Attachment name |
+| Resilient.Incidents.Attachments.Size | Attachment size |
+
+##### Raw Output
+
+{
   "ContentType":"image/png",
   "CreatedDate":"2018-05-28T06:40:28Z",
   "Creator":"CreatorName",
   "ID":"7",
   "Name":"image.png",
   "Size":"4491"
-}</pre>
-<hr>
-<h3 id="h_9184065563181528813233519">Get related incidents: rs-related-incidents</h3>
-<p>Get incidents related to a specified incident in the IBM Resilient system.</p>
-<h5>Command Example</h5>
-<p><code>!rs-related-incidents incident-id=2111</code></p>
-<h5>Input</h5>
-<table style="height: 287px; width: 737px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 211px;"><strong>&nbsp;Parameter</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 211px;">incident-id</td>
-<td style="width: 503px;">
-<p>Incident ID to get related incidents for</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="height: 63px; width: 740px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Path</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Id</td>
-<td style="width: 503px;">Incident ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Related.CreatedDate</td>
-<td style="width: 503px;">Created date of related incident</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Related.Name</td>
-<td style="width: 503px;">Name of related incident</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Related.ID</td>
-<td style="width: 503px;">ID of related incident</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Related.Status</td>
-<td style="width: 503px;">Status (Active/Closed) of related incident</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Related.Artifacts.CreatedDate</td>
-<td style="width: 503px;">Created date of artifact</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Related.Artifacts.ID</td>
-<td style="width: 503px;">ID of artifact</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Related.Artifacts.Creator</td>
-<td style="width: 503px;">Creator of artifact</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Raw Output</h5>
-<pre>[
+}
+
+* * *
+
+### Get related incidents: rs-related-incidents
+
+Get incidents related to a specified incident in the IBM Resilient system.
+
+##### Command Example
+
+`!rs-related-incidents incident-id=2111`
+
+##### Input
+
+|     |     |
+| --- | --- |
+| ** Parameter** | **Description** |
+| incident-id | Incident ID to get related incidents for |
+
+##### Context Output
+
+|     |     |
+| --- | --- |
+| **Path** | **Description** |
+| Resilient.Incidents.Id | Incident ID |
+| Resilient.Incidents.Related.CreatedDate | Created date of related incident |
+| Resilient.Incidents.Related.Name | Name of related incident |
+| Resilient.Incidents.Related.ID | ID of related incident |
+| Resilient.Incidents.Related.Status | Status (Active/Closed) of related incident |
+| Resilient.Incidents.Related.Artifacts.CreatedDate | Created date of artifact |
+| Resilient.Incidents.Related.Artifacts.ID | ID of artifact |
+| Resilient.Incidents.Related.Artifacts.Creator | Creator of artifact |
+
+##### Raw Output
+
+\[
 {
-"Artifacts":[
+"Artifacts":\[
 {
    "CreatedDate":"2018-05-27T06:26:37Z",
    "Creator":"v",
@@ -768,81 +497,45 @@ LastName:Demisto</pre>
 "Name":"test Incident 1 - Email",
 "Status":"Active"
 }
-]
-]</pre>
-<hr>
-<h3 id="h_7077667663711528814261115">Get tasks for an incident: rs-incidents-get-tasks</h3>
-<p>Get tasks for an incident in the IBM Resilient system.</p>
-<h5>Command Example</h5>
-<p><code>!rs-related-incidents incident-id=2111</code></p>
-<h5>Input</h5>
-<table style="height: 287px; width: 737px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 211px;"><strong>&nbsp;Parameter</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 211px;">incident-id</td>
-<td style="width: 503px;">
-<p>Incident ID to get tasks for</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="height: 63px; width: 740px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Path</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Id</td>
-<td style="width: 503px;">Incident ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Name</td>
-<td style="width: 503px;">Incident name</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Tasks.Category</td>
-<td style="width: 503px;">Task category</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Tasks.Creator</td>
-<td style="width: 503px;">Task creator</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Tasks.DueDate</td>
-<td style="width: 503px;">Task due date</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Tasks.Form</td>
-<td style="width: 503px;">Task form</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Tasks.ID</td>
-<td style="width: 503px;">Task ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Tasks.Name</td>
-<td style="width: 503px;">Task name</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Tasks.Required</td>
-<td style="width: 503px;">Task required</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.Incidents.Tasks.Status</td>
-<td style="width: 503px;">Task status (Open/Closed)</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Raw Output</h5>
-<pre>[
+\]
+\]
+
+* * *
+
+### Get tasks for an incident: rs-incidents-get-tasks
+
+Get tasks for an incident in the IBM Resilient system.
+
+##### Command Example
+
+`!rs-related-incidents incident-id=2111`
+
+##### Input
+
+|     |     |
+| --- | --- |
+| ** Parameter** | **Description** |
+| incident-id | Incident ID to get tasks for |
+
+##### Context Output
+
+|     |     |
+| --- | --- |
+| **Path** | **Description** |
+| Resilient.Incidents.Id | Incident ID |
+| Resilient.Incidents.Name | Incident name |
+| Resilient.Incidents.Tasks.Category | Task category |
+| Resilient.Incidents.Tasks.Creator | Task creator |
+| Resilient.Incidents.Tasks.DueDate | Task due date |
+| Resilient.Incidents.Tasks.Form | Task form |
+| Resilient.Incidents.Tasks.ID | Task ID |
+| Resilient.Incidents.Tasks.Name | Task name |
+| Resilient.Incidents.Tasks.Required | Task required |
+| Resilient.Incidents.Tasks.Status | Task status (Open/Closed) |
+
+##### Raw Output
+
+\[
 {
 "Category":"Initial"
 "Creator":"CreatorName"
@@ -863,365 +556,130 @@ Name:Investigate exposure of PI
 Required:true
 Status:Closed
 }
-]</pre></div></div></section>
-<hr>
-<h3 id="h_9184065563181528813233520">Add a note to an incident: rs-add-note</h3>
-<p>Add a note to an incident.</p>
-<h5>Command Example</h5>
-<p><code>!rs-add-note incident-id=2111 note="This is a note"</code></p>
-<h5>Input</h5>
-<table style="height: 287px; width: 737px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 211px;"><strong>&nbsp;Parameter</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 211px;">incident-id</td>
-<td style="width: 503px;">
-<p>Incident ID to add the note there</p>
-</td>
-</tr>
-<tr>
-<td style="width: 211px;">note</td>
-<td style="width: 503px;">
-<p>The text of the note</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="height: 630px; width: 740px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Path</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.type</td>
-<td style="width: 503px;"> The type of the note (incident or task)</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.id</td>
-<td style="width: 503px;">The note's ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.parent_id</td>
-<td style="width: 503px;">The ID of the parent note (null for top-level note)</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.user_id</td>
-<td style="width: 503px;">The ID of the user who created the note</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.user_fname</td>
-<td style="width: 503px;">The user's first name</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.user_lname</td>
-<td style="width: 503px;">The user's last name</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.text</td>
-<td style="width: 503px;">The note text</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.create_date</td>
-<td style="width: 503px;">The date the note was created</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.modify_date</td>
-<td style="width: 503px;">The date the note was modified</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.is_deleted</td>
-<td style="width: 503px;">The flag indicating if the note is deleted</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.modify_user.id</td>
-<td style="width: 503px;">The user that last modified the note</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.modify_user.first_name</td>
-<td style="width: 503px;">The user's last name that last modified the note</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.modify_user.last_name</td>
-<td style="width: 503px;">The user's first name that last modified the note</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.inc_id</td>
-<td style="width: 503px;">The ID of the incident to which this note belongs</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.inc_name</td>
-<td style="width: 503px;">The name of the incident to which this note belongs</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.task_id</td>
-<td style="width: 503px;">The ID of the task to which this note belongs. Will be null on incident notes</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.task_name</td>
-<td style="width: 503px;">The name of the task to which this note belongs. Will be null on incident notes</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.task_custom</td>
-<td style="width: 503px;">For task note, whether or not that task is custom. Null for incident notes</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.task_members</td>
-<td style="width: 503px;">For task notes, the list of that task's members, if any. Null for incident notes</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.task_at_id</td>
-<td style="width: 503px;">For task notes, whether or not that task is an automatic task</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.inc_owner</td>
-<td style="width: 503px;">The owner of the incident to which this note belongs</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.user_name</td>
-<td style="width: 503px;">The owner of the incident to which this note belongs</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.modify_principal.id</td>
-<td style="width: 503px;">The ID of the principal</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.modify_principal.type</td>
-<td style="width: 503px;">The type of the principal Currently only user or group</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.modify_principal.name</td>
-<td style="width: 503px;">The name of the principal</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.modify_principal.display_name</td>
-<td style="width: 503px;">The display name of the principal</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.comment_perms.update</td>
-<td style="width: 503px;">The permission of the current user to update this note</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentNote.comment_perms.delete</td>
-<td style="width: 503px;">The permission of the current user to delete this note</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Raw Output</h5>
-<pre>The note was added successfully to incident 2111.</pre>
-<hr>
-<h3 id="h_7077667663711528814261121">Add an artifact to an incident: rs-add-artifact</h3>
-<p>Add an artifact to an incident.</p>
-<h5>Command Example</h5>
-<p><code>!rs-add-artifact incident-id=2111 artifact-type="IP Address" artifact-value="1.1.1.1" artifact-description"Description of the artifact"</code></p>
-<h5>Input</h5>
-<table style="height: 287px; width: 737px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 211px;"><strong>&nbsp;Parameter</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 211px;">incident-id</td>
-<td style="width: 503px;">
-<p>Incident ID to add the artifact there</p>
-</td>
-</tr>
-<tr>
-<td style="width: 211px;">artifact-type</td>
-<td style="width: 503px;">
-<p>The type of the artifact</p>
-</td>
-</tr>
-<tr>
-<td style="width: 211px;">artifact-value</td>
-<td style="width: 503px;">
-<p>The value of the artifact</p>
-</td>
-</tr>
-<tr>
-<td style="width: 211px;">artifact-description</td>
-<td style="width: 503px;">
-<p>The description of the artifact</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="height: 630px; width: 740px;" border="2" cellpadding="6">
-<tbody>
-<tr>
-<td style="width: 210px;"><strong>Path</strong></td>
-<td style="width: 503px;"><strong>Description</strong></td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.id</td>
-<td style="width: 503px;">The id of the artifact</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.type</td>
-<td style="width: 503px;">The type of the artifact</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.value</td>
-<td style="width: 503px;">The value of the artifact, this would be for example the IP address for an IP address artifact</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.description</td>
-<td style="width: 503px;">The description of the artifact</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.attachment</td>
-<td style="width: 503px;">The files are attached to the artifact</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.parent_id</td>
-<td style="width: 503px;">The parent artifact ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator.id</td>
-<td style="width: 503px;">The ID of the artifact creator</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator.fname</td>
-<td style="width: 503px;">The first name of the artifact creator</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator.lname</td>
-<td style="width: 503px;">The last name of the artifact creator</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator.display_name</td>
-<td style="width: 503px;">The display name of the artifact creator</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator.status</td>
-<td style="width: 503px;">The status of the artifact creator</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator.email</td>
-<td style="width: 503px;">The email of the artifact creator</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator.phone</td>
-<td style="width: 503px;">The phone number of the artifact creator</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator.cell</td>
-<td style="width: 503px;">The cellphone number of the artifact creator</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator.title</td>
-<td style="width: 503px;">The user's job title (e.g. Incident Response Manager)</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator.locked</td>
-<td style="width: 503px;">The status of the creator's acount (true if locked false otherwise)</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator.password_changed</td>
-<td style="width: 503px;">The user's password has changed (true if changed false otherwise)</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator.is_external</td>
-<td style="width: 503px;">The user's account is authenticated externally</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator.ui_theme</td>
-<td style="width: 503px;">The UI theme the user has selected. The Resilient UI recognizes the following values (darkmode lightmode verydarkmode)</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.inc_id</td>
-<td style="width: 503px;">The incident ID</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.inc_name</td>
-<td style="width: 503px;">The incident name</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.inc_owner</td>
-<td style="width: 503px;">The incident owner</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.created</td>
-<td style="width: 503px;">The date when the artifact is created</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.last_modified_time</td>
-<td style="width: 503px;">The last date on which the artifact changed</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.last_modified_by.id</td>
-<td style="width: 503px;">The ID of the last who changed the artifact</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.last_modified_by.type</td>
-<td style="width: 503px;">The type of the last who changed the artifact</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.last_modified_by.name</td>
-<td style="width: 503px;">The name of the last who changed the artifact</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.last_modified_by.display_name</td>
-<td style="width: 503px;">The display name of the last who changed the artifact</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.perms.read</td>
-<td style="width: 503px;">The permission of the current user to read this artifact</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.perms.write</td>
-<td style="width: 503px;">The permission of the current user to write this artifact</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.perms.delete</td>
-<td style="width: 503px;">The permission of the current user to delete this artifact</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.properties</td>
-<td style="width: 503px;">The additional artifact properties</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.hash</td>
-<td style="width: 503px;">The hash of the incident</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.relating</td>
-<td style="width: 503px;">Whether or not this artifact should be used for relating to other incidents</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator_principal.id</td>
-<td style="width: 503px;">The ID of the principal</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator_principal.type</td>
-<td style="width: 503px;">The type of the principal. Currently only user or group</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator_principal.name</td>
-<td style="width: 503px;">The API name of the principal</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.creator_principal.display_name</td>
-<td style="width: 503px;">The display name of the principal</td>
-</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.ip.source</td>
-<td style="width: 503px;">The IP address is a source</tr>
-<tr>
-<td style="width: 210px;">Resilient.IncidentArtifact.ip.destination</td>
-<td style="width: 503px;">The IP address is a destination</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Raw Output</h5>
-<pre>The artifact was added successfully to incident 2111.</pre>
+\]
+
+* * *
+
+### Add a note to an incident: rs-add-note
+
+Add a note to an incident.
+
+##### Command Example
+
+`!rs-add-note incident-id=2111 note="This is a note"`
+
+##### Input
+
+|     |     |
+| --- | --- |
+| ** Parameter** | **Description** |
+| incident-id | Incident ID to add the note there |
+| note | The text of the note |
+
+##### Context Output
+
+|     |     |
+| --- | --- |
+| **Path** | **Description** |
+| Resilient.IncidentNote.type | The type of the note (incident or task) |
+| Resilient.IncidentNote.id | The note's ID |
+| Resilient.IncidentNote.parent_id | The ID of the parent note (null for top-level note) |
+| Resilient.IncidentNote.user_id | The ID of the user who created the note |
+| Resilient.IncidentNote.user_fname | The user's first name |
+| Resilient.IncidentNote.user_lname | The user's last name |
+| Resilient.IncidentNote.text | The note text |
+| Resilient.IncidentNote.create_date | The date the note was created |
+| Resilient.IncidentNote.modify_date | The date the note was modified |
+| Resilient.IncidentNote.is_deleted | The flag indicating if the note is deleted |
+| Resilient.IncidentNote.modify_user.id | The user that last modified the note |
+| Resilient.IncidentNote.modify\_user.first\_name | The user's last name that last modified the note |
+| Resilient.IncidentNote.modify\_user.last\_name | The user's first name that last modified the note |
+| Resilient.IncidentNote.inc_id | The ID of the incident to which this note belongs |
+| Resilient.IncidentNote.inc_name | The name of the incident to which this note belongs |
+| Resilient.IncidentNote.task_id | The ID of the task to which this note belongs. Will be null on incident notes |
+| Resilient.IncidentNote.task_name | The name of the task to which this note belongs. Will be null on incident notes |
+| Resilient.IncidentNote.task_custom | For task note, whether or not that task is custom. Null for incident notes |
+| Resilient.IncidentNote.task_members | For task notes, the list of that task's members, if any. Null for incident notes |
+| Resilient.IncidentNote.task\_at\_id | For task notes, whether or not that task is an automatic task |
+| Resilient.IncidentNote.inc_owner | The owner of the incident to which this note belongs |
+| Resilient.IncidentNote.user_name | The owner of the incident to which this note belongs |
+| Resilient.IncidentNote.modify_principal.id | The ID of the principal |
+| Resilient.IncidentNote.modify_principal.type | The type of the principal Currently only user or group |
+| Resilient.IncidentNote.modify_principal.name | The name of the principal |
+| Resilient.IncidentNote.modify\_principal.display\_name | The display name of the principal |
+| Resilient.IncidentNote.comment_perms.update | The permission of the current user to update this note |
+| Resilient.IncidentNote.comment_perms.delete | The permission of the current user to delete this note |
+
+##### Raw Output
+
+The note was added successfully to incident 2111.
+
+* * *
+
+### Add an artifact to an incident: rs-add-artifact
+
+Add an artifact to an incident.
+
+##### Command Example
+
+`!rs-add-artifact incident-id=2111 artifact-type="IP Address" artifact-value="1.1.1.1" artifact-description"Description of the artifact"`
+
+##### Input
+
+|     |     |
+| --- | --- |
+| ** Parameter** | **Description** |
+| incident-id | Incident ID to add the artifact there |
+| artifact-type | The type of the artifact |
+| artifact-value | The value of the artifact |
+| artifact-description | The description of the artifact |
+
+##### Context Output
+
+|     |     |
+| --- | --- |
+| **Path** | **Description** |
+| Resilient.IncidentArtifact.id | The id of the artifact |
+| Resilient.IncidentArtifact.type | The type of the artifact |
+| Resilient.IncidentArtifact.value | The value of the artifact, this would be for example the IP address for an IP address artifact |
+| Resilient.IncidentArtifact.description | The description of the artifact |
+| Resilient.IncidentArtifact.attachment | The files are attached to the artifact |
+| Resilient.IncidentArtifact.parent_id | The parent artifact ID |
+| Resilient.IncidentArtifact.creator.id | The ID of the artifact creator |
+| Resilient.IncidentArtifact.creator.fname | The first name of the artifact creator |
+| Resilient.IncidentArtifact.creator.lname | The last name of the artifact creator |
+| Resilient.IncidentArtifact.creator.display_name | The display name of the artifact creator |
+| Resilient.IncidentArtifact.creator.status | The status of the artifact creator |
+| Resilient.IncidentArtifact.creator.email | The email of the artifact creator |
+| Resilient.IncidentArtifact.creator.phone | The phone number of the artifact creator |
+| Resilient.IncidentArtifact.creator.cell | The cellphone number of the artifact creator |
+| Resilient.IncidentArtifact.creator.title | The user's job title (e.g. Incident Response Manager) |
+| Resilient.IncidentArtifact.creator.locked | The status of the creator's acount (true if locked false otherwise) |
+| Resilient.IncidentArtifact.creator.password_changed | The user's password has changed (true if changed false otherwise) |
+| Resilient.IncidentArtifact.creator.is_external | The user's account is authenticated externally |
+| Resilient.IncidentArtifact.creator.ui_theme | The UI theme the user has selected. The Resilient UI recognizes the following values (darkmode lightmode verydarkmode) |
+| Resilient.IncidentArtifact.inc_id | The incident ID |
+| Resilient.IncidentArtifact.inc_name | The incident name |
+| Resilient.IncidentArtifact.inc_owner | The incident owner |
+| Resilient.IncidentArtifact.created | The date when the artifact is created |
+| Resilient.IncidentArtifact.last\_modified\_time | The last date on which the artifact changed |
+| Resilient.IncidentArtifact.last\_modified\_by.id | The ID of the last who changed the artifact |
+| Resilient.IncidentArtifact.last\_modified\_by.type | The type of the last who changed the artifact |
+| Resilient.IncidentArtifact.last\_modified\_by.name | The name of the last who changed the artifact |
+| Resilient.IncidentArtifact.last\_modified\_by.display_name | The display name of the last who changed the artifact |
+| Resilient.IncidentArtifact.perms.read | The permission of the current user to read this artifact |
+| Resilient.IncidentArtifact.perms.write | The permission of the current user to write this artifact |
+| Resilient.IncidentArtifact.perms.delete | The permission of the current user to delete this artifact |
+| Resilient.IncidentArtifact.properties | The additional artifact properties |
+| Resilient.IncidentArtifact.hash | The hash of the incident |
+| Resilient.IncidentArtifact.relating | Whether or not this artifact should be used for relating to other incidents |
+| Resilient.IncidentArtifact.creator_principal.id | The ID of the principal |
+| Resilient.IncidentArtifact.creator_principal.type | The type of the principal. Currently only user or group |
+| Resilient.IncidentArtifact.creator_principal.name | The API name of the principal |
+| Resilient.IncidentArtifact.creator\_principal.display\_name | The display name of the principal |
+| Resilient.IncidentArtifact.ip.source | The IP address is a source |
+| Resilient.IncidentArtifact.ip.destination | The IP address is a destination |
+
+##### Raw Output
+
+The artifact was added successfully to incident 2111.

@@ -344,13 +344,13 @@ def search_incidents(client, args):
     return response
 
 
-def extract_data_form_other_fields_argument(other_fields: str, incident: dict, changes: list):
+def extract_data_form_other_fields_argument(other_fields, incident, changes):
     """Extracts the values from other-field argument and build a json object in ibm format to update an incident.
 
     Args:
-        other_fields: Contains the field that should be changed and the new value ({"name": {"text": "The new name"}}).
-        incident: Contains the old value of the field that should be changed ({"name": "The old name"}).
-        changes: Contains the fields that should be changed with the old and new values in IBM format
+        other_fields (str): Contains the field that should be changed and the new value ({"name": {"text": "The new name"}}).
+        incident (dict): Contains the old value of the field that should be changed ({"name": "The old name"}).
+        changes (list): Contains the fields that should be changed with the old and new values in IBM format
             ([{'field': {'name': 'confirmed'}, 'old_value': {'boolean': 'false'}, 'new_value': {'boolean': 'true'},
             {'field': {'name': 'name'}, 'old_value': {'text': 'The old name'}, 'new_value': {'text': 'The new name'}}]).
 
