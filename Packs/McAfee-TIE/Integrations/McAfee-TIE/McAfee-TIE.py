@@ -189,7 +189,8 @@ def file(hash_inputs):
             hash_type = get_hash_type(hash_value)
             hash_type_key = HASH_TYPE_KEYS.get(hash_type)
             if not hash_type_key:
-                return create_error_entry('file argument must be sha1(40 charecters) or sha256(64 charecters) or md5(32 charecters)')
+                return create_error_entry('file argument must be sha1(40 charecters) or sha256(64 charecters)'
+                                          ' or md5(32 charecters)')
 
             hash_param = {}
             hash_param[hash_type_key] = hash_value
@@ -208,8 +209,10 @@ def file(hash_inputs):
             context_file['TrustLevel'] = tl_score['trust_level']
             context_file['Vendor'] = tl_score['vendor']
 
-            dbot_score = [{'Indicator': hash_value, 'Type': 'hash', 'Vendor': tl_score['vendor'], 'Score': tl_score['score']},
-                          {'Indicator': hash_value, 'Type': 'file', 'Vendor': tl_score['vendor'], 'Score': tl_score['score']}]
+            dbot_score = [{'Indicator': hash_value, 'Type': 'hash', 'Vendor': tl_score['vendor'],
+                           'Score': tl_score['score']},
+                          {'Indicator': hash_value, 'Type': 'file', 'Vendor': tl_score['vendor'],
+                           'Score': tl_score['score']}]
             if tl_score['score'] >= 2:
                 context_file['Malicious'] = {
                     'Vendor': tl_score['vendor'],
