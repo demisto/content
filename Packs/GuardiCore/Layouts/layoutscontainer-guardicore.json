@@ -395,19 +395,21 @@
                 "startCol": 0
               },
               {
+                "dropEffect": "move",
                 "endCol": 2,
-                "fieldId": "tags",
+                "fieldId": "guardicoreassociatedincidentgroups",
                 "height": 22,
-                "id": "f465a030-f9c0-11eb-acfd-4543cef9e100",
+                "id": "cdc41fc0-fa8c-11eb-a472-f10ae10bf706",
                 "index": 8,
+                "listId": "caseinfoid-fe428ef0-ed55-11eb-b6cc-d9d8af995038",
                 "sectionItemType": "field",
                 "startCol": 0
               },
               {
                 "endCol": 2,
-                "fieldId": "associatedincidentgroups",
+                "fieldId": "tags",
                 "height": 22,
-                "id": "9c15f300-f9f5-11eb-a64d-311eb0456683",
+                "id": "f465a030-f9c0-11eb-acfd-4543cef9e100",
                 "index": 9,
                 "sectionItemType": "field",
                 "startCol": 0
