@@ -569,7 +569,7 @@ def main():
         command = demisto.command()
         if command == 'test-module':
             get_token()
-            demisto.results('ok')
+            return_results('ok')
         elif command == 'redlock-search-alerts':
             search_alerts()
         elif command == 'redlock-list-alert-filters':
