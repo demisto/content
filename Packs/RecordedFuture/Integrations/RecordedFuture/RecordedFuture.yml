@@ -742,7 +742,7 @@ script:
     - contextPath: RecordedFuture.IP.rules
       description: Risk rules
       type: string
-    - contextPath: RecordedFuture.IP.concatRules
+    - contextPath: RecordedFuture.Ip.concatRules
       description: All risk rules concatenated by comma
       type: string
     - contextPath: RecordedFuture.IP.score
@@ -1045,30 +1045,6 @@ script:
     - contextPath: RecordedFuture.Domain.metrics.value
       description: Recorded Future metrics value
       type: number
-    - contextPath: RecordedFuture.Domain.location.asn
-      description: ASN number
-      type: string
-    - contextPath: RecordedFuture.Domain.location.cidr.id
-      description: Recorded Future CIDR ID
-      type: string
-    - contextPath: RecordedFuture.Domain.location.cidr.name
-      description: Recorded Future CIDR
-      type: string
-    - contextPath: RecordedFuture.Domain.location.cidr.type
-      description: Recorded Future CIDR Type
-      type: string
-    - contextPath: RecordedFuture.Domain.location.location.city
-      description: IP Geolocation City
-      type: string
-    - contextPath: RecordedFuture.Domain.location.location.continent
-      description: IP Geolocation Continent
-      type: string
-    - contextPath: RecordedFuture.Domain.location.location.country
-      description: IP Geolocation Country
-      type: string
-    - contextPath: RecordedFuture.Domain.location.organization
-      description: IP Geolocation Organization
-      type: string
     - contextPath: RecordedFuture.Domain.threatLists.description
       description: Recorded Future threat list description
       type: string
@@ -1303,6 +1279,9 @@ script:
     - contextPath: RecordedFuture.CVE.intelCard
       description: Recorded Future Intelligence Card URL
       type: string
+    - contextPath: RecordedFuture.CVE.hashAlgorithm
+      description: Hash Algorithm
+      type: string
     - contextPath: RecordedFuture.CVE.type
       description: Entity Type
       type: string
@@ -1318,30 +1297,6 @@ script:
     - contextPath: RecordedFuture.CVE.metrics.value
       description: Recorded Future Metrics Value
       type: number
-    - contextPath: RecordedFuture.CVE.location.asn
-      description: ASN number
-      type: string
-    - contextPath: RecordedFuture.CVE.location.cidr.id
-      description: Recorded Future CIDR ID
-      type: string
-    - contextPath: RecordedFuture.CVE.location.cidr.name
-      description: Recorded Future CIDR
-      type: string
-    - contextPath: RecordedFuture.CVE.location.cidr.type
-      description: Recorded Future CIDR Type
-      type: string
-    - contextPath: RecordedFuture.CVE.location.location.city
-      description: IP Geolocation City
-      type: string
-    - contextPath: RecordedFuture.CVE.location.location.continent
-      description: IP Geolocation Continent
-      type: string
-    - contextPath: RecordedFuture.CVE.location.location.country
-      description: IP Geolocation Country
-      type: string
-    - contextPath: RecordedFuture.CVE.location.organization
-      description: IP Geolocation Organization
-      type: string
     - contextPath: RecordedFuture.CVE.threatLists.description
       description: Recorded Future Threat List Description
       type: string
@@ -1849,30 +1804,6 @@ script:
     - contextPath: RecordedFuture.URL.metrics.value
       description: Recorded Future Metrics Value
       type: number
-    - contextPath: RecordedFuture.URL.location.asn
-      description: ASN number
-      type: string
-    - contextPath: RecordedFuture.URL.location.cidr.id
-      description: Recorded Future CIDR ID
-      type: string
-    - contextPath: RecordedFuture.URL.location.cidr.name
-      description: Recorded Future CIDR
-      type: string
-    - contextPath: RecordedFuture.URL.location.cidr.type
-      description: Recorded Future CIDR Type
-      type: string
-    - contextPath: RecordedFuture.URL.location.location.city
-      description: IP Geolocation City
-      type: string
-    - contextPath: RecordedFuture.URL.location.location.continent
-      description: IP Geolocation Continent
-      type: string
-    - contextPath: RecordedFuture.URL.location.location.country
-      description: IP Geolocation Country
-      type: string
-    - contextPath: RecordedFuture.URL.location.organization
-      description: IP Geolocation Organization
-      type: string
     - contextPath: RecordedFuture.URL.threatLists.description
       description: Recorded Future Threat List Description
       type: string

@@ -175,7 +175,6 @@ class RFTest(unittest.TestCase):
     @vcr.use_cassette()
     def test_get_links_command(self):
         """Get Technical Links"""
-        import pdb; pdb.set_trace()
         resp = self.actions.get_links_command('152.169.22.67', 'ip')
         context = resp.to_context()
         self.assertIsInstance(resp, CommandResults)
