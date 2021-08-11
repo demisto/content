@@ -78,16 +78,16 @@ script:
       description: The domain for which to get the reputation.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision
@@ -144,16 +144,16 @@ script:
       description: IP address for which to get the reputation
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: IP.Malicious.Vendor
       description: For malicious IP addresses, the vendor that made the decision
@@ -212,16 +212,16 @@ script:
         SHA256, SHA512, CRC32 or CTPH
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: File.SHA256
       description: SHA-256 hash of the file
@@ -293,16 +293,16 @@ script:
       description: CVE for which to get the reputation.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: CVE.ID
       description: Vulnerability name
@@ -353,16 +353,16 @@ script:
       description: URL for which to get the reputation.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
