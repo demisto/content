@@ -139,6 +139,8 @@ def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         raise ValueError('AlexaV2: domain doesn\'t exists')
     command_results: List[CommandResults] = []
     for domain in domains:
+        if not re.match(urlRegex, domain):
+            raise DemistoException('Entered invalid url')
         result = client.alexa_rank(domain)
         rank = demisto.get(result,
                            'Awis.Results.Result.Alexa.TrafficData.Rank')

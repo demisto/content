@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: ca365c80-1f6e-494b-8115-4b5619c11978
+    taskid: 51f1f999-be43-4861-8118-332586bfb281
     type: condition
     task:
-      id: ca365c80-1f6e-494b-8115-4b5619c11978
+      id: 51f1f999-be43-4861-8118-332586bfb281
       version: -1
       name: test_domain
       type: condition
@@ -115,6 +115,46 @@ tasks:
           right:
             value:
               simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+          right:
+            value:
+              simple: A - Completely reliable
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: domain
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: Alexa Rank Indicator V2
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: google.com
     view: |-
       {
         "position": {

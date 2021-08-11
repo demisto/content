@@ -13,6 +13,7 @@ pytest-xdist = "*"
 
 [packages]
 python-dateutil = "*"
+pipenv = "*"
 
 [requires]
 python_version = "3.7"
