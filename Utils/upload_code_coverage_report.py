@@ -24,23 +24,12 @@ def create_minimal_report(source_file: str, destination_file: str):
         minimal_output.write(json.dumps(minimal_coverage_contents))
 
 
-# https://storage.cloud.google.com/marketplace-dist-dev/code-coverage/coverage_data.json
-def upload_code_cov_report(options: Namespace):
-    """Uploads the Code Coverage report to the bucket."""
-    upload_file_to_google_cloud_storage(options)
-
-
-def upload_file_to_google_cloud_storage(options: Namespace = None):
+def upload_file_to_google_cloud_storage(service_account: str,
+                                       bucket_name: str,
+                                       source_file_name: str,
+                                       destination_blob_name: str,
+                                       ):
     """Uploads a file to the bucket."""
-
-    service_account = options.get('service_account')
-    if not service_account:
-        print('No service_account, exiting')
-        return
-
-    bucket_name = options.get('bucket_name') or 'marketplace-dist-dev'
-    source_file_name = options.get('source_file_name') or 'coverage_data.json'
-    destination_blob_name = options.get('destination_blob_name') or 'code-coverage/coverage_data.json'
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -73,19 +62,29 @@ def options_handler():
                               "`gcloud auth application-default login` and leave this parameter blank. "
                               "For more information go to: "
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
-                        required=False)
+                        required=True)
 
     parser.add_argument('-b', '--bucket_name',
                         help=("Name of the bucket in Google Cloud Storage. "
                               "Default value is marketplace-dist-dev."),
                         required=False)
 
+    # TODO Pass specific arguments to methods (and no "options")
     parser.add_argument('-f', '--source_file_name',
-                        help=("Path to the source file. "
+                        default='coverage.json',
+                        help=("Path to the Coverage report in json format. "
+                              "Default value is coverage.json."),
+                        required=False)
+
+    parser.add_argument('-m', '--minimal_file_name',
+                        default='coverage_data.json',
+                        help=("Filename of a minimal coverage report. "
+                              "It is a subset of the source_file_name. "
                               "Default value is coverage_data.json."),
                         required=False)
 
     parser.add_argument('-d', '--destination_blob_name',
+                        default='code-coverage/coverage_data.json',
                         help=("Blob Name in Google Cloud Storage. "
                               "Default value is code-coverage/coverage_data.json."),
                         required=False)
@@ -93,9 +92,28 @@ def options_handler():
     return parser.parse_args()
 
 
+def coverage_json(cov_file):
+    # this method will be removed when merge to sdk
+    import os
+    from coverage import Coverage
+    cov_dir = os.path.split(cov_file)[0]
+    data_file = os.path.join(cov_dir, '.coverage')
+    json_file = os.path.join(cov_dir, 'coverage.json')
+    Coverage(data_file=data_file).json_report(outfile=json_file)
+
 def main():
     options = options_handler()
-    upload_code_cov_report(options=options)
+    coverage_json(options['source-file-name'])
+
+    create_minimal_report(source_file=options.get('source_file_name'),
+                          destination_file=options.get('minimal_file_name'),
+                         )
+
+    upload_file_to_google_cloud_storage(service_account=options.get('service_account'),
+                                       bucket_name=options.get('bucket_name'),
+                                       source_file_name=options.get('source_file_name'),
+                                       destination_blob_name=options.get('destination_blob_name'),
+                                       )
 
 
 if __name__ == '__main__':
