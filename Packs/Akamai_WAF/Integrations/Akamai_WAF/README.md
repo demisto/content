@@ -448,7 +448,7 @@ Akamai WAF - element **8.8.8.8** removed from network list **69988_TEST** succes
 
 ### akamai-get-network-list-activation-status
 
-Gets the activation status of the specified network list
+Gets the activation status of the specified network list.
 
 ##### Base Command
 
