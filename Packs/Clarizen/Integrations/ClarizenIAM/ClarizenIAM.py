@@ -127,7 +127,7 @@ class Client(BaseClient):
         """
         uri = f'/data/objects/User/{user_id}'
 
-        res = self._http_request(
+        self._http_request(
             method='POST',
             url_suffix=uri,
             json_data=user_data
@@ -158,7 +158,7 @@ class Client(BaseClient):
             "operation": "Enable"
         }
 
-        res = self._http_request(
+        self._http_request(
             method='POST',
             url_suffix=uri,
             json_data=user_data
@@ -189,7 +189,7 @@ class Client(BaseClient):
             "operation": "Disable"
         }
 
-        res = self._http_request(
+        self._http_request(
             method='POST',
             url_suffix=uri,
             json_data=user_data
