@@ -3,11 +3,10 @@ from argparse import argparse, Namespace
 from datetime import datetime
 import json
 
-from google.cloud import storage
-
 from typing import Dict
 
 from Tests.Marketplace.marketplace_services import init_storage_client
+
 
 def create_minimal_report(source_file: str, destination_file: str):
     with open(source_file, 'r') as cov_util_output:
@@ -34,14 +33,14 @@ def upload_code_cov_report(options: Namespace):
 def upload_file_to_google_cloud_storage(options: Namespace = None):
     """Uploads a file to the bucket."""
 
-    service_account=options.get('service_account')
+    service_account = options.get('service_account')
     if not service_account:
         print('No service_account, exiting')
         return
 
-    bucket_name=options.get('bucket_name') or 'marketplace-dist-dev'
-    source_file_name=options.get('source_file_name') or 'coverage_data.json'
-    destination_blob_name=options.get('destination_blob_name') or 'code-coverage/coverage_data.json'
+    bucket_name = options.get('bucket_name') or 'marketplace-dist-dev'
+    source_file_name = options.get('source_file_name') or 'coverage_data.json'
+    destination_blob_name = options.get('destination_blob_name') or 'code-coverage/coverage_data.json'
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
