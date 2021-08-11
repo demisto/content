@@ -58,7 +58,7 @@ class Client(BaseClient):
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        uri = f'{URI_PREFIX}parameterizedSearch/'
+        uri = f'{URI_PREFIX}parameterizedSearch'
         params = {
             "q": email,
             "sobject": "FF__Key_Contact__c",
@@ -268,7 +268,7 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
 def main():
     user_profile = None
     params = demisto.params()
-    base_url = urljoin(params['url'].strip('/'), '/api/now/')
+    base_url = urljoin(params['url'].strip('/'))
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
     mapper_in = params.get('mapper_in')
