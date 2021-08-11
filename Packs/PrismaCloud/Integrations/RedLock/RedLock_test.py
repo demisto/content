@@ -1,6 +1,5 @@
-import time
-
 import pytest
+from freezegun import freeze_time
 
 import demistomock as demisto
 
@@ -18,6 +17,7 @@ def set_mocks(mocker):
     mocker.patch.object(demisto, 'params', return_value=integration_params)
 
 
+@freeze_time("2021-07-10T16:34:14.758295 UTC+1")
 def test_fetch_incidents_first_time_fetch(mocker):
     """Unit test
     Given
@@ -33,4 +33,4 @@ def test_fetch_incidents_first_time_fetch(mocker):
     mocker.patch('RedLock.req', return_value=[])
 
     _, next_run = fetch_incidents()
-    assert str(next_run)[:-3] == str(time.time())[:-2]
+    assert next_run == 1625938454758

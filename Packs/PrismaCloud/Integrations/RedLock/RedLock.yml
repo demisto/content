@@ -688,9 +688,9 @@ script:
   isfetch: true
   runonce: false
   script: ''
-  subtype: python2
+  subtype: python3
   type: python
-  dockerimage: demisto/python:2.7.18.22912
+  dockerimage: demisto/python3:3.9.6.22912
 fromversion: 5.0.0
 defaultclassifier: RedLock
 defaultmapperin: RedLock-mapper
