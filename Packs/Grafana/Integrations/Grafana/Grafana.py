@@ -228,11 +228,11 @@ def calculate_fetch_start_time(last_fetch: str = None, first_fetch: str = FETCH_
 
 
 def parse_alerts(alerts: List[Dict[str, Any]], max_fetch: int, last_fetch: datetime):
-    incidents: List[Dict[str, Any]] = []
-    updated_last_fetch = last_fetch
-
     # sorting alerts by newStateDate so the fetch will work by date and not by id
     alerts.sort(key=lambda a: dateparser.parse(a['newStateDate']).replace(tzinfo=utc))
+
+    incidents: List[Dict[str, Any]] = []
+    updated_last_fetch = last_fetch
 
     for alert in alerts:
         if len(incidents) >= max_fetch:
@@ -308,7 +308,7 @@ def alert_pause_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=output,
         raw_response=response,
-        readable_output=tableToMarkdown('Paused Alert', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Paused Alert {alert_id}', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -327,7 +327,7 @@ def alert_unpause_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_key_field='id',
         outputs=output,
         raw_response=response,
-        readable_output=tableToMarkdown('Un-paused Alerts', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Un-paused Alert {alert_id}', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -345,7 +345,7 @@ def alert_get_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResu
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Alert', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Alert {alert_id} Results', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -378,7 +378,7 @@ def user_get_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResul
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('User', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'User {user_id} Results', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -395,7 +395,7 @@ def users_teams_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=output,
         raw_response=response,
-        readable_output=tableToMarkdown('Teams For User', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Teams For User {user_id}', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -412,7 +412,7 @@ def users_organization_command(client: Client, args: Dict[str, Any]) -> CommandR
         outputs_key_field='id',
         outputs=output,
         raw_response=response,
-        readable_output=tableToMarkdown('Organization For User', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Organization For User {user_id}', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -481,7 +481,7 @@ def teams_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs_key_field='id',
         outputs=response['teams'],
         raw_response=response['teams'],
-        readable_output=tableToMarkdown('Teams', response['teams'], removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown('Teams Search Results', response['teams'], removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -496,7 +496,7 @@ def team_get_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResul
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Team', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Team {team_id} Results', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -513,7 +513,7 @@ def team_members_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs_key_field='id',
         outputs=output,
         raw_response=response,
-        readable_output=tableToMarkdown('Team Members', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Team {team_id} Members', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -600,7 +600,7 @@ def org_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Organization', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown('Organizations', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -615,7 +615,7 @@ def org_get_by_name_command(client: Client, args: Dict[str, Any]) -> CommandResu
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Organization', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown('Organizations', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -630,7 +630,7 @@ def org_get_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Organization', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Organization {org_id} Results', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -652,7 +652,7 @@ def dashboards_search_command(client: Client, args: Dict[str, Any]) -> CommandRe
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown('Dashboard', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown('Dashboards', response, removeNull=True, headerTransform=pascalToSpace)
     )
 
     return command_results
