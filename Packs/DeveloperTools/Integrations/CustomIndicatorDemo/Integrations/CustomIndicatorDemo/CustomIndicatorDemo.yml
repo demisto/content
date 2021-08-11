@@ -21,21 +21,19 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration
-  does, what use cases it is designed for, etc.]'
+description: 'Custom Indicator Demo is a demo integration which demonstrates usage of CustomIndicator helper class.'
 display: CustomIndicatorDemo
 name: CustomIndicatorDemo
 script:
   commands:
   - arguments:
     deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
+    description: 'This command demonstrates the usage of CustomIndicator.'
     execution: false
     name: test-custom-indicator
     outputs:
     - contextPath: Demo.Result.Output
-      description: '[Enter a description of the data returned in this output.]'
+      description: 'Dummy output.'
       type: String
   isfetch: false
   runonce: false
@@ -45,4 +43,4 @@ script:
   dockerimage: demisto/python3:3.9.5.21272
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+- CustomIndicatorDemo-test
