@@ -55,7 +55,7 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: An Identity and Access Management integration template.
+description: Integrate with Exceed LMS Identity Access Management services to execute CRUD operations to employee lifecycle processes.
 display: ExceedLMS IAM
 name: ExceedLMS IAM
 script:
