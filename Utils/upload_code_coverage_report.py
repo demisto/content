@@ -1,14 +1,13 @@
 
+from argparse import argparse, Namespace
 from datetime import datetime
 import json
-import os
 
 from google.cloud import storage
 
 from typing import Dict
 
-# TODO Initialize the Storage Client. See upload_packs.py
-# from Tests.Marketplace.marketplace_services import init_storage_client
+from Tests.Marketplace.marketplace_services import init_storage_client
 
 def create_minimal_report(source_file: str, destination_file: str):
     with open(source_file, 'r') as cov_util_output:
@@ -27,15 +26,25 @@ def create_minimal_report(source_file: str, destination_file: str):
 
 
 # https://storage.cloud.google.com/marketplace-dist-dev/code-coverage/coverage_data.json
-def upload_code_cov_report(source_file_name: str, bucket_name: str = 'marketplace-dist-dev', destination_blob_name: str = 'code-coverage/coverage_data.json'):
+def upload_code_cov_report(options: Namespace):
     """Uploads the Code Coverage report to the bucket."""
-    upload_file_to_google_cloud_storage(bucket_name=bucket_name, source_file_name=source_file_name, destination_blob_name=destination_blob_name)
+    upload_file_to_google_cloud_storage(options)
 
 
-def upload_file_to_google_cloud_storage(bucket_name: str, source_file_name: str, destination_blob_name: str):
+def upload_file_to_google_cloud_storage(options: Namespace = None):
     """Uploads a file to the bucket."""
 
-    storage_client = storage.Client()
+    service_account=options.get('service_account')
+    if not service_account:
+        print('No service_account, exiting')
+        return
+
+    bucket_name=options.get('bucket_name') or 'marketplace-dist-dev'
+    source_file_name=options.get('source_file_name') or 'coverage_data.json'
+    destination_blob_name=options.get('destination_blob_name') or 'code-coverage/coverage_data.json'
+
+    # google cloud storage client initialized
+    storage_client = init_storage_client(service_account)
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
 
@@ -46,3 +55,49 @@ def upload_file_to_google_cloud_storage(bucket_name: str, source_file_name: str,
             source_file_name, destination_blob_name
         )
     )
+
+
+def options_handler():
+    """Validates and parses script arguments.
+
+    Returns:
+        Namespace: Parsed arguments object.
+
+    """
+    parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
+    # disable-secrets-detection-start
+    parser.add_argument('-s', '--service_account',
+                        help=("Path to gcloud service account, "
+                              "For uploading the coverage report to Google Cloud Storage. "
+                              "For local development use your personal account and "
+                              "authenticate using Google Cloud SDK by running: "
+                              "`gcloud auth application-default login` and leave this parameter blank. "
+                              "For more information go to: "
+                              "https://googleapis.dev/python/google-api-core/latest/auth.html"),
+                        required=False)
+
+    parser.add_argument('-b', '--bucket_name',
+                        help=("Name of the bucket in Google Cloud Storage. "
+                              "Default value is marketplace-dist-dev."),
+                        required=False)
+
+    parser.add_argument('-f', '--source_file_name',
+                        help=("Path to the source file. "
+                              "Default value is coverage_data.json."),
+                        required=False)
+
+    parser.add_argument('-d', '--destination_blob_name',
+                        help=("Blob Name in Google Cloud Storage. "
+                              "Default value is code-coverage/coverage_data.json."),
+                        required=False)
+
+    return parser.parse_args()
+
+
+def main():
+    options = options_handler()
+    upload_code_cov_report(options=options)
+
+
+if __name__ == '__main__':
+    main()
