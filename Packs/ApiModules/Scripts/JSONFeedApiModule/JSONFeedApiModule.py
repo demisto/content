@@ -162,16 +162,16 @@ def get_no_update_value(response: requests.Response) -> bool:
     set_integration_context({'last_modified': last_modified, 'etag': etag})
 
     if old_etag and old_etag != etag:
-        demisto.log('New indicators fetched - the ETag value has been updated,'
-                    ' createIndicators will be executed with noUpdate=False.')
+        demisto.debug('New indicators fetched - the ETag value has been updated,'
+                      ' createIndicators will be executed with noUpdate=False.')
         return False
 
     if old_last_modified and old_last_modified != last_modified:
-        demisto.log('New indicators fetched - the Last-Modified value has been updated,'
-                    ' createIndicators will be executed with noUpdate=False.')
+        demisto.debug('New indicators fetched - the Last-Modified value has been updated,'
+                      ' createIndicators will be executed with noUpdate=False.')
         return False
 
-    demisto.log('No new indicators fetched, createIndicators will be executed with noUpdate=True.')
+    demisto.debug('No new indicators fetched, createIndicators will be executed with noUpdate=True.')
     return True
 
 
