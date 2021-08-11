@@ -1246,8 +1246,8 @@ def panorama_edit_address_group_command(args: dict):
     """
     Edit an address group
     """
-    address_group_name = args['name']
-    type_ = args['type']
+    address_group_name = args.get('name')
+    type_ = args.get('type', '').lower()
     match = args.get('match')
     element_to_add = argToList(args['element_to_add']) if 'element_to_add' in args else None
     element_to_remove = argToList(
