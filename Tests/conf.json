@@ -3562,9 +3562,21 @@
         "test playbook - QRadarCorrelations": "Issue 38639",
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
         "O365 - EWS - Extension - Test": "Issue 39008",
-        "Majestic Million Test Playbook": "Issue 30931"
+        "Majestic Million Test Playbook": "Issue 30931",
+        "iDefense_v2_Test": "Issue 40126",
+        "EWS Mail Sender Test": "Issue 27944",
+        "McAfee ESM v2 - Test v10.3.0": "Issue 35616",
+        "AzureADTest": "Issue 40131",
+        "AWS - IAM Test Playbook": "Issue 39320",
+        "Feed iDefense Test": "Issue 34035",
+        "FireEyeNX-Test": "Issue 33216",
+        "McAfee ESM v2 - Test v10.2.0": "Issue 35670",
+        "McAfee ESM Watchlists - Test v10.3.0": "Issue 37130",
+        "McAfee ESM Watchlists - Test v10.2.0": "Issue 39389",
+        "Microsoft Teams Management - Test": "Issue 33410"
     },
     "skipped_integrations": {
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "SolarWinds": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
@@ -3579,7 +3591,6 @@
         "Fidelis Elevate Network": "Issue 26453",
         "CrowdStrike Falcon X": "Issue 26209",
         "ArcSight Logger": "Issue 19117",
-        "Zscaler Test":  "API subscription is required, but it is currently Expired (Issue 40157)",
         "Sophos Central": "No instance",
         "MxToolBox": "No instance",
         "Prisma Access": "Instance will be provided soon by Lior and Prasen - Issue 27112",
@@ -3646,13 +3657,16 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
+
         "_comment4": "~~~ OTHER ~~~",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
@@ -3728,6 +3742,7 @@
         "palo_alto_firewall": "Need to check test module",
         "Signal Sciences WAF": "error with certificate",
         "google": "'unsecure' parameter not working",
+        "Zscaler Test": "API subscription is required, but it is currently Expired (Issue 40157)",
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Recorded Future": "might be dynamic test",
@@ -3826,6 +3841,7 @@
         "HelloWorldPremium_Scan-Test"
     ],
     "docker_thresholds": {
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
