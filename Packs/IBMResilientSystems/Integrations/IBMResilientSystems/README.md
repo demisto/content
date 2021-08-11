@@ -6,8 +6,8 @@ Use this integration to manage and orchestrate your IBM Resilient Systems incide
 
 
 1.  Navigate to **Settings** \> **Integrations** \> **Servers & Services**.
-2.  Search for IBM Resilient Systems.
-3.  Click **Add instance** to create and configure a new integration instance.
+2.  Search for IBM Resilient Systems.
+3.  Click **Add instance** to create and configure a new integration instance.
     * **Name**: a textual name for the integration instance
     * **Server URL**
     * **Credentials (either username and password or API key ID and API key secret, see [here](https://www.ibm.com/support/knowledgecenter/SSBRUQ_35.0.0/com.ibm.resilient.doc/admin/API_accounts.htm) for more details about API key ID and API key secret)**
