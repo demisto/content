@@ -3,7 +3,7 @@ and Bot Manager. This integration was integrated and tested with [Network Lists 
 
 ##  Playbooks
 
-* Akamai WAF Network list activate generic polling
+* Akamai WAF Network list activate generic polling.
 
 ## Use Cases
 
