@@ -108,7 +108,7 @@ def test_get_user_command__bad_response(mocker):
 
     bad_response = Response()
     bad_response.status_code = 500
-    bad_response._content = b'{"detail": "details", "message": "message"}'
+    bad_response._content = b'{"error": {"detail": "details", "message": "message"}}'
 
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(Session, 'request', return_value=bad_response)
@@ -119,7 +119,7 @@ def test_get_user_command__bad_response(mocker):
     assert outputs.get('action') == IAMActions.GET_USER
     assert outputs.get('success') is False
     assert outputs.get('errorCode') == 500
-    assert outputs.get('errorMessage') == "message: {'detail': 'details', 'message': 'message'}"
+    assert outputs.get('errorMessage') == "message: {'error': {'detail': 'details', 'message': 'message'}}"
 
 
 def test_create_user_command__success(mocker):

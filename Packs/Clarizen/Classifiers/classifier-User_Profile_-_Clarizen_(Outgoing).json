@@ -26,17 +26,13 @@
 					"complex": null,
 					"simple": "givenname"
 				},
-				"active": {
-					"complex": null,
-					"simple": "isactive"
-				},
-				"lastname": {
+				"Surname": {
 					"complex": null,
 					"simple": "lastname"
 				},
 				"Region": {
 					"complex": null,
-					"simple": "locationregion"
+					"simple": "state"
 				},
 				"phone_mobile": {
 					"complex": null,
@@ -91,17 +87,13 @@
 					"complex": null,
 					"simple": "givenname"
 				},
-				"active": {
-					"complex": null,
-					"simple": "isactive"
-				},
-				"lastname": {
+				"Surname": {
 					"complex": null,
 					"simple": "lastname"
 				},
 				"Region": {
 					"complex": null,
-					"simple": "locationregion"
+					"simple": "state"
 				},
 				"phone_mobile": {
 					"complex": null,

@@ -26,15 +26,11 @@
 					"complex": null,
 					"simple": "firstname"
 				},
-				"Is Active": {
-					"complex": null,
-					"simple": "active"
-				},
 				"Last Name": {
 					"complex": null,
-					"simple": "lastname"
+					"simple": "Surname"
 				},
-				"Location Region": {
+				"State": {
 					"complex": null,
 					"simple": "Region"
 				},

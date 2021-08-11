@@ -1,6 +1,6 @@
 category: Identity and Access Management
 commonfields:
-  id: ClarizenIAM
+  id: Clarizen IAM
   version: -1
 configuration:
 - display: Base URL
@@ -44,19 +44,19 @@ configuration:
   name: create_if_not_exists
   required: false
   type: 8
-- defaultvalue: User Profile - IAM Template (Incoming)
+- defaultvalue: User Profile - IAM Clarizen (Incoming)
   display: Incoming Mapper
   name: mapper_in
   required: true
   type: 0
-- defaultvalue: User Profile - IAM Template (Outgoing)
+- defaultvalue: User Profile - IAM Clarizen (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
   required: true
   type: 0
-description: An Identity and Access Management integration template.
-display: ClarizenIAM
-name: ClarizenIAM
+description: IAM Integration for Clarizen. Handles user account auto-provisioning to Clarizen.
+display: Clarizen IAM
+name: Clarizen IAM
 script:
   commands:
   - arguments:

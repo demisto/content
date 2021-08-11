@@ -3,9 +3,9 @@ from CommonServerPython import *
 from IAMApiModule import *
 import traceback
 import urllib3
+
 # Disable insecure warnings
 urllib3.disable_warnings()
-
 
 ''' CONSTANTS '''
 USER_FIELDS = 'Name,Email,Region,Location,JobTitle,DirectManager,MobilePhone,TimeZone,username,profile,firstname,' \
@@ -13,7 +13,6 @@ USER_FIELDS = 'Name,Email,Region,Location,JobTitle,DirectManager,MobilePhone,Tim
 ERROR_CODES_TO_SKIP = [
     404
 ]
-
 
 '''CLIENT CLASS'''
 
@@ -34,8 +33,8 @@ class Client(BaseClient):
             "userName": self.username,
             "Password": self.password
         }
-        
-        self._http_request(method='GET', url_suffix=uri, params=params)
+
+        return self._http_request(method='POST', url_suffix=uri, data={}, params=params)
 
     def get_user_by_id(self, user_id):
         uri = f'/data/objects/{user_id}'
@@ -60,32 +59,29 @@ class Client(BaseClient):
         :rtype: ``Optional[IAMUserAppData]``
         """
         uri = '/data/findUserQuery'
-        date = {'email': email}
+        data = {'email': email}
 
         res = self._http_request(
             method='POST',
             url_suffix=uri,
-            json_data=date
+            json_data=data
         )
 
-        if res:
-            res_json = res.json()
-            entities = res_json.get('entities')
+        res_json = res.json()
+        entities = res_json.get('entities')
 
-            if len(entities) > 0:
-                user_id = entities[0].get('id')
-                user_res = self.get_user_by_id(user_id)
+        if entities:
+            user_id = entities[0].get('id')
+            user_res = self.get_user_by_id(user_id)
 
-                if user_res:
-                    user_app_data = user_res.json()
+            user_app_data = user_res.json()
 
-                    if user_app_data:
-                        user_id = user_app_data.get('id').replace('/User/', '')
-                        user_name = user_app_data.get('username')
-                        active = user_app_data.get('state', {}).get('id').replace('/State/', '')
-                        is_active = False if active == 'Disabled' else True
+            user_id = user_app_data.get('id').replace('/User/', '')
+            user_name = user_app_data.get('username')
+            active = user_app_data.get('state', {}).get('id').replace('/State/', '')
+            is_active = False if active == 'Disabled' else True
 
-                        return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+            return IAMUserAppData(user_id, user_name, is_active, user_app_data)
         return None
 
     def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
@@ -105,20 +101,17 @@ class Client(BaseClient):
             json_data=user_data
         )
 
-        if res:
-            res_json = res.json()
-            user_id = res_json.get('id')
-            user_res = self.get_user_by_id(user_id)
+        res_json = res.json()
+        user_id = res_json.get('id')
+        user_res = self.get_user_by_id(user_id)
 
-            if user_res:
-                user_app_data = user_res.json()
+        user_app_data = user_res.json()
 
-                if user_app_data:
-                    user_id = user_app_data.get('id').replace('/User/', '')
-                    user_name = user_app_data.get('username')
-                    is_active = True
+        user_id = user_app_data.get('id').replace('/User/', '')
+        user_name = user_app_data.get('username')
+        is_active = True
 
-                    return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+        return IAMUserAppData(user_id, user_name, is_active, user_app_data)
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
         """ Updates a user in the application using REST API.
@@ -140,17 +133,14 @@ class Client(BaseClient):
             json_data=user_data
         )
 
-        if res:
-            user_res = self.get_user_by_id(f'/User/{user_id}')
+        user_res = self.get_user_by_id(f'/User/{user_id}')
 
-            if user_res:
-                user_app_data = user_res.json()
+        user_app_data = user_res.json()
 
-                if user_app_data:
-                    user_name = user_app_data.get('username')
-                    is_active = True
+        user_name = user_app_data.get('username')
+        is_active = True
 
-                    return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+        return IAMUserAppData(user_id, user_name, is_active, user_app_data)
 
     def enable_user(self, user_id: str) -> IAMUserAppData:
         """ Enables a user in the application using REST API.
@@ -161,9 +151,6 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the user in the application.
         :rtype: ``IAMUserAppData``
         """
-        # Note: ENABLE user API endpoints might vary between different APIs.
-        # In this example, we use the same endpoint as in update_user() method,
-        # But other APIs might have a unique endpoint for this request.
 
         uri = '/data/lifecycle'
         user_data = {
@@ -177,17 +164,14 @@ class Client(BaseClient):
             json_data=user_data
         )
 
-        if res:
-            user_res = self.get_user_by_id(f'/User/{user_id}')
+        user_res = self.get_user_by_id(f'/User/{user_id}')
 
-            if user_res:
-                user_app_data = user_res.json()
+        user_app_data = user_res.json()
 
-                if user_app_data:
-                    user_name = user_app_data.get('username')
-                    is_active = True
+        user_name = user_app_data.get('username')
+        is_active = True
 
-                    return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+        return IAMUserAppData(user_id, user_name, is_active, user_app_data)
 
     def disable_user(self, user_id: str) -> IAMUserAppData:
         """ Disables a user in the application using REST API.
@@ -198,9 +182,6 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the user in the application.
         :rtype: ``IAMUserAppData``
         """
-        # Note: DISABLE user API endpoints might vary between different APIs.
-        # In this example, we use the same endpoint as in update_user() method,
-        # But other APIs might have a unique endpoint for this request.
 
         uri = '/data/lifecycle'
         user_data = {
@@ -214,17 +195,14 @@ class Client(BaseClient):
             json_data=user_data
         )
 
-        if res:
-            user_res = self.get_user_by_id(f'/User/{user_id}')
+        user_res = self.get_user_by_id(f'/User/{user_id}')
 
-            if user_res:
-                user_app_data = user_res.json()
+        user_app_data = user_res.json()
 
-                if user_app_data:
-                    user_name = user_app_data.get('username')
-                    is_active = False
+        user_name = user_app_data.get('username')
+        is_active = False
 
-                    return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+        return IAMUserAppData(user_id, user_name, is_active, user_app_data)
 
     def get_app_fields(self) -> Dict[str, Any]:
         """ Gets a dictionary of the user schema fields in the application and their description.
@@ -244,7 +222,7 @@ class Client(BaseClient):
             params=params
         )
 
-        fields = res.get('entityDescriptions', {}).get('fields')
+        fields = res.get('entityDescriptions', {}).get('fields', [])
         return {field.get('name'): field.get('label') for field in fields}
 
     @staticmethod
@@ -311,7 +289,7 @@ def get_error_details(res: Dict[str, Any]) -> str:
     :return: The parsed error details.
     :rtype: ``str``
     """
-    message = res.get('message')
+    message = res.get('error', {}).get('message')
     details = res
     return f'{message}: {details}'
 
@@ -322,8 +300,11 @@ def get_error_details(res: Dict[str, Any]) -> str:
 def test_module(client: Client):
     """ Tests connectivity with the client. """
 
-    client.test()
-    return_results('ok')
+    res = client.test()
+    if res.status_code == 200:
+        return_results('ok')
+    else:
+        return_error(f'Error testing {res.status_code} - {res.text}')
 
 
 def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
