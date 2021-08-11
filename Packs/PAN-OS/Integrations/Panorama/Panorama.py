@@ -1246,7 +1246,7 @@ def panorama_edit_address_group_command(args: dict):
     """
     Edit an address group
     """
-    address_group_name = args.get('name')
+    address_group_name = args.get('name', '')
     type_ = args.get('type', '').lower()
     match = args.get('match')
     element_to_add = argToList(args['element_to_add']) if 'element_to_add' in args else None
@@ -1257,7 +1257,7 @@ def panorama_edit_address_group_command(args: dict):
         if not match:
             raise Exception('To edit a Dynamic Address group, Please provide a match.')
         match_param = add_argument_open(match, 'filter', False)
-        match_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/dynamic/filter"
+        match_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/dynamic/filter"
 
     if type_ == 'static':
         if (element_to_add and element_to_remove) or (not element_to_add and not element_to_remove):
@@ -1273,7 +1273,7 @@ def panorama_edit_address_group_command(args: dict):
         else:
             addresses = [item for item in address_group_list if item not in element_to_remove]
         addresses_param = add_argument_list(addresses, 'member', False)
-        addresses_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/static"
+        addresses_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/static"
 
     description = args.get('description')
     tags = argToList(args['tags']) if 'tags' in args else None
@@ -1313,7 +1313,7 @@ def panorama_edit_address_group_command(args: dict):
 
     if description:
         description_param = add_argument_open(description, 'description', False)
-        description_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/description"
+        description_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/description"
         params['xpath'] = description_path
         params['element'] = description_param
         result = http_request(
@@ -1325,7 +1325,7 @@ def panorama_edit_address_group_command(args: dict):
 
     if tags:
         tag_param = add_argument_list(tags, 'tag', True)
-        tag_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/tag"
+        tag_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/tag"
         params['xpath'] = tag_path
         params['element'] = tag_param
         result = http_request(
