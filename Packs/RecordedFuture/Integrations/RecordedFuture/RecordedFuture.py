@@ -1246,13 +1246,13 @@ class Actions():
             return self.__build_links_context(scored_links, markdown)
         except DemistoException as err:
             if "404" in str(err):
-                return [CommandResults(
+                return CommandResults(
                     outputs_prefix="",
                     outputs={},
                     raw_response={},
                     readable_output="No results found.",
                     outputs_key_field="",
-                )]
+                )
             else:
                 raise err
 
