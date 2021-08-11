@@ -73,7 +73,6 @@
       venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
     fi
   - source ./venv/bin/activate
-  - pip3 install "git+https://github.com/demisto/demisto-sdk@${SDK_REF}" >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
   - |
     if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
       echo "Installing SDK from $SDK_REF" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
