@@ -973,7 +973,6 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 |EWS.Items.ItemAttachments.attachmentId|unknown|Attachment ID of the item attachment.|
 |EWS.Items.FileAttachments.attachmentName|unknown|Attachment name of the file attachment.|
 |EWS.Items.ItemAttachments.attachmentName|unknown|Attachment name of the item attachment.|
-|Email.Items.ItemAttachments.attachmentName|unknown|Attachment name of the item attachment.|
 |EWS.Items.isRead|String|The read status of the email.|
 
 ##### Command Example
