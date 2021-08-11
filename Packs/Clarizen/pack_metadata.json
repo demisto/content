@@ -1,5 +1,5 @@
 {
-    "name": "ClarizenIAM",
+    "name": "Clarizen IAM",
     "description": "IAM Integration for Clarizen. This handles user account auto-provisioning",
     "support": "xsoar",
     "currentVersion": "1.0.0",
