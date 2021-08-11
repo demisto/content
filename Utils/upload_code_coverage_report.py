@@ -24,10 +24,10 @@ def create_minimal_report(source_file: str, destination_file: str):
 
 
 def upload_file_to_google_cloud_storage(service_account: str,
-                                       bucket_name: str,
-                                       source_file_name: str,
-                                       destination_blob_name: str,
-                                       ):
+                                        bucket_name: str,
+                                        source_file_name: str,
+                                        destination_blob_name: str,
+                                        ):
     """Uploads a file to the bucket."""
 
     # google cloud storage client initialized
@@ -100,19 +100,20 @@ def coverage_json(cov_file):
     json_file = os.path.join(cov_dir, 'coverage.json')
     Coverage(data_file=data_file).json_report(outfile=json_file)
 
+
 def main():
     options = options_handler()
     coverage_json(options['source-file-name'])
 
     create_minimal_report(source_file=options.get('source_file_name'),
                           destination_file=options.get('minimal_file_name'),
-                         )
+                          )
 
     upload_file_to_google_cloud_storage(service_account=options.get('service_account'),
-                                       bucket_name=options.get('bucket_name'),
-                                       source_file_name=options.get('source_file_name'),
-                                       destination_blob_name=options.get('destination_blob_name'),
-                                       )
+                                        bucket_name=options.get('bucket_name'),
+                                        source_file_name=options.get('source_file_name'),
+                                        destination_blob_name=options.get('destination_blob_name'),
+                                        )
 
 
 if __name__ == '__main__':
