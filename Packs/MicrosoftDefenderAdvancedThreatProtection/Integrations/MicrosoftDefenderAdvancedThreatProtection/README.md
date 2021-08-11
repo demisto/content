@@ -3541,7 +3541,7 @@ Creates a new indicator.
 | indicator_type | Type of the indicator. Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required | 
 | action | The action that will be taken if the indicator will be discovered in the organization. Possible values are: Alert, AlertAndBlock, Allowed. | Required | 
 | severity | The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, Medium, High, where High is the most severe and Informational is not severe at all. Possible values are: Informational, Low, Medium, High. | Optional | 
-| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 1 day. | Optional | 
+| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 14 days. | Optional | 
 | indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required | 
 | indicator_title | Indicator alert title. | Required | 
 | indicator_application | The application associated with the indicator. | Optional | 
@@ -3652,7 +3652,7 @@ Creates a new indicator.
 | indicator_type | Type of the indicator. Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required | 
 | action | The action that will be taken if the indicator will be discovered in the organization. Possible values are: Alert, AlertAndBlock, Allowed. | Required | 
 | severity | The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, Medium, High, where High is the most severe and Informational is not severe at all.| Optional | 
-| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) Default value is 1 day. | Optional | 
+| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) Default value is 14 days. | Optional | 
 | indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required | 
 | indicator_title | Indicator alert title. | Required | 
 | indicator_application | The application associated with the indicator. | Optional | 
@@ -3977,7 +3977,7 @@ Updates the specified indicator.
 | indicator_type | Type of the indicator. Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required | 
 | action | The action that will be taken if the indicator will be discovered in the organization. Possible values are: Alert, AlertAndBlock, Allowed. | Required | 
 | severity | The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, Medium, High, where High is the most severe and Informational is not severe at all. Possible values are: Informational, Low, Medium, High. | Optional | 
-| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 1 day. | Optional | 
+| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 14 days. | Optional | 
 | indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required | 
 | indicator_title | Indicator alert title. | Required | 
 | indicator_application | The application associated with the indicator. | Optional | 
@@ -4088,7 +4088,7 @@ Updates the specified indicator.
 | indicator_type | Type of the indicator. Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required | 
 | action | The action that will be taken if the indicator will be discovered in the organization. Possible values are: Alert, AlertAndBlock, Allowed. | Required | 
 | severity | The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, Medium, High, where High is the most severe and Informational is not severe at all. | Optional | 
-| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) Default value is 1 day. | Optional | 
+| expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) Default value is 14 days. | Optional | 
 | indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required | 
 | indicator_title | Indicator alert title. | Required | 
 | indicator_application | The application associated with the indicator. | Optional | 

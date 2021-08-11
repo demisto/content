@@ -3877,7 +3877,7 @@ script:
       description: 'DateTime string indicating when the indicator expires. Format:
         (<number> <time unit>, e.g., 12 hours, 7 days).'
       isArray: false
-      defaultValue: 1 day
+      defaultValue: 14 days
       name: expiration_time
       required: false
       secret: false
@@ -4070,7 +4070,7 @@ script:
       description: 'DateTime string indicating when the indicator expires. Format:
         (<number> <time unit>, e.g., 12 hours, 7 days).'
       isArray: false
-      defaultValue: 1 day
+      defaultValue: 14 days
       name: expiration_time
       required: false
       secret: false
