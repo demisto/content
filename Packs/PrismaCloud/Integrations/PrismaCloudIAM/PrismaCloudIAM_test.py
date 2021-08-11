@@ -26,7 +26,7 @@ DISABLED_USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=F
 
 
 def mock_client(mocker):
-    mocker.patch.object(Client, 'create_login', return_value={})
+    mocker.patch.object(Client, 'login', return_value={})
     client = Client(base_url='https://test.com',
                     username='test',
                     password='test',

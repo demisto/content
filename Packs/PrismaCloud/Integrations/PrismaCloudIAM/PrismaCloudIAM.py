@@ -31,23 +31,11 @@ class Client(BaseClient):
         self._username = username
         self._password = password
         self._customer_name = customer_name
-        res = self.create_login()
-        self._headers['x-redlock-auth'] = res.get('token')
 
     def test(self):
         """ Tests connectivity with the application. """
-        uri = 'user/id'
-        try:
-            res = self._http_request(method='GET', url_suffix=uri)
-            if res.status_code == 200:
-                return 'ok'
-        except DemistoException as e:
-            if e.res.status_code == 400:
-                return 'ok'
-
-        error_response = str(res.headers.get('x-redlock-status'))
-        raise Exception(
-            f"Failed to execuete test_module. Error Code: {res.status_code}. Error Response: {error_response}")
+        self.login()
+        return 'ok'
 
     def get_user(self, email: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
@@ -168,24 +156,21 @@ class Client(BaseClient):
         :return: The user schema fields dictionary
         :rtype: ``Dict[str, str]``
         """
-
         return USER_SCHEMA
 
-    def create_login(self):
-        try:
-            uri = '/login/'
-            body = {
-                "username": self._username,
-                "password": self._password,
-                "customerName": self._customer_name
-            }
-            return self._http_request(
-                method='POST',
-                url_suffix=uri,
-                json_data=body
-            )
-        except DemistoException as e:
-            return_error(e.message)
+    def login(self):
+        uri = '/login/'
+        body = {
+            "username": self._username,
+            "password": self._password,
+            "customerName": self._customer_name
+        }
+        res = self._http_request(
+            method='POST',
+            url_suffix=uri,
+            json_data=body
+        )
+        self._headers['x-redlock-auth'] = res.get('token')
 
     @staticmethod
     def handle_exception(user_profile: IAMUserProfile,
@@ -278,9 +263,10 @@ def get_error_details(res: requests.Response) -> str:
 
 def test_module(client: Client):
     """ Tests connectivity with the client. """
-
-    client.test()
-    return_results('ok')
+    try:
+        return_results(client.test())
+    except DemistoException as e:
+        return_error(e.message)
 
 
 def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
@@ -327,47 +313,46 @@ def main():
         'x-redlock-auth': ''
     }
 
-    client = Client(
-        base_url=base_url,
-        verify=verify_certificate,
-        proxy=proxy,
-        headers=headers,
-        ok_codes=(200, 201),
-        username=username,
-        password=password,
-        customer_name=customer_name
-    )
-
     demisto.debug(f'Command being called is {command}')
 
-    '''CRUD commands'''
-
-    if command == 'iam-get-user':
-        user_profile = iam_command.get_user(client, args)
-
-    elif command == 'iam-create-user':
-        user_profile = iam_command.create_user(client, args)
-
-    elif command == 'iam-update-user':
-        user_profile = iam_command.update_user(client, args)
-
-    elif command == 'iam-disable-user':
-        user_profile = iam_command.disable_user(client, args)
-
-    if user_profile:
-        return_results(user_profile)
-
-    '''non-CRUD commands'''
-
     try:
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            proxy=proxy,
+            headers=headers,
+            ok_codes=(200, 201),
+            username=username,
+            password=password,
+            customer_name=customer_name
+        )
+
+        '''non-CRUD commands - not need to login'''
+
         if command == 'test-module':
             test_module(client)
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields(client))
 
+        '''CRUD commands - login needed'''
+        client.login()
+        if command == 'iam-get-user':
+            user_profile = iam_command.get_user(client, args)
+
+        elif command == 'iam-create-user':
+            user_profile = iam_command.create_user(client, args)
+
+        elif command == 'iam-update-user':
+            user_profile = iam_command.update_user(client, args)
+
+        elif command == 'iam-disable-user':
+            user_profile = iam_command.disable_user(client, args)
+
+        if user_profile:
+            return_results(user_profile)
+
     except Exception:
-        # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
 
 
