@@ -663,6 +663,7 @@ Retrieves the list of users or computers that are members of the specified group
 | attributes | A CSV list of attributes to include in the results (in addition to the default attributes). | Optional |
 | time\_limit | Time limit (in seconds) for the search to run. | Optional |
 | disable-nested-search | Disable recursive retrieval of a user's group memberships. | Optional |
+| sAMAccountName | Queries results by the samAccountName attribute. | Optional |
 
 
 ##### Context Output

@@ -1156,7 +1156,7 @@ Creates a new managed policy for your AWS account.  This operation creates a pol
 | AWS.IAM.Policies.Path | string | The path to the policy. | 
 | AWS.IAM.Policies.DefaultVersionId | string | The identifier for the version of the policy that is set as the default version. | 
 | AWS.IAM.Policies.AttachmentCount | number | The number of entities \(users, groups, and roles\) that the policy is attached to. | 
-| AWS.IAM.Policies.PermissionsBoundaryUsageCount  | number | The number of entities \(users and roles\) for which the policy is used to set the permissions boundary. | 
+| AWS.IAM.Policies.PermissionsBoundaryUsageCount | number | The number of entities \(users and roles\) for which the policy is used to set the permissions boundary. | 
 | AWS.IAM.Policies.IsAttachable | boolean | Specifies whether the policy can be attached to an IAM user, group, or role. | 
 | AWS.IAM.Policies.Description | string | A friendly description of the policy. | 
 | AWS.IAM.Policies.CreateDate | date | The date and time, in ISO 8601 date-time format , when the policy was created. | 
