@@ -82,7 +82,7 @@ script:
       defaultValue: url
       description: The name the file will be saved as.
       isArray: false
-      name: filename
+      name: file_name
       required: false
       secret: false
     deprecated: false
@@ -133,7 +133,7 @@ script:
       defaultValue: email
       description: The name the file will be saved as.
       isArray: false
-      name: filename
+      name: file_name
       required: false
       secret: false
     deprecated: false
@@ -166,7 +166,7 @@ script:
     - default: false
       description: The name the file will be saved as.
       isArray: false
-      name: filename
+      name: file_name
       required: false
       secret: false
     deprecated: false
@@ -210,7 +210,7 @@ script:
       defaultValue: image
       description: The name the file will be saved as.
       isArray: false
-      name: filename
+      name: file_name
       required: false
       secret: false
     deprecated: false

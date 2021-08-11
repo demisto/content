@@ -296,18 +296,18 @@ def rasterize_command():
     r_type = demisto.args().get('type', 'png')
     wait_time = int(demisto.args().get('wait_time', 0))
     page_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
-    filename = demisto.args().get('filename', 'url')
+    file_name = demisto.args().get('file_name', 'url')
 
     if not (url.startswith('http')):
         url = f'http://{url}'
-    filename = f'{filename}.{"pdf" if r_type == "pdf" else "png"}'  # type: ignore
+    file_name = f'{file_name}.{"pdf" if r_type == "pdf" else "png"}'  # type: ignore
 
     output = rasterize(path=url, r_type=r_type, width=w, height=h, wait_time=wait_time, max_page_load_time=page_load)
     if r_type == 'json':
         return_results(CommandResults(raw_response=output, readable_output="Successfully load image for url: " + url))
         return
 
-    res = fileResult(filename=filename, data=output)
+    res = fileResult(filename=file_name, data=output)
     if r_type == 'png':
         res['Type'] = entryTypes['image']
 
@@ -319,14 +319,14 @@ def rasterize_image_command():
     entry_id = args.get('EntryID')
     w = args.get('width', DEFAULT_W).rstrip('px')
     h = args.get('height', DEFAULT_H).rstrip('px')
-    filename = args.get('filename', entry_id)
+    file_name = args.get('file_name', entry_id)
 
     file_path = demisto.getFilePath(entry_id).get('path')
-    filename = f'{filename}.pdf'
+    file_name = f'{file_name}.pdf'
 
     with open(file_path, 'rb') as f:
         output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type='pdf')
-        res = fileResult(filename=filename, data=output, file_type=entryTypes['entryInfoFile'])
+        res = fileResult(filename=file_name, data=output, file_type=entryTypes['entryInfoFile'])
         demisto.results(res)
 
 
@@ -336,15 +336,15 @@ def rasterize_email_command():
     h = demisto.args().get('height', DEFAULT_H).rstrip('px')
     offline = demisto.args().get('offline', 'false') == 'true'
     r_type = demisto.args().get('type', 'png')
-    filename = demisto.args().get('filename', 'email')
+    file_name = demisto.args().get('file_name', 'email')
 
-    filename = f'{filename}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
+    file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
     with open('htmlBody.html', 'w') as f:
         f.write(f'<html style="background:white";>{html_body}</html>')
     path = f'file://{os.path.realpath(f.name)}'
 
     output = rasterize(path=path, r_type=r_type, width=w, height=h, offline_mode=offline)
-    res = fileResult(filename=filename, data=output)
+    res = fileResult(filename=file_name, data=output)
     if r_type == 'png':
         res['Type'] = entryTypes['image']
 
@@ -356,16 +356,16 @@ def rasterize_pdf_command():
     password = demisto.args().get('pdfPassword')
     max_pages = int(demisto.args().get('maxPages', 30))
     horizontal = demisto.args().get('horizontal', 'false') == 'true'
-    filename = demisto.args().get('filename', 'image')
+    file_name = demisto.args().get('file_name', 'image')
 
     file_path = demisto.getFilePath(entry_id).get('path')
 
-    filename = f'{filename}.jpeg'  # type: ignore
+    file_name = f'{file_name}.jpeg'  # type: ignore
 
     with open(file_path, 'rb') as f:
         output = convert_pdf_to_jpeg(path=os.path.realpath(f.name), max_pages=max_pages, password=password,
                                      horizontal=horizontal)
-        res = fileResult(filename=filename, data=output)
+        res = fileResult(filename=file_name, data=output)
         res['Type'] = entryTypes['image']
 
         demisto.results(res)
