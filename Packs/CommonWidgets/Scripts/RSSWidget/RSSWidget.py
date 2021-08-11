@@ -3,13 +3,14 @@ from datetime import datetime
 from time import mktime
 
 import feedparser
+from feedparser.util import FeedParserDict
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
 class Client(BaseClient):
-    """Client for RSS Feed - gets Reports from the website
+    """Client for RSS Feed.
     Attributes:
         server_url(str): The RSS URL.
         use_ssl: Whether to use ssl.
@@ -19,11 +20,21 @@ class Client(BaseClient):
     def __init__(self, server_url, use_ssl, proxy):
         super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl)
 
-    def request_feed_url(self):
+    def get_feed_data(self):
+        """Retrieves the data from the RSS feed.
+        """
         return self._http_request(method='GET', resp_type='response')
 
 
-def parse_feed_data(feed_response):
+def parse_feed_data(feed_response: requests.Response) -> FeedParserDict:
+    """Parses the data from the RSS feed.
+
+    Args:
+        feed_response (requests.Response): The raw data from the RSS feed.
+
+    Returns:
+        FeedParserDict: Parsed RSS feed data.
+    """
     try:
         if feed_response:
             return feedparser.parse(feed_response.text)
@@ -31,10 +42,18 @@ def parse_feed_data(feed_response):
         raise DemistoException(f"Failed to parse feed.\nError:\n{str(err)}")
 
 
-def collect_entries_data_from_response(parsed_feed_data):
+def collect_entries_data_from_response(parsed_feed_data: FeedParserDict) -> List[Dict[str, Any]]:
+    """Collects relevant data from the parsed RSS feed entries.
+
+    Args:
+        parsed_feed_data (FeedParserDict): Parsed RSS feed data.
+
+    Returns:
+        List[Dict[str, Any]]: The data from the RSS feed relevant for the widget.
+    """
     entries_data: List[Dict[str, Any]] = []
     if not parsed_feed_data:
-        raise DemistoException(f"Could not parse feed data {self._base_url}")
+        raise DemistoException(f"Could not parse feed data")
 
     for entry in reversed(parsed_feed_data.entries):
         if entry:
@@ -57,7 +76,15 @@ def collect_entries_data_from_response(parsed_feed_data):
     return entries_data
 
 
-def create_widget_content(entries_data: List[Dict[str, Any]]):
+def create_widget_content(entries_data: List[Dict[str, Any]]) -> str:
+    """Creates the human readable text for the widget.
+
+    Args:
+        entries_data (List[Dict[str, Any]]): The data from the  RSS feed relevant for the widget.
+
+    Returns:
+        str: The widget's content.
+    """
     content: str = ''
 
     for entry_data in entries_data:
@@ -66,7 +93,6 @@ def create_widget_content(entries_data: List[Dict[str, Any]]):
         content += f'<h5>{entry_data["summary"]}</h5>\n'
         content += '<hr>\n'
 
-    content += ''
     return content
 
 
@@ -79,10 +105,14 @@ def main():
         proxy=args.get('proxy', False),
     )
 
-    rss_raw_data = client.request_feed_url()
-    parsed_feed_data = parse_feed_data(rss_raw_data)
-    entries_data = collect_entries_data_from_response(parsed_feed_data)
-    content = create_widget_content(entries_data)
+    try:
+        rss_raw_data = client.get_feed_data()
+        parsed_feed_data = parse_feed_data(rss_raw_data)
+        entries_data = collect_entries_data_from_response(parsed_feed_data)
+        content = create_widget_content(entries_data)
+    except Exception as e:
+        demisto.error(traceback.format_exc())
+        return_error(str(e))
 
     demisto.results({
         'Type': EntryType.NOTE,
