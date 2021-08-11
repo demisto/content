@@ -35,7 +35,7 @@ configuration:
   type: 8
 description: Microsoft Intune is a Microsoft cloud-based management solution that
   provides for mobile device and operating system management
-display: Microsoft Graph Device Management (Microsoft Intune)
+display: Microsoft Endpoint Manager (Intune)
 name: Microsoft Graph Device Management
 script:
   commands:

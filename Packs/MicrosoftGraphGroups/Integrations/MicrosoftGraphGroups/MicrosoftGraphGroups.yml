@@ -33,7 +33,7 @@ configuration:
   required: false
   type: 8
 description: Microsoft Graph Groups enables you to create and manage different types of groups and group functionality according to your requirements.
-display: Microsoft Graph Groups
+display: Azure Active Directory Groups
 name: Microsoft Graph Groups
 script:
   commands:

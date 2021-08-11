@@ -29,9 +29,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Microsoft Graph Identity and Access integration to manage roles
+description: Use the Azure Active Directory Identity And Access integration to manage roles
   and members.
-display: Microsoft Graph Identity & Access
+display: Azure Active Directory Identity And Access
 name: MicrosoftGraphIdentityandAccess
 script:
   commands:

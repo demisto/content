@@ -43,7 +43,7 @@ configuration:
   required: false
   type: 8
 description: Unified gateway to security insights - all from a unified Microsoft Graph User API.
-display: Microsoft Graph User
+display: Azure Active Directory Users
 name: Microsoft Graph User
 script:
   commands:

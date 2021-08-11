@@ -36,8 +36,8 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-description: Microsoft Graph Calendar enables you to create and manage different calendars and events according to your requirements.
-display: Microsoft Graph Calendar
+description: O365 Outlook Calendar enables you to create and manage different calendars and events according to your requirements.
+display: O365 Outlook Calendar
 name: Microsoft Graph Calendar
 script:
   commands:
