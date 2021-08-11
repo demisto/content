@@ -498,7 +498,7 @@ script:
     - default: false
       description: Incident ID to get attachments from.
       isArray: false
-      name: incident-id.
+      name: incident-id
       required: true
       secret: false
     deprecated: false

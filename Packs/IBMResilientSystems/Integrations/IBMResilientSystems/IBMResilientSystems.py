@@ -702,12 +702,20 @@ def set_member_command(client, incident_id, members):
     if response:
         for user in users:
             if user['id'] in members:
-                response.append({
-                    'FirstName': user['fname'],
-                    'LastName': user['lname'],
-                    'ID': user['id'],
-                    'Email': user['email']
-                })
+                if isinstance(response, dict):
+                    response.update({
+                        'FirstName': user['fname'],
+                        'LastName': user['lname'],
+                        'ID': user['id'],
+                        'Email': user['email']
+                    })
+                else:
+                    response.append({
+                        'FirstName': user['fname'],
+                        'LastName': user['lname'],
+                        'ID': user['id'],
+                        'Email': user['email']
+                    })
         ec = {
             'Resilient.Incidents(val.Id && val.Id === obj.Id)': {
                 'Id': incident_id,
