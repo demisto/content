@@ -177,7 +177,7 @@ def test_get_no_update_value_empty_context():
     - Ensure that the response is True.
     """
     class MockResponse:
-        headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',
+        headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
                    'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
     no_update = get_no_update_value(MockResponse())
     assert no_update
@@ -195,11 +195,11 @@ def test_get_no_update_value(mocker):
     - Ensure that the response is False
     """
     mocker.patch.object(demisto, 'getIntegrationContext',
-                        return_value={'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',
+                        return_value={'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
                                       'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'})  # guardrails-disable-line
 
     class MockResponse:
-        headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',
+        headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
                    'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
     no_update = get_no_update_value(MockResponse())
     assert not no_update
