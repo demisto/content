@@ -4,7 +4,7 @@ from CommonServerPython import *
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 URL = ''
-VERIFY = ''
+VERIFY = False
 DEFAULT_LIMIT = 100
 
 # Standard headers
@@ -560,7 +560,7 @@ def fetch_incidents():
 def main():
     global URL, VERIFY
     handle_proxy()
-    params = demisto.parms()
+    params = demisto.params()
     URL = params.get('url')
     if URL[-1] != '/':
         URL += '/'
