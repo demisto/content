@@ -598,7 +598,7 @@ def add_http_prefix_if_missing(address=''):
         :rtype: ``string``
         :return: proxy address after the 'http://' prefix was added, if needed.
     """
-    PROXY_PREFIXES = ['http://', 'https://', 'socks5://','socks5h://', 'socks4://', 'socks4a://']
+    PROXY_PREFIXES = ['http://', 'https://', 'socks5://', 'socks5h://', 'socks4://', 'socks4a://']
     if not address:
         return ''
     for prefix in PROXY_PREFIXES:
