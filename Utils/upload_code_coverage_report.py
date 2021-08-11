@@ -1,8 +1,7 @@
 
-from argparse import argparse, Namespace
+import argparse
 from datetime import datetime
 import json
-
 from typing import Dict
 
 from Tests.Marketplace.marketplace_services import init_storage_client
