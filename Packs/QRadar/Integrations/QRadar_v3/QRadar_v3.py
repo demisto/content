@@ -2713,7 +2713,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
 
     current_last_update = ctx.get('last_mirror_update') if not offenses else offenses[-1].get('last_persisted_time')
     set_integration_context({'samples': ctx.get('samples', []), 'last_mirror_update': current_last_update,
-                             LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY, 0)})
+                             LAST_FETCH_KEY: get_integration_context().get(LAST_FETCH_KEY, 0)})
 
     return GetModifiedRemoteDataResponse(new_modified_records_ids)
 
