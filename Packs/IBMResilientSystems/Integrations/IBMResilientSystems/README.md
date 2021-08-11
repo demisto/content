@@ -1,19 +1,16 @@
-Overview
---------
 
 Use this integration to manage and orchestrate your IBM Resilient Systems incident response from Cortex XSOAR.
 
-* * *
 
-Configure the IBM Resilient Systems Integration on Cortex XSOAR
----------------------------------------------------------------
+## Configure the IBM Resilient Systems Integration on Cortex XSOAR
+
 
 1.  Navigate to **Settings** \> **Integrations** \> **Servers & Services**.
 2.  Search for IBM Resilient Systems.
 3.  Click **Add instance** to create and configure a new integration instance.
     * **Name**: a textual name for the integration instance
     * **Server URL**
-    * **Credentials (either username and password or API key ID and API key secret, see [here](https://www.ibm.com/support/knowledgecenter/SSBRUQ_35.0.0/com.ibm.resilient.doc/admin/API_accounts.htm) for more details about API key ID and secret)**
+    * **Credentials (either username and password or API key ID and API key secret, see [here](https://www.ibm.com/support/knowledgecenter/SSBRUQ_35.0.0/com.ibm.resilient.doc/admin/API_accounts.htm) for more details about API key ID and API key secret)**
     * **Organization name**
     * **Do not validate server certificate (not secure)**
     * **Use system proxy settings**
@@ -23,27 +20,15 @@ Configure the IBM Resilient Systems Integration on Cortex XSOAR
 
 * * *
 
-Commands
---------
+## Commands
+
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1.  [Search for incidents: rs-search-incidents](#search-for-incidents-rs-search-incidents)
-2.  [Update an incident: rs-update-incident](#update-an-incident-rs-update-incident)
-3.  [Get a list of incident members: rs-incident-get-members](#get-a-list-of-incident-members-rs-incident-get-members)
-4.  [Get incident information: rs-get-incident](#get-incident-information-rs-get-incident)
-5.  [Update information for an incident member: rs-incidents-update-member](#update-information-for-an-incident-member-rs-incidents-update-member)
-6.  [Get a list of users: rs-get-users](#get-a-list-of-users-rs-get-users)
-7.  [Close an incident: rs-close-incident](#close-an-incident-rs-close-incident)
-8.  [Create an incident: rs-create-incident](#create-an-incident-rs-create-incident)
-9.  [Get artifacts for an incident: rs-incident-artifacts](#get-artifacts-for-an-incident-rs-incident-artifacts)
-10. [Get attachments of an incident: rs-incident-attachments](#get-attachments-of-an-incident-rs-incident-attachments)
-11. [Get related incidents: rs-related-incidents](#get-related-incidents-rs-related-incidents)
-12. [Get tasks for an incident: rs-incidents-get-tasks](#get-tasks-for-an-incident-rs-incidents-get-tasks)
-13. [Add a note to an incident: rs-add-note](#add-a-note-to-an-incident-rs-add-note)
-14. [Add an artifact to an incident: rs-add-artifact](#add-an-artifact-to-an-incident-rs-add-artifact)
 
-### Search for incidents: rs-search-incidents
+
+### rs-search-incidents
+***
 
 Search for incidents in your IBM Resilient system.
 
@@ -89,11 +74,12 @@ Search for incidents in your IBM Resilient system.
     Phase:Respond
     Severity:Low
 
-* * *
 
-### Update an incident: rs-update-incident
 
-Updater an incident in your IBM Resilient system.
+### rs-update-incident
+***
+
+Update an incident in your IBM Resilient system.
 
 ##### Command Example
 
@@ -122,9 +108,10 @@ There is no context output for this command.
 
     Incident was updated successfully.
 
-* * *
 
-### Get a list of incident members: rs-incident-get-members
+
+### rs-incident-get-members
+***
 
 Get a list of members associated with the incident.
 
@@ -165,9 +152,10 @@ Get a list of members associated with the incident.
        }
     ]
 
-* * *
 
-### Get incident information: rs-get-incident
+
+### rs-get-incident
+***
 
 Get information for an incident.
 
@@ -206,7 +194,7 @@ Get information for an incident.
         Confirmed:false
         CreatedDate:2018-05-22T23:47:25Z
         DateOccurred:2018-03-30T04:00:00Z
-        Description:Desciprion
+        Description:Description
         DiscoveredDate:2018-05-01T04:00:00Z
         DueDate:2018-05-31T04:00:00Z
         ExposureType:Individual
@@ -222,9 +210,10 @@ Get information for an incident.
         Severity:Low
     }
 
-* * *
 
-### Update information for an incident member: rs-incidents-update-member
+
+### rs-incidents-update-member
+***
 
 Update information for a member associated with an incident.
 
@@ -250,9 +239,10 @@ There is no context output for this command.
     ID:1
     LastName:Demisto
 
-* * *
 
-### Get a list of users: rs-get-users
+
+### rs-get-users
+* * *
 
 Returns a list of users in the IBM Resilient system.
 
@@ -285,9 +275,10 @@ There is no context output for this command.
       }
     ]
 
-* * *
 
-### Close an incident: rs-close-incident
+
+### rs-close-incident
+* * *
 
 Close an incident in the IBM Resilient system.
 
@@ -309,9 +300,10 @@ There is no context output for this command.
 
     Incident 2111 was closed.
 
-* * *
 
-### Create an incident: rs-create-incident
+
+### rs-create-incident
+* * *
 
 Create an incident in the IBM Resilient system.
 
@@ -333,9 +325,10 @@ There is no context output for this command.
 
     Incident  was created.
 
-* * *
 
-### Get artifacts for an incident: rs-incident-artifacts
+
+### rs-incident-artifacts
+* * *
 
 Return artifacts for an incident in the IBM Resilient system.
 
@@ -389,9 +382,10 @@ Return artifacts for an incident in the IBM Resilient system.
         }
     }
 
-* * *
 
-### Get attachments of an incident: rs-incident-attachments
+
+### rs-incident-attachments
+* * *
 
 Return attachments for an incident in the IBM Resilient system.
 
@@ -430,9 +424,10 @@ Return attachments for an incident in the IBM Resilient system.
       "Size":"4491"
     }
 
-* * *
 
-### Get related incidents: rs-related-incidents
+
+### rs-related-incidents
+* * *
 
 Get incidents related to a specified incident in the IBM Resilient system.
 
@@ -486,9 +481,10 @@ Get incidents related to a specified incident in the IBM Resilient system.
     ]
 
 
-* * *
 
-### Get tasks for an incident: rs-incidents-get-tasks
+
+### rs-incidents-get-tasks
+* * *
 
 Get tasks for an incident in the IBM Resilient system.
 
@@ -542,9 +538,10 @@ Get tasks for an incident in the IBM Resilient system.
         }
     ]
 
-* * *
 
-### Add a note to an incident: rs-add-note
+
+### rs-add-note
+* * *
 
 Add a note to an incident.
 
@@ -596,9 +593,10 @@ Add a note to an incident.
 
     The note was added successfully to incident 2111.
 
-* * *
 
-### Add an artifact to an incident: rs-add-artifact
+
+### rs-add-artifact
+* * *
 
 Add an artifact to an incident.
 
