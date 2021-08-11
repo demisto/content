@@ -1,4 +1,4 @@
-from datetime import datetime
+import time
 
 import pytest
 
@@ -33,4 +33,4 @@ def test_fetch_incidents_first_time_fetch(mocker):
     mocker.patch('RedLock.req', return_value=[])
 
     _, next_run = fetch_incidents()
-    assert str(next_run)[:-3] == str(datetime.now(tz=None).timestamp())[:-7]
+    assert str(next_run)[:-3] == str(time.time())[:-7]
