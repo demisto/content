@@ -93,6 +93,10 @@ Gets the properties of returned emails.
 | MSGraphMail.ReplyTo.Name | String | The name in the 'replyTo' field of the email. | 
 | MSGraphMail.ReplyTo.Address | String | The email address in the 'replyTo' field of the email. | 
 | MSGraphMail.UserID | String | The ID of the user. | 
+| MSGraphMail.ConversationID | String | The ID of the conversation. |
+| MSGraphMail.InternetMessageID | String | Internet Message ID of the message |
+| MSGraphMail.Recipients.Name | String | The name of the user in the 'toRecipients' field of the email. |
+| MSGraphMail.Recipients.Address | String | The email address of the user in the 'toRecipients' field of the email. |
 | MSGraphMail.NextPage | String | A token to pass to the next list command to retrieve additional results. | 
 
 
@@ -108,6 +112,7 @@ Gets the properties of returned emails.
             "BCCRecipients": null,
             "CCRecipients": null,
             "Categories": [],
+            "ConversationID": """,
             "Created": "2020-03-29T09:56:37Z",
             "Flag": {
                 "flagStatus": "notFlagged"
@@ -120,9 +125,16 @@ Gets the properties of returned emails.
             "Headers": null,
             "ID": """",
             "Importance": "low",
+            "InternetMessageID": """,
             "IsDraft": false,
             "LastModifiedTime": "2020-03-29T09:56:37Z",
             "ReceivedTime": "2020-03-29T09:56:37Z",
+            "Recipients": [
+                {
+                "Address": "dev@demistodev.onmicrosoft.com",
+                "Name": "demisto dev"
+                }
+            ],
             "ReplyTo": null,
             "SendTime": "2020-03-29T09:56:37Z",
             "Sender": {
@@ -138,15 +150,15 @@ Gets the properties of returned emails.
 
 ##### Human Readable Output
 ##### ### Total of 7 of mails received
-|Subject|From|SendTime|ID|
-|---|---|---|---|
-| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:56:37Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQBBBA== |
-| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:56:18Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQCCAA== |
-| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:52:59Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJDCAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== |
-| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:52:41Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEk-MxMBZHrT7QACY4VISQAAAA== |
-| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:51:06Z | AAAkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== |
-| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:06:54Z | ABKkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== |
-| Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-26T09:21:14Z | AQKkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== |
+|Subject|From|Recipients|SendTime|ID|InternetMessageID
+|---|---|---|---|---|---|
+| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | 2020-03-29T09:56:37Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQBBBA== | "" |
+| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | 2020-03-29T09:56:18Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQCCAA== | "" |
+| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | 2020-03-29T09:52:59Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJDCAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== | "" |
+| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | 2020-03-29T09:52:41Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEk-MxMBZHrT7QACY4VISQAAAA== | "" |
+| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | 2020-03-29T09:51:06Z | AAAkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== | "" |
+| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | 2020-03-29T09:06:54Z | ABKkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== | "" |
+| Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | 2020-03-26T09:21:14Z | AQKkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== | "" |
 
 
 
@@ -197,6 +209,10 @@ Returns the properties of an email.
 | MSGraphMail.ReplyTo.Name | String | The name in the 'replyTo' field of the email. | 
 | MSGraphMail.ReplyTo.Address | String | The email address in the 'replyTo' field of the email. | 
 | MSGraphMail.UserID | String | The ID of the user. | 
+| MSGraphMail.ConversationID | String | The ID of the conversation. |
+| MSGraphMail.InternetMessageID | String | Internet Message ID of the message |
+| MSGraphMail.Recipients.Name | String | The name of the user in the 'toRecipients' field of the email. |
+| MSGraphMail.Recipients.Address | String | The email address of the user in the 'toRecipients' field of the email. |
 
 
 ##### Command Example
@@ -209,6 +225,7 @@ Returns the properties of an email.
         "BCCRecipients": null,
         "CCRecipients": null,
         "Categories": [],
+        "ConversationID": """,
         "Created": "2020-03-26T09:21:15Z",
         "Flag": {
             "flagStatus": "notFlagged"
@@ -221,9 +238,16 @@ Returns the properties of an email.
         "Headers": null,
         "ID": """",
         "Importance": "low",
+        "InternetMessageID": """,
         "IsDraft": false,
         "LastModifiedTime": "2020-03-29T09:56:18Z",
         "ReceivedTime": "2020-03-26T09:21:15Z",
+        "Recipients": [
+            {
+            "Address": "dev@demistodev.onmicrosoft.com",
+            "Name": "demisto dev"
+            }
+        ],
         "ReplyTo": null,
         "SendTime": "2020-03-26T09:21:14Z",
         "Sender": {
@@ -238,9 +262,9 @@ Returns the properties of an email.
 
 ##### Human Readable Output
 ##### Results for message ID ""
-|ID|Subject|SendTime|Sender|From|HasAttachments|Body|
-|---|---|---|---|---|---|---|
-| "" | Demo test | 2020-03-26T09:21:14Z | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | false |  |
+|ID|Subject|SendTime|Sender|From|Recipients|HasAttachments|Body|
+|---|---|---|---|---|---|---|---|
+| "" | Demo test | 2020-03-26T09:21:14Z | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | false |  |
 
 #### OData Usage
 The OData parameter can be used to create different queries. Please see [OData Docs](https://docs.microsoft.com/en-us/graph/query-parameters) for detailed information.
