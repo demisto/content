@@ -27,7 +27,9 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
+DBOT_SCORE_TO_TEXT = {0: 'Unknown',
+                      1: 'Good',
+                      2: 'Suspicous'}
 ''' CLIENT CLASS '''
 
 
@@ -139,8 +141,8 @@ def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         raise ValueError('AlexaV2: domain doesn\'t exists')
     command_results: List[CommandResults] = []
     for domain in domains:
-        if not re.match(urlRegex, domain):
-            raise DemistoException('Entered invalid url')
+        # if not re.match(DOMAINREGEX, domain):
+        #     raise DemistoException('Entered invalid url')
         result = client.alexa_rank(domain)
         rank = demisto.get(result,
                            'Awis.Results.Result.Alexa.TrafficData.Rank')
@@ -154,10 +156,10 @@ def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         result = {'Name': domain,
                   'Indicator': domain,
                   'Rank': alexa_rank}
-        readable = f'The Alexa rank of {domain} is {alexa_rank} and has been marked as ' \
-                   f'{domain_standard_context.dbot_score.score}.' \
-                   f' The benign threshold is {client.benign} ' \
-                   f'while the suspicious threshold is {client.threshold}.'
+        table = {'Domain': domain,
+                 'Alexa Rank': rank,
+                 'Reputation': DBOT_SCORE_TO_TEXT.get(domain_standard_context.dbot_score.score, 'Unknown')}
+        readable = tableToMarkdown(f'Alexa Rank for {domain}', table, headers=list(table.keys()))
         command_results.append(CommandResults(
             outputs_prefix='Alexa.Domain',
             outputs_key_field='Name',
