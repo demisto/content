@@ -3,8 +3,7 @@ import os
 from distutils.version import LooseVersion
 from typing import Dict, Optional, List, Any, Tuple
 
-from Tests.Marketplace.marketplace_services import filter_dir_files_by_extension, load_json, \
-    underscore_file_name_to_dotted_version
+import Tests.Marketplace.marketplace_services as mps
 
 
 class ReleaseNotesBreakingChangesCalc:
@@ -81,7 +80,7 @@ class ReleaseNotesBreakingChangesCalc:
             return '\n'.join(bc_version_to_text.values())
 
     def _handle_many_bc_versions_some_with_text(self, text_of_bc_versions: List[str],
-                                                bc_versions_without_text: List[str],) -> str:
+                                                bc_versions_without_text: List[str], ) -> str:
         """
         Calculates text for changelog entry where some BC versions contain text and some don't.
         Important: Currently, implementation of aggregating BCs was decided to concat between them (and if BC version
@@ -148,14 +147,14 @@ class ReleaseNotesBreakingChangesCalc:
         """
         bc_version_to_text: Dict[str, Optional[str]] = dict()
         # Get all config files in RN dir
-        rn_config_file_names = filter_dir_files_by_extension(self.release_notes_dir, '.json')
+        rn_config_file_names = mps.filter_dir_files_by_extension(self.release_notes_dir, '.json')
 
         for file_name in rn_config_file_names:
-            file_data: Dict = load_json(os.path.join(self.release_notes_dir, file_name))
+            file_data: Dict = mps.load_json(os.path.join(self.release_notes_dir, file_name))
             # Check if version is BC
             if file_data.get('breakingChanges', False):
                 # Processing name for easier calculations later on
-                processed_name: str = underscore_file_name_to_dotted_version(file_name)
+                processed_name: str = mps.underscore_file_name_to_dotted_version(file_name)
                 bc_version_to_text[processed_name] = file_data.get('breakingChangesNotes')
         return bc_version_to_text
 
