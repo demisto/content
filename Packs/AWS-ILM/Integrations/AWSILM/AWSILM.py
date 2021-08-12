@@ -26,7 +26,7 @@ class Client(BaseClient):
 
         self._http_request(method='GET', url_suffix=uri)
 
-    def get_user(self, email: str) -> Optional[IAMUserAppData]:
+    def get_user(self, email: str) -> Optional['IAMUserAppData']:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
@@ -47,18 +47,16 @@ class Client(BaseClient):
             params=params
         )
 
-        if res:
-            user_app_data = res.json()
-            if user_app_data.get('totalResults') > 0:
+        if res.get('totalResults') > 0:
+            user_app_data = res.get('Resources')[0]
+            user_id = user_app_data.get('id')
+            username = user_app_data.get('userName')
+            is_active = user_app_data.get('active')
 
-                user_id = user_app_data.get('Resources')[0].get('id')
-                username = user_app_data.get('Resources')[0].get('userName')
-                is_active = user_app_data.get('Resources')[0].get('active')
-
-                return IAMUserAppData(user_id, username, is_active, user_app_data)
+            return IAMUserAppData(user_id, username, is_active, user_app_data)
         return None
 
-    def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
+    def create_user(self, user_data: Dict[str, Any]) -> 'IAMUserAppData':
         """ Creates a user in the application using REST API.
 
         :type user_data: ``Dict[str, Any]``
@@ -75,15 +73,13 @@ class Client(BaseClient):
             json_data=user_data
         )
 
-        if res:
-            user_app_data = res.json()
-            user_id = user_app_data.get('id')
-            is_active = user_app_data.get('active')
-            username = user_app_data.get('userName')
+        user_id = res.get('id')
+        is_active = res.get('active')
+        username = res.get('userName')
 
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, res)
 
-    def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
+    def update_user(self, user_id: str, user_data: Dict[str, Any]) -> 'IAMUserAppData':
         """ Updates a user in the application using REST API.
 
         :type user_id: ``str``
@@ -103,15 +99,13 @@ class Client(BaseClient):
             json_data=user_data
         )
 
-        if res:
-            user_app_data = res.json()
-            user_id = user_app_data.get('id')
-            is_active = user_app_data.get('active')
-            username = user_app_data.get('userName')
+        user_id = res.get('id')
+        is_active = res.get('active')
+        username = res.get('userName')
 
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, res)
 
-    def enable_user(self, user_id: str) -> IAMUserAppData:
+    def enable_user(self, user_id: str) -> 'IAMUserAppData':
         """ Enables a user in the application using REST API.
 
         :type user_id: ``str``
@@ -124,7 +118,7 @@ class Client(BaseClient):
         user_data = {'active': True}
         return self.update_user(user_id, user_data)
 
-    def disable_user(self, user_id: str) -> IAMUserAppData:
+    def disable_user(self, user_id: str) -> 'IAMUserAppData':
         """ Disables a user in the application using REST API.
 
         :type user_id: ``str``
@@ -154,9 +148,7 @@ class Client(BaseClient):
         return {field.get('name'): field.get('description') for field in fields}
 
     @staticmethod
-    def handle_exception(user_profile: IAMUserProfile,
-                         e: Union[DemistoException, Exception],
-                         action: IAMActions):
+    def handle_exception(user_profile, e, action):
         """ Handles failed responses from the application API by setting the User Profile object with the result.
             The result entity should contain the following data:
             1. action        (``IAMActions``)       The failed action                       Required
@@ -250,7 +242,7 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
 def main():
     user_profile = None
     params = demisto.params()
-    base_url = urljoin(params['url'].strip('/'))
+    base_url = params['url'].strip('/')
     tenant_id = params.get('tenant_id')
     url_with_tenant = f'{base_url}/{tenant_id}'
     authentication_token = params.get('authentication_token')
@@ -258,7 +250,6 @@ def main():
     mapper_out = params.get('mapper_out')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    api_version = params.get('api_version', None)
     command = demisto.command()
     args = demisto.args()
 
@@ -318,7 +309,7 @@ def main():
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
 
 
-from IAMApiModule import *
+from IAMApiModule import * # noqa E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
