@@ -179,8 +179,6 @@
     - section_end "Run Unit Testing and Lint"
 
 .run-validations:
-  tags:
-    - gke
   stage: unittests-and-validations
   extends:
     - .default-job-settings
