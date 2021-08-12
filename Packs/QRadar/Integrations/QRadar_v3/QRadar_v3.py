@@ -1422,11 +1422,11 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     return incidents, new_highest_offense_id
 
 
-def update_mirrored_events_from_long_running(client: Client,
-                                             events_columns: str,
-                                             events_limit: int,
-                                             context_data: dict,
-                                             mirror_options: str) -> list:
+def update_mirrored_events(client: Client,
+                           events_columns: str,
+                           events_limit: int,
+                           context_data: dict,
+                           mirror_options: str) -> Tuple[list, list]:
     """Update mirrored offenses' events assuming a long running container.
 
     Args:
@@ -1440,20 +1440,36 @@ def update_mirrored_events_from_long_running(client: Client,
     """
     offenses = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
     updated_offenses = []
-    if len(offenses) > 0 and mirror_options == MIRROR_OFFENSE_AND_EVENTS:
-        futures = []
-        for offense in offenses:
-            futures.append(EXECUTOR.submit(
-                enrich_offense_with_events,
-                client=client,
-                offense=offense,
-                fetch_mode=FetchMode.correlations_events_only.value,
-                events_columns=events_columns,
-                events_limit=events_limit,
-            ))
-        updated_offenses = [future.result() for future in futures]
+    print_debug_msg(f"DDDDD3-1: mirrored_offenses: {offenses}  mirror_options: {mirror_options}")
+    try:
+        if len(offenses) > 0:
+            print_debug_msg(f"DDDDD3-2: updating mirrored offenses: {offenses}")
+            futures = []
+            #  TODO: Make sure events are not closed
+            for offense in offenses:
+                print_debug_msg(f"DDDDD3-3: updating offense: {offense}")
+                if offense.get('status', 'CLOSED') == 'CLOSED':
+                    print_debug_msg(f"Not updating offense with id {offense.get('id')} since its status is either "
+                                    f"CLOSED or missing.")
+                    updated_offenses.append(offense)
+                else:
+                    futures.append(EXECUTOR.submit(
+                        enrich_offense_with_events,
+                        client=client,
+                        offense=offense,
+                        fetch_mode=FetchMode.correlations_events_only.value,
+                        events_columns=events_columns,
+                        events_limit=events_limit,
+                    ))
 
-    return updated_offenses
+            updated_offenses += [future.result() for future in futures]
+
+        return updated_offenses, []
+
+    except Exception as e:
+        print_debug_msg(f"Error while enriching mirrored offenses with events: {str(e)}")
+        #  TODO: smarter here
+        return [], offenses
 
 
 def create_incidents_from_offenses(offenses: List[Dict], incident_type: Optional[str]) -> List[Dict]:
@@ -1500,7 +1516,9 @@ def long_running_execution_command(client: Client, params: Dict):
     mirror_direction = MIRROR_DIRECTION.get(mirror_options)
     while True:
         try:
+            print_debug_msg('DDDD4-1: Starting fetch loop.')
             is_reset_triggered(handle_reset=True)
+            print_debug_msg('DDDD4-2: getting integration context.')
             ctx = get_integration_context()
             print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
             incidents, new_highest_id = get_incidents_long_running_execution(
@@ -1516,23 +1534,30 @@ def long_running_execution_command(client: Client, params: Dict):
                 incident_type=incident_type,
                 mirror_direction=mirror_direction
             )
+            incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
+            context_data = {LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
+                            'last_mirror_update': ctx.get('last_mirror_update')}
 
-            updated_mirrored_offenses = update_mirrored_events_from_long_running(client=client,
-                                                                                 events_columns=events_columns,
-                                                                                 events_limit=events_limit,
-                                                                                 context_data=ctx,
-                                                                                 mirror_options=mirror_options)
+            if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+                print_debug_msg('DDDD4-3: updating events.')
+                updated_mirrored_offenses, not_updated_offenses = update_mirrored_events(client=client,
+                                                                                         events_columns=events_columns,
+                                                                                         events_limit=events_limit,
+                                                                                         context_data=ctx,
+                                                                                         mirror_options=mirror_options)
+                print_debug_msg(f"DDDD0: updated_mirrored_offenses from lr: {updated_mirrored_offenses}")
+                all_updated_mirrored_offenses = merge_lists(original_list=ctx.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY,
+                                                                                  []),
+                                                            updated_list=updated_mirrored_offenses, key='id')
+                context_data.update({UPDATED_MIRRORED_OFFENSES_CTX_KEY: all_updated_mirrored_offenses,
+                                     # TODO: smart merge here
+                                     MIRRORED_OFFENSES_CTX_KEY: not_updated_offenses})
 
             # Reset was called during execution, skip creating incidents.
             if not incidents and not new_highest_id:
                 continue
 
-            incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
-            print_debug_msg(f"DDDD: creating incidents after fetch: {True if incidents else False}")
-            set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
-                                     'last_mirror_update': ctx.get('last_mirror_update'),
-                                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: updated_mirrored_offenses,
-                                     MIRRORED_OFFENSES_CTX_KEY: []})
+            set_integration_context(context_data)
 
             demisto.createIncidents(incidents)
 
@@ -2686,12 +2711,12 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     Returns:
         GetRemoteDataResponse.
     """
-    context_data = get_integration_context()
     remote_args = GetRemoteDataArgs(args)
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
     offense_id = remote_args.remote_incident_id
     offense = client.offenses_list(offense_id=offense_id)
     offense_last_update = get_time_parameter(offense.get('last_persisted_time'))
+    mirror_options = params.get('mirror_options')
 
     # versions below 6.1 compatibility
     last_update = get_time_parameter(args.get('lastUpdate'))
@@ -2728,18 +2753,37 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
             'ContentsFormat': EntryFormat.JSON
         })
 
-    offenses_with_updated_events = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
-    evented_offense = [evented_offense for evented_offense in offenses_with_updated_events
-                       if evented_offense.get('id') == remote_args.remote_incident_id]
+    if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+        context_data = get_integration_context()
+        offenses_with_updated_events = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
+        evented_offense = [evented_offense for evented_offense in offenses_with_updated_events
+                           if str(evented_offense.get('id')) == str(offense.get("id"))]
+        retries = 0
+        while not evented_offense and retries < 3:
+            demisto.debug(f"DDDDD2-1: get_remote_data_command, "
+                          f"updated_evented_offenses are: {offenses_with_updated_events}")
+            demisto.debug(f"DDDDD2-3: offense {offense.get('id')} events were not updated yet. "
+                          f"retry: {retries}")
+            time.sleep(FAILURE_SLEEP)
+            retries += 1
+            context_data = get_integration_context()
+            offenses_with_updated_events = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
+            evented_offense = [evented_offense for evented_offense in offenses_with_updated_events
+                               if str(evented_offense.get('id')) == str(offense.get("id"))]
+            demisto.debug(f"DDDDD2-5: id type {type(remote_args.remote_incident_id)}")
 
-    if evented_offense:
-        if evented_offense[0].get('events'):
-            offense['events'] = evented_offense[0].get('events')
+        if evented_offense:
+            demisto.debug(f"DDDDD2-4: offense {remote_args.remote_incident_id} events were updated, updating incident.")
+            if evented_offense[0].get('events'):
+                offense['events'] = evented_offense[0].get('events')
+                demisto.debug(f"DDDDD2-4: new evented offense is {offense}")
 
-        offenses_with_updated_events.remove(evented_offense[0])
+            offenses_with_updated_events.remove(evented_offense[0])
 
-    context_data[UPDATED_MIRRORED_OFFENSES_CTX_KEY] = offenses_with_updated_events
-    set_integration_context(context_data)
+        demisto.debug(f"DDDDD2-2: get_remote_data_command, "
+                      f"updated_evented_offenses are: {offenses_with_updated_events}")
+        context_data[UPDATED_MIRRORED_OFFENSES_CTX_KEY] = offenses_with_updated_events
+        set_integration_context(context_data)
 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
     final_offense_data = sanitize_outputs(enriched_offense)[0]
@@ -2770,18 +2814,22 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
         last_update_time = remote_args.last_update
     last_update = get_time_parameter(last_update_time, epoch_format=True)
 
-    demisto.debug("DDDD1: Getting offenses with get_modified_remote_data_command")
     offenses = client.offenses_list(range_=range_,
                                     filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}',
                                     sort='+last_persisted_time',
-                                    fields='id,last_persisted_time')
+                                    fields='id,status,start_time,last_persisted_time')
     new_modified_records_ids = [str(offense.get('id')) for offense in offenses if 'id' in offense]
-
     current_last_update = ctx.get('last_mirror_update') if not offenses else offenses[-1].get('last_persisted_time')
-    set_integration_context({'samples': ctx.get('samples', []), 'last_mirror_update': current_last_update,
-                             LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY, 0),
-                             MIRRORED_OFFENSES_CTX_KEY: offenses})
+    new_context_data = {'samples': ctx.get('samples', []), 'last_mirror_update': current_last_update,
+                        LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY, 0)}
 
+    if params.get('mirror_options') == MIRROR_OFFENSE_AND_EVENTS:
+        mirrored_offenses = merge_lists(original_list=ctx.get(MIRRORED_OFFENSES_CTX_KEY, []), updated_list=offenses,
+                                        key='id')
+        demisto.debug(f"DDDD1: get_modified_remote_data_command, mirrored_offenses are: {mirrored_offenses}")
+        new_context_data.update({MIRRORED_OFFENSES_CTX_KEY: mirrored_offenses})
+
+    set_integration_context(new_context_data)
     return GetModifiedRemoteDataResponse(new_modified_records_ids)
 
 
