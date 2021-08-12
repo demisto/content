@@ -261,12 +261,14 @@ def test_get_path_data_command(requests_mock, mocker):
     assert command_results.outputs == test_get_file_data_command_response['expected']
 
 
-def test_url_parameter_value(mocker):
-    mocker.patch.object(demisto, 'params', return_value={'url': 'example.com'})
-    mocker.patch.object(demisto, 'command', return_value='test-module')
-    mocker.patch('GitHub.http_request', return_value={})
-    mock_results = mocker.patch('GitHub.test_module')
+@pytest.mark.parametrize('mock_params, expected_url', [
+    ({'url': 'example.com', 'token': 'testtoken'}, 'example.com'),
+    ({'token': 'testtoken'}, 'https://api.github.com'),
+])
+def test_url_parameter_value(mocker, mock_params, expected_url):
+    mocker.patch.object(demisto, 'params', return_value=mock_params)
+    mock_results = mocker.patch.object(demisto, 'log')
 
     main()
 
-    assert mock_results
+    assert mock_results.call_args_list[0].args[0] == expected_url
