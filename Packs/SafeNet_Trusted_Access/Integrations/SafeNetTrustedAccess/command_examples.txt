@@ -1,0 +1,17 @@
+!sta-get-user-list limit=10
+!sta-get-user-info userName="demouser"
+!sta-create-user email="usertest123@gmail.com" firstName="User" lastName="Test" userName="usertest123"
+!sta-update-user-info userName="usertest123" userName_new="demousername" firstName="Demo" lastName="Name"
+!sta-delete-user userName="demousername"
+!sta-get-user-groups userName="hellouser"
+!sta-get-group-list limit=5
+!sta-get-group-info groupName="TestGroup1"
+!sta-get-group-members groupName="TestGroup0"
+!sta-create-group groupName="TestGroup2" description="Group description." isSynchronized=False
+!sta-delete-group groupName="TestGroup2"
+!sta-update-group-info groupName="TestGroup1" description="Description has been updated from XSOAR end."
+!sta-add-user-group groupName="TestGroup1" userName="hellouser"
+!sta-user-exist-group groupName="TestGroup1" userName="hellouser"
+!sta-remove-user-group groupName="TestGroup1" userName="hellouser"
+!sta-get-access-logs userName="demouser" since="2021-07-21T12:22:16.718Z"
+!sta-validate-tenant
