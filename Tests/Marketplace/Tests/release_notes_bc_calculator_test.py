@@ -333,21 +333,6 @@ class TestReleaseNotesBreakingChangesCalc:
         rn_bc_calc.add_bc_entries_if_needed(changelog)
         assert changelog == {'a': 1}
 
-    def test_update_changelog_with_bc_empty(self, dummy_pack):
-        """
-       Given:
-       - Empty changelog file
-
-        When:
-        - Updating 'breakingChanges' entry for each changelog dict entry.
-
-       Then:
-        - Ensure empty changelog is returned as expected.
-       """
-        changelog: Dict[str, Any] = dict()
-        dummy_pack.update_changelog_with_bc(changelog)
-        assert changelog == dict()
-
 
 def create_rn_config_file(rn_dir: str, version: str, data: Dict):
     with open(f'{rn_dir}/{version}.json', 'w') as f:
