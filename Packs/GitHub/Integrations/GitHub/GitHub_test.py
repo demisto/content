@@ -267,8 +267,7 @@ def test_get_path_data_command(requests_mock, mocker):
 ])
 def test_url_parameter_value(mocker, mock_params, expected_url):
     mocker.patch.object(demisto, 'params', return_value=mock_params)
-    mock_results = mocker.patch.object(demisto, 'log')
 
     main()
 
-    assert mock_results.call_args_list[0].args[0] == expected_url
+    assert GitHub.BASE_URL == expected_url

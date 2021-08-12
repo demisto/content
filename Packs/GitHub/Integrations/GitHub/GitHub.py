@@ -2002,7 +2002,6 @@ def main():
     handle_proxy()
     cmd = demisto.command()
     LOG(f'command is {cmd}')
-    demisto.log(BASE_URL)
     try:
         if cmd in COMMANDS.keys():
             COMMANDS[cmd]()
