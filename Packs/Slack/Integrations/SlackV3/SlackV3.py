@@ -75,7 +75,6 @@ BOT_ICON_URL: str
 MAX_LIMIT_TIME: int
 PAGINATED_COUNT: int
 ENABLE_DM: bool
-THREAD_LOCK: threading.Lock()
 
 
 ''' HELPER FUNCTIONS '''
@@ -717,15 +716,13 @@ def check_for_mirrors():
                 else:
                     demisto.info(f'Could not mirror {investigation_id}')
 
-        if updated_mirrors:
-            THREAD_LOCK.acquire()
-            integration_context = get_integration_context(SYNC_CONTEXT)
-            integration_context.update({'mirrors': updated_mirrors})
-            if updated_users:
-                integration_context['users'].update(updated_users)
-            set_to_integration_context_with_retries(integration_context, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-            THREAD_LOCK.release()
-    return
+            if updated_mirrors:
+                context = {'mirrors': updated_mirrors}
+                if updated_users:
+                    context['users'] = updated_users
+
+                set_to_integration_context_with_retries(context, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        return
 
 
 def invite_to_mirrored_channel(channel_id: str, users: List[Dict]) -> list:
@@ -853,8 +850,6 @@ async def start_listening():
     """
     Starts a Slack SocketMode client and checks for mirrored incidents.
     """
-    global THREAD_LOCK
-    THREAD_LOCK = threading.Lock()
     await slack_loop()
     long_loop_task = asyncio.create_task(long_running_loop(), name="Unanswered loop")
     await asyncio.gather(long_loop_task)
@@ -1108,13 +1103,9 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                         demisto.mirrorInvestigation(investigation_id,
                                                     f'{mirror_type}:{direction}', auto_close)
                         mirror['mirrored'] = True
-                        THREAD_LOCK.acquire()
-                        integration_context = get_integration_context(SYNC_CONTEXT)
-                        mirrors = json.loads(integration_context['mirrors'])
                         mirrors.append(mirror)
                         set_to_integration_context_with_retries({'mirrors': mirrors},
                                                                 OBJECTS_TO_KEYS, SYNC_CONTEXT)
-                        THREAD_LOCK.release()
 
                 investigation_id = mirror['investigation_id']
                 await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
@@ -1151,12 +1142,8 @@ async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:
         user = (
             await send_slack_request_async(client, 'users.info', http_verb='GET', body=body)).get(
             'user', {})
-        THREAD_LOCK.acquire()
-        integration_context = demisto.getIntegrationContext()
-        users = json.loads(integration_context['users'])
         users.append(user)
         set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-        THREAD_LOCK.release()
 
     return user
 
@@ -1217,12 +1204,8 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
                 demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content,
                                                  task_id)
                 question['remove'] = True
-                THREAD_LOCK.acquire()
-                integration_context = get_integration_context(SYNC_CONTEXT)
-                questions = integration_context.get('questions', [])
                 questions = json.loads(questions)
                 set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-                THREAD_LOCK.release()
 
                 return reply
 
@@ -1952,7 +1935,6 @@ def init_globals(command_name: str = ''):
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
-    global THREAD_LOCK
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
