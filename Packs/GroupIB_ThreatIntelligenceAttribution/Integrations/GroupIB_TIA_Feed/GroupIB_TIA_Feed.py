@@ -584,7 +584,7 @@ def unpack_iocs(iocs, ioc_type, fields, fields_names, collection_name):
 
         fields_dict.update({'gibcollection': collection_name})
         return [{'value': iocs, 'type': ioc_type,
-                 'raw_json': {'value': iocs, 'type': ioc_type, **fields_dict}, 'fields': fields_dict}]
+                 'rawJSON': {'value': iocs, 'type': ioc_type, **fields_dict}, 'fields': fields_dict}]
 
 
 def find_iocs_in_feed(feed: Dict, collection_name: str) -> List:
@@ -628,7 +628,7 @@ def get_human_readable_feed(indicators: List, type_: str, collection_name: str) 
 def format_result_for_manual(indicators: List) -> Dict:
     formatted_indicators: Dict[str, Any] = {}
     for indicator in indicators:
-        indicator = indicator.get('raw_json')
+        indicator = indicator.get('rawJSON')
         type_ = indicator.get('type')
         if type_ == 'CVE':
             del indicator["gibsoftwaremixed"]
