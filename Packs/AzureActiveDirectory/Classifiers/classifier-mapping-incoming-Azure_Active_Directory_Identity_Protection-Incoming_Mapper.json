@@ -1,0 +1,77 @@
+{
+    "name": "Azure Active Directory Identity Protection Incoming Mapper",
+    "description": "",
+    "feed": false,
+    "id": "Azure Active Directory Identity Protection Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "mapping": {
+        "Azure Active Directory Identity Protection": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Type": {
+                    "complex": null,
+                    "simple": "riskEventType"
+                },
+                "State": {
+                    "complex": null,
+                    "simple": "riskState"
+                },
+                "Risk Rating": {
+                    "complex": null,
+                    "simple": "riskLevel"
+                },
+                "Subtype": {
+                    "complex": null,
+                    "simple": "riskDetail"
+                },
+                "Azure Active Directory Identity Protection Detection Timing Type": {
+                    "complex": null,
+                    "simple": "detectionTimingType"
+                },
+                "Azure Active Directory Identity Protection Activity": {
+                    "complex": null,
+                    "simple": "activity"
+                },
+                "Azure Active Directory Identity Protection Token Issuer Type": {
+                    "complex": null,
+                    "simple": "tokenIssuerType"
+                },
+                "Source IP": {
+                    "complex": null,
+                    "simple": "ipAddress"
+                },
+                "Location": {
+                    "complex": {
+                        "accessor": "geoCoordinates",
+                        "filters": [],
+                        "root": "location",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Location Region": {
+                    "complex": null,
+                    "simple": "location.countryOrRegion"
+                },
+                "Azure Active Directory Identity Protection Activity Date Time": {
+                    "complex": null,
+                    "simple": "activityDateTime"
+                },
+                "Azure Active Directory Identity Protection Detected Date Time": {
+                    "complex": null,
+                    "simple": "detectedDateTime"
+                },
+                "Last Update Time": {
+                    "complex": null,
+                    "simple": "lastUpdatedDateTime"
+                },
+                "Username": {
+                    "complex": null,
+                    "simple": "userPrincipalName"
+                }
+            }
+        }
+    }
+}
