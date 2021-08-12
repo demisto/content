@@ -1771,7 +1771,7 @@ script:
       description: The number of entities (users, groups, and roles) that the policy
         is attached to.
       type: number
-    - contextPath: 'AWS.IAM.Policies.PermissionsBoundaryUsageCount '
+    - contextPath: 'AWS.IAM.Policies.PermissionsBoundaryUsageCount'
       description: The number of entities (users and roles) for which the policy is
         used to set the permissions boundary.
       type: number
@@ -2242,41 +2242,41 @@ script:
       type: Unknown
   - name: aws-iam-get-role-policy
     arguments:
-      - name: roleName
-        required: true
-        description: The name of the role associated with the policy.
-      - name: policyName
-        required: true
-        description: The name of the policy document to get.
+    - name: roleName
+      required: true
+      description: The name of the role associated with the policy.
+    - name: policyName
+      required: true
+      description: The name of the policy document to get.
     outputs:
-      - contextPath: AWS.IAM.Roles.PolicyDocument
-        description: The policy document.
-        type: string
+    - contextPath: AWS.IAM.Roles.PolicyDocument
+      description: The policy document.
+      type: string
     description: Retrieves the specified inline policy document that is embedded with
       the specified IAM role.
   - name: aws-iam-get-policy
     arguments:
-      - name: policyArn
-        required: true
-        description: The Amazon Resource Name (ARN) of the managed policy that you want
-          information about.
+    - name: policyArn
+      required: true
+      description: The Amazon Resource Name (ARN) of the managed policy that you want
+        information about.
     outputs:
-      - contextPath: AWS.IAM.Policy.PolicyName
-        description: The friendly name (not ARN) identifying the policy.
-        type: string
-      - contextPath: AWS.IAM.Policy.PolicyId
-        description: The stable and unique string identifying the policy.
-        type: string
-      - contextPath: AWS.IAM.Policy.Arn
-        description: The Amazon Resource Name (ARN). ARNs are unique identifiers for
-          Amazon Web Services resources.
-        type: string
-      - contextPath: AWS.IAM.Policy.Path
-        description: The path to the policy.
-        type: string
-      - contextPath: AWS.IAM.Policy.Description
-        description: A friendly description of the policy.
-        type: string
+    - contextPath: AWS.IAM.Policy.PolicyName
+      description: The friendly name (not ARN) identifying the policy.
+      type: string
+    - contextPath: AWS.IAM.Policy.PolicyId
+      description: The stable and unique string identifying the policy.
+      type: string
+    - contextPath: AWS.IAM.Policy.Arn
+      description: The Amazon Resource Name (ARN). ARNs are unique identifiers for
+        Amazon Web Services resources.
+      type: string
+    - contextPath: AWS.IAM.Policy.Path
+      description: The path to the policy.
+      type: string
+    - contextPath: AWS.IAM.Policy.Description
+      description: A friendly description of the policy.
+      type: string
     description: Retrieves information about the specified managed policy, including
       the policy's default version and the total number of IAM users, groups, and
       roles to which the policy is attached.
