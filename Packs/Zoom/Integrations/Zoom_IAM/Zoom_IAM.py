@@ -1,13 +1,16 @@
-import jwt
 import demistomock as demisto
 from CommonServerPython import *
 from IAMApiModule import *
 import traceback
+import jwt
+import datetime
 import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+DEFAULT_OUTGOING_MAPPER = "User Profile - SCIM (Outgoing)"
+DEFAULT_INCOMING_MAPPER = "User Profile - SCIM (Incoming)"
 
 ERROR_CODES_TO_SKIP = [
     404
@@ -21,17 +24,21 @@ BASE_URL = 'https://api.zoom.us/v2/'
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with Zoom application. """
 
-    def __init__(self, base_url, api_key, api_secret, verify=True, proxy=False, params=None):
+    def __init__(self, base_url, api_key, api_secret, verify=True, proxy=False):
         super().__init__(base_url, verify, proxy)
+        self.api_key = api_key,
+        self.api_secret = api_secret,
         self.access_token = get_jwt(api_key, api_secret)
-        self.params = params
-        self.headers = {'authorization': f'Bearer {self.access_token}'}
+        # self.headers = {'authorization': f'Bearer {self.access_token}',
+        #                 'Accept': 'application/json',
+        #                 'Content-Type': 'application/json'
+        #                 }
 
     def test(self):
         """ Tests connectivity with the application. """
 
-        uri = '/test'                                 # TODO: replace to a valid test API endpoint
-        self._http_request(method='GET', url_suffix=uri)
+        self.get_user('me')
+        return 'ok'
 
     def get_user(self, email: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
@@ -48,18 +55,51 @@ class Client(BaseClient):
         res = self._http_request(
             method='GET',
             url_suffix=uri,
+            headers={'authorization': f'Bearer {self.access_token}',
+                     'Accept': 'application/json',
+                     'Content-Type': 'application/json'
+                     }
         )
-
-        if res and len(res.get('result', [])) == 1: 
-            user_app_data = res.get('result')[0]     
-
+        if res and (not res.get('users')):
+            user_app_data = res
             user_id = user_app_data.get('id')
-            is_active = user_app_data.get('status')
-            username = user_app_data.get('user_name')
-            #TODO: there is no user name
+            is_active = True if user_app_data.get('status') == 'active' else False
+            username = ''
 
             return IAMUserAppData(user_id, username, is_active, user_app_data)
         return None
+
+    def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
+        """ Updates a user in the application using REST API.
+
+        :type user_id: ``str``
+        :param user_id: ID of the user in the application
+
+        :type user_data: ``Dict[str, Any]``
+        :param user_data: User data in the application format
+
+        :return: An IAMUserAppData object that contains the data of the updated user in the application.
+        :rtype: ``IAMUserAppData``
+        """
+        uri = f'/users/{user_id}/status'
+        res = self._http_request(
+            method='PUT',
+            url_suffix=uri,
+            json_data=user_data,
+            headers={'authorization': f'Bearer {self.access_token}',
+                     'Accept': 'application/json',
+                     'Content-Type': 'application/json'
+                     },
+            return_empty_response=True
+        )
+        # res is an empty response
+        user_app_data = res
+        # if we wanted to disable the user and request succeeded,
+        # we get to this line and know the user's status
+        is_active = True if user_data.get('action', '') == 'activate' else False
+        username = ''
+
+        return IAMUserAppData(user_id, username, is_active, user_app_data)
 
     def disable_user(self, user_id: str) -> IAMUserAppData:
         """ Disables a user in the application using REST API.
@@ -70,35 +110,25 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the user in the application.
         :rtype: ``IAMUserAppData``
         """
-        uri = f'/users/{user_id}/status'
-        res = self._http_request(
-            method='PUT',
-            url_suffix=uri,
-            data={'action': 'deactivate'}
-        )
 
-        user_app_data = res.get('result')
-        user_id = user_app_data.get('id')
-        is_active = user_app_data.get('status')
-        username = user_app_data.get('user_name')
+        user_data = {"action": "deactivate"}
+        return self.update_user(user_id, user_data)
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
-
-    def get_app_fields(self) -> Dict[str, Any]:
-        """ Gets a dictionary of the user schema fields in the application and their description.
-
-        :return: The user schema fields dictionary
-        :rtype: ``Dict[str, str]``
-        """
-
-        uri = '/schema'                             # TODO: replace to the correct GET Schema API endpoint
-        res = self._http_request(
-            method='GET',
-            url_suffix=uri
-        )
-
-        fields = res.get('result', [])
-        return {field.get('name'): field.get('description') for field in fields}
+    # def get_app_fields(self) -> Dict[str, Any]:
+    #     """ Gets a dictionary of the user schema fields in the application and their description.
+    #
+    #     :return: The user schema fields dictionary
+    #     :rtype: ``Dict[str, str]``
+    #     """
+    #
+    #     uri = '/schema'
+    #     res = self._http_request(
+    #         method='GET',
+    #         url_suffix=uri
+    #     )
+    #
+    #     fields = res.get('result', [])
+    #     return {field.get('name'): field.get('description') for field in fields}
 
     @staticmethod
     def handle_exception(user_profile: IAMUserProfile,
@@ -178,8 +208,8 @@ def get_error_details(res: Dict[str, Any]) -> str:
     :return: The parsed error details.
     :rtype: ``str``
     """
-    message = res.get('error', {}).get('message')   # TODO: make sure you parse the error details correctly
-    details = res.get('error', {}).get('detail')
+    message = res.get('code', '')
+    details = res.get('message', '')
     return f'{message}: {details}'
 
 
@@ -193,29 +223,28 @@ def test_module(client: Client):
     return_results('ok')
 
 
-def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
-    """ Creates and returns a GetMappingFieldsResponse object of the user schema in the application
-
-    :param client: (Client) The integration Client object that implements a get_app_fields() method
-    :return: (GetMappingFieldsResponse) An object that represents the user schema
-    """
-    app_fields = client.get_app_fields()
-    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
-
-    for field, description in app_fields.items():
-        incident_type_scheme.add_field(field, description)
-
-    return GetMappingFieldsResponse([incident_type_scheme])
+# def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
+#     """ Creates and returns a GetMappingFieldsResponse object of the user schema in the application
+#
+#     :param client: (Client) The integration Client object that implements a get_app_fields() method
+#     :return: (GetMappingFieldsResponse) An object that represents the user schema
+#     """
+#     app_fields = client.get_app_fields()
+#     incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
+#
+#     for field, description in app_fields.items():
+#         incident_type_scheme.add_field(field, description)
+#
+#     return GetMappingFieldsResponse([incident_type_scheme])
 
 
 def main():
     user_profile = None
     params = demisto.params()
-    base_url = urljoin(params['url'].strip('/'), '/api/now/')
-    username = params.get('credentials', {}).get('identifier')
-    password = params.get('credentials', {}).get('password')
-    mapper_in = params.get('mapper_in')
-    mapper_out = params.get('mapper_out')
+    api_key = params.get('api_key')
+    api_secret = params.get('api_secret')
+    mapper_in = params.get('mapper_in', DEFAULT_INCOMING_MAPPER)
+    mapper_out = params.get('mapper_out', DEFAULT_OUTGOING_MAPPER)
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
@@ -230,18 +259,12 @@ def main():
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
                              create_if_not_exists, mapper_in, mapper_out)
 
-    headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    }
-
     client = Client(
-        base_url=base_url,
+        base_url=BASE_URL,
         verify=verify_certificate,
         proxy=proxy,
-        headers=headers,
-        ok_codes=(200, 201),
-        auth=(username, password)
+        api_key=api_key,
+        api_secret=api_secret
     )
 
     demisto.debug(f'Command being called is {command}')
@@ -259,9 +282,6 @@ def main():
     try:
         if command == 'test-module':
             test_module(client)
-
-        elif command == 'get-mapping-fields':
-            return_results(get_mapping_fields(client))
 
     except Exception:
         # For any other integration command exception, return an error
