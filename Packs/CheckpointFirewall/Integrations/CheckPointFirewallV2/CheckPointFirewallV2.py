@@ -54,7 +54,7 @@ class Client(BaseClient):
         Otherwise, an exception should be raised by self._http_request()
         """
         response = self._http_request(method='POST', url_suffix='show-api-versions', headers=self.headers,
-                                      ok_codes=(200, 500), resp_type='')  # returns requests.Response
+                                      ok_codes=(200, 500), resp_type='response')  # returns requests.Response
         if response.status_code == 500:
             return 'Server Error: make sure Server URL and Server Port are correctly set'
 
