@@ -30,6 +30,14 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 DBOT_SCORE_TO_TEXT = {0: 'Unknown',
                       1: 'Good',
                       2: 'Suspicous'}
+
+DOMAIN_REGEX = (
+    r"([a-z¡-\uffff0-9](?:[a-z¡-\uffff0-9-]{0,61}"
+    "[a-z¡-\uffff0-9])?(?:\\.(?!-)[a-z¡-\uffff0-9-]{1,63}(?<!-))*"
+    "\\.(?!-)(?!(jpg|jpeg|exif|tiff|tif|png|gif|otf|ttf|fnt|dtd|xhtml|css"
+    "|html)$)(?:[a-z¡-\uffff-]{2,63}|xn--[a-z0-9]{1,59})(?<!-)\\.?$"
+    "|localhost)"
+)
 ''' CLIENT CLASS '''
 
 
@@ -141,8 +149,8 @@ def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         raise ValueError('AlexaV2: domain doesn\'t exists')
     command_results: List[CommandResults] = []
     for domain in domains:
-        # if not re.match(DOMAINREGEX, domain):
-        #     raise DemistoException('Entered invalid url')
+        if not re.match(DOMAIN_REGEX, domain):
+            raise DemistoException('Entered invalid domain')
         result = client.alexa_rank(domain)
         rank = demisto.get(result,
                            'Awis.Results.Result.Alexa.TrafficData.Rank')
