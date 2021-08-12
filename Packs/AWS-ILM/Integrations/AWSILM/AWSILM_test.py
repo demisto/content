@@ -1,4 +1,3 @@
-from requests import Response, Session
 from AWSILM import Client, main
 from IAMApiModule import *
 import requests_mock
@@ -322,7 +321,7 @@ class TestAWSILM:
         }
 
         with requests_mock.Mocker() as m:
-            m.get(f'http://example.com/tenant/schema', json=schema)
+            m.get('http://example.com/tenant/schema', json=schema)
 
             main()
 
