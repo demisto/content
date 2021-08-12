@@ -2,13 +2,11 @@ import concurrent.futures
 import secrets
 from enum import Enum
 from ipaddress import ip_address
-from threading import Lock
 from typing import Tuple
 
 import pytz
 import urllib3
 from CommonServerUserPython import *  # noqa
-
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
@@ -261,7 +259,34 @@ USECS_ENTRIES = {'last_persisted_time',
                  'first_seen_profiler',
                  'modified_time',
                  'last_event_time',
-                 'modified_date'}
+                 'modified_date',
+                 'first_event_flow_seen',
+                 'last_event_flow_seen'}
+
+LOCAL_DESTINATION_IPS_OLD_NEW_MAP = {
+        'domain_id': 'DomainID',
+        'event_flow_count': 'EventFlowCount',
+        'first_event_flow_seen': 'FirstEventFlowSeen',
+        'id': 'ID',
+        'last_event_flow_seen': 'LastEventFlowSeen',
+        'local_destination_ip': 'LocalDestinationIP',
+        'magnitude': 'Magnitude',
+        'network': 'Network',
+        'offense_ids': 'OffenseIDs',
+        'source_address_ids': 'SourceAddressIDs'
+    }
+SOURCE_IPS_OLD_NEW_MAP = {
+        'domain_id': 'DomainID',
+        'event_flow_count': 'EventFlowCount',
+        'first_event_flow_seen': 'FirstEventFlowSeen',
+        'id': 'ID',
+        'last_event_flow_seen': 'LastEventFlowSeen',
+        'local_destination_address_ids': 'LocalDestinationAddressIDs',
+        'magnitude': 'Magnitude',
+        'network': 'Network',
+        'offense_ids': 'OffenseIDs',
+        'source_ip': 'SourceIP'
+    }
 ''' ENRICHMENT MAPS '''
 
 ASSET_PROPERTIES_NAME_MAP = {
@@ -606,11 +631,13 @@ class Client(BaseClient):
             params=assign_params(filter=filter_, fields=fields)
         )
 
-    def get_addresses(self, address_suffix: str, filter_: Optional[str] = None, fields: Optional[str] = None):
+    def get_addresses(self, address_suffix: str, filter_: Optional[str] = None, fields: Optional[str] = None,
+                      range_: Optional[str] = None):
         return self.http_request(
             method='GET',
             url_suffix=f'/siem/{address_suffix}',
-            params=assign_params(filter=filter_, fields=fields)
+            params=assign_params(filter=filter_, fields=fields),
+            additional_headers={'Range': range_} if range_ else None
         )
 
     def test_connection(self):
@@ -2473,6 +2500,73 @@ def qradar_get_custom_properties_command(client: Client, args: Dict) -> CommandR
     )
 
 
+def perform_ips_command_request(client: Client, args: Dict[str, Any], is_destination_addresses: bool):
+    """
+    Performs request to QRadar IPs endpoint.
+    Args:
+        client (Client): Client to perform the request to QRadar service.
+        args (Dict[str, Any]): XSOAR arguments.
+        is_destination_addresses (bool): Whether request is for destination addresses or source addresses.
+
+    Returns:
+        - Request response.
+    """
+    range_: str = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    filter_: Optional[str] = args.get('filter')
+    fields: Optional[str] = args.get('fields')
+
+    address_type = 'local_destination' if is_destination_addresses else 'source'
+    url_suffix = f'{address_type}_addresses'
+
+    response = client.get_addresses(url_suffix, filter_, fields, range_)
+
+    return response
+
+
+def qradar_ips_source_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get source IPS from QRadar service.
+    Args:
+        client (Client): Client to perform API calls to QRadar service.
+        args (Dict[str, Any): XSOAR arguments.
+
+    Returns:
+        (CommandResults).
+    """
+    response = perform_ips_command_request(client, args, is_destination_addresses=False)
+    outputs = sanitize_outputs(response, SOURCE_IPS_OLD_NEW_MAP)
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Source IPs', outputs),
+        outputs_prefix='QRadar.SourceIP',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def qradar_ips_local_destination_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get local destination IPS from QRadar service.
+    Args:
+        client (Client): Client to perform API calls to QRadar service.
+        args (Dict[str, Any): XSOAR arguments.
+
+    Returns:
+        (CommandResults).
+    """
+    response = perform_ips_command_request(client, args, is_destination_addresses=True)
+    outputs = sanitize_outputs(response, LOCAL_DESTINATION_IPS_OLD_NEW_MAP)
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Local Destination IPs', outputs),
+        outputs_prefix='QRadar.LocalDestinationIP',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
 def qradar_reset_last_run_command() -> str:
     """
     Puts the reset flag inside integration context.
@@ -2845,6 +2939,12 @@ def main() -> None:
 
         elif command == 'qradar-get-custom-properties':
             return_results(qradar_get_custom_properties_command(client, args))
+
+        elif command == 'qradar-ips-source-get':
+            return_results(qradar_ips_source_get_command(client, args))
+
+        elif command == 'qradar-ips-local-destination-get':
+            return_results(qradar_ips_local_destination_get_command(client, args))
 
         elif command == 'qradar-reset-last-run':
             return_results(qradar_reset_last_run_command())
