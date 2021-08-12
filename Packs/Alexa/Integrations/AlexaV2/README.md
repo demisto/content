@@ -1,5 +1,5 @@
 Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence. V2
-This integration was integrated and tested on Alexa Rank Indicator V2
+This integration was integrated and tested with Alexa Rank Indicator V2
 
 ## Configure Alexa Rank Indicator V2 on Cortex XSOAR
 
@@ -10,9 +10,9 @@ This integration was integrated and tested on Alexa Rank Indicator V2
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Sensitivity threshold | Sensitivity threshold for configuring which domains are suspicious versus trusted. | True |
+    | Rank threshold for suspicious domain | For Alexa rank over this threshold, the domain will be marked as suspicious. | True |
     | Base API URL |  | True |
-    | Alexa rank | These domains will be given a DbotScore of good. | True |
+    | Rank threshold for top domains | For Alexa rank less than this threshold, the domain will be considered trusted and marked as good. | True |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Api Key |  | True |
@@ -99,4 +99,8 @@ Provides an Alexa ranking of the Domain in question.
 
 #### Human Readable Output
 
->The Alexa rank of xsoar.com is Unknown and has been marked as 2. The benign threshold is 0 while the suspicious threshold is 2000000.
+>### Alexa Rank for xsoar.com
+>|Domain|Alexa Rank|Reputation|
+>|---|---|---|
+>| xsoar.com |  | Suspicous |
+

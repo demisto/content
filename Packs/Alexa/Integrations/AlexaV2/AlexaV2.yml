@@ -49,7 +49,7 @@ configuration:
   type: 4
 description: Alexa provides website ranking information that can be useful in determining
   if the domain in question has a strong web presence. V2
-display: Alexa V2 Rank Indicator
+display: Alexa Rank Indicator V2
 name: Alexa Rank Indicator V2
 script:
   commands:
