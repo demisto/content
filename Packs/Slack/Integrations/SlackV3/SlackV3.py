@@ -1204,7 +1204,6 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
                 demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content,
                                                  task_id)
                 question['remove'] = True
-                questions = json.loads(questions)
                 set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
                 return reply
