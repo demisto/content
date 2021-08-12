@@ -13,7 +13,7 @@ import warnings
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 from distutils.version import LooseVersion
-from typing import Tuple, Any, Union, Dict, List, Optional, Set
+from typing import Tuple, Any, Union, List
 from zipfile import ZipFile, ZIP_DEFLATED
 
 import git
@@ -25,6 +25,7 @@ from google.cloud import storage
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PackTags, PackIgnored, Changelog
+import Tests.Marketplace.release_notes_bc_calculator as rn_bc_calculator
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 
 
@@ -362,7 +363,6 @@ class Pack(object):
             list: list of sorted integration images
 
         """
-
         def sort_by_name(integration_image: dict):
             return integration_image.get('name', '')
 
@@ -1153,7 +1153,7 @@ class Pack(object):
         modified_versions_dict = {}
 
         for rn_filename in modified_rn_files:
-            version = release_notes_file_to_version(rn_filename)
+            version = underscore_file_name_to_dotted_version(rn_filename)
             # Should only apply on modified files that are not the last rn file
             if version in new_release_notes_versions:
                 continue
@@ -1198,8 +1198,8 @@ class Pack(object):
         higher_nearest_version = min(higher_versions)
         lower_versions = lower_versions + lowest_version  # if the version is 1.0.0, ensure lower_versions is not empty
         lower_nearest_version = max(lower_versions)
-        for rn_filename in filter_rn_dir_files_by_extension(release_notes_dir, '.md'):
-            current_version = release_notes_file_to_version(rn_filename)
+        for rn_filename in filter_dir_files_by_extension(release_notes_dir, '.md'):
+            current_version = underscore_file_name_to_dotted_version(rn_filename)
             # Catch all versions that are in the same block
             if lower_nearest_version < LooseVersion(current_version) <= higher_nearest_version:
                 with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
@@ -1222,8 +1222,8 @@ class Pack(object):
         """
         found_versions: list = list()
         pack_versions_dict: dict = dict()
-        for filename in sorted(filter_rn_dir_files_by_extension(release_notes_dir, '.md')):
-            version = release_notes_file_to_version(filename)
+        for filename in sorted(filter_dir_files_by_extension(release_notes_dir, '.md')):
+            version = underscore_file_name_to_dotted_version(filename)
 
             # Aggregate all rn files that are bigger than what we have in the changelog file
             if LooseVersion(version) > changelog_latest_rn_version:
@@ -1409,7 +1409,8 @@ class Pack(object):
                 return task_status, not_updated_build
 
             # Update change log entries with BC flag.
-            self.update_changelog_with_bc(changelog, release_notes_dir)
+            release_notes_breaking_changes_calc = rn_bc_calculator.ReleaseNotesBreakingChangesCalc(release_notes_dir)
+            release_notes_breaking_changes_calc.add_bc_entries_if_needed(changelog)
 
             # write back changelog with changes to pack folder
             with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as pack_changelog:
@@ -2372,90 +2373,6 @@ class Pack(object):
             os.path.basename(file_path).endswith('.yml')
         ])
 
-    def update_changelog_with_bc(self, changelog: Dict[str, Any], release_notes_dir: str) -> None:
-        """
-        Receives changelog, checks if there exists a BC version in each changelog entry (as changelog entry might be
-        zipped into few RN versions, check if at least one of the versions is BC).
-        Check if RN is BC is done by doing the following:
-         1) Check if RN has corresponding config file, e.g 1_0_1.md has corresponding 1_0_1.json file.
-         2) If it does, check if `isBreakingChanges` field is true
-        If such version exists, adds a
-        true value to 'breakingChanges' field.
-        if JSON file also has breakingChangesNotes configures, adds `breakingChangesNotes` field to changelog file.
-        This function iterates every entry in changelog because it takes into consideration four scenarios:
-          a) Entry without breaking changes, changes to entry with breaking changes (because at least one of the
-             versions in the entry was marked as breaking changes).
-          b) Entry without breaking changes, does not change.
-          c) Entry with breaking changes, changes to entry without breaking changes (because all the BC versions
-             corresponding to the changelog entry were re-marked as not BC).
-          d) Entry with breaking changes, does not change.
-        Args:
-            changelog (Dict[str, Any]): Changelog data represented as a dict.
-            release_notes_dir (str): Path to RN dir.
-
-        Returns:
-            (None): Modifies changelog, adds bool value to 'breakingChanges' and `breakingChangesNotes` fields to every
-             changelog entry, according to the logic described above.
-        """
-        bc_version_to_text: Dict[str, Optional[str]] = self.breaking_changes_versions_to_text(release_notes_dir)
-        bc_versions: List[LooseVersion] = [LooseVersion(bc_ver) for bc_ver in bc_version_to_text.keys()]
-        predecessor_version: LooseVersion = LooseVersion('0.0.0')
-        for rn_version in sorted(changelog.keys(), key=LooseVersion):
-            rn_loose_version: LooseVersion = LooseVersion(rn_version)
-            if bc_versions := self.changelog_entry_bc_versions(predecessor_version, rn_loose_version, bc_versions):
-                changelog[rn_version]['breakingChanges'] = True
-                if bc_text := self.changelog_entry_bc_text(release_notes_dir, )
-            elif 'breakingChanges' in changelog[rn_version]:
-                # If version was BC but now is not anymore, delete its entry
-                del changelog[rn_version]['breakingChanges']
-            predecessor_version = rn_loose_version
-
-    @staticmethod
-    def changelog_entry_bc_text(release_notes_dir: str, bc_version_to_text: Dict[str, Optional[str]],
-                                bc_versions: List[str]) -> str:
-        if len(bc_versions) == 1:
-
-
-
-    @staticmethod
-    def breaking_changes_versions_to_text(release_notes_dir: str) -> Dict[str, Optional[str]]:
-        """
-        Calculates every BC version in given RN dir and maps it to text if exists.
-        Args:
-            release_notes_dir (str): RN dir path.
-
-        Returns:
-            (Dict[str, Optional[str]]): {dotted_version, text}.
-        """
-        bc_version_to_text: Dict[str, Optional[str]] = dict()
-        # Get all config files in RN dir
-        rn_config_file_names = filter_rn_dir_files_by_extension(release_notes_dir, '.json')
-
-        for file_name in rn_config_file_names:
-            file_data: Dict = load_json(os.path.join(release_notes_dir, file_name))
-            # Check if version is BC
-            if file_data.get('breakingChanges', False):
-                # Processing name for easier calculations later on
-                processed_name: str = file_name.replace('_', '.').replace('.json', '')
-                bc_version_to_text[processed_name] = file_data.get('breakingChangesNotes')
-        return bc_version_to_text
-
-    @staticmethod
-    def changelog_entry_bc_versions(predecessor_version: LooseVersion, rn_version: LooseVersion,
-                                    breaking_changes_versions: List[LooseVersion]) -> List[str]:
-        """
-        Gets all BC versions of given changelog entry, every BC s.t predecessor_version < BC version <= rn_version.
-        Args:
-            predecessor_version (LooseVersion): Predecessor version in numeric version order.
-            rn_version (LooseVersion): RN version of current processed changelog entry.
-            breaking_changes_versions (List[str]): List of BC versions, of dotted format `x.x.x`.
-
-        Returns:
-            (List[str]): List of BC versions contained in the changelog.
-        """
-        return [bc_ver.vstring for bc_ver in breaking_changes_versions if predecessor_version < bc_ver <= rn_version]
-
-
 # HELPER FUNCTIONS
 
 
@@ -2820,11 +2737,11 @@ def is_ignored_pack_file(modified_file_path_parts):
     return False
 
 
-def filter_rn_dir_files_by_extension(release_notes_dir: str, extension: str) -> List[str]:
+def filter_dir_files_by_extension(release_notes_dir: str, extension: str) -> List[str]:
     """
     Receives path to RN dir, filters only files in RN dir corresponding to the extension.
-    Needed because RN directory will be extended to contain JSON files for configurations, see update_changelog_with_bc
-    function.
+    Needed because RN directory will be extended to contain JSON files for configurations,
+    see 'release_notes_bc_calculator.py'
     Args:
         release_notes_dir (str): Path to RN dir
         extension (str): Extension to filter by.
@@ -2863,8 +2780,8 @@ def is_the_only_rn_in_block(release_notes_dir: str, version: str, changelog: dic
         return False
     all_rn_versions = []
     lowest_version = [LooseVersion('1.0.0')]
-    for filename in filter_rn_dir_files_by_extension(release_notes_dir, '.md'):
-        current_version = release_notes_file_to_version(filename)
+    for filename in filter_dir_files_by_extension(release_notes_dir, '.md'):
+        current_version = underscore_file_name_to_dotted_version(filename)
         all_rn_versions.append(LooseVersion(current_version))
     lower_versions_all_versions = [item for item in all_rn_versions if item < version] + lowest_version
     lower_versions_in_changelog = [LooseVersion(item) for item in changelog.keys() if
@@ -2872,5 +2789,16 @@ def is_the_only_rn_in_block(release_notes_dir: str, version: str, changelog: dic
     return max(lower_versions_all_versions) == max(lower_versions_in_changelog)
 
 
-def release_notes_file_to_version(rn_file_name):
-    return rn_file_name.replace('.md', '').replace('_', '.')
+def underscore_file_name_to_dotted_version(file_name: str) -> str:
+    """
+    Receives file name with expected format of x_x_x<extension>, and transforms it to dotted string.
+    Examples
+        - underscore_file_name_to_dotted_version(1_2_3.md) --> 1.2.3
+        - underscore_file_name_to_dotted_version(1_4_2.json) --> 1.4.2
+    Args:
+        file_name (str): File name.
+
+    Returns:
+        (str): Dotted version of file name
+    """
+    return os.path.splitext(file_name)[0].replace('_', '.')
