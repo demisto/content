@@ -1654,7 +1654,6 @@ def get_endpoint_command():
 
     command_results = []
     for endpoint in standard_endpoints:
-
         endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
         hr = tableToMarkdown('CrowdStrike Falcon Endpoint', endpoint_context)
 
@@ -2463,6 +2462,23 @@ def list_incident_summaries_command():
     )
 
 
+def create_host_group(name, group_type, description=None, assignment_rule=None):
+    data = {'resources': [{
+        "name": name,
+        "description": description,
+        "group_type": group_type,
+        "assignment_rule": assignment_rule
+    }]}
+    response = http_request(method='POST',
+                            url_suffix='/devices/entities/host-groups/v1',
+                            json=data,
+                            )
+    resources = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=resources)
+
+
 def test_module():
     try:
         get_token(new_token=True)
@@ -2566,6 +2582,8 @@ def main():
             )
         elif command == 'endpoint':
             return_results(get_endpoint_command())
+        elif command == 'cs-falcon-create-host-group':
+            return_results(create_host_group(**args))
         # Log exceptions
     except Exception as e:
         return_error(str(e))

@@ -2786,3 +2786,6 @@ def test_get_endpint_command(requests_mock, mocker):
     context = result.get('EntryContext')
 
     assert context['Endpoint(val.ID && val.ID == obj.ID)'] == [endpoint_context]
+
+def test_create_hostgroup():
+    pass
