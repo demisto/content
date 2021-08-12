@@ -36,23 +36,33 @@ script:
   - name: lr-alarms-list
     description: ''
     arguments:
-    - name: alarmstatus
+    - name: alarm_status
       description: ''
       required: false
       isArray: false
     - name: offset
+      defaultValue: "0"
       description: ''
       required: false
       isArray: false
     - name: count
+      defaultValue: "30"
       description: ''
       required: false
       isArray: false
-    - name: alarmrulename
+    - name: alarm_rule_name
       description: ''
       required: false
       isArray: false
-    - name: entityname
+    - name: entity_name
+      description: ''
+      required: false
+      isArray: false
+    - name: alarm_id
+      description: ''
+      required: false
+      isArray: false
+    - name: case_association
       description: ''
       required: false
       isArray: false
@@ -91,63 +101,57 @@ script:
       contextPath: LogrhythmV2.AlarmsList.responseMessage
       description: ''
   - name: lr-alarm-update
-    description: ''
+    description: 'alarm_status or rbp are required'
     arguments:
     - name: alarm_id
       description: ''
-      required: false
+      required: true
       isArray: false
-    - name: alarmstatus
+    - name: alarm_status
       description: ''
       required: false
       isArray: false
+      auto: PREDEFINED
+      predefined:
+      - New
+      - Opened
+      - Working
+      - Escalated
+      - Closed
+      - Closed_FalseAlarm
+      - Closed_Resolved
+      - Closed_Unresolved
+      - Closed_Reported
+      - Closed_Monitor
     - name: rbp
       description: ''
       required: false
       isArray: false
-    outputs:
-    - type: Number
-      contextPath: LogrhythmV2.AlarmUpdate.statusCode
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.AlarmUpdate.statusMessage
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.AlarmUpdate.responseMessage
-      description: ''
+    outputs: []
   - name: lr-alarm-add-comment
     description: ''
     arguments:
     - name: alarm_id
       description: ''
-      required: false
+      required: true
       isArray: false
-    - name: alarmcomment
+    - name: alarm_comment
       description: ''
-      required: false
+      required: true
       isArray: false
-    outputs:
-    - type: Number
-      contextPath: LogrhythmV2.AlarmAddComment.statusCode
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.AlarmAddComment.statusMessage
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.AlarmAddComment.responseMessage
-      description: ''
+    outputs: []
   - name: lr-alarm-history-list
     description: ''
     arguments:
     - name: alarm_id
       description: ''
-      required: false
+      required: true
       isArray: false
-    - name: personid
+    - name: person_id
       description: ''
       required: false
       isArray: false
-    - name: dateupdated
+    - name: date_updated
       description: ''
       required: false
       isArray: false
@@ -155,11 +159,18 @@ script:
       description: ''
       required: false
       isArray: false
+      auto: PREDEFINED
+      predefined:
+        - comment
+        - status
+        - rbp
     - name: offset
+      defaultValue: "0"
       description: ''
       required: false
       isArray: false
     - name: count
+      defaultValue: "30"
       description: ''
       required: false
       isArray: false
@@ -193,7 +204,7 @@ script:
     arguments:
     - name: alarm_id
       description: ''
-      required: false
+      required: true
       isArray: false
     outputs:
     - type: String
@@ -645,7 +656,7 @@ script:
     arguments:
     - name: alarm_id
       description: ''
-      required: false
+      required: true
       isArray: false
     outputs:
     - type: Date
@@ -723,19 +734,51 @@ script:
   - name: lr-cases-list
     description: ''
     arguments:
+    - name: case_id
+      description: ''
+      required: false
+      isArray: false
+    - name: timestamp_filter_type
+      description: ''
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - updatedAfter
+      - updatedBefore
+      - createdAfter
+      - createdBefore
+    - name: timestamp
+      description: ''
+      required: false
+      isArray: false
     - name: priority
       description: ''
       required: false
       isArray: false
-    - name: statusnumber
+      auto: PREDEFINED
+      predefined:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+    - name: status
       description: ''
       required: false
       isArray: false
-    - name: ownernumber
+      auto: PREDEFINED
+      predefined:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+    - name: owners
       description: ''
       required: false
       isArray: false
-    - name: tagnumber
+    - name: tags
       description: ''
       required: false
       isArray: false
@@ -743,27 +786,36 @@ script:
       description: ''
       required: false
       isArray: false
-    - name: evidencetype
+    - name: evidence_type
       description: ''
       required: false
       isArray: false
-    - name: referenceid
+      auto: PREDEFINED
+      predefined:
+      - alarm
+      - userEvents
+      - log
+      - note
+      - file
+    - name: reference_id
       description: ''
       required: false
       isArray: false
-    - name: externalid
+    - name: external_id
       description: ''
       required: false
       isArray: false
-    - name: entitynumber
+    - name: entity_number
       description: ''
       required: false
       isArray: false
     - name: offset
+      defaultValue: "0"
       description: ''
       required: false
       isArray: false
     - name: count
+      defaultValue: "30"
       description: ''
       required: false
       isArray: false
@@ -854,9 +906,32 @@ script:
     arguments:
     - name: name
       description: ''
-      required: false
+      required: true
       isArray: false
     - name: priority
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+    - name: external_id
+      description: ''
+      required: false
+      isArray: false
+    - name: due_date
+      description: ''
+      required: false
+      isArray: false
+    - name: summary
+      description: ''
+      required: false
+      isArray: false
+    - name: entity_id
       description: ''
       required: false
       isArray: false
@@ -947,9 +1022,40 @@ script:
     arguments:
     - name: case_id
       description: ''
-      required: false
+      required: true
       isArray: false
     - name: name
+      description: ''
+      required: false
+      isArray: false
+    - name: priority
+      description: ''
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+    - name: external_id
+      description: ''
+      required: false
+      isArray: false
+    - name: due_date
+      description: ''
+      required: false
+      isArray: false
+    - name: summary
+      description: ''
+      required: false
+      isArray: false
+    - name: entity_id
+      description: ''
+      required: false
+      isArray: false
+    - name: resolution
       description: ''
       required: false
       isArray: false
@@ -1040,12 +1146,19 @@ script:
     arguments:
     - name: case_id
       description: ''
-      required: false
+      required: true
       isArray: false
-    - name: statusnumber
+    - name: status
       description: ''
-      required: false
+      required: true
       isArray: false
+      auto: PREDEFINED
+      predefined:
+      - Created
+      - Completed
+      - Incident
+      - Mitigated
+      - Resolved
     outputs:
     - type: String
       contextPath: LogrhythmV2.CaseStatusChange.id
@@ -1133,13 +1246,29 @@ script:
     arguments:
     - name: case_id
       description: ''
-      required: false
+      required: true
       isArray: false
-    - name: type
+    - name: evidence_type
       description: ''
       required: false
       isArray: false
+      auto: PREDEFINED
+      predefined:
+      - alarm
+      - userEvents
+      - log
+      - note
+      - file
     - name: status
+      description: ''
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - pending
+      - completed
+      - failed
+    - name: evidence_number
       description: ''
       required: false
       isArray: false
@@ -1218,11 +1347,11 @@ script:
     arguments:
     - name: case_id
       description: ''
-      required: false
+      required: true
       isArray: false
-    - name: alarmnumbers
+    - name: alarm_numbers
       description: ''
-      required: false
+      required: true
       isArray: false
     outputs:
     - type: Number
@@ -1299,11 +1428,11 @@ script:
     arguments:
     - name: case_id
       description: ''
-      required: false
+      required: true
       isArray: false
-    - name: text
+    - name: note
       description: ''
-      required: false
+      required: true
       isArray: false
     outputs:
     - type: Number
@@ -1356,7 +1485,11 @@ script:
     arguments:
     - name: case_id
       description: ''
-      required: false
+      required: true
+      isArray: false
+    - name: entryId
+      description: ''
+      required: true
       isArray: false
     outputs:
     - type: Number
@@ -1407,24 +1540,24 @@ script:
   - name: lr-case-evidence-delete
     description: ''
     arguments:
-    - name: case_idevidence
+    - name: case_id
       description: ''
-      required: false
+      required: true
       isArray: false
     - name: evidence_number
       description: ''
-      required: false
+      required: true
       isArray: false
   - name: lr-case-file-evidence-download
     description: ''
     arguments:
     - name: case_id
       description: ''
-      required: false
+      required: true
       isArray: false
     - name: evidence_number
       description: ''
-      required: false
+      required: true
       isArray: false
   - name: lr-case-evidence-user-events-list
     description: ''
