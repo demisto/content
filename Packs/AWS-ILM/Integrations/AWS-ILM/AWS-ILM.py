@@ -121,9 +121,6 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the user in the application.
         :rtype: ``IAMUserAppData``
         """
-        # Note: ENABLE user API endpoints might vary between different APIs.
-        # In this example, we use the same endpoint as in update_user() method,
-        # But other APIs might have a unique endpoint for this request.
 
         user_data = {'active': True}
         return self.update_user(user_id, user_data)
@@ -137,9 +134,6 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the user in the application.
         :rtype: ``IAMUserAppData``
         """
-        # Note: DISABLE user API endpoints might vary between different APIs.
-        # In this example, we use the same endpoint as in update_user() method,
-        # But other APIs might have a unique endpoint for this request.
 
         user_data = {'active': False}
         return self.update_user(user_id, user_data)
@@ -151,7 +145,7 @@ class Client(BaseClient):
         :rtype: ``Dict[str, str]``
         """
 
-        uri = '/schema'                             # TODO: replace to the correct GET Schema API endpoint
+        uri = '/schema'
         res = self._http_request(
             method='GET',
             url_suffix=uri
@@ -224,7 +218,7 @@ def get_error_details(res: Dict[str, Any]) -> str:
     :return: The parsed error details.
     :rtype: ``str``
     """
-    message = res.get('error', {}).get('message')   # TODO: make sure you parse the error details correctly
+    message = res.get('error', {}).get('message')
     details = res.get('error', {}).get('detail')
     return f'{message}: {details}'
 
