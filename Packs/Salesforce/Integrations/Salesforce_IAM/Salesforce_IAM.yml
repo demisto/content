@@ -276,18 +276,28 @@ script:
       description: The user ID.
     - name: permission_set_id
       required: true
+      isArray: false
       description: Permission set ID of the user.
     outputs:
-    - contextPath: SalesforceAssignPermissionSet.success
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.action
+      description: The command name.
+      type: String
+    - contextPath: IAM.Vendor.success
       description: Status of the result. Can be true or false.
       type: boolean
-    - contextPath: SalesforceAssignPermissionSet.PermissionSetAssign.id
+    - contextPath: IAM.Vendor.PermissionSetAssign.id
       description: ID of the created permission set assignment.
       type: string
-    - contextPath: SalesforceAssignPermissionSet.errorCode
+    - contextPath: IAM.Vendor.errorCode
       description: Error code from API, displayed in case of failure.
       type: string
-    - contextPath: SalesforceAssignPermissionSet.errorMessage
+    - contextPath: IAM.Vendor.errorMessage
       description: Error message from API, displayed in case of failure.
       type: string
     description: Assigns a permission set for a user.
@@ -297,22 +307,31 @@ script:
       required: true
       description: The user ID.
     outputs:
-    - contextPath: SalesforceGetAssignedPermissionSet.success
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.action
+      description: The command name.
+      type: String
+    - contextPath: IAM.Vendor.success
       description: Status of the result. Can be true or false.
       type: boolean
-    - contextPath: SalesforceGetAssignedPermissionSet.PermissionSetAssignments.attributes
+    - contextPath: IAM.Vendor.PermissionSetAssignments.attributes
       description: Information about the type and the url of the field fetched.
       type: string
-    - contextPath: SalesforceGetAssignedPermissionSet.PermissionSetAssignments.AssigneeId
+    - contextPath: IAM.Vendor.PermissionSetAssignments.AssigneeId
       description: User ID passed as an input.
       type: string
-    - contextPath: SalesforceGetAssignedPermissionSet.PermissionSetAssignments.Id
+    - contextPath: IAM.Vendor.PermissionSetAssignments.Id
       description: ID of the created permission set assignment.
       type: string
-    - contextPath: SalesforceGetAssignedPermissionSet.errorCode
+    - contextPath: IAM.Vendor.errorCode
       description: Error code from API, displayed in case of failure.
       type: string
-    - contextPath: SalesforceGetAssignedPermissionSet.errorMessage
+    - contextPath: IAM.Vendor.errorMessage
       description: Error message from API, displayed in case of failure.
       type: string
     description: Gets the assigned permission set.
@@ -320,16 +339,26 @@ script:
   - arguments:
     - name: permission_set_assignment_id
       required: true
+      isArray: false
       description: ID of the PermissionSetAssignment object. A PermissionSetAssignment
         represents the association between a user and a permission set.
     outputs:
-    - contextPath: SalesforceDeleteAssignedPermissionSet.success
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.action
+      description: The command name.
+      type: String
+    - contextPath: IAM.Vendor.success
       description: Status of the result. Can be true or false.
       type: boolean
-    - contextPath: SalesforceDeleteAssignedPermissionSet.errorCode
+    - contextPath: IAM.Vendor.errorCode
       description: Error code from API, displayed in case of failure.
       type: number
-    - contextPath: SalesforceDeleteAssignedPermissionSet.errorMessage
+    - contextPath: IAM.Vendor.errorMessage
       description: Error message from API, displayed in case of failure.
       type: string
     description: Deletes an assigned permission set.
@@ -342,13 +371,22 @@ script:
         you need the UserPermissions.ManageUsers permission. For more details Please
         refer to https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_userlogin.htm
     outputs:
-    - contextPath: SalesforceFreezeUserAccount.success
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.action
+      description: The command name.
+      type: String
+    - contextPath: IAM.Vendor.success
       description: Status of the result. Can be true or false.
       type: boolean
-    - contextPath: SalesforceFreezeUserAccount.errorCode
+    - contextPath: IAM.Vendor.errorCode
       description: Error code from API, displayed in case of failure.
       type: number
-    - contextPath: SalesforceFreezeUserAccount.errorMessage
+    - contextPath: IAM.Vendor.errorMessage
       description: Error message from API, displayed in case of failure.
       type: string
     description: Freezes a user account.
@@ -361,13 +399,22 @@ script:
         you need the UserPermissions.ManageUsers permission. For more details Please
         refer to https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_userlogin.htm
     outputs:
-    - contextPath: SalesforceUnfreezeUserAccount.success
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.action
+      description: The command name.
+      type: String
+    - contextPath: IAM.Vendor.success
       description: Status of the result. Can be true or false.
       type: boolean
-    - contextPath: SalesforceUnfreezeUserAccount.errorCode
+    - contextPath: IAM.Vendor.errorCode
       description: Error code from API, displayed in case of failure.
       type: number
-    - contextPath: SalesforceUnfreezeUserAccount.errorMessage
+    - contextPath: IAM.Vendor.errorMessage
       description: Error message from API, displayed in case of failure.
       type: string
     description: Unfreezes a user account.
@@ -377,25 +424,34 @@ script:
       required: true
       description: The user ID.
     outputs:
-    - contextPath: SalesforceGetUserIsfrozenStatus.success
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.action
+      description: The command name.
+      type: String
+    - contextPath: IAM.Vendor.success
       description: Status of the result. Can be true or false.
       type: boolean
-    - contextPath: SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.attributes
+    - contextPath: IAM.Vendor.UserIsfrozenStatus.attributes
       description: Information about the type, url of the field fetched.
       type: string
-    - contextPath: SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.Id
+    - contextPath: IAM.Vendor.UserIsfrozenStatus.Id
       description: ID of UserLogin object. UserLogin represents the settings that
         affect a user's ability to log into an organization. To access this object,
         you need the UserPermissions.ManageUsers permission. For more details Please
         refer to https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_userlogin.htm
       type: string
-    - contextPath: SalesforceGetUserIsfrozenStatus.UserIsfrozenStatus.IsFrozen
+    - contextPath: IAM.Vendor.UserIsfrozenStatus.IsFrozen
       description: Whether the User account is in frozen state. Can be true or false.
       type: boolean
-    - contextPath: SalesforceGetUserIsfrozenStatus.errorCode
+    - contextPath: IAM.Vendor.errorCode
       description: Error code from API, displayed in case of failure.
       type: string
-    - contextPath: SalesforceGetUserIsfrozenStatus.errorMessage
+    - contextPath: IAM.Vendor.errorMessage
       description: Error message from API, displayed in case of failure.
       type: string
     description: Gets a user frozen status.
@@ -406,18 +462,28 @@ script:
       description: The user ID.
     - name: permission_set_license_id
       required: true
+      isArray: false
       description: Permission set license ID.
     outputs:
-    - contextPath: SalesforceAssignPermissionSetLicense.success
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.action
+      description: The command name.
+      type: String
+    - contextPath: IAM.Vendor.success
       description: Status of the result. Can be true or false.
       type: boolean
-    - contextPath: SalesforceAssignPermissionSetLicense.PermissionSetLicenseAssign.id
+    - contextPath: IAM.Vendor.PermissionSetLicenseAssign.id
       description: ID of the created ermission set assignment license.
       type: string
-    - contextPath: SalesforceAssignPermissionSetLicense.errorCode
+    - contextPath: IAM.Vendor.errorCode
       description: Error code from API, displayed in case of failure.
       type: string
-    - contextPath: SalesforceAssignPermissionSetLicense.errorMessage
+    - contextPath: IAM.Vendor.errorMessage
       description: Error message from API, displayed in case of failure.
       type: string
     description: Assigns a permission set license.
@@ -427,22 +493,31 @@ script:
       required: true
       description: The user ID.
     outputs:
-    - contextPath: SalesforceGetAssignedPermissionSetLicense.success
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.action
+      description: The command name.
+      type: String
+    - contextPath: IAM.Vendor.success
       description: Status of the result. Can be true or false.
       type: boolean
-    - contextPath: SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.attributes
+    - contextPath: IAM.Vendor.PermissionSetLicenseAssignments.attributes
       description: Information about the type and url of the field fetched.
       type: string
-    - contextPath: SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.AssigneeId
+    - contextPath: IAM.Vendor.PermissionSetLicenseAssignments.AssigneeId
       description: User ID passed as input.
       type: string
-    - contextPath: SalesforceGetAssignedPermissionSetLicense.PermissionSetLicenseAssignments.Id
+    - contextPath: IAM.Vendor.PermissionSetLicenseAssignments.Id
       description: ID of the PermissionSetLicenseAssignments assigned for given user.
       type: string
-    - contextPath: SalesforceGetAssignedPermissionSetLicense.errorCode
+    - contextPath: IAM.Vendor.errorCode
       description: Error code from API, displayed in case of failure.
       type: string
-    - contextPath: SalesforceGetAssignedPermissionSetLicense.errorMessage
+    - contextPath: IAM.Vendor.errorMessage
       description: Error message from API, displayed in case of failure.
       type: string
     description: Gets an assigned permission set license.
@@ -450,16 +525,26 @@ script:
   - arguments:
     - name: permission_set_assignment_license_id
       required: true
+      isArray: false
       description: ID of the PermissionSetLicenseAssign object. A PermissionSetLicenseAssign
         represents the association between a user and the PermissionSetLicense.
     outputs:
-    - contextPath: SalesforceDeleteAssignedPermissionSetLicense.success
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.action
+      description: The command name.
+      type: String
+    - contextPath: IAM.Vendor.success
       description: Status of the result. Can be true or false.
       type: boolean
-    - contextPath: SalesforceDeleteAssignedPermissionSetLicense.errorCode
+    - contextPath: IAM.Vendor.errorCode
       description: Error code from API, displayed in case of failure.
       type: string
-    - contextPath: SalesforceDeleteAssignedPermissionSetLicense.errorMessage
+    - contextPath: IAM.Vendor.errorMessage
       description: Error message from API, displayed in case of failure.
       type: string
     description: Deletes an assigned permission set license.
@@ -472,16 +557,25 @@ script:
       required: true
       description: The package License ID.
     outputs:
-    - contextPath: SalesforceAssignPackageLicense.success
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.action
+      description: The command name.
+      type: String
+    - contextPath: IAM.Vendor.success
       description: Status of the result. Can be true or false.
       type: boolean
-    - contextPath: SalesforceAssignPackageLicense.PackageLicenseAssign.id
+    - contextPath: IAM.Vendor.PackageLicenseAssign.id
       description: ID of the created Package License Assign.
       type: boolean
-    - contextPath: SalesforceAssignPackageLicense.errorCode
+    - contextPath: IAM.Vendor.errorCode
       description: Error code from API, displayed in case of failure.
       type: number
-    - contextPath: SalesforceAssignPackageLicense.errorMessage
+    - contextPath: IAM.Vendor.errorMessage
       description: Error message from API, displayed in case of failure.
       type: string
     description: Assigns a package license.
@@ -491,22 +585,31 @@ script:
       required: true
       description: The user ID.
     outputs:
-    - contextPath: SalesforceGetAssignedPackageLicense.success
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.action
+      description: The command name.
+      type: String
+    - contextPath: IAM.Vendor.success
       description: Status of the result. Can be true or false.
       type: boolean
-    - contextPath: SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.attributes
+    - contextPath: IAM.Vendor.PackageLicenseAssignments.attributes
       description: Information about the type and url of the field fetched.
       type: boolean
-    - contextPath: SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.AssigneeId
+    - contextPath: IAM.Vendor.PackageLicenseAssignments.AssigneeId
       description: User ID passed as input.
       type: string
-    - contextPath: SalesforceGetAssignedPackageLicense.PackageLicenseAssignments.Id
+    - contextPath: IAM.Vendor.PackageLicenseAssignments.Id
       description: ID of the Package License Assignment of the given user.
       type: string
-    - contextPath: SalesforceGetAssignedPackageLicense.errorCode
+    - contextPath: IAM.Vendor.errorCode
       description: Error code from API, displayed in case of failure.
       type: number
-    - contextPath: SalesforceGetAssignedPackageLicense.errorMessage
+    - contextPath: IAM.Vendor.errorMessage
       description: Error message from API, displayed in case of failure.
       type: string
     description: Gets an assigned package license.
@@ -514,15 +617,16 @@ script:
   - arguments:
     - name: user_package_license_id
       required: true
+      isArray: false
       description: ID of the UserPackageLicense object.
     outputs:
-    - contextPath: SalesforceDeleteAssignedPackageLicense.success
+    - contextPath: IAM.Vendor.success
       description: Status of the result. Can be true or false.
       type: boolean
-    - contextPath: SalesforceDeleteAssignedPackageLicense.errorCode
+    - contextPath: IAM.Vendor.errorCode
       description: Error code from API, displayed in case of failure.
       type: number
-    - contextPath: SalesforceDeleteAssignedPackageLicense.errorMessage
+    - contextPath: IAM.Vendor.errorMessage
       description: Error message from API, displayed in case of failure.
       type: string
     description: Deletes an assigned package license.

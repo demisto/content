@@ -34,6 +34,13 @@ class Client(BaseClient):
         self.token = self.get_access_token_()
         self.demisto_params = demisto_params
 
+        # used in non-CRUD commands, to allow collecting their result at the end of `IAM - Sync User` flow
+        self.command_details = {
+            'instanceName': demisto.callingContext.get('context', {}).get('IntegrationInstance'),
+            'brand': demisto.callingContext.get('context', {}).get('IntegrationInstance'),
+            'action': demisto.command().replace('-', '_').title().replace('_', '')
+        }
+
     def get_access_token_(self):
         params = {
             "client_id": self._conn_client_id,
@@ -127,7 +134,7 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix=uri,
-            data=data,
+            json_data=data,
             ok_codes=(201,)
         )
 
@@ -145,7 +152,8 @@ class Client(BaseClient):
         return self._http_request(
             method='DELETE',
             url_suffix=uri,
-            ok_codes=(204,)
+            ok_codes=(204,),
+            resp_type='response'
         )
 
     def assign_permission_set_license(self, data):
@@ -153,7 +161,7 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix=uri,
-            data=data,
+            json_data=data,
             ok_codes=(201,)
         )
 
@@ -171,7 +179,8 @@ class Client(BaseClient):
         return self._http_request(
             method='DELETE',
             url_suffix=uri,
-            ok_codes=(204,)
+            ok_codes=(204,),
+            resp_type='response'
         )
 
     def assign_package_license(self, data):
@@ -179,7 +188,7 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix=uri,
-            data=data,
+            json_data=data,
             ok_codes=(201,)
         )
 
@@ -206,8 +215,9 @@ class Client(BaseClient):
             method='POST',
             url_suffix=uri,
             params=params,
-            data=data,
-            ok_codes=(204,)
+            json_data=data,
+            ok_codes=(204,),
+            resp_type='response'
         )
 
     def get_user_isfrozen_status(self, user_id):
@@ -424,8 +434,12 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
                                             skip=True,
                                             skip_reason=error_message)
             else:
-                salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out,
-                                                              incident_type='User Profile - Disable')
+                # temporarily not using IAMUserProfile.map_object() until we add the `User Profile - Disable`
+                # incident type as a valid mapping type
+
+                # salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out,
+                #                                               incident_type='User Profile - Disable')
+                salesforce_user = demisto.mapObject(user_profile, mapper_out, 'User Profile - Disable')
                 salesforce_user['IsActive'] = False
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
                 res = client.update_user_profile(user_term=user_id, data=salesforce_user)
@@ -493,16 +507,18 @@ def assign_permission_set_command(client, args):
         }
 
     except Exception as e:
-        error_code, error_message = handle_exception(e, is_crud_command=False)
+        error_message, error_code, = handle_exception(e, is_crud_command=False)
         outputs = {
             'success': False,
             'errorCode': error_code,
             'errorMessage': error_message
         }
-
+    
+    outputs.update(client.command_details)
     return CommandResults(
         outputs=outputs,
-        outputs_prefix='SalesforceAssignPermissionSet'
+        outputs_prefix='IAM.Vendor',
+        outputs_key_field='PermissionSetAssign.id'
     )
 
 
@@ -515,16 +531,18 @@ def get_assigned_permission_set_command(client, args):
         }
 
     except Exception as e:
-        error_code, error_message = handle_exception(e, is_crud_command=False)
+        error_message, error_code, = handle_exception(e, is_crud_command=False)
         outputs = {
             'success': False,
             'errorCode': error_code,
             'errorMessage': error_message
         }
 
+    outputs.update(client.command_details)
     return CommandResults(
         outputs=outputs,
-        outputs_prefix='SalesforceGetAssignedPermissionSet'
+        outputs_prefix='IAM.Vendor',
+        outputs_key_field='PermissionSetAssignments.id'
     )
 
 
@@ -536,16 +554,17 @@ def delete_assigned_permission_set_command(client, args):
         }
 
     except Exception as e:
-        error_code, error_message = handle_exception(e, is_crud_command=False)
+        error_message, error_code, = handle_exception(e, is_crud_command=False)
         outputs = {
             'success': False,
             'errorCode': error_code,
             'errorMessage': error_message
         }
 
+    outputs.update(client.command_details)
     return CommandResults(
         outputs=outputs,
-        outputs_prefix='SalesforceDeleteAssignedPermissionSet'
+        outputs_prefix='IAM.Vendor'
     )
 
 
@@ -562,16 +581,18 @@ def assign_permission_set_license_command(client, args):
         }
 
     except Exception as e:
-        error_code, error_message = handle_exception(e, is_crud_command=False)
+        error_message, error_code, = handle_exception(e, is_crud_command=False)
         outputs = {
             'success': False,
             'errorCode': error_code,
             'errorMessage': error_message
         }
 
+    outputs.update(client.command_details)
     return CommandResults(
         outputs=outputs,
-        outputs_prefix='SalesforceAssignPermissionSetLicense'
+        outputs_prefix='IAM.Vendor',
+        outputs_key_field='PermissionSetLicenseAssign.id'
     )
 
 
@@ -584,16 +605,17 @@ def get_assigned_permission_set_license_command(client, args):
         }
 
     except Exception as e:
-        error_code, error_message = handle_exception(e, is_crud_command=False)
+        error_message, error_code, = handle_exception(e, is_crud_command=False)
         outputs = {
             'success': False,
             'errorCode': error_code,
             'errorMessage': error_message
         }
 
+    outputs.update(client.command_details)
     return CommandResults(
         outputs=outputs,
-        outputs_prefix='SalesforceGetAssignedPermissionSetLicense'
+        outputs_prefix='IAM.Vendor'
     )
 
 
@@ -606,16 +628,17 @@ def delete_assigned_permission_set_license_command(client, args):
         }
 
     except Exception as e:
-        error_code, error_message = handle_exception(e, is_crud_command=False)
+        error_message, error_code, = handle_exception(e, is_crud_command=False)
         outputs = {
             'success': False,
             'errorCode': error_code,
             'errorMessage': error_message
         }
 
+    outputs.update(client.command_details)
     return CommandResults(
         outputs=outputs,
-        outputs_prefix='SalesforceDeleteAssignedPermissionSetLicense'
+        outputs_prefix='IAM.Vendor'
     )
 
 
@@ -632,16 +655,18 @@ def assign_package_license_command(client, args):
         }
 
     except Exception as e:
-        error_code, error_message = handle_exception(e, is_crud_command=False)
+        error_message, error_code, = handle_exception(e, is_crud_command=False)
         outputs = {
             'success': False,
             'errorCode': error_code,
             'errorMessage': error_message
         }
 
+    outputs.update(client.command_details)
     return CommandResults(
         outputs=outputs,
-        outputs_prefix='SalesforceAssignPackageLicense'
+        outputs_prefix='IAM.Vendor',
+        outputs_key_field='PackageLicenseAssign.id'
     )
 
 
@@ -656,16 +681,17 @@ def get_assigned_package_license_command(client, args):
         }
 
     except Exception as e:
-        error_code, error_message = handle_exception(e, is_crud_command=False)
+        error_message, error_code, = handle_exception(e, is_crud_command=False)
         outputs = {
             'success': False,
             'errorCode': error_code,
             'errorMessage': error_message
         }
 
+    outputs.update(client.command_details)
     return CommandResults(
         outputs=outputs,
-        outputs_prefix='SalesforceGetAssignedPackageLicense'
+        outputs_prefix='IAM.Vendor'
     )
 
 
@@ -678,16 +704,17 @@ def delete_assigned_package_license_command(client, args):
         }
 
     except Exception as e:
-        error_code, error_message = handle_exception(e, is_crud_command=False)
+        error_message, error_code, = handle_exception(e, is_crud_command=False)
         outputs = {
             'success': False,
             'errorCode': error_code,
             'errorMessage': error_message
         }
 
+    outputs.update(client.command_details)
     return CommandResults(
         outputs=outputs,
-        outputs_prefix='SalesforceDeleteAssignedPackageLicense'
+        outputs_prefix='IAM.Vendor'
     )
 
 
@@ -702,16 +729,17 @@ def freeze_unfreeze_user_account_command(client, args, freeze=True):
         }
 
     except Exception as e:
-        error_code, error_message = handle_exception(e, is_crud_command=False)
+        error_message, error_code = handle_exception(e, is_crud_command=False)
         outputs = {
             'success': False,
             'errorCode': error_code,
             'errorMessage': error_message
         }
 
+    outputs.update(client.command_details)
     return CommandResults(
         outputs=outputs,
-        outputs_prefix=f'Salesforce{"Freeze" if freeze else "Unfreeze"}UserAccount'
+        outputs_prefix='IAM.Vendor'
     )
 
 
@@ -728,16 +756,17 @@ def get_user_isfrozen_status_command(client, args):
         }
 
     except Exception as e:
-        error_code, error_message = handle_exception(e, is_crud_command=False)
+        error_message, error_code = handle_exception(e, is_crud_command=False)
         outputs = {
             'success': False,
             'errorCode': error_code,
             'errorMessage': error_message
         }
 
+    outputs.update(client.command_details)
     return CommandResults(
         outputs=outputs,
-        outputs_prefix='SalesforceGetUserIsfrozenStatus'
+        outputs_prefix='IAM.Vendor'
     )
 
 
