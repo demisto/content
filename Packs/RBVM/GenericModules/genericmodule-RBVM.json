@@ -1,5 +1,6 @@
 {
-    "id": "rbvm",
+    "description": ":genericmodule-RBVM",
+    "id",: "rbvm",
     "version": -1,
     "name": "Risk Based Vulnerability Management",
     "fromVersion": "6.5.0",

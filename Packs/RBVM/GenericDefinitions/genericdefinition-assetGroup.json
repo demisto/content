@@ -3,5 +3,6 @@
     "fromVersion": "6.5.0",
     "id": "assetGroup",
     "name": "Asset Group",
-    "auditable": false
+    "auditable": false,
+    "description": "genericdefinition-assetGroup"
 }

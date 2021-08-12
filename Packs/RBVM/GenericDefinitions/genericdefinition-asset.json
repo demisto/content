@@ -3,5 +3,6 @@
     "fromVersion": "6.5.0",
     "id": "asset",
     "name": "Asset",
-    "auditable": false
+    "auditable": false,
+    "description": "genericdefinition-asset"
 }
