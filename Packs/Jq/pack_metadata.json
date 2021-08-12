@@ -1,0 +1,17 @@
+{
+    "name": "jq",
+    "description": "This is a transformer that allows you to query JSON using JQ. https://stedolan.github.io/jq/",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Clay Curtis",
+    "url": "",
+    "email": "",
+    "created": "2021-08-12T21:10:09Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "clay584"
+    ]
+}
