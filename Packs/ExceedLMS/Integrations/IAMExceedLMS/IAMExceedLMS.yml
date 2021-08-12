@@ -222,7 +222,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Disable an active user.
+    description: Disables an active user.
     execution: true
     name: iam-disable-user
     outputs:
