@@ -32,9 +32,9 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-description: Use the O365 File Management (Onedrive/Sharepoint/Teams) integration to enable your app to get authorized
-  access to files in OneDrive, SharePoint, and MS Teams across your entire organization.
-  This integration requires admin consent.
+description: Use the O365 File Management (Onedrive/Sharepoint/Teams) integration
+  to enable your app to get authorized access to files in OneDrive, SharePoint, and
+  MS Teams across your entire organization. This integration requires admin consent.
 display: O365 File Management (Onedrive/Sharepoint/Teams)
 name: Microsoft_Graph_Files
 script:
@@ -694,7 +694,7 @@ script:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
-  dockerimage: demisto/python_pancloud:1.0.0.14303
+  dockerimage: demisto/python_pancloud:1.0.0.23674
   feed: false
   isfetch: false
   longRunning: false
