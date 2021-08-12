@@ -60,6 +60,17 @@ configuration:
   options:
   - Case Per Anomaly
   - Case For All Anomalies
+- display: Fetch Incident By Case Status
+  name: fetch_incident_by_case_status
+  defaultvalue: ALL
+  type: 15
+  required: false
+  options:
+  - ALL
+  - OPEN
+  - REOPENED
+  - CLOSED
+  - RISK ACCEPTED
 script:
   script: ''
   type: python

@@ -125,13 +125,21 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
                                ) -> Tuple[Dict[str, int], List[dict]]:
     last_fetch = last_run.get('last_fetch', None)
     case_anomaly = demisto.params().get('fetch_incident_cases') or 'Case Per Anomaly'
+    case_status = demisto.params().get('fetch_incident_by_case_status') or 'ALL'
+    url_access_time = datetime.now().timestamp()
 
     if last_fetch is None:
         last_fetch = first_fetch_time
+        case_url = '/cases/history?startDate=' + (
+            datetime.fromtimestamp(cast(int, last_fetch)).replace(microsecond=0, second=0).strftime(
+                '%Y-%m-%d %H:%M:%S')) + '&endDate=' + (datetime.fromtimestamp(cast(int, url_access_time)).strftime(
+                    '%Y-%m-%d %H:%M:%S')) + '&status=' + case_status + '&timezone=UTC'
     else:
         last_fetch = int(last_fetch)
-
-    case_url = '/cases/OPEN/opendate/' + (datetime.fromtimestamp(cast(int, last_fetch)).strftime('%Y-%m-%d'))
+        case_url = '/cases/history?startDate=' + (
+            datetime.fromtimestamp(cast(int, last_fetch) + 1).strftime('%Y-%m-%d %H:%M:%S')) + '&endDate=' + (
+            datetime.fromtimestamp(cast(int, url_access_time)).strftime(
+                '%Y-%m-%d %H:%M:%S')) + '&status=' + case_status + '&timezone=UTC'
     latest_created_time = cast(int, last_fetch)
     incidents: List[Dict[str, Any]] = []
     page = 1
@@ -184,8 +192,8 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
                         'rawJSON': json.dumps(record)
                     }
                     incidents.append(inc)
-            if incident_created_time > latest_created_time:
-                latest_created_time = int(incident_created_time)
+
+            latest_created_time = int(url_access_time)
 
         next_run = {'last_fetch': latest_created_time}
     return next_run, incidents
@@ -195,13 +203,19 @@ def fetch_incidents_high_risk_users(client: Client, max_results: int, last_run: 
                                     first_fetch_time: Optional[int]
                                     ) -> Tuple[Dict[str, int], List[dict]]:
     last_fetch = last_run.get('last_fetch', None)
+    url_access_time = datetime.now().timestamp()
     if last_fetch is None:
         last_fetch = first_fetch_time
+        high_risk_user_url = '/users/highrisk/modifieddate?startDate=' + (
+            datetime.fromtimestamp(cast(int, last_fetch)).replace(microsecond=0, second=0).strftime(
+                '%Y-%m-%d %H:%M:%S')) + '&endDate=' + (datetime.fromtimestamp(cast(int, url_access_time)).strftime(
+                    '%Y-%m-%d %H:%M:%S')) + '&timezone=UTC'
     else:
         last_fetch = int(last_fetch)
-
-    high_risk_user_url = '/users/highrisk/modifieddate/' \
-                         + (datetime.fromtimestamp(cast(int, last_fetch)).strftime('%Y-%m-%d'))
+        high_risk_user_url = '/users/highrisk/modifieddate?startDate=' + (
+            datetime.fromtimestamp(cast(int, last_fetch) + 1).strftime('%Y-%m-%d %H:%M:%S')) + '&endDate=' + (
+            datetime.fromtimestamp(cast(int, url_access_time)).strftime(
+                '%Y-%m-%d %H:%M:%S')) + '&timezone=UTC'
 
     latest_created_time = cast(int, last_fetch)
     incidents: List[Dict[str, Any]] = []
@@ -225,8 +239,8 @@ def fetch_incidents_high_risk_users(client: Client, max_results: int, last_run: 
             }
             if record1.get('employeeId') is not None:
                 incidents.append(inc1)
-            if incident_created_time > latest_created_time:
-                latest_created_time = int(incident_created_time)
+
+            latest_created_time = int(url_access_time)
 
         next_run = {'last_fetch': latest_created_time}
     return next_run, incidents
