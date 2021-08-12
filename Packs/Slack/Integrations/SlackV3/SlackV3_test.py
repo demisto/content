@@ -1764,10 +1764,9 @@ async def test_get_user_by_id_async_user_exists(mocker):
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
 
     user_id = 'U012A3CDE'
-    integration_context = get_integration_context()
 
     # Arrange
-    user = await get_user_by_id_async(slack_sdk.WebClient, user_id, integration_context)
+    user = await get_user_by_id_async(slack_sdk.WebClient, user_id)
 
     # Assert
     assert slack_sdk.WebClient.api_call.call_count == 0
@@ -1791,10 +1790,9 @@ async def test_get_user_by_id_async_user_doesnt_exist(mocker):
     mocker.patch.object(socket_client, 'api_call', side_effect=api_call)
 
     user_id = 'XXXXXXX'
-    integration_context = {}
 
     # Arrange
-    user = await get_user_by_id_async(socket_client, user_id, integration_context)
+    user = await get_user_by_id_async(socket_client, user_id)
 
     # Assert
 
@@ -1847,7 +1845,6 @@ async def test_check_entitlement(mocker):
             'email': 'test@demisto.com'
         }
     }
-    integration_context = get_integration_context()
 
     message1 = 'hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@e093ba05-3f3c-402e-81a7-149db969be5d goodbye'
     message2 = 'hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@22 goodbye'
@@ -1859,14 +1856,14 @@ async def test_check_entitlement(mocker):
     message8 = 'hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@22_2 goodbye'
 
     # Arrange
-    result1 = await check_and_handle_entitlement(message1, user, '', integration_context)
-    result2 = await check_and_handle_entitlement(message2, user, '', integration_context)
-    result3 = await check_and_handle_entitlement(message3, user, '', integration_context)
-    result4 = await check_and_handle_entitlement(message4, user, '', integration_context)
-    result5 = await check_and_handle_entitlement(message5, user, '', integration_context)
-    result6 = await check_and_handle_entitlement(message6, user, '', integration_context)
-    result7 = await check_and_handle_entitlement(message7, user, '', integration_context)
-    result8 = await check_and_handle_entitlement(message8, user, '', integration_context)
+    result1 = await check_and_handle_entitlement(message1, user, '')
+    result2 = await check_and_handle_entitlement(message2, user, '')
+    result3 = await check_and_handle_entitlement(message3, user, '')
+    result4 = await check_and_handle_entitlement(message4, user, '')
+    result5 = await check_and_handle_entitlement(message5, user, '')
+    result6 = await check_and_handle_entitlement(message6, user, '')
+    result7 = await check_and_handle_entitlement(message7, user, '')
+    result8 = await check_and_handle_entitlement(message8, user, '')
 
     result1_args = demisto.handleEntitlementForUser.call_args_list[0][0]
     result2_args = demisto.handleEntitlementForUser.call_args_list[1][0]
@@ -1952,7 +1949,7 @@ async def test_check_entitlement_with_context(mocker):
     set_integration_context(integration_context)
 
     # Arrange
-    await check_and_handle_entitlement('hola', user, 'cool', integration_context)
+    await check_and_handle_entitlement('hola', user, 'cool')
 
     result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
 
