@@ -34,8 +34,8 @@ configuration:
   required: false
   defaultvalue:
   type: 15
-  additionalinfo: The options itemName - Fetch activities for this Drive item. The
-    format is "items/ITEM_ID". folderName- Fetch activities for this Drive folder
+  additionalinfo: itemName - Fetch activities for this drive item. The
+    format is "items/ITEM_ID". folderName - Fetch activities for this drive folder
     and all children and descendants. The format is "items/ITEM_ID".
   options:
   - itemName
@@ -66,7 +66,7 @@ configuration:
   defaultvalue: 10 minutes
   type: 0
   additionalinfo: The time range to consider for the initial data fetch in the format
-    <number> <unit> e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours).
+    <number> <unit> e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours.
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
@@ -99,7 +99,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the shared drive is hidden from the default view.
+      description: 'Whether the shared drive is hidden from the default view. Possible values: "True" and "False".'
       isArray: false
       name: hidden
       predefined:
@@ -129,7 +129,7 @@ script:
       description: The name of the shared drive.
       type: String
     - contextPath: GoogleDrive.Drive.hidden
-      description: Whether the shared drive is hidden from default view.
+      description: Whether the shared drive is hidden from the default view.
       type: Boolean
   - arguments:
     - default: false
@@ -145,8 +145,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The shared drive from which changes are returned (can be retrieved
-        using the `google-drive-drives-list` command)
+      description: The shared drive from which changes are returned. Can be retrieved
+        using the `google-drive-drives-list` command.
       isArray: false
       name: drive_id
       required: false
@@ -154,10 +154,10 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: "false"
-      description: Whether changes should include the file resource if the file is
+      description: 'Whether changes should include the file resource if the file is
         still accessible by the user at the time of the request, even when a file
         was removed from the list of changes and there will be no further change entries
-        for this file. Default is "false".
+        for this file. Possible values: "true" and "false".'
       isArray: false
       name: include_corpus_removals
       predefined:
@@ -168,8 +168,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: "false"
-      description: Whether both My Drive and shared drive items should be included
-        in the results. Default is "false".
+      description: 'Whether both My Drive and shared drive items should be included
+        in the results. Possible values: "true" and "false".'
       isArray: false
       name: include_items_from_all_drives
       predefined:
@@ -187,9 +187,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: "true"
-      description: Whether to include changes indicating that items have been removed
-        from the list of changes, for example by deletion or loss of access. Default
-        is "true".
+      description: 'Whether to include changes indicating that items have been removed
+        from the list of changes, for example by deletion or loss of access.
+        Possible values: "true" and "false".'
       isArray: false
       name: include_removed
       predefined:
@@ -200,7 +200,7 @@ script:
     - default: false
       defaultValue: 100
       description: The maximum number of changes to return per page. Acceptable values
-        are 1 to 1000, inclusive. Default is "100".
+        are 1 to 1000, inclusive. 
       isArray: false
       name: page_size
       required: false
@@ -208,9 +208,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: "false"
-      description: Whether to restrict the results to changes inside the My Drive
+      description: 'Whether to restrict the results to changes inside the My Drive
         hierarchy. This omits changes to files such as those in the Application Data
-        folder or shared files which have not been added to My Drive. Default is "false".
+        folder or shared files which have not been added to My Drive. Possible values: "true" and "false".'
       isArray: false
       name: restrict_to_my_drive
       predefined:
@@ -228,8 +228,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: "false"
-      description: Whether the requesting application supports both My Drives and
-        shared drives. Default is "false".
+      description: 'Whether the requesting application supports both My Drives and
+        shared drives. Possible values: "true" and "false".'
       isArray: false
       name: supports_all_drives
       predefined:
@@ -242,8 +242,7 @@ script:
       defaultValue: basic
       description: 'The paths of the fields you want to include in the response. Possible
         values are: "basic" (the response will include a default set of fields specific
-        to this method) and "advance" (you can use the value * to return all the fields).
-        Default is "basic".'
+        to this method) and "advance" (you can use the value * to return all the fields).'
       isArray: false
       name: fields
       predefined:
@@ -414,7 +413,7 @@ script:
       description: Whether this user is the requesting user.
       type: Boolean
     - contextPath: GoogleDrive.DriveChange.file.sharingUser.permissionId
-      description: The user's ID as visible in the Permission resources.
+      description: The user's ID as visible in Permission resources.
       type: String
     - contextPath: GoogleDrive.DriveChange.file.sharingUser.emailAddress
       description: The email address of the user. This may not be present in certain
@@ -433,7 +432,7 @@ script:
       description: Whether this user is the requesting user.
       type: Boolean
     - contextPath: GoogleDrive.DriveChange.file.owners.permissionId
-      description: The user's ID as visible in the Permission resources.
+      description: The user's ID as visible in Permission resources.
       type: String
     - contextPath: GoogleDrive.DriveChange.file.owners.emailAddress
       description: The email address of the user. This may not be present in certain
@@ -484,7 +483,7 @@ script:
         drive files.
       type: Boolean
     - contextPath: GoogleDrive.DriveChange.file.capabilities.canChangeCopyRequiresWriterPermission
-      description: Whether the current user can change the copyRequiresWriterPermission
+      description: Whether the current user can change the 'copy requires writer permission'
         restriction of this file.
       type: Boolean
     - contextPath: GoogleDrive.DriveChange.file.capabilities.canComment
@@ -843,11 +842,11 @@ script:
         drive.
       type: Boolean
     - contextPath: GoogleDrive.DriveChange.drive.capabilities.canChangeCopyRequiresWriterPermissionRestriction
-      description: Whether the current user can change the copyRequiresWriterPermission
+      description: Whether the current user can change the 'copy requires writer permission'
         restriction of this shared drive.
       type: Boolean
     - contextPath: GoogleDrive.DriveChange.drive.capabilities.canChangeDomainUsersOnlyRestriction
-      description: Whether the current user can change the domainUsersOnly restriction
+      description: Whether the current user can change the 'domain users only' restriction
         of this shared drive.
       type: Boolean
     - contextPath: GoogleDrive.DriveChange.drive.capabilities.canChangeDriveBackground
@@ -855,7 +854,7 @@ script:
         drive.
       type: Boolean
     - contextPath: GoogleDrive.DriveChange.drive.capabilities.canChangeDriveMembersOnlyRestriction
-      description: Whether the current user can change the driveMembersOnly restriction
+      description: Whether the current user can change the 'drive members only' restriction
         of this shared drive.
       type: Boolean
     - contextPath: GoogleDrive.DriveChange.drive.capabilities.canComment
@@ -908,7 +907,7 @@ script:
       description: The time at which the shared drive was created (RFC 3339 date-time).
       type: Date
     - contextPath: GoogleDrive.DriveChange.drive.hidden
-      description: Whether the shared drive is hidden from default view.
+      description: Whether the shared drive is hidden from the default view.
       type: Boolean
     - contextPath: GoogleDrive.DriveChange.drive.restrictions.adminManagedRestrictions
       description: Whether administrative privileges on this shared drive are required
@@ -1799,9 +1798,9 @@ script:
       required: false
       isArray: false
     - name: use_domain_admin_access
-      description: "Issue the request as a domain administrator; if set to true, then\
+      description: "Issue the request as a domain administrator. If set to true,\
         \ all shared drives of the domain in which the requester is an administrator\
-        \ are returned. (Default: false)"
+        \ are returned."
       required: false
       isArray: false
       defaultValue: "false"
@@ -1825,11 +1824,11 @@ script:
         drive.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.capabilities.canChangeCopyRequiresWriterPermissionRestriction
-      description: Whether the current user can change the copyRequiresWriterPermission
+      description: Whether the current user can change the 'copy requires writer permission'
         restriction of this shared drive.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.capabilities.canChangeDomainUsersOnlyRestriction
-      description: Whether the current user can change the domainUsersOnly restriction
+      description: Whether the current user can change the 'domain users only' restriction
         of this shared drive.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.capabilities.canChangeDriveBackground
@@ -1837,7 +1836,7 @@ script:
         drive.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.capabilities.canChangeDriveMembersOnlyRestriction
-      description: Whether the current user can change the driveMembersOnly restriction
+      description: Whether the current user can change the 'drive members only' restriction
         of this shared drive.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.capabilities.canComment
@@ -1890,7 +1889,7 @@ script:
       description: The time at which the shared drive was created (RFC 3339 date-time).
       type: Date
     - contextPath: GoogleDrive.Drive.Drive.hidden
-      description: Whether the shared drive is hidden from default view.
+      description: Whether the shared drive is hidden from the default view.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.restrictions.adminManagedRestrictions
       description: Whether administrative privileges on this shared drive are required
@@ -1917,9 +1916,9 @@ script:
     deprecated: false
     arguments:
     - name: use_domain_admin_access
-      description: "Issue the request as a domain administrator; if set to true, then\
+      description: "Issue the request as a domain administrator. If set to true,\
         \ all shared drives of the domain in which the requester is an administrator\
-        \ are returned. (Default: false)"
+        \ are returned."
       required: false
       isArray: false
       defaultValue: "false"
@@ -1928,8 +1927,8 @@ script:
       required: false
       isArray: false
     - name: drive_id
-      description: id of the shared drive (can be retrieved using the `google-drive-drives-list`
-        command)
+      description: ID of the shared drive. Can be retrieved using the `google-drive-drives-list`
+        command.
       required: false
       isArray: false
     - name: fields
@@ -1953,11 +1952,11 @@ script:
         drive.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.capabilities.canChangeCopyRequiresWriterPermissionRestriction
-      description: Whether the current user can change the copyRequiresWriterPermission
+      description: Whether the current user can change the 'copy requires writer permission'
         restriction of this shared drive.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.capabilities.canChangeDomainUsersOnlyRestriction
-      description: Whether the current user can change the domainUsersOnly restriction
+      description: Whether the current user can change the 'domain users only' restriction
         of this shared drive.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.capabilities.canChangeDriveBackground
@@ -1965,7 +1964,7 @@ script:
         drive.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.capabilities.canChangeDriveMembersOnlyRestriction
-      description: Whether the current user can change the driveMembersOnly restriction
+      description: Whether the current user can change the 'drive members only' restriction
         of this shared drive.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.capabilities.canComment
@@ -1985,7 +1984,7 @@ script:
       description: Whether the current user can download files in this shared drive.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.capabilities.canEdit
-      description: Whether the current user can edit files in this shared drive
+      description: Whether the current user can edit files in this shared drive.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.capabilities.canListChildren
       description: Whether the current user can list the children of folders in this
@@ -2018,7 +2017,7 @@ script:
       description: The time at which the shared drive was created (RFC 3339 date-time).
       type: Date
     - contextPath: GoogleDrive.Drive.Drive.hidden
-      description: Whether the shared drive is hidden from default view.
+      description: Whether the shared drive is hidden from the default view.
       type: Boolean
     - contextPath: GoogleDrive.Drive.Drive.restrictions.adminManagedRestrictions
       description: Whether administrative privileges on this shared drive are required
@@ -2046,7 +2045,7 @@ script:
     arguments:
     - name: page_size
       description: "Maximum number of shared drives to return. Acceptable values are\
-        \ 1 to 100, inclusive. (Default: 100)"
+        \ 1 to 100, inclusive."
       required: false
       isArray: false
       defaultValue: "100"
@@ -2106,8 +2105,8 @@ script:
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the requested file (can be retrieved using the `google-drive-files-list`
-        command)
+      description: ID of the requested file. Can be retrieved using the `google-drive-files-list`
+        command.
       required: false
       isArray: false
     - name: user_id
@@ -2139,12 +2138,12 @@ script:
         drive files.
       type: Boolean
     - contextPath: GoogleDrive.File.File.capabilities.canChangeCopyRequiresWriterPermission
-      description: Whether the current user can change the copyRequiresWriterPermission
+      description: Whether the current user can change the 'copy requires writer permission'
         restriction of this file.
       type: Boolean
     - contextPath: GoogleDrive.File.File.capabilities.canChangeSecurityUpdateEnabled
-      description: Whether the current user can change the securityUpdateEnabled field
-        on link share metadata.
+      description: Whether the current user can change the 'security update enabled' field
+        on link shared metadata.
       type: Boolean
     - contextPath: GoogleDrive.File.File.capabilities.canComment
       description: Whether the current user can comment on this file.
@@ -2253,13 +2252,13 @@ script:
       description: A link to the user's profile photo, if available.
       type: String
     - contextPath: GoogleDrive.File.File.linkShareMetadata.securityUpdateEligible
-      description: Whether the file is eligible for security update.
+      description: Whether the file is eligible for a security update.
       type: Boolean
     - contextPath: GoogleDrive.File.File.linkShareMetadata.securityUpdateEnabled
       description: Whether the security update is enabled for this file.
       type: Boolean
     - contextPath: GoogleDrive.File.File.mimeType
-      description: he MIME type of the file.
+      description: The MIME type of the file.
       type: String
     - contextPath: GoogleDrive.File.File.modifiedByMe
       description: Whether the file has been modified by this user.
@@ -2302,7 +2301,7 @@ script:
       description: List of permission IDs for users with access to this file.
       type: String
     - contextPath: GoogleDrive.File.File.permissions.deleted
-      description: Whether the permission was deleted
+      description: Whether the permission was deleted.
       type: Boolean
     - contextPath: GoogleDrive.File.File.permissions.displayName
       description: A plain text displayable name for this user.
@@ -2332,7 +2331,7 @@ script:
       type: Boolean
     - contextPath: GoogleDrive.File.File.spaces
       description: The list of spaces which contain the file. The currently supported
-        values are 'drive', 'appDataFolder' and 'photos'.
+        values are 'drive', 'appDataFolder', and 'photos'.
       type: String
     - contextPath: GoogleDrive.File.File.starred
       description: Whether the user has starred the file.
@@ -2392,10 +2391,10 @@ script:
     - contextPath: GoogleDrive.File.File.name
       description: The name of the file. This is not necessarily unique within a folder.
         Note that for immutable items such as the top level folders of shared drives,
-        My Drive root folder, and Application Data folder the name is constant.
+        My Drive root folder, and Application Data folder, the name is constant.
       type: String
     - contextPath: GoogleDrive.File.File.mimeType
-      description: he MIME type of the file.
+      description: The MIME type of the file.
       type: String
     - contextPath: GoogleDrive.File.File.starred
       description: Whether the user has starred the file.
@@ -2413,7 +2412,7 @@ script:
       type: String
     - contextPath: GoogleDrive.File.File.spaces
       description: The list of spaces which contain the file. The currently supported
-        values are 'drive', 'appDataFolder' and 'photos'.
+        values are 'drive', 'appDataFolder', and 'photos'.
       type: String
     - contextPath: GoogleDrive.File.File.version
       description: A monotonically increasing version number for the file. This reflects
@@ -2493,12 +2492,12 @@ script:
         drive files.
       type: Boolean
     - contextPath: GoogleDrive.File.File.capabilities.canChangeCopyRequiresWriterPermission
-      description: Whether the current user can change the copyRequiresWriterPermission
+      description: Whether the current user can change the 'copy requires writer permission'
         restriction of this file.
       type: Boolean
     - contextPath: GoogleDrive.File.File.capabilities.canChangeSecurityUpdateEnabled
-      description: Whether the current user can change the securityUpdateEnabled field
-        on link share metadata.
+      description: Whether the current user can change the 'security update enabled' field
+        on link shared metadata.
       type: Boolean
     - contextPath: GoogleDrive.File.File.capabilities.canComment
       description: Whether the current user can comment on this file.
@@ -2608,7 +2607,7 @@ script:
       description: List of permission IDs for users with access to this file.
       type: String
     - contextPath: GoogleDrive.File.File.permissions.deleted
-      description: Whether the permission was deleted
+      description: Whether the permission was deleted.
       type: Boolean
     - contextPath: GoogleDrive.File.File.permissions.displayName
       description: A plain text displayable name for this user.
@@ -2633,8 +2632,8 @@ script:
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the requested file (can be retrieved using the `google-drive-files-list`
-        command)
+      description: ID of the requested file. Can be retrieved using the `google-drive-files-list`
+        command.
       required: false
       isArray: false
     - name: file_name
@@ -2682,12 +2681,12 @@ script:
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the file to replace (can be retrieved using the `google-drive-files-list`
-        command)
+      description: ID of the file to replace. Can be retrieved using the `google-drive-files-list`
+        command.
       required: false
       isArray: false
     - name: entry_id
-      description: The file's Entry ID.
+      description: The file's entry ID.
       required: false
       isArray: false
     outputs:
@@ -2697,10 +2696,10 @@ script:
     - contextPath: GoogleDrive.File.File.name
       description: The name of the file. This is not necessarily unique within a folder.
         Note that for immutable items such as the top level folders of shared drives,
-        My Drive root folder, and Application Data folder the name is constant.
+        My Drive root folder, and Application Data folder, the name is constant.
       type: String
     - contextPath: GoogleDrive.File.File.mimeType
-      description: he MIME type of the file.
+      description: The MIME type of the file.
       type: String
     - contextPath: GoogleDrive.File.File.starred
       description: Whether the user has starred the file.
@@ -2718,7 +2717,7 @@ script:
       type: String
     - contextPath: GoogleDrive.File.File.spaces
       description: The list of spaces which contain the file. The currently supported
-        values are 'drive', 'appDataFolder' and 'photos'.
+        values are 'drive', 'appDataFolder', and 'photos'.
       type: String
     - contextPath: GoogleDrive.File.File.version
       description: A monotonically increasing version number for the file. This reflects
@@ -2798,12 +2797,12 @@ script:
         drive files.
       type: Boolean
     - contextPath: GoogleDrive.File.File.capabilities.canChangeCopyRequiresWriterPermission
-      description: Whether the current user can change the copyRequiresWriterPermission
+      description: Whether the current user can change the 'copy requires writer permission'
         restriction of this file.
       type: Boolean
     - contextPath: GoogleDrive.File.File.capabilities.canChangeSecurityUpdateEnabled
-      description: Whether the current user can change the securityUpdateEnabled field
-        on link share metadata.
+      description: Whether the current user can change the 'security update enabled' field
+        on link shared metadata.
       type: Boolean
     - contextPath: GoogleDrive.File.File.capabilities.canComment
       description: Whether the current user can comment on this file.
@@ -2913,7 +2912,7 @@ script:
       description: List of permission IDs for users with access to this file.
       type: String
     - contextPath: GoogleDrive.File.File.permissions.deleted
-      description: Whether the permission was deleted
+      description: Whether the permission was deleted.
       type: Boolean
     - contextPath: GoogleDrive.File.File.permissions.displayName
       description: A plain text displayable name for this user.
@@ -2941,8 +2940,8 @@ script:
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the requested file (can be retrieved using the `google-drive-files-list`
-        command)
+      description: ID of the requested file. Can be retrieved using the `google-drive-files-list`
+        command.
       required: false
       isArray: false
     - name: user_id
@@ -2952,8 +2951,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: "false"
-      description: Whether the requesting application supports both My Drives and
-        shared drives. Default is "false".
+      description: 'Whether the requesting application supports both My Drives and
+        shared drives. Possible values: "true" and "false".'
       isArray: false
       name: supports_all_drives
       predefined:
@@ -2963,15 +2962,15 @@ script:
       secret: false
     outputs:
     - contextPath: GoogleDrive.File.File.id
-      description: id of the deleted file.
+      description: ID of the deleted file.
       type: String
   - name: google-drive-file-permissions-list
     description: Lists a file's or shared drive's permissions.
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the requested file (can be retrieved using the `google-drive-files-list`
-        command)
+      description: ID of the requested file. Can be retrieved using the `google-drive-files-list`
+        command.
       required: false
       isArray: false
     - name: user_id
@@ -2980,7 +2979,7 @@ script:
       isArray: false
     - name: page_size
       description: "Maximum number of shared drives to return. Acceptable values are\
-        \ 1 to 100, inclusive. (Default: 100)"
+        \ 1 to 100, inclusive."
       required: false
       isArray: false
       defaultValue: "100"
@@ -2991,8 +2990,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: "false"
-      description: Whether the requesting application supports both My Drives and
-        shared drives. Default is "false".
+      description: 'Whether the requesting application supports both My Drives and
+        shared drives. Possible values: "true" and "false".'
       isArray: false
       name: supports_all_drives
       predefined:
@@ -3029,8 +3028,8 @@ script:
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the requested file (can be retrieved using the `google-drive-files-list`
-        command)
+      description: ID of the requested file. Can be retrieved using the `google-drive-files-list`
+        command.
       required: false
       isArray: false
     - name: user_id
@@ -3040,7 +3039,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: "false"
-      description: Whether a confirmation email will be sent. Default is true.
+      description: 'Whether a confirmation email will be sent. Possible values: "true" and "false".'
       isArray: false
       name: send_notification_email
       predefined:
@@ -3051,7 +3050,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: "reader"
-      description: The role granted by this permission. Default is reader.
+      description: 'The role granted by this permission. Possible values: "owner", "organizer", "fileOrganizer", "writer", "commenter", and "reader".'
       isArray: false
       name: role
       predefined:
@@ -3066,10 +3065,10 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: "anyone"
-      description: The type of the grantee. When creating a permission, if type is
+      description: 'The type of the grantee. When creating a permission, if type is
         user or group, you must provide an emailAddress for the user or group. When
-        type is domain, you must provide a domain. There isn't extra information required
-        for a anyone type. Default is anyone.
+        type is domain, you must provide a domain. No extra information is required
+        for an anyone type. Possible values: "user", "group", "domain", and "anyone".'
       isArray: false
       name: type
       predefined:
@@ -3117,8 +3116,8 @@ script:
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the requested file (can be retrieved using the `google-drive-files-list`
-        command)
+      description: ID of the requested file. Can be retrieved using the `google-drive-files-list`
+        command.
       required: false
       isArray: false
     - name: user_id
@@ -3130,14 +3129,14 @@ script:
       required: false
       isArray: false
     - name: permission_id
-      description: The ID of the permission (can be retrieved using the `google-drive-file-permissions-list`
-        command)
+      description: The ID of the permission. Can be retrieved using the `google-drive-file-permissions-list`
+        command.
       required: false
       isArray: false
     - auto: PREDEFINED
       default: false
       defaultValue: "reader"
-      description: The role granted by this permission. Default is reader.
+      description: 'The role granted by this permission. Possible values: "owner", "organizer", "fileOrganizer", "writer", "commenter", and "reader".'
       isArray: false
       name: role
       predefined:
@@ -3178,8 +3177,8 @@ script:
     deprecated: false
     arguments:
     - name: file_id
-      description: id of the requested file (can be retrieved using the `google-drive-files-list`
-        command)
+      description: ID of the requested file. Can be retrieved using the `google-drive-files-list`
+        command.
       required: false
       isArray: false
     - name: user_id
@@ -3187,8 +3186,8 @@ script:
       required: false
       isArray: false
     - name: permission_id
-      description: The ID of the permission (can be retrieved using the `google-drive-file-permissions-list`
-        command)
+      description: The ID of the permission. Can be retrieved using the `google-drive-file-permissions-list`
+        command.
       required: false
       isArray: false
   dockerimage: demisto/googleapi-python3:1.0.0.23531
