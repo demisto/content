@@ -1406,7 +1406,7 @@ def rawToDict(raw):
             # search for the pattern: `key="value", `
             # (the double quotes are optional)
             # we append `, ` to the end of the string to catch the last value
-            raw_response = re.findall(r'(\S+=("?)[\S\s]+?\2), ', raw + ', ')  
+            raw_response = re.findall(r'(\S+=("?)[\S\s]+?\2), ', raw + ', ')
             for key_val, _ in raw_response:
                 key_value = key_val.replace('"', '').strip()
                 if '=' in key_value:
