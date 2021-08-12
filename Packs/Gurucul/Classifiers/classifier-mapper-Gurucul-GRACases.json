@@ -177,7 +177,16 @@
                         "transformers": []
                     },
                     "simple": ""
-                }
+                },
+                "Gra Weblink": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "graweblink",
+						"transformers": []
+					},
+					"simple": ""
+				}
             }
         }
     },
