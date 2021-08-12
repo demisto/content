@@ -3,7 +3,6 @@ from CommonServerPython import *
 from IAMApiModule import *
 import traceback
 import jwt
-import datetime
 import urllib3
 
 # Disable insecure warnings
@@ -189,8 +188,8 @@ def get_jwt(api_key: str, api_secret: str) -> str:
     """
     Encode the JWT token given the api ket and secret
     """
-    tt = datetime.datetime.now()
-    expire_time = int(tt.strftime('%s')) + 5000
+    tt = time.time()
+    expire_time = int(tt) + 5000
     payload = {
         'iss': api_key,
         'exp': expire_time
