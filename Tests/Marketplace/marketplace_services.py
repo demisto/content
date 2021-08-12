@@ -23,9 +23,9 @@ import yaml
 from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
+import Tests.Marketplace.release_notes_bc_calculator as rn_bc_calculator
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PackTags, PackIgnored, Changelog
-import Tests.Marketplace.release_notes_bc_calculator as rn_bc_calculator
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 
 
@@ -363,6 +363,7 @@ class Pack(object):
             list: list of sorted integration images
 
         """
+
         def sort_by_name(integration_image: dict):
             return integration_image.get('name', '')
 
@@ -672,7 +673,7 @@ class Pack(object):
             version_display_name if version_display_name else changelog_entry[Changelog.DISPLAY_NAME].split('-')[0]
         build_number_with_prefix = \
             build_number_with_prefix if build_number_with_prefix else \
-            changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
+                changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
 
         changelog_entry[Changelog.RELEASE_NOTES] = release_notes if release_notes else changelog_entry[
             Changelog.RELEASE_NOTES]
@@ -2372,6 +2373,7 @@ class Pack(object):
             os.path.basename(file_path).startswith('integration'),
             os.path.basename(file_path).endswith('.yml')
         ])
+
 
 # HELPER FUNCTIONS
 
