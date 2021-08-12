@@ -4,9 +4,11 @@ import pytest
 
 import demistomock as demisto
 from CommonServerPython import CommandResults
-from GitHub import main, BASE_URL, list_branch_pull_requests, list_all_projects_command, \
+from GitHub import main, list_branch_pull_requests, list_all_projects_command, \
     add_issue_to_project_board_command, get_path_data
 import GitHub
+
+REGULAR_BASE_URL = 'https://api.github.com'
 
 MOCK_PARAMS = {
     'user': 'test',
@@ -22,7 +24,7 @@ def load_test_data(json_path):
 
 def test_search_code(requests_mock, mocker):
     raw_response = load_test_data('./test_data/search_code_response.json')
-    requests_mock.get(f'{BASE_URL}/search/code?q=create_artifacts%2borg%3ademisto&page=0&per_page=10',
+    requests_mock.get(f'{REGULAR_BASE_URL}/search/code?q=create_artifacts%2borg%3ademisto&page=0&per_page=10',
                       json=raw_response)
 
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
@@ -184,7 +186,7 @@ def test_list_all_projects_command(mocker, requests_mock):
         Assert that only the filtered projects are returned.
     """
     mocker.patch.object(demisto, 'args', return_value={'project_filter': '22,24'})
-    requests_mock.get(f'{BASE_URL}/projects?per_page=100', json=PROJECTS_TEST)
+    requests_mock.get(f'{REGULAR_BASE_URL}/projects?per_page=100', json=PROJECTS_TEST)
     mocker.patch('GitHub.get_project_details', side_effect=get_project_d)
     mocker_output = mocker.patch('GitHub.return_results')
 
@@ -219,7 +221,7 @@ def test_add_issue_to_project_board_command(mocker, requests_mock, response_code
         Assert the message returned is as expected.
     """
     mocker.patch.object(demisto, 'args', return_value={'column_id': 'column_id', 'issue_unique_id': '11111'})
-    requests_mock.post(f'{BASE_URL}/projects/columns/column_id/cards', status_code=response_code,
+    requests_mock.post(f'{REGULAR_BASE_URL}/projects/columns/column_id/cards', status_code=response_code,
                        content=response_content)
     mocker_results = mocker.patch(mocked_return)
 
@@ -257,3 +259,14 @@ def test_get_path_data_command(requests_mock, mocker):
     assert command_results.outputs_key_field == 'url'
     assert command_results.raw_response == test_get_file_data_command_response['response']
     assert command_results.outputs == test_get_file_data_command_response['expected']
+
+
+def test_url_parameter_value(mocker):
+    mocker.patch.object(demisto, 'params', return_value={'url': 'example.com'})
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch('GitHub.http_request', return_value={})
+    mock_results = mocker.patch('GitHub.test_module')
+
+    main()
+
+    assert mock_results
