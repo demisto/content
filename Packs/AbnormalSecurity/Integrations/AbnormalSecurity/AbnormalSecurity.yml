@@ -110,7 +110,7 @@ script:
   - arguments:
       - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ
           lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently
-          the only the key `lastReportedTime` is supported for `/abusecampaigns`. At
+          only the key `lastReportedTime` is supported for `/abusecampaigns`. At
           least one of `gte`/`lte` must be specified, with a datetime string following
           the `YYYY-MM-DDTHH:MM:SSZ` format. Do note that provided filter time is in
           UTC.
@@ -138,13 +138,13 @@ script:
     description: Get a list of campaigns submitted to Abuse Mailbox
     name: abnormal-security-list-abuse-mailbox-campaigns
     outputs:
-      - contextPath: AbnormalSecurity.inline_response_200_3.campaigns.campaignId
+      - contextPath: AbnormalSecurity.AbuseCampaigns.campaigns.campaignId
         description: An id which maps to an abuse campaign.
         type: String
-      - contextPath: AbnormalSecurity.inline_response_200_3.pageNumber
+      - contextPath: AbnormalSecurity.AbuseCampaigns.pageNumber
         description: The current page number.
         type: Number
-      - contextPath: AbnormalSecurity.inline_response_200_3.nextPageNumber
+      - contextPath: AbnormalSecurity.AbuseCampaigns.nextPageNumber
         description: The next page number.
         type: Number
   - arguments:

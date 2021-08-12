@@ -246,7 +246,7 @@ def test_get_a_list_of_campaigns_submitted_to_abuse_mailbox_command(mocker):
     assert results.outputs.get('campaigns')[0].get('campaignId') == 'fff51768-c446-34e1-97a8-9802c29c3ebd'
     assert results.outputs.get('pageNumber', 0) > 0
     assert results.outputs.get('nextPageNumber') == results.outputs.get('pageNumber', 0) + 1
-    assert results.outputs_prefix == 'AbnormalSecurity.inline_response_200_3'
+    assert results.outputs_prefix == 'AbnormalSecurity.AbuseCampaigns'
 
 
 def test_get_details_of_an_abuse_mailbox_campaign_command(mocker):
@@ -310,7 +310,7 @@ def test_get_employee_login_information_for_last_30_days_in_csv_format_command(m
 def test_provides_the_analysis_and_timeline_details_of_a_case_command(mocker):
     """
         When:
-            - Retrieving details of an abuse mailbox campaign reported
+            - Retrieving anaylsis and timeline detail of a case
         Then
             - Assert the context data is as expected.
             - Assert output prefix data is as expected

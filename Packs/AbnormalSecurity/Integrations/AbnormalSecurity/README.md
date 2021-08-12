@@ -138,10 +138,26 @@ Download data from Threat Log in .csv format
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!abnormal-security-download-threat-log-csv filter="gte 2020-12-01T01:01:01Z"```
 
-#### Human Readable Output
-
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "1675@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
+        "Extension": "csv",
+        "Info": "csv",
+        "MD5": "11afb4879c5026e25bd868dfcf23e811",
+        "Name": "threat_log.csv",
+        "SHA1": "345ea1d24b52c96baf6b0e4d892d13d4efcf666d",
+        "SHA256": "12620e0f576f4d74603b1f542919a3e5199e61435ffd99bcd68c26e02ed9c693",
+        "SHA512": "f0e788981ce70d9668100ae3f93d1f28660f0d8a9dfda02284a70f08ac14ca5a356872284f460d8fb7970791e314e0db4a6c84b0032c35046efce62368a00da5",
+        "SSDeep": "12:uR2xCC56aHoW2IY3zg05Eg05ng05Eg05V:uROjHn2IY3v5i5T5i5V",
+        "Size": 484,
+        "Type": "ASCII text, with CRLF line terminators"
+    }
+}
+```
 
 
 ### abnormal-security-list-abuse-mailbox-campaigns
@@ -167,9 +183,9 @@ Get a list of campaigns submitted to Abuse Mailbox
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.inline_response_200_3.campaigns.campaignId | String | An id which maps to an abuse campaign. | 
-| AbnormalSecurity.inline_response_200_3.pageNumber | Number | The current page number. | 
-| AbnormalSecurity.inline_response_200_3.nextPageNumber | Number | The next page number. | 
+| AbnormalSecurity.AbuseCampaigns.campaigns.campaignId | String | An id which maps to an abuse campaign. | 
+| AbnormalSecurity.AbuseCampaigns.pageNumber | Number | The current page number. | 
+| AbnormalSecurity.AbuseCampaigns.nextPageNumber | Number | The next page number. | 
 
 
 #### Command Example
@@ -729,9 +745,6 @@ There is no context output for this command.
 }
 ```
 
-#### Human Readable Output
-
-
 
 ### abnormal-security-get-latest-threat-intel-feed
 ***
@@ -773,10 +786,6 @@ There is no context output for this command.
     }
 }
 ```
-
-#### Human Readable Output
-
-
 
 ### abnormal-security-manage-threat
 ***
