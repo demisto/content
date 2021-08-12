@@ -94,7 +94,7 @@ class Client(BaseClient):
         if len(search_records) > 0:
             for search_record in search_records:
                 user_id = search_record.get('Id')
-                active = search_record.get('IsActive') == 'true'
+                active = search_record.get('IsActive')
 
         return user_id, active
 
@@ -298,7 +298,7 @@ def get_user_command(client, args, mapper_in):
                                         username=salesforce_user.get('Username'),
                                         action=IAMActions.GET_USER,
                                         details=salesforce_user,
-                                        active=True if salesforce_user.get('IsActive') == "true" else False)
+                                        active=salesforce_user.get('IsActive'))
 
         return iam_user_profile
 
