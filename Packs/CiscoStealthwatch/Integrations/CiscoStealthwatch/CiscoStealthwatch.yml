@@ -243,10 +243,10 @@ script:
       description: Within the byte count of the hourly traffic summary for a single host group (called tag on the API).
       type: str
     - contextPath: CiscoStealthwatch.TagHourlyTraffic.tenant_id
-      description: The tenant ID of the hourly traffic summary for a single host group (called tag on the API). 
+      description: The tenant ID of the hourly traffic summary for a single host group (called tag on the API).
       type: str
     - contextPath: CiscoStealthwatch.TagHourlyTraffic.tag_id
-      description: The tag ID of the hourly traffic summary for a single host group (called tag on the API). 
+      description: The tag ID of the hourly traffic summary for a single host group (called tag on the API).
       type: str
   - arguments:
     - default: false
@@ -314,7 +314,7 @@ script:
     - contextPath: CiscoStealthwatch.SecurityEventStatus.searchJobStatus
       description: The status of the search job for the security event.
       type: str
-    - contextPath: 'CiscoStealthwatch.SecurityEventStatus.percentComplete '
+    - contextPath: 'CiscoStealthwatch.SecurityEventStatus.percentComplete'
       description: The percent of the security event that is completed.
       type: str
   - arguments:
@@ -397,7 +397,7 @@ script:
     - contextPath: CiscoStealthwatch.SecurityEventResults.hitCount
       description: The hit count of the security event.
       type: str
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
   longRunning: false
