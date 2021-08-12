@@ -2196,9 +2196,461 @@ script:
       - contextPath: CrowdStrike.HostGroup.modified_timestamp
         description: The integration name of the endpoint vendor.
         type: String
-      - contextPath: Endpoint.OSVersion
-        description: The endpoint's operation system version.
-        type: String
+      - arguments:
+          - default: false
+            description: The host group id
+            isArray: false
+            name: host_group_id
+            required: true
+            secret: false
+          - default: false
+            description: The name of the host
+            isArray: false
+            name: name
+            required: false
+            secret: false
+          - default: true
+            description: Can be 'static' or 'dynamic'
+            isArray: false
+            name: group_type
+            required: false
+            secret: false
+          - default: false
+            description: Description of the host
+            isArray: false
+            name: description
+            required: false
+            secret: false
+          - default: false
+            description: The assignmet rule
+            isArray: false
+            name: assignment_rule
+            required: false
+            secret: false
+        deprecated: false
+        description: Update a host group
+        execution: false
+        name: cs-falcon-update-host-group
+        outputs:
+          - contextPath: CrowdStrike.HostGroup.id
+            description: The id of the host group.
+            type: String
+          - contextPath: CrowdStrike.HostGroup.group_type
+            description: The group type of the host group
+            type: String
+          - contextPath: CrowdStrike.HostGroup.name
+            description: The name of the hostgroup
+            type: String
+          - contextPath: CrowdStrike.HostGroup.description
+            description: The description of the hostgroup
+            type: String
+          - contextPath: CrowdStrike.HostGroup.created_by
+            description: The created client of the host group.
+            type: String
+          - contextPath: CrowdStrike.HostGroup.created_timestamp
+            description: The timestamp of created hostgroup
+            type: String
+          - contextPath: CrowdStrike.HostGroup.modified_by
+            description: The client that modified the host group.
+            type: String
+          - contextPath: CrowdStrike.HostGroup.modified_timestamp
+            description: The integration name of the endpoint vendor.
+            type: String
+      - arguments:
+          - default: false
+            description: The host group id
+            isArray: false
+            name: host_group_id
+            required: false
+            secret: false
+          - default: false
+            description: Filter the result
+            isArray: false
+            name: filter
+            required: false
+            secret: false
+          - default: true
+            description: Page offset
+            isArray: false
+            name: offset
+            required: false
+            secret: false
+          - default: true
+            defaultValue: 50
+            description: Number of result in a page
+            isArray: false
+            name: limit
+            required: false
+            secret: false
+        deprecated: false
+        description: Get the list of host group members
+        execution: false
+        name: cs-falcon-list-host-group-members
+        outputs:
+          - contextPath: CrowdStrike.HostGroupMember.device_id
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.cid
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.agent_load_flags
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.agent_local_time
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.agent_version
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.bios_manufacturer
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.bios_version
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.build_number
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.config_id_base
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.config_id_build
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.config_id_platform
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.cpu_signature
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.external_ip
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.mac_address
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.instance_id
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.service_provider
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.service_provider_account_id
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.hostname
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.first_seen
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.last_seen
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.local_ip
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.major_version
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.minor_version
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.os_version
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.platform_id
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.platform_name
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.policies.policy_type
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.policies.policy_id
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.policies.applied
+            description: ''
+            type: Boolean
+          - contextPath: CrowdStrike.HostGroupMember.policies.settings_hash
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.policies.assigned_date
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.policies.applied_date
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.policies.rule_groups
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.reduced_functionality_mode
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.prevention.policy_type
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.prevention.policy_id
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.prevention.applied
+            description: ''
+            type: Boolean
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.prevention.settings_hash
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.prevention.assigned_date
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.prevention.applied_date
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.prevention.rule_groups
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.sensor_update.policy_type
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.sensor_update.policy_id
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.sensor_update.applied
+            description: ''
+            type: Boolean
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.sensor_update.settings_hash
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.sensor_update.assigned_date
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.sensor_update.applied_date
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.sensor_update.uninstall_protection
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.device_control.policy_type
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.device_control.policy_id
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.device_control.applied
+            description: ''
+            type: Boolean
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.device_control.assigned_date
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.device_control.applied_date
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.global_config.policy_type
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.global_config.policy_id
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.global_config.applied
+            description: ''
+            type: Boolean
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.global_config.settings_hash
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.global_config.assigned_date
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.global_config.applied_date
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.remote_response.policy_type
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.remote_response.policy_id
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.remote_response.applied
+            description: ''
+            type: Boolean
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.remote_response.settings_hash
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.remote_response.assigned_date
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.remote_response.applied_date
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.firewall.policy_type
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.firewall.policy_id
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.firewall.applied
+            description: ''
+            type: Boolean
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.firewall.assigned_date
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.firewall.applied_date
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.device_policies.firewall.rule_set_id
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.groups
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.group_hash
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.product_type
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.product_type_desc
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.provision_status
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.serial_number
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.service_pack_major
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.service_pack_minor
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.pointer_size
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.status
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.system_manufacturer
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.system_product_name
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.modified_timestamp
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.slow_changing_modified_timestamp
+            description: ''
+            type: Date
+          - contextPath: CrowdStrike.HostGroupMember.meta.version
+            description: ''
+            type: String
+          - contextPath: CrowdStrike.HostGroupMember.zone_group
+            description: ''
+            type: String
+      - arguments:
+          - default: false
+            description: The host group id
+            isArray: false
+            name: host_group_id
+            required: true
+            secret: false
+          - default: false
+            description: The id of the host
+            isArray: true
+            name: host_ids
+            required: true
+            secret: false
+        deprecated: false
+        description: Add host group members
+        execution: false
+        name: cs-falcon-add-host-group-members
+        outputs:
+          - contextPath: CrowdStrike.HostGroup.id
+            description: The id of the host group.
+            type: String
+          - contextPath: CrowdStrike.HostGroup.group_type
+            description: The group type of the host group
+            type: String
+          - contextPath: CrowdStrike.HostGroup.name
+            description: The name of the hostgroup
+            type: String
+          - contextPath: CrowdStrike.HostGroup.description
+            description: The description of the hostgroup
+            type: String
+          - contextPath: CrowdStrike.HostGroup.created_by
+            description: The created client of the host group.
+            type: String
+          - contextPath: CrowdStrike.HostGroup.created_timestamp
+            description: The timestamp of created hostgroup
+            type: String
+          - contextPath: CrowdStrike.HostGroup.modified_by
+            description: The client that modified the host group.
+            type: String
+          - contextPath: CrowdStrike.HostGroup.modified_timestamp
+            description: The integration name of the endpoint vendor.
+            type: String
+      - arguments:
+          - default: false
+            description: The host group id
+            isArray: false
+            name: host_group_id
+            required: true
+            secret: false
+          - default: false
+            description: The id of the host
+            isArray: true
+            name: host_ids
+            required: true
+            secret: false
+        deprecated: false
+        description: Remove host group members
+        execution: false
+        name: cs-falcon-remove-host-group-members
+        outputs:
+          - contextPath: CrowdStrike.HostGroup.id
+            description: The id of the host group.
+            type: String
+          - contextPath: CrowdStrike.HostGroup.group_type
+            description: The group type of the host group
+            type: String
+          - contextPath: CrowdStrike.HostGroup.name
+            description: The name of the hostgroup
+            type: String
+          - contextPath: CrowdStrike.HostGroup.description
+            description: The description of the hostgroup
+            type: String
+          - contextPath: CrowdStrike.HostGroup.created_by
+            description: The created client of the host group.
+            type: String
+          - contextPath: CrowdStrike.HostGroup.created_timestamp
+            description: The timestamp of created hostgroup
+            type: Date
+          - contextPath: CrowdStrike.HostGroup.modified_by
+            description: The client that modified the host group.
+            type: String
+          - contextPath: CrowdStrike.HostGroup.modified_timestamp
+            description: The integration name of the endpoint vendor.
+            type: Date
+      - arguments:
+          - default: false
+            description: Incidents ids
+            isArray: true
+            name: ids
+            required: true
+            secret: false
+          - default: false
+            description: The new status of the incident
+            isArray: true
+            name: status
+            required: true
+            secret: false
+        deprecated: false
+        description: Resolve incidents
+        execution: false
+        name: cs-falcon-resolve-incident
+        outputs:
+          -
   dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: true
