@@ -3575,10 +3575,11 @@
         "McAfee ESM v2 - Test v10.2.0": "Issue 35670",
         "McAfee ESM Watchlists - Test v10.3.0": "Issue 37130",
         "McAfee ESM Watchlists - Test v10.2.0": "Issue 39389",
-        "Microsoft Teams Management - Test": "Issue 33410"
+        "Microsoft Teams Management - Test": "Issue 33410",
+        "palo_alto_panorama_test_pb": "Issue 34371"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "SolarWinds": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
@@ -3658,16 +3659,16 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-
+        
         "_comment4": "~~~ OTHER ~~~",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
@@ -3841,7 +3842,7 @@
         "HelloWorldPremium_Scan-Test"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
