@@ -1,6 +1,7 @@
 id: PAN-OS Create Or Edit Rule Test
 version: -1
 name: PAN-OS Create Or Edit Rule Test
+description: Used in the palo_alto_panorama_test_pb Test playbook, hence skipped in the pack ignore.
 starttaskid: "0"
 tasks:
   "0":
@@ -800,4 +801,4 @@ inputs:
   required: false
   description: ""
 outputs: []
-fromversion: 5.0.0
+fromversion: "6.1.0"

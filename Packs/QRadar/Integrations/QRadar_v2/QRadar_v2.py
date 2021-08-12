@@ -19,6 +19,7 @@ from CommonServerUserPython import *
 urllib3.disable_warnings()
 
 """ ADVANCED GLOBAL PARAMETERS """
+REQUEST_TIMEOUT = 30                # number of seconds to wait for a request result
 SAMPLE_SIZE = 2                     # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 15           # interval between events polling
 EVENTS_FAILURE_LIMIT = 3            # amount of consecutive failures events fetch will tolerate
@@ -45,6 +46,7 @@ ADVANCED_PARAMETER_NAMES = [
     "RULES_ENRCH_FLG",
     "MAX_FETCH_EVENT_RETIRES",
     "SLEEP_FETCH_EVENT_RETIRES",
+    "REQUEST_TIMEOUT"
 ]
 
 """ GLOBAL VARS """
@@ -222,6 +224,7 @@ class QRadarClient:
                 verify=self._use_ssl,
                 data=data,
                 auth=auth,
+                timeout=REQUEST_TIMEOUT
             )
             res.raise_for_status()
         except HTTPError:
