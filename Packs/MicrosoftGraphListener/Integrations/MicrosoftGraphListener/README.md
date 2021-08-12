@@ -20,11 +20,11 @@ The following permissions are required for all commands:
  <li>Mail.Send - Delegated</li>
  <li>User.Read - Delegated</li>
 </ul>
-<h2>Configure O365 Outlook Mail (Using Graph API) on Cortex XSOAR</h2>
+<h2>Configure O365 Outlook Mail Single User (Using Graph API) on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for O365 Outlook Mail (Using Graph API).</li>
+  <li>Search for O365 Outlook Mail Single User (Using Graph API).</li>
   <li>
     Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
     <ul>
