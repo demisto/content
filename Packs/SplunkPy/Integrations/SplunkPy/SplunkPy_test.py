@@ -629,7 +629,7 @@ def test_get_drilldown_timeframe(notable_data, raw, status, earliest, latest, mo
 @pytest.mark.parametrize('raw_field, notable_data, expected_field, expected_value', [
     ('field|s', {'field': '1'}, 'field', '1'),
     ('field', {'field': '1'}, 'field', '1'),
-    ('field|s', {'_raw': 'field=1,value=2'}, 'field', '1'),
+    ('field|s', {'_raw': 'field=1, value=2'},'field', '1'),
     ('x', {'y': '2'}, '', '')
 ])
 def test_get_notable_field_and_value(raw_field, notable_data, expected_field, expected_value, mocker):
@@ -683,8 +683,8 @@ def test_build_drilldown_search(notable_data, search, raw, expected_search, mock
 
 @pytest.mark.parametrize('notable_data, prefix, fields, query_part', [
     ({'user': ['u1', 'u2']}, 'identity', ['user'], '(identity="u1" OR identity="u2")'),
-    ({'_raw': '1233,user=u1'}, 'user', ['user'], 'user="u1"'),
-    ({'user': ['u1', 'u2'], '_raw': '1321,src_user=u3'}, 'user', ['user', 'src_user'],
+    ({'_raw': '1233, user=u1'}, 'user', ['user'], 'user="u1"'),
+    ({'user': ['u1', 'u2'], '_raw': '1321, src_user=u3'}, 'user', ['user', 'src_user'],
      '(user="u1" OR user="u2" OR user="u3")'),
     ({}, 'prefix', ['field'], '')
 ])
