@@ -7,7 +7,9 @@
     "url": "skyboxsecurity.com",
     "email": "Matthew.Worby@skyboxsecurity.com",
     "created": "2021-07-16T10:38:08Z",
-    "categories": [],
+    "categories": [
+        "Case Management"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
