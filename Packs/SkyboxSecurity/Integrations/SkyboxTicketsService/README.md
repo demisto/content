@@ -650,13 +650,6 @@ access rules.
 | Skybox.createRecertifyTicketV2 | String | The recertify ticket that has been created | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### skybox-getAccessChangeTicket
 ***
 Retrieves an Access Change ticket from Skybox.
@@ -677,13 +670,6 @@ Retrieves an Access Change ticket from Skybox.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Skybox.getAccessChangeTicket | String | The access change ticket | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### skybox-getAccessRequests
@@ -2283,12 +2269,6 @@ original change request is of type Access Update
 | Skybox.addDerivedChangeRequests | String | The status of adding the derived change requests | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### skybox-getPolicyViolations
 ***
@@ -2480,13 +2460,6 @@ in the system.
 in the system. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### skybox-getSponsoringApplication
 ***
 Retrieves the sponsoring application of the
@@ -2510,14 +2483,6 @@ determine the phase owners for the ticket.
 | --- | --- | --- |
 | Skybox.getSponsoringApplication | String | The sponsoring application of the
 specified ticket. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### skybox-addOriginalChangeRequestsV7
 ***
@@ -2559,14 +2524,6 @@ vulnerabilities.
 | --- | --- | --- |
 | Skybox.addOriginalChangeRequestsV7 | String | The status of adding an original change request | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### skybox-createTicketAccessRequestsForObjectChange
 ***
 Adds change requests to a ticket. The method
@@ -2600,13 +2557,6 @@ each access rule.
 | Skybox.createTicketAccessRequestsForObjectChange | String | The status of the ticket access request object change. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### skybox-getDerivedChangeRequestRouteInfoV1
 ***
 Retrieves the route information from a derived
@@ -2630,14 +2580,6 @@ change request.
 | --- | --- | --- |
 | Skybox.getDerivedChangeRequestRouteInfoV1 | String | The route information from a derived
 change request. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### skybox-implementChangeRequests
 ***
@@ -2679,13 +2621,6 @@ Implements the specified change requests.
 | Skybox.implementChangeRequests | String | The change request implementation status | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### skybox-getAnalysisTree
 ***
 Returns a list of analyses; each analysis includes
@@ -2708,13 +2643,6 @@ its ID, path, name, and type.
 | --- | --- | --- |
 | Skybox.getAnalysisTree | String | A list of analyses; each analysis includes
 its ID, path, name, and type. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### skybox-operateOnAccessChangeTicket
