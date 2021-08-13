@@ -11,19 +11,18 @@ Please make sure you look at the integration source code and comments.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL \(e.g. `https://soar.monstersofhack.com`\) | True |
-| isFetch | Fetch incidents | False |
-| incidentType | Incident type | False |
-| max_fetch | Maximum number of incidents per fetch | False |
-| fetch_incident_cases | Fetch Incident Cases | False |
 | apikey | API Key | True |
-| threshold_ip | Score threshold for ip reputation command \(0\-100\) | False |
-| threshold_domain | Score threshold for domain reputation command \(0\-100\) | False |
-| alert_status | Fetch alerts with status \(ACTIVE, CLOSED\) | False |
-| alert_type | Fetch alerts with type | False |
-| min_severity | Minimum severity of alerts to fetch | True |
-| first_fetch | First fetch time | False |
+| isFetch | Fetch incidents | False |
+| Classifier| Classifier for incident|False|
+| IncidentType | Incident type | False |
+| Mapper | Mapping incoming data|False|
+| fetch_incident_command | Fetch Incident Command | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
+| first_fetch | First fetch time | False |
+| max_fetch | Maximum number of incidents per fetch | False |
+| fetch_incident_cases | Fetch Incident Cases | False |
+| fetch_incident_by_case_status | Fetch Incident By Case Status | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

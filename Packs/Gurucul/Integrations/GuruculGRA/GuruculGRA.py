@@ -128,25 +128,24 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
     case_anomaly = demisto.params().get('fetch_incident_cases') or 'Case Per Anomaly'
     case_status = demisto.params().get('fetch_incident_by_case_status') or 'ALL'
     url_access_time = datetime.now().timestamp()
-
+    endDate = (datetime.fromtimestamp(cast(int, url_access_time)).strftime(API_DATE_FORMAT))
+    case_url = '/cases/history'
     if last_fetch is None:
         last_fetch = first_fetch_time
-        case_url = '/cases/history?startDate=' + (
-            datetime.fromtimestamp(cast(int, last_fetch)).replace(microsecond=0, second=0).strftime(
-                API_DATE_FORMAT)) + '&endDate=' + (datetime.fromtimestamp(cast(int, url_access_time)).strftime(
-                    API_DATE_FORMAT)) + '&status=' + case_status + '&timezone=UTC'
+        startDate = (
+            datetime.fromtimestamp(cast(int, last_fetch)).replace(microsecond=0, second=0).strftime(API_DATE_FORMAT))
     else:
         last_fetch = int(last_fetch)
-        case_url = '/cases/history?startDate=' + (
-            datetime.fromtimestamp(cast(int, last_fetch) + 1).strftime(API_DATE_FORMAT)) + '&endDate=' + (
-            datetime.fromtimestamp(cast(int, url_access_time)).strftime(
-                API_DATE_FORMAT)) + '&status=' + case_status + '&timezone=UTC'
+        startDate = (datetime.fromtimestamp(cast(int, last_fetch) + 1).strftime(API_DATE_FORMAT))
+
     latest_created_time = cast(int, last_fetch)
     incidents: List[Dict[str, Any]] = []
     page = 1
     isContinue = True
+
     while isContinue:
-        params = {'page': page, 'max': max_results}
+        params = {'page': page, 'max': max_results, 'timezone': 'UTC', 'status': case_status, 'startDate': startDate,
+                  'endDate': endDate}
         case_data = client.fetch_command_result(case_url, params, None)
         if len(case_data) < max_results:
             isContinue = False
@@ -205,25 +204,22 @@ def fetch_incidents_high_risk_users(client: Client, max_results: int, last_run: 
                                     ) -> Tuple[Dict[str, int], List[dict]]:
     last_fetch = last_run.get('last_fetch', None)
     url_access_time = datetime.now().timestamp()
+    endDate = (datetime.fromtimestamp(cast(int, url_access_time)).strftime(API_DATE_FORMAT))
+    high_risk_user_url = '/users/highrisk/modifieddate'
     if last_fetch is None:
         last_fetch = first_fetch_time
-        high_risk_user_url = '/users/highrisk/modifieddate?startDate=' + (
-            datetime.fromtimestamp(cast(int, last_fetch)).replace(microsecond=0, second=0).strftime(
-                API_DATE_FORMAT)) + '&endDate=' + (datetime.fromtimestamp(cast(int, url_access_time)).strftime(
-                    API_DATE_FORMAT)) + '&timezone=UTC'
+        startDate = (
+            datetime.fromtimestamp(cast(int, last_fetch)).replace(microsecond=0, second=0).strftime(API_DATE_FORMAT))
     else:
         last_fetch = int(last_fetch)
-        high_risk_user_url = '/users/highrisk/modifieddate?startDate=' + (
-            datetime.fromtimestamp(cast(int, last_fetch) + 1).strftime(API_DATE_FORMAT)) + '&endDate=' + (
-            datetime.fromtimestamp(cast(int, url_access_time)).strftime(
-                API_DATE_FORMAT)) + '&timezone=UTC'
+        startDate = (datetime.fromtimestamp(cast(int, last_fetch) + 1).strftime(API_DATE_FORMAT))
 
     latest_created_time = cast(int, last_fetch)
     incidents: List[Dict[str, Any]] = []
     page = 1
     isContinue = True
     while isContinue:
-        params = {'page': page, 'max': max_results}
+        params = {'page': page, 'max': max_results, 'timezone': 'UTC', 'startDate': startDate, 'endDate': endDate}
         users_data = client.fetch_command_result(high_risk_user_url, params, None)
         if len(users_data) < max_results:
             isContinue = False
