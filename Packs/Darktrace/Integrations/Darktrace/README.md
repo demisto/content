@@ -251,6 +251,11 @@ Unacknowledges a model breach as specified by Model Breach ID
 >|---|
 >| Successfully unacknowledged. |
 
+### darktrace-get-breach-details
+***
+Returns details on a modelbreach
+
+#### Base Command
 `darktrace-get-breach-details`
 #### Input
 
@@ -267,6 +272,11 @@ Unacknowledges a model breach as specified by Model Breach ID
 | --- | --- | --- |
 | Darktrace.ModelBreach.breach_details | Dictionary | Details of the model breach |
 
+### darktrace-add-comment
+***
+Adds a comment to a single modelbreach given a pbid
+
+#### Base Command
 `darktrace-add-comment`
 #### Input
 
@@ -275,6 +285,11 @@ Unacknowledges a model breach as specified by Model Breach ID
 | pbid | Darktrace model breach ID | Required | 
 | comment | The comment to add | Required | 
 
+### darktrace-get-model
+***
+Returns a model given a UUID
+
+#### Base Command
 `darktrace-get-model`
 #### Input
 
@@ -289,6 +304,11 @@ Unacknowledges a model breach as specified by Model Breach ID
 | Darktrace.Model | Dictionary | Details of the model |
 
 
+### darktrace-get-component
+***
+Returns the details of a component given a CID
+
+#### Base Command
 `darktrace-get-component`
 #### Input
 
