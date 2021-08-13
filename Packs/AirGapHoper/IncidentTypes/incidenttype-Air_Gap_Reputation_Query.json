@@ -1,0 +1,22 @@
+{
+ "autorun": true,
+ "color": "#FF3F81",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "Air Gap Reputation Query",
+ "layout": "Indicator Feed",
+ "locked": false,
+ "name": "Air Gap Reputation Query",
+ "playbookId": "0b8f98b1-5756-4a9e-8ee7-a2b95eaf7f37",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "6.0.0"
+}

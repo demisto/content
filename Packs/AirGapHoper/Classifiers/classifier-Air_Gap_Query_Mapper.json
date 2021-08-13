@@ -1,0 +1,19 @@
+{
+ "feed": false,
+ "id": "37209ad6-fcaa-45b8-811f-acdcbc13f217",
+ "name": "Air Gap Query Mapper",
+ "propagationLabels": [
+  "all"
+ ],
+ "transformer": {
+  "complex": null,
+  "simple": ""
+ },
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "description": "",
+ "keyTypeMap": {
+
+ }
+}

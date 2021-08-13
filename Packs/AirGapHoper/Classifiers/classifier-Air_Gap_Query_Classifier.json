@@ -1,0 +1,56 @@
+{
+ "feed": false,
+ "id": "e53beb9b-98ec-4d40-8eb9-a9609a68f4d3",
+ "keyTypeMap": {
+  "Air Hopper": "Air Hopper",
+  "Air Hopper:": "Air Gap Reputation Query"
+ },
+ "name": "Air Gap Query Classifier",
+ "propagationLabels": [
+  "all"
+ ],
+ "transformer": {
+  "complex": {
+   "accessor": "",
+   "filters": [
+
+   ],
+   "root": "content",
+   "transformers": [
+    {
+     "args": {
+      "error_if_no_match": {
+       "isContext": false,
+       "value": null
+      },
+      "ignore_case": {
+       "isContext": false,
+       "value": null
+      },
+      "multi_line": {
+       "isContext": false,
+       "value": null
+      },
+      "period_matches_newline": {
+       "isContext": false,
+       "value": null
+      },
+      "regex": {
+       "isContext": false,
+       "value": {
+        "complex": null,
+        "simple": "Air Hopper:"
+       }
+      }
+     },
+     "operator": "RegexExtractAll"
+    }
+   ]
+  },
+  "simple": ""
+ },
+ "type": "classification",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "description": ""
+}

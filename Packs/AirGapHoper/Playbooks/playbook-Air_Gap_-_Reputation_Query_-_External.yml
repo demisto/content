@@ -1,0 +1,451 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 8e4fde93-5819-443a-80a7-1f19d0b61d5c
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: |-
+  This playbook extract indicators from specific incident field "
+  incident.labels.content" , enriches them ,generates reputation.json file from the DBotScore and uploads the file to SMB share.
+  The "reputation.json" file, should be consumed by the JSON Feed in the "Air Gap Internal Network".
+
+  This playbook should be triggered by the "Air Gap Reputation Query" incident type.
+  "Air Gap Reputation Query" should be attached to "Syslog" integration that "listens" for logs from the internal "XSOAR" server and generates incidents from them.
+  Classification for this incident type: Air Gap Query Classifier
+  Mapping for this incident type: Air Gap Query Mapper
+
+  Playbook inputs:
+
+  smbshare - SMB share name to write the file to. Example: Folder.
+id: Air Gap - Reputation Query - External
+inputs:
+- description: SMB share name to write the file to.
+  key: smbshare
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Air Gap - Reputation Query - External
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 79385a7d-ddc1-47f9-80a1-e9b96b19e150
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 79385a7d-ddc1-47f9-80a1-e9b96b19e150
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        complex:
+          accessor: content
+          root: incident.labels
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: 0489a346-aba5-4d6c-8c58-a79599122275
+      iscommand: true
+      name: Extract Indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: 0489a346-aba5-4d6c-8c58-a79599122275
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      outputformat:
+        simple: json
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Pretty-print the contents of the DBotScore context
+      id: aeef3b66-bd65-488f-845f-1bdcf8454019
+      iscommand: false
+      name: Create DBotScore Json file
+      script: 03d80091-447a-4290-8e67-a04211b11d4d
+      type: regular
+      version: -1
+    taskid: aeef3b66-bd65-488f-845f-1bdcf8454019
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      content: {}
+      domain: {}
+      entryID:
+        simple: ${File.EntryID}
+      file_path:
+        simple: ${inputs.smbshare}/reputation.json
+      hostname: {}
+      nbname: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Uploads a file to the SMB server.
+      id: a1637d48-3cfc-4525-87c1-e2503578b90a
+      iscommand: true
+      name: Write File to SMB shared directory
+      script: '|||smb-upload'
+      type: regular
+      version: -1
+    taskid: a1637d48-3cfc-4525-87c1-e2503578b90a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 75975da7-06b6-4053-8454-60349e75fe67
+      iscommand: false
+      name: 'Enrich Indicators '
+      type: title
+      version: -1
+      description: ''
+    taskid: 75975da7-06b6-4053-8454-60349e75fe67
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ExtractedIndicators
+          operator: isNotEmpty
+      label: "Yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "21"
+      "Yes":
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c2292029-d383-4a89-8abf-3920dd0d4852
+      iscommand: false
+      name: Do we have Indicators?
+      type: condition
+      version: -1
+    taskid: c2292029-d383-4a89-8abf-3920dd0d4852
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Incident Closed.
+      closeReason:
+        simple: Resolved
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      incidentwasescalated: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 961c83df-e465-4cf8-8f24-a8196be1fd15
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 961c83df-e465-4cf8-8f24-a8196be1fd15
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1390
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8cad2bce-93bb-479a-8de9-3fda4b071b7c
+      iscommand: false
+      name: End Playbook
+      type: title
+      version: -1
+      description: ''
+    taskid: 8cad2bce-93bb-479a-8de9-3fda4b071b7c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1565
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      CVE:
+        complex:
+          accessor: CVE
+          root: ExtractedIndicators
+      Domain:
+        complex:
+          accessor: Domain
+          root: ExtractedIndicators
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          accessor: Email
+          root: ExtractedIndicators
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          accessor: Hostname
+          root: ExtractedIndicators
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          accessor: IP
+          root: ExtractedIndicators
+          transformers:
+          - operator: uniq
+      InternalDomains: {}
+      InternalRange: {}
+      MD5:
+        complex:
+          accessor: MD5
+          root: ExtractedIndicators
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "True"
+      SHA1:
+        complex:
+          accessor: SHA1
+          root: ExtractedIndicators
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ExtractedIndicators.File
+              operator: isNotEmpty
+            - left:
+                iscontext: true
+                value:
+                  simple: ExtractedIndicators.SHA256
+              operator: isNotEmpty
+          root: ExtractedIndicators
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          accessor: URL
+          root: ExtractedIndicators
+          transformers:
+          - operator: uniq
+      Username:
+        complex:
+          accessor: Account
+          root: ExtractedIndicators
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Enrich entities using one or more integrations.
+      id: ac203f65-a438-4937-8767-c281a0f416d6
+      iscommand: false
+      name: Entity Enrichment - Generic v3
+      playbookId: Entity Enrichment - Generic v3
+      type: playbook
+      version: -1
+    taskid: ac203f65-a438-4937-8767-c281a0f416d6
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      seconds:
+        simple: "20"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: ae040ee7-9b7b-4a81-83bd-2a106f23b10c
+      iscommand: false
+      name: Sleep for 20 seconds for Dbot Score to update
+      script: Sleep
+      type: regular
+      version: -1
+    taskid: ae040ee7-9b7b-4a81-83bd-2a106f23b10c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1580,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
