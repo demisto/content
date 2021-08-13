@@ -80,7 +80,6 @@ def test_get_comments(requests_mock):
     assert integration_response.outputs_prefix == 'Darktrace.ModelBreach'
     assert integration_response.outputs_key_field == 'pid'
 
-
 def test_acknowledge(requests_mock):
     """Tests darktrace-acknowledge command function.
 

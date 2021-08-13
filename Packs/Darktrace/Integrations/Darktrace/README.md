@@ -251,6 +251,57 @@ Unacknowledges a model breach as specified by Model Breach ID
 >|---|
 >| Successfully unacknowledged. |
 
+`darktrace-get-breach-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pbid | Darktrace model breach ID | Required | 
+| endtime | Endtime of data retrieved | Not Required | 
+| count | The amount of lines returned | Not Required | 
+| offset | The offset of data pulled | Not Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Darktrace.ModelBreach.breach_details | Dictionary | Details of the model breach |
+
+`darktrace-add-comment`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pbid | Darktrace model breach ID | Required | 
+| comment | The comment to add | Required | 
+
+`darktrace-get-model`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | Darktrace model ID | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Darktrace.Model | Dictionary | Details of the model |
+
+
+`darktrace-get-component`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cid | Darktrace components ID | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Darktrace.Model | Dictionary | Details of the component |
+
 
 ### darktrace-list-similar-devices
 ***
