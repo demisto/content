@@ -3743,7 +3743,7 @@ You can use this method with all ticket types.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Skybox.getTicketFields.getTicketFields | String | The ticket data from Skybox | 
+| Skybox.getTicketFields | String | The ticket data from Skybox | 
 
 
 #### Command Example
