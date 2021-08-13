@@ -38,7 +38,6 @@
 !skybox-getDerivedChangeRequestRouteInfoV1 changeRequestId=607 ticketId=415
 !skybox-implementChangeRequests changeRequests_id=777 changeRequests_comment=comment changeRequests_firewallName=firewallname changeRequests_owner=skyboxview changeRequests_ticketId=415
 !skybox-getAnalysisTree type=Public
-!skybox-operateOnAccessChangeTicket ticketId=415 phaseOperation_type=ACCEPT phaseOperation_phaseId=1 phaseOperation_reject=false phaseOperation_phaseOwner=skyboxview
 !skybox-analyzeAccessChangeTicket mode=2 ticketId=415 accessRequests=605
 !skybox-operateOnAccessChangeTicket ticketId=415 phaseOperation_type=ACCEPT phaseOperation_phaseId=1 phaseOperation_reject=false phaseOperation_phaseOwner=skyboxview
 !skybox-getVerificationDetails changeRequestId=611 ticketId=415

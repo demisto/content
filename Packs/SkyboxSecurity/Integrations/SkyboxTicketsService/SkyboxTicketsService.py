@@ -181,7 +181,7 @@ def createAccessChangeTicket_command(client, args):
     accessChangeTicket_customFields_typeCode = args.get('accessChangeTicket_customFields_typeCode')
     accessChangeTicket_customFields_value = args.get('accessChangeTicket_customFields_value')
     accessChangeTicket_currentPhaseName = args.get('accessChangeTicket_currentPhaseName')
-    """
+
     phases_comment = args.get('phases_comment')
     phases_createdBy = args.get('phases_createdBy')
     phases_creationTime = args.get('phases_creationTime')
@@ -231,7 +231,7 @@ def createAccessChangeTicket_command(client, args):
         startDate=phases_startDate,
         ticketTypePhase=ticketTypePhase
     )
-    """
+
 
     customField_type = client.get_type('ns0:customField')
     customField = customField_type(
@@ -279,7 +279,7 @@ def createAccessChangeTicket_command(client, args):
 
     response = client.service.createAccessChangeTicket(
         accessChangeTicket=accessChangeTicket,
-        # phases=phases
+        phases=phases
     )
 
     command_results = CommandResults(
@@ -343,9 +343,6 @@ def createRecertifyTicketV2_command(client, args):
     accessRuleElements_destinationAddresses = args.get('accessRuleElements_destinationAddresses')
     accessRuleElements_direction = args.get('accessRuleElements_direction')
     accessRuleElements_disabled = args.get('accessRuleElements_disabled')
-    # accessRuleElements_firewall_id = args.get('accessRuleElements_firewall_id')
-    # accessRuleElements_firewall_name = args.get('accessRuleElements_firewall_name')
-    # accessRuleElements_firewall_path = args.get('accessRuleElements_firewall_path')
     accessRuleElements_globalUniqueId = args.get('accessRuleElements_globalUniqueId')
     accessRuleElements_id = args.get('accessRuleElements_id')
     accessRuleElements_implied = args.get('accessRuleElements_implied')
@@ -416,7 +413,6 @@ def createRecertifyTicketV2_command(client, args):
         destinationAddresses=accessRuleElements_destinationAddresses,
         direction=accessRuleElements_direction,
         disabled=accessRuleElements_disabled,
-        # firewall=firewall,
         globalUniqueId=accessRuleElements_globalUniqueId,
         id=accessRuleElements_id,
         implied=accessRuleElements_implied,
@@ -768,11 +764,6 @@ def createChangeManagerTicket_command(client, args):
         workflowId=workflowId
     )
 
-    readable_output = {}
-    readable_output['id'] = response['id']
-    readable_output['title'] = response['title']
-    readable_output['priority'] = response['priority']
-
     command_results = CommandResults(
         outputs_prefix='Skybox.createChangeManagerTicket',
         outputs_key_field='id',
@@ -837,7 +828,7 @@ def expandFirewallsForAccessChangeTicket_command(client, args):
 
 
 def addAttachmentFile_command(client, args):
-    entry_id = demisto.args()['EntryID']
+    entry_id = args.get('EntryID')
     attachmentDesc = args.get('attachmentDesc')
     sourceFileName = args.get('sourceFileName')
     ticketId = args.get('ticketId')
@@ -915,227 +906,6 @@ def getDerivedChangeRequestsV7_command(client, args):
 
 
 def setTicketAccessRequests_command(client, args):
-    """
-    setTicketAccessRequests": {
-                         "input": {
-                              "ticketId": {
-                                   "optional": false,
-                                   "type": "Int(value)"
-                              },
-                              "accessRequests": {
-                                   "optional": true,
-                                   "type": {
-                                        "accessQuery": {
-                                             "optional": true,
-                                             "type": {
-                                                  "destinationAddresses": {
-                                                       "optional": true,
-                                                       "type": "String(value)"
-                                                  },
-                                                  "destinationElements": {
-                                                       "optional": true,
-                                                       "type": {
-                                                            "IPAddress": {
-                                                                 "optional": true,
-                                                                 "type": "String(value)"
-                                                            },
-                                                            "id": {
-                                                                 "optional": false,
-                                                                 "type": "Int(value)"
-                                                            },
-                                                            "name": {
-                                                                 "optional": true,
-                                                                 "type": "String(value)"
-                                                            },
-                                                            "netMask": {
-                                                                 "optional": false,
-                                                                 "type": "Int(value)"
-                                                            },
-                                                            "path": {
-                                                                 "optional": true,
-                                                                 "type": "String(value)"
-                                                            },
-                                                            "type": {
-                                                                 "optional": false,
-                                                                 "type": "Int(value)"
-                                                            }
-                                                       }
-                                                  },
-                                                  "firewall": {
-                                                       "optional": true,
-                                                       "type": {
-                                                            "id": {
-                                                                 "optional": false,
-                                                                 "type": "Int(value)"
-                                                            },
-                                                            "name": {
-                                                                 "optional": true,
-                                                                 "type": "String(value)"
-                                                            },
-                                                            "path": {
-                                                                 "optional": true,
-                                                                 "type": "String(value)"
-                                                            }
-                                                       }
-                                                  },
-                                                  "mode": {
-                                                       "optional": false,
-                                                       "type": "Int(value)"
-                                                  },
-                                                  "ports": {
-                                                       "optional": true,
-                                                       "type": "String(value)"
-                                                  },
-                                                  "sourceAddresses": {
-                                                       "optional": true,
-                                                       "type": "String(value)"
-                                                  },
-                                                  "sourceElements": {
-                                                       "optional": true,
-                                                       "type": {
-                                                            "IPAddress": {
-                                                                 "optional": true,
-                                                                 "type": "String(value)"
-                                                            },
-                                                            "id": {
-                                                                 "optional": false,
-                                                                 "type": "Int(value)"
-                                                            },
-                                                            "name": {
-                                                                 "optional": true,
-                                                                 "type": "String(value)"
-                                                            },
-                                                            "netMask": {
-                                                                 "optional": false,
-                                                                 "type": "Int(value)"
-                                                            },
-                                                            "path": {
-                                                                 "optional": true,
-                                                                 "type": "String(value)"
-                                                            },
-                                                            "type": {
-                                                                 "optional": false,
-                                                                 "type": "Int(value)"
-                                                            }
-                                                       }
-                                                  }
-                                             }
-                                        },
-                                        "accessQueryMode": {
-                                             "optional": true,
-                                             "type": "String(value)"
-                                        },
-                                        "accessStatus": {
-                                             "optional": true,
-                                             "type": "String(value)"
-                                        },
-                                        "accessType": {
-                                             "optional": true,
-                                             "type": "String(value)"
-                                        },
-                                        "comment": {
-                                             "optional": true,
-                                             "type": "String(value)"
-                                        },
-                                        "complianceStatus": {
-                                             "optional": true,
-                                             "type": "String(value)"
-                                        },
-                                        "complianceViolations": {
-                                             "optional": true,
-                                             "type": {
-                                                  "aprName": {
-                                                       "optional": true,
-                                                       "type": "String(value)"
-                                                  },
-                                                  "aprPath": {
-                                                       "optional": true,
-                                                       "type": "String(value)"
-                                                  },
-                                                  "importance": {
-                                                       "optional": false,
-                                                       "type": "Int(value)"
-                                                  },
-                                                  "portsViolating": {
-                                                       "optional": true,
-                                                       "type": "String(value)"
-                                                  }
-                                             }
-                                        },
-                                        "createdBy": {
-                                             "optional": true,
-                                             "type": "String(value)"
-                                        },
-                                        "creationTime": {
-                                             "optional": true,
-                                             "type": "DateTime(value)"
-                                        },
-                                        "description": {
-                                             "optional": true,
-                                             "type": "String(value)"
-                                        },
-                                        "destinationZones": {
-                                             "optional": true,
-                                             "type": "String(value)"
-                                        },
-                                        "disabled": {
-                                             "optional": false,
-                                             "type": "Boolean(value)"
-                                        },
-                                        "id": {
-                                             "optional": false,
-                                             "type": "Int(value)"
-                                        },
-                                        "lastModificationTime": {
-                                             "optional": true,
-                                             "type": "DateTime(value)"
-                                        },
-                                        "lastModifiedBy": {
-                                             "optional": true,
-                                             "type": "String(value)"
-                                        },
-                                        "potentialVulnerabilities": {
-                                             "optional": true,
-                                             "type": {
-                                                  "catalogId": {
-                                                       "optional": true,
-                                                       "type": "String(value)"
-                                                  },
-                                                  "cveId": {
-                                                       "optional": true,
-                                                       "type": "String(value)"
-                                                  },
-                                                  "hostIp": {
-                                                       "optional": true,
-                                                       "type": "String(value)"
-                                                  },
-                                                  "hostName": {
-                                                       "optional": true,
-                                                       "type": "String(value)"
-                                                  },
-                                                  "id": {
-                                                       "optional": false,
-                                                       "type": "Int(value)"
-                                                  },
-                                                  "severity": {
-                                                       "optional": true,
-                                                       "type": "String(value)"
-                                                  },
-                                                  "title": {
-                                                       "optional": true,
-                                                       "type": "String(value)"
-                                                  }
-                                             }
-                                        },
-                                        "sourceZones": {
-                                             "optional": true,
-                                             "type": "String(value)"
-                                        }
-                                   }
-                              }
-                         }
-                    },
-    """
     ticketId = args.get('ticketId')
     accessRequests_accessQuery_destinationAddresses = args.get('accessRequests_accessQuery_destinationAddresses')
     accessRequests_accessQuery_destinationElements_IPAddress = args.get(
@@ -1351,7 +1121,7 @@ def updateAccessChangeTicket_command(client, args):
         currentPhaseName=accessChangeTicket_currentPhaseName
     )
 
-    response = client.service.createChangeManagerTicket(
+    response = client.service.updateAccessChangeTicket(
         accessChangeTicket=accessChangeTicket,
     )
 

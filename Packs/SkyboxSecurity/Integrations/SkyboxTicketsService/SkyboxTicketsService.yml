@@ -818,24 +818,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: The firewall ID
-      isArray: false
-      name: accessRuleElements_firewall_id
-      required: false
-      secret: false
-    - default: false
-      description: The firewall name
-      isArray: false
-      name: accessRuleElements_firewall_name
-      required: false
-      secret: false
-    - default: false
-      description: The firewall path
-      isArray: false
-      name: accessRuleElements_firewall_path
-      required: false
-      secret: false
-    - default: false
       description: The access rule global unique ID
       isArray: false
       name: accessRuleElements_globalUniqueId
@@ -2112,6 +2094,12 @@ script:
       description: The source elements type
       isArray: false
       name: accessRequests_accessQuery_sourceElements_type
+      required: false
+      secret: false
+    - default: false
+      description: The destination elements IP Address
+      isArray: false
+      name: accessRequests_accessQuery_destinationElements_IPAddress
       required: false
       secret: false
     deprecated: false
@@ -3392,6 +3380,12 @@ script:
       name: ruleAttributes_customFields_defId
       required: false
       secret: false
+    - default: false
+      description: The rule attributes email address
+      isArray: false
+      name: ruleAttributes_email
+      required: false
+      secret: false
     deprecated: false
     description: |-
       Sets the rule attributes for the rules in the
@@ -3975,7 +3969,7 @@ script:
     execution: false
     name: skybox-getTicketFields
     outputs:
-    - contextPath: Skybox.getTicketFields.getTicketFields
+    - contextPath: Skybox.getTicketFields
       description: The ticket data from Skybox
       type: String
   - arguments:
@@ -4028,6 +4022,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.0.0

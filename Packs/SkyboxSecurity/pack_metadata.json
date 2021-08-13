@@ -1,10 +1,10 @@
 {
     "name": "Skybox Security",
     "description": "Skybox provides complete visibility, analytics and automation to quickly map, prioritize and remediate vulnerabilities across the organization.",
-    "support": "community",
+    "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Maciej Drobniuch",
-    "url": "",
+    "url": "skyboxsecurity.com",
     "email": "",
     "created": "2021-07-16T10:38:08Z",
     "categories": [],
