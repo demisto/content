@@ -241,6 +241,7 @@ SQL_LOGGERS = [
 
 def main():
     sql_loggers: list = []  # saves the debug loggers
+    client = None
     try:
         logging.captureWarnings(True)
         for lgr_name in SQL_LOGGERS:
@@ -285,7 +286,7 @@ def main():
         return_error(f'Unexpected error: {str(err)} \nquery: {demisto.args().get("query")} \n{traceback.format_exc()}')
     finally:
         try:
-            if client.connection:
+            if client and client.connection:
                 client.connection.close()
         except Exception as ex:
             demisto.error(f'Failed closing connection: {str(ex)}')
