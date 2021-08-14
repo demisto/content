@@ -334,7 +334,7 @@ class Client:
             'ID': email_data.get('id'),
             'ThreadId': email_data.get('threadId'),
             'Labels': ', '.join(email_data.get('labelIds', [])),
-            'Headers': context_headers,
+            'Headers': str(context_headers),
             'Attachments': email_data.get('payload', {}).get('filename', ''),
             # only for format 'raw'
             'RawData': email_data.get('raw'),

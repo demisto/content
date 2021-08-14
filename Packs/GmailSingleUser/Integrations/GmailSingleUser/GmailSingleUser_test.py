@@ -26,7 +26,7 @@ MOCK_MAIL_NO_LABELS = {
                 u'value': u'<some_mail>'
             }, {
                 u'name': u'cc',
-                u'value': u''
+                u'value': u'Männer'
             }, {
                 u'name': u'bcc',
                 u'value': u''
@@ -84,7 +84,7 @@ EXPECTED_GMAIL_CONTEXT = {
     'From': u'<some_mail>',
     'Attachments': u'',
     'Format': u'mixed',
-    'Cc': u'',
+    'Cc': u'Männer',
     'Labels': '',
     'Mailbox': 'some_mail',
     'Headers': [
@@ -103,7 +103,7 @@ EXPECTED_GMAIL_CONTEXT = {
             'Value': u'<some_mail>'
         }, {
             'Name': u'cc',
-            'Value': u''
+            'Value': u'Männer'
         }, {
             'Name': u'bcc', 'Value': u''
         }, {
