@@ -1,0 +1,265 @@
+{
+    "id": "Tier2 - Daily Tasks",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 7,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "Tier2 - Daily Tasks",
+    "layout": [
+        {
+            "id": "333aa140-47c2-11eb-95fd-8b63c7e77cc4",
+            "forceRange": false,
+            "x": 0,
+            "y": 2,
+            "i": "333aa140-47c2-11eb-95fd-8b63c7e77cc4",
+            "w": 12,
+            "h": 5,
+            "widget": {
+                "id": "1b980ec3-486a-4ae5-8dd1-760183d5bce1",
+                "version": 1,
+                "name": "License Error Gifs",
+                "dataType": "scripts",
+                "widgetType": "text",
+                "query": "WidgetLicenseErrorGifs",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "tableColumns": []
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "de64ada0-490b-11eb-94f7-5f5a665d1937",
+            "forceRange": false,
+            "x": 3,
+            "y": 0,
+            "i": "de64ada0-490b-11eb-94f7-5f5a665d1937",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "80de440c-230d-4295-831d-8b376e2973cc",
+                "version": 1,
+                "name": "Gifs",
+                "dataType": "scripts",
+                "widgetType": "text",
+                "query": "WidgetLicenseErrorText",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "tableColumns": []
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "a5f50590-965f-11eb-a745-4524c078d462",
+            "forceRange": true,
+            "x": 0,
+            "y": 0,
+            "i": "a5f50590-965f-11eb-a745-4524c078d462",
+            "w": 3,
+            "h": 2,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "2021-02-07T23:17:36.534032+02:00",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.0.6",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Active Incidents - Pie chart",
+                "prevName": "Active Incidents - Pie chart",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "-category:job and -status:archived and -status:closed",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "severity"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "3cac27e0-9979-11eb-8fb8-ed33914a4604",
+            "forceRange": false,
+            "x": 9,
+            "y": 0,
+            "i": "3cac27e0-9979-11eb-8fb8-ed33914a4604",
+            "w": 3,
+            "h": 2,
+            "widget": {
+                "id": "incidents-assigned-by-user",
+                "version": 29,
+                "modified": "2021-02-07T23:17:36.533938+02:00",
+                "sortValues": null,
+                "packID": "CommonWidgets",
+                "itemVersion": "1.0.6",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Active Incidents Assigned by User",
+                "prevName": "Active Incidents Assigned by User",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "-category:job and -status:archived and -status:closed",
+                "sort": null,
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "owner"
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        }
+    ],
+    "fromVersion": "5.0.0",
+    "description": "",
+    "isPredefined": true
+}

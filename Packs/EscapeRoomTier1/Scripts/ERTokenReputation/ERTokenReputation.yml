@@ -1,0 +1,30 @@
+comment: Escape Room Token reputation script.
+commonfields:
+  id: ERTokenReputation
+  version: -1
+enabled: false
+name: ERTokenReputation
+script: '-'
+args:
+- default: true
+  description: ER Token.
+  name: token
+  required: true
+- default: false
+  description: Indicator ID.
+  name: indicator_id
+  required: true
+#pswd: JDJhJDEwJDJ4Sk5mMExIM0tMbTlLN0c1dDNwM3VvTmdPMkNwSXRlbmdHRmdSY3ZMRmxvYUkvMGljWDRp
+system: false
+tags:
+- Enrichment
+- Enhancement
+- Reputation
+- indicator-action-button
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.4.18682
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
