@@ -1,8 +1,6 @@
 import json
 import io
 
-import dateparser
-
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -469,7 +467,6 @@ def test_create_observable_command(requests_mock):
 
     requests_mock.post('https://test/api/case/artifact/_search',
                        json=[])
-
 
     requests_mock.post('https://test/api/case/1/artifact',
                        json=mock_response['observables'])

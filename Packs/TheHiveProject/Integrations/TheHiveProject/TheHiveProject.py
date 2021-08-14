@@ -37,7 +37,7 @@ class Client(BaseClient):
             cases.append(case)
         return cases
 
-    def get_case(self, case_id: str):
+    def get_case(self, case_id):
         res = self._http_request('GET', f'case/{case_id}', ok_codes=[200, 201, 404], resp_type='response')
         if res.status_code == 404:
             return None
@@ -77,7 +77,7 @@ class Client(BaseClient):
             case = res.json()
             return case
 
-    def remove_case(self, case_id: str = None, permanent: str = ''):
+    def remove_case(self, case_id: str = None, permanent=''):
         url = f'case/{case_id}/force' if permanent == 'true' else f'case/{case_id}'
         res = self._http_request('DELETE', url, ok_codes=[200, 201, 204, 404], resp_type='response', timeout=360)
         if res.status_code not in [200, 201, 204]:
@@ -85,7 +85,8 @@ class Client(BaseClient):
         else:
             return res.status_code
 
-    def get_linked_cases(self, case_id: str = None): # TODO: the method does not work, after merging the case is deleted
+    def get_linked_cases(self, case_id: str = None):
+        # TODO: the method does not work, after merging the case is deleted
         res = self._http_request('GET', 'case/{case_id}/links', ok_codes=[200, 201, 204, 404], resp_type='response')
         if res.status_code not in [200, 201, 204]:
             return (res.status_code, res.text)
@@ -100,7 +101,7 @@ class Client(BaseClient):
         else:
             return res.json()
 
-    def get_tasks(self, case_id: str = ''):
+    def get_tasks(self, case_id=''):
         if self.version[0] == "4":
             query = {
                 "query": [
@@ -306,7 +307,7 @@ class Client(BaseClient):
         users = self._http_request('POST', 'user/_search', ok_codes=[200, 404], data=None, resp_type='response')
         return users.json() if users.status_code != 404 else None
 
-    def get_user(self, user_id: str):
+    def get_user(self, user_id):
         res = self._http_request('GET', f'user/{user_id}', ok_codes=[200, 404], resp_type='response')
         return res.json() if res.status_code != 404 else None
 
@@ -420,8 +421,8 @@ def list_cases_command(client: Client, args: dict):
 
 
 def get_case_command(client: Client, args: dict):
-    case_id: str = args.get('id')
-    case = client.get_case(case_id)
+    case_id = args.get('id')
+    case: Optional[Any] = client.get_case(case_id)
     if case:
         case_date_dt = dateparser.parse(str(case['createdAt']))
         if case_date_dt:
@@ -468,7 +469,7 @@ def search_cases_command(client: Client, args: dict):
 
 
 def update_case_command(client: Client, args: dict):
-    case_id: str = args.get('id')
+    case_id = args.get('id')
 
     # Get the case first
     original_case = client.get_case(case_id)
@@ -593,7 +594,7 @@ def merge_cases_command(client: Client, args: dict):
 
 
 def get_case_tasks_command(client: Client, args: dict):
-    case_id: str = args.get('id')
+    case_id = args.get('id')
     if client.get_case(case_id):
         tasks = client.get_tasks(case_id)
         if tasks:
@@ -650,11 +651,11 @@ def get_attachment_command(client: Client, args: dict):
         read = f'No attachments with ID "{attachment_id}" and name "{attachment_name}" found'
 
     return CommandResults(
-            outputs_prefix='TheHive.Attachments',
-            outputs_key_field="id",
-            outputs={"name": attachment_name, "id": attachment_id},
-            readable_output=read
-        )
+        outputs_prefix='TheHive.Attachments',
+        outputs_key_field="id",
+        outputs={"name": attachment_name, "id": attachment_id},
+        readable_output=read
+    )
 
 
 def update_task_command(client: Client, args: dict):
@@ -671,16 +672,16 @@ def update_task_command(client: Client, args: dict):
             read = tableToMarkdown(f"Updated task with id: {task_id}", updated_task,
                                    ['_id', 'title', 'createdAt', '_createdBy', 'status', 'group'])
         else:
-            read = f"failed to update the task"
+            read = "failed to update the task"
     else:
         read = f"No task found with id: {task_id}"
 
     return CommandResults(
-            outputs_prefix='TheHive.Tasks',
-            outputs_key_field="id",
-            outputs=updated_task,
-            readable_output=read
-        )
+        outputs_prefix='TheHive.Tasks',
+        outputs_key_field="id",
+        outputs=updated_task,
+        readable_output=read
+    )
 
 
 def get_users_list_command(client: Client, args: dict = None):
@@ -695,15 +696,15 @@ def get_users_list_command(client: Client, args: dict = None):
         read = "No users found"
 
     return CommandResults(
-            outputs_prefix='TheHive.Users',
-            outputs_key_field="id",
-            outputs=users,
-            readable_output=read
-        )
+        outputs_prefix='TheHive.Users',
+        outputs_key_field="id",
+        outputs=users,
+        readable_output=read
+    )
 
 
 def get_user_command(client: Client, args: dict):
-    user_id: str = args.get('id')
+    user_id = args.get('id')
     user = client.get_user(user_id)
     if user:
         user_date_dt = dateparser.parse(str(user['createdAt']))
@@ -715,11 +716,11 @@ def get_user_command(client: Client, args: dict):
         read = f"No user found with id: {user_id}"
 
     return CommandResults(
-            outputs_prefix='TheHive.Users',
-            outputs_key_field="id",
-            outputs=user,
-            readable_output=read
-        )
+        outputs_prefix='TheHive.Users',
+        outputs_key_field="id",
+        outputs=user,
+        readable_output=read
+    )
 
 
 def create_local_user_command(client: Client, args: dict):
@@ -741,11 +742,11 @@ def create_local_user_command(client: Client, args: dict):
         read = "failed to create a user"
 
     return CommandResults(
-            outputs_prefix='TheHive.Users',
-            outputs_key_field="id",
-            outputs=result,
-            readable_output=read
-        )
+        outputs_prefix='TheHive.Users',
+        outputs_key_field="id",
+        outputs=result,
+        readable_output=read
+    )
 
 
 def block_user_command(client: Client, args: dict):
@@ -766,16 +767,16 @@ def list_observables_command(client: Client, args: dict):
         observables = client.list_observables(case_id)
         if observables:
             read = tableToMarkdown(f"Observables for Case {case_id}" if case_id else "Observables:", observables,
-                                ['data', 'dataType', 'message'])
+                                   ['data', 'dataType', 'message'])
         else:
             read = f"No observables found for case with id: {case_id}" if case_id else "No observables found"
 
     return CommandResults(
-            outputs_prefix='TheHive.Observables',
-            outputs_key_field="id",
-            outputs=observables,
-            readable_output=read
-        )
+        outputs_prefix='TheHive.Observables',
+        outputs_key_field="id",
+        outputs=observables,
+        readable_output=read
+    )
 
 
 def create_observable_command(client: Client, args: dict):
@@ -802,10 +803,10 @@ def create_observable_command(client: Client, args: dict):
             read = "Could not create a new observable"
 
     return CommandResults(
-            outputs_prefix='TheHive.Observables',
-            outputs_key_field="id",
-            outputs=res,
-            readable_output=read
+        outputs_prefix='TheHive.Observables',
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=read
     )
 
 
@@ -1021,7 +1022,3 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-
- # the search user, cases command, does not have the option to filter, just return the whole list ...to delete filter
-#observables are not returned without specific case id
