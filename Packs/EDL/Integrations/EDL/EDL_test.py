@@ -2,7 +2,6 @@
 import json
 import pytest
 import os
-from netaddr import IPAddress
 from tempfile import mkdtemp
 
 IOC_RES_LEN = 38
@@ -165,7 +164,7 @@ class TestHelperFunctions:
             assert len(edl_vals) == limit
 
     def test_format_indicators(self):
-        from EDL import format_indicators, RequestArguments
+        from EDL import format_indicators, RequestArguments, COLLAPSE_TO_RANGES
         with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
 
@@ -187,10 +186,15 @@ class TestHelperFunctions:
         with open('EDL_test/TestHelperFunctions/simplified_demisto_ip_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
 
-            # collapse IPs
+            # collapse IPs to CIDRs
             request_args = RequestArguments(query='', collapse_ips=True)
             returned_output = format_indicators(iocs_json, request_args)
             assert returned_output == {'1.1.1.2/31', '1.1.1.1'}
+
+            # collapse IPs to ranges
+            request_args = RequestArguments(query='', collapse_ips=COLLAPSE_TO_RANGES)
+            returned_output = format_indicators(iocs_json, request_args)
+            assert returned_output == {'1.1.1.1-1.1.1.3'}
 
         with open('EDL_test/TestHelperFunctions/simplified_demisto_ip_v6_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
@@ -251,9 +255,8 @@ class TestHelperFunctions:
 
     def test_ips_to_ranges_range(self):
         from EDL import ips_to_ranges, COLLAPSE_TO_RANGES
-        ip_list = [IPAddress("1.1.1.1"), IPAddress("25.24.23.22"), IPAddress("22.21.20.19"),
-                   IPAddress("1.1.1.2"), IPAddress("1.2.3.4"), IPAddress("1.1.1.3"), IPAddress("2.2.2.2"),
-                   IPAddress("1.2.3.5")]
+        ip_list = ["1.1.1.1", "25.24.23.22", "22.21.20.19", "1.1.1.2", "1.2.3.4", "1.1.1.3", "2.2.2.2", "1.2.3.5",
+                   "3.3.3.0/30", '3.3.3.1']
 
         ip_range_list = ips_to_ranges(ip_list, COLLAPSE_TO_RANGES)
         assert "1.1.1.1-1.1.1.3" in ip_range_list
@@ -261,12 +264,12 @@ class TestHelperFunctions:
         assert "1.1.1.2" not in ip_range_list
         assert "2.2.2.2" in ip_range_list
         assert "25.24.23.22" in ip_range_list
+        assert "3.3.3.0-3.3.3.3" in ip_range_list
 
     def test_ips_to_ranges_cidr(self):
         from EDL import ips_to_ranges, COLLAPSE_TO_CIDR
-        ip_list = [IPAddress("1.1.1.1"), IPAddress("25.24.23.22"), IPAddress("22.21.20.19"),
-                   IPAddress("1.1.1.2"), IPAddress("1.2.3.4"), IPAddress("1.1.1.3"), IPAddress("2.2.2.2"),
-                   IPAddress("1.2.3.5")]
+        ip_list = ["1.1.1.1", "25.24.23.22", "22.21.20.19", "1.1.1.2", "1.2.3.4", "1.1.1.3", "2.2.2.2", "1.2.3.5",
+                   "3.3.3.0/30", '3.3.3.1']
 
         ip_range_list = ips_to_ranges(ip_list, COLLAPSE_TO_CIDR)
         assert "1.1.1.1" in ip_range_list
@@ -276,6 +279,7 @@ class TestHelperFunctions:
         assert "1.1.1.3" not in ip_range_list
         assert "2.2.2.2" in ip_range_list
         assert "25.24.23.22" in ip_range_list
+        assert "3.3.3.0/30" in ip_range_list
 
     def test_get_bool_arg_or_param(self):
         """
