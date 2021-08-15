@@ -38,8 +38,7 @@ tasks:
       id: 86b65937-519e-421c-8b04-50e0ad26d93d
       version: -1
       name: test-custom-indicator
-      description: '[Enter a description of the command, including any important information
-        users need to know, for example required permissions.]'
+      description: 'This command demonstrates the usage of CustomIndicator.'
       script: CustomIndicatorDemo|||test-custom-indicator
       type: regular
       iscommand: true

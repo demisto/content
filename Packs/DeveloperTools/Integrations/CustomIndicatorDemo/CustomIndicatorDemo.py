@@ -18,9 +18,9 @@ class Client(BaseClient):
 
     This Client implements API calls, and does not contain any XSOAR logic.
     Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
+    It inherits from BaseClient defined in CommonServerPython.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
+    For this implementation, no special attributes are defined.
     """
 
     def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
@@ -54,9 +54,9 @@ def test_module(client: Client) -> str:
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+            message = 'Authorization Error: make sure API Key is correctly set.'
         else:
-            raise e
+            raise
     return message
 
 
@@ -73,7 +73,7 @@ def test_custom_indicator(client: Client) -> CommandResults:
         indicator=indicator_value,
         indicator_type=DBotScoreType.CUSTOM,
         integration_name='DummyIntegration',
-        score=score
+        score=score,
     )
     # Create a data dictionary, which is the data of the indicator
     data = {
@@ -94,7 +94,7 @@ def test_custom_indicator(client: Client) -> CommandResults:
         outputs=result,
         outputs_prefix='Demo.Result',
         outputs_key_field='test_key_field',
-        indicator=custom_indicator
+        indicator=custom_indicator,
     )
 
 
