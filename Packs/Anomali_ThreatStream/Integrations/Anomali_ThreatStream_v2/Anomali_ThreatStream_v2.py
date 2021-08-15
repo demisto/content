@@ -13,6 +13,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
+VENDOR_NAME = 'ThreatStream'
 HEADERS = {
     'Content-Type': 'application/json'
 }
@@ -100,7 +101,7 @@ class Client:
         )
         # Handle error responses gracefully
         if res.status_code in {401}:
-            return_error("Got unauthorized from the server. Check the credentials.")
+            raise Exception(f"{VENDOR_NAME} - Got unauthorized from the server. Check the credentials.")
         elif res.status_code in {404}:
             command = demisto.command()
             if command in ['threatstream-get-model-description', 'threatstream-get-indicators-by-model',
@@ -108,9 +109,9 @@ class Client:
                 # in order to prevent raising en error in case model/indicator/report was not found
                 return {}
             else:
-                return_error("The resource not found. Check the endpoint.")
+                raise Exception(f"{VENDOR_NAME} - The resource not found. Check the endpoint.")
         elif res.status_code not in {200, 201, 202}:
-            return_error(F"Error in API call to ThreatStream {res.status_code} - {res.text}")
+            raise Exception(F"{VENDOR_NAME} - Error in API call to ThreatStream {res.status_code} - {res.text}")
 
         if text_response:
             return res.text
@@ -127,7 +128,7 @@ class Client:
         indicator_score = DBOT_SCORE[indicator.get('meta', {}).get('severity', 'low')]
         # the indicator will be considered as malicious in case it's score is greater or equal to threshold
         dbot_context['Score'] = 3 if indicator_score >= DBOT_SCORE[threshold] else indicator_score
-        dbot_context['Vendor'] = 'ThreatStream'
+        dbot_context['Vendor'] = VENDOR_NAME
         dbot_context['Reliability'] = self.reliability
 
         return dbot_context
@@ -915,7 +916,7 @@ def submit_report(client: Client, submission_type, submission_value, submission_
             # submission_value will be entry id of uploaded file to war room
             file_info = demisto.getFilePath(submission_value)
         except Exception:
-            return_error(F"Entry {submission_value} does not contain a file.")
+            raise Exception(F"{VENDOR_NAME} - Entry {submission_value} does not contain a file.")
 
         uploaded_file = open(file_info['path'], 'rb')
         file_name = file_name_to_valid_string(file_info.get('name'))
@@ -1032,7 +1033,7 @@ def main():
     try:
 
         client = Client(
-            base_url=server_url + '/api/',
+            base_url=f'{server_url}/api/',
             use_ssl=not params.get('insecure', False),
             default_threshold=params.get('default_threshold', 'high'),
             reliability=reliability
