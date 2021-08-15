@@ -716,12 +716,12 @@ def check_for_mirrors():
                 else:
                     demisto.info(f'Could not mirror {investigation_id}')
 
-            if updated_mirrors:
-                context = {'mirrors': updated_mirrors}
-                if updated_users:
-                    context['users'] = updated_users
+        if updated_mirrors:
+            context = {'mirrors': updated_mirrors}
+            if updated_users:
+                context['users'] = updated_users
 
-                set_to_integration_context_with_retries(context, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+            set_to_integration_context_with_retries(context, OBJECTS_TO_KEYS, SYNC_CONTEXT)
         return
 
 
