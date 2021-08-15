@@ -288,7 +288,7 @@ view: |-
 inputs:
 - key: endpoint_ids
   value: {}
-  required: true
+  required: false
   description: A comma-separated list of endpoint IDs.
   playbookInputQuery:
 - key: file_path
@@ -352,6 +352,5 @@ outputs:
     file entries).
   type: String
 tests:
-- Test XDR Playbook
-- Cortex XDR - IOC - Test
+- No tests (auto formatted)
 fromversion: 5.0.0
