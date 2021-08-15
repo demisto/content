@@ -5,7 +5,7 @@ import pytest
 from VirusTotalV3 import (ScoreCalculator, encode_to_base64,
                           encode_url_to_base64, epoch_to_timestamp,
                           get_working_id, raise_if_hash_not_valid,
-                          raise_if_ip_not_valid, create_relationships)
+                          raise_if_ip_not_valid, create_relationships, get_whois)
 
 from CommonServerPython import DemistoException
 import demistomock as demisto
@@ -186,3 +186,6 @@ def test_create_relationships():
         assert relation.get('name') == expected_relation_name
         assert relation.get('entityA') == 'Test'
         assert relation.get('entityBType') == 'File'
+
+def test_get_whois_unexpected_value():
+    assert get_whois('g. [Organization] Reserved Domain Name\nl. [Organization Type] Reserved Domain Name') == dict()
