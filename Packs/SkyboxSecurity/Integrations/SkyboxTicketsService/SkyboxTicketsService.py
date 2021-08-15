@@ -232,7 +232,6 @@ def createAccessChangeTicket_command(client, args):
         ticketTypePhase=ticketTypePhase
     )
 
-
     customField_type = client.get_type('ns0:customField')
     customField = customField_type(
         comment=accessChangeTicket_customFields_comment,
