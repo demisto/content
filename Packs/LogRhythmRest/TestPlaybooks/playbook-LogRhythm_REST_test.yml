@@ -5,15 +5,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f0668485-34ef-47ea-877c-79a1f512a276
+    taskid: 580d0fca-d223-4a66-85c6-c0b7538e0721
     type: start
     task:
-      id: f0668485-34ef-47ea-877c-79a1f512a276
+      id: 580d0fca-d223-4a66-85c6-c0b7538e0721
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -28,14 +27,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
-    taskid: 1bd2facb-c26b-4b31-8fcc-b23388516e7d
+    taskid: 39e16077-e504-4969-831d-2e0a7acbdda3
     type: regular
     task:
-      id: 1bd2facb-c26b-4b31-8fcc-b23388516e7d
+      id: 39e16077-e504-4969-831d-2e0a7acbdda3
       version: -1
       name: Clear context
       description: Delete field from context
@@ -49,6 +46,10 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -60,18 +61,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
-    taskid: 605c4f05-4361-4b66-8fa0-518cae3ac167
+    taskid: 45f1703e-d7dc-4d77-8f9c-599163198df2
     type: regular
     task:
-      id: 605c4f05-4361-4b66-8fa0-518cae3ac167
+      id: 45f1703e-d7dc-4d77-8f9c-599163198df2
       version: -1
       name: Get hosts
-      description: Retrieves a list of hosts for a given entity, or an empty list
-        if none is found.
+      description: Retrieves a list of hosts for a given entity, or an empty list if none is found.
       script: '|||lr-get-hosts-by-entity'
       type: regular
       iscommand: true
@@ -80,6 +78,7 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
+      count: {}
       entity-name:
         simple: Primary Site
     separatecontext: false
@@ -93,39 +92,34 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
-    taskid: 4b0007b0-a0ed-45f3-8ddd-1402d88a803a
+    taskid: 78021504-11ad-45be-8ba2-a1e96ff47896
     type: title
     task:
-      id: 4b0007b0-a0ed-45f3-8ddd-1402d88a803a
+      id: 78021504-11ad-45be-8ba2-a1e96ff47896
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 3695
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
     id: "4"
-    taskid: 6208d310-2e85-4338-8e6e-c6bf0e8a43cb
+    taskid: db4e8671-ff2b-493e-866a-089981521c22
     type: condition
     task:
-      id: 6208d310-2e85-4338-8e6e-c6bf0e8a43cb
+      id: db4e8671-ff2b-493e-866a-089981521c22
       version: -1
       name: Verify output
       type: condition
@@ -161,14 +155,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
-    taskid: 0f57303c-72d8-4de3-8de9-5530acda7f12
+    taskid: c03450cb-1f9b-4731-84fb-2b9b6ef0b152
     type: regular
     task:
-      id: 0f57303c-72d8-4de3-8de9-5530acda7f12
+      id: c03450cb-1f9b-4731-84fb-2b9b6ef0b152
       version: -1
       name: Execute query
       description: Executes a query for logs that match query parameters.
@@ -180,12 +172,15 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
+      end-date: {}
       keyword:
         simple: WIN-JSBOL5ERCQA.demisto.lab
       page-size:
         simple: "100"
+      start-date: {}
       time-frame:
         simple: LastWeek
+      time_frame: {}
     separatecontext: false
     view: |-
       {
@@ -197,14 +192,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "7":
     id: "7"
-    taskid: acd70a30-f8be-436a-8fd1-8e19b1e011e5
+    taskid: 6ef2f73c-82e8-4023-8061-e517fa008de2
     type: regular
     task:
-      id: acd70a30-f8be-436a-8fd1-8e19b1e011e5
+      id: 6ef2f73c-82e8-4023-8061-e517fa008de2
       version: -1
       name: Update status to Retired
       description: Updates an host status.
@@ -231,14 +224,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "8":
     id: "8"
-    taskid: b2492065-36b9-4a29-8d55-ab846ae8a5ed
+    taskid: 431d42bd-27ac-4262-8955-efb398110389
     type: condition
     task:
-      id: b2492065-36b9-4a29-8d55-ab846ae8a5ed
+      id: 431d42bd-27ac-4262-8955-efb398110389
       version: -1
       name: Verify output
       type: condition
@@ -280,14 +271,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "9":
     id: "9"
-    taskid: 1b15baaf-b219-4d0a-8e5d-4a80b229f701
+    taskid: 68afee3b-3c0e-4c76-80cb-a9ce1a1c5c3d
     type: regular
     task:
-      id: 1b15baaf-b219-4d0a-8e5d-4a80b229f701
+      id: 68afee3b-3c0e-4c76-80cb-a9ce1a1c5c3d
       version: -1
       name: Update status to Active
       description: Updates an host status.
@@ -314,14 +303,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "10":
     id: "10"
-    taskid: 6993ff88-9621-4333-8d9d-c2eb5ae4b974
+    taskid: 457ca935-2075-4e13-8a44-f97ef6f39158
     type: condition
     task:
-      id: 6993ff88-9621-4333-8d9d-c2eb5ae4b974
+      id: 457ca935-2075-4e13-8a44-f97ef6f39158
       version: -1
       name: Verify output
       type: condition
@@ -363,14 +350,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "11":
     id: "11"
-    taskid: cd8267b2-e47b-4b63-8138-4beec59564a0
+    taskid: 29decea9-3029-4027-85ba-b893429c1bb9
     type: regular
     task:
-      id: cd8267b2-e47b-4b63-8138-4beec59564a0
+      id: 29decea9-3029-4027-85ba-b893429c1bb9
       version: -1
       name: Get persons
       description: Retrieves a list of persons
@@ -382,6 +367,7 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
+      count: {}
       person-id:
         simple: "2"
     separatecontext: false
@@ -395,14 +381,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "12":
     id: "12"
-    taskid: 92ea5163-50a9-4e8d-8ac9-88c457dba2dc
+    taskid: dc7e0fc8-b085-4e40-876b-5ec346d6821a
     type: condition
     task:
-      id: 92ea5163-50a9-4e8d-8ac9-88c457dba2dc
+      id: dc7e0fc8-b085-4e40-876b-5ec346d6821a
       version: -1
       name: Verify output
       type: condition
@@ -449,14 +433,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "13":
     id: "13"
-    taskid: c9d66e05-54d3-4eb3-8012-60135d7309d8
+    taskid: 8fd0f8f2-8623-4f99-8e77-37b17fdd2417
     type: regular
     task:
-      id: c9d66e05-54d3-4eb3-8012-60135d7309d8
+      id: 8fd0f8f2-8623-4f99-8e77-37b17fdd2417
       version: -1
       name: Get networks
       description: Retrieves a list of networks
@@ -467,6 +449,9 @@ tasks:
     nexttasks:
       '#none#':
       - "14"
+    scriptarguments:
+      count: {}
+      network-id: {}
     separatecontext: false
     view: |-
       {
@@ -478,14 +463,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "14":
     id: "14"
-    taskid: 7215bac6-235c-4c50-87fc-63cb82d9f73a
+    taskid: 8908068f-2226-4a1d-825e-1a6491197e22
     type: condition
     task:
-      id: 7215bac6-235c-4c50-87fc-63cb82d9f73a
+      id: 8908068f-2226-4a1d-825e-1a6491197e22
       version: -1
       name: Verify output
       type: condition
@@ -532,14 +515,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "15":
     id: "15"
-    taskid: 2035cebc-288d-434d-8626-63932cc11f59
+    taskid: 17c426b2-3c48-4cfe-8244-0cf0100824f1
     type: regular
     task:
-      id: 2035cebc-288d-434d-8626-63932cc11f59
+      id: 17c426b2-3c48-4cfe-8244-0cf0100824f1
       version: -1
       name: Get hosts
       description: Retrieves a list of hosts.
@@ -551,6 +532,7 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
+      count: {}
       host-id:
         simple: "1"
     separatecontext: false
@@ -564,14 +546,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "16":
     id: "16"
-    taskid: 46932cdd-a28a-497e-866c-fbdd6a8f0d06
+    taskid: 46980f51-0a6d-4ebd-8d4d-36b2c14d5fbc
     type: condition
     task:
-      id: 46932cdd-a28a-497e-866c-fbdd6a8f0d06
+      id: 46980f51-0a6d-4ebd-8d4d-36b2c14d5fbc
       version: -1
       name: Verify output
       type: condition
@@ -618,14 +598,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "17":
     id: "17"
-    taskid: 10206b36-70dc-4d02-819c-b80efa426ac3
+    taskid: 949d19c8-3862-45c1-84da-08b8d00ed915
     type: regular
     task:
-      id: 10206b36-70dc-4d02-819c-b80efa426ac3
+      id: 949d19c8-3862-45c1-84da-08b8d00ed915
       version: -1
       name: Get alarm data
       description: Retrieves alarm data
@@ -650,14 +628,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "18":
     id: "18"
-    taskid: 68bf0efb-5028-4b41-874e-af5b36d2e00b
+    taskid: eb2fd87c-50a0-4b05-80a8-4c0c0466267f
     type: condition
     task:
-      id: 68bf0efb-5028-4b41-874e-af5b36d2e00b
+      id: eb2fd87c-50a0-4b05-80a8-4c0c0466267f
       version: -1
       name: Verify output
       type: condition
@@ -704,14 +680,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "19":
     id: "19"
-    taskid: 54fc67e6-804b-4b5d-8386-efee621bdf99
+    taskid: 710daa19-6ce6-4e83-8714-d5a279ea6de4
     type: regular
     task:
-      id: 54fc67e6-804b-4b5d-8386-efee621bdf99
+      id: 710daa19-6ce6-4e83-8714-d5a279ea6de4
       version: -1
       name: Get alarm events
       description: Retrieves a list of events by alarm id
@@ -725,6 +699,9 @@ tasks:
     scriptarguments:
       alarm-id:
         simple: "2980"
+      count: {}
+      fields: {}
+      get-log-message: {}
     separatecontext: false
     view: |-
       {
@@ -736,14 +713,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "20":
     id: "20"
-    taskid: 431d2556-1e47-497a-8b7c-beec86528ea2
+    taskid: b642384f-3d4a-45e5-8ea8-1aa72db63010
     type: condition
     task:
-      id: 431d2556-1e47-497a-8b7c-beec86528ea2
+      id: b642384f-3d4a-45e5-8ea8-1aa72db63010
       version: -1
       name: Verify output
       type: condition
@@ -781,12 +756,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 5050d654-5d5d-4464-8d7d-91e5be572e5f
+    taskid: ae3f9b8e-2919-4b52-82e9-1828afa4d4af
     type: regular
     task:
-      id: 5050d654-5d5d-4464-8d7d-91e5be572e5f
+      id: ae3f9b8e-2919-4b52-82e9-1828afa4d4af
       version: -1
       name: Get case evidences
       description: Execute evidence query for a specific case-id
@@ -813,12 +790,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 0ee8adb1-0fc3-4648-8eb5-6b5299e5f2ca
+    taskid: 5ec12b44-595a-483c-8ae4-1967d2a6be90
     type: condition
     task:
-      id: 0ee8adb1-0fc3-4648-8eb5-6b5299e5f2ca
+      id: 5ec12b44-595a-483c-8ae4-1967d2a6be90
       version: -1
       name: Verify output
       type: condition
@@ -826,7 +805,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "23"
+      - "3"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -853,44 +832,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "23":
-    id: "23"
-    taskid: 7bb4feb4-7d2f-44bd-8908-4c51ed8f7447
-    type: regular
-    task:
-      id: 7bb4feb4-7d2f-44bd-8908-4c51ed8f7447
-      version: -1
-      name: Execute Search Query
-      description: Execute search query to LogRhythm log database.
-      script: '|||lr-execute-search-query'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      number_of_days:
-        simple: "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3695
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3885,
+        "height": 3710,
         "width": 380,
         "x": 50,
         "y": 50
@@ -900,4 +849,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: ''
