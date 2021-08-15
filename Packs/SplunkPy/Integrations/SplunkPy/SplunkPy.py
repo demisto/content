@@ -1403,11 +1403,8 @@ def rawToDict(raw):
                         result[key] = val
 
         else:
-            # search for the pattern: `key="value", `
-            # (the double quotes are optional)
-            # we append `, ` to the end of the string to catch the last value
-            raw_response = re.findall(r'(\S+=("?)[\S\s]+?\2), ', raw + ', ')
-            for key_val, _ in raw_response:
+            raw_response = re.split('(?<=\S),', raw)  # split by any non-whitespace character
+            for key_val in raw_response:
                 key_value = key_val.replace('"', '').strip()
                 if '=' in key_value:
                     key_and_val = key_value.split('=', 1)

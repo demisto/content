@@ -7,7 +7,7 @@ def main():
     try:
         from_date = demisto.args().get('from', '')
         to_date = demisto.args().get('to', '')
-        query = 'type:"Attack Pattern" and investigationsCount:>0 and -incident.type:"MITRE ATT&CK CoA"'
+        query = 'type:"Attack Pattern" and investigationsCount:>0'
         search_indicators = IndicatorsSearcher()
 
         res = search_indicators.search_indicators_by_version(query=query, from_date=from_date, to_date=to_date)

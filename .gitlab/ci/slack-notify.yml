@@ -16,8 +16,6 @@ include:
 
 
 slack-notify:
-  tags:
-    - gke
   stage: notify
   extends: .default-job-settings
   script:

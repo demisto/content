@@ -19,8 +19,7 @@ PARAMETERS_DICT = {
     'modelExpiration': 24,
     'forceRetrain': 'True',
     'modelHidden': 'False',
-    'numberOfFeaturesPerField': 500,
-    'analyzer': 'char'
+    'numberOfFeaturesPerField': 500
 }
 
 FETCHED_INCIDENT_NOT_EMPTY = [

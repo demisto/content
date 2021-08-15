@@ -7,14 +7,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8b46dcb8-73ff-4616-843f-4f6d4a189549
+    taskid: 0235e09c-8a23-4fa9-8782-0fbefa7340ec
     type: start
     task:
-      id: 8b46dcb8-73ff-4616-843f-4f6d4a189549
+      id: 0235e09c-8a23-4fa9-8782-0fbefa7340ec
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -33,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 1a925e20-1bb4-45fc-8759-1e3c02e3ebfd
+    taskid: 1dd27bd2-45e8-40a5-88c1-1e442ee6f184
     type: regular
     task:
-      id: 1a925e20-1bb4-45fc-8759-1e3c02e3ebfd
+      id: 1dd27bd2-45e8-40a5-88c1-1e442ee6f184
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -64,10 +65,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 01860141-2cc4-4075-881e-862fb1caca85
+    taskid: fcb50dda-d341-4565-8b9a-ea14d0487a91
     type: regular
     task:
-      id: 01860141-2cc4-4075-881e-862fb1caca85
+      id: fcb50dda-d341-4565-8b9a-ea14d0487a91
       version: -1
       name: cb-edr-processes-search
       script: '|||cb-edr-processes-search'
@@ -87,7 +88,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 3345
         }
       }
     note: false
@@ -97,10 +98,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 39d4765f-6874-47dc-8df3-1dff33ea6e8d
+    taskid: 1c2adc99-e611-4936-8533-47e370006f01
     type: condition
     task:
-      id: 39d4765f-6874-47dc-8df3-1dff33ea6e8d
+      id: 1c2adc99-e611-4936-8533-47e370006f01
       version: -1
       name: Verify Outputs
       type: condition
@@ -142,7 +143,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 3520
         }
       }
     note: false
@@ -152,10 +153,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: e086dd42-a33a-4459-8784-43d3389e48e8
+    taskid: d2f4e919-5b16-47bc-8266-1d494f4c18fe
     type: regular
     task:
-      id: e086dd42-a33a-4459-8784-43d3389e48e8
+      id: d2f4e919-5b16-47bc-8266-1d494f4c18fe
       version: -1
       name: cb-edr-process-get
       script: '|||cb-edr-process-get'
@@ -177,7 +178,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 3695
         }
       }
     note: false
@@ -187,10 +188,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 4a058c7c-d570-40cb-8489-53733b97a758
+    taskid: 7e89f366-362a-443d-84b9-7f99f73248aa
     type: condition
     task:
-      id: 4a058c7c-d570-40cb-8489-53733b97a758
+      id: 7e89f366-362a-443d-84b9-7f99f73248aa
       version: -1
       name: Verify Outputs
       type: condition
@@ -247,7 +248,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 3870
         }
       }
     note: false
@@ -257,10 +258,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: dd4e23b6-c32b-4144-8943-0661c2451cd0
+    taskid: f0d020ed-d4d4-4212-8bea-b13b964a4169
     type: regular
     task:
-      id: dd4e23b6-c32b-4144-8943-0661c2451cd0
+      id: f0d020ed-d4d4-4212-8bea-b13b964a4169
       version: -1
       name: cb-edr-process-segments-get
       script: '|||cb-edr-process-segments-get'
@@ -280,7 +281,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 4045
         }
       }
     note: false
@@ -290,10 +291,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: afbd1b05-f831-4d54-8ce2-5d27f5d4103e
+    taskid: 0dc0988b-ea9d-44b3-89e9-44330c3a378c
     type: condition
     task:
-      id: afbd1b05-f831-4d54-8ce2-5d27f5d4103e
+      id: 0dc0988b-ea9d-44b3-89e9-44330c3a378c
       version: -1
       name: Verify Outputs
       type: condition
@@ -320,7 +321,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4570
+          "y": 4220
         }
       }
     note: false
@@ -330,10 +331,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: e56af198-b3c8-4dab-8863-663e9c7bc68c
+    taskid: 5defa9fc-fa80-4691-8e0f-c344cb60281e
     type: regular
     task:
-      id: e56af198-b3c8-4dab-8863-663e9c7bc68c
+      id: 5defa9fc-fa80-4691-8e0f-c344cb60281e
       version: -1
       name: cb-edr-process-events-list
       script: '|||cb-edr-process-events-list'
@@ -353,7 +354,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 4395
         }
       }
     note: false
@@ -363,10 +364,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: fb8523df-9aaa-46dd-81c9-a8447ba9ac2f
+    taskid: 6c0fec92-20d0-4385-8a5c-0f5f5150ef69
     type: condition
     task:
-      id: fb8523df-9aaa-46dd-81c9-a8447ba9ac2f
+      id: 6c0fec92-20d0-4385-8a5c-0f5f5150ef69
       version: -1
       name: Verify Outputs
       type: condition
@@ -458,7 +459,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4920
+          "y": 4570
         }
       }
     note: false
@@ -468,10 +469,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 76cf94b8-729a-4bb9-8f8c-7014f4577d7a
+    taskid: 89f479ea-0991-410b-809e-c2193f9cda4f
     type: regular
     task:
-      id: 76cf94b8-729a-4bb9-8f8c-7014f4577d7a
+      id: 89f479ea-0991-410b-809e-c2193f9cda4f
       version: -1
       name: cb-edr-unquarantine-device
       script: '|||cb-edr-unquarantine-device'
@@ -483,7 +484,24 @@ tasks:
       - "31"
     scriptarguments:
       sensor_id:
-        simple: "15"
+        complex:
+          root: CarbonBlackEDR.Sensor
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CarbonBlackEDR.Sensor.status
+                iscontext: true
+              right:
+                value:
+                  simple: Online
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
     separatecontext: false
     view: |-
       {
@@ -499,10 +517,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: eac9fd5e-6aef-4f91-8e6b-b103eb74eaa4
+    taskid: c986608d-5f33-4510-8ad9-24e3a905f558
     type: regular
     task:
-      id: eac9fd5e-6aef-4f91-8e6b-b103eb74eaa4
+      id: c986608d-5f33-4510-8ad9-24e3a905f558
       version: -1
       name: cb-edr-quarantine-device
       script: '|||cb-edr-quarantine-device'
@@ -514,7 +532,24 @@ tasks:
       - "11"
     scriptarguments:
       sensor_id:
-        simple: "15"
+        complex:
+          root: CarbonBlackEDR.Sensor
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CarbonBlackEDR.Sensor.status
+                iscontext: true
+              right:
+                value:
+                  simple: Online
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
     separatecontext: false
     view: |-
       {
@@ -530,10 +565,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 0710b665-5bf8-4a44-8d36-ad2448cb32df
+    taskid: 3adc86af-ee0a-46f5-84b8-ff39ad2e94a8
     type: regular
     task:
-      id: 0710b665-5bf8-4a44-8d36-ad2448cb32df
+      id: 3adc86af-ee0a-46f5-84b8-ff39ad2e94a8
       version: -1
       name: cb-edr-sensors-list
       script: '|||cb-edr-sensors-list'
@@ -561,10 +596,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 68da2686-c860-4afc-8e91-a217668d20e5
+    taskid: 6ff073d6-e495-4080-8daa-b0cc62377160
     type: condition
     task:
-      id: 68da2686-c860-4afc-8e91-a217668d20e5
+      id: 6ff073d6-e495-4080-8daa-b0cc62377160
       version: -1
       name: Verify Outputs
       type: condition
@@ -611,10 +646,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: e3fdc759-c99d-4471-896d-664abf7aeb10
+    taskid: 2e3e8ed2-d86c-42c5-84a9-2ef0630a6314
     type: regular
     task:
-      id: e3fdc759-c99d-4471-896d-664abf7aeb10
+      id: 2e3e8ed2-d86c-42c5-84a9-2ef0630a6314
       version: -1
       name: cb-edr-watchlist-delete
       script: '|||cb-edr-watchlist-delete'
@@ -640,7 +675,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 2820
         }
       }
     note: false
@@ -650,10 +685,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: d7bf5f1a-2b4e-4b8b-87c6-5c6eb9655746
+    taskid: c8f2b31a-bd82-4456-8e39-b3324b91ee26
     type: regular
     task:
-      id: d7bf5f1a-2b4e-4b8b-87c6-5c6eb9655746
+      id: c8f2b31a-bd82-4456-8e39-b3324b91ee26
       version: -1
       name: cb-edr-watchlist-update
       script: '|||cb-edr-watchlist-update'
@@ -675,7 +710,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 2645
         }
       }
     note: false
@@ -685,10 +720,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 169d7544-2e36-49c1-8d24-6fffff51e5e6
+    taskid: ae9c04bb-16c1-4d7b-82c7-6e179ae15be6
     type: regular
     task:
-      id: 169d7544-2e36-49c1-8d24-6fffff51e5e6
+      id: ae9c04bb-16c1-4d7b-82c7-6e179ae15be6
       version: -1
       name: cb-edr-watchlist-create
       script: '|||cb-edr-watchlist-create'
@@ -710,7 +745,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2470
         }
       }
     note: false
@@ -720,10 +755,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: b2ce7103-49ab-472c-8b2e-8e2acc2d2f10
+    taskid: 6a3849a8-c6e7-4b10-8921-e6a72d61b029
     type: regular
     task:
-      id: b2ce7103-49ab-472c-8b2e-8e2acc2d2f10
+      id: 6a3849a8-c6e7-4b10-8921-e6a72d61b029
       version: -1
       name: cb-edr-watchlists-list
       script: '|||cb-edr-watchlists-list'
@@ -738,7 +773,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 2995
         }
       }
     note: false
@@ -748,10 +783,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 33989d36-9e52-4098-8791-feee12806d45
+    taskid: dd79b577-0d32-41c3-8ac6-4f26e885195d
     type: condition
     task:
-      id: 33989d36-9e52-4098-8791-feee12806d45
+      id: dd79b577-0d32-41c3-8ac6-4f26e885195d
       version: -1
       name: Verify Outputs
       type: condition
@@ -788,7 +823,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 3170
         }
       }
     note: false
@@ -798,10 +833,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 01716b13-96cf-4b4a-85b5-c94a6b64a4bf
+    taskid: 77fabb71-eec1-43b2-878b-e5a805a4dc66
     type: regular
     task:
-      id: 01716b13-96cf-4b4a-85b5-c94a6b64a4bf
+      id: 77fabb71-eec1-43b2-878b-e5a805a4dc66
       version: -1
       name: cb-edr-binary-bans-list
       description: Returns a list of banned hashes
@@ -820,7 +855,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1420
         }
       }
     note: false
@@ -830,10 +865,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 0a68713c-e02f-45f3-81e9-33ac49dbbff8
+    taskid: cd4423b8-041e-49c3-8a35-7be1bdcadb5c
     type: condition
     task:
-      id: 0a68713c-e02f-45f3-81e9-33ac49dbbff8
+      id: cd4423b8-041e-49c3-8a35-7be1bdcadb5c
       version: -1
       name: Verify Outputs
       type: condition
@@ -885,7 +920,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1595
         }
       }
     note: false
@@ -895,10 +930,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 98a7c9a1-362d-495d-8289-5c3e800ae6d5
+    taskid: 212fd434-8bce-42c2-81f1-d0908d685ed7
     type: regular
     task:
-      id: 98a7c9a1-362d-495d-8289-5c3e800ae6d5
+      id: 212fd434-8bce-42c2-81f1-d0908d685ed7
       version: -1
       name: cb-edr-alert-update
       script: '|||cb-edr-alert-update'
@@ -926,7 +961,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 5095
         }
       }
     note: false
@@ -936,10 +971,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: cc241b54-2a8e-4e04-8730-6a2cf9b81098
+    taskid: cf5d39ef-7d5a-4704-8bf5-2855cab6af5d
     type: regular
     task:
-      id: cc241b54-2a8e-4e04-8730-6a2cf9b81098
+      id: cf5d39ef-7d5a-4704-8bf5-2855cab6af5d
       version: -1
       name: cb-edr-alert-search
       script: '|||cb-edr-alert-search'
@@ -957,7 +992,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5095
+          "y": 4745
         }
       }
     note: false
@@ -967,10 +1002,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 5b56ec70-3724-4e4e-864b-6a8e41bde59a
+    taskid: 76aa598b-b9c6-4e7a-862f-7ab07ee71e29
     type: condition
     task:
-      id: 5b56ec70-3724-4e4e-864b-6a8e41bde59a
+      id: 76aa598b-b9c6-4e7a-862f-7ab07ee71e29
       version: -1
       name: Verify Outputs
       type: condition
@@ -1187,7 +1222,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5270
+          "y": 4920
         }
       }
     note: false
@@ -1197,10 +1232,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: ade67e78-1bfe-4a5b-86a3-44948cee29c1
+    taskid: 3d3b628e-9991-4107-8bfb-89afd3021a68
     type: regular
     task:
-      id: ade67e78-1bfe-4a5b-86a3-44948cee29c1
+      id: 3d3b628e-9991-4107-8bfb-89afd3021a68
       version: -1
       name: cb-edr-binary-summary
       script: '|||cb-edr-binary-summary'
@@ -1226,7 +1261,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2120
         }
       }
     note: false
@@ -1236,10 +1271,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 143d2766-a4e9-4e7c-8dea-5eb40adc0340
+    taskid: ee0ed20a-8e33-4cf8-82b3-ef7ba48f4862
     type: condition
     task:
-      id: 143d2766-a4e9-4e7c-8dea-5eb40adc0340
+      id: ee0ed20a-8e33-4cf8-82b3-ef7ba48f4862
       version: -1
       name: Verify Outputs
       type: condition
@@ -1376,7 +1411,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2295
         }
       }
     note: false
@@ -1386,10 +1421,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 75b06ead-0eed-449f-83cc-b8b419c4991a
+    taskid: 48e84e78-6689-425a-80b8-a111abdfd62b
     type: regular
     task:
-      id: 75b06ead-0eed-449f-83cc-b8b419c4991a
+      id: 48e84e78-6689-425a-80b8-a111abdfd62b
       version: -1
       name: cb-edr-binary-search
       description: Binary search
@@ -1410,7 +1445,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1770
         }
       }
     note: false
@@ -1420,10 +1455,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: ede6e993-d9f2-4e58-81e6-77ed5c6a20ae
+    taskid: e5943572-a2db-42f3-85a0-f20ddf15a48c
     type: condition
     task:
-      id: ede6e993-d9f2-4e58-81e6-77ed5c6a20ae
+      id: e5943572-a2db-42f3-85a0-f20ddf15a48c
       version: -1
       name: Verify Outputs
       type: condition
@@ -1495,7 +1530,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 1945
         }
       }
     note: false
@@ -1505,12 +1540,12 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 4f339007-62d2-4556-84b4-e07ca64201a9
+    taskid: 4fcdfe74-c69b-4c33-8a32-a8e4092da4c1
     type: regular
     task:
-      id: 4f339007-62d2-4556-84b4-e07ca64201a9
+      id: 4fcdfe74-c69b-4c33-8a32-a8e4092da4c1
       version: -1
-      name: endpoint by id
+      name: endpoint
       script: '|||endpoint'
       type: regular
       iscommand: true
@@ -1544,10 +1579,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 57bf63a2-6929-4f4d-8ec6-01ecfe6a4ced
+    taskid: b7cfa2ce-331a-4a13-8dcf-36679d175078
     type: condition
     task:
-      id: 57bf63a2-6929-4f4d-8ec6-01ecfe6a4ced
+      id: b7cfa2ce-331a-4a13-8dcf-36679d175078
       version: -1
       name: Verify Outputs
       type: condition
@@ -1555,7 +1590,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "37"
+      - "21"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1589,10 +1624,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 59042624-7479-4a6c-8710-cd38fcd3eabf
+    taskid: 492385d3-233c-457f-8afa-6f63bd79f0bf
     type: title
     task:
-      id: 59042624-7479-4a6c-8710-cd38fcd3eabf
+      id: 492385d3-233c-457f-8afa-6f63bd79f0bf
       version: -1
       name: Test Done
       type: title
@@ -1604,7 +1639,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5795
+          "y": 5445
         }
       }
     note: false
@@ -1614,10 +1649,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 1c4e9433-545c-465d-8e04-bf4f0a10f95b
+    taskid: da5f0cec-1910-4cdc-8bbf-948f43d04a76
     type: regular
     task:
-      id: 1c4e9433-545c-465d-8e04-bf4f0a10f95b
+      id: da5f0cec-1910-4cdc-8bbf-948f43d04a76
       version: -1
       name: cb-edr-alert-update (revert)
       script: '|||cb-edr-alert-update'
@@ -1645,123 +1680,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5620
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: 3926c54f-c545-4a71-87fb-4fe766130bd0
-    type: regular
-    task:
-      id: 3926c54f-c545-4a71-87fb-4fe766130bd0
-      version: -1
-      name: endpoint by ips
-      script: '|||endpoint'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "36"
-    scriptarguments:
-      ip:
-        simple: 172.31.11.44,172.31.35.147
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: 7269bd5a-4a20-4079-8062-244c28f5921c
-    type: condition
-    task:
-      id: 7269bd5a-4a20-4079-8062-244c28f5921c
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "21"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Endpoint.ID
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Endpoint.Status
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Endpoint.Vendor
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
-    taskid: aec16752-35b4-474f-8196-b0c7c6c59569
-    type: regular
-    task:
-      id: aec16752-35b4-474f-8196-b0c7c6c59569
-      version: -1
-      name: Clear Endpoints
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "35"
-    scriptarguments:
-      all:
-        simple: "no"
-      key:
-        simple: Endpoint
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 1340
+          "y": 5270
         }
       }
     note: false
@@ -1775,8 +1694,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5810,
-        "width": 800,
+        "height": 5460,
+        "width": 380,
         "x": 50,
         "y": 50
       }

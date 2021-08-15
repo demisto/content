@@ -62,7 +62,7 @@ configuration:
   type: 13
 description: Microsoft Graph lets your app get authorized access to a user's Outlook
   mail data in a personal or organization account.
-display: O365 Outlook Mail (Using Graph API)
+display: Microsoft Graph Mail
 name: MicrosoftGraphMail
 script:
   commands:
@@ -1121,7 +1121,7 @@ script:
     - contextPath: MicrosoftGraph.SentMail.ID
       description: The immutable ID of the message.
       type: String
-  dockerimage: demisto/crypto:1.0.0.23151
+  dockerimage: demisto/crypto:1.0.0.19032
   feed: false
   isfetch: true
   longRunning: false

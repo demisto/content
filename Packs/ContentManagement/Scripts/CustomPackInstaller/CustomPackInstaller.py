@@ -1,20 +1,17 @@
-from typing import Tuple
-
 import demistomock as demisto
 from CommonServerPython import *
 
 SCRIPT_NAME = 'CustomPackInstaller'
 
 
-def install_custom_pack(pack_id: str) -> Tuple[bool, str]:
+def install_custom_pack(pack_id: str) -> bool:
     """Installs a custom pack in the machine.
 
     Args:
         pack_id (str): The ID of the pack to install.
 
     Returns:
-        - bool. Whether the installation of the pack was successful or not.
-        - str. In case of failure, the error message.
+        bool. Whether the installation of the pack was successful or not.
 
     Notes:
         Assumptions: The zipped file is in the war-room, and the context includes the data related to it.
@@ -33,23 +30,21 @@ def install_custom_pack(pack_id: str) -> Tuple[bool, str]:
             break
 
     if pack_file_entry_id:
-        status, res = execute_command(
+        res = demisto.executeCommand(
             'demisto-api-multipart',
             {'uri': '/contentpacks/installed/upload', 'entryID': pack_file_entry_id},
-            fail_on_error=False,
         )
 
-        if not status:
-            error_message = f'{SCRIPT_NAME} - {res}'
+        if is_error(res):
+            error_message = f'{SCRIPT_NAME} - {get_error(res)}'
             demisto.debug(error_message)
-            return False, f'Issue occurred while installing the pack on the machine.\n{res}'
+            return False
 
     else:
-        error_message = 'Could not find file entry ID.'
-        demisto.debug(f'{SCRIPT_NAME}, "{pack_id}" - {error_message}.')
-        return False, error_message
+        demisto.debug(f'{SCRIPT_NAME} - An error occurred while installing {pack_id}.')
+        return False
 
-    return True, ''
+    return True
 
 
 def main():
@@ -57,7 +52,7 @@ def main():
     pack_id = args.get('pack_id')
 
     try:
-        installation_status, error_message = install_custom_pack(pack_id)
+        installation_status = install_custom_pack(pack_id)
 
         return_results(
             CommandResults(
@@ -65,13 +60,10 @@ def main():
                 outputs_key_field='packid',
                 outputs={
                     'packid': pack_id,
-                    'installationstatus': 'Success.' if installation_status else error_message,
+                    'installationstatus': 'Success.' if installation_status else 'Failure.',
                 },
             )
         )
-
-        if not installation_status:
-            return_error(error_message)
 
     except Exception as e:
         return_error(f'{SCRIPT_NAME} - Error occurred while installing custom pack "{pack_id}".\n{e}')

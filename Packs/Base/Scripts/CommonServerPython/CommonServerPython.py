@@ -588,25 +588,6 @@ def auto_detect_indicator_type(indicator_value):
     return None
 
 
-def add_http_prefix_if_missing(address=''):
-    """
-        This function adds `http://` prefix to the proxy address in case it is missing.
-
-        :type address: ``string``
-        :param address: Proxy address.
-
-        :rtype: ``string``
-        :return: proxy address after the 'http://' prefix was added, if needed.
-    """
-    PROXY_PREFIXES = ['http://', 'https://', 'socks5://', 'socks5h://', 'socks4://', 'socks4a://']
-    if not address:
-        return ''
-    for prefix in PROXY_PREFIXES:
-        if address.startswith(prefix):
-            return address
-    return 'http://' + address
-
-
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
                  insecure_param_name=None):
     """
@@ -634,7 +615,6 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
     """
     proxies = {}  # type: dict
     if demisto.params().get(proxy_param_name, checkbox_default_value):
-        ensure_proxy_has_http_prefix()
         proxies = {
             'http': os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', ''),
             'https': os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy', '')
@@ -664,20 +644,6 @@ def skip_proxy():
     for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
         if k in os.environ:
             del os.environ[k]
-
-
-def ensure_proxy_has_http_prefix():
-    """
-    The function checks if proxy environment vars are missing http/https prefixes, and adds http if so.
-
-    :return: None
-    :rtype: ``None``
-    """
-    for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
-        if k in os.environ:
-            proxy_env_var = os.getenv(k)
-            if proxy_env_var:
-                os.environ[k] = add_http_prefix_if_missing(os.environ[k])
 
 
 def skip_cert_verification():
@@ -6848,9 +6814,7 @@ if 'requests' in sys.modules:
             self._headers = headers
             self._auth = auth
             self._session = requests.Session()
-            if proxy:
-                ensure_proxy_has_http_prefix()
-            else:
+            if not proxy:
                 skip_proxy()
 
             if not verify:

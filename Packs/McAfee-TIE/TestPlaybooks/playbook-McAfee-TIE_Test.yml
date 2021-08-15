@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b71b0c55-e274-4b4d-8142-3aa69bff4bd1
+    taskid: 48b0a26c-5ae3-46cc-86df-595550e7f6fa
     type: start
     task:
-      id: b71b0c55-e274-4b4d-8142-3aa69bff4bd1
+      id: 48b0a26c-5ae3-46cc-86df-595550e7f6fa
       version: -1
       name: ""
       iscommand: false
@@ -26,17 +26,12 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: c41046d5-3372-45a7-8f7b-cee805073d2c
+    taskid: 635c0710-f43c-4492-82cd-145dd4ec3d99
     type: condition
     task:
-      id: c41046d5-3372-45a7-8f7b-cee805073d2c
+      id: 635c0710-f43c-4492-82cd-145dd4ec3d99
       version: -1
       name: Verify Context File Reputation
       description: |-
@@ -72,17 +67,12 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 6b552aee-ad58-4223-895c-3f14d6cc9ac1
+    taskid: 1908d988-6de1-47c6-83eb-faff50494c67
     type: condition
     task:
-      id: 6b552aee-ad58-4223-895c-3f14d6cc9ac1
+      id: 1908d988-6de1-47c6-83eb-faff50494c67
       version: -1
       name: Verify Context DBot Score
       description: |-
@@ -118,21 +108,15 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 1abf001a-903c-47ae-8f4a-7f22edbb3723
+    taskid: 73f34142-9516-409e-8986-8fa3c122d89c
     type: regular
     task:
-      id: 1abf001a-903c-47ae-8f4a-7f22edbb3723
+      id: 73f34142-9516-409e-8986-8fa3c122d89c
       version: -1
       name: TIE file reputation
-      description: Retrieves the reputations for the specified hash. Can be "MD5",
-        "SHA1", or "SHA256".
+      description: Retrieves the reputations for the specified hash ( Supports MD5 SHA1 & SHA256)
       script: McAfee Threat Intelligence Exchange|||file
       type: regular
       iscommand: true
@@ -142,7 +126,7 @@ tasks:
       - "2"
     scriptarguments:
       file:
-        simple: 6EAE26DB8C13182A7947982991B4321732CC3DE2,85525e9c1fd30a20848812e417f3bb1a
+        simple: 6EAE26DB8C13182A7947982991B4321732CC3DE2
     separatecontext: false
     view: |-
       {
@@ -153,21 +137,14 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: f9bc7406-b16b-48e7-80aa-b864e1527282
+    taskid: 2fa64b7a-e29d-4e24-81ad-801d5d6ddf89
     type: regular
     task:
-      id: f9bc7406-b16b-48e7-80aa-b864e1527282
+      id: 2fa64b7a-e29d-4e24-81ad-801d5d6ddf89
       version: -1
       name: tie-file-references
-      description: Retrieves the set of systems which have referenced (typically executed)
-        the specified file.
       script: McAfee Threat Intelligence Exchange|||tie-file-references
       type: regular
       iscommand: true
@@ -188,17 +165,12 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: b7477ad9-9e13-42cc-8c7c-cfce5e99599e
+    taskid: f664dbf3-e09d-4527-8c99-6e9e2d3caf64
     type: regular
     task:
-      id: b7477ad9-9e13-42cc-8c7c-cfce5e99599e
+      id: f664dbf3-e09d-4527-8c99-6e9e2d3caf64
       version: -1
       name: Verify Context tie-file-references
       description: |-
@@ -207,7 +179,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -215,6 +187,7 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      expectedValue: {}
       fields:
         simple: MD5,References
       path:
@@ -229,17 +202,12 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: e44d5ece-e171-4b3f-881c-01b7be40c861
+    taskid: e8998e24-05f6-4977-82dc-7c470a5c78cf
     type: regular
     task:
-      id: e44d5ece-e171-4b3f-881c-01b7be40c861
+      id: e8998e24-05f6-4977-82dc-7c470a5c78cf
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -253,6 +221,7 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
     separatecontext: false
     view: |-
       {
@@ -263,21 +232,14 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 4df40e4c-f08e-4ea2-876e-4c46dd69cc0e
+    taskid: b134af34-476e-442f-8ced-e8c5f615cd93
     type: regular
     task:
-      id: 4df40e4c-f08e-4ea2-876e-4c46dd69cc0e
+      id: b134af34-476e-442f-8ced-e8c5f615cd93
       version: -1
       name: TIE File reputation - Malicious
-      description: Retrieves the reputations for the specified hash. Can be "MD5",
-        "SHA1", or "SHA256".
       script: McAfee Threat Intelligence Exchange|||file
       type: regular
       iscommand: true
@@ -298,17 +260,12 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 5cc7f22b-90a1-4d6e-8187-f823ce0ee255
+    taskid: d63b213c-f1bc-4fe9-842f-2dc6ccbd0482
     type: condition
     task:
-      id: 5cc7f22b-90a1-4d6e-8187-f823ce0ee255
+      id: d63b213c-f1bc-4fe9-842f-2dc6ccbd0482
       version: -1
       name: Verify Context DBot Score
       type: condition
@@ -338,17 +295,12 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 42ec0ba4-8ca6-4cfa-8d31-a14356f6c381
+    taskid: fe037440-31c6-4d5e-8ce3-c2a6c150ebc1
     type: title
     task:
-      id: 42ec0ba4-8ca6-4cfa-8d31-a14356f6c381
+      id: fe037440-31c6-4d5e-8ce3-c2a6c150ebc1
       version: -1
       name: Done
       type: title
@@ -364,11 +316,6 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},

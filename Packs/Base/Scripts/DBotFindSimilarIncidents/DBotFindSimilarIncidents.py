@@ -9,7 +9,6 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import json
 import pandas as pd
 from scipy.spatial.distance import cdist
-from typing import List, Dict, Union
 
 warnings.simplefilter("ignore")
 

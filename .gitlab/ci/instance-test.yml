@@ -3,8 +3,6 @@
     - if: '$INSTANCE_TESTS'
 
 test_instances:
-  tags:
-    - gke
   extends:
     - .default-job-settings
     - .instance-test-rule
