@@ -1,5 +1,6 @@
 from dateparser import parse
 from pytz import utc
+
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # Disable insecure warnings
@@ -142,11 +143,12 @@ class Client(BaseClient):
             json_data=request_data,
         )
 
-    def list_activities(self, url_suffix: str, request_data: dict):
+    def list_activities(self, url_suffix: str, request_data: dict, timeout: int):
         data = self._http_request(
             method='GET',
             url_suffix=url_suffix,
             json_data=request_data,
+            timeout=timeout
         )
         return data
 
@@ -481,8 +483,9 @@ def list_activities_command(client: Client, args: dict):
     activity_id = args.get('activity_id')
     custom_filter = args.get('custom_filter')
     arguments = assign_params(**args)
+    timeout = arg_to_number(arguments.get('timeout', 60)) or 60
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, activity_id)
-    activities_response_data = client.list_activities(url_suffix, request_data)
+    activities_response_data = client.list_activities(url_suffix, request_data, timeout)
     list_activities = activities_response_data.get('data') if activities_response_data.get('data') \
         else [activities_response_data]
     activities = arrange_entities_data(list_activities)

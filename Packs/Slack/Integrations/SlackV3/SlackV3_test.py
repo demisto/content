@@ -3549,7 +3549,7 @@ def test_set_proxy_by_url(mocker):
     import ssl
 
     # Set
-    mocker.patch.object(demisto, 'params', return_value={'unsecure': 'true', 'proxy': 'true', 'proxy_url': 'my_proxy'})
+    mocker.patch.object(demisto, 'params', return_value={'unsecure': 'true', 'proxy': 'true'})
     mocker.patch.object(slack_sdk, 'WebClient')
     mocker.patch.object(SlackV3, 'handle_proxy', return_value={'https': 'https_proxy', 'http': 'http_proxy'})
 
@@ -3562,7 +3562,7 @@ def test_set_proxy_by_url(mocker):
     init_args = slack_sdk.WebClient.call_args[1]
     assert init_args['ssl'].check_hostname is False
     assert init_args['ssl'].verify_mode == ssl.CERT_NONE
-    assert init_args['proxy'] == 'my_proxy'
+    assert init_args['proxy'] == 'http_proxy'
 
 
 def test_unset_proxy_and_ssl(mocker):

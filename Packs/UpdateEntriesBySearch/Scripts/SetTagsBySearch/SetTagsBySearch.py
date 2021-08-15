@@ -49,7 +49,8 @@ def build_pattern(pattern_algorithm: str, pattern: str, case_insensitive: bool) 
 
 class EntryFilter:
     def __init__(self, include_pattern: re.Pattern[str], exclude_pattern: Optional[re.Pattern[str]],
-                 node_paths: List[str], filter_entry_formats: List[str], filter_entry_types: List[str]):
+                 node_paths: List[str], filter_entry_formats: List[str], filter_entry_types: List[str],
+                 filter_user_type: List[str]):
         """
         Initialize the filter with the matching conditions.
 
@@ -58,12 +59,14 @@ class EntryFilter:
         :param node_paths: The list of node path of entries to which the pattern matching is performed.
         :param filter_entry_formats: The list of entry format to filter entries.
         :param filter_entry_types: The list of entry type to filter entries.
+        :param filter_user_type: The list of user type to filter entries.
         """
         self.__include_pattern = include_pattern
         self.__exclude_pattern = exclude_pattern
         self.__node_paths = node_paths
         self.__filter_entry_formats = filter_entry_formats
         self.__filter_entry_types = [to_entry_type_code(f) for f in filter_entry_types]
+        self.__filter_user_type = filter_user_type
 
         # Check content format name
         for f in filter_entry_formats:
@@ -94,6 +97,12 @@ class EntryFilter:
         if self.__filter_entry_formats and \
                 entry.get('ContentsFormat') not in self.__filter_entry_formats:
             return None
+
+        if self.__filter_user_type:
+            user = demisto.get(entry, 'Metadata.user') or ''
+            if (user and ('user' not in self.__filter_user_type)) or \
+               ((not user) and ('dbot' not in self.__filter_user_type)):
+                return None
 
         matched = None
         for node_path in self.__node_paths:
@@ -196,7 +205,8 @@ def main():
             exclude_pattern=exclude_pattern,
             node_paths=argToList(args.get('node_paths', 'Contents')),
             filter_entry_formats=argToList(args.get('filter_entry_formats', [])),
-            filter_entry_types=argToList(args.get('filter_entry_types', []))
+            filter_entry_types=argToList(args.get('filter_entry_types', [])),
+            filter_user_type=argToList(args.get('filter_user_type', []))
         )
     ):
         if entry.entry['ID'] not in exclude_ids:
@@ -226,30 +236,35 @@ def main():
         if action == 'add':
             tags = argToList(args.get('tags', []))
             for ent in ents:
+                ent['Modified'] = True if set(tags) - set(ent['Tags']) else False
                 ent['Tags'] = ','.join(list(set(tags + ent['Tags'])))
 
             if not dry_run:
                 for ent in ents:
-                    entry_id = ent['ID']
-                    res = demisto.executeCommand('setEntriesTags', {
-                        'entryIDs': entry_id,
-                        'entryTags': ent['Tags']
-                    })
-                    if not res or is_error(res[0]):
-                        return_error(f'Failed to set tags: entryID={entry_id}')
+                    if ent['Modified']:
+                        entry_id = ent['ID']
+                        res = demisto.executeCommand('setEntriesTags', {
+                            'entryIDs': entry_id,
+                            'entryTags': ent['Tags']
+                        })
+                        if not res or is_error(res[0]):
+                            return_error(f'Failed to set tags: entryID={entry_id}')
 
         elif action == 'replace':
             tags = list(set(argToList(args.get('tags', []))))
             for ent in ents:
+                ent['Modified'] = set(tags) != set(ent['Tags'])
                 ent['Tags'] = ','.join(tags)
 
             if not dry_run:
-                res = demisto.executeCommand('setEntriesTags', {
-                    'entryIDs': [ent['ID'] for ent in ents],
-                    'entryTags': ent['Tags']
-                })
-                if not res or is_error(res[0]):
-                    return_error('Failed to set tags')
+                ent_ids = [ent['ID'] for ent in ents if ent['Modified']]
+                if ent_ids:
+                    res = demisto.executeCommand('setEntriesTags', {
+                        'entryIDs': ent_ids,
+                        'entryTags': ','.join(tags)
+                    })
+                    if not res or is_error(res[0]):
+                        return_error('Failed to set tags')
 
         else:
             raise ValueError(f'Invalid action name: {action}')
@@ -259,6 +274,7 @@ def main():
             header = assign_params(
                 ID='Entry ID',
                 Tags='Tags',
+                Modified='Modified',
                 Where='Where' if 'verbose' == output_option else None,
                 Text='Text' if 'verbose' == output_option else None
             )

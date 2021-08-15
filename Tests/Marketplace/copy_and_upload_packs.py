@@ -363,7 +363,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, user_metadata = pack.load_user_metadata()
+        task_status = pack.load_user_metadata()
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name
             pack.cleanup()

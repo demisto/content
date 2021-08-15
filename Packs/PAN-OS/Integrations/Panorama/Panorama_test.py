@@ -119,10 +119,12 @@ def test_add_argument_target():
 def test_prettify_addresses_arr():
     from Panorama import prettify_addresses_arr
     addresses_arr = [{'@name': 'my_name', 'fqdn': 'a.com'},
-                     {'@name': 'my_name2', 'fqdn': 'b.com'}]
+                     {'@name': 'my_name2', 'fqdn': 'b.com'},
+                     {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}]
     response = prettify_addresses_arr(addresses_arr)
     expected = [{'Name': 'my_name', 'FQDN': 'a.com'},
-                {'Name': 'my_name2', 'FQDN': 'b.com'}]
+                {'Name': 'my_name2', 'FQDN': 'b.com'},
+                {'Name': 'test', 'IP_Netmask': '1.1.1.1'}]
     assert response == expected
 
 
@@ -131,6 +133,14 @@ def test_prettify_address():
     address = {'@name': 'my_name', 'ip-netmask': '1.1.1.1', 'description': 'lala'}
     response = prettify_address(address)
     expected = {'Name': 'my_name', 'IP_Netmask': '1.1.1.1', 'Description': 'lala'}
+    assert response == expected
+
+
+def test_prettify_address_tag_none():
+    from Panorama import prettify_address
+    address = {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}
+    response = prettify_address(address)
+    expected = {'Name': 'test', 'IP_Netmask': '1.1.1.1'}
     assert response == expected
 
 
@@ -146,10 +156,23 @@ def test_prettify_address_group():
     expected_address_group_dynamic = {'Name': 'foo', 'Type': 'dynamic', 'Match': '1.1.1.1 and 2.2.2.2'}
     assert response_dynamic == expected_address_group_dynamic
 
+    address_group_dynamic_tag_none = {'@name': 'foo', 'dynamic': {'filter': '1.1.1.1 or 2.2.2.2'}, 'tag': None}
+    response_dynamic_tag_none = prettify_address_group(address_group_dynamic_tag_none)
+    expected_address_group_dynamic_tag_none = {'Name': 'foo', 'Type': 'dynamic', 'Match': '1.1.1.1 or 2.2.2.2'}
+    assert response_dynamic_tag_none == expected_address_group_dynamic_tag_none
+
 
 def test_prettify_service():
     from Panorama import prettify_service
     service = {'@name': 'service_name', 'description': 'foo', 'protocol': {'tcp': {'port': '443'}}}
+    response = prettify_service(service)
+    expected = {'Name': 'service_name', 'Description': 'foo', 'Protocol': 'tcp', 'DestinationPort': '443'}
+    assert response == expected
+
+
+def test_prettify_service_tag_none():
+    from Panorama import prettify_service
+    service = {'@name': 'service_name', 'description': 'foo', 'protocol': {'tcp': {'port': '443'}}, 'tag': None}
     response = prettify_service(service)
     expected = {'Name': 'service_name', 'Description': 'foo', 'Protocol': 'tcp', 'DestinationPort': '443'}
     assert response == expected
@@ -160,6 +183,14 @@ def test_prettify_service_group():
     service_group = {'@name': 'sg', 'members': {'member': ['service1', 'service2']}}
     response = prettify_service_group(service_group)
     expected = {'Name': 'sg', 'Services': ['service1', 'service2']}
+    assert response == expected
+
+
+def test_prettify_service_group_tag_none():
+    from Panorama import prettify_service_group
+    service_group = {'@name': 'sg_group', 'members': {'member': ['service1', 'service2']}, 'tag': None}
+    response = prettify_service_group(service_group)
+    expected = {'Name': 'sg_group', 'Services': ['service1', 'service2']}
     assert response == expected
 
 

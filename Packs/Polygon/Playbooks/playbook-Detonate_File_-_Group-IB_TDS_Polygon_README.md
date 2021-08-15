@@ -68,7 +68,7 @@ This playbook does not use any integrations.
 | Process.Path | String | Process path | 
 | Process.StartTime | date | Process start time | 
 | Process.EndTime | date | Process end time | 
-| Polygon.Analysis.ID | string | TDS File ID | 
+| Polygon.Analysis.ID | string | THF File ID | 
 | Polygon.Analysis.Name | string | File Name | 
 | Polygon.Analysis.Size | number | File Size | 
 | Polygon.Analysis.Started | date | Analysis start timestamp | 
