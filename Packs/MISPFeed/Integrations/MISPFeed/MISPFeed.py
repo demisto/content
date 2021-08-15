@@ -153,7 +153,7 @@ Python 3) and then calls the ``main()`` function. Just keep this convention.
 
 from typing import Dict, List, Optional
 
-import urllib3
+import urllib3, json
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -171,17 +171,26 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this HelloWorld Feed implementation, no special attributes defined
     """
+    def search_query(self, body: Dict[str, Any]) -> List:
+        res = self._http_request('POST',
+                                 url_suffix='/attributes/restSearch',
+                                 full_url=self._base_url,
+                                 resp_type='text',
+                                 json_data=body,
+                                 )
+        try:
+            return json.loads(res)
+        except ValueError as err:
+            demisto.debug(str(err))
+            raise ValueError(f'Could not parse returned data as indicator. \n\nError massage: {err}')
 
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
         """
-
-        result = []
-
-        res = self._http_request('GET',
-                                 url_suffix='',
+        res = self._http_request('POST',
+                                 url_suffix='/attributes/restSearch',
                                  full_url=self._base_url,
                                  resp_type='text',
                                  )
@@ -190,22 +199,10 @@ class Client(BaseClient):
         # iterating over it's lines solely. Other feeds could be in other kinds of formats (CSV, MISP, etc.), or might
         # require additional processing as well.
         try:
-            indicators = res.split('\n')
-
-            for indicator in indicators:
-                # Infer the type of the indicator using 'auto_detect_indicator_type(indicator)' function
-                # (defined in CommonServerPython).
-                if auto_detect_indicator_type(indicator):
-                    result.append({
-                        'value': indicator,
-                        'type': auto_detect_indicator_type(indicator),
-                        'FeedURL': self._base_url
-                    })
-
+            return json.loads(res)
         except ValueError as err:
             demisto.debug(str(err))
             raise ValueError(f'Could not parse returned data as indicator. \n\nError massage: {err}')
-        return result
 
 
 def test_module(client: Client) -> str:
@@ -297,20 +294,37 @@ def search_attributes_command(client: Client,
     Returns:
         Outputs.
     """
-    limit = int(args.get('limit', '10'))
-    tlp_color = params.get('tlp_color')
+    # limit = int(args.get('limit', '10'))
+    # tlp_color = params.get('tlp_color')
     tags = argToList(params.get('tags', ''))
     attribute_type = argToList(params.get('tags', ''))
-    indicators = fetch_indicators(client, tlp_color, feed_tags, limit)
-    human_readable = tableToMarkdown('Indicators from HelloWorld Feed:', indicators,
-                                     headers=['value', 'type'], headerTransform=string_to_table_header, removeNull=True)
+    params_dict = build_params_dict(tags, attribute_type)
+    indicators = client.search_query(params_dict)
+    # human_readable = tableToMarkdown('Indicators from HelloWorld Feed:', indicators, headers=['value', 'type'],
+    # headerTransform=string_to_table_header, removeNull=True)
     return CommandResults(
-        readable_output=human_readable,
+        readable_output="",
         outputs_prefix='',
         outputs_key_field='',
         raw_response=indicators,
-        outputs={},
+        outputs=indicators,
     )
+
+
+def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[str, Any]:
+    params = {
+        "returnFormat": "json",
+        "type": {
+            attribute_type[0]
+        },
+        "tags": {
+            "OR":
+                [
+                    tags[0]
+                ]
+        }
+    }
+    return params
 
 
 def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
