@@ -437,7 +437,7 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> \
             id=res.get("_id"),
             os_version=res.get("guest_agent_details", {}).get(
                 "os_details", {}).get("os_display_name"),
-            ip_address=res.get("ip_addresses", []),
+            ip_address=res.get("ip_addresses", [])[0],  # Get only the ipv4
             mac_address=", ".join(res.get("mac_addresses", [])),
             os=map_guardicore_os(res.get("guest_agent_details", {}).get("os")),
             status='Online' if res.get('status') == "on" else 'Offline',
@@ -463,8 +463,8 @@ def main() -> None:
     global GLOBAL_TIMEOUT
     params = demisto.params()
     base_url = params.get('base_url')
-    username = params.get('username')
-    password = params.get('password')
+    username = params.get('credentials').get('identifier')
+    password = params.get('credentials').get('password')
     proxy = params.get('proxy', False)
     insecure = params.get('insecure', False)
     client = Client(username=username, password=password,

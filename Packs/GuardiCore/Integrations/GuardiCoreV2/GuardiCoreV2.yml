@@ -9,18 +9,10 @@ configuration:
     defaultvalue: https://example.com/
     type: 0
     additionalinfo: null
-  - name: username
-    display: Username for API
+  - display: Username
+    name: credentials
+    type: 9
     required: true
-    defaultvalue: null
-    type: 0
-    additionalinfo: null
-  - name: password
-    display: Password for API
-    required: true
-    defaultvalue: null
-    type: 4
-    additionalinfo: null
   - name: source
     display: Source
     required: false
