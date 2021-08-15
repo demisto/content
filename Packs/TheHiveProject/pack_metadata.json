@@ -1,7 +1,7 @@
 {
     "name": "TheHive Project",
     "description": "Provides an integration, incident type and layout for use with TheHive Project.",
-    "support": "xsoar",
+    "support": "community",
     "currentVersion": "1.1.2",
     "author": "aburt-demisto",
     "url": "",
