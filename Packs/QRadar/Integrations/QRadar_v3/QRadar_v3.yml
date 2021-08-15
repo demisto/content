@@ -2814,7 +2814,7 @@ script:
     name: qradar-upload-indicators
   - arguments:
     - default: false
-      description: 'Query to filter IPs. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query to filter IPs. E.g, filter=`source_ip="192.168.0.1"`. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
       isArray: false
       name: filter
       required: false
@@ -2873,7 +2873,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: 'Query to filter IPs. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query to filter IPs. E.g, filter=`local_destination_ip="192.168.0.1"` For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
       isArray: false
       name: filter
       required: false
