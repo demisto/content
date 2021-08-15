@@ -1,4 +1,4 @@
-Before you can use the AWS Athena integration in Demisto, you need to perform several configuration steps in your AWS environment.
+Before you can use the AWS Athena integration in XSOAR, you need to perform several configuration steps in your AWS environment.
 
 ### Prerequisites
 - Attach an instance profile with the required permissions to the XSOAR server or engine that is running 
