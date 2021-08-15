@@ -416,14 +416,9 @@ def test_email_with_special_character(mocker):
     ),
     (
             'This is test =?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?= '
-            '=?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?= =?utf-8?B?4pGg?=',
-            'This is test 日本語文字が表示されない文字のテスト日本語文字が表示されない文字のテスト\xe2\x91\xa0'
-    ),
-    (
-            '=?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
             '=?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?=',
-            '日本語文字が表示されない文字のテストメール�と�'
-     )
+            'This is test 日本語文字が表示されない文字のテストメール�と�'
+    )
 ])
 def test_utf_subject_convert(encoded_subject, decoded_subject):
     decoded = convert_to_unicode(encoded_subject)

@@ -3747,8 +3747,8 @@ def is_email_data_populated(email_data):
 
 
 def main():
-    # file_type = ''
-    # entry_id = demisto.args()['entryid']
+    file_type = ''
+    entry_id = demisto.args()['entryid']
     max_depth = int(demisto.args().get('max_depth', '3'))
 
     # we use the MAX_DEPTH_CONST to calculate the depth of the email
@@ -3757,33 +3757,31 @@ def main():
     global MAX_DEPTH_CONST
     MAX_DEPTH_CONST = max_depth
 
-    # if max_depth < 1:
-    #     return_error('Minimum max_depth is 1, the script will parse just the top email')
-    #
+    if max_depth < 1:
+        return_error('Minimum max_depth is 1, the script will parse just the top email')
+
     parse_only_headers = demisto.args().get('parse_only_headers', 'false').lower() == 'true'
-    # try:
-    #     result = demisto.executeCommand('getFilePath', {'id': entry_id})
-    #     if is_error(result):
-    #         return_error(get_error(result))
-    #
-    #     file_path = result[0]['Contents']['path']
-    #     file_name = result[0]['Contents']['name']
-    #     result = demisto.executeCommand('getEntry', {'id': entry_id})
-    #     if is_error(result):
-    #         return_error(get_error(result))
-    #
-    #     file_metadata = result[0]['FileMetadata']
-    #     file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
-    #     if 'MIME entity text, ISO-8859 text' in file_type:
-    #         file_type = 'application/pkcs7-mime'
-    #
-    # except Exception as ex:
-    #     return_error(
-    #         "Failed to load file entry with entry id: {}. Error: {}".format(
-    #             entry_id, str(ex) + "\n\nTrace:\n" + traceback.format_exc()))
-    file_path = '/Users/tlieber/Downloads/test_data.msg'
-    file_name = 'test_data.msg'
-    file_type = 'CDFV2 Microsoft Outlook Message'
+    try:
+        result = demisto.executeCommand('getFilePath', {'id': entry_id})
+        if is_error(result):
+            return_error(get_error(result))
+
+        file_path = result[0]['Contents']['path']
+        file_name = result[0]['Contents']['name']
+        result = demisto.executeCommand('getEntry', {'id': entry_id})
+        if is_error(result):
+            return_error(get_error(result))
+
+        file_metadata = result[0]['FileMetadata']
+        file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
+        if 'MIME entity text, ISO-8859 text' in file_type:
+            file_type = 'application/pkcs7-mime'
+
+    except Exception as ex:
+        return_error(
+            "Failed to load file entry with entry id: {}. Error: {}".format(
+                entry_id, str(ex) + "\n\nTrace:\n" + traceback.format_exc()))
+
     try:
         file_type_lower = file_type.lower()
         if 'composite document file v2 document' in file_type_lower \
