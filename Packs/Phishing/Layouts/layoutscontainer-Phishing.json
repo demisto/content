@@ -824,7 +824,7 @@
                     {
                         "description": "Critical Assets that were found, at the investigation stage, to be involved in the incident.",
                         "displayType": "ROW",
-                        "h": 4,
+                        "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "1vduzkpmlh-swtuqptgvs-8fd72e00-e837-11e9-9c9e-41d82f09b6f1",
@@ -845,8 +845,8 @@
                         "name": "Critical Assets",
                         "static": false,
                         "w": 1,
-                        "x": 2,
-                        "y": 10
+                        "x": 0,
+                        "y": 12
                     },
                     {
                         "description": "",
@@ -939,8 +939,8 @@
                     {
                         "description": "PCL - Phishing Confidence Level (4-8: The message content is likely to be phishing.)\nBCL - Bulk complaint level (4-7: The message is from a bulk sender that generates a mixed number of complaints. 8-9: The message is from a bulk sender that generates a high number of complaints.)\nSCL - Spam confidence level (5-6: Spam filtering marked the message as Spam. 9: Spam filtering marked the message as High confidence spam)",
                         "displayType": "ROW",
-                        "h": 2,
-                        "hideName": true,
+                        "h": 4,
+                        "hideName": false,
                         "i": "1vduzkpmlh-ef7fd3b0-fdb2-11eb-8fad-971332201675",
                         "items": [
                             {
@@ -978,8 +978,8 @@
                         "name": "Microsoft Anti-Spam Headers",
                         "static": false,
                         "w": 1,
-                        "x": 0,
-                        "y": 12
+                        "x": 2,
+                        "y": 10
                     }
                 ],
                 "type": "custom"
@@ -1194,7 +1194,7 @@
         ]
     },
     "group": "incident",
-    "id": "Phishing",
+    "id": "Phishing Incident",
     "mobile": {
         "sections": [
             {
