@@ -178,6 +178,10 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
 
         if r_type.lower() == 'pdf':
             output = get_pdf(driver, width, height)
+        elif r_type.lower() == 'json':
+            html = driver.page_source
+            output = {'image_b64': base64.b64encode(get_image(driver, width, height)).decode('utf8'),
+                      'html': html}
         else:
             output = get_image(driver, width, height)
 
@@ -298,6 +302,10 @@ def rasterize_command():
     filename = f'url.{"pdf" if r_type == "pdf" else "png"}'  # type: ignore
 
     output = rasterize(path=url, r_type=r_type, width=w, height=h, wait_time=wait_time, max_page_load_time=page_load)
+    if r_type == 'json':
+        return_results(CommandResults(raw_response=output, readable_output="Successfully load image for url: " + url))
+        return
+
     res = fileResult(filename=filename, data=output)
     if r_type == 'png':
         res['Type'] = entryTypes['image']
