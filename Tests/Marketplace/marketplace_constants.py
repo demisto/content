@@ -104,6 +104,7 @@ class PackFolders(enum.Enum):
     CLASSIFIERS = 'Classifiers'
     INDICATOR_TYPES = 'IndicatorTypes'
     CONNECTIONS = "Connections"
+    DATA_LISTS = 'Lists'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -111,7 +112,8 @@ class PackFolders(enum.Enum):
             PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
             PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
             PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
-            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value
+            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value,
+            PackFolders.DATA_LISTS.value
         }
 
     @classmethod
@@ -124,7 +126,7 @@ class PackFolders(enum.Enum):
         return {PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
                 PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
                 PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
-                PackFolders.WIDGETS.value}
+                PackFolders.WIDGETS.value, PackFolders.DATA_LISTS.value}  # TODO: confirm
 
 
 class PackIgnored(object):

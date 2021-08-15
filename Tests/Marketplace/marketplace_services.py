@@ -1472,7 +1472,8 @@ class Pack(object):
                 PackFolders.INDICATOR_TYPES.value: "reputation",
                 PackFolders.LAYOUTS.value: "layoutscontainer",
                 PackFolders.CLASSIFIERS.value: "classifier",
-                PackFolders.WIDGETS.value: "widget"
+                PackFolders.WIDGETS.value: "widget",
+                PackFolders.DATA_LISTS.value: "list"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -1605,6 +1606,10 @@ class Pack(object):
                             'name': content_item.get('name', ""),
                             'dataType': content_item.get('dataType', ""),
                             'widgetType': content_item.get('widgetType', "")
+                        })
+                    elif current_directory == PackFolders.DATA_LISTS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', "")  # TODO: confirm
                         })
 
                 if current_directory in PackFolders.pack_displayed_items():
