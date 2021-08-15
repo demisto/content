@@ -16,7 +16,7 @@ configuration:
   - Pull_requests
   required: false
   type: 15
-- display: URL
+- display: Server URL
   name: url
   defaultvalue: 'https://api.github.com'
   type: 0
