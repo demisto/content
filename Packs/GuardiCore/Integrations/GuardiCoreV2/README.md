@@ -1310,7 +1310,7 @@ Endpoint command (uses `guardicore-search-asset` internally).
 
 
 ## Breaking changes from the previous version of this integration - GuardiCore v2
-This is a new version, old version is deprecated by GuardiCore.
+This is a new version, old version of the API is deprecated (by GuardiCore).
 
 ## Additional Considerations for this version
 
