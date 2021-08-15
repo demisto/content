@@ -89,7 +89,7 @@ class Client(BaseClient):
 
 def rank_to_score(domain: str, rank: Optional[int], threshold: int, benign: int, reliability: DBotScoreReliability):
     if rank is None:
-        score = Common.DBotScore.SUSPICIOUS
+        score = Common.DBotScore.NONE
     elif rank < 0:
         raise DemistoException('Rank should be positive')
     elif 0 < rank <= benign:
@@ -141,25 +141,27 @@ def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         raise ValueError('AlexaV2: domain doesn\'t exists')
     command_results: List[CommandResults] = []
     for domain in domains:
-        if not re.match(DOMAIN_REGEX, domain):
-            raise DemistoException('Entered invalid domain')
         result = client.alexa_rank(domain)
+        domain_res = demisto.get(result,
+                                 'Awis.Results.Result.Alexa.TrafficData.DataUrl')
+        if domain_res == '404':  # Not found on alexa
+            raise DemistoException('Url cannot be found')
         rank = demisto.get(result,
                            'Awis.Results.Result.Alexa.TrafficData.Rank')
-        domain_standard_context: Common.Domain = rank_to_score(domain=domain,
+        domain_standard_context: Common.Domain = rank_to_score(domain=domain_res,
                                                                rank=arg_to_number(rank),
                                                                threshold=client.threshold,
                                                                benign=client.benign,
                                                                reliability=client.reliability)
 
         rank: str = rank if rank else 'Unknown'
-        result = {'Name': domain,
-                  'Indicator': domain,
+        result = {'Name': domain_res,
+                  'Indicator': domain_res,
                   'Rank': rank}
-        table = {'Domain': domain,
+        table = {'Domain': domain_res,
                  'Alexa Rank': rank,
                  'Reputation': DBOT_SCORE_TO_TEXT.get(domain_standard_context.dbot_score.score, 'Unknown')}
-        readable = tableToMarkdown(f'Alexa Rank for {domain}', table, headers=list(table.keys()))
+        readable = tableToMarkdown(f'Alexa Rank for {domain_res}', table, headers=list(table.keys()))
         command_results.append(CommandResults(
             outputs_prefix='Alexa.Domain',
             outputs_key_field='Name',

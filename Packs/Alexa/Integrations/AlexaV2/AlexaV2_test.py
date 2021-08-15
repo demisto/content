@@ -87,7 +87,7 @@ def test_domain_invalid_rank(mocker, domain, raw_result):
 
 
 SCORE_TESTS = [(1, 0, 200, DBotScoreReliability.A_PLUS, 1),
-               (None, 0, 200, DBotScoreReliability.A_PLUS, 2),
+               (None, 0, 200, DBotScoreReliability.A_PLUS, 0),
                (0, 0, 200, DBotScoreReliability.A_PLUS, 0),
                (4000, 0, 200, DBotScoreReliability.A_PLUS, 2)]
 

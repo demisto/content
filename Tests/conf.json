@@ -2161,7 +2161,7 @@
         },
         {
             "playbookID": "AlexaV2 Test Playbook",
-            "integrations": "Alexa Rank Indicator V2",
+            "integrations": "Alexa Rank Indicator v2",
             "fromversion": "5.5.0"
         },
         {
