@@ -195,7 +195,7 @@ def get_jwt(api_key: str, api_secret: str) -> str:
         'exp': expire_time
     }
     encoded = jwt.encode(payload, api_secret, algorithm='HS256')
-    return encoded
+    return str(encoded)
 
 
 def get_error_details(res: Dict[str, Any]) -> str:
