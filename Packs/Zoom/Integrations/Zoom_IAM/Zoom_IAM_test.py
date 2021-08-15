@@ -73,7 +73,6 @@ def test_disable_user_command__non_existing_user(mocker):
         - An app client object
         - A user-profile argument that contains an email of a user
     When:
-        - create-if-not-exists parameter is unchecked
         - The user does not exist in the application
         - Calling function disable_user_command
     Then:
