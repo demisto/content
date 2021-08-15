@@ -19,7 +19,7 @@ configuration:
   required: false
   type: 8
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
-display: O365 - Security And Compliance - Content Search (beta)
+display: O365 - Security And Compliance - Content Search
 name: SecurityAndCompliance
 script:
   commands:
@@ -969,7 +969,7 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
       type: String
-  dockerimage: demisto/powershell-ubuntu:7.1.3.22304
+  dockerimage: demisto/powershell-ubuntu:7.1.3.22925
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -977,6 +977,5 @@ script:
   script: '-'
   type: powershell
 fromversion: 5.5.0
-beta: true
 tests:
 - O365-SecurityAndCompliance-Test
