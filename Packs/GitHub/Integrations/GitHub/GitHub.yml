@@ -20,7 +20,7 @@ configuration:
   name: url
   defaultvalue: 'https://api.github.com'
   type: 0
-  required: true
+  required: false
 - display: API Token
   name: token
   required: false
