@@ -54,15 +54,15 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Integrate with Salesforce Fusion Identity Access Management service to execute CRUD
-  operations to employee lifecycle processes.
+description: Integrate with Salesforce Fusion Identity Access Management service to execute CRUD 
+  (create, read, update, and delete) operations for employee lifecycle processes.
 display: Salesforce Fusion IAM
 name: Salesforce Fusion IAM
 script:
   commands:
   - arguments:
     - default: false
-      description: User Profile indicator details.
+      description: The User Profile indicator.
       isArray: false
       name: user-profile
       required: true
@@ -70,8 +70,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active.
+      description: 'When set to true, after the command executes the status of the
+        user in the 3rd-party integration will be active. Possible values: "true" and "false".'
       isArray: false
       name: allow-enable
       predefined:
@@ -117,7 +117,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A User Profile indicator.
+      description: The User Profile indicator.
       isArray: false
       name: user-profile
       required: true
@@ -125,8 +125,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active.
+      description: 'When set to true, after the command executes the status of the
+        user in the 3rd-party integration will be active. Possible values: "true" and "false".'
       isArray: false
       name: allow-enable
       predefined:
@@ -173,7 +173,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A User Profile indicator.
+      description: The User Profile indicator.
       isArray: false
       name: user-profile
       required: true
@@ -216,7 +216,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A User Profile indicator.
+      description: The User Profile indicator.
       isArray: false
       name: user-profile
       required: true

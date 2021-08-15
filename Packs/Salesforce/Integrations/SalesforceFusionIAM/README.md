@@ -1,4 +1,4 @@
-Integrate with Salesforce Fusion Identity Access Management service to execute CRUD operations to employee lifecycle processes.
+Integrate with Salesforce Fusion Identity Access Management service to execute CRUD (create, read, update, and delete) operations for employee lifecycle processes.
 For more information, refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 
 ## Configure Salesforce Fusion IAM on Cortex XSOAR
@@ -39,7 +39,7 @@ Creates a user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-profile | User Profile indicator details. | Required | 
+| user-profile | The User Profile indicator. | Required | 
 | allow-enable | When set to true, after the command execution the status of the user in the 3rd-party integration will be active. Possible values are: true, false. Default is true. | Optional | 
 
 
@@ -81,7 +81,7 @@ Updates an existing user with the data passed in the user-profile argument.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-profile | A User Profile indicator. | Required | 
+| user-profile | The User Profile indicator. | Required | 
 | allow-enable | When set to true, after the command execution the status of the user in the 3rd-party integration will be active. Possible values are: true, false. Default is true. | Optional | 
 
 
@@ -123,7 +123,7 @@ Retrieves a single user resource.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-profile | A User Profile indicator. | Required | 
+| user-profile | The User Profile indicator. | Required | 
 
 
 #### Context Output
@@ -164,7 +164,7 @@ Disable an active user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user-profile | A User Profile indicator. | Required | 
+| user-profile | The User Profile indicator. | Required | 
 
 
 #### Context Output
