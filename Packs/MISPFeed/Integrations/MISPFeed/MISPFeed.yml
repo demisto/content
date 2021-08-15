@@ -27,22 +27,29 @@ name: MISPFeed
 script:
   commands:
   - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
+    - name: limit
+      defaultValue: '10'
+      description: The maximum number of results to return.
       isArray: false
-      name: dummy
-      required: true
+      default: false
+      required: false
+      secret: false
+    - name: tags
+      description: Tags of the attributes to search for
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: attribute_type
+      description: Types of the attributes to search for
+      isArray: false
+      default: false
+      required: false
       secret: false
     deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
+    description: Gets indicators from the feed.
     execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    name: misp-search-attributes
   isfetch: false
   runonce: false
   script: '-'

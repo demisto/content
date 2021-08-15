@@ -285,7 +285,7 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
     return indicators
 
 
-def get_indicators_command(client: Client,
+def search_attributes_command(client: Client,
                            params: Dict[str, str],
                            args: Dict[str, str]
                            ) -> CommandResults:
@@ -299,7 +299,8 @@ def get_indicators_command(client: Client,
     """
     limit = int(args.get('limit', '10'))
     tlp_color = params.get('tlp_color')
-    feed_tags = argToList(params.get('feedTags', ''))
+    tags = argToList(params.get('tags', ''))
+    attribute_type = argToList(params.get('tags', ''))
     indicators = fetch_indicators(client, tlp_color, feed_tags, limit)
     human_readable = tableToMarkdown('Indicators from HelloWorld Feed:', indicators,
                                      headers=['value', 'type'], headerTransform=string_to_table_header, removeNull=True)
@@ -366,10 +367,10 @@ def main():
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
 
-        elif command == 'helloworld-get-indicators':
+        elif command == 'misp-search-attributes':
             # This is the command that fetches a limited number of indicators from the feed source
             # and displays them in the war room.
-            return_results(get_indicators_command(client, params, args))
+            return_results(search_attributes_command(client, params, args))
 
         elif command == 'fetch-indicators':
             # This is the command that initiates a request to the feed endpoint and create new indicators objects from
