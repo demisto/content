@@ -143,9 +143,10 @@ class Client(BaseClient):
         return evidences
 
     def case_alarm_evidence_add_request(self, case_id, alarm_numbers):
+        headers = self._headers
+
         alarms = [int(alarm) for alarm in alarm_numbers]
         data = {"alarmNumbers": alarms}
-        headers = self._headers
 
         response = self._http_request(
             'POST', f'lr-case-api/cases/{case_id}/evidence/alarms', json_data=data, headers=headers)
@@ -203,37 +204,37 @@ class Client(BaseClient):
 
     def case_evidence_user_events_list_request(self, case_id, evidence_number):
         headers = self._headers
-        headers['Content-Type'] = 'multipart/form-data'
 
         response = self._http_request(
             'GET', f'lr-case-api/cases/{case_id}/evidence/{evidence_number}/userEvents/', headers=headers)
 
         return response
 
-    def case_tags_add_request(self, case_id, numbers):
-        data = {"numbers": numbers}
+    def case_tags_add_request(self, case_id, tag_numbers):
         headers = self._headers
-        headers['Content-Type'] = 'multipart/form-data'
+
+        tags = [int(tag) for tag in tag_numbers]
+        data = {"numbers": tags}
 
         response = self._http_request(
             'PUT', f'lr-case-api/cases/{case_id}/actions/addTags', json_data=data, headers=headers)
 
         return response
 
-    def case_tags_remove_request(self, case_id, numbers):
-        data = {"numbers": numbers}
+    def case_tags_remove_request(self, case_id, tag_numbers):
         headers = self._headers
-        headers['Content-Type'] = 'multipart/form-data'
+
+        tags = [int(tag) for tag in tag_numbers]
+        data = {"numbers": tags}
 
         response = self._http_request(
             'PUT', f'lr-case-api/cases/{case_id}/actions/removeTags', json_data=data, headers=headers)
 
         return response
 
-    def tags_list_request(self, offset, count):
-        params = assign_params(offset=offset, count=count)
+    def tags_list_request(self, tag_name, offset, count):
+        params = assign_params(tag=tag_name, offset=offset, count=count)
         headers = self._headers
-        headers['Content-Type'] = 'multipart/form-data'
 
         response = self._http_request('GET', 'lr-case-api/tags', params=params, headers=headers)
 
@@ -248,37 +249,47 @@ class Client(BaseClient):
         return response
 
     def case_collaborators_update_request(self, case_id, owner, collaborators):
-        data = {"collaborators": collaborators, "owner": owner}
+        collaborators = [int(collaborator) for collaborator in collaborators]
+
+        data = {"owner": int(owner),
+                "collaborators": collaborators}
+
         headers = self._headers
-        headers['Content-Type'] = 'multipart/form-data'
 
         response = self._http_request(
             'PUT', f'lr-case-api/cases/{case_id}/collaborators', json_data=data, headers=headers)
 
         return response
 
-    def entities_list_request(self, parententityid, offset, count):
-        params = assign_params(parentEntityId=parententityid, offset=offset, count=count)
+    def entities_list_request(self, entity_id, parent_entity_id, offset, count):
+        params = assign_params(parentEntityId=parent_entity_id, offset=offset, count=count)
         headers = self._headers
-        headers['Content-Type'] = 'multipart/form-data'
 
-        response = self._http_request('GET', 'lr-admin-api/entities', params=params, headers=headers)
+        entities = self._http_request('GET', 'lr-admin-api/entities', params=params, headers=headers)
+        if entity_id:
+            entities = next((entity for entity in entities if entity.get('id') == int(entity_id)), None)
+        return entities
 
-        return response
-
-    def hosts_list_request(self, name=None, entity=None, recordstatus=None, offset=None, count=None):
-        params = assign_params(name=name, entity=entity, recordStatus=recordstatus, offset=offset, count=count)
+    def hosts_list_request(self, host_id, host_name, entity_name, record_status, offset, count):
+        params = assign_params(name=host_name, entity=entity_name, recordStatus=record_status, offset=offset, count=count)
         headers = self._headers
-        headers['Content-Type'] = 'multipart/form-data'
 
-        response = self._http_request('GET', 'lr-admin-api/hosts', params=params, headers=headers)
+        hosts = self._http_request('GET', 'lr-admin-api/hosts', params=params, headers=headers)
+        if host_id:
+            hosts = next((host for host in hosts if host.get('id') == int(host_id)), None)
+        return hosts
+
+    def users_list_request(self, user_ids, entity_ids, user_status, offset, count):
+        params = assign_params(id=user_ids, entityIds=entity_ids, userStatus=user_status, offset=offset, count=count)
+        headers = self._headers
+
+        response = self._http_request('GET', 'lr-admin-api/users', params=params, headers=headers)
 
         return response
 
     def lists_get_request(self, listtype, name, canedit):
         params = assign_params(listType=listtype, name=name, canEdit=canedit)
         headers = self._headers
-        headers['Content-Type'] = 'multipart/form-data'
 
         response = self._http_request('GET', 'lr-admin-api/lists', params=params, headers=headers)
 
@@ -288,7 +299,6 @@ class Client(BaseClient):
         data = {"autoImportOption": {"enabled": enabled, "replaceExisting": replaceexisting, "usePatterns": usepatterns}, "doesExpire": doesexpire, "entityName": entityname,
                 "listType": listtype, "name": name, "needToNotify": needtonotify, "readAccess": readaccess, "restrictedRead": restrictedread, "writeAccess": writeaccess}
         headers = self._headers
-        headers['Content-Type'] = 'multipart/form-data'
 
         response = self._http_request('POST', 'lr-admin-api/lists', json_data=data, headers=headers)
 
@@ -297,7 +307,6 @@ class Client(BaseClient):
     def list_details_and_items_get_request(self, list_id, maxitemsthreshold):
         params = assign_params(maxItemsThreshold=maxitemsthreshold)
         headers = self._headers
-        headers['Content-Type'] = 'multipart/form-data'
 
         response = self._http_request('GET', f'lr-admin-api/lists/{list_id}', params=params, headers=headers)
 
@@ -307,7 +316,6 @@ class Client(BaseClient):
         data = {"items": [{"displayValue": displayvalue, "expirationDate": expirationdate, "isExpired": isexpired, "isListItem": islistitem, "isPattern": ispattern,
                            "listItemDataType": listitemdatatype, "listItemType": listitemtype, "value": value, "valueAsListReference": {"guid": guid, "listId": listid, "listType": listtype, "name": name}}]}
         headers = self._headers
-        headers['Content-Type'] = 'multipart/form-data'
 
         response = self._http_request('POST', f'lr-admin-api/lists/{list_id}', json_data=data, headers=headers)
 
@@ -317,7 +325,6 @@ class Client(BaseClient):
         data = {"items": [{"displayValue": displayvalue, "expirationDate": expirationdate, "isExpired": isexpired, "isListItem": islistitem,
                            "isPattern": ispattern, "listItemDataType": listitemdatatype, "listItemType": listitemtype, "value": value}]}
         headers = self._headers
-        headers['Content-Type'] = 'multipart/form-data'
 
         response = self._http_request('DELETE', f'lr-admin-api/lists/{list_id}', json_data=data, headers=headers)
 
@@ -553,7 +560,7 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.case_update_request(case_id, name, priority, external_id, due_date, summary, entity_id, resolution)
 
-    hr = tableToMarkdown('Case updated successfully', response, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(f'Case {case_id} updated successfully', response, headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=hr,
@@ -702,10 +709,13 @@ def case_evidence_user_events_list_command(client: Client, args: Dict[str, Any])
 
 def case_tags_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get('case_id')
-    numbers = args.get('numbers')
+    tag_numbers = argToList(args.get('tag_numbers'))
 
-    response = client.case_tags_add_request(case_id, numbers)
+    response = client.case_tags_add_request(case_id, tag_numbers)
+    hr = tableToMarkdown(f'Tags added successfully to case {case_id}', response, headerTransform=pascalToSpace)
+
     command_results = CommandResults(
+        readable_output=hr,
         outputs_prefix='LogrhythmV2.CaseTagsAdd',
         outputs_key_field='',
         outputs=response,
@@ -717,11 +727,14 @@ def case_tags_add_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 def case_tags_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get('case_id')
-    numbers = args.get('numbers')
+    tag_numbers = argToList(args.get('tag_numbers'))
 
-    response = client.case_tags_remove_request(case_id, numbers)
+    response = client.case_tags_remove_request(case_id, tag_numbers)
+    hr = tableToMarkdown(f'Tags removed successfully from case {case_id}', response, headerTransform=pascalToSpace)
+
     command_results = CommandResults(
-        outputs_prefix='LogrhythmV2.CaseTagsRemove',
+        readable_output=hr,
+        outputs_prefix='LogrhythmV2.CaseTagsAdd',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -731,11 +744,18 @@ def case_tags_remove_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 
 def tags_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    tag_name = args.get('tag_name')
     offset = args.get('offset')
     count = args.get('count')
 
-    response = client.tags_list_request(offset, count)
+    response = client.tags_list_request(tag_name, offset, count)
+    if response:
+        hr = tableToMarkdown('Tags', response, headerTransform=pascalToSpace)
+    else:
+        hr = 'No tags were found.'
+
     command_results = CommandResults(
+        readable_output=hr,
         outputs_prefix='LogrhythmV2.TagsList',
         outputs_key_field='',
         outputs=response,
@@ -749,7 +769,14 @@ def case_collaborators_list_command(client: Client, args: Dict[str, Any]) -> Com
     case_id = args.get('case_id')
 
     response = client.case_collaborators_list_request(case_id)
+    collaborators = response.get('collaborators')
+
+    hr = tableToMarkdown('Case owner', response.get('owner'), headerTransform=pascalToSpace)
+    if collaborators:
+        hr = hr + tableToMarkdown('Case collaborators', collaborators, headerTransform=pascalToSpace)
+
     command_results = CommandResults(
+        readable_output=hr,
         outputs_prefix='LogrhythmV2.CaseCollaboratorsList',
         outputs_key_field='',
         outputs=response,
@@ -762,11 +789,19 @@ def case_collaborators_list_command(client: Client, args: Dict[str, Any]) -> Com
 def case_collaborators_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get('case_id')
     owner = args.get('owner')
-    collaborators = args.get('collaborators')
+    collaborators = argToList(args.get('collaborators'))
 
     response = client.case_collaborators_update_request(case_id, owner, collaborators)
+    collaborators = response.get('collaborators')
+
+    hr = f'### Case {case_id} updated successfully\n'
+    hr = hr + tableToMarkdown('Case owner', response.get('owner'), headerTransform=pascalToSpace)
+    if collaborators:
+        hr = hr + tableToMarkdown('Case collaborators', collaborators, headerTransform=pascalToSpace)
+
     command_results = CommandResults(
-        outputs_prefix='LogrhythmV2.CaseCollaboratorsUpdate',
+        readable_output=hr,
+        outputs_prefix='LogrhythmV2.CaseCollaboratorsList',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -776,12 +811,19 @@ def case_collaborators_update_command(client: Client, args: Dict[str, Any]) -> C
 
 
 def entities_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    parententityid = args.get('parententityid')
+    entity_id = args.get('entity_id')
+    parent_entity_id = args.get('parent_entity_id')
     offset = args.get('offset')
     count = args.get('count')
 
-    response = client.entities_list_request(parententityid, offset, count)
+    response = client.entities_list_request(entity_id, parent_entity_id, offset, count)
+    if response:
+        hr = tableToMarkdown('Entities', response, headerTransform=pascalToSpace)
+    else:
+        hr = 'No entities were found.'
+
     command_results = CommandResults(
+        readable_output=hr,
         outputs_prefix='LogrhythmV2.EntitiesList',
         outputs_key_field='',
         outputs=response,
@@ -792,14 +834,45 @@ def entities_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 
 def hosts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    name = args.get('name')
-    entity = args.get('entity')
-    recordstatus = args.get('recordstatus')
+    host_id = args.get('host_id')
+    host_name = args.get('host_name')
+    entity_name = args.get('entity_name')
+    record_status = args.get('record_status')
     offset = args.get('offset')
     count = args.get('count')
 
-    response = client.hosts_list_request(name, entity, recordstatus, offset, count)
+    response = client.hosts_list_request(host_id, host_name, entity_name, record_status, offset, count)
+    if response:
+        hr = tableToMarkdown('Hosts', response, headerTransform=pascalToSpace)
+    else:
+        hr = 'No hosts were found.'
+
     command_results = CommandResults(
+        readable_output=hr,
+        outputs_prefix='LogrhythmV2.HostsList',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def users_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    user_ids = args.get('user_ids')
+    entity_ids = args.get('entity_ids')
+    user_status = args.get('user_status')
+    offset = args.get('offset')
+    count = args.get('count')
+
+    response = client.users_list_request(user_ids, entity_ids, user_status, offset, count)
+    if response:
+        hr = tableToMarkdown('Users', response, headerTransform=pascalToSpace)
+    else:
+        hr = 'No users were found.'
+
+    command_results = CommandResults(
+        readable_output=hr,
         outputs_prefix='LogrhythmV2.HostsList',
         outputs_key_field='',
         outputs=response,
@@ -1042,6 +1115,7 @@ def main() -> None:
             'lr-case-collaborators-update': case_collaborators_update_command,
             'lr-entities-list': entities_list_command,
             'lr-hosts-list': hosts_list_command,
+            'lr-users-list': users_list_command,
             'lr-lists-get': lists_get_command,
             'lr-list-summary-create-update': list_summary_create_update_command,
             'lr-list-details-and-items-get': list_details_and_items_get_command,

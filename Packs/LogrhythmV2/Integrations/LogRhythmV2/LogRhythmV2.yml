@@ -1575,11 +1575,11 @@ script:
     arguments:
     - name: case_id
       description: ''
-      required: false
+      required: true
       isArray: false
-    - name: numbers
+    - name: tag_numbers
       description: ''
-      required: false
+      required: true
       isArray: false
     outputs:
     - type: String
@@ -1674,11 +1674,11 @@ script:
     arguments:
     - name: case_id
       description: ''
-      required: false
+      required: true
       isArray: false
-    - name: numbers
+    - name: tag_numbers
       description: ''
-      required: false
+      required: true
       isArray: false
     outputs:
     - type: String
@@ -1765,11 +1765,17 @@ script:
   - name: lr-tags-list
     description: ''
     arguments:
+    - name: tag_name
+      description: ''
+      required: false
+      isArray: false
     - name: offset
+      defaultValue: "0"
       description: ''
       required: false
       isArray: false
     - name: count
+      defaultValue: "30"
       description: ''
       required: false
       isArray: false
@@ -1797,7 +1803,7 @@ script:
     arguments:
     - name: case_id
       description: ''
-      required: false
+      required: true
       isArray: false
     outputs:
     - type: Number
@@ -1823,15 +1829,15 @@ script:
     arguments:
     - name: case_id
       description: ''
-      required: false
+      required: true
       isArray: false
     - name: owner
       description: ''
-      required: false
+      required: true
       isArray: false
     - name: collaborators
       description: ''
-      required: false
+      required: true
       isArray: false
     outputs:
     - type: Number
@@ -1855,15 +1861,21 @@ script:
   - name: lr-entities-list
     description: ''
     arguments:
-    - name: parententityid
+    - name: parent_entity_id
+      description: ''
+      required: false
+      isArray: false
+    - name: entity_id
       description: ''
       required: false
       isArray: false
     - name: offset
+      defaultValue: "0"
       description: ''
       required: false
       isArray: false
     - name: count
+      defaultValue: "30"
       description: ''
       required: false
       isArray: false
@@ -1889,23 +1901,34 @@ script:
   - name: lr-hosts-list
     description: ''
     arguments:
-    - name: name
+    - name: host_id
       description: ''
       required: false
       isArray: false
-    - name: entity
+    - name: host_name
       description: ''
       required: false
       isArray: false
-    - name: recordstatus
+    - name: entity_name
       description: ''
       required: false
       isArray: false
+    - name: record_status
+      description: ''
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - all
+      - active
+      - retired
     - name: offset
+      defaultValue: "0"
       description: ''
       required: false
       isArray: false
     - name: count
+      defaultValue: "30"
       description: ''
       required: false
       isArray: false
@@ -1970,6 +1993,36 @@ script:
     - type: String
       contextPath: LogrhythmV2.HostsList..eventlogPassword
       description: ''
+  - name: lr-users-list
+    description: ''
+    arguments:
+    - name: user_ids
+      description: ''
+      required: false
+      isArray: false
+    - name: entity_ids
+      description: ''
+      required: false
+      isArray: false
+    - name: user_status
+      description: ''
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - Active
+      - Retired
+    - name: offset
+      defaultValue: "0"
+      description: ''
+      required: false
+      isArray: false
+    - name: count
+      defaultValue: "30"
+      description: ''
+      required: false
+      isArray: false
+    outputs: []
   - name: lr-lists-get
     description: ''
     arguments:
