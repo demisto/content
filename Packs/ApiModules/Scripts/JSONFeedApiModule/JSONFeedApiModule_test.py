@@ -1,6 +1,7 @@
-from JSONFeedApiModule import Client, fetch_indicators_command, jmespath
+from JSONFeedApiModule import Client, fetch_indicators_command, jmespath, get_no_update_value
 from CommonServerPython import *
 import requests_mock
+import demistomock as demisto
 
 
 def test_json_feed_no_config():
@@ -19,8 +20,8 @@ def test_json_feed_no_config():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
-                                              auto_detect=False)
+        indicators, _ = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
+                                                 auto_detect=False)
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
 
@@ -48,8 +49,8 @@ def test_json_feed_with_config():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
-                                              auto_detect=False)
+        indicators, _ = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
+                                                 auto_detect=False)
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
 
@@ -80,8 +81,8 @@ def test_json_feed_with_config_mapping():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
-                                              auto_detect=False)
+        indicators, _ = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
+                                                 auto_detect=False)
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
         indicator = indicators[0]
         custom_fields = indicator['fields']
@@ -116,7 +117,8 @@ def test_list_of_indicators_with_no_json_object():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'], auto_detect=True)
+        indicators, _ = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'],
+                                                 auto_detect=True)
         assert len(indicators) == 3
         assert indicators[0].get('value') == '1.1.1.1'
         assert indicators[0].get('type') == 'IP'
@@ -142,7 +144,7 @@ def test_post_of_indicators_with_no_json_object():
             insecure=True, data='test=1'
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'], auto_detect=True)
+        indicators, _ = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'], auto_detect=True)
         assert matcher.last_request.text == 'test=1'
         assert len(indicators) == 3
         assert indicators[0].get('value') == '1.1.1.1'
@@ -161,3 +163,43 @@ Stam : Ba
     assert res['User-Agent'] == 'test'
     assert res['Stam'] == 'Ba'
     assert len(res) == 3
+
+
+def test_get_no_update_value_empty_context():
+    """
+    Given
+    - response with last_modified and etag headers.
+
+    When
+    - Running get_no_update_value method with empty integration context.
+
+    Then
+    - Ensure that the response is True.
+    """
+    class MockResponse:
+        headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                   'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
+    no_update = get_no_update_value(MockResponse())
+    assert no_update
+
+
+def test_get_no_update_value(mocker):
+    """
+    Given
+    - response with last_modified and etag headers with the same values like in the integration context.
+
+    When
+    - Running get_no_update_value method.
+
+    Then
+    - Ensure that the response is False
+    """
+    mocker.patch.object(demisto, 'getIntegrationContext',
+                        return_value={'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                                      'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'})  # guardrails-disable-line
+
+    class MockResponse:
+        headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                   'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
+    no_update = get_no_update_value(MockResponse())
+    assert not no_update
