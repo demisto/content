@@ -154,9 +154,14 @@ class Client(BaseClient):
                    facet: str = None, limit: Union[str, int] = None, start: str = None,
                    allow_empty_params: bool = False) -> dict:
 
-        query_fields = ['status', 'username', 'feedname', 'hostname', 'report', 'query']
-        local_params = locals()
-        query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
+        query_params = assign_params(
+            status=status,
+            username=username,
+            feedname=feedname,
+            hostname=hostname,
+            report=report,
+            query=query
+        )
         query_string = _create_query_string(query_params, allow_empty_params=allow_empty_params)
         params = assign_params(q=query_string,
                                rows=arg_to_number(limit, 'limit'),
@@ -172,10 +177,18 @@ class Client(BaseClient):
                      company_name: str = None, sort: str = None,
                      observed_filename: str = None, query: str = None, facet: str = None,
                      limit: str = None, start: str = None) -> dict:
-        query_fields = ['md5', 'product_name', 'signed', 'group', 'hostname', 'digsig_publisher', 'company_name',
-                        'observed_filename', 'query']
-        local_params = locals()
-        query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
+
+        query_params = assign_params(
+            md5=md5,
+            product_name=product_name,
+            signed=signed,
+            group=group,
+            hostname=hostname,
+            digsig_publisher=digsig_publisher,
+            company_name=company_name,
+            observed_filename=observed_filename,
+            query=query
+        )
         query_string = _create_query_string(query_params)
         params = assign_params(q=query_string,
                                rows=arg_to_number(limit, 'limit'),
@@ -191,7 +204,15 @@ class Client(BaseClient):
                       facet_field: str = None, limit: str = None, start: str = None, allow_empty: bool = False):
         query_fields = ['process_name', 'group', 'hostname', 'parent_name', 'process_path', 'md5', 'query']
         local_params = locals()
-        query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
+        query_params = assign_params(
+            process_name=process_name,
+            parent_name=parent_name,
+            process_path=process_path,
+            group=group,
+            hostname=hostname,
+            md5=md5,
+            query=query
+        )
         query_string = _create_query_string(query_params, allow_empty)
         params = assign_params(q=query_string,
                                rows=arg_to_number(limit, 'limit'),
