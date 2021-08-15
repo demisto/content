@@ -503,10 +503,10 @@ tasks:
     task:
       id: 6838736c-c177-4b2a-883e-43e36cc896bb
       version: -1
-      name: Search And Delete Emails - Generic
+      name: Search And Delete Emails - Generic v2
       description: This playbook searches and delete emails with similar attributes
         of a malicious email using EWS or Office 365.
-      playbookName: Search And Delete Emails - Generic
+      playbookName: Search And Delete Emails - Generic v2
       type: playbook
       iscommand: false
       brand: ""
