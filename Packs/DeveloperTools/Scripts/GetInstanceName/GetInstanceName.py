@@ -26,7 +26,6 @@ def get_instance_name_command(args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='Instances',
         outputs_key_field='',
         outputs={
-            'Instances': instances,
             'integrationName': integration_name,
             'instanceName': instance_name
         },
