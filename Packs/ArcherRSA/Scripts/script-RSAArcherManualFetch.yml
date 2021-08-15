@@ -34,13 +34,14 @@ args:
   description: 'ID of the application to get the incident from. For example: applicationId="75"'
 - name: incidentIds
   required: true
-  description: 'The Incident IDs to get details for, separated by commas. For example: IncidentIds="12345,67891" '
+  description: 'The Incident IDs to get details for, separated by commas. For example:
+    IncidentIds="12345,67891" '
 scripttarget: 0
 runonce: false
 dependson:
   must:
   - archer-manually-fetch-incident
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.20958
+dockerimage: demisto/python:2.7.18.22912
 tests:
 - No tests (auto formatted)
