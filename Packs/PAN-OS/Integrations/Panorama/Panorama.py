@@ -1965,15 +1965,15 @@ def panorama_create_custom_url_category(custom_url_category_name: str, type_: An
     element = add_argument(description, 'description', False)
     if major_version <= 8:
         if type_ or categories:
-            raise Exception('The type and categories arguments are only relevant for PAN-OS 9.x versions.')
+            raise DemistoException('The type and categories arguments are only relevant for PAN-OS 9.x versions.')
         element += add_argument_list(sites, 'list', True)
     else:  # major is 9.x
         if not type_:
-            raise Exception('The type argument is mandatory for PAN-OS 9.x versions.')
+            raise DemistoException('The type argument is mandatory for PAN-OS 9.x versions.')
         if (not sites and not categories) or (sites and categories):
-            raise Exception('Exactly one of the sites and categories arguments should be defined.')
+            raise DemistoException('Exactly one of the sites and categories arguments should be defined.')
         if (type_ == 'URL List' and categories) or (type_ == 'Category Match' and sites):
-            raise Exception('URL List type is only for sites, Category Match is only for categories.')
+            raise DemistoException('URL List type is only for sites, Category Match is only for categories.')
 
         if type_ == 'URL List':
             element += add_argument_list(sites, 'list', True)
@@ -1984,7 +1984,7 @@ def panorama_create_custom_url_category(custom_url_category_name: str, type_: An
     params = {
         'action': 'set',
         'type': 'config',
-        'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
+        'xpath': f'{XPATH_OBJECTS}profiles/custom-url-category/entry[@name=\'{custom_url_category_name}\']',
         'element': element,
         'key': API_KEY
     }
@@ -2436,6 +2436,29 @@ def panorama_get_url_filter_command(name: str):
         }
     })
 
+@logger
+def create_url_filter_params(
+        url_filter_name: str, action: str,
+        url_category_list: str,
+        override_allow_list: Optional[str] = None,
+        override_block_list: Optional[str] = None,
+        description: Optional[str] = None):
+    element = add_argument_list(url_category_list, action, True) + \
+              add_argument_list(override_allow_list, 'allow-list', True) + \
+              add_argument_list(override_block_list, 'block-list', True) + \
+              add_argument(description, 'description', False)
+    major_version = get_pan_os_major_version()
+    if major_version <= 8:  # up to version 8.X included, the action xml tag needs to be added
+        element += "<action>block</action>"
+    url_filter_params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f'{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']',
+        'element': element,
+        'key': API_KEY
+    }
+    return url_filter_params
+
 
 @logger
 def panorama_create_url_filter(
@@ -2444,23 +2467,8 @@ def panorama_create_url_filter(
         override_allow_list: Optional[str] = None,
         override_block_list: Optional[str] = None,
         description: Optional[str] = None):
-
-    element = add_argument_list(url_category_list, action, True) + \
-              add_argument_list(override_allow_list, 'allow-list', True) + \
-              add_argument_list(override_block_list, 'block-list', True) + \
-              add_argument(description, 'description', False)
-
-    major_version = get_pan_os_major_version()
-    if major_version <= 8:  # up to version 8.X included, the action xml tag needs to be added
-        element += "<action>block</action>"
-
-    params = {
-        'action': 'set',
-        'type': 'config',
-        'xpath': f'{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']',
-        'element': element,
-        'key': API_KEY
-    }
+    params = create_url_filter_params(url_filter_name, action, description, override_allow_list, override_block_list,
+                                      url_category_list)
 
     result = http_request(
         URL,
