@@ -39,7 +39,7 @@ tasks:
     task:
       id: 06a7596c-6db0-4ecb-8da5-c0bf9f43df49
       version: -1
-      name: Check If Incidents exists
+      name: Check If Incidents exist
       type: condition
       iscommand: false
       brand: ""
@@ -416,7 +416,7 @@ tasks:
       id: a3329f63-f23a-439e-81de-919adb7b3f8d
       version: -1
       name: VerifyEnoughIncidents
-      description: Returns, whether there're, are enough incidents in the system.
+      description: Returns whether there are enough incidents in the system.
       scriptName: VerifyEnoughIncidents
       type: regular
       iscommand: false
@@ -547,7 +547,7 @@ tasks:
       id: 2540385f-49bf-4cb3-8f83-7a82da8d0d3d
       version: -1
       name: GetInstanceName
-      description: Check integration instance name.
+      description: Given an integration name, returns the instance name.
       scriptName: GetInstanceName
       type: regular
       iscommand: false
@@ -620,7 +620,7 @@ tasks:
     task:
       id: 1fc1c12a-a2de-45e8-8761-6b9330559448
       version: -1
-      name: Check if there is inputs?
+      name: Check if there are playbook inputs
       type: condition
       iscommand: false
       brand: ""
