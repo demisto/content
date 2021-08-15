@@ -65,7 +65,7 @@ class ReleaseNotesBreakingChangesCalc:
         # Handle cases of one BC version in entry.
         if len(bc_version_to_text) == 1:
             return list(bc_version_to_text.values())[0]
-        # Handle cases of more two or more BC versions in entry.
+        # Handle cases of two or more BC versions in entry.
         text_of_bc_versions, bc_without_text = self._split_bc_versions_with_and_without_text(bc_version_to_text)
         # Case one: Not even one BC version contains breaking text.
         if len(text_of_bc_versions) == 0:
