@@ -1,0 +1,90 @@
+args:
+  - auto: PREDEFINED
+    default: false
+    defaultValue: scatter
+    description: The type of the widget to return.
+    isArray: false
+    name: returnWidgetType
+    predefined:
+      - scatter
+      - summary
+      - incidents
+    required: false
+    secret: false
+  - default: false
+    defaultValue: 1 months ago
+    description: 'The start date by which to filter incidents. Date format will be the
+    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
+    +0200").'
+    isArray: false
+    name: fromDate
+    required: false
+    secret: false
+  - default: false
+    defaultValue: '500'
+    description: The maximum number of incidents to fetch
+    isArray: false
+    name: limit
+    required: false
+    secret: false
+  - default: false
+    defaultValue: Phishing
+    description: The Phishing incident type
+    isArray: false
+    name: incidentType
+    required: false
+    secret: false
+  - default: false
+    description: Input search query from the dashboard
+    isArray: false
+    name: searchQuery
+    required: false
+    secret: false
+  - default: false
+    defaultValue: '24'
+    description: Period of time (in hours) before retraining the model. Default is "24".
+    isArray: false
+    name: modelExpiration
+    predefined:
+      - ''
+    required: false
+    secret: false
+  - auto: PREDEFINED
+    default: false
+    defaultValue: 'False'
+    description: Determines whether to force the model to re-train. Default is "False".
+    isArray: false
+    name: forceRetrain
+    predefined:
+      - 'True'
+      - 'False'
+    required: false
+    secret: false
+  - default: false
+    defaultValue: emailsubject,emailbody,emailbodyhtml
+    description: Comma-separated list of additional incident fields to display, but
+      which will not be taken into account when computing similarity.
+    isArray: false
+    name: fieldsToDisplay
+    required: false
+    secret: false
+  - default: false
+    defaultValue: '4'
+    description: Minimum number of incidents a cluster should contain for it to be retained.
+    isArray: false
+    name: minNumberofIncidentPerCluster
+    required: false
+    secret: false
+comment: Train clustering model on Cortex XDR incident type.
+commonfields:
+  id: 3b0d4507-99af-4f37-aaa0-03844bbc2e2c
+  version: -1
+enabled: false
+name: DBotGroupPhishingIncidents
+script: '-'
+subtype: python3
+system: false
+tags:
+  - ml
+timeout: '0'
+type: python
