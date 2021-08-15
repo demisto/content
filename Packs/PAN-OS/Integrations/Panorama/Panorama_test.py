@@ -50,7 +50,7 @@ def patched_requests_mocker(requests_mock):
     return requests_mock
 
 
-def test_panoram_get_os_version(patched_requests_mocker):
+def test_panorama_get_os_version(patched_requests_mocker):
     from Panorama import get_pan_os_version
     import Panorama
     Panorama.URL = 'https://1.1.1.1:443/api/'
@@ -59,7 +59,7 @@ def test_panoram_get_os_version(patched_requests_mocker):
     assert r == '9.0.6'
 
 
-def test_panoram_override_vulnerability(patched_requests_mocker):
+def test_panorama_override_vulnerability(patched_requests_mocker):
     from Panorama import panorama_override_vulnerability
     import Panorama
     Panorama.URL = 'https://1.1.1.1:443/api/'
@@ -201,6 +201,110 @@ def test_prettify_custom_url_category():
     response = prettify_custom_url_category(custom_url_category)
     expected = {'Name': 'foo', 'Sites': ['a', 'b', 'c']}
     assert response == expected
+
+
+def test_panorama_create_custom_url_category_8_x(mocker):
+    """
+    Given:
+     - an only > 9.x valid argument for custom url category creation
+
+    When:
+     - running the panorama_create_custom_url_category function
+     - mocking the pan-os version to be 8.x
+
+    Then:
+     - a proper error is raised
+    """
+    from Panorama import panorama_create_custom_url_category
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=8)
+    custom_url_category_name = 'name'
+    description = 'test_desc'
+    type_ = 'URL List'
+
+    with pytest.raises(DemistoException,
+                       match='The type and categories arguments are only relevant for PAN-OS 9.x versions.'):
+        panorama_create_custom_url_category(custom_url_category_name, type_=type_, description=description)
+
+
+def test_panorama_create_custom_url_category_9_x(mocker):
+    """
+    Given:
+     - a non valid argument for custom url category creation
+
+    When:
+     - running the panorama_create_custom_url_category function
+     - mocking the pan-os version to be 9.x
+
+    Then:
+     - a proper error is raised
+    """
+    from Panorama import panorama_create_custom_url_category
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+    custom_url_category_name = 'name'
+    type_ = 'URL List'
+    categories = 'phishing'
+    sites = 'a.com'
+    description = 'test_desc'
+
+    with pytest.raises(DemistoException,
+                       match='The type argument is mandatory for PAN-OS 9.x versions.'):
+        panorama_create_custom_url_category(custom_url_category_name, sites=sites, description=description)
+
+    with pytest.raises(DemistoException,
+                       match='Exactly one of the sites and categories arguments should be defined.'):
+        panorama_create_custom_url_category(custom_url_category_name, type_=type_, sites=sites, categories=categories)
+
+    with pytest.raises(DemistoException,
+                       match='URL List type is only for sites, Category Match is only for categories.'):
+        panorama_create_custom_url_category(custom_url_category_name, type_=type_, categories=categories)
+
+
+def test_create_url_filter_params_8_x(mocker):
+    """
+    Given:
+     - a valid argument for url filter creation
+
+    When:
+     - running the create_url_filter_params utility function
+     - mocking the pan-os version to be 8.x
+
+    Then:
+     - a proper xml element is generated
+    """
+    from Panorama import create_url_filter_params
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=8)
+    url_filter_name = 'name'
+    action = 'alert'
+    url_category_list = 'adult'
+    description = 'test_desc'
+
+    url_filter_params = create_url_filter_params(url_filter_name, action, url_category_list=url_category_list,
+                                                 description=description)
+    assert url_filter_params['element'].find('<action>block</action>') != -1  # if not -1, then it is found
+
+
+def test_create_url_filter_params_9_x(mocker):
+    """
+    Given:
+     - a valid argument for url filter creation
+
+    When:
+     - running the create_url_filter_params utility function
+     - mocking the pan-os version to be 9.x
+
+    Then:
+     - a proper xml element is generated
+    """
+    from Panorama import create_url_filter_params
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+    url_filter_name = 'name'
+    action = 'alert'
+    url_category_list = 'adult'
+    description = 'test_desc'
+
+    url_filter_params = create_url_filter_params(url_filter_name, action, url_category_list=url_category_list,
+                                                 description=description)
+    assert url_filter_params['element'].find('<action>block</action>') == -1  # if  -1, then it is not found
 
 
 def test_prettify_edl():

@@ -2178,6 +2178,7 @@ tasks:
       serialNo: {}
       sessionID:
         simple: "84190"
+    continueonerror: true
     separatecontext: false
     view: |-
       {
