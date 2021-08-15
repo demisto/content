@@ -361,8 +361,22 @@ class Client(BaseClient):
                 json_data=query
             )
         else:
-            res = self._http_request('POST', 'case/artifact/_search', ok_codes=[200])
-            res[:] = [x for x in res] if case_id else res
+            query = {
+                "query": {
+                    "_and": [{
+                        "_parent": {
+                            "_type": "case",
+                            "_query": {"_id": case_id}
+                        }
+                    }, {
+
+                    }]
+                }
+            }
+            res = self._http_request('POST', 'case/artifact/_search?range=all', ok_codes=[200], json_data=query)
+
+            #res = self._http_request('POST', 'case/artifact/_search', ok_codes=[200])
+            #res[:] = [x for x in res] if case_id else res
         return res
 
     def create_observable(self, case_id: str = None, data: dict = None):
@@ -764,7 +778,7 @@ def list_observables_command(client: Client, args: dict):
         read = f"No case found with id: {case_id}"
         observables = None
     else:
-        observables = client.list_observables(case_id)
+        observables = client.list_observables() if case == "all" else case['observables']
         if observables:
             read = tableToMarkdown(f"Observables for Case {case_id}" if case_id else "Observables:", observables,
                                    ['data', 'dataType', 'message'])
