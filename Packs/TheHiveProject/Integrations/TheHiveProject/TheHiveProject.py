@@ -324,7 +324,7 @@ class Client(BaseClient):
 
     def list_observables(self, case_id: str = None):
         if self.version[0] == "4":
-            query = {
+            query4 = {
                 "query": [
                     {
                         "_name": "getCase",
@@ -358,7 +358,7 @@ class Client(BaseClient):
                 'v1/query',
                 ok_codes=[200],
                 params={"name": "observables"},
-                json_data=query
+                json_data=query4
             )
         else:
             query = {
@@ -375,8 +375,8 @@ class Client(BaseClient):
             }
             res = self._http_request('POST', 'case/artifact/_search?range=all', ok_codes=[200], json_data=query)
 
-            #res = self._http_request('POST', 'case/artifact/_search', ok_codes=[200])
-            #res[:] = [x for x in res] if case_id else res
+            #  res = self._http_request('POST', 'case/artifact/_search', ok_codes=[200])
+            #  res[:] = [x for x in res] if case_id else res
         return res
 
     def create_observable(self, case_id: str = None, data: dict = None):
