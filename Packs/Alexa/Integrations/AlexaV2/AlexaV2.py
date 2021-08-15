@@ -29,7 +29,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 DBOT_SCORE_TO_TEXT = {0: 'Unknown',
                       1: 'Good',
-                      2: 'Suspicous'}
+                      2: 'Suspicious'}
 
 DOMAIN_REGEX = (
     r"([a-z¡-\uffff0-9](?:[a-z¡-\uffff0-9-]{0,61}"
@@ -90,22 +90,14 @@ class Client(BaseClient):
 def rank_to_score(domain: str, rank: Optional[int], threshold: int, benign: int, reliability: DBotScoreReliability):
     if rank is None:
         score = Common.DBotScore.SUSPICIOUS
-        # score_text = 'suspicious'
     elif rank < 0:
         raise DemistoException('Rank should be positive')
     elif 0 < rank <= benign:
         score = Common.DBotScore.GOOD
-        # score_text = 'good'
     elif rank > threshold:
         score = Common.DBotScore.SUSPICIOUS  # todo maybe it should be bad?
-        # score_text = 'suspicious'
     else:  # alexa_rank < client.threshold:
         score = Common.DBotScore.NONE
-        # score_text = 'Unkown'
-    # else: # Should never be here
-    #     score = 2
-    #     score_text = 'suspicious'
-    # todo check with Meital / Dean if we use score_text
     dbot_score = Common.DBotScore(
         indicator=domain,
         indicator_type=DBotScoreType.DOMAIN,
@@ -160,10 +152,10 @@ def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
                                                                benign=client.benign,
                                                                reliability=client.reliability)
 
-        alexa_rank: str = rank if rank else 'Unknown'
+        rank: str = rank if rank else 'Unknown'
         result = {'Name': domain,
                   'Indicator': domain,
-                  'Rank': alexa_rank}
+                  'Rank': rank}
         table = {'Domain': domain,
                  'Alexa Rank': rank,
                  'Reputation': DBOT_SCORE_TO_TEXT.get(domain_standard_context.dbot_score.score, 'Unknown')}
@@ -188,7 +180,7 @@ def main() -> None:
     :rtype:
     """
     params = demisto.params()
-    api_key = params.get('api_key')
+    api_key = params.get('credentials').get('password')
     base_api = params.get('base_url')
     reliability = demisto.params().get('integrationReliability')
     verify_certificate = not params.get('insecure', False)

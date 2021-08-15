@@ -16,8 +16,8 @@ def file_to_dct(file: str) -> Dict:
 
 client = create_client()
 
-DOMAINS_GOOD_RESULTS = [('google.com', file_to_dct('google_response.json')),
-                        ('google.com', file_to_dct('404_response.json'))]
+DOMAINS_GOOD_RESULTS = [('google.com', file_to_dct('test_data/google_response.json')),
+                        ('google.com', file_to_dct('test_data/404_response.json'))]
 
 
 @pytest.mark.parametrize('domain, raw_result', DOMAINS_GOOD_RESULTS)
@@ -41,8 +41,8 @@ def test_domain_rank(mocker, domain, raw_result):
     assert demisto.get(raw_result, 'Awis.Results.Result.Alexa.TrafficData.Rank') == rank_result
 
 
-DOMAINS_BAD_RESULTS = [('xsoar.com', file_to_dct('negative_rank_response.json')),
-                       ('xsoar.com', file_to_dct('nan_rank_response.json'))]
+DOMAINS_BAD_RESULTS = [('xsoar.com', file_to_dct('test_data/negative_rank_response.json')),
+                       ('xsoar.com', file_to_dct('test_data/nan_rank_response.json'))]
 
 
 def test_multi_domains(mocker):
@@ -60,7 +60,7 @@ def test_multi_domains(mocker):
     """
 
     domains = 'google.com,xsoar.com'
-    raw_res = file_to_dct('google_response.json')
+    raw_res = file_to_dct('test_data/google_response.json')
     mocker.patch.object(client, 'alexa_rank', return_value=raw_res)
     result = alexa_domain(client, {'domain': domains})
     assert len(result) == len(argToList(domains))

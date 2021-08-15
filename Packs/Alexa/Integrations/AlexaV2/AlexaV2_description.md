@@ -1,4 +1,4 @@
-טובThreshold is the point where a domain will be considered unknown versus suspicious.
+Threshold is the point where a domain will be considered unknown versus suspicious.
 
 
 To get an API key go to: https://awis.alexa.com/

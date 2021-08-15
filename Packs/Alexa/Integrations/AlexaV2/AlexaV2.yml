@@ -3,6 +3,36 @@ commonfields:
   id: Alexa Rank Indicator V2
   version: -1
 configuration:
+- defaultvalue: 'https://awis.api.alexa.com/api'
+  display: Base API URL
+  name: base_url
+  required: true
+  type: 0
+- displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: For Alexa rank over this threshold, the domain will be marked as suspicious.
+  defaultvalue: '2000000'
+  display: Rank threshold for suspicious domain
+  name: threshold
+  required: true
+  type: 0
+- additionalinfo: For Alexa rank less than this threshold, the domain will be considered trusted and marked as good.
+  defaultvalue: '0'
+  display: Rank threshold for top domains
+  name: benign
+  required: true
+  type: 0
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -17,38 +47,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: For Alexa rank over this threshold, the domain will be marked as suspicious.
-  defaultvalue: '2000000'
-  display: Rank threshold for suspicious domain
-  name: threshold
-  required: true
-  type: 0
-- defaultvalue: 'https://awis.api.alexa.com/api'
-  display: Base API URL
-  name: base_url
-  required: true
-  type: 0
-- additionalinfo: For Alexa rank less than this threshold, the domain will be considered trusted and marked as good.
-  defaultvalue: '0'
-  display: Rank threshold for top domains
-  name: benign
-  required: true
-  type: 0
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Api Key
-  hidden: false
-  name: api_key
-  required: true
-  type: 4
 description: Alexa provides website ranking information that can be useful in determining
-  if the domain in question has a strong web presence. V2
+  if the domain in question has a strong web presence.
 display: Alexa Rank Indicator V2
 name: Alexa Rank Indicator V2
 script:
