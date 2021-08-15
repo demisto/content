@@ -247,6 +247,7 @@ def search_alerts():
     payload = {}  # type: dict
     handle_time_filter(payload, {'type': 'relative', 'value': {'amount': 7, 'unit': 'day'}})
     handle_filters(payload)
+    demisto.info("Executing Prisma Cloud (RedLock) search_alerts with payload: {}".format(payload))
     response = req('POST', 'alert', payload, {'detailed': 'true'})
     alerts = []
     context_path = 'Redlock.Alert(val.ID === obj.ID)'
