@@ -4,7 +4,7 @@ To configure the integration, enter your credentials in the following fields:
 
 ### To configure fetch incidents
 - Check the *Fetches incidents*.
-- Set the relevant fetch incidents parameters: 
+- Set the relevant fetch incident parameters: 
    - *Source*
    - *Destination*
    - *Tag*
