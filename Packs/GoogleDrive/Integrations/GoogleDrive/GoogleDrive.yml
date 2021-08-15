@@ -3205,4 +3205,4 @@ commonfields:
 fromversion: 5.0.0
 tests:
 - GoogleDrive-Test
-- GoogleDrive-Permissions-Test
+- Google Drive Permissions Test
