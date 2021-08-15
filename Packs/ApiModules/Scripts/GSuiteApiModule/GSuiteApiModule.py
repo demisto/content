@@ -41,13 +41,15 @@ class GSuiteClient:
     """
 
     def __init__(self, service_account_dict: Dict[str, str], proxy: bool, verify: bool,
-                 base_url: str = '', headers: Optional[Dict[str, str]] = None):
+                 base_url: str = '', headers: Optional[Dict[str, str]] = None,
+                 user_id: str = ''):
         self.headers = headers
         self.credentials = service_account.Credentials.from_service_account_info(info=service_account_dict)
         self.proxy = proxy
         self.verify = verify
         self.authorized_http: Any = None
         self.base_url = base_url
+        self.user_id = user_id
 
     def set_authorized_http(self, scopes: List[str], subject: Optional[str] = None, timeout: int = 60) -> None:
         """
