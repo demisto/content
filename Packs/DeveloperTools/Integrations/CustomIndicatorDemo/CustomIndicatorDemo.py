@@ -37,15 +37,12 @@ class Client(BaseClient):
         return {"dummy": dummy}
 
 
-def test_module(client: Client) -> str:
+def test_module() -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
 
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
@@ -107,22 +104,19 @@ def main() -> None:
     :return:
     :rtype:
     """
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         headers: Dict = {}
 
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
+            base_url='',
+            verify=False,
             headers=headers,
-            proxy=proxy)
+            proxy=False)
 
         if demisto.command() == 'test-module':
-            result = test_module(client)
+            result = test_module()
             return_results(result)
         elif demisto.command() == 'test-custom-indicator':
             return_results(test_custom_indicator(client))
