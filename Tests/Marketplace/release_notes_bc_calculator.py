@@ -54,7 +54,7 @@ class ReleaseNotesBreakingChangesCalc:
 
     def _calculate_bc_text(self, bc_version_to_text: Dict[str, Optional[str]]) -> Optional[str]:
         """
-        Receives BC versions to dict for current changelog entry. Calculates text for for BC entry.
+        Receives BC versions to text dict for current changelog entry. Calculates text for BC entry.
         Args:
             bc_version_to_text (Dict[str, Optional[str]): {bc version, bc_text}
 
