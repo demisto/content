@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 import json
 import requests
 import dateparser
-
+from MicrosoftApiModule import *  # noqa: E402
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -16,7 +16,7 @@ APP_NAME = 'ms-azure-sentinel'
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
-API_VERSION = '2019-01-01-preview'
+API_VERSION = '2021-04-01'
 
 NEXTLINK_DESCRIPTION = 'NextLink for listing commands'
 
@@ -34,62 +34,59 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel
                                     'for GetEntityByID is 30 days.'
 
 
-class Client:
-    def __init__(self, self_deployed: bool, refresh_token: str, auth_and_token_url: str, enc_key: str,
-                 redirect_uri: str, auth_code: str, subscription_id: str, resource_group_name: str, workspace_name: str,
-                 verify: bool, proxy: bool):
+class AzureSentinelClient(MicrosoftClient):
+    def __init__(self, tenant_id: str,  client_id: str,
+                 client_secret: str, subscription_id: str,
+                 resource_group_name: str,  workspace_name: str,
+                 *args, **kwargs):
 
-        tenant_id = refresh_token if self_deployed else ''
-        refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
                    f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
                    f'{workspace_name}/providers/Microsoft.SecurityInsights'
-        self.ms_client = MicrosoftClient(
-            self_deployed=self_deployed,
-            auth_id=auth_and_token_url,
-            refresh_token=refresh_token,
-            enc_key=enc_key,
-            redirect_uri=redirect_uri,
-            token_retrieval_url='https://login.microsoftonline.com/{tenant_id}/oauth2/token',
-            grant_type=AUTHORIZATION_CODE,  # disable-secrets-detection
-            app_name=APP_NAME,
-            base_url=base_url,
-            verify=verify,
-            proxy=proxy,
-            resource='https://management.core.windows.net',
-            scope='',
+
+        super().__init__(
             tenant_id=tenant_id,
-            auth_code=auth_code,
-            ok_codes=(200, 201, 202, 204, 400, 401, 403, 404)
-        )
+            auth_id=client_id,
+            enc_key=client_secret,
+            self_deployed=True,
+            grant_type=CLIENT_CREDENTIALS,
+            token_retrieval_url=TOKEN_RETRIEVAL_URI,
+            base_url=base_url,
+            scope=Scopes.management_azure,
+            ok_codes=(200, 201, 202, 204),
+            *args, **kwargs)
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None, is_get_entity_cmd=False):
-        if not params:
-            params = {}
         if not full_url:
+            params = params or {}
             params['api-version'] = API_VERSION
 
-        res = self.ms_client.http_request(method=method,  # disable-secrets-detection
-                                          url_suffix=url_suffix,
-                                          full_url=full_url,
-                                          json_data=data,
-                                          params=params,
-                                          resp_type='response')
-        res_json = res.json()
+        res = super().http_request(
+            method=method,  # disable-secrets-detection
+            url_suffix=url_suffix,
+            full_url=full_url,
+            json_data=data,
+            params=params,
+            error_handler=error_handler,
+            resp_type='response')
 
-        if res.status_code in (400, 401, 403, 404):
-            code = res_json.get('error', {}).get('code', 'Error')
-            error_msg = res_json.get('error', {}).get('message', res_json)
-            if res.status_code == 404 and is_get_entity_cmd:
-                error_msg += ENTITIES_RETENTION_PERIOD_MESSAGE
-            raise ValueError(
-                f'[{code} {res.status_code}] {error_msg}'
-            )
-
-        return res_json
+        return res.json()
 
 
 ''' INTEGRATION HELPER METHODS '''
+
+
+def error_handler(response: requests.Response):
+    """
+    raise informative exception in case of error response
+    """
+    if response.status_code in (400, 401, 403, 404):
+        res_json = response.json()
+        code = res_json.get('error', {}).get('code', 'Error')
+        error_msg = res_json.get('error', {}).get('message', res_json)
+        raise ValueError(
+            f'[{code} {response.status_code}] {error_msg}'
+        )
 
 
 def format_date(date):
@@ -135,7 +132,7 @@ def incident_data_to_demisto_format(inc_data):
     return formatted_data
 
 
-def get_update_incident_request_data(client: Client, args: Dict[str, str]):
+def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str, str]):
     # Get Etag and other mandatory properties (title, severity, status) for update_incident command
     _, _, fetched_incident_data = get_incident_by_id_command(client, args)
 
@@ -243,11 +240,9 @@ def severity_to_level(severity):
 ''' INTEGRATION COMMANDS '''
 
 
-def test_connection(client, params):
-    if params.get('self_deployed', False) and not params.get('auth_code'):
-        return_error('You must enter an authorization code in a self-deployed configuration.')
-    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
-    return_outputs('```✅ Success!```')
+def test_connection(client):
+    client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+    return 'ok'
 
 
 def get_incident_by_id_command(client, args):
@@ -318,7 +313,7 @@ def list_incidents_command(client, args, is_fetch_incidents=False):
     )
 
 
-def update_incident_command(client: Client, args: Dict[str, Any]):
+def update_incident_command(client: AzureSentinelClient, args: Dict[str, Any]):
     inc_id = args.get('incident_id')
 
     inc_data = get_update_incident_request_data(client, args)
@@ -532,6 +527,53 @@ def list_entity_relations_command(client, args):
     )
 
 
+def list_incident_entities_command(client, args):
+    incident_id = args.get('incident_id')
+    limit = min(50, int(args.get('limit')))
+    next_link = args.get('next_link', '')
+
+    if next_link:
+        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
+        result = client.http_request('GET', full_url=next_link)
+    else:
+        url_suffix = f'incidents/{incident_id}/entities'
+        params = {
+            '$top': limit
+        }
+
+        result = client.http_request('POST', url_suffix, params=params)
+        raw_entities = result.get('entities', [])
+    entities = [
+       dict(
+           ID=entity.get('name'),
+           Kind=entity.get('kind'),
+           IncidentId=incident_id,
+           Properties=entity.get('properties')) for entity in raw_entities
+    ]
+
+    outputs = {f'AzureSentinel.IncidentEntity(val.ID === obj.ID && val.IncidentId == {incident_id})': entities}
+
+    # we don't want whitespaces in this value, so it won't be considered as two arguments in the CLI by mistake
+    next_link = result.get('nextLink', '').replace(' ', '%20')
+    if next_link:
+        next_link_item = {
+            'Description': NEXTLINK_DESCRIPTION,
+            'URL': next_link
+        }
+        outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item  # type: ignore
+
+    readable_output = tableToMarkdown(f'Incident {incident_id} Entities ({len(entities)} results)', entities,
+                                      headers=['ID', 'Kind', 'IncidentId'],
+                                      headerTransform=pascalToSpace,
+                                      removeNull=True)
+
+    return (
+        readable_output,
+        outputs,
+        result
+    )
+
+
 def list_incident_relations_command(client, args):
     inc_id = args.get('incident_id')
     limit = min(50, int(args.get('limit')))
@@ -637,13 +679,10 @@ def main():
     params = demisto.params()
     LOG(f'Command being called is {demisto.command()}')
     try:
-        client = Client(
-            self_deployed=params.get('self_deployed', False),
-            auth_and_token_url=params.get('auth_id', ''),
-            refresh_token=params.get('refresh_token', ''),
-            enc_key=params.get('enc_key', ''),
-            redirect_uri=params.get('redirect_uri', ''),
-            auth_code=params.get('auth_code', ''),
+        client = AzureSentinelClient(
+            tenant_id=params.get('tenant_id', ''),
+            client_id=params.get('client_id', ''),
+            client_secret=params.get('client_secret', ''),
             subscription_id=params.get('subscriptionID', ''),
             resource_group_name=params.get('resourceGroupName', ''),
             workspace_name=params.get('workspaceName', ''),
@@ -660,15 +699,12 @@ def main():
             'azure-sentinel-incident-add-comment': incident_add_comment_command,
             'azure-sentinel-list-incident-relations': list_incident_relations_command,
             'azure-sentinel-get-entity-by-id': get_entity_by_id_command,
-            'azure-sentinel-list-entity-relations': list_entity_relations_command
+            'azure-sentinel-list-entity-relations': list_entity_relations_command,
+            'azure-sentinel-list-incident-entities': list_incident_entities_command
         }
 
         if demisto.command() == 'test-module':
-            # cannot use test module due to the lack of ability to set refresh token to integration context
-            raise Exception("Please use !azure-sentinel-test instead")
-
-        elif demisto.command() == 'azure-sentinel-test':
-            test_connection(client, params)
+            return_outputs(test_connection(client))
 
         elif demisto.command() == 'fetch-incidents':
             # How much time before the first fetch to retrieve incidents
@@ -692,9 +728,6 @@ def main():
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
-
-
-from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

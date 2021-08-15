@@ -3,34 +3,36 @@ commonfields:
   id: Azure Sentinel
   version: -1
 configuration:
-- display: ID (received from the authorization step - see Detailed Instructions (?)
-    section)
-  name: auth_id
+- display: Tenant ID
+  description: The tenant (directory) id from Azure Active Directory
+  name: tenant_id
   required: true
   type: 4
-- display: Token (received from the authorization step - see Detailed Instructions
-    (?) section)
-  name: refresh_token
+- display: Client ID
+  description: The Application ID id from Azure App registrations
+  name: client_id
   required: true
   type: 4
-- display: Key (received from the authorization step - see Detailed Instructions (?)
-    section)
-  name: enc_key
+- display: Client Secret
+  description: The secret from the registered application's Client credentials
+  name: client_secret
   required: true
   type: 4
-- display: Use a self-deployed Azure application
-  name: self_deployed
-  required: false
-  type: 8
-- display: Application redirect URI (for self-deployed mode)
-  name: redirect_uri
-  required: false
+- display: Subscription ID
+  description: The Azure Subscription ID
+  name: subscriptionID
+  required: true
   type: 0
-- display: Authorization code (received from the authorization step - see Detailed
-    Instructions (?) section)
-  name: auth_code
-  required: false
-  type: 4
+- display: Resource Group Name
+  description: The Azure Resource Group Name
+  name: resourceGroupName
+  required: true
+  type: 0
+- display: Workspace Name
+  description: The Azure Workspace Name
+  name: workspaceName
+  required: true
+  type: 0
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -54,18 +56,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Subscription ID
-  name: subscriptionID
-  required: true
-  type: 0
-- display: Resource Group Name
-  name: resourceGroupName
-  required: true
-  type: 0
-- display: Workspace Name
-  name: workspaceName
-  required: true
-  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -596,6 +586,7 @@ script:
       command, and get an entity ID to apply this command on. In the current Azure
       Sentinel API version the retention period for GetEntityByID is 30 days.
     execution: false
+    hidden: true
     name: azure-sentinel-get-entity-by-id
   - arguments:
     - default: false
@@ -640,6 +631,7 @@ script:
     deprecated: false
     description: Gets a list of an entity's relations from Azure Sentinel.
     execution: false
+    hidden: true
     name: azure-sentinel-list-entity-relations
     outputs:
     - contextPath: AzureSentinel.EntityRelatedResource.ID
@@ -659,10 +651,46 @@ script:
     - contextPath: AzureSentinel.EntityRelatedResource.EntityID
       description: The entity ID.
       type: String
-  - deprecated: false
-    description: Tests connectivity to Azure Sentinel.
+  - arguments:
+      - default: false
+        description: The incident ID.
+        isArray: false
+        name: incident_id
+        required: true
+        secret: false
+      - default: false
+        defaultValue: '50'
+        description: The maximum number of entities to return. The default value is
+          50.
+        isArray: false
+        name: limit
+        required: false
+        secret: false
+      - default: false
+        description: A link that specifies a starting point to use for subsequent calls.
+          Using this argument overrides all of the other command arguments.
+        isArray: false
+        name: next_link
+        required: false
+        secret: false
+    deprecated: false
+    description: Gets a list of an incident's entities from Azure Sentinel.
     execution: false
-    name: azure-sentinel-test
+    name: azure-sentinel-list-incident-entities
+    outputs:
+      - contextPath: AzureSentinel.IncidentEntity.ID
+        description: The ID of the entity.
+        type: String
+      - contextPath: AzureSentinel.IncidentEntity.IncidentId
+        description: The ID of the incident.
+        type: String
+      - contextPath: AzureSentinel.IncidentEntity.Kind
+        description: The kind of the entity.
+        type: String
+      - contextPath: AzureSentinel.IncidentEntity.Properties
+        description: The properties of the entity.
+        type: Unknown
+
   dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: true

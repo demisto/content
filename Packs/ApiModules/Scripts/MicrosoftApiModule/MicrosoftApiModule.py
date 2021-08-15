@@ -13,6 +13,7 @@ from typing import Dict, Tuple, List, Optional
 class Scopes:
     graph = 'https://graph.microsoft.com/.default'
     security_center = 'https://api.securitycenter.windows.com/.default'
+    management_azure = 'https://management.azure.com/.default'
 
 
 # authorization types
@@ -26,6 +27,8 @@ REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
 REGEX_SEARCH_URL = r'(?P<url>https?://[^\s]+)'
 SESSION_STATE = 'session_state'
+
+TOKEN_RETRIEVAL_URI = 'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
 
 
 class MicrosoftClient(BaseClient):
@@ -112,7 +115,7 @@ class MicrosoftClient(BaseClient):
         Returns:
             Response from api according to resp_type. The default is `json` (dict or list).
         """
-        if 'ok_codes' not in kwargs:
+        if 'ok_codes' not in kwargs and not self._ok_codes:
             kwargs['ok_codes'] = (200, 201, 202, 204, 206, 404)
         token = self.get_access_token(resource=resource, scope=scope)
         default_headers = {
@@ -186,8 +189,7 @@ class MicrosoftClient(BaseClient):
             if self.epoch_seconds() < valid_until:
                 return access_token
 
-        auth_type = self.auth_type
-        if auth_type == OPROXY_AUTH_TYPE:
+        if self.auth_type == OPROXY_AUTH_TYPE:
             if self.multi_resource:
                 for resource_str in self.resources:
                     access_token, expires_in, refresh_token = self._oproxy_authorize(resource_str)
@@ -283,6 +285,7 @@ class MicrosoftClient(BaseClient):
                                  scope: Optional[str] = None,
                                  integration_context: Optional[dict] = None
                                  ) -> Tuple[str, int, str]:
+
         if self.grant_type == AUTHORIZATION_CODE:
             if not self.multi_resource:
                 return self._get_self_deployed_token_auth_code(refresh_token, scope=scope)
