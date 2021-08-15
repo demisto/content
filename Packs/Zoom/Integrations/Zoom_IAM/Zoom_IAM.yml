@@ -93,20 +93,6 @@ script:
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
-  - deprecated: false
-    description: Retrieves a User Profile schema, which holds all of the user fields
-      within the application. Used for outgoing-mapping through the Get Schema option.
-    execution: false
-    name: get-mapping-fields
-  - arguments:
-    - default: false
-      isArray: false
-      name: user-profile
-      required: false
-      secret: false
-    deprecated: false
-    execution: false
-    name: iam-get-user
   dockerimage: demisto/pyjwt3:1.0.0.23674
   feed: false
   isfetch: false
