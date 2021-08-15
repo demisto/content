@@ -10,7 +10,7 @@ SecurityScorecard is an information security company focused on third party mana
 
 * Manage (create, delete, list) score or threshold-based alerts.
 * Creates Cortex XSOAR Incidents based on SecurityScorecard alerts.
-* Retrieves current and historical security scores for organization with a the ability to choose specific risk factors explained below:
+* Retrieves current and historical security scores for organization with the ability to choose specific risk factors explained below:
 
   * **DNS health**: Measurement of DNS configuration presence.
 
