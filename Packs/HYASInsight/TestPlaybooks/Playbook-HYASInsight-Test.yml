@@ -1,0 +1,1214 @@
+id: Playbook-HYASInsight-Test
+version: 36
+vcShouldKeepItemLegacyProdMachine: false
+name: Playbook-HYASInsight-Test
+fromversion: 6.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 724698b1-9ea8-4e8d-838e-b2da56045aaf
+    type: start
+    task:
+      id: 724698b1-9ea8-4e8d-838e-b2da56045aaf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 036384ba-1889-4411-8ff5-d7871a9a3957
+    type: regular
+    task:
+      id: 036384ba-1889-4411-8ff5-d7871a9a3957
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: fafa3e8c-860f-4711-8785-ab49a575fab5
+    type: regular
+    task:
+      id: fafa3e8c-860f-4711-8785-ab49a575fab5
+      version: -1
+      name: hyas-get-passive-dns-records-by-indicator
+      script: '|||hyas-get-passive-dns-records-by-indicator'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      indicator_type:
+        simple: domain
+      indicator_value:
+        simple: domain.org
+      limit:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: bfc530d6-4ebf-4be4-812e-69adc14b5be4
+    type: condition
+    task:
+      id: bfc530d6-4ebf-4be4-812e-69adc14b5be4
+      version: -1
+      name: Passive DNS Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.count
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.first_seen
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.first_seen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.geo.city_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.geo.city_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.geo.country_iso_code
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.geo.country_iso_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.geo.country_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.geo.country_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.geo.location_latitude
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.geo.location_latitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.geo.location_longitude
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.geo.location_longitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.geo.postal_code
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.geo.postal_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.ip
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.isp.autonomous_system_number
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.isp.autonomous_system_number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.isp.autonomous_system_organization
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.isp.autonomous_system_organization
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.isp.ip_address
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.isp.ip_address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.isp.isp
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.isp.isp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.isp.organization
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ip.isp.organization
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ipv4
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.ipv4
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.last_seen
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.last_seen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.sources
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.PassiveDNS.sources
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 5a72e333-15e1-4eff-8245-80b485cbf5b1
+    type: regular
+    task:
+      id: 5a72e333-15e1-4eff-8245-80b485cbf5b1
+      version: -1
+      name: hyas-get-dynamic-dns-records-by-indicator
+      script: '|||hyas-get-dynamic-dns-records-by-indicator'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      indicator_type:
+        simple: ip
+      indicator_value:
+        simple: 4.4.4.4
+      limit:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 6d12ef3e-df88-49d0-8d6b-509876386d7f
+    type: condition
+    task:
+      id: 6d12ef3e-df88-49d0-8d6b-509876386d7f
+      version: -1
+      name: Dynamic DNS Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.DynamicDNS.a_record
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.DynamicDNS.a_record
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.DynamicDNS.account
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.DynamicDNS.account
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.DynamicDNS.created
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.DynamicDNS.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.DynamicDNS.created_ip
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.DynamicDNS.created_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.DynamicDNS.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.DynamicDNS.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.DynamicDNS.domain_creator_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.DynamicDNS.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.DynamicDNS.email
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 3454d54f-a8f2-4725-86d5-961340acfda1
+    type: regular
+    task:
+      id: 3454d54f-a8f2-4725-86d5-961340acfda1
+      version: -1
+      name: hyas-get-whois-records-by-indicator
+      script: '|||hyas-get-whois-records-by-indicator'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      indicator_type:
+        simple: domain
+      indicator_value:
+        simple: domain.net
+      limit:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 02bf9db0-c783-4fc8-80a6-1bac9e6b98c0
+    type: condition
+    task:
+      id: 02bf9db0-c783-4fc8-80a6-1bac9e6b98c0
+      version: -1
+      name: Whois  Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.address
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.city
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.city
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.country
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.domain_2tld
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.domain_2tld
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.domain_created_datetime
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.domain_created_datetime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.domain_expires_datetime
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.domain_expires_datetime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.domain_updated_datetime
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.domain_updated_datetime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.idn_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.idn_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.nameserver
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.nameserver
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.phone.phone
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.phone.phone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.phone.phone_info.carrier
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.phone.phone_info.carrier
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.phone.phone_info.country
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.phone.phone_info.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.phone.phone_info.geo
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.phone.phone_info.geo
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.privacy_punch
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.privacy_punch
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.registrar
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOIS.registrar
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 6091472f-f7af-4d95-83f0-9f976105135c
+    type: regular
+    task:
+      id: 6091472f-f7af-4d95-83f0-9f976105135c
+      version: -1
+      name: hyas-get-whois-current-records-by-domain
+      script: '|||hyas-get-whois-current-records-by-domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      domain:
+        simple: www.hyas.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: fa85732d-0f05-49f7-8d9b-adae0ab6a02f
+    type: condition
+    task:
+      id: fa85732d-0f05-49f7-8d9b-adae0ab6a02f
+      version: -1
+      name: Whois Current Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.abuse_emails
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.abuse_emails
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.address
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.city
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.city
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.country
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.domain_2tld
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.domain_2tld
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.domain_created_datetime
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.domain_created_datetime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.domain_expires_datetime
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.domain_expires_datetime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.domain_updated_datetime
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.domain_updated_datetime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.idn_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.idn_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.nameserver
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.nameserver
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.organization
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.organization
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.phone
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.phone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.registrar
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.registrar
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.state
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.WHOISCurrent.state
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 56f14f3a-ef51-4549-8106-22d7c4d98bbc
+    type: regular
+    task:
+      id: 56f14f3a-ef51-4549-8106-22d7c4d98bbc
+      version: -1
+      name: hyas-get-malware-samples-records-by-indicator
+      script: '|||hyas-get-malware-samples-records-by-indicator'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      indicator_type:
+        simple: domain
+      indicator_value:
+        simple: butterfly.bigmoney.biz
+      limit:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: d4447e79-f120-44b7-8496-2b1fd2cedbfd
+    type: condition
+    task:
+      id: d4447e79-f120-44b7-8496-2b1fd2cedbfd
+      version: -1
+      name: Malware Sample Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.MalwareSamples.datetime
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.MalwareSamples.datetime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.MalwareSamples.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.MalwareSamples.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.MalwareSamples.ipv4
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.MalwareSamples.ipv4
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.MalwareSamples.ipv6
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.MalwareSamples.ipv6
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.MalwareSamples.md5
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.MalwareSamples.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.MalwareSamples.sha1
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.MalwareSamples.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.MalwareSamples.sha256
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.MalwareSamples.sha256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 94543929-8b07-4a43-8fc3-006ddafe5f50
+    type: regular
+    task:
+      id: 94543929-8b07-4a43-8fc3-006ddafe5f50
+      version: -1
+      name: hyas-get-associated-ips-by-hash
+      script: '|||hyas-get-associated-ips-by-hash'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      md5:
+        simple: 1d0a97c41afe5540edd0a8c1fb9a0f2d
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 955db45c-0763-4fa9-8d07-79ab05b06725
+    type: condition
+    task:
+      id: 955db45c-0763-4fa9-8d07-79ab05b06725
+      version: -1
+      name: Associated IPs Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.HASH-IP.md5
+            iscontext: true
+    - label: AND
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.HASH-IP.ips
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 002ec0e6-2420-499b-871b-c4da3ac0f105
+    type: regular
+    task:
+      id: 002ec0e6-2420-499b-871b-c4da3ac0f105
+      version: -1
+      name: hyas-get-associated-domains-by-hash
+      script: '|||hyas-get-associated-domains-by-hash'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      md5:
+        simple: 1d0a97c41afe5540edd0a8c1fb9a0f2d
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: f52c553b-cdf8-418f-8af4-c56f92357779
+    type: condition
+    task:
+      id: f52c553b-cdf8-418f-8af4-c56f92357779
+      version: -1
+      name: Associated Domains Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "YES":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.HASH-DOMAIN.md5
+            iscontext: true
+    - label: AND
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.HASH-DOMAIN.domains
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 80292ff3-b3b3-459d-8c90-97cd9faa327d
+    type: title
+    task:
+      id: 80292ff3-b3b3-459d-8c90-97cd9faa327d
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3215,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

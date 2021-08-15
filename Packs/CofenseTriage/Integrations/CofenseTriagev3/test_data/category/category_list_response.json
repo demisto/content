@@ -1,0 +1,68 @@
+{
+    "data": [
+        {
+            "id": "4",
+            "type": "categories",
+            "links": {
+                "self": "https://triage.example.com/api/public/v2/categories/4"
+            },
+            "attributes": {
+                "name": "Advanced Threats",
+                "score": 10,
+                "malicious": true,
+                "color": "#a9052a",
+                "archived": false,
+                "created_at": "2020-10-21T15:30:56.280Z",
+                "updated_at": "2020-10-21T15:30:56.280Z"
+            },
+            "relationships": {
+                "one_clicks": {
+                    "links": {
+                        "self": "https://triage.example.com/api/public/v2/categories/4/relationships/one_clicks",
+                        "related": "https://triage.example.com/api/public/v2/categories/4/one_clicks"
+                    }
+                },
+                "reports": {
+                    "links": {
+                        "self": "https://triage.example.com/api/public/v2/categories/4/relationships/reports",
+                        "related": "https://triage.example.com/api/public/v2/categories/4/reports"
+                    }
+                }
+            }
+        },
+        {
+            "id": "5",
+            "type": "categories",
+            "links": {
+                "self": "https://triage.example.com/api/public/v2/categories/5"
+            },
+            "attributes": {
+                "name": "Phishing Simulation",
+                "score": 10,
+                "malicious": false,
+                "color": "#4c024c",
+                "archived": false,
+                "created_at": "2020-10-21T15:30:58.593Z",
+                "updated_at": "2020-11-03T14:06:33.521Z"
+            },
+            "relationships": {
+                "one_clicks": {
+                    "links": {
+                        "self": "https://triage.example.com/api/public/v2/categories/5/relationships/one_clicks",
+                        "related": "https://triage.example.com/api/public/v2/categories/5/one_clicks"
+                    }
+                },
+                "reports": {
+                    "links": {
+                        "self": "https://triage.example.com/api/public/v2/categories/5/relationships/reports",
+                        "related": "https://triage.example.com/api/public/v2/categories/5/reports"
+                    }
+                }
+            }
+        }
+    ],
+    "links": {
+        "first": "https://triage.example.com/api/public/v2/categories?filter%5Bscore%5D=4%2C10&page%5Bnumber%5D=1&page%5Bsize%5D=20",
+        "last": "https://triage.example.com/api/public/v2/categories?filter%5Bscore%5D=4%2C10&page%5Bnumber%5D=1&page%5Bsize%5D=20"
+    }
+}
