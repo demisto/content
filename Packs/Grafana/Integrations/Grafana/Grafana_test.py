@@ -3,7 +3,7 @@ import pytest
 from pytz import utc
 
 from Grafana import Client, change_key, keys_to_lowercase, decapitalize, url_encode, calculate_fetch_start_time, \
-    parse_alerts, parse_alert
+    parse_alerts, alert_to_incident
 from freezegun import freeze_time
 from CommonServerPython import urljoin
 
@@ -67,7 +67,7 @@ def test_change_key(dict_input, prev_key, new_key, expected_result):
     assert change_key(dict_input, prev_key, new_key) == expected_result
 
 
-def test_lower_keys():
+def test_keys_to_lowercase():
     """
 
     Given:
@@ -316,243 +316,261 @@ def test_calculate_fetch_start_time(last_fetch, first_fetch, expected_output):
     assert calculate_fetch_start_time(last_fetch, first_fetch) == expected_output
 
 
+no_alerts_to_fetch = (
+    [],
+    5,
+    dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
+    0,
+    dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
+    0,
+    []
+)
+after_one_alert_was_fetched_high_limit = (
+    [
+        {
+            "id": 2,
+            "dashboardId": 2,
+            "dashboardUid": "yzDQUOR7z",
+            "dashboardSlug": "simple-streaming-example-adis-copy",
+            "panelId": 5,
+            "name": "Adi's Alert",
+            "state": "no_data",
+            "newStateDate": "2021-07-29T14:03:20Z",
+            "evalDate": "0001-01-01T00:00:00Z",
+            "evalData": {
+                "noData": True
+            },
+            "executionError": "",
+            "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+        },
+        {
+            "id": 1,
+            "dashboardId": 1,
+            "dashboardUid": "TXSTREZ",
+            "dashboardSlug": "simple-streaming-example",
+            "panelId": 4,
+            "name": "Arseny's Alert",
+            "state": "no_data",
+            "newStateDate": "2021-06-09T15:20:01Z",
+            "evalDate": "0001-01-01T00:00:00Z",
+            "evalData": {
+                "noData": True
+            },
+            "executionError": "",
+            "url": "/d/TXSTREZ/simple-streaming-example"
+        },
+        {
+            "id": 3,
+            "dashboardId": 2,
+            "dashboardUid": "yzDQUOR7z",
+            "dashboardSlug": "simple-streaming-example-adis-copy",
+            "panelId": 6,
+            "name": "TryAlert",
+            "state": "alerting",
+            "newStateDate": "2021-07-08T12:08:40Z",
+            "evalDate": "0001-01-01T00:00:00Z",
+            "evalData": {
+                "noData": True
+            },
+            "executionError": "",
+            "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+        }
+    ],
+    10,
+    dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
+    1,
+    dateparser.parse('2021-07-29 14:03:20 UTC').replace(tzinfo=utc, microsecond=0),
+    2,
+    ["TryAlert", "Adi's Alert"]
+)
+after_one_alert_was_fetched_low_limit = (
+    [
+        {
+            "id": 2,
+            "dashboardId": 2,
+            "dashboardUid": "yzDQUOR7z",
+            "dashboardSlug": "simple-streaming-example-adis-copy",
+            "panelId": 5,
+            "name": "Adi's Alert",
+            "state": "no_data",
+            "newStateDate": "2021-07-29T14:03:20Z",
+            "evalDate": "0001-01-01T00:00:00Z",
+            "evalData": {
+                "noData": True
+            },
+            "executionError": "",
+            "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+        },
+        {
+            "id": 1,
+            "dashboardId": 1,
+            "dashboardUid": "TXSTREZ",
+            "dashboardSlug": "simple-streaming-example",
+            "panelId": 4,
+            "name": "Arseny's Alert",
+            "state": "no_data",
+            "newStateDate": "2021-06-09T15:20:01Z",
+            "evalDate": "0001-01-01T00:00:00Z",
+            "evalData": {
+                "noData": True
+            },
+            "executionError": "",
+            "url": "/d/TXSTREZ/simple-streaming-example"
+        },
+        {
+            "id": 3,
+            "dashboardId": 2,
+            "dashboardUid": "yzDQUOR7z",
+            "dashboardSlug": "simple-streaming-example-adis-copy",
+            "panelId": 6,
+            "name": "TryAlert",
+            "state": "alerting",
+            "newStateDate": "2021-07-08T12:08:40Z",
+            "evalDate": "0001-01-01T00:00:00Z",
+            "evalData": {
+                "noData": True
+            },
+            "executionError": "",
+            "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+        }
+    ],
+    2,
+    dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
+    1,
+    dateparser.parse('2021-07-29 14:03:20 UTC').replace(tzinfo=utc, microsecond=0),
+    2,
+    ["TryAlert", "Adi's Alert"]
+)
+limit_to_two = (
+    [
+        {
+            "id": 2,
+            "dashboardId": 2,
+            "dashboardUid": "yzDQUOR7z",
+            "dashboardSlug": "simple-streaming-example-adis-copy",
+            "panelId": 5,
+            "name": "Adi's Alert",
+            "state": "no_data",
+            "newStateDate": "2021-07-29T14:03:20Z",
+            "evalDate": "0001-01-01T00:00:00Z",
+            "evalData": {
+                "noData": True
+            },
+            "executionError": "",
+            "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+        },
+        {
+            "id": 1,
+            "dashboardId": 1,
+            "dashboardUid": "TXSTREZ",
+            "dashboardSlug": "simple-streaming-example",
+            "panelId": 4,
+            "name": "Arseny's Alert",
+            "state": "no_data",
+            "newStateDate": "2021-06-09T15:20:01Z",
+            "evalDate": "0001-01-01T00:00:00Z",
+            "evalData": {
+                "noData": True
+            },
+            "executionError": "",
+            "url": "/d/TXSTREZ/simple-streaming-example"
+        },
+        {
+            "id": 3,
+            "dashboardId": 2,
+            "dashboardUid": "yzDQUOR7z",
+            "dashboardSlug": "simple-streaming-example-adis-copy",
+            "panelId": 6,
+            "name": "TryAlert",
+            "state": "alerting",
+            "newStateDate": "2021-07-08T12:08:40Z",
+            "evalDate": "0001-01-01T00:00:00Z",
+            "evalData": {
+                "noData": True
+            },
+            "executionError": "",
+            "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+        }
+    ],
+    2,
+    dateparser.parse('2020-06-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
+    0,
+    dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
+    3,
+    ["Arseny's Alert", "TryAlert"]
+)
+limit_to_one = (
+    [
+        {
+            "id": 2,
+            "dashboardId": 2,
+            "dashboardUid": "yzDQUOR7z",
+            "dashboardSlug": "simple-streaming-example-adis-copy",
+            "panelId": 5,
+            "name": "Adi's Alert",
+            "state": "no_data",
+            "newStateDate": "2021-07-29T14:03:20Z",
+            "evalDate": "0001-01-01T00:00:00Z",
+            "evalData": {
+                "noData": True
+            },
+            "executionError": "",
+            "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+        },
+        {
+            "id": 1,
+            "dashboardId": 1,
+            "dashboardUid": "TXSTREZ",
+            "dashboardSlug": "simple-streaming-example",
+            "panelId": 4,
+            "name": "Arseny's Alert",
+            "state": "no_data",
+            "newStateDate": "2021-06-09T15:20:01Z",
+            "evalDate": "0001-01-01T00:00:00Z",
+            "evalData": {
+                "noData": True
+            },
+            "executionError": "",
+            "url": "/d/TXSTREZ/simple-streaming-example"
+        },
+        {
+            "id": 3,
+            "dashboardId": 2,
+            "dashboardUid": "yzDQUOR7z",
+            "dashboardSlug": "simple-streaming-example-adis-copy",
+            "panelId": 6,
+            "name": "TryAlert",
+            "state": "alerting",
+            "newStateDate": "2021-07-08T12:08:40Z",
+            "evalDate": "0001-01-01T00:00:00Z",
+            "evalData": {
+                "noData": True
+            },
+            "executionError": "",
+            "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
+        }
+    ],
+    1,
+    dateparser.parse('2020-06-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
+    0,
+    dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
+    1,
+    ["Arseny's Alert"]
+)
 PARSE_ALERTS_VALUES = [
-    (
-        [
-            {
-                "id": 2,
-                "dashboardId": 2,
-                "dashboardUid": "yzDQUOR7z",
-                "dashboardSlug": "simple-streaming-example-adis-copy",
-                "panelId": 5,
-                "name": "Adi's Alert",
-                "state": "no_data",
-                "newStateDate": "2021-07-29T14:03:20Z",
-                "evalDate": "0001-01-01T00:00:00Z",
-                "evalData": {
-                    "noData": True
-                },
-                "executionError": "",
-                "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
-            },
-            {
-                "id": 1,
-                "dashboardId": 1,
-                "dashboardUid": "TXSTREZ",
-                "dashboardSlug": "simple-streaming-example",
-                "panelId": 4,
-                "name": "Arseny's Alert",
-                "state": "no_data",
-                "newStateDate": "2021-06-09T15:20:01Z",
-                "evalDate": "0001-01-01T00:00:00Z",
-                "evalData": {
-                    "noData": True
-                },
-                "executionError": "",
-                "url": "/d/TXSTREZ/simple-streaming-example"
-            },
-            {
-                "id": 3,
-                "dashboardId": 2,
-                "dashboardUid": "yzDQUOR7z",
-                "dashboardSlug": "simple-streaming-example-adis-copy",
-                "panelId": 6,
-                "name": "TryAlert",
-                "state": "alerting",
-                "newStateDate": "2021-07-08T12:08:40Z",
-                "evalDate": "0001-01-01T00:00:00Z",
-                "evalData": {
-                    "noData": True
-                },
-                "executionError": "",
-                "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
-            }
-        ],
-        1,
-        dateparser.parse('2020-06-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
-        dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
-        ["Arseny's Alert"]
-    ),
-    (
-        [
-            {
-                "id": 2,
-                "dashboardId": 2,
-                "dashboardUid": "yzDQUOR7z",
-                "dashboardSlug": "simple-streaming-example-adis-copy",
-                "panelId": 5,
-                "name": "Adi's Alert",
-                "state": "no_data",
-                "newStateDate": "2021-07-29T14:03:20Z",
-                "evalDate": "0001-01-01T00:00:00Z",
-                "evalData": {
-                    "noData": True
-                },
-                "executionError": "",
-                "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
-            },
-            {
-                "id": 1,
-                "dashboardId": 1,
-                "dashboardUid": "TXSTREZ",
-                "dashboardSlug": "simple-streaming-example",
-                "panelId": 4,
-                "name": "Arseny's Alert",
-                "state": "no_data",
-                "newStateDate": "2021-06-09T15:20:01Z",
-                "evalDate": "0001-01-01T00:00:00Z",
-                "evalData": {
-                    "noData": True
-                },
-                "executionError": "",
-                "url": "/d/TXSTREZ/simple-streaming-example"
-            },
-            {
-                "id": 3,
-                "dashboardId": 2,
-                "dashboardUid": "yzDQUOR7z",
-                "dashboardSlug": "simple-streaming-example-adis-copy",
-                "panelId": 6,
-                "name": "TryAlert",
-                "state": "alerting",
-                "newStateDate": "2021-07-08T12:08:40Z",
-                "evalDate": "0001-01-01T00:00:00Z",
-                "evalData": {
-                    "noData": True
-                },
-                "executionError": "",
-                "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
-            }
-        ],
-        2,
-        dateparser.parse('2020-06-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
-        dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
-        ["Arseny's Alert", "TryAlert"]
-    ),
-    (
-        [
-            {
-                "id": 2,
-                "dashboardId": 2,
-                "dashboardUid": "yzDQUOR7z",
-                "dashboardSlug": "simple-streaming-example-adis-copy",
-                "panelId": 5,
-                "name": "Adi's Alert",
-                "state": "no_data",
-                "newStateDate": "2021-07-29T14:03:20Z",
-                "evalDate": "0001-01-01T00:00:00Z",
-                "evalData": {
-                    "noData": True
-                },
-                "executionError": "",
-                "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
-            },
-            {
-                "id": 1,
-                "dashboardId": 1,
-                "dashboardUid": "TXSTREZ",
-                "dashboardSlug": "simple-streaming-example",
-                "panelId": 4,
-                "name": "Arseny's Alert",
-                "state": "no_data",
-                "newStateDate": "2021-06-09T15:20:01Z",
-                "evalDate": "0001-01-01T00:00:00Z",
-                "evalData": {
-                    "noData": True
-                },
-                "executionError": "",
-                "url": "/d/TXSTREZ/simple-streaming-example"
-            },
-            {
-                "id": 3,
-                "dashboardId": 2,
-                "dashboardUid": "yzDQUOR7z",
-                "dashboardSlug": "simple-streaming-example-adis-copy",
-                "panelId": 6,
-                "name": "TryAlert",
-                "state": "alerting",
-                "newStateDate": "2021-07-08T12:08:40Z",
-                "evalDate": "0001-01-01T00:00:00Z",
-                "evalData": {
-                    "noData": True
-                },
-                "executionError": "",
-                "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
-            }
-        ],
-        2,
-        dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
-        dateparser.parse('2021-07-29 14:03:20 UTC').replace(tzinfo=utc, microsecond=0),
-        ["TryAlert", "Adi's Alert"]
-    ),
-    (
-        [
-            {
-                "id": 2,
-                "dashboardId": 2,
-                "dashboardUid": "yzDQUOR7z",
-                "dashboardSlug": "simple-streaming-example-adis-copy",
-                "panelId": 5,
-                "name": "Adi's Alert",
-                "state": "no_data",
-                "newStateDate": "2021-07-29T14:03:20Z",
-                "evalDate": "0001-01-01T00:00:00Z",
-                "evalData": {
-                    "noData": True
-                },
-                "executionError": "",
-                "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
-            },
-            {
-                "id": 1,
-                "dashboardId": 1,
-                "dashboardUid": "TXSTREZ",
-                "dashboardSlug": "simple-streaming-example",
-                "panelId": 4,
-                "name": "Arseny's Alert",
-                "state": "no_data",
-                "newStateDate": "2021-06-09T15:20:01Z",
-                "evalDate": "0001-01-01T00:00:00Z",
-                "evalData": {
-                    "noData": True
-                },
-                "executionError": "",
-                "url": "/d/TXSTREZ/simple-streaming-example"
-            },
-            {
-                "id": 3,
-                "dashboardId": 2,
-                "dashboardUid": "yzDQUOR7z",
-                "dashboardSlug": "simple-streaming-example-adis-copy",
-                "panelId": 6,
-                "name": "TryAlert",
-                "state": "alerting",
-                "newStateDate": "2021-07-08T12:08:40Z",
-                "evalDate": "0001-01-01T00:00:00Z",
-                "evalData": {
-                    "noData": True
-                },
-                "executionError": "",
-                "url": "/d/yzDQUOR7z/simple-streaming-example-adis-copy"
-            }
-        ],
-        10,
-        dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
-        dateparser.parse('2021-07-29 14:03:20 UTC').replace(tzinfo=utc, microsecond=0),
-        ["TryAlert", "Adi's Alert"]
-    ),
-    (
-        [],
-        5,
-        dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
-        dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
-        []
-    )
+    limit_to_one,
+    limit_to_two,
+    after_one_alert_was_fetched_low_limit,
+    after_one_alert_was_fetched_high_limit,
+    no_alerts_to_fetch
 ]
 
 
-@pytest.mark.parametrize('alerts, max_fetch, last_fetch, expected_output_time, expected_incidents_names', PARSE_ALERTS_VALUES)
-def test_parse_alerts(alerts, max_fetch, last_fetch, expected_output_time, expected_incidents_names):
+@pytest.mark.parametrize('alerts, max_fetch, last_fetch, last_id_fetched, '
+                         'expected_output_time, expected_output_id, expected_incidents_names',
+                         PARSE_ALERTS_VALUES)
+def test_parse_alerts(alerts, max_fetch, last_fetch, last_id_fetched,
+                      expected_output_time, expected_output_id, expected_incidents_names):
     """
 
     Given:
@@ -565,10 +583,11 @@ def test_parse_alerts(alerts, max_fetch, last_fetch, expected_output_time, expec
         - Returns the new time to fetch from next time, and the incidents fetched
 
     """
-    output = parse_alerts(alerts, max_fetch, last_fetch)
-    assert output[0] == expected_output_time
+    output_time, output_id, output_incidents = parse_alerts(alerts, max_fetch, last_fetch, last_id_fetched)
+    assert output_time == expected_output_time
+    assert output_id == expected_output_id
     for i in range(len(expected_incidents_names)):
-        assert output[1][i]['name'] == expected_incidents_names[i]
+        assert output_incidents[i]['name'] == expected_incidents_names[i]
 
 
 ALERT_VALUES = [
@@ -613,8 +632,7 @@ ALERT_VALUES = [
 ]
 
 
-@pytest.mark.parametrize('alert, change_date, last_fetch, expected_incident', ALERT_VALUES)
-def test_parse_alert(alert, change_date, last_fetch, expected_incident):
+def test_alert_to_incident():
     """
 
     Given:
@@ -627,7 +645,25 @@ def test_parse_alert(alert, change_date, last_fetch, expected_incident):
         - Returns the incident
 
     """
-    incident = parse_alert(alert, change_date, last_fetch)
+    alert = {
+        "id": 2,
+        "dashboardId": 2,
+        "dashboardUid": "yzDQUOR7z",
+        "dashboardSlug": "simple-streaming-example-adis-copy",
+        "panelId": 5,
+        "name": "Adi's Alert",
+        "state": "no_data",
+        "newStateDate": "2021-07-29T14:03:20Z",
+        "evalDate": "0001-01-01T00:00:00Z",
+        "evalData": {
+            "noData": True
+        }}
+    expected_incident = {
+        'name': "Adi's Alert",
+        'occurred': "2021-07-29T14:03:20Z",
+        'type': 'Grafana Alert'
+    }
+    incident = alert_to_incident(alert)
     if incident:
         incident.pop('rawJSON')
     assert incident == expected_incident

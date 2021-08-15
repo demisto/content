@@ -166,16 +166,17 @@ class Client(BaseClient):
 
         return response
 
-    def _concatenate_url(self, response: List[Dict[str, Any]]):
+    def _concatenate_url(self, responses: List[Dict[str, Any]]):
         """
-        Concatenates a url suffix with the base url, for the places where only a suffix is returned.
+        Concatenates a url suffix with the base url for the places where only a suffix is returned, so urls we display will be
+        clickable and lead to a real place.
         Updates the dict given, and returns it.
         """
-        for r in response:
-            if 'url' in r:
-                url = urljoin(self._base_url, r['url'])
-                r['url'] = url
-        return response
+        for response in responses:
+            if 'url' in response:
+                url = urljoin(self._base_url, response['url'])
+                response['url'] = url
+        return responses
 
 
 ''' HELPER FUNCTIONS '''
@@ -209,13 +210,11 @@ def decapitalize(s: str):
     return s[0].lower() + s[1:]
 
 
-def url_encode(query: Optional[str]):
+def url_encode(query: str):
     """
     Query values with spaces need to be URL encoded e.g. query=Jane%20Doe.
     """
-    if query:
-        return query.replace(' ', '%20')
-    return None
+    return query.replace(' ', '%20')
 
 
 def calculate_fetch_start_time(last_fetch: str = None, first_fetch: str = FETCH_DEFAULT_TIME):
@@ -227,38 +226,49 @@ def calculate_fetch_start_time(last_fetch: str = None, first_fetch: str = FETCH_
     return max(last_fetch, first_fetch_datetime)
 
 
-def parse_alerts(alerts: List[Dict[str, Any]], max_fetch: int, last_fetch: datetime):
-    # sorting alerts by newStateDate so the fetch will work by date and not by id
-    alerts.sort(key=lambda a: dateparser.parse(a['newStateDate']).replace(tzinfo=utc))
-
-    incidents: List[Dict[str, Any]] = []
-    updated_last_fetch = last_fetch
-
-    for alert in alerts:
-        if len(incidents) >= max_fetch:
-            break
-        # ignoring microsecond because date_to_timestamp doesn't know how to handle it
-        # which causes the last alert to be fetched every time the function is called
-        new_state_date = dateparser.parse(alert['newStateDate']).replace(tzinfo=utc, microsecond=0)
-        incident = parse_alert(alert, new_state_date, last_fetch)
-        if incident:
-            incidents.append(incident)
-            updated_last_fetch = max(updated_last_fetch, new_state_date)
-
-    return updated_last_fetch, incidents
+def filter_alerts_by_time(alerts: List[Dict[str, Any]], last_fetch: datetime):
+    # ignoring microsecond because date_to_timestamp doesn't know how to handle it
+    return [alert for alert in alerts if dateparser.parse(alert['newStateDate']).replace(tzinfo=utc, microsecond=0) >= last_fetch]
 
 
-def parse_alert(alert: Dict[str, Any], new_state_date: datetime, last_fetch: datetime):
-    if last_fetch:
-        if new_state_date <= last_fetch:
-            return None
+def filter_alerts_by_id(alerts: List[Dict[str, Any]], last_fetch: datetime, last_id_fetched: int):
+    # only for alerts with the same newStateDate as last_fetch
+    return [alert for alert in alerts
+            if dateparser.parse(alert['newStateDate']).replace(tzinfo=utc, microsecond=0) != last_fetch
+            or alert['id'] > last_id_fetched]
 
+
+def reduce_incidents_to_limit(alerts: List[Dict[str, Any]], limit: int, last_fetch: datetime, last_id_fetched: int):
+    incidents_count = min(limit, len(alerts))
+    # limit can't be 0 or less, but there could be no alerts at the wanted time
+    if incidents_count > 0:
+        alerts = alerts[:limit]
+        last_fetched_alert = alerts[incidents_count - 1]
+        last_fetch = dateparser.parse(last_fetched_alert['newStateDate']).replace(tzinfo=utc, microsecond=0)
+        last_id_fetched = last_fetched_alert['id']
+    return last_fetch, last_id_fetched, alerts
+
+
+def parse_alerts(alerts: List[Dict[str, Any]], limit: int, last_fetch: datetime, last_id_fetched: int):
+    alerts = filter_alerts_by_time(alerts, last_fetch)
+    alerts = filter_alerts_by_id(alerts, last_fetch, last_id_fetched)
+
+    # sorting alerts by date and then by id
+    alerts.sort(key=lambda alert: (dateparser.parse(alert['newStateDate']).replace(tzinfo=utc), alert['id']))
+
+    last_fetch, last_id_fetched, alerts = reduce_incidents_to_limit(alerts, limit, last_fetch, last_id_fetched)
+
+    incidents: List[Dict[str, Any]] = [alert_to_incident(alert) for alert in alerts]
+    return last_fetch, last_id_fetched, incidents
+
+
+def alert_to_incident(alert: Dict[str, Any]):
     alert['type'] = 'Grafana Alert'
     incident = {
         'name': alert['name'],
         'occurred': alert['newStateDate'],
         'rawJSON': json.dumps(alert),
-        'type': 'Grafana Alert'
+        'type': alert['type']
     }
     return incident
 
@@ -298,8 +308,10 @@ def alerts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def alert_pause_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     alert_id = str(args.get('alert_id'))
 
+    # response will be shown to the user
     response = client.alert_pause_request(alert_id, True)
 
+    # output will be added to context data without the message (will only change alert's state)
     output = change_key(dict(response), 'alertId', 'id')
     output.pop('message', None)
 
@@ -317,8 +329,10 @@ def alert_pause_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def alert_unpause_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     alert_id = str(args.get('alert_id'))
 
+    # response will be shown to the user
     response = client.alert_pause_request(alert_id, False)
 
+    # output will be added to context data without the message (will only change alert's state)
     output = change_key(dict(response), 'alertId', 'id')
     output.pop('message', None)
 
@@ -355,7 +369,8 @@ def users_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
     perpage = args.get('perpage')
     page = args.get('page')
     query = args.get('query')
-    query = url_encode(query)
+    if query:
+        query = url_encode(query)
 
     response = client.users_search_request(perpage, page, query)
     command_results = CommandResults(
@@ -412,7 +427,8 @@ def users_organization_command(client: Client, args: Dict[str, Any]) -> CommandR
         outputs_key_field='id',
         outputs=output,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Organization For User {user_id}', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Organization For User {user_id}', response, removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -471,7 +487,8 @@ def teams_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
     perpage = args.get('perpage')
     page = args.get('page')
     query = args.get('query')
-    query = url_encode(query)
+    if query:
+        query = url_encode(query)
     name = args.get('name')
 
     response = client.teams_search_request(perpage, page, query, name)
@@ -630,7 +647,8 @@ def org_get_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_key_field='id',
         outputs=response,
         raw_response=response,
-        readable_output=tableToMarkdown(f'Organization {org_id} Results', response, removeNull=True, headerTransform=pascalToSpace)
+        readable_output=tableToMarkdown(f'Organization {org_id} Results', response, removeNull=True,
+                                        headerTransform=pascalToSpace)
     )
 
     return command_results
@@ -658,14 +676,25 @@ def dashboards_search_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return command_results
 
 
-def test_module(client: Client) -> None:
+def test_module(client: Client, params: dict) -> None:
     message: str = ''
     try:
         if client.users_search_request():
             message = 'ok'
 
+        if params['isFetch']:
+            max_fetch = arg_to_number(params.get('max_fetch'))
+            if max_fetch and (max_fetch > MAX_INCIDENTS_TO_FETCH or max_fetch <= 0):
+                raise DemistoException(f'Maximum number of incidents to fetch exceeds the limit '
+                                       f'(restricted to {MAX_INCIDENTS_TO_FETCH})')
+            query = params.get('query')
+            if query:
+                query = url_encode(query)
+            client.alerts_list_request(dashboard_id=argToList(params.get('dashboard_id')), panel_id=params.get('panel_id'),
+                                       query=query, state=params.get('state'))
+
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
+        if 'Unauthorized' in str(e):
             message = 'Authorization Error: make sure username and password are correctly set'
         else:
             raise e
@@ -673,15 +702,22 @@ def test_module(client: Client) -> None:
 
 
 def fetch_incidents(client: Client, first_fetch: str, dashboard_id: str = None, panel_id: str = None,
-                    alert_name: str = None, state: str = None, max_fetch: int = MAX_INCIDENTS_TO_FETCH) -> List[dict]:
+                    alert_name: str = None, state: str = None, limit: int = MAX_INCIDENTS_TO_FETCH) -> List[dict]:
+    if not limit:
+        limit = MAX_INCIDENTS_TO_FETCH
     last_fetch = demisto.getLastRun().get('last_fetch', None)
+    last_id_fetched = demisto.getLastRun().get('last_id_fetched', 0)
     fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
-    demisto.debug(f'last fetch was at: {last_fetch}, time to fetch from is: {fetch_start_time}')
+    demisto.debug(f'last fetch was at: {last_fetch}, last id fetched was: {last_id_fetched}, '
+                  f'time to fetch from is: {fetch_start_time}')
+
     alerts = client.alerts_list_request(dashboard_id=argToList(dashboard_id), panel_id=panel_id, query=alert_name,
                                         state=argToList(state))
-    last_fetch, incidents = parse_alerts(alerts, max_fetch, fetch_start_time)
-    demisto.debug(f'last fetch now is: {last_fetch}, number of incidents fetched is {len(incidents)}')
-    demisto.setLastRun({'last_fetch': str(date_to_timestamp(last_fetch, DATE_FORMAT))})
+    last_fetch, last_id_fetched, incidents = parse_alerts(alerts, limit, fetch_start_time, last_id_fetched)
+    demisto.debug(f'last fetch now is: {last_fetch}, last id fetched is now: {last_id_fetched}, '
+                  f'number of incidents fetched is {len(incidents)}')
+
+    demisto.setLastRun({'last_fetch': str(date_to_timestamp(last_fetch, DATE_FORMAT)), 'last_id_fetched': last_id_fetched})
     return incidents
 
 
@@ -741,16 +777,13 @@ def main():
             panel_id = params.get('panel_id')
             alert_name = params.get('alert_name')
             state = params.get('state')
-
             limit = arg_to_number(params.get('max_fetch'))
-            if not limit or limit > MAX_INCIDENTS_TO_FETCH:
-                limit = MAX_INCIDENTS_TO_FETCH
 
             incidents = fetch_incidents(client, first_fetch, dashboard_id, panel_id, alert_name, state, limit)
             demisto.incidents(incidents)
 
         elif command == 'test-module':
-            test_module(client)
+            test_module(client, params)
         elif command in commands:
             return_results(commands[command](client, args))
         else:
