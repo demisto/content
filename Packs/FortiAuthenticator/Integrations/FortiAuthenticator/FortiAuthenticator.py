@@ -104,7 +104,7 @@ def update_user_command():
         }
         jsonData = json.dumps(userDict)
 
-        res = requests.patch(BASE_URL + 'localusers/' + userID + '/', data=jsonData, auth=(USER_NAME, PASSWORD), verify=USE_SSL)
+        res = requests.patch(BASE_URL + userType + '/' + userID + '/', data=jsonData, auth=(USER_NAME, PASSWORD), verify=USE_SSL)
 
         if res.status_code == 202:
             user_context.append({
