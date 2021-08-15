@@ -397,13 +397,14 @@ tasks:
           - operator: uniq
       email:
         complex:
-          root: Account.Email
+          root: Account
           filters:
           - - operator: isNotEmpty
               left:
                 value:
                   simple: Account.Email.Address
                 iscontext: true
+          accessor: Email
           transformers:
           - operator: WhereFieldEquals
             args:
