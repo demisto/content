@@ -187,5 +187,16 @@ def test_create_relationships():
         assert relation.get('entityA') == 'Test'
         assert relation.get('entityBType') == 'File'
 
+
 def test_get_whois_unexpected_value():
+    """
+    Given:
+    - Whois string.
+
+    When:
+    - Whois string returned is a reserved Whois string returned by VirusTotal services.
+
+    Then:
+    - Validate empty dict is returned
+    """
     assert get_whois('g. [Organization] Reserved Domain Name\nl. [Organization Type] Reserved Domain Name') == dict()
