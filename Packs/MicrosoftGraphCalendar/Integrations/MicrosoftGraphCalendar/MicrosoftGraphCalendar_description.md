@@ -7,5 +7,5 @@ There are 2 application authentication methods available:
 
 Depending on the authentication method that you use, the integration parameters might change.
 
-To allow access to Microsoft Graph Calendar, an administrator has to approve the Demisto app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-graph-calendar).
+To allow access to O365 Outlook Calendar, an administrator has to approve the Demisto app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-graph-calendar).
 After authorizing the Demisto app, you will get an ID, Token, and Key, which needs to be added to the integration instance configuration's corresponding fields.
