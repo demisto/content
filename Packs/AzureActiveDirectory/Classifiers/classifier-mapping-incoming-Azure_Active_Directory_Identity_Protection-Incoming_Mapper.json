@@ -1,46 +1,34 @@
 {
-    "name": "Azure Active Directory Identity Protection Incoming Mapper",
     "description": "",
     "feed": false,
     "id": "Azure Active Directory Identity Protection Incoming Mapper",
-    "type": "mapping-incoming",
-    "version": -1,
-    "fromVersion": "6.0.0",
     "mapping": {
-        "Azure Active Directory Identity Protection": {
-            "dontMapEventToLabels": true,
+        "AAD Identity Protection Risk Detection": {
+            "dontMapEventToLabels": false,
             "internalMapping": {
                 "Alert Type": {
                     "complex": null,
                     "simple": "riskEventType"
                 },
-                "State": {
+                "Azure Active Directory Identity Protection Activity": {
                     "complex": null,
-                    "simple": "riskState"
+                    "simple": "activity"
                 },
-                "Risk Rating": {
+                "Azure Active Directory Identity Protection Detected Date Time": {
                     "complex": null,
-                    "simple": "riskLevel"
-                },
-                "Subtype": {
-                    "complex": null,
-                    "simple": "riskDetail"
+                    "simple": "detectedDateTime"
                 },
                 "Azure Active Directory Identity Protection Detection Timing Type": {
                     "complex": null,
                     "simple": "detectionTimingType"
                 },
-                "Azure Active Directory Identity Protection Activity": {
-                    "complex": null,
-                    "simple": "activity"
-                },
                 "Azure Active Directory Identity Protection Token Issuer Type": {
                     "complex": null,
                     "simple": "tokenIssuerType"
                 },
-                "Source IP": {
+                "Last Update Time": {
                     "complex": null,
-                    "simple": "ipAddress"
+                    "simple": "lastUpdatedDateTime"
                 },
                 "Location": {
                     "complex": {
@@ -55,17 +43,21 @@
                     "complex": null,
                     "simple": "location.countryOrRegion"
                 },
-                "Azure Active Directory Identity Protection Activity Date Time": {
+                "Risk Rating": {
                     "complex": null,
-                    "simple": "activityDateTime"
+                    "simple": "riskLevel"
                 },
-                "Azure Active Directory Identity Protection Detected Date Time": {
+                "Source IP": {
                     "complex": null,
-                    "simple": "detectedDateTime"
+                    "simple": "ipAddress"
                 },
-                "Last Update Time": {
+                "State": {
                     "complex": null,
-                    "simple": "lastUpdatedDateTime"
+                    "simple": "riskState"
+                },
+                "Subtype": {
+                    "complex": null,
+                    "simple": "riskDetail"
                 },
                 "Username": {
                     "complex": null,
@@ -73,5 +65,9 @@
                 }
             }
         }
-    }
+    },
+    "name": "Azure Active Directory Identity Protection Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }
