@@ -1631,7 +1631,7 @@ class Pack(object):
                             'description': content_item.get('description', ""),
                         })
 
-            if current_directory in PackFolders.pack_displayed_items():
+                if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = content_item_name_mapping[current_directory]
                     content_items_result[content_item_key] = folder_collected_items
 
