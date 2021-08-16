@@ -2,7 +2,7 @@ category: Vulnerability Management
 commonfields:
   id: CustomIndicatorDemo
   version: -1
-configuration: []
+configuration:
 description: 'Custom Indicator Demo is a demo integration which demonstrates usage of CustomIndicator helper class.'
 display: CustomIndicatorDemo
 name: CustomIndicatorDemo
