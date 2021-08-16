@@ -103,16 +103,16 @@ def coverage_json(cov_file):
 
 def main():
     options = options_handler()
-    coverage_json(options.get('source_file_namee'))
+    coverage_json(options.source_file_namee)
 
-    create_minimal_report(source_file=options.get('source_file_name'),
-                          destination_file=options.get('minimal_file_name'),
+    create_minimal_report(source_file=options.source_file_name,
+                          destination_file=options.minimal_file_name,
                           )
 
-    upload_file_to_google_cloud_storage(service_account=options.get('service_account'),
-                                        bucket_name=options.get('bucket_name'),
-                                        source_file_name=options.get('source_file_name'),
-                                        destination_blob_name=options.get('destination_blob_name'),
+    upload_file_to_google_cloud_storage(service_account=options.service_account,
+                                        bucket_name=options.bucket_name,
+                                        source_file_name=options.source_file_name,
+                                        destination_blob_name=options.destination_blob_name,
                                         )
 
 
