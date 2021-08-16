@@ -2502,7 +2502,7 @@ def list_host_group_members(host_group_id=None, filter=None, offset=None, limit=
 
 def host_group_members(action_name, host_group_id, host_ids):
     host_ids = argToList(host_ids)
-    dats = {'action_parameters': [{'nsme': 'filter',
+    dats = {'action_parameters': [{'name': 'filter',
                                    'value': f"(device_id:{str(host_ids)})"}],
             'id': [host_group_id]}
     response = http_request(method='POST',
