@@ -534,6 +534,7 @@ Returns a list of activities that match the specified filters.
 | source | The source type. Valid values are: "Access_control", "Session_control", "App_connector", "App_connector_analysis", "Discovery", and "MDATP". Possible values are: Access_control, Session_control, App_connector, App_connector_analysis, Discovery, MDATP. | Optional | 
 | custom_filter | A custom filter by which to filter the returned activities. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters. | Optional | 
 | activity_id | The ID of the activity. | Optional | 
+| timeout | Timeout of the request to Microsoft CAS, in seconds. Default is 60 seconds. | Optional | 
 
 
 #### Context Output
