@@ -33,6 +33,13 @@ function check_arguments {
     fail "You must provide a csv list of packs to force upload." "skip"
   fi
 
+  if [ -z "$production" ] && [ "$(echo "$bucket" | tr '[:upper:]' '[:lower:]')" == "marketplace-dist" ]; then
+    fail "Only test buckets are allowed to use. Using marketplace-dist-dev instead."
+  fi
+
+  if [ -n "$production" ]; then
+    echo "Uploading to production bucket - ${production}."
+  fi
 }
 
 # copy_pack
@@ -443,11 +450,7 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -gb|--bucket)
-    if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-dist" ]; then
-      echo "Only test buckets are allowed to use. Using marketplace-dist-dev instead."
-    else
-      bucket=$2
-    fi
+    bucket=$2
     shift
     shift;;
 
@@ -483,7 +486,17 @@ check_arguments
 
 # If production flag is set - upload master branch
 if [ -n "$production" ]; then
-  trigger_circle_ci "master"
+  slack_channel="dmst-content-team"
+  bucket="marketplace-dist"
+
+  if [ -n "$gitlab_token" ]; then
+    trigger_gitlab_ci "master"
+  fi
+
+  if [ -n "$circle_token" ]; then
+    trigger_circle_ci "master"
+  fi
+
   exit 0
 fi
 
@@ -499,11 +512,11 @@ existed_in_remote=$(git ls-remote --heads origin "${new_content_branch}")
 existed_in_local=$(git branch --list "${new_content_branch}")
 
 # Deletes the remote branch if exists
-if [ -z "${existed_in_remote}" ]; then
+if [ -n "${existed_in_remote}" ]; then
   git push origin --delete "${new_content_branch}"
 fi
 # Deletes the local branch if exists
-if [ -z "${existed_in_local}" ]; then
+if [ -n "${existed_in_local}" ]; then
   git branch -D "${new_content_branch}" # delete local branch
 fi
 
