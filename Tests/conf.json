@@ -938,17 +938,10 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
-            "playbookID": "palo_alto_panorama_test_pb",
-            "fromversion": "6.1.0",
-            "timeout": 3600
-        },
-        {
-            "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "6.1.0",
-            "timeout": 3600
+            "timeout": 2400
         },
         {
             "integrations": "Panorama",
@@ -1411,8 +1404,8 @@
         },
         {
             "integrations": "McAfee ESM v2",
-            "instance_names": "v10.3.0",
-            "playbookID": "McAfee ESM v2 - Test v10.3.0",
+            "instance_names": "v11.1.3",
+            "playbookID": "McAfee ESM v2 - Test v11.1.3",
             "fromversion": "5.0.0",
             "is_mockable": false
         },
@@ -1432,8 +1425,8 @@
         },
         {
             "integrations": "McAfee ESM v2",
-            "instance_names": "v10.3.0",
-            "playbookID": "McAfee ESM Watchlists - Test v10.3.0",
+            "instance_names": "v11.1.3",
+            "playbookID": "McAfee ESM Watchlists - Test v11.1.3",
             "fromversion": "5.0.0"
         },
         {
@@ -3534,7 +3527,7 @@
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
         "Cortex Data Lake Test": "Issue 24346",
-        "Phishing - Core - Test - Incident Starter": "Issue 26784",
+        "Phishing - Cre - Test - Incident Starter": "Issue 26784",
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
@@ -3569,7 +3562,6 @@
         "EWS Mail Sender Test": "Issue 27944",
         "McAfee ESM v2 - Test v10.3.0": "Issue 35616",
         "AzureADTest": "Issue 40131",
-        "AWS - IAM Test Playbook": "Issue 39320",
         "Feed iDefense Test": "Issue 34035",
         "FireEyeNX-Test": "Issue 33216",
         "McAfee ESM v2 - Test v10.2.0": "Issue 35670",
@@ -3756,6 +3748,7 @@
         "AWS - Athena - Beta": "Issue 24926",
         "AWS - CloudTrail": "Issue 24926",
         "AWS - Lambda": "Issue 24926",
+        "AWS - IAM": "Issue 24926",
         "AWS Sagemaker": "Issue 24926",
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
