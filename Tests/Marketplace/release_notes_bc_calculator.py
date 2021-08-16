@@ -54,7 +54,7 @@ class ReleaseNotesBreakingChangesCalc:
 
     def _calculate_bc_text(self, bc_version_to_text: Dict[str, Optional[str]]) -> Optional[str]:
         """
-        Receives BC versions to dict for current changelog entry. Calculates text for for BC entry.
+        Receives BC versions to text dict for current changelog entry. Calculates text for BC entry.
         Args:
             bc_version_to_text (Dict[str, Optional[str]): {bc version, bc_text}
 
@@ -65,7 +65,7 @@ class ReleaseNotesBreakingChangesCalc:
         # Handle cases of one BC version in entry.
         if len(bc_version_to_text) == 1:
             return list(bc_version_to_text.values())[0]
-        # Handle cases of more two or more BC versions in entry.
+        # Handle cases of two or more BC versions in entry.
         text_of_bc_versions, bc_without_text = self._split_bc_versions_with_and_without_text(bc_version_to_text)
         # Case one: Not even one BC version contains breaking text.
         if len(text_of_bc_versions) == 0:
