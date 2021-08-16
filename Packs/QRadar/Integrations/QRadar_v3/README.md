@@ -2365,7 +2365,7 @@ Get Source IPs
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | filter | Query to filter IPs. E.g, filter=`source_ip="192.168.0.1"`. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/docs/en/qradar-common?topic=endpoints-get-siemlocal-destination-addresses. | Optional | 
+| fields | If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/docs/en/qradar-common?topic=endpoints-get-siemsource-addresses | Optional | 
 | range | Range of results to return. e.g.: 0-20. | Optional | 
 
 
@@ -2413,37 +2413,7 @@ Get Source IPs
                 5,
                 9,
                 10,
-                11,
-                12,
-                13,
-                14,
-                15,
-                16,
-                17,
-                18,
-                19,
-                20,
-                21,
-                22,
-                23,
-                24,
-                25,
-                27,
-                28,
-                29,
-                30,
-                31,
-                32,
-                33,
-                34,
-                35,
-                36,
-                37,
-                38,
-                39,
-                40,
-                41,
-                42
+                11
             ],
             "SourceIP": "172.42.18.211"
         }
@@ -2471,7 +2441,7 @@ Get Source IPs
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Query to filter IPs. E.g, filter=`local_destination_ip="192.168.0.1"` For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| filter | If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/docs/en/qradar-common?topic=endpoints-get-siemlocal-destination-addresses | Optional | 
 | fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/docs/en/qradar-common?topic=endpoints-get-siemlocal-destination-addresses. | Optional | 
 | range | Range of results to return. e.g.: 0-20. | Optional | 
 
@@ -2511,41 +2481,7 @@ Get Source IPs
             "OffenseIDs": [
                 1,
                 4,
-                5,
-                9,
-                10,
-                11,
-                12,
-                13,
-                14,
-                15,
-                16,
-                17,
-                18,
-                19,
-                20,
-                21,
-                22,
-                23,
-                24,
-                25,
-                26,
-                27,
-                28,
-                29,
-                30,
-                31,
-                32,
-                33,
-                34,
-                35,
-                36,
-                37,
-                38,
-                39,
-                40,
-                41,
-                42
+                5
             ],
             "SourceAddressIDs": [
                 1,
