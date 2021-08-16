@@ -1,6 +1,6 @@
 This integration enables the management of Kubernetes environments using Ansible modules. The Ansible engine is self-contained and pre-configured as part of this pack onto your XSOAR server, all you need to do is provide credentials you are ready to use the feature rich commands.
 
-# Authorize Cortex XSOAR for Kubernetes
+# Authorize Cortex XSOAR for Ansible Kubernetes
 
 This integration supports API Token, and Username/Password authentication. It is recommended to use API tokens.
 
