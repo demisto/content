@@ -1505,4 +1505,4 @@ script:
   isremotesyncout: true
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- Playbook_TheHiveProject_Test

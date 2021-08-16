@@ -3472,6 +3472,10 @@
         {
             "integrations": "SOCRadarThreatFusion",
             "playbookID": "SOCRadarThreatFusion-Test"
+        },
+        {
+            "integrations": "TheHive Project",
+            "playbookID": "Playbook_TheHiveProject_Test"
         }
     ],
     "skipped_tests": {
