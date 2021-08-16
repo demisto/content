@@ -428,48 +428,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                                 "manager": "kubectl-client-side-apply",
                                 "operation": "Update",
                                 "time": "2021-07-04T16:42:43Z"
-                            },
-                            {
-                                "apiVersion": "apps/v1",
-                                "fieldsType": "FieldsV1",
-                                "fieldsV1": {
-                                    "f:metadata": {
-                                        "f:annotations": {
-                                            "f:deployment.kubernetes.io/revision": {}
-                                        }
-                                    },
-                                    "f:status": {
-                                        "f:availableReplicas": {},
-                                        "f:conditions": {
-                                            ".": {},
-                                            "k:{\"type\":\"Available\"}": {
-                                                ".": {},
-                                                "f:lastTransitionTime": {},
-                                                "f:lastUpdateTime": {},
-                                                "f:message": {},
-                                                "f:reason": {},
-                                                "f:status": {},
-                                                "f:type": {}
-                                            },
-                                            "k:{\"type\":\"Progressing\"}": {
-                                                ".": {},
-                                                "f:lastTransitionTime": {},
-                                                "f:lastUpdateTime": {},
-                                                "f:message": {},
-                                                "f:reason": {},
-                                                "f:status": {},
-                                                "f:type": {}
-                                            }
-                                        },
-                                        "f:observedGeneration": {},
-                                        "f:readyReplicas": {},
-                                        "f:replicas": {},
-                                        "f:updatedReplicas": {}
-                                    }
-                                },
-                                "manager": "kube-controller-manager",
-                                "operation": "Update",
-                                "time": "2021-07-04T16:42:52Z"
                             }
                         ],
                         "name": "nginx-deployment",
@@ -535,14 +493,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                                 "reason": "MinimumReplicasAvailable",
                                 "status": "True",
                                 "type": "Available"
-                            },
-                            {
-                                "lastTransitionTime": "2021-07-04T16:42:43Z",
-                                "lastUpdateTime": "2021-07-04T16:42:52Z",
-                                "message": "ReplicaSet \"nginx-deployment-66b6c48dd5\" has successfully progressed.",
-                                "reason": "NewReplicaSetAvailable",
-                                "status": "True",
-                                "type": "Progressing"
                             }
                         ],
                         "observedGeneration": 2,
@@ -646,14 +596,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >            * ####### F:Conditions
 >              * ######## .
 >              * ######## K:{"Type":"Available"}
->                * ######### .
->                * ######### F:Lasttransitiontime
->                * ######### F:Lastupdatetime
->                * ######### F:Message
->                * ######### F:Reason
->                * ######### F:Status
->                * ######### F:Type
->              * ######## K:{"Type":"Progressing"}
 >                * ######### .
 >                * ######### F:Lasttransitiontime
 >                * ######### F:Lastupdatetime
@@ -804,9 +746,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                         "uid": "71dd0d2d-9c84-497f-b900-6ba4357a325d"
                     },
                     "spec": {
-                        "clusterIP": "10.100.158.225",
+                        "clusterIP": "1.1.1.1",
                         "clusterIPs": [
-                            "10.100.158.225"
+                            "1.1.1.1"
                         ],
                         "ports": [
                             {
@@ -868,11 +810,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >            * ####### F:Sessionaffinity
 >            * ####### F:Type
 >    * ### Spec
->      * clusterIP: 10.100.158.225
+>      * clusterIP: 1.1.1.1
 >      * sessionAffinity: None
 >      * type: ClusterIP
 >      * #### Clusterips
->        * 0: 10.100.158.225
+>        * 0: 1.1.1.1
 >      * #### Ports
 >      * #### List
 >        * port: 443
