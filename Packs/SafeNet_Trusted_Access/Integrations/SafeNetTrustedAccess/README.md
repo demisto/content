@@ -163,10 +163,10 @@ Create new user in the tenant
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | userName | User ID of the user. | Required | 
-| firstName | First name of the user. | Required | 
-| lastName | Last name of the user. | Required | 
+| first_name | First name of the user. | Required | 
+| last_name | Last name of the user. | Required | 
 | email | Email ID of the user. | Required | 
-| mobileNumber | Mobile number of the user. | Optional | 
+| mobile_number | Mobile number of the user. | Optional | 
 | alias1 | Alias for the user. | Optional | 
 | alias2 | Additional alias for the user. | Optional | 
 | custom1 | Custom value for the user. | Optional | 
@@ -176,8 +176,8 @@ Create new user in the tenant
 | city | City of the user. | Optional | 
 | state | State of the user. | Optional | 
 | country | Country of the user. | Optional | 
-| postalCode | Postal Code of the user. | Optional | 
-| isSynchronized | Is user synchronized. | Optional | 
+| postal_code | Postal Code of the user. | Optional | 
+| synchronized | Is user synchronized. | Optional | 
 
 
 #### Context Output
@@ -205,7 +205,7 @@ Create new user in the tenant
 
 
 #### Command Example
-```!sta-create-user email="test.user@demisto.com" firstName="User" lastName="Test" userName="usertest123"```
+```!sta-create-user email="test.user@demisto.com" first_name="User" last_name="Test" userName="usertest123"```
 
 #### Context Example
 ```json
@@ -245,17 +245,17 @@ Update the profile for a specific user.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | userName | User ID of the user. | Required | 
-| firstName | First name of the user. | Optional | 
-| lastName | Last name of the user. | Optional | 
+| first_name | First name of the user. | Optional | 
+| last_name | Last name of the user. | Optional | 
 | email | Email ID of the user. | Optional | 
-| mobileNumber | Mobile number of the user. | Optional | 
+| mobile_number | Mobile number of the user. | Optional | 
 | alias1 | Alias for the user. | Optional | 
 | alias2 | Additional alias for the user. | Optional | 
 | address | Address of the user. | Optional | 
 | city | City of the user. | Optional | 
 | state | State of the user. | Optional | 
 | country | Country of the user. | Optional | 
-| postalCode | Postal Code of the user. | Optional | 
+| postal_code | Postal Code of the user. | Optional | 
 | userName_new | New userName to be updated. | Optional | 
 
 
@@ -284,7 +284,7 @@ Update the profile for a specific user.
 
 
 #### Command Example
-```!sta-update-user-info userName="usertest123" userName_new="demousername" firstName="Demo" lastName="Name"```
+```!sta-update-user-info userName="usertest123" userName_new="testuser" first_name="Demo" last_name="Name"```
 
 #### Context Example
 ```json
@@ -297,7 +297,7 @@ Update the profile for a specific user.
             "isSynchronized": false,
             "lastName": "Name",
             "schemaVersionNumber": "1.0",
-            "userName": "demousername"
+            "userName": "testuser"
         }
     }
 }
@@ -308,7 +308,7 @@ Update the profile for a specific user.
 >### STA user successfully updated:
 >|Id|Schema Version Number|User Name|First Name|Last Name|Email|Is Synchronized|
 >|---|---|---|---|---|---|---|
->| iNlUrf8RIazgkpeUDHEAAAAc | 1.0 | demousername | Demo | Name | test.user@demisto.com | false |
+>| iNlUrf8RIazgkpeUDHEAAAAc | 1.0 | testuser | Demo | Name | test.user@demisto.com | false |
 
 
 ### sta-delete-user
@@ -334,7 +334,7 @@ Delete user from the tenant.
 
 
 #### Command Example
-```!sta-delete-user userName="demousername"```
+```!sta-delete-user userName="testuser"```
 
 #### Context Example
 ```json
@@ -349,7 +349,7 @@ Delete user from the tenant.
 
 #### Human Readable Output
 
->## STA user - demousername successfully deleted.
+>## STA user - testuser successfully deleted.
 
 ### sta-get-user-groups
 ***
@@ -390,7 +390,7 @@ Return all the groups associated with a specific user.
                 "description": "High Risk Group for Testing",
                 "id": "50331650",
                 "isSynchronized": false,
-                "name": "TestHighRiskGroup",
+                "name": "Test Group",
                 "schemaVersionNumber": "1.0"
             },
             {
@@ -410,7 +410,7 @@ Return all the groups associated with a specific user.
 >### Groups associated with user - hellouser : 
 >|Id|Schema Version Number|Name|Description|Is Synchronized|
 >|---|---|---|---|---|
->| 50331650 | 1.0 | TestHighRiskGroup | High Risk Group for Testing | false |
+>| 50331650 | 1.0 | Test Group | High Risk Group for Testing | false |
 >| 50331652 | 1.0 | TestGroup0 | Group for testing. | false |
 
 
@@ -449,7 +449,7 @@ Get list of groups in the tenant.
     "STA": {
         "GROUP": [
             {
-                "description": "Description has been updated from XSOAR end.",
+                "description": "Description has been updated.",
                 "id": "50331649",
                 "isSynchronized": false,
                 "name": "TestGroup1",
@@ -459,7 +459,7 @@ Get list of groups in the tenant.
                 "description": "High Risk Group for Testing",
                 "id": "50331650",
                 "isSynchronized": false,
-                "name": "TestHighRiskGroup",
+                "name": "Test Group",
                 "schemaVersionNumber": "1.0"
             },
             {
@@ -479,8 +479,8 @@ Get list of groups in the tenant.
 >### STA groups in the tenant : 
 >|Id|Schema Version Number|Name|Description|Is Synchronized|
 >|---|---|---|---|---|
->| 50331649 | 1.0 | TestGroup1 | Description has been updated from XSOAR end. | false |
->| 50331650 | 1.0 | TestHighRiskGroup | High Risk Group for Testing | false |
+>| 50331649 | 1.0 | TestGroup1 | Description has been updated. | false |
+>| 50331650 | 1.0 | Test Group | High Risk Group for Testing | false |
 >| 50331652 | 1.0 | TestGroup0 | Group for testing. | false |
 
 
@@ -518,7 +518,7 @@ Get information for a specific group.
 {
     "STA": {
         "GROUP": {
-            "description": "Description has been updated from XSOAR end.",
+            "description": "Description has been updated.",
             "id": "50331649",
             "isSynchronized": false,
             "name": "TestGroup1",
@@ -533,7 +533,7 @@ Get information for a specific group.
 >### Group - TestGroup1 :
 >|Id|Schema Version Number|Name|Description|Is Synchronized|
 >|---|---|---|---|---|
->| 50331649 | 1.0 | TestGroup1 | Description has been updated from XSOAR end. | false |
+>| 50331649 | 1.0 | TestGroup1 | Description has been updated. | false |
 
 
 ### sta-get-group-members
@@ -613,7 +613,7 @@ Create a new group in the tenant.
 | --- | --- | --- |
 | groupName | Name of the group. | Required | 
 | description | Description of the group. | Optional | 
-| isSynchronized | Is group synchronized. | Optional | 
+| synchronized | Is group synchronized. | Optional | 
 
 
 #### Context Output
@@ -628,7 +628,7 @@ Create a new group in the tenant.
 
 
 #### Command Example
-```!sta-create-group groupName="TestGroup2" description="Group description." isSynchronized=False```
+```!sta-create-group groupName="TestGroup2" description="Group description." synchronized=False```
 
 #### Context Example
 ```json
@@ -722,14 +722,14 @@ Update information for a specific group.
 
 
 #### Command Example
-```!sta-update-group-info groupName="TestGroup1" description="Description has been updated from XSOAR end."```
+```!sta-update-group-info groupName="TestGroup1" description="Description has been updated."```
 
 #### Context Example
 ```json
 {
     "STA": {
         "GROUP": {
-            "description": "Description has been updated from XSOAR end.",
+            "description": "Description has been updated.",
             "id": "50331649",
             "isSynchronized": false,
             "name": "TestGroup1",
@@ -744,7 +744,7 @@ Update information for a specific group.
 >### STA user successfully updated :
 >|Id|Schema Version Number|Name|Description|Is Synchronized|
 >|---|---|---|---|---|
->| 50331649 | 1.0 | TestGroup1 | Description has been updated from XSOAR end. | false |
+>| 50331649 | 1.0 | TestGroup1 | Description has been updated. | false |
 
 
 ### sta-user-exist-group
@@ -889,8 +889,8 @@ Fetch the access logs.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | userName | Username of the user. | Optional | 
-| since | Filter logs since the specified date and time in UTC time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T06:27:00.000Z. | Optional | 
-| till | Filter logs until the specified date and time in UTC time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T07:40:00.000Z. | Optional | 
+| since | Filter logs since the specified date and time in Universal Time Coordinated time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T06:27:00.000Z. | Optional | 
+| till | Filter logs until the specified date and time in Universal Time Coordinated time zone. Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T07:40:00.000Z. | Optional | 
 | limit | The maximum number of results to return. | Optional | 
 
 

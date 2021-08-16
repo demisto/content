@@ -1,13 +1,13 @@
 !sta-get-user-list limit=10
 !sta-get-user-info userName="demouser"
-!sta-create-user email="test.user@demisto.com" firstName="User" lastName="Test" userName="usertest123"
-!sta-update-user-info userName="usertest123" userName_new="demousername" firstName="Demo" lastName="Name"
-!sta-delete-user userName="demousername"
+!sta-create-user email="test.user@demisto.com" first_name="User" last_name="Test" userName="usertest123"
+!sta-update-user-info userName="usertest123" userName_new="testuser" first_name="Demo" last_name="Name"
+!sta-delete-user userName="testuser"
 !sta-get-user-groups userName="hellouser"
 !sta-get-group-list limit=5
 !sta-get-group-info groupName="TestGroup1"
 !sta-get-group-members groupName="TestGroup0"
-!sta-create-group groupName="TestGroup2" description="Group description." isSynchronized=False
+!sta-create-group groupName="TestGroup2" description="Group description." synchronized=False
 !sta-delete-group groupName="TestGroup2"
 !sta-update-group-info groupName="TestGroup1" description="Description has been updated from XSOAR end."
 !sta-add-user-group groupName="TestGroup1" userName="hellouser"

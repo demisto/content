@@ -164,16 +164,16 @@ script:
       name: userName
       required: true
     - description: First name of the user.
-      name: firstName
+      name: first_name
       required: true
     - description: Last name of the user.
-      name: lastName
+      name: last_name
       required: true
     - description: Email ID of the user.
       name: email
       required: true
     - description: Mobile number of the user.
-      name: mobileNumber
+      name: mobile_number
     - description: Alias for the user.
       name: alias1
     - description: Additional alias for the user.
@@ -193,9 +193,9 @@ script:
     - description: Country of the user.
       name: country
     - description: Postal Code of the user.
-      name: postalCode
+      name: postal_code
     - description: Is user synchronized.
-      name: isSynchronized
+      name: synchronized
     description: Create new user in the tenant
     name: sta-create-user
     outputs:
@@ -258,13 +258,13 @@ script:
       name: userName
       required: true
     - description: First name of the user.
-      name: firstName
+      name: first_name
     - description: Last name of the user.
-      name: lastName
+      name: last_name
     - description: Email ID of the user.
       name: email
     - description: Mobile number of the user.
-      name: mobileNumber
+      name: mobile_number
     - description: Alias for the user.
       name: alias1
     - description: Additional alias for the user.
@@ -278,7 +278,7 @@ script:
     - description: Country of the user.
       name: country
     - description: Postal Code of the user.
-      name: postalCode
+      name: postal_code
     - description: New userName to be updated.
       name: userName_new
     description: Update the profile for a specific user.
@@ -441,7 +441,7 @@ script:
     - description: Description of the group.
       name: description
     - description: Is group synchronized.
-      name: isSynchronized
+      name: synchronized
     description: Create a new group in the tenant.
     name: sta-create-group
     outputs:
@@ -538,10 +538,10 @@ script:
   - arguments:
     - description: Username of the user.
       name: userName
-    - description: 'Filter logs since the specified date and time in UTC time zone.
+    - description: 'Filter logs since the specified date and time in Universal Time Coordinated time zone.
         Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T06:27:00.000Z'
       name: since
-    - description: 'Filter logs until the specified date and time in UTC time zone.
+    - description: 'Filter logs until the specified date and time in Universal Time Coordinated time zone.
         Format : yyyy-mm-ddTHH:mm:ss.fffZ  .Example : 2021-06-03T07:40:00.000Z'
       name: until
     - description: The maximum number of results to return.

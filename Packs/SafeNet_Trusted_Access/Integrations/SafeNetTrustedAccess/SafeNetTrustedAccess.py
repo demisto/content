@@ -159,10 +159,10 @@ class Client(BaseClient):
 
         data = {
             "userName": args.get('userName'),
-            "firstName": args.get('firstName'),
-            "lastName": args.get('lastName'),
+            "firstName": args.get('first_name'),
+            "lastName": args.get('last_name'),
             "email": args.get('email'),
-            "mobileNumber": args.get('mobileNumber'),
+            "mobileNumber": args.get('mobile_number'),
             "alias1": args.get('alias1'),
             "alias2": args.get('alias2'),
             "custom1": args.get('custom1'),
@@ -172,8 +172,8 @@ class Client(BaseClient):
             "city": args.get('city'),
             "state": args.get('state'),
             "country": args.get('country'),
-            "postalCode": args.get('postalCode'),
-            "isSynchronized": args.get('isSynchronized')
+            "postalCode": args.get('postal_code'),
+            "isSynchronized": args.get('synchronized')
         }
 
         return self.http_request(
@@ -188,14 +188,14 @@ class Client(BaseClient):
         data = {}
         if args.get('userName_new') is not None:
             data['userName'] = args.get('userName_new')
-        if args.get('firstName') is not None:
-            data['firstName'] = args.get('firstName')
-        if args.get('lastName') is not None:
-            data['lastName'] = args.get('lastName')
+        if args.get('first_name') is not None:
+            data['firstName'] = args.get('first_name')
+        if args.get('last_name') is not None:
+            data['lastName'] = args.get('last_name')
         if args.get('email') is not None:
             data['email'] = args.get('email')
-        if args.get('mobileNumber') is not None:
-            data['mobileNumber'] = args.get('mobileNumber')
+        if args.get('mobile_number') is not None:
+            data['mobileNumber'] = args.get('mobile_number')
         if args.get('alias1') is not None:
             data['alias1'] = args.get('alias1')
         if args.get('alias2') is not None:
@@ -208,8 +208,8 @@ class Client(BaseClient):
             data['state'] = args.get('state')
         if args.get('country') is not None:
             data['country'] = args.get('country')
-        if args.get('postalCode') is not None:
-            data['postalCode'] = args.get('postalCode')
+        if args.get('postal_code') is not None:
+            data['postalCode'] = args.get('postal_code')
 
         return self.http_request(
             method='PATCH',
@@ -310,7 +310,7 @@ class Client(BaseClient):
         data = {
             "name": args.get('groupName'),
             "description": args.get('description'),
-            "isSynchronized": args.get('isSynchronized'),
+            "isSynchronized": args.get('synchronized'),
         }
 
         return self.http_request(

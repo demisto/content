@@ -54,7 +54,7 @@ update_user = {
     "isSynchronized": False,
     "lastName": "Name",
     "schemaVersionNumber": "1.0",
-    "userName": "demousername"
+    "userName": "testuser"
 }
 
 delete_user = Response()
@@ -65,7 +65,7 @@ user_groups = [
         "description": "High Risk Group for Testing",
         "id": "50331650",
         "isSynchronized": False,
-        "name": "TestHighRiskGroup",
+        "name": "Test Group",
         "schemaVersionNumber": "1.0"
     },
     {
@@ -89,7 +89,7 @@ group_list = [
         "description": "High Risk Group for Testing",
         "id": "50331650",
         "isSynchronized": False,
-        "name": "TestHighRiskGroup",
+        "name": "Test Group",
         "schemaVersionNumber": "1.0"
     },
     {
@@ -199,9 +199,9 @@ validate_tenant = True
     "args, expected_output, expected_readable",
     [
         ({'limit': '5'},
-         [{"email": "demo.user@demisto.com", "firstName": "Demo", "id": "CNlM6Pyq3nADXA4rWyUAAAAc",
+         [{"email": "demo.user@demisto.com", "first_name": "Demo", "id": "CNlM6Pyq3nADXA4rWyUAAAAc",
            "isSynchronized": False, "lastName": "User", "schemaVersionNumber": "1.0", "userName": "demouser"},
-          {"email": "test.user@demisto.com", "firstName": "Hello", "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
+          {"email": "test.user@demisto.com", "first_name": "Hello", "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
            "isSynchronized": False, "lastName": "User", "schemaVersionNumber": "1.0", "userName": "hellouser"}],
          [{'id': 'CNlM6Pyq3nADXA4rWyUAAAAc', 'schemaVersionNumber': '1.0', 'userName': 'demouser',
            'firstName': 'Demo', 'lastName': 'User', 'email': 'demo.user@demisto.com',
@@ -228,7 +228,7 @@ def test_get_userlist_sta_command(mocker, args, expected_output, expected_readab
     "args, expected_output, expected_readable",
     [
         ({'userName': 'hellouser'},
-         {"email": "test.user@demisto.com", "firstName": "Hello", "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
+         {"email": "test.user@demisto.com", "first_name": "Hello", "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
           "isSynchronized": False, "lastName": "User", "schemaVersionNumber": "1.0", "userName": "hellouser"},
          {'id': 'CNlM6rvB0uQDXA4rWyUAAAAc', 'schemaVersionNumber': '1.0', 'userName': 'hellouser',
           'firstName': 'Hello', 'lastName': 'User', 'email': 'test.user@demisto.com',
@@ -250,7 +250,7 @@ def test_get_user_info_sta_command(mocker, args, expected_output, expected_reada
 @pytest.mark.parametrize(
     "args, expected_output, expected_readable",
     [
-        ({'userName': 'usertest123', 'firstName': 'User', 'lastName': 'Test', 'email': 'demo.user@demisto.com'},
+        ({'userName': 'usertest123', 'first_name': 'User', 'last_name': 'Test', 'email': 'demo.user@demisto.com'},
          {"email": "demo.user@demisto.com", "firstName": "User", "id": "iNlPIy6flxPgkpeUDHEAAAAc",
           "isSynchronized": False, "lastName": "Test", "schemaVersionNumber": "1.0", "userName": "usertest123"},
          {"id": "iNlPIy6flxPgkpeUDHEAAAAc", "schemaVersionNumber": "1.0", "userName": "usertest123",
@@ -272,10 +272,10 @@ def test_create_user_sta_command(mocker, args, expected_output, expected_readabl
 @pytest.mark.parametrize(
     "args, expected_output, expected_readable",
     [
-        ({'userName': 'usertest123', 'firstName': 'Demo', 'lastName': 'Name', 'userName_new': 'demousername'},
+        ({'userName': 'usertest123', 'first_name': 'Demo', 'last_name': 'Name', 'userName_new': 'testuser'},
          {"email": "demo.user@demisto.com", "firstName": "Demo", "id": "iNlPIy6flxPgkpeUDHEAAAAc",
-          "isSynchronized": False, "lastName": "Name", "schemaVersionNumber": "1.0", "userName": "demousername"},
-         {"id": "iNlPIy6flxPgkpeUDHEAAAAc", "schemaVersionNumber": "1.0", "userName": "demousername",
+          "isSynchronized": False, "lastName": "Name", "schemaVersionNumber": "1.0", "userName": "testuser"},
+         {"id": "iNlPIy6flxPgkpeUDHEAAAAc", "schemaVersionNumber": "1.0", "userName": "testuser",
           "firstName": "Demo", "lastName": "Name", "email": "demo.user@demisto.com", "isSynchronized": False})
     ])
 def test_update_user_sta_command(mocker, args, expected_output, expected_readable):
@@ -293,7 +293,7 @@ def test_update_user_sta_command(mocker, args, expected_output, expected_readabl
 @pytest.mark.parametrize(
     "args, expected_output",
     [
-        ({'userName': 'demousername'},
+        ({'userName': 'testuser'},
          {204})
     ])
 def test_delete_user_sta_command(mocker, args, expected_output):
@@ -304,7 +304,7 @@ def test_delete_user_sta_command(mocker, args, expected_output):
 
     assert response.outputs_prefix == 'STA.USER.DELETE'
     assert response.outputs == 204
-    assert 'demousername' in response.readable_output
+    assert 'testuser' in response.readable_output
 
 
 # Tests sta-get-user-groups command function.
@@ -313,10 +313,10 @@ def test_delete_user_sta_command(mocker, args, expected_output):
     [
         ({'userName': 'hellouser', 'limit': '5'},
          [{"description": "High Risk Group for Testing", "id": "50331650", "isSynchronized": False,
-           "name": "TestHighRiskGroup", "schemaVersionNumber": "1.0"},
+           "name": "Test Group", "schemaVersionNumber": "1.0"},
           {"description": "Group for testing.", "id": "50331652", "isSynchronized": False, "name": "TestGroup0",
            "schemaVersionNumber": "1.0"}],
-         [{"id": "50331650", "schemaVersionNumber": "1.0", "name": "TestHighRiskGroup",
+         [{"id": "50331650", "schemaVersionNumber": "1.0", "name": "Test Group",
            "description": "High Risk Group for Testing", "isSynchronized": False},
           {"id": "50331652", "schemaVersionNumber": "1.0", "name": "TestGroup0", "description": "Group for testing.",
            "isSynchronized": False}]
@@ -332,7 +332,7 @@ def test_get_user_groups_sta_command(mocker, args, expected_output, expected_rea
     assert response.outputs_prefix == 'STA.GROUP'
     assert response.outputs_key_field[0] in expected_output[0]
     assert response.outputs == expected_output
-    assert 'TestHighRiskGroup' in response.outputs[0]['name']
+    assert 'Test Group' in response.outputs[0]['name']
     assert 'TestGroup0' in response.outputs[1]['name']
 
 
@@ -344,12 +344,12 @@ def test_get_user_groups_sta_command(mocker, args, expected_output, expected_rea
          [{"description": "Group for testing.", "id": "50331649", "isSynchronized": False,
            "name": "TestGroup1", "schemaVersionNumber": "1.0"},
           {"description": "High Risk Group for Testing", "id": "50331650", "isSynchronized": False,
-           "name": "TestHighRiskGroup", "schemaVersionNumber": "1.0"},
+           "name": "Test Group", "schemaVersionNumber": "1.0"},
           {"description": "Group for testing.", "id": "50331652", "isSynchronized": False, "name": "TestGroup0",
            "schemaVersionNumber": "1.0"}],
          [{"id": "50331649", "schemaVersionNumber": "1.0", "name": "TestGroup1",
            "description": "Group for testing.", "isSynchronized": False},
-          {"id": "50331650", "schemaVersionNumber": "1.0", "name": "TestHighRiskGroup",
+          {"id": "50331650", "schemaVersionNumber": "1.0", "name": "Test Group",
            "description": "High Risk Group for Testing", "isSynchronized": False},
           {"id": "50331652", "schemaVersionNumber": "1.0", "name": "TestGroup0", "description": "Group for testing.",
            "isSynchronized": False}]
@@ -366,7 +366,7 @@ def test_get_group_list_sta_command(mocker, args, expected_output, expected_read
     assert response.outputs_key_field[0] in expected_output[0]
     assert len(response.outputs) <= int(args['limit'])
     assert 'TestGroup1' in response.outputs[0]['name']
-    assert 'TestHighRiskGroup' in response.outputs[1]['name']
+    assert 'Test Group' in response.outputs[1]['name']
     assert 'TestGroup0' in response.outputs[2]['name']
 
 
