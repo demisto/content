@@ -8,10 +8,10 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 
 ## Use Cases
 ---
-1. Fetch incidents.
-2. Managing machines and performing actions on them.
-3. Blocking files and applications.
-4. Uploading and digesting threat indicators for the actions of allow, block, or alert.
+- Fetching incidents.
+- Managing machines and performing actions on them.
+- Blocking files and applications.
+- Uploading and digesting threat indicators for the actions of allow, block, or alert.
 
 ## Authentication
 ---
@@ -30,7 +30,7 @@ For more details about the authentication used in this integration, see [Microso
 * Machine.RestrictExecution - Application
 * Machine.Scan - Application
 * Machine.StopAndQuarantine - Application
-* ThreatIndicators.ReadWrite.OwnedBy - Application. Please note - this only used for the deprecated indicators command and it is not needed if not using them.
+* ThreatIndicators.ReadWrite.OwnedBy - Application. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required. 
 * Url.Read.All - Application
 * User.Read.All - Application
 * Ti.ReadWrite (Read and write IOCs belonging to the app) - Application
@@ -47,8 +47,8 @@ For more details about the authentication used in this integration, see [Microso
     | Name | A meaningful name for the integration instance. | XXXXX Instance Alpha |
     | Host URL | The URL to the Microsoft Defender for Endpoint server, including the scheme. | `https://api.securitycenter.windows.com` |
      | ID | The ID used to gain access to the integration. | N/A |
-     | Token | A piece of data that servers use to verify for authenticity | eea810f5-a6f6 |
-    | Fetch Incidents | Whether to fetch the incidents or not. | N/A |
+     | Token | A piece of data that servers use to verify for authenticity. | eea810f5-a6f6 |
+    | Fetch Incidents | Whether to fetch the incidents. | N/A |
     | Incident Type | The type of incident to select. | Phishing |
     | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated values supported. | New,Resolved |
     | Severity to filter out alerts for fetching as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated values supported. | Medium,High |
@@ -61,31 +61,31 @@ For more details about the authentication used in this integration, see [Microso
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
-1. id
-2. incidentId
-3. investigationId
-4. assignedTo
-5. severity
-6. status
-7. classification
-8. determination
-9. investigationState
-10. detectionSource
-11. category
-12. threatFamilyName
-13. title
-14. description
-15. alertCreationTime
-16. firstEventTime
-17. lastEventTime
-18. lastUpdateTime
-19. resolvedTime
-20. machineId
-21. computerDnsName
-22. aadTenantId
-23. relatedUser
-24. comments
-25. evidence
+- id
+- incidentId
+- investigationId
+- assignedTo
+- severity
+- status
+- classification
+- determination
+- investigationState
+- detectionSource
+- category
+- threatFamilyName
+- title
+- description
+- alertCreationTime
+- firstEventTime
+- lastEventTime
+- lastUpdateTime
+- resolvedTime
+- machineId
+- computerDnsName
+- aadTenantId
+- relatedUser
+- comments
+- evidence
 
 
 ## Commands
