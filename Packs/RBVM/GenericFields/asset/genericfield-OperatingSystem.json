@@ -1,24 +1,23 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Vulnerability"
+        "Workstation"
     ],
     "caseInsensitive": true,
-    "cliName": "edgescancvssversion",
+    "cliName": "operatingsystem",
+    "id": "generic_asset_operatingsystem",
+    "name": "Operating System",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
+    "definitionId": "asset",
+    "genericModuleId": "rbvm",
     "hidden": false,
-    "id": "incident_edgescan_cvssversion",
     "isReadOnly": false,
     "locked": false,
-    "name": "Edgescan CVSS Version",
     "neverSetAsRequired": false,
     "ownerOnly": false,
-    "propagationLabels": [
-        "all"
-    ],
     "required": false,
     "sla": 0,
     "system": false,
@@ -28,5 +27,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.5.0"
 }
