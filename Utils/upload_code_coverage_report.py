@@ -88,22 +88,24 @@ def options_handler():
                               "Default value is code-coverage/coverage_data.json."),
                         required=False)
 
+    parser.add_argument('-cov', '--cov_bin_dir',
+                        default='code-coverage/coverage_data.json',
+                        help=("Blob Name in Google Cloud Storage. "
+                              "Default value is code-coverage/coverage_data.json."),
+                        required=False)
+
     return parser.parse_args()
 
 
-def coverage_json(cov_file):
+def coverage_json(cov_file, json_file):
     # this method will be removed when merge to sdk
-    import os
     from coverage import Coverage
-    cov_dir = os.path.split(cov_file)[0]
-    data_file = os.path.join(cov_dir, '.coverage')
-    json_file = os.path.join(cov_dir, 'coverage.json')
-    Coverage(data_file=data_file).json_report(outfile=json_file)
+    Coverage(data_file=cov_file).json_report(outfile=json_file)
 
 
 def main():
     options = options_handler()
-    coverage_json(options.source_file_name)
+    coverage_json(options.cov_bin_dir, options.source_file_name)
 
     create_minimal_report(source_file=options.source_file_name,
                           destination_file=options.minimal_file_name,
