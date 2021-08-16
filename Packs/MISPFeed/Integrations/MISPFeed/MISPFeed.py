@@ -222,7 +222,7 @@ def test_module(client: Client) -> str:
     # Cortex XSOAR will print everything you return different than 'ok' as
     # an error
 
-    client.build_iterator()
+    client.search_query(build_params_dict([], []))
     return 'ok'
 
 
@@ -314,16 +314,15 @@ def search_attributes_command(client: Client,
 def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[str, Any]:
     params = {
         "returnFormat": "json",
-        "type": {
-            attribute_type[0]
-        },
+        "type": {},
         "tags": {
-            "OR":
-                [
-                    tags[0]
-                ]
+            "OR": []
         }
     }
+    if attribute_type:
+        params["type"]["type"] = attribute_type
+    if tags:
+        params["tags"]["OR"] = tags
     return params
 
 
