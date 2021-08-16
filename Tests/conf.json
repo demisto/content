@@ -952,7 +952,8 @@
         {
             "integrations": "Panorama",
             "instance_names": "panorama_instance_best_practice",
-            "playbookID": "Panorama Best Practise - Test"
+            "playbookID": "Panorama Best Practise - Test",
+            "fromversion": "6.1.0"
         },
         {
             "integrations": "Tenable.io",
