@@ -80,7 +80,6 @@ class Client(BaseClient):
             if int(demisto.args().get('count')) < 100:
                 search_url += "&count=" + demisto.args().get('count')
             else:
-                print("Error: Count must not exceed 100. Count was set to 100.")
                 search_url += "&count=100"
         search_url += "&tweet_mode=extended"
         headers = Client.create_headers(demisto.params().get('bearer_token'))
