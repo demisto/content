@@ -103,7 +103,7 @@ def coverage_json(cov_file):
 
 def main():
     options = options_handler()
-    coverage_json(options.source_file_namee)
+    coverage_json(options.source_file_name)
 
     create_minimal_report(source_file=options.source_file_name,
                           destination_file=options.minimal_file_name,
