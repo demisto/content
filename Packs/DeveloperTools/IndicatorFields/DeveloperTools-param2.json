@@ -2,7 +2,7 @@
     "id": "indicator_param2",
     "version": -1,
     "modified": "2021-08-05T12:23:24.119509+03:00",
-    "name": "param2",
+    "name": "DeveloperTools-param2",
     "ownerOnly": false,
     "cliName": "param2",
     "type": "shortText",
