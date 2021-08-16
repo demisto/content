@@ -700,13 +700,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "dm-0": [
                         "dm-name-cs-root",
                         "dm-uuid-LVM-YhrXQybKNO1NfDqL2i4yG9N2vQ9W5Ix0PcUDF884ZLUhBT5nET1F2IFZs8MpqFoT"
-                    ],
-                    "dm-1": [
-                        "dm-name-cs-swap",
-                        "dm-uuid-LVM-YhrXQybKNO1NfDqL2i4yG9N2vQ9W5Ix0stV0tWjpScIjCHGYvj7JbN35iH0TlkyT"
-                    ],
-                    "sda2": [
-                        "lvm-pv-uuid-MDpyrE-0Jf7-5l19-AirF-Gopq-2i9w-bGPpPQ"
                     ]
                 },
                 "labels": {},
@@ -719,15 +712,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                 "uuids": {
                     "dm-0": [
                         "9cf80eb1-50cf-48e5-af07-49d65717fab7"
-                    ],
-                    "dm-1": [
-                        "13bbd60d-288f-4e95-96f6-150dff4e5208"
-                    ],
-                    "sda1": [
-                        "99851642-260f-4d7e-83dd-7cc990d49126"
-                    ],
-                    "sdb1": [
-                        "d35fab31-b660-4633-8288-c1367c82acd4"
                     ]
                 }
             },
@@ -758,136 +742,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "size": "13.39 GB",
                     "support_discard": "0",
                     "vendor": null,
-                    "virtual": 1
-                },
-                "dm-1": {
-                    "holders": [],
-                    "host": "",
-                    "links": {
-                        "ids": [
-                            "dm-name-cs-swap",
-                            "dm-uuid-LVM-YhrXQybKNO1NfDqL2i4yG9N2vQ9W5Ix0stV0tWjpScIjCHGYvj7JbN35iH0TlkyT"
-                        ],
-                        "labels": [],
-                        "masters": [],
-                        "uuids": [
-                            "13bbd60d-288f-4e95-96f6-150dff4e5208"
-                        ]
-                    },
-                    "model": null,
-                    "partitions": {},
-                    "removable": "0",
-                    "rotational": "0",
-                    "sas_address": null,
-                    "sas_device_handle": null,
-                    "scheduler_mode": "",
-                    "sectors": "3358720",
-                    "sectorsize": "512",
-                    "size": "1.60 GB",
-                    "support_discard": "0",
-                    "vendor": null,
-                    "virtual": 1
-                },
-                "sda": {
-                    "holders": [],
-                    "host": "Serial Attached SCSI controller: VMware PVSCSI SCSI Controller (rev 02)",
-                    "links": {
-                        "ids": [],
-                        "labels": [],
-                        "masters": [],
-                        "uuids": []
-                    },
-                    "model": "Virtual disk",
-                    "partitions": {
-                        "sda1": {
-                            "holders": [],
-                            "links": {
-                                "ids": [],
-                                "labels": [],
-                                "masters": [],
-                                "uuids": [
-                                    "99851642-260f-4d7e-83dd-7cc990d49126"
-                                ]
-                            },
-                            "sectors": "2097152",
-                            "sectorsize": 512,
-                            "size": "1.00 GB",
-                            "start": "2048",
-                            "uuid": "99851642-260f-4d7e-83dd-7cc990d49126"
-                        },
-                        "sda2": {
-                            "holders": [
-                                "cs-swap",
-                                "cs-root"
-                            ],
-                            "links": {
-                                "ids": [
-                                    "lvm-pv-uuid-MDpyrE-0Jf7-5l19-AirF-Gopq-2i9w-bGPpPQ"
-                                ],
-                                "labels": [],
-                                "masters": [
-                                    "dm-0",
-                                    "dm-1"
-                                ],
-                                "uuids": []
-                            },
-                            "sectors": "31455232",
-                            "sectorsize": 512,
-                            "size": "15.00 GB",
-                            "start": "2099200",
-                            "uuid": null
-                        }
-                    },
-                    "removable": "0",
-                    "rotational": "0",
-                    "sas_address": null,
-                    "sas_device_handle": null,
-                    "scheduler_mode": "mq-deadline",
-                    "sectors": "33554432",
-                    "sectorsize": "512",
-                    "size": "16.00 GB",
-                    "support_discard": "0",
-                    "vendor": "VMware",
-                    "virtual": 1
-                },
-                "sdb": {
-                    "holders": [],
-                    "host": "Serial Attached SCSI controller: VMware PVSCSI SCSI Controller (rev 02)",
-                    "links": {
-                        "ids": [],
-                        "labels": [],
-                        "masters": [],
-                        "uuids": []
-                    },
-                    "model": "Virtual disk",
-                    "partitions": {
-                        "sdb1": {
-                            "holders": [],
-                            "links": {
-                                "ids": [],
-                                "labels": [],
-                                "masters": [],
-                                "uuids": [
-                                    "d35fab31-b660-4633-8288-c1367c82acd4"
-                                ]
-                            },
-                            "sectors": "2095104",
-                            "sectorsize": 512,
-                            "size": "1023.00 MB",
-                            "start": "2048",
-                            "uuid": "d35fab31-b660-4633-8288-c1367c82acd4"
-                        }
-                    },
-                    "removable": "0",
-                    "rotational": "0",
-                    "sas_address": null,
-                    "sas_device_handle": null,
-                    "scheduler_mode": "mq-deadline",
-                    "sectors": "2097152",
-                    "sectorsize": "512",
-                    "size": "1.00 GB",
-                    "support_discard": "1048576",
-                    "vendor": "VMware",
                     "virtual": 1
                 }
             },
@@ -1172,22 +1026,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "size_available": 12525264896,
                     "size_total": 14371782656,
                     "uuid": "9cf80eb1-50cf-48e5-af07-49d65717fab7"
-                },
-                {
-                    "block_available": 201086,
-                    "block_size": 4096,
-                    "block_total": 249830,
-                    "block_used": 48744,
-                    "device": "/dev/sda1",
-                    "fstype": "ext4",
-                    "inode_available": 65227,
-                    "inode_total": 65536,
-                    "inode_used": 309,
-                    "mount": "/boot",
-                    "options": "rw,seclabel,relatime",
-                    "size_available": 823648256,
-                    "size_total": 1023303680,
-                    "uuid": "99851642-260f-4d7e-83dd-7cc990d49126"
                 }
             ],
             "nodename": "web01",
@@ -1261,44 +1099,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
             "swaptotal_mb": 1639,
             "system": "Linux",
             "system_capabilities": [
-                "cap_chown",
-                "cap_dac_override",
-                "cap_dac_read_search",
-                "cap_fowner",
-                "cap_fsetid",
-                "cap_kill",
-                "cap_setgid",
-                "cap_setuid",
-                "cap_setpcap",
-                "cap_linux_immutable",
-                "cap_net_bind_service",
-                "cap_net_broadcast",
-                "cap_net_admin",
-                "cap_net_raw",
-                "cap_ipc_lock",
-                "cap_ipc_owner",
-                "cap_sys_module",
-                "cap_sys_rawio",
-                "cap_sys_chroot",
-                "cap_sys_ptrace",
-                "cap_sys_pacct",
-                "cap_sys_admin",
-                "cap_sys_boot",
-                "cap_sys_nice",
-                "cap_sys_resource",
-                "cap_sys_time",
-                "cap_sys_tty_config",
-                "cap_mknod",
-                "cap_lease",
-                "cap_audit_write",
-                "cap_audit_control",
-                "cap_setfcap",
-                "cap_mac_override",
-                "cap_mac_admin",
-                "cap_syslog",
-                "cap_wake_alarm",
-                "cap_block_suspend",
-                "cap_audit_read+ep"
+                "cap_chown"
             ],
             "system_capabilities_enforced": "True",
             "system_vendor": "VMware, Inc.",
@@ -1449,11 +1250,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * #### Dm-0
 >        * 0: dm-name-cs-root
 >        * 1: dm-uuid-LVM-YhrXQybKNO1NfDqL2i4yG9N2vQ9W5Ix0PcUDF884ZLUhBT5nET1F2IFZs8MpqFoT
->      * #### Dm-1
->        * 0: dm-name-cs-swap
->        * 1: dm-uuid-LVM-YhrXQybKNO1NfDqL2i4yG9N2vQ9W5Ix0stV0tWjpScIjCHGYvj7JbN35iH0TlkyT
->      * #### Sda2
->        * 0: lvm-pv-uuid-MDpyrE-0Jf7-5l19-AirF-Gopq-2i9w-bGPpPQ
 >    * ### Labels
 >    * ### Masters
 >      * #### Sda2
@@ -1462,12 +1258,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * ### Uuids
 >      * #### Dm-0
 >        * 0: 9cf80eb1-50cf-48e5-af07-49d65717fab7
->      * #### Dm-1
->        * 0: 13bbd60d-288f-4e95-96f6-150dff4e5208
->      * #### Sda1
->        * 0: 99851642-260f-4d7e-83dd-7cc990d49126
->      * #### Sdb1
->        * 0: d35fab31-b660-4633-8288-c1367c82acd4
 >  * ## Devices
 >    * ### Dm-0
 >      * host: 
@@ -1493,115 +1283,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >        * ##### Uuids
 >          * 0: 9cf80eb1-50cf-48e5-af07-49d65717fab7
 >      * #### Partitions
->    * ### Dm-1
->      * host: 
->      * model: None
->      * removable: 0
->      * rotational: 0
->      * sas_address: None
->      * sas_device_handle: None
->      * scheduler_mode: 
->      * sectors: 3358720
->      * sectorsize: 512
->      * size: 1.60 GB
->      * support_discard: 0
->      * vendor: None
->      * virtual: 1
->      * #### Holders
->      * #### Links
->        * ##### Ids
->          * 0: dm-name-cs-swap
->          * 1: dm-uuid-LVM-YhrXQybKNO1NfDqL2i4yG9N2vQ9W5Ix0stV0tWjpScIjCHGYvj7JbN35iH0TlkyT
->        * ##### Labels
->        * ##### Masters
->        * ##### Uuids
->          * 0: 13bbd60d-288f-4e95-96f6-150dff4e5208
->      * #### Partitions
->    * ### Sda
->      * host: Serial Attached SCSI controller: VMware PVSCSI SCSI Controller (rev 02)
->      * model: Virtual disk
->      * removable: 0
->      * rotational: 0
->      * sas_address: None
->      * sas_device_handle: None
->      * scheduler_mode: mq-deadline
->      * sectors: 33554432
->      * sectorsize: 512
->      * size: 16.00 GB
->      * support_discard: 0
->      * vendor: VMware
->      * virtual: 1
->      * #### Holders
->      * #### Links
->        * ##### Ids
->        * ##### Labels
->        * ##### Masters
->        * ##### Uuids
->      * #### Partitions
->        * ##### Sda1
->          * sectors: 2097152
->          * sectorsize: 512
->          * size: 1.00 GB
->          * start: 2048
->          * uuid: 99851642-260f-4d7e-83dd-7cc990d49126
->          * ###### Holders
->          * ###### Links
->            * ####### Ids
->            * ####### Labels
->            * ####### Masters
->            * ####### Uuids
->              * 0: 99851642-260f-4d7e-83dd-7cc990d49126
->        * ##### Sda2
->          * sectors: 31455232
->          * sectorsize: 512
->          * size: 15.00 GB
->          * start: 2099200
->          * uuid: None
->          * ###### Holders
->            * 0: cs-swap
->            * 1: cs-root
->          * ###### Links
->            * ####### Ids
->              * 0: lvm-pv-uuid-MDpyrE-0Jf7-5l19-AirF-Gopq-2i9w-bGPpPQ
->            * ####### Labels
->            * ####### Masters
->              * 0: dm-0
->              * 1: dm-1
->            * ####### Uuids
->    * ### Sdb
->      * host: Serial Attached SCSI controller: VMware PVSCSI SCSI Controller (rev 02)
->      * model: Virtual disk
->      * removable: 0
->      * rotational: 0
->      * sas_address: None
->      * sas_device_handle: None
->      * scheduler_mode: mq-deadline
->      * sectors: 2097152
->      * sectorsize: 512
->      * size: 1.00 GB
->      * support_discard: 1048576
->      * vendor: VMware
->      * virtual: 1
->      * #### Holders
->      * #### Links
->        * ##### Ids
->        * ##### Labels
->        * ##### Masters
->        * ##### Uuids
->      * #### Partitions
->        * ##### Sdb1
->          * sectors: 2095104
->          * sectorsize: 512
->          * size: 1023.00 MB
->          * start: 2048
->          * uuid: d35fab31-b660-4633-8288-c1367c82acd4
->          * ###### Holders
->          * ###### Links
->            * ####### Ids
->            * ####### Labels
->            * ####### Masters
->            * ####### Uuids
->              * 0: d35fab31-b660-4633-8288-c1367c82acd4
 >  * ## Dns
 >    * ### Nameservers
 >      * 0: 192.168.1.1
@@ -1878,43 +1559,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * type: targeted
 >  * ## System_Capabilities
 >    * 0: cap_chown
->    * 1: cap_dac_override
->    * 2: cap_dac_read_search
->    * 3: cap_fowner
->    * 4: cap_fsetid
->    * 5: cap_kill
->    * 6: cap_setgid
->    * 7: cap_setuid
->    * 8: cap_setpcap
->    * 9: cap_linux_immutable
->    * 10: cap_net_bind_service
->    * 11: cap_net_broadcast
->    * 12: cap_net_admin
->    * 13: cap_net_raw
->    * 14: cap_ipc_lock
->    * 15: cap_ipc_owner
->    * 16: cap_sys_module
->    * 17: cap_sys_rawio
->    * 18: cap_sys_chroot
->    * 19: cap_sys_ptrace
->    * 20: cap_sys_pacct
->    * 21: cap_sys_admin
->    * 22: cap_sys_boot
->    * 23: cap_sys_nice
->    * 24: cap_sys_resource
->    * 25: cap_sys_time
->    * 26: cap_sys_tty_config
->    * 27: cap_mknod
->    * 28: cap_lease
->    * 29: cap_audit_write
->    * 30: cap_audit_control
->    * 31: cap_setfcap
->    * 32: cap_mac_override
->    * 33: cap_mac_admin
->    * 34: cap_syslog
->    * 35: cap_wake_alarm
->    * 36: cap_block_suspend
->    * 37: cap_audit_read+ep
 >  * ## Gather_Subset
 >    * 0: all
 
@@ -2547,47 +2191,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "protocol": "tcp",
                     "stime": "Sun Jul  4 18:12:31 2021",
                     "user": "root"
-                },
-                {
-                    "address": "::",
-                    "name": "sshd",
-                    "pid": 964,
-                    "port": 22,
-                    "protocol": "tcp",
-                    "stime": "Sun Jul  4 18:12:31 2021",
-                    "user": "root"
-                },
-                {
-                    "address": "::",
-                    "name": "httpd",
-                    "pid": 7626,
-                    "port": 80,
-                    "protocol": "tcp",
-                    "stime": "Thu Jul  8 14:12:40 2021",
-                    "user": "root"
                 }
             ],
             "udp_listen": [
                 {
                     "address": "127.0.0.1",
-                    "name": "chronyd",
-                    "pid": 890,
-                    "port": 323,
-                    "protocol": "udp",
-                    "stime": "Sun Jul  4 18:12:29 2021",
-                    "user": "chrony"
-                },
-                {
-                    "address": "fe80::a291:d0c1:61f",
-                    "name": "NetworkManager",
-                    "pid": 954,
-                    "port": 546,
-                    "protocol": "udp",
-                    "stime": "Sun Jul  4 18:12:31 2021",
-                    "user": "root"
-                },
-                {
-                    "address": "::1",
                     "name": "chronyd",
                     "pid": 890,
                     "port": 323,
@@ -2614,22 +2222,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * protocol: tcp
 >    * stime: Sun Jul  4 18:12:31 2021
 >    * user: root
->  * ## Sshd
->    * address: ::
->    * name: sshd
->    * pid: 964
->    * port: 22
->    * protocol: tcp
->    * stime: Sun Jul  4 18:12:31 2021
->    * user: root
->  * ## Httpd
->    * address: ::
->    * name: httpd
->    * pid: 7626
->    * port: 80
->    * protocol: tcp
->    * stime: Thu Jul  8 14:12:40 2021
->    * user: root
 >  * ## Udp_Listen
 >  * ## Chronyd
 >    * address: 127.0.0.1
@@ -2639,23 +2231,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * protocol: udp
 >    * stime: Sun Jul  4 18:12:29 2021
 >    * user: chrony
->  * ## Networkmanager
->    * address: fe80::a291:d0c1:61f
->    * name: NetworkManager
->    * pid: 954
->    * port: 546
->    * protocol: udp
->    * stime: Sun Jul  4 18:12:31 2021
->    * user: root
->  * ## Chronyd
->    * address: ::1
->    * name: chronyd
->    * pid: 890
->    * port: 323
->    * protocol: udp
->    * stime: Sun Jul  4 18:12:29 2021
->    * user: chrony
-
 
 ### linux-locale-gen
 ***
