@@ -1,0 +1,22 @@
+{
+  "Tag": [
+    {
+      "id": "1",
+      "name": "Tag1"
+    },
+    {
+      "id": "2",
+      "name": "misp-galaxy:tag2",
+      "is_galaxy": true,
+      "is_custom_galaxy": false,
+      "inherited": 1
+    },
+    {
+      "id": "3",
+      "name": "misp-galaxy:tag3",
+      "is_galaxy": true,
+      "is_custom_galaxy": false,
+      "inherited": 0
+    }
+  ]
+}
