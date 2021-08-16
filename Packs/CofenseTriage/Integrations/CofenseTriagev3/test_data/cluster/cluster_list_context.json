@@ -1,0 +1,136 @@
+[
+  {
+    "id": "1",
+    "type": "clusters",
+    "links": {
+      "self": "https://triage.example.com/api/public/v2/clusters/1"
+    },
+    "attributes": {
+      "risk_score": 34,
+      "first_reported_at": "2019-11-08T17:17:05.000Z",
+      "average_reporter_reputation": "0.0",
+      "match_priority": 0,
+      "host_source": "dummy_source",
+      "attachments_count": 0,
+      "unprocessed_reports_count": 0,
+      "processed_reports_count": 11,
+      "total_reports_count": 11,
+      "rules_count": 0,
+      "urls_count": 3,
+      "vip_reporters_count": 0,
+      "created_at": "2020-10-21T20:54:25.644Z",
+      "updated_at": "2021-06-02T11:05:02.806Z"
+    },
+    "relationships": {
+      "attachment_payloads": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/clusters/1/relationships/attachment_payloads",
+          "related": "https://triage.example.com/api/public/v2/clusters/1/attachment_payloads"
+        }
+      },
+      "domains": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/clusters/1/relationships/domains",
+          "related": "https://triage.example.com/api/public/v2/clusters/1/domains"
+        }
+      },
+      "hostnames": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/clusters/1/relationships/hostnames",
+          "related": "https://triage.example.com/api/public/v2/clusters/1/hostnames"
+        }
+      },
+      "reports": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/clusters/1/relationships/reports",
+          "related": "https://triage.example.com/api/public/v2/clusters/1/reports"
+        }
+      },
+      "reporters": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/clusters/1/relationships/reporters",
+          "related": "https://triage.example.com/api/public/v2/clusters/1/reporters"
+        }
+      },
+      "rules": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/clusters/1/relationships/rules",
+          "related": "https://triage.example.com/api/public/v2/clusters/1/rules"
+        }
+      },
+      "urls": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/clusters/1/relationships/urls",
+          "related": "https://triage.example.com/api/public/v2/clusters/1/urls"
+        }
+      }
+    }
+  },
+  {
+    "id": "2",
+    "type": "clusters",
+    "links": {
+      "self": "https://triage.example.com/api/public/v2/clusters/2"
+    },
+    "attributes": {
+      "risk_score": 8,
+      "first_reported_at": "2019-11-08T19:50:17.000Z",
+      "average_reporter_reputation": "0.0",
+      "match_priority": 0,
+      "host_source": "dummy_source",
+      "attachments_count": 0,
+      "unprocessed_reports_count": 0,
+      "processed_reports_count": 1,
+      "total_reports_count": 1,
+      "rules_count": 0,
+      "urls_count": 3,
+      "vip_reporters_count": 0,
+      "created_at": "2020-10-21T20:54:28.227Z",
+      "updated_at": "2020-11-23T13:17:43.492Z"
+    },
+    "relationships": {
+      "attachment_payloads": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/clusters/2/relationships/attachment_payloads",
+          "related": "https://triage.example.com/api/public/v2/clusters/2/attachment_payloads"
+        }
+      },
+      "domains": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/clusters/2/relationships/domains",
+          "related": "https://triage.example.com/api/public/v2/clusters/2/domains"
+        }
+      },
+      "hostnames": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/clusters/2/relationships/hostnames",
+          "related": "https://triage.example.com/api/public/v2/clusters/2/hostnames"
+        }
+      },
+      "reports": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/clusters/2/relationships/reports",
+          "related": "https://triage.example.com/api/public/v2/clusters/2/reports"
+        }
+      },
+      "reporters": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/clusters/2/relationships/reporters",
+          "related": "https://triage.example.com/api/public/v2/clusters/2/reporters"
+        }
+      },
+      "rules": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/clusters/2/relationships/rules",
+          "related": "https://triage.example.com/api/public/v2/clusters/2/rules"
+        }
+      },
+      "urls": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/clusters/2/relationships/urls",
+          "related": "https://triage.example.com/api/public/v2/clusters/2/urls"
+        }
+      }
+    }
+  }
+]

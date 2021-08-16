@@ -11,3 +11,4 @@ Among other things, this integration enables you to:
 - Get a list of files for a GitHub pull request.
 - Get a list of inactive GitHub pull requests.
 - Get the contents of a file in GitHub.
+- Create a release.

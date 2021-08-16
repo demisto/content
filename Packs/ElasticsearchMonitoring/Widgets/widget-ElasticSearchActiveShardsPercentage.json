@@ -1,0 +1,31 @@
+{
+    "id": "es-active-shards-percentage",
+    "version": -1,
+    "fromVersion": "6.1.0",
+    "modified": "2021-01-10T13:24:20.812147Z",
+    "name": "Elasticsearch Shards Current Usage",
+    "dataType": "system",
+    "widgetType": "number",
+    "query": "es-shard.usedPercent",
+    "isPredefined": true,
+    "description": "Elasticsearch Shards Current Usage %",
+    "params": {
+        "colors": {
+            "isEnabled": true,
+            "items": {
+                "#00CD33": {
+                    "value": 99
+                },
+                "#FAC100": {
+                    "value": 50
+                },
+                "#FF1B15": {
+                    "value": -1
+                }
+            },
+            "type": "above"
+        },
+        "currencySign": "%",
+        "signAlignment": "right"
+    }
+}

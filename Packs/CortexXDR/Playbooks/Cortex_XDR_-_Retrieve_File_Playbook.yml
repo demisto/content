@@ -1,5 +1,7 @@
 id: Cortex XDR - Retrieve File Playbook
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex XDR - Retrieve File Playbook
 description: |-
   Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
@@ -37,10 +39,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: d07c1069-79ab-47ca-88a7-bfc4448ec9c1
+    taskid: b5b9500b-4287-4ed4-85f7-8d65d06975d4
     type: regular
     task:
-      id: d07c1069-79ab-47ca-88a7-bfc4448ec9c1
+      id: b5b9500b-4287-4ed4-85f7-8d65d06975d4
       version: -1
       name: xdr-retrieve-files
       description: Retrieves files from selected endpoints. You can retrieve up to
@@ -57,13 +59,20 @@ tasks:
       - "3"
     scriptarguments:
       endpoint_ids:
-        simple: ${inputs.endpoint_ids}
+        complex:
+          root: inputs.endpoint_ids
+      generic_file_path:
+        complex:
+          root: inputs.file_path
       linux_file_paths:
-        simple: ${inputs.linux_file_paths}
+        complex:
+          root: inputs.linux_file_paths
       mac_file_paths:
-        simple: ${inputs.mac_file_paths}
+        complex:
+          root: inputs.mac_file_paths
       windows_file_paths:
-        simple: ${inputs.windows_file_paths}
+        complex:
+          root: inputs.windows_file_paths
     separatecontext: false
     view: |-
       {
@@ -79,10 +88,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 4b33d290-4788-4f1e-8e9b-ea7d13cdd0b0
+    taskid: 0cb9b5c1-4c47-42fc-860c-20385870f6c7
     type: playbook
     task:
-      id: 4b33d290-4788-4f1e-8e9b-ea7d13cdd0b0
+      id: 0cb9b5c1-4c47-42fc-860c-20385870f6c7
       version: -1
       name: GenericPolling
       description: |-
@@ -199,10 +208,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 776b2c6a-86da-4037-8a97-f037d957a432
+    taskid: 1c13cd5a-8e50-4d71-8479-01639acc41b4
     type: regular
     task:
-      id: 776b2c6a-86da-4037-8a97-f037d957a432
+      id: 1c13cd5a-8e50-4d71-8479-01639acc41b4
       version: -1
       name: Print Error message
       description: Prints an error entry with a given message.
@@ -228,10 +237,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 00a014af-15f0-4944-8fbe-c59133e02d92
+    taskid: 0564ecf2-66a6-4447-8572-b0854d7f6162
     type: regular
     task:
-      id: 00a014af-15f0-4944-8fbe-c59133e02d92
+      id: 0564ecf2-66a6-4447-8572-b0854d7f6162
       version: -1
       name: xdr-retrieve-file-details
       description: View the file retrieved by the xdr-retrieve-files command according
@@ -246,7 +255,9 @@ tasks:
       - "5"
     scriptarguments:
       action_id:
-        simple: ${PaloAltoNetworksXDR.RetrievedFiles.action_id}
+        complex:
+          root: PaloAltoNetworksXDR.RetrievedFiles
+          accessor: action_id
     separatecontext: false
     view: |-
       {
@@ -278,27 +289,35 @@ inputs:
 - key: endpoint_ids
   value: {}
   required: true
-  description: Comma-separated list of endpoint IDs.
+  description: A comma-separated list of endpoint IDs.
+  playbookInputQuery:
+- key: file_path
+  value: {}
+  required: false
+  description: "A comma-separated list of file paths in any platform. It can be used\
+    \ instead of the macOS/Windows/Linux file paths. \nThe order of the files path\
+    \ list must be parallel to the endpoints list order. Therefore, the first file\
+    \ path in the list is related to the first endpoint ID and so on."
   playbookInputQuery:
 - key: windows_file_paths
   value: {}
   required: false
   description: |-
-    Comma-separated list of Windows paths.
+    A comma-separated list of Windows paths.
     Enter at least one path for either Windows, Linux, or Mac.
   playbookInputQuery:
 - key: linux_file_paths
   value: {}
   required: false
   description: |-
-    Comma-separated list Linux paths.
+    A comma-separated list Linux paths.
     Enter at least one path for either Windows, Linux, or Mac.
   playbookInputQuery:
 - key: mac_file_paths
   value: {}
   required: false
   description: |-
-    Comma-separated list of Mac paths.
+    A comma-separated list of Mac paths.
     Enter at least one path for either Windows, Linux, or Mac.
   playbookInputQuery:
 outputs:
@@ -329,7 +348,8 @@ outputs:
   description: The file extension. For example, 'xls'.
   type: String
 - contextPath: File.Type
-  description: The file type, as determined by libmagic (same as displayed in the file entries).
+  description: The file type, as determined by libmagic (same as displayed in the
+    file entries).
   type: String
 tests:
 - Test XDR Playbook

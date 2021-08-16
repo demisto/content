@@ -1117,7 +1117,10 @@ def search_records_by_report_command(client: Client, args: Dict[str, str]):
     records = []
     ec = {}
     if raw_records.get('Records') and raw_records['Records'].get('Record'):
-        level_id = raw_records['Records']['Record'][0]['@levelId']
+        if isinstance(raw_records['Records'].get('Record'), list):
+            level_id = raw_records['Records']['Record'][0]['@levelId']
+        else:
+            level_id = raw_records['Records']['Record']['@levelId']
 
         level_res = client.do_request('GET', f'/api/core/system/fielddefinition/level/{level_id}')
         fields = {}

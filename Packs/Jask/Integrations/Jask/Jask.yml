@@ -40,8 +40,8 @@ configuration:
   name: fetchLimit
   required: false
   type: 0
-description: Freeing the analyst with autonomous decisions
-display: Jask
+description: Deprecated. Use Sumo Logic Cloud SIEM instead. Freeing the analyst with autonomous decisions.
+display: Jask (Deprecated)
 name: Jask
 script:
   commands:
@@ -639,3 +639,4 @@ script:
 tests:
 - No test
 fromversion: 5.0.0
+deprecated: true

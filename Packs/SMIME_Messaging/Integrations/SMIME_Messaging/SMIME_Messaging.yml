@@ -70,6 +70,12 @@ script:
       name: encrypt_message
       required: true
       secret: false
+    - default: false
+      description: The encoding code to use when decode the message body, e.g 'ISO-8859-2''
+      isArray: false
+      name: encoding
+      required: false
+      secret: false
     deprecated: false
     description: Decrypts the message body.
     execution: false
@@ -93,7 +99,7 @@ script:
     - contextPath: SMIME.SignedAndEncrypted.Message
       description: The raw message to send.
       type: String
-  dockerimage: demisto/m2crypto:1.0.0.10664
+  dockerimage: demisto/m2crypto:1.0.0.23290
   isfetch: false
   longRunning: false
   longRunningPort: false

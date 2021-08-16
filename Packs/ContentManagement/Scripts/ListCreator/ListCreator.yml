@@ -1,0 +1,35 @@
+args:
+- default: false
+  description: The name of the list to be configured.
+  isArray: false
+  name: list_name
+  required: true
+  secret: false
+- default: false
+  description: The data of the list to be configured.
+  isArray: false
+  name: list_data
+  required: true
+  secret: false
+commonfields:
+  id: ListCreator
+  version: -1
+enabled: false
+name: ListCreator
+comment: List Creator for the Content Management pack.
+outputs:
+- contextPath: ConfigurationSetup.Lists.creationstatus
+  description: The creation status of the list.
+  type: Unknown
+script: '-'
+subtype: python3
+system: false
+tags:
+- configuration
+- Content Management
+timeout: '0'
+type: python
+dockerimage: demisto/xsoar-tools:1.0.0.19258
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

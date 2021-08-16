@@ -684,7 +684,10 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        if repr(e) == "KeyError('email')":
+            return_error(f"Failed to execute {demisto.command()} command. Please provide a valid email.")
+        else:
+            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', 'builtins'):

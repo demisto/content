@@ -133,7 +133,7 @@ script:
       default: false
       defaultValue: 'true'
       description: Whether to auto-close the channel when the incident is closed in
-        Demisto. If "true", the channel will be auto-closed. Default is "true".
+        XSOAR. If "true", the channel will be auto-closed. Default is "true".
       isArray: false
       name: autoclose
       predefined:
@@ -155,7 +155,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The team in which to mirror the Demisto investigation. If not specified,
+      description: The team in which to mirror the XSOAR investigation. If not specified,
         the default team configured in the integration parameters will be used.
       isArray: false
       name: team
@@ -168,7 +168,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Mirrors the Demisto investigation to the specified Microsoft Teams
+    description: Mirrors the XSOAR investigation to the specified Microsoft Teams
       channel.
     execution: false
     name: mirror-investigation
@@ -343,7 +343,7 @@ script:
     - contextPath: MicrosoftTeams.CreateMeeting.participantDisplayName
       description: The display name of the participants.
       type: String
-  dockerimage: demisto/teams:1.0.0.20407
+  dockerimage: demisto/teams:1.0.0.23674
   feed: false
   isfetch: false
   longRunning: true
@@ -354,5 +354,5 @@ script:
   type: python
   resetContext: true
 tests:
-- No test
+- Microsoft Teams - Test
 fromversion: 5.0.0

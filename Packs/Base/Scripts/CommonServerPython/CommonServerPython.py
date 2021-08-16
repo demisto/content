@@ -20,6 +20,7 @@ from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
 from distutils.version import LooseVersion
+from threading import Lock
 
 import demistomock as demisto
 import warnings
@@ -225,6 +226,7 @@ class DBotScoreType(object):
     DBotScoreType.ACCOUNT
     DBotScoreType.CRYPTOCURRENCY
     DBotScoreType.EMAIL
+    DBotScoreType.ATTACKPATTERN
     :return: None
     :rtype: ``None``
     """
@@ -239,6 +241,7 @@ class DBotScoreType(object):
     CERTIFICATE = 'certificate'
     CRYPTOCURRENCY = 'cryptocurrency'
     EMAIL = 'email'
+    ATTACKPATTERN = 'attackpattern'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -260,6 +263,7 @@ class DBotScoreType(object):
             DBotScoreType.CERTIFICATE,
             DBotScoreType.CRYPTOCURRENCY,
             DBotScoreType.EMAIL,
+            DBotScoreType.ATTACKPATTERN,
         )
 
 
@@ -584,6 +588,25 @@ def auto_detect_indicator_type(indicator_value):
     return None
 
 
+def add_http_prefix_if_missing(address=''):
+    """
+        This function adds `http://` prefix to the proxy address in case it is missing.
+
+        :type address: ``string``
+        :param address: Proxy address.
+
+        :rtype: ``string``
+        :return: proxy address after the 'http://' prefix was added, if needed.
+    """
+    PROXY_PREFIXES = ['http://', 'https://', 'socks5://', 'socks5h://', 'socks4://', 'socks4a://']
+    if not address:
+        return ''
+    for prefix in PROXY_PREFIXES:
+        if address.startswith(prefix):
+            return address
+    return 'http://' + address
+
+
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
                  insecure_param_name=None):
     """
@@ -611,6 +634,7 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
     """
     proxies = {}  # type: dict
     if demisto.params().get(proxy_param_name, checkbox_default_value):
+        ensure_proxy_has_http_prefix()
         proxies = {
             'http': os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', ''),
             'https': os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy', '')
@@ -640,6 +664,20 @@ def skip_proxy():
     for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
         if k in os.environ:
             del os.environ[k]
+
+
+def ensure_proxy_has_http_prefix():
+    """
+    The function checks if proxy environment vars are missing http/https prefixes, and adds http if so.
+
+    :return: None
+    :rtype: ``None``
+    """
+    for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
+        if k in os.environ:
+            proxy_env_var = os.getenv(k)
+            if proxy_env_var:
+                os.environ[k] = add_http_prefix_if_missing(os.environ[k])
 
 
 def skip_cert_verification():
@@ -1184,6 +1222,40 @@ def remove_empty_elements(d):
         return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
 
 
+class SmartGetDict(dict):
+    """A dict that when called with get(key, default) will return the default passed
+    value, even if there is a value of "None" in the place of the key. Example with built-in dict:
+    ```
+    >>> d = {}
+    >>> d['test'] = None
+    >>> d.get('test', 1)
+    >>> print(d.get('test', 1))
+    None
+    ```
+    Example with SmartGetDict:
+    ```
+    >>> d = SmartGetDict()
+    >>> d['test'] = None
+    >>> d.get('test', 1)
+    >>> print(d.get('test', 1))
+    1
+    ```
+
+    :return: SmartGetDict
+    :rtype: ``SmartGetDict``
+
+    """
+    def get(self, key, default=None):
+        res = dict.get(self, key)
+        if res is not None:
+            return res
+        return default
+
+
+if (not os.getenv('COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS')) and hasattr(demisto, 'params') and demisto.params():
+    demisto.callingContext['params'] = SmartGetDict(demisto.params())
+
+
 def aws_table_to_markdown(response, table_header):
     """
     Converts a raw response from AWS into a markdown formatted table. This function checks to see if
@@ -1327,6 +1399,12 @@ class IntegrationLogger(object):
                 a = self.encode(a)
                 to_add.append(stringEscape(a))
                 to_add.append(stringUnEscape(a))
+                js = json.dumps(a)
+                if js.startswith('"'):
+                    js = js[1:]
+                if js.endswith('"'):
+                    js = js[:-1]
+                to_add.append(js)
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
@@ -2294,7 +2372,7 @@ def get_integration_name():
     :return: Calling integration's name
     :rtype: ``str``
     """
-    return demisto.callingContext.get('IntegrationBrand')
+    return demisto.callingContext.get('context', '').get('IntegrationBrand')
 
 
 class Common(object):
@@ -2318,7 +2396,8 @@ class Common(object):
         :param indicator_type: use DBotScoreType class
 
         :type integration_name: ``str``
-        :param integration_name: integration name
+        :param integration_name: For integrations - The class will automatically determine the integration name.
+                                For scripts - The class will use the given integration name.
 
         :type score: ``DBotScore``
         :param score: DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD
@@ -2342,7 +2421,7 @@ class Common(object):
 
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
-        def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None,
+        def __init__(self, indicator, indicator_type, integration_name='', score=None, malicious_description=None,
                      reliability=None):
 
             if not DBotScoreType.is_valid_type(indicator_type):
@@ -2356,7 +2435,11 @@ class Common(object):
 
             self.indicator = indicator
             self.indicator_type = indicator_type
-            self.integration_name = integration_name or get_integration_name()
+            # For integrations - The class will automatically determine the integration name.
+            if demisto.callingContext.get('integration'):
+                self.integration_name = get_integration_name()
+            else:
+                self.integration_name = integration_name
             self.score = score
             self.malicious_description = malicious_description
             self.reliability = reliability
@@ -3813,6 +3896,72 @@ class Common(object):
 
             ret_value = {
                 Common.Cryptocurrency.CONTEXT_PATH: crypto_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+    class AttackPattern(Indicator):
+        """
+        Attack Pattern indicator
+        :type stix_id: ``str``
+        :param stix_id: The Attack Pattern STIX ID
+        :type kill_chain_phases: ``str``
+        :param kill_chain_phases: The Attack Pattern kill chain phases.
+        :type first_seen_by_source: ``str``
+        :param first_seen_by_source: The Attack Pattern first seen by source
+        :type description: ``str``
+        :param description: The Attack Pattern description
+        :type operating_system_refs: ``str``
+        :param operating_system_refs: The operating system refs of the Attack Pattern.
+        :type publications: ``str``
+        :param publications: The Attack Pattern publications
+        :type mitre_id: ``str``
+        :param mitre_id: The Attack Pattern kill mitre id.
+        :type tags: ``str``
+        :param tags: The Attack Pattern kill tags.
+        :type dbot_score: ``DBotScore``
+        :param dbot_score:  If the address has reputation then create DBotScore object.
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'AttackPattern(val.value && val.value == obj.value)'
+
+        def __init__(self, stix_id, kill_chain_phases, first_seen_by_source, description,
+                     operating_system_refs, publications, mitre_id, tags, dbot_score):
+            self.stix_id = stix_id
+            self.kill_chain_phases = kill_chain_phases
+            self.first_seen_by_source = first_seen_by_source
+            self.description = description
+            self.operating_system_refs = operating_system_refs
+            self.publications = publications
+            self.mitre_id = mitre_id
+            self.tags = tags
+
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            attack_pattern_context = {
+                'STIXID': self.stix_id,
+                "KillChainPhases": self.kill_chain_phases,
+                "FirstSeenBySource": self.first_seen_by_source,
+                'OperatingSystemRefs': self.operating_system_refs,
+                "Publications": self.publications,
+                "MITREID": self.mitre_id,
+                "Tags": self.tags,
+                "Description": self.description
+            }
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                attack_pattern_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            ret_value = {
+                Common.AttackPattern.CONTEXT_PATH: attack_pattern_context
             }
 
             if self.dbot_score:
@@ -5851,6 +6000,56 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
         sys.exit(0)
 
 
+def execute_command(command, args, extract_contents=True, fail_on_error=True):
+    """
+    Runs the `demisto.executeCommand()` function and checks for errors.
+
+    :type command: ``str``
+    :param command: The command to run. (required)
+
+    :type args: ``dict``
+    :param args: The command arguments. (required)
+
+    :type extract_contents: ``bool``
+    :param extract_contents: Whether to return only the Contents part of the results. Default is True.
+
+    :type fail_on_error: ``bool``
+    :param fail_on_error: Whether to fail the command when receiving an error from the command. Default is True.
+
+    :return: The command results.
+    :rtype:
+        - When `fail_on_error` is True - ``list`` or ``dict`` or ``str``.
+        - When `fail_on_error` is False -``bool`` and ``str``.
+
+    Note:
+    For backward compatibility, only when `fail_on_error` is set to False, two values will be returned.
+    """
+    if not hasattr(demisto, 'executeCommand'):
+        raise DemistoException('Cannot run demisto.executeCommand() from integrations.')
+
+    res = demisto.executeCommand(command, args)
+    if is_error(res):
+        error_message = get_error(res)
+        if fail_on_error:
+            return_error('Failed to execute {}. Error details:\n{}'.format(command, error_message))
+        else:
+            return False, error_message
+
+    if not extract_contents:
+        if fail_on_error:
+            return res
+        else:
+            return True, res
+
+    contents = [entry.get('Contents', {}) for entry in res]
+    contents = contents[0] if len(contents) == 1 else contents
+
+    if fail_on_error:
+        return contents
+
+    return True, contents
+
+
 def camelize(src, delim=' ', upper_camel=True):
     """
         Convert all keys of a dictionary (or list of dictionaries) to CamelCase (with capital first letter)
@@ -6331,7 +6530,7 @@ class DemistoHandler(logging.Handler):
                 self.int_logger(msg)
             else:
                 demisto.debug(msg)
-        except Exception:
+        except Exception:  # noqa: disable=broad-except
             pass
 
 
@@ -6395,12 +6594,12 @@ class DebugLogger(object):
                                                                                             os.environ)
         if hasattr(demisto, 'params'):
             msg += "\n#### Params: {}.".format(json.dumps(demisto.params(), indent=2))
-        callingContext = demisto.callingContext.get('context', {})
-        msg += "\n#### Docker image: [{}]".format(callingContext.get('DockerImage'))
-        brand = callingContext.get('IntegrationBrand')
+        calling_context = demisto.callingContext.get('context', {})
+        msg += "\n#### Docker image: [{}]".format(calling_context.get('DockerImage'))
+        brand = calling_context.get('IntegrationBrand')
         if brand:
-            msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, callingContext.get('IntegrationInstance'))
-        sm = get_schedule_metadata(context=callingContext)
+            msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, calling_context.get('IntegrationInstance'))
+        sm = get_schedule_metadata(context=calling_context)
         if sm.get('is_polling'):
             msg += "\n#### Schedule Metadata: scheduled command: [{}] args: [{}] times ran: [{}] scheduled: [{}] end " \
                    "date: [{}]".format(sm.get('polling_command'),
@@ -6649,11 +6848,19 @@ if 'requests' in sys.modules:
             self._headers = headers
             self._auth = auth
             self._session = requests.Session()
-            if not proxy:
+            if proxy:
+                ensure_proxy_has_http_prefix()
+            else:
                 skip_proxy()
 
             if not verify:
                 skip_cert_verification()
+
+        def __del__(self):
+            try:
+                self._session.close()
+            except Exception:  # noqa
+                demisto.debug('failed to close BaseClient session with the following error:\n{}'.format(traceback.format_exc()))
 
         def _implement_retry(self, retries=0,
                              status_list_to_retry=None,
@@ -6698,6 +6905,10 @@ if 'requests' in sys.modules:
                 been exhausted.
             """
             try:
+                method_whitelist = "allowed_methods" if hasattr(Retry.DEFAULT, "allowed_methods") else "method_whitelist"
+                whitelist_kawargs = {
+                    method_whitelist: frozenset(['GET', 'POST', 'PUT'])
+                }
                 retry = Retry(
                     total=retries,
                     read=retries,
@@ -6705,9 +6916,9 @@ if 'requests' in sys.modules:
                     backoff_factor=backoff_factor,
                     status=retries,
                     status_forcelist=status_list_to_retry,
-                    method_whitelist=frozenset(['GET', 'POST', 'PUT']),
                     raise_on_status=raise_on_status,
-                    raise_on_redirect=raise_on_redirect
+                    raise_on_redirect=raise_on_redirect,
+                    **whitelist_kawargs
                 )
                 adapter = HTTPAdapter(max_retries=retry)
                 self._session.mount('http://', adapter)
@@ -6869,10 +7080,12 @@ if 'requests' in sys.modules:
                         return res.content
                     if resp_type == 'xml':
                         ET.parse(res.text)
+                    if resp_type == 'response':
+                        return res
                     return res
                 except ValueError as exception:
                     raise DemistoException('Failed to parse json object from response: {}'
-                                           .format(res.content), exception)
+                                           .format(res.content), exception, res)
             except requests.exceptions.ConnectTimeout as exception:
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                           ' is incorrect or that the Server is not accessible from your host.'
@@ -6900,7 +7113,7 @@ if 'requests' in sys.modules:
             except requests.exceptions.RetryError as exception:
                 try:
                     reason = 'Reason: {}'.format(exception.args[0].reason.args[0])
-                except Exception:
+                except Exception:  # noqa: disable=broad-except
                     reason = ''
                 err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
                 raise DemistoException(err_msg, exception)
@@ -6949,10 +7162,10 @@ def batch(iterable, batch_size=1):
 def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None, raise_return_type=True):
     """Recursive safe get query (for nested dicts and lists), If keys found return value otherwise return None or default value.
     Example:
-    >>> dict = {"something" : {"test": "A"}}
-    >>> dict_safe_get(dict,['something', 'test'])
+    >>> data = {"something" : {"test": "A"}}
+    >>> dict_safe_get(data, ['something', 'test'])
     >>> 'A'
-    >>> dict_safe_get(dict,['something', 'else'],'default value')
+    >>> dict_safe_get(data, ['something', 'else'], 'default value')
     >>> 'default value'
 
     :type dict_object: ``dict``
@@ -6964,7 +7177,7 @@ def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None
     :type default_return_value: ``object``
     :param default_return_value: Value to return when no key available.
 
-    :type return_type: ``object``
+    :type return_type: ``type``
     :param return_type: Excepted return type.
 
     :type raise_return_type: ``bool``
@@ -7608,39 +7821,142 @@ class TableOrListWidget(BaseWidget):
 class IndicatorsSearcher:
     """Used in order to search indicators by the paging or serachAfter param
     :type page: ``int``
-    :param page: the number of page from which we start search indicators from.
+    :param page: the number of page from which we start search indicators from. (will be updated via iter)
 
-    :type filter_fields: ``str``
+    :type filter_fields: ``Optional[str]``
     :param filter_fields: comma separated fields to filter (e.g. "value,type")
+
+    :type from_date: ``Optional[str]``
+    :param from_date: the start date to search from.
+
+    :type query: ``Optional[str]``
+    :param query: indicator search query
+
+    :type size: ``int``
+    :param size: limit the number of returned results.
+
+    :type to_date: ``Optional[str]``
+    :param to_date: the end date to search until to.
+
+    :type value: ``str``
+    :param value: the indicator value to search.
+
+    :type limit ``Optional[int]``
+    :param limit the upper limit of the search (will be updated via iter)
 
     :return: No data returned
     :rtype: ``None``
     """
-    def __init__(self, page=0, filter_fields=None):
+    def __init__(self,
+                 page=0,
+                 filter_fields=None,
+                 from_date=None,
+                 query=None,
+                 size=100,
+                 to_date=None,
+                 value='',
+                 limit=None):
         # searchAfter is available in searchIndicators from version 6.1.0
         self._can_use_search_after = is_demisto_version_ge('6.1.0')
         # populateFields merged in https://github.com/demisto/server/pull/18398
         self._can_use_filter_fields = is_demisto_version_ge('6.1.0', build_number='1095800')
         self._search_after_title = 'searchAfter'
         self._search_after_param = None
+        self._original_page = page
         self._page = page
         self._filter_fields = filter_fields
+        self._total = None
+        self._from_date = from_date
+        self._query = query
+        self._size = size
+        self._to_date = to_date
+        self._value = value
+        self._original_limit = limit
+        self._next_limit = limit
+        self._search_is_done = False
+
+    def __iter__(self):
+        self._total = None
+        self._search_after_param = None
+        self._page = self._original_page
+        self._next_limit = self._original_limit
+        self._search_is_done = False
+        return self
+
+    # python2
+    def next(self):
+        return self.__next__()
+
+    def __next__(self):
+        if self._search_is_done:
+            raise StopIteration
+        size = min(self._size, self._next_limit or self._size)
+        res = self.search_indicators_by_version(from_date=self._from_date,
+                                                query=self._query,
+                                                size=size,
+                                                to_date=self._to_date,
+                                                value=self._value)
+        fetched_len = len(res.get('iocs') or [])
+        if fetched_len == 0:
+            raise StopIteration
+        if self._next_limit:
+            self._next_limit -= fetched_len
+        self._search_is_done = self._is_search_done()
+        return res
+
+    @property
+    def page(self):
+        return self._page
+
+    @property
+    def total(self):
+        return self._total
+
+    @property
+    def limit(self):
+        return self._next_limit
+
+    @limit.setter
+    def limit(self, value):
+        self._next_limit = self._original_limit = value
+
+    def _is_search_done(self):
+        """
+        Checks one of these conditions:
+        1. self.limit is set, and it's updated to be less or equal to zero
+        2. for search_after if self.total was populated by a previous search, but no self._search_after_param
+        3. for page if self.total was populated by a previous search, but page is too large
+        """
+        if self._search_is_done:
+            return True
+
+        reached_limit = isinstance(self._next_limit, int) and self._next_limit <= 0
+        if reached_limit:
+            return True
+
+        if self.total is None:
+            return False
+        else:
+            if self._can_use_search_after:
+                return self._search_after_param is None
+            else:
+                return self.total == self.page * self._size
 
     def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
         """There are 2 cases depends on the sever version:
         1. Search indicators using paging, raise the page number in each call.
         2. Search indicators using searchAfter param, update the _search_after_param in each call.
 
-        :type from_date: ``str``
+        :type from_date: ``Optional[str]``
         :param from_date: the start date to search from.
 
-        :type query: ``str``
+        :type query: ``Optional[str]``
         :param query: indicator search query
 
-        :type size: ``size``
+        :type size: ``int``
         :param size: limit the number of returned results.
 
-        :type to_date: ``str``
+        :type to_date: ``Optional[str]``
         :param to_date: the end date to search until to.
 
         :type value: ``str``
@@ -7649,34 +7965,29 @@ class IndicatorsSearcher:
         :return: object contains the search results
         :rtype: ``dict``
         """
-        if self._can_use_search_after:
-            # if search_after_param exists use it for paging, else use the page number
-            search_iocs_params = assign_params(
-                fromDate=from_date,
-                toDate=to_date,
-                query=query,
-                size=size,
-                value=value,
-                searchAfter=self._search_after_param,
-                populateFields=self._filter_fields if self._can_use_filter_fields else None,
-                page=self._page if not self._search_after_param else None
-            )
-            res = demisto.searchIndicators(**search_iocs_params)
-            self._search_after_param = res[self._search_after_title]
-
-            if res[self._search_after_title] is None:
-                demisto.info('Elastic search using searchAfter returned all indicators')
-
+        # use paging as fallback when cannot use search_after
+        use_paging = not (self._search_after_param and self._can_use_search_after)
+        search_iocs_params = assign_params(
+            fromDate=from_date,
+            toDate=to_date,
+            query=query,
+            size=size,
+            value=value,
+            searchAfter=self._search_after_param if not use_paging else None,
+            populateFields=self._filter_fields if self._can_use_filter_fields else None,
+            page=self.page if use_paging else None
+        )
+        res = demisto.searchIndicators(**search_iocs_params)
+        if len(res.get('iocs') or []) > 0:
+            self._page += 1  # advance pages for search_after, as fallback
         else:
-            res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, page=self._page,
-                                           value=value)
-            self._page += 1
-
+            self._search_is_done = True
+        self._search_after_param = res.get(self._search_after_title)
+        self._total = res.get('total')
+        if self._search_after_title in res and self._search_after_param is None:
+            demisto.info('Elastic search using searchAfter returned all indicators')
+            self._search_is_done = True
         return res
-
-    @property
-    def page(self):
-        return self._page
 
 
 class AutoFocusKeyRetriever:
@@ -7699,3 +8010,60 @@ class AutoFocusKeyRetriever:
             except ValueError as err:
                 raise DemistoException('AutoFocus API Key is only available on the main account for TIM customers. ' + str(err))
         self.key = api_key
+
+
+def get_feed_last_run():
+    """
+    This function gets the feed's last run: from XSOAR version 6.2.0: using `demisto.getLastRun()`.
+    Before XSOAR version 6.2.0: using `demisto.getIntegrationContext()`.
+    :rtype: ``dict``
+    :return: All indicators from the feed's last run
+    """
+    if is_demisto_version_ge('6.2.0'):
+        feed_last_run = demisto.getLastRun() or {}
+        if not feed_last_run:
+            integration_ctx = demisto.getIntegrationContext()
+            if integration_ctx:
+                feed_last_run = integration_ctx
+                demisto.setLastRun(feed_last_run)
+                demisto.setIntegrationContext({})
+    else:
+        feed_last_run = demisto.getIntegrationContext() or {}
+    return feed_last_run
+
+
+def set_feed_last_run(last_run_indicators):
+    """
+    This function sets the feed's last run: from XSOAR version 6.2.0: using `demisto.setLastRun()`.
+    Before XSOAR version 6.2.0: using `demisto.setIntegrationContext()`.
+    :type last_run_indicators: ``dict``
+    :param last_run_indicators: Indicators to save in "lastRun" object.
+    :rtype: ``None``
+    :return: None
+    """
+    if is_demisto_version_ge('6.2.0'):
+        demisto.setLastRun(last_run_indicators)
+    else:
+        demisto.setIntegrationContext(last_run_indicators)
+
+
+def support_multithreading():
+    """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    global demisto
+    prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
+    demisto.lock = Lock()  # type: ignore[attr-defined]
+
+    def locked_do(cmd):
+        try:
+            if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+                return prev_do(cmd)  # type: ignore[call-arg]
+            else:
+                raise RuntimeError('Failed acquiring lock')
+        finally:
+            demisto.lock.release()  # type: ignore[attr-defined]
+
+    demisto._Demisto__do = locked_do  # type: ignore[attr-defined]

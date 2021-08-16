@@ -2,7 +2,6 @@ from XFE_v2 import Client, ip_command, url_command, cve_get_command, \
     cve_search_command, file_command, whois_command
 from CommonServerPython import outputPaths
 
-
 DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 
 MOCK_BASE_URL = 'https://www.this-is-a-fake-url.com'
@@ -68,6 +67,14 @@ MOCK_IP_RESP = {
     "reasonDescription": "One of the five RIRs announced a (new) location mapping of the IP.",
     "categoryDescriptions": {},
     "tags": []
+}
+MOCK_INVALID_IP_RESP = {
+    'ip': '8.8.8.8',
+    'history': [],
+    'subnets': [],
+    'cats': {},
+    'score': 1,
+    'tags': []
 }
 
 MOCK_URL_RESP = {
@@ -364,6 +371,14 @@ MOCK_CVE_SEARCH_RESP = {'total_rows': 1,
 
 
 def test_ip(requests_mock):
+    """
+    Given: Arguments for ip command
+
+    When: The server response is complete
+
+    Then: validates the outputs
+
+    """
     requests_mock.get(f'{MOCK_BASE_URL}/ipr/{MOCK_IP}', json=MOCK_IP_RESP)
 
     client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
@@ -374,6 +389,33 @@ def test_ip(requests_mock):
 
     assert outputs[outputPaths['ip']][0]['Address'] == MOCK_IP
     assert outputs[DBOT_SCORE_KEY][0] == MOCK_IP_RESP[DBOT_SCORE_KEY]
+
+
+def test_ip_with_invalid_resp(requests_mock):
+    """
+    Given: Arguments for ip command
+
+    When: The server response is not complete and some data fields are empty
+
+    Then: validates the outputs
+
+    """
+    requests_mock.get(f'{MOCK_BASE_URL}/ipr/{MOCK_IP}', json=MOCK_INVALID_IP_RESP)
+
+    client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
+    args = {
+        'ip': MOCK_IP
+    }
+    md, outputs, reports = ip_command(client, args)
+
+    assert outputs[outputPaths['ip']][0]['Address'] == MOCK_IP
+    assert reports[0] == {'ip': '8.8.8.8', 'history': [], 'subnets': [], 'cats': {}, 'score': 1, 'tags': []}
+    assert md == """### X-Force IP Reputation for: 8.8.8.8
+https://exchange.xforce.ibmcloud.com/ip/8.8.8.8
+|Reason|Score|
+|---|---|
+| Reason not found. | 1 |
+"""
 
 
 def test_url(requests_mock):

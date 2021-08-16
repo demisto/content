@@ -6,6 +6,7 @@ import pytest
 # Import local packages
 from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command, url_command, domain_command, ip_command
 from CommonServerPython import *
+import demistomock as demisto
 
 # DBot calculation Test
 arg_names_dbot = "pulse, score"
@@ -197,6 +198,7 @@ DOMAIN_EC = {
         'Name': 'otx.alienvault.com', 'Alexa': 'http://www.alexa.com/siteinfo/otx.alienvault.com',
         'Whois': 'http://whois.domaintools.com/otx.alienvault.com'}
 }
+IP_404_RAW_RESPONSE = 404
 
 IP_RAW_RESPONSE = {
     "accuracy_radius": 1000,
@@ -499,6 +501,8 @@ IP_RELATIONSHIPS = [
      'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern', 'fields': {}, 'reliability': 'C - Fairly reliable',
      'brand': 'AlienVault OTX v2'}]
 
+INTEGRATION_NAME = 'AlienVault OTX v2'
+
 client = Client(
     base_url="base_url",
     headers={'X-OTX-API-KEY': "TOKEN"},
@@ -513,6 +517,11 @@ client = Client(
 @pytest.mark.parametrize(argnames=arg_names_dbot, argvalues=arg_values_dbot)
 def test_dbot_score(pulse: dict, score: int):
     assert calculate_dbot_score(client, pulse) == score, f"Error calculate DBot Score {pulse.get('count')}"
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
 
 
 @pytest.mark.parametrize('raw_response_general,raw_response_analysis,expected', [
@@ -635,3 +644,22 @@ def test_ip_command(mocker, ip_, raw_response, expected_ec, expected_relationshi
 
     relations = all_context['Relationships']
     assert expected_relationships == relations
+
+
+@pytest.mark.parametrize('ip_,raw_response,expected', [
+    ('8.8.88.8', IP_404_RAW_RESPONSE, 'IP 8.8.88.8 could not be found.'),
+])
+def test_ip_command_on_404(mocker, ip_, raw_response, expected):
+    """
+        Given
+        - An IPv4 address.
+
+        When
+        - Running ip_command with the IP.
+
+        Then
+        - Validate that the CommandResult created correctly when the api returns 404
+        """
+    mocker.patch.object(client, 'query', side_effect=[raw_response])
+    command_results = ip_command(client, ip_, 'IPv4')
+    assert command_results[0].readable_output == expected

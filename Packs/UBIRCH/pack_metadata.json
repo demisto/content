@@ -1,0 +1,20 @@
+{
+    "name": "UBIRCH",
+    "description": "Integration to handle Ubirch incidents.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Ubirch GmbH",
+    "url": "https://ubirch.com/helpdesk",
+    "email": "support@ubirch.com",
+    "created": "2021-01-07T12:05:49Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "domlen",
+        "lalottacontinua"
+    ]
+}

@@ -285,6 +285,8 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
 
     logging.debug(f'commit hash is: {commit}')
     index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
+    logging.info(f'index json path: {index_json_path}')
+    logging.info(f'Private packs are: {private_packs}')
     with open(index_json_path, "w+") as index_file:
         index = {
             'revision': build_number,
@@ -299,15 +301,15 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
     try:
+        logging.info(f'index zip path: {index_zip_path}')
         index_blob.reload()
         current_index_generation = index_blob.generation
         index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
 
         if is_private or current_index_generation == index_generation:
             # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
-            if storage_bucket:
-                index_blob.upload_from_filename(index_zip_path)
-                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
+            index_blob.upload_from_filename(index_zip_path)
+            logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
         else:
             logging.critical(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation.")
             logging.critical(f"Downloaded index generation: {index_generation}")
@@ -460,14 +462,9 @@ def add_private_content_to_index(private_index_path: str, extract_destination_pa
     updated_private_packs = []
 
     try:
-        logging.info("get_private_packs")
         private_packs = get_private_packs(private_index_path, pack_names,
                                           extract_destination_path)
-
-        logging.info("get_updated_private_packs")
         updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
-
-        logging.info("add_private_packs_to_index")
         add_private_packs_to_index(index_folder_path, private_index_path)
 
     except Exception as e:
@@ -523,6 +520,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
     :param extract_destination_path: Path to where the files should be extracted to.
     :return: List of dicts containing pack metadata information.
     """
+    logging.info(f'getting all private packs. private_index_path: {private_index_path}')
     try:
         metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
     except Exception:
@@ -533,6 +531,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
         logging.warning(f'No metadata files found in [{private_index_path}]')
 
     private_packs = []
+    logging.info(f'all metadata files found: {metadata_files}')
     for metadata_file_path in metadata_files:
         try:
             with open(metadata_file_path, "r") as metadata_file:
@@ -543,6 +542,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
                           "r") as metadata_file:
                     metadata = json.load(metadata_file)
+            logging.info(f'metadata of changed private pack: {metadata}')
             if metadata:
                 private_packs.append({
                     'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
@@ -959,9 +959,12 @@ def main():
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket)
 
+    # Packages that depend on new packs that are not in the previous index.json
+    packs_missing_dependencies = []
+
     # starting iteration over packs
     for pack in packs_list:
-        task_status, user_metadata = pack.load_user_metadata()
+        task_status = pack.load_user_metadata()
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
             pack.cleanup()
@@ -994,8 +997,20 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
-                                           current_commit_hash, pack_was_modified, statistics_handler)
+        task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
+                                                                    packs_dependencies_mapping, build_number,
+                                                                    current_commit_hash, pack_was_modified,
+                                                                    statistics_handler, pack_names)
+
+        if is_missing_dependencies:
+            # If the pack is dependent on a new pack
+            # (which is not yet in the index.zip as it might not have been iterated yet)
+            # we will note that it is missing dependencies.
+            # And finally after updating all the packages in index.zip - i.e. the new pack exists now.
+            # We will go over the pack again to add what was missing.
+            # See issue #37290
+            packs_missing_dependencies.append(pack)
+
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
@@ -1059,8 +1074,31 @@ def main():
             continue
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
-        if skipped_upload and exists_in_index:
+        if skipped_upload and exists_in_index and pack not in packs_missing_dependencies:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
+            pack.cleanup()
+            continue
+
+        pack.status = PackStatus.SUCCESS.name
+
+    logging.info(f"packs_missing_dependencies: {packs_missing_dependencies}")
+
+    # Going over all packs that were marked as missing dependencies,
+    # updating them with the new data for the new packs that were added to the index.zip
+    for pack in packs_missing_dependencies:
+        task_status, _ = pack.format_metadata(index_folder_path, packs_dependencies_mapping,
+                                              build_number, current_commit_hash, False, statistics_handler,
+                                              pack_names, format_dependencies_only=True)
+
+        if not task_status:
+            pack.status = PackStatus.FAILED_METADATA_REFORMATING.name
+            pack.cleanup()
+            continue
+
+        task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
+                                          pack_version=pack.latest_version, hidden_pack=pack.hidden)
+        if not task_status:
+            pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
             pack.cleanup()
             continue
 

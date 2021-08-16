@@ -1,0 +1,35 @@
+{
+    "id": "incident_configurationsetup_configurationfilesource",
+    "version": -1,
+    "name": "Configuration File Source",
+    "ownerOnly": false,
+    "description": "The source of the configuration file.",
+    "cliName": "configurationfilesource",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "",
+        "Attachment",
+        "GitHub"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Configuration Setup"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

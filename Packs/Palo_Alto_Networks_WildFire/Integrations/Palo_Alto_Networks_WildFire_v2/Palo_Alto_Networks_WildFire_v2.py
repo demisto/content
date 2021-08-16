@@ -1,5 +1,4 @@
 import shutil
-from typing import Dict
 
 from CommonServerPython import *
 
@@ -7,10 +6,12 @@ from CommonServerPython import *
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-URL = demisto.getParam('server')
-TOKEN = demisto.getParam('token')
-USE_SSL = not demisto.params().get('insecure', False)
-FILE_TYPE_SUPPRESS_ERROR = demisto.getParam('suppress_file_type_error')
+PARAMS = demisto.params()
+URL = PARAMS.get('server')
+TOKEN = PARAMS.get('token')
+USE_SSL = not PARAMS.get('insecure', False)
+FILE_TYPE_SUPPRESS_ERROR = PARAMS.get('suppress_file_type_error')
+RELIABILITY = PARAMS.get('integrationReliability', DBotScoreReliability.B) or DBotScoreReliability.B
 DEFAULT_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 MULTIPART_HEADERS = {'Content-Type': "multipart/form-data; boundary=upload_boundry"}
 
@@ -80,7 +81,7 @@ class NotFoundError(Exception):
 
 
 def http_request(url: str, method: str, headers: dict = None, body=None, params=None, files=None,
-                 resp_type: str = 'xml'):
+                 resp_type: str = 'xml', return_raw: bool = False):
     LOG('running request with url=%s' % url)
     result = requests.request(
         method,
@@ -91,7 +92,6 @@ def http_request(url: str, method: str, headers: dict = None, body=None, params=
         params=params,
         files=files
     )
-
     if str(result.reason) == 'Not Found':
         raise NotFoundError('Not Found.')
 
@@ -113,8 +113,8 @@ def http_request(url: str, method: str, headers: dict = None, body=None, params=
     if result.text.find("Forbidden. (403)") != -1:
         raise Exception('Request Forbidden - 403, check SERVER URL and API Key')
 
-    if ('Content-Type' in result.headers and result.headers['Content-Type'] == 'application/octet-stream') or (
-            'Transfer-Encoding' in result.headers and result.headers['Transfer-Encoding'] == 'chunked'):
+    if (('Content-Type' in result.headers and result.headers['Content-Type'] == 'application/octet-stream') or (
+            'Transfer-Encoding' in result.headers and result.headers['Transfer-Encoding'] == 'chunked')) and return_raw:
         return result
 
     if resp_type == 'json':
@@ -183,12 +183,14 @@ def create_dbot_score_from_verdict(pretty_verdict):
         {'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
          'Type': 'hash',
          'Vendor': 'WildFire',
-         'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+         'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]],
+         'Reliability': RELIABILITY
          },
         {'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
          'Type': 'file',
          'Vendor': 'WildFire',
-         'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+         'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]],
+         'Reliability': RELIABILITY
          }
     ]
     return dbot_score
@@ -227,13 +229,15 @@ def create_dbot_score_from_verdicts(pretty_verdicts):
             'Indicator': pretty_verdict["SHA256"] if "SHA256" in pretty_verdict else pretty_verdict["MD5"],
             'Type': 'hash',
             'Vendor': 'WildFire',
-            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]],
+            'Reliability': RELIABILITY
         }
         dbot_score_type_file = {
             'Indicator': pretty_verdict["SHA256"] if "SHA256" in pretty_verdict else pretty_verdict["MD5"],
             'Type': 'file',
             'Vendor': 'WildFire',
-            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]]
+            'Score': VERDICTS_TO_DBOTSCORE[pretty_verdict["Verdict"]],
+            'Reliability': RELIABILITY
         }
         dbot_score_arr.append(dbot_score_type_hash)
         dbot_score_arr.append(dbot_score_type_file)
@@ -512,7 +516,8 @@ def wildfire_get_webartifacts(url: str, types: str) -> dict:
         get_webartifacts_uri,
         'POST',
         headers=DEFAULT_HEADERS,
-        params=params
+        params=params,
+        return_raw=True
     )
     return result
 
@@ -664,8 +669,10 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
             }
         else:
             dbot_score_file = 1
-    dbot = [{'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'WildFire', 'Score': dbot_score_file},
-            {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'WildFire', 'Score': dbot_score_file}]
+    dbot = [{'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'WildFire', 'Score': dbot_score_file,
+             'Reliability': RELIABILITY},
+            {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'WildFire', 'Score': dbot_score_file,
+             'Reliability': RELIABILITY}]
     entry_context["DBotScore"] = dbot
 
     if format_ == 'pdf':
@@ -676,7 +683,7 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
             'hash': file_hash
         }
 
-        res_pdf = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
+        res_pdf = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, return_raw=True)
 
         file_name = 'wildfire_report_' + file_hash + '.pdf'
         file_type = entryTypes['entryInfoFile']
@@ -858,7 +865,7 @@ def wildfire_get_sample(file_hash):
         'apikey': TOKEN,
         'hash': file_hash
     }
-    result = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
+    result = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, return_raw=True)
     return result
 
 
@@ -935,5 +942,5 @@ def main():
         LOG.print_log()
 
 
-if __name__ in ["__builtin__", "builtins"]:
+if __name__ in ["__main__", "__builtin__", "builtins"]:
     main()

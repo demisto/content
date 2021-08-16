@@ -14,7 +14,7 @@ import Tests
 from demisto_sdk.commands.common.constants import (PACK_METADATA_SUPPORT,
                                                    PACKS_PACK_META_FILE_NAME)
 from Tests.scripts.collect_tests_and_content_packs import (
-    PACKS_DIR, TestConf, collect_content_packs_to_install,
+    PACKS_DIR, SANITY_TESTS, TestConf, collect_content_packs_to_install,
     create_filter_envs_file, get_from_version_and_to_version_bounderies,
     get_test_list_and_content_packs_to_install, is_documentation_changes_only,
     remove_ignored_tests, remove_tests_for_non_supported_packs, is_release_branch)
@@ -560,7 +560,10 @@ class TestChangedCommonTesting:
 
     def test_all_tests(self):
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
-        assert content_packs == {"DeveloperTools", "Base"}
+        assert 'TestCommonPython' in filterd_tests
+        # verify all sanity tests are collected
+        assert len(SANITY_TESTS - filterd_tests) == 0
+        assert content_packs == {'DeveloperTools', 'Base', 'HelloWorld', 'Gmail'}
 
 
 class TestPackageFilesModified:

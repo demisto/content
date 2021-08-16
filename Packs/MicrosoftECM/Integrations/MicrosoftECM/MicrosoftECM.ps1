@@ -568,11 +568,11 @@ Function GetDeviceList()
 		Import-Module .\ConfigurationManager.psd1
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
-		if ($parameters.CollectionID)
+		if ($parameters.collection_id)
 		{
 			(Get-CMDevice -CollectionId $parameters.collection_id)[0..$parameters.limit] | Select-Object Name, ResourceID
 		}
-		elseif ($parameters.CollectionName)
+		elseif ($parameters.collection_name)
 		{
 			(Get-CMDevice -CollectionName $parameters.collection_name)[0..$parameters.limit] | Select-Object Name, ResourceID
 		}
