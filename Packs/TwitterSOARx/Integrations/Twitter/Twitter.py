@@ -3,7 +3,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import tweepy
-import json
 import urllib
 import requests
 class Client(BaseClient):
@@ -75,7 +74,7 @@ class Client(BaseClient):
         if demisto.args().get('count'):
             try:
                 int(demisto.args().get('count'))
-            except:
+            except ValueError:
                 return_error("Count must be an integer less than or equal to 100.")
             if int(demisto.args().get('count')) < 100:
                 search_url += "&count=" + demisto.args().get('count')
@@ -123,11 +122,11 @@ class Client(BaseClient):
         table = []
         try:
             int(demisto.args().get('count'))
-        except:
+        except ValueError:
             return_error("Count must be an integer less than or equal to 20.")
         try:
             int(demisto.args().get('page'))
-        except:
+        except ValueError:
             return_error("Page must be an integer.")
         if int(demisto.args().get('count')) > 20:
                 print("Error: Count must not exceed 20. Count was set to 20.")
