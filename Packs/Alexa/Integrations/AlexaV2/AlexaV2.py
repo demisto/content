@@ -1,25 +1,10 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
-from typing import Dict, Any
+from typing import Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -27,37 +12,18 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-DBOT_SCORE_TO_TEXT = {0: 'Unknown',
-                      1: 'Good',
-                      2: 'Suspicious'}
 
-DOMAIN_REGEX = (
-    r"([a-z¡-\uffff0-9](?:[a-z¡-\uffff0-9-]{0,61}"
-    "[a-z¡-\uffff0-9])?(?:\\.(?!-)[a-z¡-\uffff0-9-]{1,63}(?<!-))*"
-    "\\.(?!-)(?!(jpg|jpeg|exif|tiff|tif|png|gif|otf|ttf|fnt|dtd|xhtml|css"
-    "|html)$)(?:[a-z¡-\uffff-]{2,63}|xn--[a-z0-9]{1,59})(?<!-)\\.?$"
-    "|localhost)"
-)
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
-
     def __init__(self, api_key: str,
                  base_url: str,
                  proxy: bool,
                  verify: bool,
                  reliability: str,
-                 benign: int,
-                 threshold: int):
+                 top_domain_threshold: int,
+                 suspicious_domain_threshold: int):
         super().__init__(base_url=base_url,
                          verify=verify,
                          proxy=proxy)
@@ -66,13 +32,12 @@ class Client(BaseClient):
         else:
             raise DemistoException("AlexaV2 error: Please provide a valid"
                                    " value for the Source Reliability parameter.")
-        self.benign = benign
-        self.threshold = threshold
+        self.top_domain_threshold = top_domain_threshold
+        self.suspicious_domain_threshold = suspicious_domain_threshold
         self.api_key = api_key
 
     def http_request(self, params: Dict):
         return self._http_request(method='GET',
-                                  url_suffix='',
                                   headers={'x-api-key': self.api_key},
                                   params=params)
 
@@ -87,15 +52,19 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def rank_to_score(domain: str, rank: Optional[int], threshold: int, benign: int, reliability: DBotScoreReliability):
+def rank_to_context(domain: str,
+                    rank: Optional[int],
+                    suspicious_domain_threshold: int,
+                    top_domain_threshold: int,
+                    reliability: DBotScoreReliability):
     if rank is None:
         score = Common.DBotScore.NONE
     elif rank < 0:
-        raise DemistoException('Rank should be positive')
-    elif 0 < rank <= benign:
+        raise DemistoException(f'Rank {rank} is invalid. Rank should be positive')
+    elif 0 < rank <= top_domain_threshold:
         score = Common.DBotScore.GOOD
-    elif rank > threshold:
-        score = Common.DBotScore.SUSPICIOUS  # todo maybe it should be bad?
+    elif rank > suspicious_domain_threshold:
+        score = Common.DBotScore.SUSPICIOUS
     else:  # alexa_rank < client.threshold:
         score = Common.DBotScore.NONE
     dbot_score = Common.DBotScore(
@@ -135,8 +104,7 @@ def test_module(client: Client) -> str:
         raise e
 
 
-def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    domains = argToList(args.get('domain'))
+def alexa_domain(client: Client, domains: List[str]) -> List[CommandResults]:
     if not domains:
         raise ValueError('AlexaV2: domain doesn\'t exists')
     command_results: List[CommandResults] = []
@@ -144,15 +112,15 @@ def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         result = client.alexa_rank(domain)
         domain_res = demisto.get(result,
                                  'Awis.Results.Result.Alexa.TrafficData.DataUrl')
-        if domain_res == '404':  # Not found on alexa
-            raise DemistoException('Url cannot be found')
+        if not domain_res or domain_res == '404':  # Not found on alexa
+            raise DemistoException('Domain cannot be found')
         rank = demisto.get(result,
                            'Awis.Results.Result.Alexa.TrafficData.Rank')
-        domain_standard_context: Common.Domain = rank_to_score(domain=domain_res,
-                                                               rank=arg_to_number(rank),
-                                                               threshold=client.threshold,
-                                                               benign=client.benign,
-                                                               reliability=client.reliability)
+        domain_standard_context: Common.Domain = rank_to_context(domain=domain_res,
+                                                                 rank=arg_to_number(rank),
+                                                                 suspicious_domain_threshold=client.suspicious_domain_threshold,
+                                                                 top_domain_threshold=client.top_domain_threshold,
+                                                                 reliability=client.reliability)
 
         rank: str = rank if rank else 'Unknown'
         result = {'Name': domain_res,
@@ -160,7 +128,7 @@ def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
                   'Rank': rank}
         table = {'Domain': domain_res,
                  'Alexa Rank': rank,
-                 'Reputation': DBOT_SCORE_TO_TEXT.get(domain_standard_context.dbot_score.score, 'Unknown')}
+                 'Reputation': domain_standard_context.dbot_score.to_readable()}
         readable = tableToMarkdown(f'Alexa Rank for {domain_res}', table, headers=list(table.keys()))
         command_results.append(CommandResults(
             outputs_prefix='Alexa.Domain',
@@ -176,37 +144,39 @@ def alexa_domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
     params = demisto.params()
     api_key = params.get('credentials').get('password')
     base_api = params.get('base_url')
-    reliability = demisto.params().get('integrationReliability')
+    reliability = params.get('integrationReliability')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        threshold = arg_to_number(params.get('threshold'), required=True, arg_name='threshold')
-        benign = arg_to_number(params.get('benign'), required=True, arg_name='benign')
-        if threshold < 0 or benign < 0:  # type: ignore
-            raise DemistoException('threshold and benign should be above 0')
+        suspicious_domain_threshold = arg_to_number(params.get('suspicious_domain_threshold'),
+                                                    required=True,
+                                                    arg_name='suspicious_domain_threshold')
+        top_domain_threshold = arg_to_number(params.get('top_domain_threshold'),
+                                             required=True,
+                                             arg_name='top_domain_threshold')
+        if suspicious_domain_threshold < 0 or top_domain_threshold < 0:  # type: ignore
+            raise DemistoException(f'All threshold values should be greater than 0.'
+                                   f'Suspicious domain threshold is {suspicious_domain_threshold}.'
+                                   f'Top domain threshold is {top_domain_threshold}.')
         client = Client(
             base_url=base_api,
             verify=verify_certificate,
             proxy=proxy,
             api_key=api_key,
-            threshold=threshold,  # type: ignore
-            benign=benign,  # type: ignore
+            suspicious_domain_threshold=suspicious_domain_threshold,  # type: ignore
+            top_domain_threshold=top_domain_threshold,  # type: ignore
             reliability=reliability)
         if demisto.command() == 'test-module':
             return_results(test_module(client))
         elif demisto.command() == 'domain':
-            return_results(alexa_domain(client, demisto.args()))
+            domains = demisto.args().get('domain')
+            return_results(alexa_domain(client, argToList(domains)))
         else:
-            raise NotImplementedError('not implemented...')
+            raise NotImplementedError(f'Command {demisto.command()} is not implemented.')
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

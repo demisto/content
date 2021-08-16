@@ -24,13 +24,13 @@ configuration:
 - additionalinfo: For Alexa rank over this threshold, the domain will be marked as suspicious.
   defaultvalue: '2000000'
   display: Rank threshold for suspicious domain
-  name: threshold
+  name: suspicious_domain_threshold
   required: true
   type: 0
 - additionalinfo: For Alexa rank less than this threshold, the domain will be considered trusted and marked as good.
   defaultvalue: '0'
   display: Rank threshold for top domains
-  name: benign
+  name: top_domains_threshold
   required: true
   type: 0
 - additionalinfo: Reliability of the source providing the intelligence data.

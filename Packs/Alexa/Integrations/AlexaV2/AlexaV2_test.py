@@ -1,5 +1,5 @@
 import pytest
-from AlexaV2 import Client, rank_to_score, alexa_domain
+from AlexaV2 import Client, rank_to_context, alexa_domain
 from CommonServerPython import *  # noqa
 
 
@@ -9,15 +9,15 @@ def create_client(proxy: bool = False, verify: bool = False, benign: int = 0, th
                   reliability=reliability, api_key='', base_url='https://awis.api.alexa.com/api')
 
 
-def file_to_dct(file: str) -> Dict:
+def load_json(file: str) -> Dict:
     with open(file, 'r') as f:
         return json.load(f)
 
 
 client = create_client()
 
-DOMAINS_GOOD_RESULTS = [('google.com', file_to_dct('test_data/google_response.json')),
-                        ('google.com', file_to_dct('test_data/404_response.json'))]
+DOMAINS_GOOD_RESULTS = [('google.com', load_json('test_data/google_response.json')),
+                        ('google.com', load_json('test_data/404_response.json'))]
 
 
 @pytest.mark.parametrize('domain, raw_result', DOMAINS_GOOD_RESULTS)
@@ -41,8 +41,8 @@ def test_domain_rank(mocker, domain, raw_result):
     assert demisto.get(raw_result, 'Awis.Results.Result.Alexa.TrafficData.Rank') == rank_result
 
 
-DOMAINS_BAD_RESULTS = [('xsoar.com', file_to_dct('test_data/negative_rank_response.json')),
-                       ('xsoar.com', file_to_dct('test_data/nan_rank_response.json'))]
+DOMAINS_BAD_RESULTS = [('xsoar.com', load_json('test_data/negative_rank_response.json')),
+                       ('xsoar.com', load_json('test_data/nan_rank_response.json'))]
 
 
 def test_multi_domains(mocker):
@@ -60,7 +60,7 @@ def test_multi_domains(mocker):
     """
 
     domains = 'google.com,xsoar.com'
-    raw_res = file_to_dct('test_data/google_response.json')
+    raw_res = load_json('test_data/google_response.json')
     mocker.patch.object(client, 'alexa_rank', return_value=raw_res)
     result = alexa_domain(client, {'domain': domains})
     assert len(result) == len(argToList(domains))
@@ -73,7 +73,6 @@ def test_domain_invalid_rank(mocker, domain, raw_result):
     """
     Given:
         - A domain to be ranked by Alexa API
-
 
     When:
         - The API responds with an invalid rank
@@ -104,7 +103,7 @@ def test_rank_to_score(rank, threshold, benign, reliability, score):
     Then:
         - Ensure that the score returned corresponds to the algorithm
     """
-    context = rank_to_score('google.com', rank, threshold, benign, reliability)
+    context = rank_to_context('google.com', rank, threshold, benign, reliability)
     assert context.dbot_score.score == score
 
 
@@ -121,4 +120,4 @@ def test_rank_to_score_invalid():
     """
 
     with pytest.raises(DemistoException):
-        rank_to_score('google.com', -1, 0, 200, DBotScoreReliability.A_PLUS)
+        rank_to_context('google.com', -1, 0, 200, DBotScoreReliability.A_PLUS)

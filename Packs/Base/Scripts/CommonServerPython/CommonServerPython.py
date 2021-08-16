@@ -2442,6 +2442,13 @@ class Common(object):
             }
             return ret_value
 
+        def to_readable(self):
+            dbot_score_to_text = {0: 'Unknown',
+                                  1: 'Good',
+                                  2: 'Suspicious',
+                                  3: 'Bad'}
+            return dbot_score_to_text[self.score]
+
     class IP(Indicator):
         """
         IP indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#ip

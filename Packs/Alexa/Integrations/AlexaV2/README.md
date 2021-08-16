@@ -51,7 +51,7 @@ Provides an Alexa ranking of the Domain in question.
 
 
 #### Command Example
-```!domain domain="google.com,xsoar.com" using="Alexa Rank Indicator V2_instance_1"```
+```!domain domain="google.com,xsoar.com"
 
 #### Context Example
 ```json
