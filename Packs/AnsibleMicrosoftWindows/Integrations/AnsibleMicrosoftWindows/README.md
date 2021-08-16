@@ -785,7 +785,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | content | When used instead of `src`, sets the contents of a file directly to the specified value.<br/>This is for simple values, for anything complex or with formatting please switch to the `template` module. | Optional | 
 | decrypt | This option controls the autodecryption of source files using vault. Possible values are: Yes, No. Default is Yes. | Optional | 
 | dest | Remote absolute path where the file should be copied to.<br/>If `src` is a directory, this must be a directory too.<br/>Use \ for path separators or \\ when in "double quotes".<br/>If `dest` ends with \ then source or the contents of source will be copied to the directory without renaming.<br/>If `dest` is a nonexistent path, it will only be created if `dest` ends with "/" or "\", or `src` is a directory.<br/>If `src` and `dest` are files and if the parent directory of `dest` doesn't exist, then the task will fail. | Required | 
-| backup | Determine whether a backup should be created.<br/>When set to `yes`, create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.<br/>No backup is taken when `remote_src=False` and multiple files are being copied. Possible values are: Yes, No. Default is No. | Optional | 
+| backup | Determine whether a backup should be created.<br/>When set to `yes`, create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.<br/>No backup is taken when `remote_"src"=False` and multiple files are being copied. Possible values are: Yes, No. Default is No. | Optional | 
 | force | If set to `yes`, the file will only be transferred if the content is different than destination.<br/>If set to `no`, the file will only be transferred if the destination does not exist.<br/>If set to `no`, no checksuming of the content is performed which can help improve performance on larger files. Possible values are: Yes, No. Default is Yes. | Optional | 
 | local_follow | This flag indicates that filesystem links in the source tree, if they exist, should be followed. Possible values are: Yes, No. Default is Yes. | Optional | 
 | remote_src | If `no`, it will search for src at originating/master machine.<br/>If `yes`, it will go to the remote/target machine for the src. Possible values are: Yes, No. Default is No. | Optional | 
@@ -806,7 +806,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!win-copy host="123.123.123.123" src="C:\\Important\\Executable.exe" dest="C:\\Temp" remote_src=yes```
+```!win-copy host="123.123.123.123" "src"="C:\\Important\\Executable.exe" dest="C:\\Temp" remote_"src"=yes```
 
 #### Context Example
 ```json
@@ -4822,128 +4822,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
             "status": "SUCCESS",
             "sub_keys": [
                 "AccountPicture",
-                "ActionCenter",
-                "AdminDebug",
-                "AdvertisingInfo",
-                "App Management",
-                "App Paths",
-                "AppHost",
-                "Applets",
-                "ApplicationFrame",
-                "AppModel",
-                "AppModelUnlock",
-                "AppReadiness",
-                "Appx",
-                "Audio",
-                "Authentication",
-                "AutoRotation",
-                "BackupAndRestoreSettings",
-                "BITS",
-                "Casting",
-                "CEIPRole",
-                "Census",
-                "ClickNote",
-                "ClosedCaptioning",
-                "CloudExperienceHost",
-                "CloudStore",
-                "Component Based Servicing",
-                "ConnectedSearch",
-                "Control Panel",
-                "Controls Folder",
-                "DateTime",
-                "DeliveryOptimization",
-                "Device Installer",
-                "Device Metadata",
-                "DeviceAccess",
-                "DevicePicker",
-                "DeviceSetup",
-                "Diagnostics",
-                "DIFx",
-                "DPX",
-                "DriverSearching",
-                "EventCollector",
-                "EventForwarding",
-                "Explorer",
-                "Ext",
-                "FlightedFeatures",
-                "GameInput",
-                "GameInstaller",
-                "GameUX",
-                "Group Policy",
-                "HardwareIdentification",
-                "HelpAndSupport",
-                "Hints",
-                "HomeGroup",
-                "IME",
-                "ImmersiveShell",
-                "InstallAgent",
-                "Installer",
-                "Internet Settings",
-                "LanguageComponentsInstaller",
-                "Live",
-                "Lock Screen",
-                "Management Infrastructure",
-                "Media Center",
-                "MMDevices",
-                "NetCache",
-                "NetworkServiceTriggers",
-                "Notifications",
-                "OEMInformation",
-                "OneDriveRamps",
-                "OOBE",
-                "OpenWith",
-                "Parental Controls",
-                "Personalization",
-                "PhotoPropertyHandler",
-                "Policies",
-                "PowerEfficiencyDiagnostics",
-                "PrecisionTouchPad",
-                "PreviewHandlers",
-                "PropertySystem",
-                "Proximity",
-                "PushNotifications",
-                "Reliability",
-                "Run",
-                "RunOnce",
-                "Search",
-                "SecondaryAuthFactor",
-                "Security and Maintenance",
-                "SettingSync",
-                "Setup",
-                "SharedAccess",
-                "SharedDLLs",
-                "Shell Extensions",
-                "ShellCompatibility",
-                "ShellServiceObjectDelayLoad",
-                "SideBySide",
-                "SmartGlass",
-                "SMDEn",
-                "SMI",
-                "StorageSense",
-                "Store",
-                "SyncMgr",
-                "SysPrepTapi",
-                "SystemProtectedUserData",
-                "Telephony",
-                "ThemeManager",
-                "Themes",
-                "TouchKeyboard",
-                "UFH",
-                "Uninstall",
-                "URL",
-                "UserPictureChange",
-                "UserState",
-                "Utilman",
-                "WebCheck",
-                "WinBio",
-                "Windows To Go",
-                "WindowsAnytimeUpgrade",
-                "WindowsStore",
-                "WindowsUpdate",
-                "WINEVT",
-                "Wordpad",
-                "WSMAN",
-                "XWizards"
+                "ActionCenter"
             ]
         }
     }
@@ -5003,127 +4882,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >  * ## Sub_Keys
 >    * 0: AccountPicture
 >    * 1: ActionCenter
->    * 2: AdminDebug
->    * 3: AdvertisingInfo
->    * 4: App Management
->    * 5: App Paths
->    * 6: AppHost
->    * 7: Applets
->    * 8: ApplicationFrame
->    * 9: AppModel
->    * 10: AppModelUnlock
->    * 11: AppReadiness
->    * 12: Appx
->    * 13: Audio
->    * 14: Authentication
->    * 15: AutoRotation
->    * 16: BackupAndRestoreSettings
->    * 17: BITS
->    * 18: Casting
->    * 19: CEIPRole
->    * 20: Census
->    * 21: ClickNote
->    * 22: ClosedCaptioning
->    * 23: CloudExperienceHost
->    * 24: CloudStore
->    * 25: Component Based Servicing
->    * 26: ConnectedSearch
->    * 27: Control Panel
->    * 28: Controls Folder
->    * 29: DateTime
->    * 30: DeliveryOptimization
->    * 31: Device Installer
->    * 32: Device Metadata
->    * 33: DeviceAccess
->    * 34: DevicePicker
->    * 35: DeviceSetup
->    * 36: Diagnostics
->    * 37: DIFx
->    * 38: DPX
->    * 39: DriverSearching
->    * 40: EventCollector
->    * 41: EventForwarding
->    * 42: Explorer
->    * 43: Ext
->    * 44: FlightedFeatures
->    * 45: GameInput
->    * 46: GameInstaller
->    * 47: GameUX
->    * 48: Group Policy
->    * 49: HardwareIdentification
->    * 50: HelpAndSupport
->    * 51: Hints
->    * 52: HomeGroup
->    * 53: IME
->    * 54: ImmersiveShell
->    * 55: InstallAgent
->    * 56: Installer
->    * 57: Internet Settings
->    * 58: LanguageComponentsInstaller
->    * 59: Live
->    * 60: Lock Screen
->    * 61: Management Infrastructure
->    * 62: Media Center
->    * 63: MMDevices
->    * 64: NetCache
->    * 65: NetworkServiceTriggers
->    * 66: Notifications
->    * 67: OEMInformation
->    * 68: OneDriveRamps
->    * 69: OOBE
->    * 70: OpenWith
->    * 71: Parental Controls
->    * 72: Personalization
->    * 73: PhotoPropertyHandler
->    * 74: Policies
->    * 75: PowerEfficiencyDiagnostics
->    * 76: PrecisionTouchPad
->    * 77: PreviewHandlers
->    * 78: PropertySystem
->    * 79: Proximity
->    * 80: PushNotifications
->    * 81: Reliability
->    * 82: Run
->    * 83: RunOnce
->    * 84: Search
->    * 85: SecondaryAuthFactor
->    * 86: Security and Maintenance
->    * 87: SettingSync
->    * 88: Setup
->    * 89: SharedAccess
->    * 90: SharedDLLs
->    * 91: Shell Extensions
->    * 92: ShellCompatibility
->    * 93: ShellServiceObjectDelayLoad
->    * 94: SideBySide
->    * 95: SmartGlass
->    * 96: SMDEn
->    * 97: SMI
->    * 98: StorageSense
->    * 99: Store
->    * 100: SyncMgr
->    * 101: SysPrepTapi
->    * 102: SystemProtectedUserData
->    * 103: Telephony
->    * 104: ThemeManager
->    * 105: Themes
->    * 106: TouchKeyboard
->    * 107: UFH
->    * 108: Uninstall
->    * 109: URL
->    * 110: UserPictureChange
->    * 111: UserState
->    * 112: Utilman
->    * 113: WebCheck
->    * 114: WinBio
->    * 115: Windows To Go
->    * 116: WindowsAnytimeUpgrade
->    * 117: WindowsStore
->    * 118: WindowsUpdate
->    * 119: WINEVT
->    * 120: Wordpad
->    * 121: WSMAN
->    * 122: XWizards
 
 
 ### win-regedit
@@ -5322,7 +5080,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!win-robocopy host="123.123.123.123" src="C:/temp" dest="C:/temp2" ```
+```!win-robocopy host="123.123.123.123" "src"="C:/temp" dest="C:/temp2" ```
 
 #### Context Example
 ```json
@@ -5950,7 +5708,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!win-shortcut host="123.123.123.123" src="C:\\Program Files\\Mozilla Firefox\\Firefox.exe" dest="C:\\Users\\Public\\Desktop\\Mozilla Firefox.lnk" icon="C:\\Program Files\\Mozilla Firefox\\Firefox.exe,0" ```
+```!win-shortcut host="123.123.123.123" "src"="C:\\Program Files\\Mozilla Firefox\\Firefox.exe" dest="C:\\Users\\Public\\Desktop\\Mozilla Firefox.lnk" icon="C:\\Program Files\\Mozilla Firefox\\Firefox.exe,0" ```
 
 #### Context Example
 ```json
@@ -6204,7 +5962,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!win-template host="123.123.123.123" src="/mytemplates/file.conf.j2" dest="C:\\Temp\\file.conf" ```
+```!win-template host="123.123.123.123" "src"="/mytemplates/file.conf.j2" dest="C:\\Temp\\file.conf" ```
 
 #### Human Readable Output
 
@@ -6357,7 +6115,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!win-unzip host="123.123.123.123" src="C:/logs.zip" dest="C:/temp/OldLogs" creates="C:/temp/OldLogs" ```
+```!win-unzip host="123.123.123.123" "src"="C:/logs.zip" dest="C:/temp/OldLogs" creates="C:/temp/OldLogs" ```
 
 #### Context Example
 ```json
@@ -7162,116 +6920,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "domain_name": "WIN-U425UI0HPP7",
                     "sid": "S-1-5-21-4202888923-410868521-3023024269-513",
                     "type": "Group"
-                },
-                {
-                    "account_name": "Everyone",
-                    "attributes": [
-                        "Mandatory",
-                        "Enabled by default",
-                        "Enabled"
-                    ],
-                    "domain_name": "",
-                    "sid": "S-1-1-0",
-                    "type": "WellKnownGroup"
-                },
-                {
-                    "account_name": "Local account and member of Administrators group",
-                    "attributes": [
-                        "Mandatory",
-                        "Enabled by default",
-                        "Enabled"
-                    ],
-                    "domain_name": "NT AUTHORITY",
-                    "sid": "S-1-5-114",
-                    "type": "WellKnownGroup"
-                },
-                {
-                    "account_name": "Administrators",
-                    "attributes": [
-                        "Mandatory",
-                        "Enabled by default",
-                        "Enabled",
-                        "Owner"
-                    ],
-                    "domain_name": "BUILTIN",
-                    "sid": "S-1-5-32-544",
-                    "type": "Alias"
-                },
-                {
-                    "account_name": "Users",
-                    "attributes": [
-                        "Mandatory",
-                        "Enabled by default",
-                        "Enabled"
-                    ],
-                    "domain_name": "BUILTIN",
-                    "sid": "S-1-5-32-545",
-                    "type": "Alias"
-                },
-                {
-                    "account_name": "NETWORK",
-                    "attributes": [
-                        "Mandatory",
-                        "Enabled by default",
-                        "Enabled"
-                    ],
-                    "domain_name": "NT AUTHORITY",
-                    "sid": "S-1-5-2",
-                    "type": "WellKnownGroup"
-                },
-                {
-                    "account_name": "Authenticated Users",
-                    "attributes": [
-                        "Mandatory",
-                        "Enabled by default",
-                        "Enabled"
-                    ],
-                    "domain_name": "NT AUTHORITY",
-                    "sid": "S-1-5-11",
-                    "type": "WellKnownGroup"
-                },
-                {
-                    "account_name": "This Organization",
-                    "attributes": [
-                        "Mandatory",
-                        "Enabled by default",
-                        "Enabled"
-                    ],
-                    "domain_name": "NT AUTHORITY",
-                    "sid": "S-1-5-15",
-                    "type": "WellKnownGroup"
-                },
-                {
-                    "account_name": "Local account",
-                    "attributes": [
-                        "Mandatory",
-                        "Enabled by default",
-                        "Enabled"
-                    ],
-                    "domain_name": "NT AUTHORITY",
-                    "sid": "S-1-5-113",
-                    "type": "WellKnownGroup"
-                },
-                {
-                    "account_name": "NTLM Authentication",
-                    "attributes": [
-                        "Mandatory",
-                        "Enabled by default",
-                        "Enabled"
-                    ],
-                    "domain_name": "NT AUTHORITY",
-                    "sid": "S-1-5-64-10",
-                    "type": "WellKnownGroup"
-                },
-                {
-                    "account_name": "High Mandatory Level",
-                    "attributes": [
-                        "Integrity",
-                        "Integrity enabled"
-                    ],
-                    "domain_name": "Mandatory Label",
-                    "sid": "S-1-16-12288",
-                    "type": "Label"
                 }
             ],
             "host": "123.123.123.123",
@@ -7357,101 +7005,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * 0: Mandatory
 >      * 1: Enabled by default
 >      * 2: Enabled
->  * ## Everyone
->    * account_name: Everyone
->    * domain_name: 
->    * sid: S-1-1-0
->    * type: WellKnownGroup
->    * ### Attributes
->      * 0: Mandatory
->      * 1: Enabled by default
->      * 2: Enabled
->  * ## Local Account And Member Of Administrators Group
->    * account_name: Local account and member of Administrators group
->    * domain_name: NT AUTHORITY
->    * sid: S-1-5-114
->    * type: WellKnownGroup
->    * ### Attributes
->      * 0: Mandatory
->      * 1: Enabled by default
->      * 2: Enabled
->  * ## Administrators
->    * account_name: Administrators
->    * domain_name: BUILTIN
->    * sid: S-1-5-32-544
->    * type: Alias
->    * ### Attributes
->      * 0: Mandatory
->      * 1: Enabled by default
->      * 2: Enabled
->      * 3: Owner
->  * ## Users
->    * account_name: Users
->    * domain_name: BUILTIN
->    * sid: S-1-5-32-545
->    * type: Alias
->    * ### Attributes
->      * 0: Mandatory
->      * 1: Enabled by default
->      * 2: Enabled
->  * ## Network
->    * account_name: NETWORK
->    * domain_name: NT AUTHORITY
->    * sid: S-1-5-2
->    * type: WellKnownGroup
->    * ### Attributes
->      * 0: Mandatory
->      * 1: Enabled by default
->      * 2: Enabled
->  * ## Authenticated Users
->    * account_name: Authenticated Users
->    * domain_name: NT AUTHORITY
->    * sid: S-1-5-11
->    * type: WellKnownGroup
->    * ### Attributes
->      * 0: Mandatory
->      * 1: Enabled by default
->      * 2: Enabled
->  * ## This Organization
->    * account_name: This Organization
->    * domain_name: NT AUTHORITY
->    * sid: S-1-5-15
->    * type: WellKnownGroup
->    * ### Attributes
->      * 0: Mandatory
->      * 1: Enabled by default
->      * 2: Enabled
->  * ## Local Account
->    * account_name: Local account
->    * domain_name: NT AUTHORITY
->    * sid: S-1-5-113
->    * type: WellKnownGroup
->    * ### Attributes
->      * 0: Mandatory
->      * 1: Enabled by default
->      * 2: Enabled
->  * ## Ntlm Authentication
->    * account_name: NTLM Authentication
->    * domain_name: NT AUTHORITY
->    * sid: S-1-5-64-10
->    * type: WellKnownGroup
->    * ### Attributes
->      * 0: Mandatory
->      * 1: Enabled by default
->      * 2: Enabled
->  * ## High Mandatory Level
->    * account_name: High Mandatory Level
->    * domain_name: Mandatory Label
->    * sid: S-1-16-12288
->    * type: Label
->    * ### Attributes
->      * 0: Integrity
->      * 1: Integrity enabled
->  * ## Label
->    * account_name: High Mandatory Level
->    * domain_name: Mandatory Label
->    * sid: S-1-16-12288
->    * type: Label
 >  * ## Privileges
 >    * SeBackupPrivilege: enabled-by-default
 >    * SeChangeNotifyPrivilege: enabled-by-default
