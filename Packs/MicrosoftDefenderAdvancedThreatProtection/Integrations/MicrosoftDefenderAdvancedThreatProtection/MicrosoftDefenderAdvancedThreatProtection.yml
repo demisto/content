@@ -3099,7 +3099,7 @@ script:
       type: String
     - contextPath: MicrosoftATP.Indicators.tlpLevel
       description: 'Traffic Light Protocol value for the indicator. Possible values:
-      "unknown', "white", "green", "amber", and "red".'
+      "unknown", "white", "green", "amber", and "red".'
       type: String
     - contextPath: MicrosoftATP.Indicators.url
       description: Uniform Resource Locator. This URL complies with RFC 1738.
