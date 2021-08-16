@@ -1,0 +1,136 @@
+{
+    "data": [
+        {
+            "id": "1690",
+            "type": "rules",
+            "links": {
+                "self": "https://triage.example.com/api/public/v2/rules/1690"
+            },
+            "attributes": {
+                "name": "MX_Testing",
+                "description": "Testing customer-created rule",
+                "priority": 5,
+                "tags": [],
+                "scope": "Email",
+                "author_name": "MikeSaurbaugh",
+                "rule_context": "Phishing Tactic",
+                "active": true,
+                "content": "meta:\n  time_to_live=\"Forever\"\n  rule_context=\"Phishing Tactic\"\nstrings: \n  $Body1=\"Due within the next 30 days\" nocase\n  $Subject1=\"Aging\" nocase\ncondition:\n  all of them\n",
+                "time_to_live": "Forever",
+                "share_with_cofense": false,
+                "reports_count": 0,
+                "imported_at": null,
+                "created_at": "2020-11-24T15:19:12.616Z",
+                "updated_at": "2020-11-24T15:19:12.616Z"
+            },
+            "relationships": {
+                "cluster_context": {
+                    "links": {
+                        "self": "https://triage.example.com/api/public/v2/rules/1690/relationships/cluster_context",
+                        "related": "https://triage.example.com/api/public/v2/rules/1690/cluster_context"
+                    },
+                    "data": null
+                },
+                "report_context": {
+                    "links": {
+                        "self": "https://triage.example.com/api/public/v2/rules/1690/relationships/report_context",
+                        "related": "https://triage.example.com/api/public/v2/rules/1690/report_context"
+                    },
+                    "data": null
+                },
+                "owner": {
+                    "links": {
+                        "self": "https://triage.example.com/api/public/v2/rules/1690/relationships/owner",
+                        "related": "https://triage.example.com/api/public/v2/rules/1690/owner"
+                    },
+                    "data": {
+                        "type": "operators",
+                        "id": "2"
+                    }
+                },
+                "clusters": {
+                    "links": {
+                        "self": "https://triage.example.com/api/public/v2/rules/1690/relationships/clusters",
+                        "related": "https://triage.example.com/api/public/v2/rules/1690/clusters"
+                    }
+                },
+                "reports": {
+                    "links": {
+                        "self": "https://triage.example.com/api/public/v2/rules/1690/relationships/reports",
+                        "related": "https://triage.example.com/api/public/v2/rules/1690/reports"
+                    }
+                }
+            }
+        },
+        {
+            "id": "2534",
+            "type": "rules",
+            "links": {
+                "self": "https://triage.example.com/api/public/v2/rules/2534"
+            },
+            "attributes": {
+                "name": "test_rule1",
+                "description": "Its is a test rule",
+                "priority": 1,
+                "tags": [
+                    "test_tag",
+                    "TEST"
+                ],
+                "scope": "Email",
+                "author_name": "KetulPatel_CDS",
+                "rule_context": "Unknown",
+                "active": true,
+                "content": "meta:\n  time_to_live=\"Forever\"\n  rule_context=\"Unknown\"\nstrings: \n  $link=\"www.cnn.com\" nocase\n  $url1=\"www.cnn.com\" nocase\n  $url2=\"www.cnn.com\" nocase\n  $sub=\"REPLACE_WITH_SUBJECT\" nocase\ncondition:\n  any of ($url*) or ($link and $sub)\n",
+                "time_to_live": "Forever",
+                "share_with_cofense": false,
+                "reports_count": 4,
+                "imported_at": null,
+                "created_at": "2021-04-19T10:31:44.773Z",
+                "updated_at": "2021-04-29T07:21:30.634Z"
+            },
+            "relationships": {
+                "cluster_context": {
+                    "links": {
+                        "self": "https://triage.example.com/api/public/v2/rules/2534/relationships/cluster_context",
+                        "related": "https://triage.example.com/api/public/v2/rules/2534/cluster_context"
+                    },
+                    "data": null
+                },
+                "report_context": {
+                    "links": {
+                        "self": "https://triage.example.com/api/public/v2/rules/2534/relationships/report_context",
+                        "related": "https://triage.example.com/api/public/v2/rules/2534/report_context"
+                    },
+                    "data": null
+                },
+                "owner": {
+                    "links": {
+                        "self": "https://triage.example.com/api/public/v2/rules/2534/relationships/owner",
+                        "related": "https://triage.example.com/api/public/v2/rules/2534/owner"
+                    },
+                    "data": {
+                        "type": "operators",
+                        "id": "9"
+                    }
+                },
+                "clusters": {
+                    "links": {
+                        "self": "https://triage.example.com/api/public/v2/rules/2534/relationships/clusters",
+                        "related": "https://triage.example.com/api/public/v2/rules/2534/clusters"
+                    }
+                },
+                "reports": {
+                    "links": {
+                        "self": "https://triage.example.com/api/public/v2/rules/2534/relationships/reports",
+                        "related": "https://triage.example.com/api/public/v2/rules/2534/reports"
+                    }
+                }
+            }
+        }
+    ],
+    "links": {
+        "first": "https://triage.example.com/api/public/v2/rules?page%5Bnumber%5D=1&page%5Bsize%5D=2",
+        "next": "https://triage.example.com/api/public/v2/rules?page%5Bnumber%5D=2&page%5Bsize%5D=2",
+        "last": "https://triage.example.com/api/public/v2/rules?page%5Bnumber%5D=6&page%5Bsize%5D=2"
+    }
+}

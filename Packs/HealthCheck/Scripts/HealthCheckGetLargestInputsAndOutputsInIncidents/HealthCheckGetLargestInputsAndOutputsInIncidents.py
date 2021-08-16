@@ -113,13 +113,24 @@ def get_extra_data_from_investigations(investigations: list, is_table_result) ->
     return largest_inputs_and_outputs
 
 
+def format_table(incidentsList):
+    new_table = []
+    if incidentsList:
+        for entry in incidentsList:
+            new_entry = {'incidentid': entry['incidentid'],
+                         'details': f"TaskID: {entry['taskid']}\nTaskName: {entry['taskname']}\nArgument: {entry['name']}",
+                         'size': str(round(entry['size'], 2)) + " MB", 'inputoroutput': entry['inputoroutput']}
+            new_table.append(new_entry)
+        return new_table
+
+
 def main():
     try:
         args = demisto.args()
         incident_thresholds = args.get('Thresholds', THRESHOLDS)
 
         daysAgo = datetime.today() - timedelta(days=30)
-        is_table_result = argToBoolean(args.get('table_result', False))
+        is_table_result = argToBoolean(args.get('table_result', True))
 
         raw_output = execute_command('GetLargestInvestigations',
                                      args={
@@ -127,8 +138,7 @@ def main():
                                          'to': args.get('to'),
                                          'table_result': 'true',
                                      })
-
-        investigations = raw_output[0].get('Contents', {}).get('data')
+        investigations = raw_output.get('data')
         data = get_extra_data_from_investigations(investigations, is_table_result)
 
         if not is_table_result:
@@ -139,21 +149,17 @@ def main():
             incidentsListBiggerThan10 = []
             for entry in data:
                 if entry['size'] > 10:
-                    entry['size'] = str(entry['size']) + " MB"
-                    # incidentsList.append(entry)
                     incidentsListBiggerThan10.append(entry)
                 else:
-                    entry['size'] = str(entry['size']) + " MB"
                     incidentsList.append(entry)
             numIncidentsList = len(incidentsList)
             numIncidentsListBiggerThan10 = len(incidentsListBiggerThan10)
             analyzeFields = {
-                "healthcheckinvestigationsinputoutputbiggerthan1mb": incidentsList,
-                "healthcheckinvestigationsinputoutputbiggerthan10mb": incidentsListBiggerThan10,
+                "healthcheckinvestigationsinputoutputbiggerthan1mb": format_table(incidentsList),
+                "healthcheckinvestigationsinputoutputbiggerthan10mb": format_table(incidentsListBiggerThan10),
                 "healthchecknumberofinvestigationsinputoutputbiggerthan1mb": numIncidentsList,
                 "healthchecknumberofinvestigationsinputoutputbiggerthan10mb": numIncidentsListBiggerThan10,
             }
-
             demisto.executeCommand('setIncident', analyzeFields)
 
             # Add actionable items

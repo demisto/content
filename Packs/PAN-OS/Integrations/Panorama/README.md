@@ -3036,7 +3036,8 @@ Checks whether a session matches a specified security policy. This command is on
 | to | The to zone. | Optional | 
 | protocol | The IP protocol value. | Required | 
 | source | The source IP address. | Required | 
-| source-user | The source user. | Optional | 
+| source-user | The source user. | Optional |
+| target | Target number of the firewall. Use only on a Panorama instance. | Optional | 
 
 
 #### Context Output

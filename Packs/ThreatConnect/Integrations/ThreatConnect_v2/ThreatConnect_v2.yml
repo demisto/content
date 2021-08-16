@@ -129,6 +129,9 @@ script:
     - contextPath: IP.Malicious.Description
       description: For malicious IP addresses, the full description.
       type: string
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
   - arguments:
     - default: true
       description: The URL for which to search. For example, "www.demisto.com".
@@ -198,6 +201,9 @@ script:
       type: string
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the full description.
+      type: string
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
       type: string
   - arguments:
     - default: true
@@ -283,6 +289,9 @@ script:
       type: string
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
+      type: string
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
       type: string
   - arguments: []
     description: Retrieves all owners for the current account.
@@ -398,6 +407,9 @@ script:
       type: string
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
+      type: string
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
       type: string
   - arguments: []
     description: Returns a list of all ThreatConnect tags.
@@ -586,6 +598,9 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
       type: string
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
   - arguments:
     - default: true
       description: The name of the tag by which to filter.
@@ -689,6 +704,9 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
       type: string
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
   - arguments:
     - description: The indicator to add.
       name: indicator
@@ -786,6 +804,9 @@ script:
       type: string
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
+      type: string
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
       type: string
   - arguments:
     - description: The owner of the new incident. The default is the "defaultOrg"
@@ -960,6 +981,9 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
       type: string
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
   - arguments:
     - default: true
       description: The name of the domain.
@@ -1032,6 +1056,9 @@ script:
       type: string
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the full description.
+      type: string
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
       type: string
   - arguments:
     - default: true
@@ -1256,6 +1283,9 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
       type: string
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
   - arguments:
     - description: The name of the indicator from which to remove a tag.
       name: indicator
@@ -1346,6 +1376,9 @@ script:
       type: string
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
+      type: string
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
       type: string
   - arguments:
     - description: The name of the indicator to delete.
@@ -2129,7 +2162,7 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.18207
+  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.21898
   runonce: false
   script: ''
   subtype: python3

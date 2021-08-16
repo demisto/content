@@ -125,7 +125,15 @@ def main():
     else:
         return_error('Either a user or a channel must be provided.')
 
-    demisto.results(demisto.executeCommand('send-notification', args))
+    try:
+        demisto.results(demisto.executeCommand('send-notification', args))
+    except ValueError as e:
+        if 'Unsupported Command' in str(e):
+            return_error('The command is unsupported by any integration instance. If you have SlackV3 or above enabled, '
+                         'please use SlackAskV2 instead.')
+        else:
+            return_error('An error has occurred while executing the send-notification command',
+                         error=e)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

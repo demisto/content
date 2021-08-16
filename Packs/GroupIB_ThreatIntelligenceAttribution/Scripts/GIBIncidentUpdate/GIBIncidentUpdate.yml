@@ -5,7 +5,7 @@ commonfields:
 dockerimage: demisto/python3:3.9.5.21272
 enabled: true
 name: GIBIncidentUpdate
-runas: DBotWeakRole
+runas: DBotRole
 runonce: false
 script: ''
 scripttarget: 0

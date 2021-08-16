@@ -1,3 +1,4 @@
+﻿
 
 
 
@@ -67,6 +68,7 @@ Command performs Group IB event lookup in compromised/account collection with pr
 | GIBTIA.CompromisedAccount.threatActor.isAPT | Boolean | Is threat actor APT group | 
 | GIBTIA.CompromisedAccount.threatActor.id | String | Threat actor GIB ID | 
 | GIBTIA.CompromisedAccount.id | String | Group IB incident ID | 
+| GIBTIA.CompromisedAccount.evaluation.severity | String | Event severity | 
 
 
 #### Command Example
@@ -276,6 +278,7 @@ Command performs Group IB event lookup in compromised/card collection with provi
 | GIBTIA.CompromisedCard.threatActor.id | String | Threat actor GIB ID | 
 | GIBTIA.CompromisedCard.id | String | Group IB incident ID | 
 | GIBTIA.CompromisedCard.sourceType | String | Information source | 
+| GIBTIA.CompromisedCard.evaluation.severity | String | Event severity | 
 
 
 #### Command Example
@@ -434,6 +437,83 @@ Command performs Group IB event lookup in compromised/card collection with provi
 
 
 
+### gibtia-get-compromised-breached-info
+***
+Command performs Group IB event lookup in compromised/breached collection with provided ID.
+
+
+#### Base Command
+
+`gibtia-get-compromised-breached-info`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | GIB event id.<br/>e.g.: 6fd344f340f4bdc08548cb36ded62bdf. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GIBTIA.DataBreach.email | String | List of breached emails | 
+| GIBTIA.DataBreach.leakName | String | Name of the leak | 
+| GIBTIA.DataBreach.password | String | List of breached passwords | 
+| GIBTIA.DataBreach.uploadTime | Date | Date of breached data upload | 
+| GIBTIA.DataBreach.id | String | Group IB incident ID | 
+| GIBTIA.DataBreach.evaluation.severity | String | Event severity | 
+
+
+#### Command Example
+```!gibtia-get-compromised-breached-info id=277c4112d348c91f6dabe9467f0d18ba```
+
+#### Context Example
+```json
+{
+    "GIBTIA": {
+        "DataBreach": {
+            "addInfo": {
+                "address": [
+                    ""
+                ],
+            },
+            "description": "",
+            "downloadLinkList": [],
+            "email": [
+                "some@gmail.com"
+            ],
+            "evaluation": {
+                "admiraltyCode": "C3",
+                "credibility": 50,
+                "reliability": 50,
+                "severity": "green",
+                "tlp": "amber",
+                "ttl": null
+            },
+            "id": "277c4112d348c91f6dabe9467f0d18ba",
+            "leakName": "some.com",
+            "leakPublished": "",
+            "password": [
+                "AC91C480FDE9D7ACB8AC4B78310EB2TD",
+                "1390DDDFA28AE085D23518A035703112"
+            ],
+            "reaperMessageId": "",
+            "taName": [],
+            "uploadTime": "2021-06-12T03:02:00"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Feed from compromised/breached with ID 277c4112d348c91f6dabe9467f0d18ba
+>|addInfo|email|evaluation|id|leakName|password|uploadTime|
+>|---|---|---|---|---|---|---|
+>| address: <br/> | some@gmail.com | admiraltyCode: C3<br/>credibility: 50<br/>reliability: 50<br/>severity: green<br/>tlp: amber<br/>ttl: null | 277c4112d348c91f6dabe9467f0d18ba | some.com | AC91C480FDE9D7ACB8AC4B78310EB2TD,<br/>1390DDDFA28AE085D23518A035703112 | 2021-06-12T03:02:00 |
+
+
+
 ### gibtia-get-compromised-mule-info
 ***
 Command performs Group IB event lookup in compromised/mule collection with provided ID.
@@ -468,6 +548,7 @@ Command performs Group IB event lookup in compromised/mule collection with provi
 | GIBTIA.CompromisedMule.threatActor.isAPT | Boolean | Is threat actor APT group | 
 | GIBTIA.CompromisedMule.id | String | Group IB incident ID | 
 | GIBTIA.CompromisedMule.sourceType | String | Information source | 
+| GIBTIA.CompromisedMule.evaluation.severity | String | Event severity | 
 
 
 #### Command Example
@@ -649,6 +730,7 @@ Command performs Group IB event lookup in compromised/imei collection with provi
 | GIBTIA.CompromisedIMEI.threatActor.name | String | Associated threat actor | 
 | GIBTIA.CompromisedIMEI.threatActor.isAPT | Boolean |  Is threat actor APT group | 
 | GIBTIA.CompromisedIMEI.id | String | Group IB incident ID | 
+| GIBTIA.CompromisedIMEI.evaluation.severity | String | Event severity | 
 
 
 #### Command Example
@@ -823,6 +905,7 @@ Command performs Group IB event lookup in osi/git_leak collection with provided 
 | GIBTIA.GitLeak.revisions.info.authorEmail | String | Author name | 
 | GIBTIA.GitLeak.revisions.info.dateCreated | Date | Revision creation date | 
 | GIBTIA.GitLeak.source | String | Source\(github/gitlab/etc.\) | 
+| GIBTIA.GitLeak.evaluation.severity | String | Event severity | 
 
 
 #### Command Example
@@ -965,6 +1048,7 @@ Command performs Group IB event lookup in osi/public_leak collection with provid
 | GIBTIA.PublicLeak.linkList.source | String | Leak source | 
 | GIBTIA.PublicLeak.matches | String | Matches | 
 | GIBTIA.PublicLeak.portalLink | String | Group IB portal link | 
+| GIBTIA.PublicLeak.evaluation.severity | String | Event severity | 
 
 
 #### Command Example
@@ -1061,6 +1145,7 @@ Command performs Group IB event lookup in osi/vulnerability collection with prov
 | GIBTIA.OSIVulnerability.id | String | Vulnerability ID | 
 | GIBTIA.OSIVulnerability.reporter | String | Vulnerability reporter | 
 | GIBTIA.OSIVulnerability.title | String | Vulnerability title | 
+| GIBTIA.OSIVulnerability.evaluation.severity | String | Event severity | 
 
 
 #### Command Example
@@ -1207,6 +1292,7 @@ Command performs Group IB event lookup in bp/phishing_kit and attacks/phishing_k
 | GIBTIA.PhishingKit.targetBrand | String | Phishing kit target brand | 
 | GIBTIA.PhishingKit.emails | String | Emails found in phishing kit | 
 | GIBTIA.PhishingKit.id | String | GIB event ID | 
+| GIBTIA.PhishingKit.evaluation.severity | String | Event severity | 
 
 
 #### Command Example
@@ -1321,6 +1407,7 @@ Command performs Group IB event lookup in bp/phishing and attacks/phishing colle
 | GIBTIA.Phishing.targetDomain | String | Phishing target domain | 
 | GIBTIA.Phishing.status | String | Current status of phishing incident \(blocked, in response, etc.\) | 
 | GIBTIA.Phishing.url | String | Phishing URL | 
+| GIBTIA.Phishing.evaluation.severity | String | Event severity | 
 
 
 #### Command Example
@@ -1509,6 +1596,7 @@ Command performs Group IB event lookup in attacks/ddos collection with provided 
 | GIBTIA.AttacksDDoS.threatActor.name | String | Associated threat actor | 
 | GIBTIA.AttacksDdos.threatActor.isAPT | Boolean | Is threat actor APT | 
 | GIBTIA.AttacksDDoS.id | String | GIB incident ID | 
+| GIBTIA.AttacksDDoS.evaluation.severity | String | Event severity | 
 
 
 #### Command Example
@@ -1659,6 +1747,7 @@ Command performs Group IB event lookup in attacks/deface collection with provide
 | GIBTIA.AttacksDeface.threatActor.name | String | Associated threat actor | 
 | GIBTIA.AttacksDeface.threatActor.isAPT | Boolean | Is threat actor APT | 
 | GIBTIA.AttacksDeface.url | String | URL of compromised resource | 
+| GIBTIA.AttacksDeface.evaluation.severity | String | Event severity | 
 
 
 #### Command Example
@@ -1819,6 +1908,7 @@ Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT
 | GIBTIA.Threat.ThreatActor.id | String | Threat actor ID | 
 | GIBTIA.Threat.ThreatActor.isAPT | Boolean | Is threat actor APT group | 
 | GIBTIA.Threat.sources | String | Sources links | 
+| GIBTIA.Threat.evaluation.severity | String | Event severity | 
 
 
 #### Command Example
@@ -2175,6 +2265,7 @@ Command performs Group IB event lookup in suspicious_ip/tor_node collection with
 | GIBTIA.SuspiciousIPTorNode.ipv4.ip | String | Tor node IP address | 
 | GIBTIA.SuspiciousIPTorNode.ipv4.region | String | Tor node IP region name | 
 | GIBTIA.SuspiciousIPTorNode.id | String | GIB id | 
+| GIBTIA.SuspiciousIPTorNode.evaluation.severity | String | Event severity | 
 
 
 #### Command Example
@@ -2262,6 +2353,7 @@ Command performs Group IB event lookup in suspicious_ip/open_proxy collection wi
 | GIBTIA.SuspiciousIPOpenProxy.ipv4.source | String | Information source | 
 | GIBTIA.SuspiciousIPOpenProxy.ipv4.anonymous | String | Proxy anonymous level | 
 | GIBTIA.SuspiciousIPOpenProxy.id | String | GIB event ID | 
+| GIBTIA.SuspiciousIPOpenProxy.evaluation.severity | String | Event severity | 
 
 
 #### Command Example
@@ -2356,6 +2448,7 @@ Command performs Group IB event lookup in suspicious_ip/socks_proxy collection w
 | GIBTIA.SuspiciousIPSocksProxy.ipv4.ip | String | Proxy IP address | 
 | GIBTIA.SuspiciousIPSocksProxy.ipv4.region | String | Proxy IP region name | 
 | GIBTIA.SuspiciousIPSocksProxy.id | String | GIB ID | 
+| GIBTIA.SuspiciousIPSocksProxy.evaluation.severity | String | Event severity |
 
 
 #### Command Example
@@ -2459,6 +2552,7 @@ Command performs Group IB event lookup in malware/targeted_malware collection wi
 | GIBTIA.TargetedMalware.threatActor.name | String | Related threat actor | 
 | GIBTIA.TargetedMalware.threatActor.id | String | GIB internal threat actor ID | 
 | GIBTIA.TargetedMalware.threatActor.isAPT | Boolean | Is threat actor APT | 
+| GIBTIA.TargetedMalware.evaluation.severity | String | Event severity |
 
 
 #### Command Example
@@ -2887,4 +2981,3 @@ Command performs Group IB search in selected collection.
 >|id|additional_info|
 >|---|---|
 >| 8bd7e5cef2290b0c3f04bf283586406dceffe25d | phishingDomain_domain: some.ru |
-

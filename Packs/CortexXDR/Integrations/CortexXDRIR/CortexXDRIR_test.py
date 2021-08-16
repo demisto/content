@@ -3,10 +3,11 @@ import json
 import os
 import zipfile
 
-import demistomock as demisto
 import pytest
-from CommonServerPython import Common
 from freezegun import freeze_time
+
+import demistomock as demisto
+from CommonServerPython import Common
 
 XDR_URL = 'https://api.xdrurl.com'
 
@@ -337,10 +338,12 @@ def test_endpoint_command(requests_mock):
                                         'IPAddress': '3.3.3.3',
                                         'OS': 'Linux',
                                         'Vendor': 'Cortex XDR - IR',
-                                        'Status': 'Offline',
+                                        'Status': 'Online',
                                         'IsIsolated': 'No'}]}
 
     results = outputs[0].to_context()
+    for key, val in results.get("EntryContext").items():
+        assert results.get("EntryContext")[key] == get_endpoints_response[key]
     assert results.get("EntryContext") == get_endpoints_response
 
 
@@ -2670,3 +2673,44 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
             'parameters_values': {'process_name': 'process2.exe'}
         }
     }
+
+
+CONNECTED_STATUS = {
+    'endpoint_status': 'Connected',
+    'is_isolated': 'Isolated',
+    'host_name': 'TEST',
+    'ip': '1.1.1.1'
+}
+
+NO_STATUS = {
+    'is_isolated': 'Isolated',
+    'host_name': 'TEST',
+    'ip': '1.1.1.1'
+}
+
+OFFLINE_STATUS = {
+    'endpoint_status': 'Offline',
+    'is_isolated': 'Isolated',
+    'host_name': 'TEST',
+    'ip': '1.1.1.1'
+}
+
+
+@pytest.mark.parametrize("endpoint, expected", [
+    (CONNECTED_STATUS, 'Online'),
+    (NO_STATUS, 'Offline'),
+    (OFFLINE_STATUS, 'Offline')
+])
+def test_get_endpoint_properties(endpoint, expected):
+    """
+    Given:
+        - Endpoint data
+    When
+        - The status of the enndpoint is 'Connected' with a capital C.
+    Then
+        - The status of the endpointn is determined to be 'Online'
+    """
+    from CortexXDRIR import get_endpoint_properties
+
+    status, is_isolated, hostname, ip = get_endpoint_properties(endpoint)
+    assert status == expected

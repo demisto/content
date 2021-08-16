@@ -1,5 +1,6 @@
 import pytest
 import demistomock as demisto
+from CommonServerPython import DemistoException
 
 integration_params = {
     'port': '443',
@@ -48,7 +49,7 @@ def patched_requests_mocker(requests_mock):
     return requests_mock
 
 
-def test_panoram_get_os_version(patched_requests_mocker):
+def test_panorama_get_os_version(patched_requests_mocker):
     from Panorama import get_pan_os_version
     import Panorama
     Panorama.URL = 'https://1.1.1.1:443/api/'
@@ -57,7 +58,7 @@ def test_panoram_get_os_version(patched_requests_mocker):
     assert r == '9.0.6'
 
 
-def test_panoram_override_vulnerability(patched_requests_mocker):
+def test_panorama_override_vulnerability(patched_requests_mocker):
     from Panorama import panorama_override_vulnerability
     import Panorama
     Panorama.URL = 'https://1.1.1.1:443/api/'
@@ -118,10 +119,12 @@ def test_add_argument_target():
 def test_prettify_addresses_arr():
     from Panorama import prettify_addresses_arr
     addresses_arr = [{'@name': 'my_name', 'fqdn': 'a.com'},
-                     {'@name': 'my_name2', 'fqdn': 'b.com'}]
+                     {'@name': 'my_name2', 'fqdn': 'b.com'},
+                     {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}]
     response = prettify_addresses_arr(addresses_arr)
     expected = [{'Name': 'my_name', 'FQDN': 'a.com'},
-                {'Name': 'my_name2', 'FQDN': 'b.com'}]
+                {'Name': 'my_name2', 'FQDN': 'b.com'},
+                {'Name': 'test', 'IP_Netmask': '1.1.1.1'}]
     assert response == expected
 
 
@@ -130,6 +133,14 @@ def test_prettify_address():
     address = {'@name': 'my_name', 'ip-netmask': '1.1.1.1', 'description': 'lala'}
     response = prettify_address(address)
     expected = {'Name': 'my_name', 'IP_Netmask': '1.1.1.1', 'Description': 'lala'}
+    assert response == expected
+
+
+def test_prettify_address_tag_none():
+    from Panorama import prettify_address
+    address = {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}
+    response = prettify_address(address)
+    expected = {'Name': 'test', 'IP_Netmask': '1.1.1.1'}
     assert response == expected
 
 
@@ -145,10 +156,23 @@ def test_prettify_address_group():
     expected_address_group_dynamic = {'Name': 'foo', 'Type': 'dynamic', 'Match': '1.1.1.1 and 2.2.2.2'}
     assert response_dynamic == expected_address_group_dynamic
 
+    address_group_dynamic_tag_none = {'@name': 'foo', 'dynamic': {'filter': '1.1.1.1 or 2.2.2.2'}, 'tag': None}
+    response_dynamic_tag_none = prettify_address_group(address_group_dynamic_tag_none)
+    expected_address_group_dynamic_tag_none = {'Name': 'foo', 'Type': 'dynamic', 'Match': '1.1.1.1 or 2.2.2.2'}
+    assert response_dynamic_tag_none == expected_address_group_dynamic_tag_none
+
 
 def test_prettify_service():
     from Panorama import prettify_service
     service = {'@name': 'service_name', 'description': 'foo', 'protocol': {'tcp': {'port': '443'}}}
+    response = prettify_service(service)
+    expected = {'Name': 'service_name', 'Description': 'foo', 'Protocol': 'tcp', 'DestinationPort': '443'}
+    assert response == expected
+
+
+def test_prettify_service_tag_none():
+    from Panorama import prettify_service
+    service = {'@name': 'service_name', 'description': 'foo', 'protocol': {'tcp': {'port': '443'}}, 'tag': None}
     response = prettify_service(service)
     expected = {'Name': 'service_name', 'Description': 'foo', 'Protocol': 'tcp', 'DestinationPort': '443'}
     assert response == expected
@@ -162,12 +186,124 @@ def test_prettify_service_group():
     assert response == expected
 
 
+def test_prettify_service_group_tag_none():
+    from Panorama import prettify_service_group
+    service_group = {'@name': 'sg_group', 'members': {'member': ['service1', 'service2']}, 'tag': None}
+    response = prettify_service_group(service_group)
+    expected = {'Name': 'sg_group', 'Services': ['service1', 'service2']}
+    assert response == expected
+
+
 def test_prettify_custom_url_category():
     from Panorama import prettify_custom_url_category
     custom_url_category = {'@name': 'foo', 'list': {'member': ['a', 'b', 'c']}}
     response = prettify_custom_url_category(custom_url_category)
     expected = {'Name': 'foo', 'Sites': ['a', 'b', 'c']}
     assert response == expected
+
+
+def test_panorama_create_custom_url_category_8_x(mocker):
+    """
+    Given:
+     - an only > 9.x valid argument for custom url category creation
+
+    When:
+     - running the panorama_create_custom_url_category function
+     - mocking the pan-os version to be 8.x
+
+    Then:
+     - a proper error is raised
+    """
+    from Panorama import panorama_create_custom_url_category
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=8)
+    custom_url_category_name = 'name'
+    description = 'test_desc'
+    type_ = 'URL List'
+
+    with pytest.raises(DemistoException,
+                       match='The type and categories arguments are only relevant for PAN-OS 9.x versions.'):
+        panorama_create_custom_url_category(custom_url_category_name, type_=type_, description=description)
+
+
+def test_panorama_create_custom_url_category_9_x(mocker):
+    """
+    Given:
+     - a non valid argument for custom url category creation
+
+    When:
+     - running the panorama_create_custom_url_category function
+     - mocking the pan-os version to be 9.x
+
+    Then:
+     - a proper error is raised
+    """
+    from Panorama import panorama_create_custom_url_category
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+    custom_url_category_name = 'name'
+    type_ = 'URL List'
+    categories = 'phishing'
+    sites = 'a.com'
+    description = 'test_desc'
+
+    with pytest.raises(DemistoException,
+                       match='The type argument is mandatory for PAN-OS 9.x versions.'):
+        panorama_create_custom_url_category(custom_url_category_name, sites=sites, description=description)
+
+    with pytest.raises(DemistoException,
+                       match='Exactly one of the sites and categories arguments should be defined.'):
+        panorama_create_custom_url_category(custom_url_category_name, type_=type_, sites=sites, categories=categories)
+
+    with pytest.raises(DemistoException,
+                       match='URL List type is only for sites, Category Match is only for categories.'):
+        panorama_create_custom_url_category(custom_url_category_name, type_=type_, categories=categories)
+
+
+def test_create_url_filter_params_8_x(mocker):
+    """
+    Given:
+     - a valid argument for url filter creation
+
+    When:
+     - running the create_url_filter_params utility function
+     - mocking the pan-os version to be 8.x
+
+    Then:
+     - a proper xml element is generated
+    """
+    from Panorama import create_url_filter_params
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=8)
+    url_filter_name = 'name'
+    action = 'alert'
+    url_category_list = 'adult'
+    description = 'test_desc'
+
+    url_filter_params = create_url_filter_params(url_filter_name, action, url_category_list=url_category_list,
+                                                 description=description)
+    assert url_filter_params['element'].find('<action>block</action>') != -1  # if not -1, then it is found
+
+
+def test_create_url_filter_params_9_x(mocker):
+    """
+    Given:
+     - a valid argument for url filter creation
+
+    When:
+     - running the create_url_filter_params utility function
+     - mocking the pan-os version to be 9.x
+
+    Then:
+     - a proper xml element is generated
+    """
+    from Panorama import create_url_filter_params
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+    url_filter_name = 'name'
+    action = 'alert'
+    url_category_list = 'adult'
+    description = 'test_desc'
+
+    url_filter_params = create_url_filter_params(url_filter_name, action, url_category_list=url_category_list,
+                                                 description=description)
+    assert url_filter_params['element'].find('<action>block</action>') == -1  # if  -1, then it is not found
 
 
 def test_prettify_edl():
@@ -215,6 +351,16 @@ def test_prettify_logs():
 
 
 def test_build_policy_match_query():
+    """
+    Given:
+     - a valid arguments for policy match query generation
+
+    When:
+     - running the build_policy_match_query utility function
+
+    Then:
+     - a proper xml is generated
+    """
     from Panorama import build_policy_match_query
     source = '1.1.1.1'
     destination = '6.7.8.9'
@@ -224,6 +370,24 @@ def test_build_policy_match_query():
     expected = '<test><security-policy-match><source>1.1.1.1</source><destination>6.7.8.9</destination>' \
                '<protocol>1</protocol><application>gmail-base</application></security-policy-match></test>'
     assert response == expected
+
+
+def test_panorama_security_policy_match_command_no_target():
+    """
+    Given:
+     - a Panorama instance(mocked parameter) without the target argument
+
+    When:
+     - running the panorama-security-policy-match command
+
+    Then:
+     - Validate a proper error is raised
+    """
+    from Panorama import panorama_security_policy_match_command
+    err_msg = "The 'panorama-security-policy-match' command is relevant for a Firewall instance " \
+              "or for a Panorama instance, to be used with the target argument."
+    with pytest.raises(DemistoException, match=err_msg):
+        panorama_security_policy_match_command(demisto.args())
 
 
 def test_prettify_matching_rule():

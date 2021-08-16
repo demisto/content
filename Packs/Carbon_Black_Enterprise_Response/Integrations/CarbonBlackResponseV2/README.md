@@ -1,5 +1,5 @@
 VMware Carbon Black EDR (formerly known as Carbon Black Response)
-This integration was integrated and tested with version 6.2 of VMware Carbon Black EDR
+This integration was integrated and tested with product version 6.2 of VMware Carbon Black EDR and based on API version 6.3+.
 
 Some changes have been made that might affect your existing content. 
 
