@@ -197,5 +197,6 @@
     "locked": false,
     "hidePivot": false,
     "hideSearch": false,
-    "modulePage": false
+    "modulePage": false,
+    "fromVersion": "6.2.0"
 }

@@ -75,7 +75,7 @@ args:
   name: minNumberofIncidentPerCluster
   required: false
   secret: false
-comment: Train clustering model on Cortex XDR incident type.
+comment: Train clustering model on Phishing incident type.
 commonfields:
   id: DBotGroupPhishingIncidents
   version: -1
