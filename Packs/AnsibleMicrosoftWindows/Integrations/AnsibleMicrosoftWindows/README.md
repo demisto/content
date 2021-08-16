@@ -558,7 +558,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     },
                     {
                         "package": "chocolatey-core.extension",
-                        "version": "1.3.5.1"
+                        "version": "1.1.1.1"
                     },
                     {
                         "package": "git",
@@ -643,7 +643,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * version: 0.10.15
 >    * ### List
 >      * package: chocolatey-core.extension
->      * version: 1.3.5.1
+>      * version: 1.1.1.1
 >    * ### List
 >      * package: git
 >      * version: 2.32.0
@@ -732,7 +732,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | certificate | The path to a .pfx file to use for X509 authenticated feeds.<br/>Requires Chocolatey &gt;= 0.9.10. | Optional | 
 | certificate_password | The password for `certificate` if required.<br/>Requires Chocolatey &gt;= 0.9.10. | Optional | 
 | name | The name of the source to configure. | Required | 
-| priority | The priority order of this source compared to other sources, lower is better.<br/>All priorities above `0` will be evaluated first, then zero-based values will be evaluated in config file order.<br/>Requires Chocolatey &gt;= 0.9.9.9.<br/>When creating a new source, this defaults to `0`. | Optional | 
+| priority | The priority order of this source compared to other sources, lower is better.<br/>All priorities above `0` will be evaluated first, then zero-based values will be evaluated in config file order.<br/>Requires Chocolatey &gt;= 1.1.1.1.<br/>When creating a new source, this defaults to `0`. | Optional | 
 | source | The file/folder/url of the source.<br/>Required when `state` is `present` or `disabled` and the source does not already exist. | Optional | 
 | source_username | The username used to access `source`. | Optional | 
 | source_password | The password for `source_username`.<br/>Required if `source_username` is set. | Optional | 
