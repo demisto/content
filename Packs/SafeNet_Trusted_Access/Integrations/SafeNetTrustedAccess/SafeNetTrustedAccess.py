@@ -5,6 +5,7 @@ import re
 import traceback
 from datetime import datetime
 from typing import Any, Dict
+from urllib.parse import quote_plus
 import requests
 import urllib3
 
@@ -136,7 +137,7 @@ class Client(BaseClient):
         self.validate_mandatory_argument_sta(fields={"username": userName})
         return self.http_request(
             method='GET',
-            url_suffix=urljoin('/users/', encode_string_results(userName)),
+            url_suffix=urljoin('/users/', quote_plus(userName)),
         ).json()
 
     # Get information of a group in a tenant.
@@ -212,7 +213,7 @@ class Client(BaseClient):
 
         return self.http_request(
             method='PATCH',
-            url_suffix=urljoin('/users/', encode_string_results(args.get('userName'))),
+            url_suffix=urljoin('/users/', quote_plus(args.get('userName'))),
             data=json.dumps(data)
         ).json()
 
@@ -221,7 +222,7 @@ class Client(BaseClient):
 
         return self.http_request(
             method='DELETE',
-            url_suffix=urljoin('/users/', encode_string_results(userName)),
+            url_suffix=urljoin('/users/', quote_plus(userName)),
         )
 
     # Get user ID from username.
@@ -238,7 +239,7 @@ class Client(BaseClient):
     def get_user_groups_sta(self, userName, limit=None):
 
         user_id = self.get_user_id_sta(userName=userName)
-        uri = urljoin(urljoin('/users/', encode_string_results(user_id)), '/groups')
+        uri = urljoin(urljoin('/users/', quote_plus(user_id)), '/groups')
 
         if limit:
             limit = self.validate_limit_sta(limit)
@@ -284,7 +285,7 @@ class Client(BaseClient):
     def get_group_members_sta(self, groupName, limit=None):
 
         group_id = self.get_group_id_sta(groupName=groupName)
-        uri = urljoin(urljoin('/groups/', encode_string_results(group_id)), '/members')
+        uri = urljoin(urljoin('/groups/', quote_plus(group_id)), '/members')
 
         if limit:
             limit = self.validate_limit_sta(limit)
@@ -324,7 +325,7 @@ class Client(BaseClient):
         group_id = self.get_group_id_sta(groupName=groupName)
         return self.http_request(
             method='DELETE',
-            url_suffix=urljoin('/groups/', encode_string_results(group_id)),
+            url_suffix=urljoin('/groups/', quote_plus(group_id)),
         )
 
     # Update information of a specific group.
@@ -339,7 +340,7 @@ class Client(BaseClient):
 
         return self.http_request(
             method='PATCH',
-            url_suffix=urljoin('/groups/', encode_string_results(group_id)),
+            url_suffix=urljoin('/groups/', quote_plus(group_id)),
             data=json.dumps(data)
         ).json()
 
@@ -351,7 +352,7 @@ class Client(BaseClient):
 
         user_groups = self.http_request(
             method='GET',
-            url_suffix=urljoin(urljoin('/users/', encode_string_results(user_id)), '/groups'),
+            url_suffix=urljoin(urljoin('/users/', quote_plus(user_id)), '/groups'),
         ).json()['page']['items']
 
         if user_groups is not None:
@@ -374,7 +375,7 @@ class Client(BaseClient):
 
             return self.http_request(
                 method='POST',
-                url_suffix=urljoin(urljoin('/groups/', encode_string_results(group_id)), '/members'),
+                url_suffix=urljoin(urljoin('/groups/', quote_plus(group_id)), '/members'),
                 data=json.dumps(data),
             )
         else:
@@ -389,8 +390,8 @@ class Client(BaseClient):
 
             return self.http_request(
                 method='DELETE',
-                url_suffix=urljoin(urljoin(urljoin('/groups/', encode_string_results(group_id)), '/members/'),
-                                   encode_string_results(user_id)),
+                url_suffix=urljoin(urljoin(urljoin('/groups/', quote_plus(group_id)), '/members/'),
+                                   quote_plus(user_id)),
             )
         else:
             raise Exception(f"Username - {userName} is not a member of the group - {groupName}.")
@@ -411,8 +412,10 @@ class Client(BaseClient):
         return logs_attributes
 
     # Filter out the required data from total items as per limit and userName argument.
-    def logs_data_filter_sta(self, total_items, userName=None, limit=None, count=1, logs_items=[]):
+    def logs_data_filter_sta(self, total_items, userName=None, limit=None, count=1, logs_items=None):
 
+        if logs_items is None:
+            logs_items = []
         if userName:
             for response in total_items:
                 if 'usedName' in response['details'].keys():

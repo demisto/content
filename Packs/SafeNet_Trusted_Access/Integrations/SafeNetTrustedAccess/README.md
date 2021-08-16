@@ -50,7 +50,7 @@ Get list of users in the tenant.
     "STA": {
         "USER": [
             {
-                "email": "demo.user4alert@gmail.com",
+                "email": "demo.user@demisto.com",
                 "firstName": "Demo",
                 "id": "CNlM6Pyq3nADXA4rWyUAAAAc",
                 "isSynchronized": false,
@@ -59,7 +59,7 @@ Get list of users in the tenant.
                 "userName": "demouser"
             },
             {
-                "email": "hello.user@gmail.com",
+                "email": "test.user@demisto.com",
                 "firstName": "Hello",
                 "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
                 "isSynchronized": false,
@@ -77,8 +77,8 @@ Get list of users in the tenant.
 >### List of users in the tenant :
 >|Id|Schema Version Number|User Name|First Name|Last Name|Email|Is Synchronized|
 >|---|---|---|---|---|---|---|
->| CNlM6Pyq3nADXA4rWyUAAAAc | 1.0 | demouser | Demo | User | demo.user4alert@gmail.com | false |
->| CNlM6rvB0uQDXA4rWyUAAAAc | 1.0 | hellouser | Hello | User | hello.user@gmail.com | false |
+>| CNlM6Pyq3nADXA4rWyUAAAAc | 1.0 | demouser | Demo | User | demo.user@demisto.com | false |
+>| CNlM6rvB0uQDXA4rWyUAAAAc | 1.0 | hellouser | Hello | User | test.user@demisto.com | false |
 
 
 ### sta-get-user-info
@@ -130,7 +130,7 @@ Get the profile information for a specific user.
 {
     "STA": {
         "USER": {
-            "email": "demo.user4alert@gmail.com",
+            "email": "demo.user@demisto.com",
             "firstName": "Demo",
             "id": "CNlM6Pyq3nADXA4rWyUAAAAc",
             "isSynchronized": false,
@@ -147,7 +147,7 @@ Get the profile information for a specific user.
 >### Information for user - demouser :
 >|Id|Schema Version Number|User Name|First Name|Last Name|Email|Is Synchronized|
 >|---|---|---|---|---|---|---|
->| CNlM6Pyq3nADXA4rWyUAAAAc | 1.0 | demouser | Demo | User | demo.user4alert@gmail.com | false |
+>| CNlM6Pyq3nADXA4rWyUAAAAc | 1.0 | demouser | Demo | User | demo.user@demisto.com | false |
 
 
 ### sta-create-user
@@ -205,14 +205,14 @@ Create new user in the tenant
 
 
 #### Command Example
-```!sta-create-user email="usertest123@gmail.com" firstName="User" lastName="Test" userName="usertest123"```
+```!sta-create-user email="test.user@demisto.com" firstName="User" lastName="Test" userName="usertest123"```
 
 #### Context Example
 ```json
 {
     "STA": {
         "USER": {
-            "email": "usertest123@gmail.com",
+            "email": "test.user@demisto.com",
             "firstName": "User",
             "id": "iNlUrf8RIazgkpeUDHEAAAAc",
             "isSynchronized": false,
@@ -229,7 +229,7 @@ Create new user in the tenant
 >### STA user successfully created :
 >|Id|Schema Version Number|User Name|First Name|Last Name|Email|Is Synchronized|
 >|---|---|---|---|---|---|---|
->| iNlUrf8RIazgkpeUDHEAAAAc | 1.0 | usertest123 | User | Test | usertest123@gmail.com | false |
+>| iNlUrf8RIazgkpeUDHEAAAAc | 1.0 | usertest123 | User | Test | test.user@demisto.com | false |
 
 
 ### sta-update-user-info
@@ -291,7 +291,7 @@ Update the profile for a specific user.
 {
     "STA": {
         "USER": {
-            "email": "usertest123@gmail.com",
+            "email": "test.user@demisto.com",
             "firstName": "Demo",
             "id": "iNlUrf8RIazgkpeUDHEAAAAc",
             "isSynchronized": false,
@@ -308,7 +308,7 @@ Update the profile for a specific user.
 >### STA user successfully updated:
 >|Id|Schema Version Number|User Name|First Name|Last Name|Email|Is Synchronized|
 >|---|---|---|---|---|---|---|
->| iNlUrf8RIazgkpeUDHEAAAAc | 1.0 | demousername | Demo | Name | usertest123@gmail.com | false |
+>| iNlUrf8RIazgkpeUDHEAAAAc | 1.0 | demousername | Demo | Name | test.user@demisto.com | false |
 
 
 ### sta-delete-user
@@ -572,7 +572,7 @@ Get list of users in a specific group.
             {
                 "id": "CNlM6Pyq3nADXA4rWyUAAAAc",
                 "links": {
-                    "self": "https://api.stademo.com/api/v1/tenants/HNESAUHHA6/users/CNlM6Pyq3nADXA4rWyUAAAAc?isUid=true"
+                    "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6Pyq3nADXA4rWyUAAAAc?isUid=true"
                 },
                 "name": "demouser",
                 "type": "User"
@@ -580,7 +580,7 @@ Get list of users in a specific group.
             {
                 "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
                 "links": {
-                    "self": "https://api.stademo.com/api/v1/tenants/HNESAUHHA6/users/CNlM6rvB0uQDXA4rWyUAAAAc?isUid=true"
+                    "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6rvB0uQDXA4rWyUAAAAc?isUid=true"
                 },
                 "name": "hellouser",
                 "type": "User"
@@ -918,7 +918,7 @@ Fetch the access logs.
         "LOGS": {
             "actionText": "AUTH_ATTEMPT",
             "credentialType": "MobilePASS",
-            "ip": "165.225.104.81",
+            "ip": "8.8.8.8",
             "message": "Login from SafeNet Authentication Service Console.",
             "resultText": "AUTH_SUCCESS",
             "serial": "1000014514",
@@ -934,9 +934,9 @@ Fetch the access logs.
 >### Access logs : 
 >|Time Stamp|User Name|Action Text|Result Text|Credential Type|Message|Serial|Ip|
 >|---|---|---|---|---|---|---|---|
->| 2021-07-22T08:19:05.5905986Z | demouser | AUTH_ATTEMPT | CHALLENGE | MobilePASS | Login from SafeNet Authentication Service Console. | 1000014514 | 165.225.104.81 |
->| 2021-07-22T08:20:45.5326006Z | demouser | AUTH_ATTEMPT | AUTH_SUCCESS | MobilePASS | Login from SafeNet Authentication Service Console. | 1000014514 | 165.225.104.81 |
->| 2021-07-22T09:20:21.1356016Z | demouser | AUTH_ATTEMPT | AUTH_SUCCESS | MobilePASS | Login from SafeNet Authentication Service Console. | 1000014514 | 165.225.104.81 |
+>| 2021-07-22T08:19:05.5905986Z | demouser | AUTH_ATTEMPT | CHALLENGE | MobilePASS | Login from SafeNet Authentication Service Console. | 1000014514 | 8.8.8.8 |
+>| 2021-07-22T08:20:45.5326006Z | demouser | AUTH_ATTEMPT | AUTH_SUCCESS | MobilePASS | Login from SafeNet Authentication Service Console. | 1000014514 | 8.8.8.8 |
+>| 2021-07-22T09:20:21.1356016Z | demouser | AUTH_ATTEMPT | AUTH_SUCCESS | MobilePASS | Login from SafeNet Authentication Service Console. | 1000014514 | 8.8.8.8 |
 
 
 ### sta-validate-tenant

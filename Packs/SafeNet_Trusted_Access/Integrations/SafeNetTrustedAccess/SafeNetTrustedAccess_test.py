@@ -8,7 +8,7 @@ client = Client(base_url="demisto.com")
 # Defining result of command functions for mocker
 user_list = [
     {
-        "email": "demo.user4alert@gmail.com",
+        "email": "demo.user@demisto.com",
         "firstName": "Demo",
         "id": "CNlM6Pyq3nADXA4rWyUAAAAc",
         "isSynchronized": False,
@@ -17,7 +17,7 @@ user_list = [
         "userName": "demouser"
     },
     {
-        "email": "hello.user@gmail.com",
+        "email": "test.user@demisto.com",
         "firstName": "Hello",
         "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
         "isSynchronized": False,
@@ -28,7 +28,7 @@ user_list = [
 ]
 
 user_info = {
-    "email": "hello.user@gmail.com",
+    "email": "test.user@demisto.com",
     "firstName": "Hello",
     "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
     "isSynchronized": False,
@@ -38,7 +38,7 @@ user_info = {
 }
 
 create_user = {
-    "email": "usertest123@gmail.com",
+    "email": "demo.user@demisto.com",
     "firstName": "User",
     "id": "iNlPIy6flxPgkpeUDHEAAAAc",
     "isSynchronized": False,
@@ -48,7 +48,7 @@ create_user = {
 }
 
 update_user = {
-    "email": "usertest123@gmail.com",
+    "email": "demo.user@demisto.com",
     "firstName": "Demo",
     "id": "iNlPIy6flxPgkpeUDHEAAAAc",
     "isSynchronized": False,
@@ -113,7 +113,7 @@ group_members = [
     {
         "id": "CNlM6Pyq3nADXA4rWyUAAAAc",
         "links": {
-            "self": "https://api.stademo.com/api/v1/tenants/HNESAUHHA6/users/CNlM6Pyq3nADXA4rWyUAAAAc?isUid=true"
+            "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6Pyq3nADXA4rWyUAAAAc?isUid=true"
         },
         "name": "demouser",
         "type": "User"
@@ -121,7 +121,7 @@ group_members = [
     {
         "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
         "links": {
-            "self": "https://api.stademo.com/api/v1/tenants/HNESAUHHA6/users/CNlM6rvB0uQDXA4rWyUAAAAc?isUid=true"
+            "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6rvB0uQDXA4rWyUAAAAc?isUid=true"
         },
         "name": "hellouser",
         "type": "User"
@@ -159,7 +159,7 @@ access_logs = [
     {
         "actionText": "AUTH_ATTEMPT",
         "credentialType": "MobilePASS",
-        "ip": "165.225.104.81",
+        "ip": "8.8.8.8",
         "message": "Login from SafeNet Authentication Service Console.",
         "resultText": "CHALLENGE",
         "serial": "1000014514",
@@ -169,7 +169,7 @@ access_logs = [
     {
         "actionText": "AUTH_ATTEMPT",
         "credentialType": "MobilePASS",
-        "ip": "165.225.104.81",
+        "ip": "8.8.8.8",
         "message": "Login from SafeNet Authentication Service Console.",
         "resultText": "AUTH_SUCCESS",
         "serial": "1000014514",
@@ -179,7 +179,7 @@ access_logs = [
     {
         "actionText": "AUTH_ATTEMPT",
         "credentialType": "MobilePASS",
-        "ip": "165.225.104.81",
+        "ip": "8.8.8.8",
         "message": "Login from SafeNet Authentication Service Console.",
         "resultText": "AUTH_SUCCESS",
         "serial": "1000014514",
@@ -199,15 +199,15 @@ validate_tenant = True
     "args, expected_output, expected_readable",
     [
         ({'limit': '5'},
-         [{"email": "demo.user4alert@gmail.com", "firstName": "Demo", "id": "CNlM6Pyq3nADXA4rWyUAAAAc",
+         [{"email": "demo.user@demisto.com", "firstName": "Demo", "id": "CNlM6Pyq3nADXA4rWyUAAAAc",
            "isSynchronized": False, "lastName": "User", "schemaVersionNumber": "1.0", "userName": "demouser"},
-          {"email": "hello.user@gmail.com", "firstName": "Hello", "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
+          {"email": "test.user@demisto.com", "firstName": "Hello", "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
            "isSynchronized": False, "lastName": "User", "schemaVersionNumber": "1.0", "userName": "hellouser"}],
          [{'id': 'CNlM6Pyq3nADXA4rWyUAAAAc', 'schemaVersionNumber': '1.0', 'userName': 'demouser',
-           'firstName': 'Demo', 'lastName': 'User', 'email': 'demo.user4alert@gmail.com',
+           'firstName': 'Demo', 'lastName': 'User', 'email': 'demo.user@demisto.com',
            'isSynchronized': False},
           {'id': 'CNlM6rvB0uQDXA4rWyUAAAAc', 'schemaVersionNumber': '1.0', 'userName': 'hellouser',
-           'firstName': 'Hello', 'lastName': 'User', 'email': 'hello.user@gmail.com',
+           'firstName': 'Hello', 'lastName': 'User', 'email': 'test.user@demisto.com',
            'isSynchronized': False}])
     ])
 def test_get_userlist_sta_command(mocker, args, expected_output, expected_readable):
@@ -228,10 +228,10 @@ def test_get_userlist_sta_command(mocker, args, expected_output, expected_readab
     "args, expected_output, expected_readable",
     [
         ({'userName': 'hellouser'},
-         {"email": "hello.user@gmail.com", "firstName": "Hello", "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
+         {"email": "test.user@demisto.com", "firstName": "Hello", "id": "CNlM6rvB0uQDXA4rWyUAAAAc",
           "isSynchronized": False, "lastName": "User", "schemaVersionNumber": "1.0", "userName": "hellouser"},
          {'id': 'CNlM6rvB0uQDXA4rWyUAAAAc', 'schemaVersionNumber': '1.0', 'userName': 'hellouser',
-          'firstName': 'Hello', 'lastName': 'User', 'email': 'hello.user@gmail.com',
+          'firstName': 'Hello', 'lastName': 'User', 'email': 'test.user@demisto.com',
           'isSynchronized': False})
     ])
 def test_get_user_info_sta_command(mocker, args, expected_output, expected_readable):
@@ -250,11 +250,11 @@ def test_get_user_info_sta_command(mocker, args, expected_output, expected_reada
 @pytest.mark.parametrize(
     "args, expected_output, expected_readable",
     [
-        ({'userName': 'usertest123', 'firstName': 'User', 'lastName': 'Test', 'email': 'usertest123@gmail.com'},
-         {"email": "usertest123@gmail.com", "firstName": "User", "id": "iNlPIy6flxPgkpeUDHEAAAAc",
+        ({'userName': 'usertest123', 'firstName': 'User', 'lastName': 'Test', 'email': 'demo.user@demisto.com'},
+         {"email": "demo.user@demisto.com", "firstName": "User", "id": "iNlPIy6flxPgkpeUDHEAAAAc",
           "isSynchronized": False, "lastName": "Test", "schemaVersionNumber": "1.0", "userName": "usertest123"},
          {"id": "iNlPIy6flxPgkpeUDHEAAAAc", "schemaVersionNumber": "1.0", "userName": "usertest123",
-          "firstName": "User", "lastName": "Test", "email": "usertest123@gmail.com", "isSynchronized": False})
+          "firstName": "User", "lastName": "Test", "email": "demo.user@demisto.com", "isSynchronized": False})
     ])
 def test_create_user_sta_command(mocker, args, expected_output, expected_readable):
 
@@ -273,10 +273,10 @@ def test_create_user_sta_command(mocker, args, expected_output, expected_readabl
     "args, expected_output, expected_readable",
     [
         ({'userName': 'usertest123', 'firstName': 'Demo', 'lastName': 'Name', 'userName_new': 'demousername'},
-         {"email": "usertest123@gmail.com", "firstName": "Demo", "id": "iNlPIy6flxPgkpeUDHEAAAAc",
+         {"email": "demo.user@demisto.com", "firstName": "Demo", "id": "iNlPIy6flxPgkpeUDHEAAAAc",
           "isSynchronized": False, "lastName": "Name", "schemaVersionNumber": "1.0", "userName": "demousername"},
          {"id": "iNlPIy6flxPgkpeUDHEAAAAc", "schemaVersionNumber": "1.0", "userName": "demousername",
-          "firstName": "Demo", "lastName": "Name", "email": "usertest123@gmail.com", "isSynchronized": False})
+          "firstName": "Demo", "lastName": "Name", "email": "demo.user@demisto.com", "isSynchronized": False})
     ])
 def test_update_user_sta_command(mocker, args, expected_output, expected_readable):
 
@@ -399,11 +399,11 @@ def test_get_group_info_sta_command(mocker, args, expected_output, expected_read
         ({'groupName': 'TestGroup0'},
          [{"id": "CNlM6Pyq3nADXA4rWyUAAAAc",
            "links": {
-               "self": "https://api.stademo.com/api/v1/tenants/HNESAUHHA6/users/CNlM6Pyq3nADXA4rWyUAAAAc?isUid=true"},
+               "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6Pyq3nADXA4rWyUAAAAc?isUid=true"},
            "name": "demouser", "type": "User"},
           {"id": "CNlM6rvB0uQDXA4rWyUAAAAc",
            "links": {
-               "self": "https://api.stademo.com/api/v1/tenants/HNESAUHHA6/users/CNlM6rvB0uQDXA4rWyUAAAAc?isUid=true"},
+               "self": "https://api.safenet.com/api/v1/tenants/HNSA1UHHA6/users/CNlM6rvB0uQDXA4rWyUAAAAc?isUid=true"},
            "name": "hellouser", "type": "User"}],
          [{"id": "CNlM6Pyq3nADXA4rWyUAAAAc", "name": "demouser", "type": "User"},
           {"id": "CNlM6rvB0uQDXA4rWyUAAAAc", "name": "hellouser", "type": "User"}])
@@ -548,27 +548,27 @@ def test_remove_user_group_sta_command(mocker, args, expected_output):
     "args, expected_output, expected_readable",
     [
         ({'userName': 'demouser', 'since': '2021-07-21T12:22:16.718Z'},
-         [{"actionText": "AUTH_ATTEMPT", "credentialType": "MobilePASS", "ip": "165.225.104.81",
+         [{"actionText": "AUTH_ATTEMPT", "credentialType": "MobilePASS", "ip": "8.8.8.8",
            "message": "Login from SafeNet Authentication Service Console.", "resultText": "CHALLENGE",
            "serial": "1000014514", "timeStamp": "2021-07-22T08:19:05.5905986Z", "userName": "demouser"},
-          {"actionText": "AUTH_ATTEMPT", "credentialType": "MobilePASS", "ip": "165.225.104.81",
+          {"actionText": "AUTH_ATTEMPT", "credentialType": "MobilePASS", "ip": "8.8.8.8",
            "message": "Login from SafeNet Authentication Service Console.", "resultText": "AUTH_SUCCESS",
            "serial": "1000014514", "timeStamp": "2021-07-22T08:20:45.5326006Z", "userName": "demouser"},
-          {"actionText": "AUTH_ATTEMPT", "credentialType": "MobilePASS", "ip": "165.225.104.81",
+          {"actionText": "AUTH_ATTEMPT", "credentialType": "MobilePASS", "ip": "8.8.8.8",
            "message": "Login from SafeNet Authentication Service Console.", "resultText": "AUTH_SUCCESS",
            "serial": "1000014514", "timeStamp": "2021-07-22T09:20:21.1356016Z", "userName": "demouser"}],
          [{"timeStamp": "2021-07-22T08:19:05.5905986Z", "userName": "demouser", "actionText": "AUTH_ATTEMPT",
            "resultText": "CHALLENGE", "credentialType": "MobilePASS",
            "message": "Login from SafeNet Authentication Service Console.",
-           "serial": "1000014514", "ip": "165.225.104.81"},
+           "serial": "1000014514", "ip": "8.8.8.8"},
           {"timeStamp": "2021-07-22T08:20:45.5326006Z", "userName": "demouser", "actionText": "AUTH_ATTEMPT",
            "resultText": "AUTH_SUCCESS", "credentialType": "MobilePASS",
            "message": "Login from SafeNet Authentication Service Console.",
-           "serial": "1000014514", "ip": "165.225.104.81"},
+           "serial": "1000014514", "ip": "8.8.8.8"},
           {"timeStamp": "2021-07-22T09:20:21.1356016Z", "userName": "demouser", "actionText": "AUTH_ATTEMPT",
            "resultText": "AUTH_SUCCESS", "credentialType": "MobilePASS",
            "message": "Login from SafeNet Authentication Service Console.",
-           "serial": "1000014514", "ip": "165.225.104.81"}])
+           "serial": "1000014514", "ip": "8.8.8.8"}])
     ])
 def test_get_access_logs_sta_command(mocker, args, expected_output, expected_readable):
 

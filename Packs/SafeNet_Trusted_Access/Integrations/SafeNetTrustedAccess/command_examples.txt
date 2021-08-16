@@ -1,6 +1,6 @@
 !sta-get-user-list limit=10
 !sta-get-user-info userName="demouser"
-!sta-create-user email="usertest123@gmail.com" firstName="User" lastName="Test" userName="usertest123"
+!sta-create-user email="test.user@demisto.com" firstName="User" lastName="Test" userName="usertest123"
 !sta-update-user-info userName="usertest123" userName_new="demousername" firstName="Demo" lastName="Name"
 !sta-delete-user userName="demousername"
 !sta-get-user-groups userName="hellouser"

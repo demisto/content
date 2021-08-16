@@ -24,14 +24,14 @@ def close_incident_sta(args: Dict[str, Any]):
     incident = get_incident_sta()
     sta_fields = incident.get('CustomFields')
 
-    if sta_fields.get('removeuserfromhighriskgroup') == 'Yes':
+    if sta_fields.get('safenettrustedaccessremoveuserfromhighriskgroup') == 'Yes':
         if check_user_exist_group_sta(sta_fields) is True:
             demisto.executeCommand('sta-remove-user-group', {
                 "userName": sta_fields.get('safenettrustedaccessusername'),
                 "groupName": sta_fields.get('safenettrustedaccesshighriskgroup'),
                 "using": sta_fields.get('safenettrustedaccessinstancename'),
             })
-    if sta_fields.get('removeuserfromhighriskgroup') == 'No':
+    if sta_fields.get('safenettrustedaccessremoveuserfromhighriskgroup') == 'No':
         if check_user_exist_group_sta(sta_fields) is False:
             raise Exception(f'User - {sta_fields.get("safenettrustedaccessusername")} is not a member of the '
                             f'group - {sta_fields.get("safenettrustedaccesshighriskgroup")}.')

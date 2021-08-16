@@ -13,6 +13,7 @@ scripttarget: 0
 subtype: python3
 tags:
 - post-processing
+- field-change-triggered
 type: python
 fromversion: 6.0.0
 tests:
