@@ -953,6 +953,8 @@ class Pack(object):
                         else:
                             logging.debug(f'{modified_file.a_path} is an ignored file')
             task_status = True
+            # Filter modifications in release notes config JSON file - they will be handled later on.
+            modified_files_paths = [path_ for path_ in modified_files_paths if path_.endswith('.md')]
             if pack_was_modified:
                 # Make sure the modification is not only of release notes files, if so count that as not modified
                 pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_files_paths)
