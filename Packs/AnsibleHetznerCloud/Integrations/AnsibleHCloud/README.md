@@ -1,6 +1,6 @@
 This integration enables the management of Hetzner Cloud environments using Ansible modules. The Ansible engine is self-contained and pre-configured as part of this pack onto your XSOAR server, all you need to do is provide credentials you are ready to use the feature rich commands.
 
-# Authorize Cortex XSOAR for Hetzner Cloud
+# Authorize Cortex XSOAR for Ansible Hetzner Cloud
 
 To use this integration you must generate an API token for your HCloud project.
 
