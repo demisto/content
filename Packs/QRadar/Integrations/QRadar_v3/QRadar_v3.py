@@ -2,6 +2,7 @@ import concurrent.futures
 import secrets
 from enum import Enum
 from ipaddress import ip_address
+from threading import Lock
 from typing import Tuple
 
 import pytz
@@ -68,6 +69,8 @@ MIRROR_DIRECTION: Dict[str, Optional[str]] = {
 }
 MIRRORED_OFFENSES_CTX_KEY = 'mirrored_offenses'
 UPDATED_MIRRORED_OFFENSES_CTX_KEY = 'updated_mirrored_offenses'
+EXHAUSTED_MIRRORED_OFFENSES_CTX_KEY = 'exhausted_mirrored_offenses'
+RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY = 'resubmitted_mirrored_offenses'
 UTC_TIMEZONE = pytz.timezone('utc')
 ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
 ASCENDING_ID_ORDER = '+id'
@@ -1152,6 +1155,28 @@ def print_debug_msg(msg: str):
         lock.release()
 
 
+def reset_mirroring_events_variables(mirror_options: str):
+    ctx = get_integration_context()
+    print_mirror_events_stats(ctx, f"New Long Running Container - Before Mirroring Variables Reset, "
+                                   f"Mirror Option {mirror_options}")
+    new_ctx = ctx.copy()
+    if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+        updated_mirrored_offenses = ctx.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
+        updated_offenses_ids = [str(offense.get("id")) for offense in updated_mirrored_offenses]
+        offenses_waiting_for_update = ctx.get(MIRRORED_OFFENSES_CTX_KEY, [])
+        not_updated_offenses_ids = [str(offense.get("id")) for offense in offenses_waiting_for_update]
+
+        new_ctx[EXHAUSTED_MIRRORED_OFFENSES_CTX_KEY] = list(set(ctx.get(EXHAUSTED_MIRRORED_OFFENSES_CTX_KEY, [])
+                                                                + updated_offenses_ids + not_updated_offenses_ids))
+    else:
+        new_ctx[EXHAUSTED_MIRRORED_OFFENSES_CTX_KEY] = []
+        new_ctx[UPDATED_MIRRORED_OFFENSES_CTX_KEY] = []
+        new_ctx[MIRRORED_OFFENSES_CTX_KEY] = []
+
+    print_mirror_events_stats(new_ctx, "New Long Running Container - After Mirroring Variables Reset")
+    set_integration_context(new_ctx)
+
+
 def is_reset_triggered(handle_reset: bool = False):
     """
     Checks if reset of integration context have been made by the user.
@@ -1517,22 +1542,27 @@ def create_incidents_from_offenses(offenses: List[Dict], incident_type: Optional
     } for offense in offenses]
 
 
-def print_mirror_events_stats(context_data: dict, stage: str) -> None:
+def print_mirror_events_stats(context_data: dict, stage: str) -> List[str]:
     """Print debug message with information about mirroring events.
 
     Args:
         context_data: The integration context data.
         stage: A prefix for the debug message.
 
-    Returns: None.
+    Returns: The ids of the offenses being currently processed.
 
     """
     updated = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
     waiting_for_update = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
-    not_updated_ids = [(str(offense.get('id')), len(offense.get('events', []))) for offense in waiting_for_update]
+    exhausted_ids = context_data.get(EXHAUSTED_MIRRORED_OFFENSES_CTX_KEY, [])
+    resubmitted_ids = context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, [])
+    not_updated_ids = [str(offense.get('id')) for offense in waiting_for_update]
     stats = [(str(offense.get('id')), len(offense.get('events', []))) for offense in updated]
-    print_debug_msg(f"Mirror Events Stats: {stage}\n Updated Offenses (id, len(events)):\n {stats}"
-                    f"\n Offenses ids waiting for update: {not_updated_ids}")
+    print_debug_msg(f"Mirror Events Stats: {stage}\n Updated Offenses (id, len(events)): {stats}"
+                    f"\n Offenses ids waiting for update: {not_updated_ids}\n Exhausted Offenses: {exhausted_ids}"
+                    f"\n Resubmitted offenses: {resubmitted_ids}")
+    updated_ids = [offense_id for offense_id, events_num in stats]
+    return list(set(exhausted_ids + not_updated_ids + updated_ids + resubmitted_ids))
 
 
 def long_running_execution_command(client: Client, params: Dict):
@@ -1558,6 +1588,8 @@ def long_running_execution_command(client: Client, params: Dict):
     incident_type = params.get('incident_type')
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
     mirror_direction = MIRROR_DIRECTION.get(mirror_options)
+    reset_mirroring_events_variables(mirror_options)
+
     while True:
         try:
             is_reset_triggered(handle_reset=True)
@@ -1577,8 +1609,9 @@ def long_running_execution_command(client: Client, params: Dict):
                 mirror_direction=mirror_direction
             )
             incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
-            context_data = {LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
-                            'last_mirror_update': ctx.get('last_mirror_update')}
+            context_data = ctx.copy()
+            context_data.update({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
+                                 'last_mirror_update': ctx.get('last_mirror_update')})
 
             if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
                 print_mirror_events_stats(ctx, "Long Running Command - Before Update")
@@ -2824,10 +2857,13 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     offense = client.offenses_list(offense_id=offense_id)
     offense_last_update = get_time_parameter(offense.get('last_persisted_time'))
     mirror_options = params.get('mirror_options')
+    context_data = get_integration_context()
+    processed_offenses = print_mirror_events_stats(context_data, f"Starting Get Remote Data For "
+                                                                 f"Offense {str(offense.get('id'))}")
 
     # versions below 6.1 compatibility
     last_update = get_time_parameter(args.get('lastUpdate'))
-    if last_update and last_update > offense_last_update:
+    if last_update and last_update > offense_last_update and str(offense.get("id")) not in processed_offenses:
         demisto.debug('Nothing new in the ticket')
         return GetRemoteDataResponse({'id': offense_id, 'in_mirror_error': ''}, [])
 
@@ -2861,19 +2897,23 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         })
 
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
-        context_data = get_integration_context()
-        offenses_with_updated_events = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
-        evented_offense = [evented_offense for evented_offense in offenses_with_updated_events
-                           if str(evented_offense.get('id')) == str(offense.get("id"))]
-        retries = 1
-        while not evented_offense and retries < 4:
+        is_waiting_to_be_updated = True
+        evented_offense = None
+        retries = 0
+        while ((not evented_offense) or is_waiting_to_be_updated) and retries < 10:
+            if retries != 0:
+                time.sleep(FAILURE_SLEEP)
+            ctx = get_integration_context()
+            context_data = ctx.copy()
             print_mirror_events_stats(context_data, f"Get Remote Data Loop for id {offense.get('id')}, retry {retries}")
-            time.sleep(FAILURE_SLEEP)
             retries += 1
-            context_data = get_integration_context()
             offenses_with_updated_events = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
+            offenses_waiting_for_update = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
             evented_offense = [evented_offense for evented_offense in offenses_with_updated_events
                                if str(evented_offense.get('id')) == str(offense.get("id"))]
+
+            is_waiting_to_be_updated = any([True for waiting_offense in offenses_waiting_for_update
+                                            if str(waiting_offense.get('id')) == str(offense.get("id"))])
 
         if evented_offense:
             demisto.debug(f"Mirror Events: Offense {offense.get('id')} events were updated, updating incident.")
@@ -2883,6 +2923,16 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
                               f"fetched events.")
 
             offenses_with_updated_events.remove(evented_offense[0])
+
+        exhausted_offenses_ids = context_data.get(EXHAUSTED_MIRRORED_OFFENSES_CTX_KEY, []).copy()
+        resubmitted_offenses_ids = context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, []).copy()
+        if is_waiting_to_be_updated:
+            context_data[EXHAUSTED_MIRRORED_OFFENSES_CTX_KEY] = list(
+                set(exhausted_offenses_ids.append(str(offense.get('id')))))
+
+        elif offense.get("id") in resubmitted_offenses_ids:
+            resubmitted_offenses_ids.remove(offense.get("id"))
+            context_data[RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY] = resubmitted_offenses_ids
 
         context_data[UPDATED_MIRRORED_OFFENSES_CTX_KEY] = offenses_with_updated_events
         print_mirror_events_stats(context_data, f"Get Remote Data End for id {offense.get('id')}")
@@ -2933,6 +2983,24 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
                                         updated_list=offenses,
                                         key='id')
         new_context_data.update({MIRRORED_OFFENSES_CTX_KEY: mirrored_offenses})
+        remaining_resubmitted_offenses = ctx.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, []).copy()
+        if remaining_resubmitted_offenses:
+            updated_mirrored_offenses = ctx.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
+            clean_updates_mirrored_offenses = updated_mirrored_offenses.copy()
+            for offense in updated_mirrored_offenses:
+                if str(offense.get("id")) in remaining_resubmitted_offenses:
+                    print_debug_msg(f"Removing Offense id {offense.get('id')} from processing Mirrored Events "
+                                    f"since its incident is not responding. (It is probably closed)")
+                    clean_updates_mirrored_offenses.remove(offense)
+
+            new_context_data.update({UPDATED_MIRRORED_OFFENSES_CTX_KEY: clean_updates_mirrored_offenses})
+            new_context_data.update({RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: []})
+
+        exhausted_offenses = ctx.get(EXHAUSTED_MIRRORED_OFFENSES_CTX_KEY, [])
+        if exhausted_offenses:
+            new_modified_records_ids = list(set(new_modified_records_ids + exhausted_offenses))
+            new_context_data.update({EXHAUSTED_MIRRORED_OFFENSES_CTX_KEY: []})
+            new_context_data.update({RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: exhausted_offenses})
 
     print_mirror_events_stats(new_context_data, "Get Modified Remote Data - After update")
     set_integration_context(new_context_data)
