@@ -1610,8 +1610,28 @@ class Pack(object):
                             'dataType': content_item.get('dataType', ""),
                             'widgetType': content_item.get('widgetType', "")
                         })
+                    elif current_directory == PackFolders.GENERIC_DEFINITIONS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),
+                        })
+                    elif current_directory == PackFolders.GENERIC_FIELDS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),
+                        })
+                    elif current_directory == PackFolders.GENERIC_MODULES.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),
+                        })
+                    elif current_directory == PackFolders.GENERIC_TYPES.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),
+                        })
 
-                if current_directory in PackFolders.pack_displayed_items():
+            if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = content_item_name_mapping[current_directory]
                     content_items_result[content_item_key] = folder_collected_items
 
