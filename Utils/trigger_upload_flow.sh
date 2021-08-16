@@ -81,7 +81,7 @@ function create_new_pack {
 # Change all files and folder to the new name.
 # :param $1: pack name.
 # :param $2: new pack name.
-# :param $3: change occurrence inside files flag
+# :param $3: skip change occurrence inside files flag
 function rename_files_and_folders {
 
   if [ "$#" -ne 3 ] && [ "$#" -ne 2 ]; then
@@ -530,7 +530,7 @@ fi
 # New Pack
 array=("Hello_World" "Hello World" "helloworld" "Sanity_Test")
 create_new_pack "${base_pack_name}" "${new_suffix}" "${array[@]}"
-add_dependency "${new_pack_name}" "Viper"
+add_dependency "Viper" "${new_pack_name}"
 add_author_image "${new_pack_name}"
 add_1_0_0_release_note "${new_pack_name}"
 
@@ -542,14 +542,14 @@ enhancement_release_notes "Base"
 updating_old_release_notes "Viper"
 add_1_0_0_release_note "Viper"
 set_pack_hidden "Microsoft365Defender"
-updating_old_release_notes "Viper" # Update release notes in content that are not in the bucket
+updating_old_release_notes "${new_pack_name}" # Update release notes in content that are not in the bucket
 update_integration_readme "Microsoft365Defender"
 update_pack_ignore "Microsoft365Defender"
 
 # External changes
 add_pack_to_landing_page "${new_pack_name}"
 
-git push origin "${new_content_branch}"
+git push --set-upstream origin "${new_content_branch}"
 
 if [ -n "$circle_token" ]; then
   trigger_circle_ci "${new_content_branch}"
