@@ -1032,17 +1032,17 @@ def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='
     {
         "iocs": [],
         "searchAfter": [1596106239679, dd7aa6abfcb3adf793922618005b2ad5],
-        "total": 7
+        "total": 7432
     }
     ```
     You can then use the returned value of searchAfter to iterate over all batches.
     ```
-    >>> res = demisto.executeCommand("searchIndicators", {"query" : 'type:IP', "size" : 3})
+    >>> res = demisto.executeCommand("searchIndicators", {"query" : 'type:IP', "size" : 1000})
     >>> search_after_title = 'searchAfter'
     >>> while search_after_title in res and res[search_after_title] is not None:
     >>>     demisto.results(res)
     >>>     res = demisto.executeCommand("searchIndicators",
-    >>>                                 {"query" : 'type:IP', "size" : 3, "searchAfter" : res[search_after_title]})
+    >>>                                 {"query" : 'type:IP', "size" : 1000, "searchAfter" : res[search_after_title]})
     ```
     """
     return {}
