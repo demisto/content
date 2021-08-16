@@ -18,49 +18,50 @@ RESOLUTION = [
 ]
 
 
-def format_dict_keys(data: List[Dict[str, Any]]) -> List:
-    formated_data = []
-    for entry in data:
-        new_entry = {}
-        for key, value in entry.items():
-            if key == 'Size(MB)':
-                new_entry['size'] = f'{value} MB'
-            else:
-                new_entry[key.lower()] = value
+def format_dict_keys(entry: Dict[str, Any]) -> Dict:
+    new_entry = {}
+    for key, value in entry.items():
+        if key == 'Size(MB)':
+            new_entry['size'] = f'{value} MB'
+        else:
+            new_entry[key.lower()] = value
 
-        formated_data.append(new_entry)
-    return formated_data
+    return new_entry
 
 
 def main(args):
     thresholds = args.get('Thresholds', THRESHOLDS)
     prev_month = datetime.today() + dateutil.relativedelta.relativedelta(months=-1)
-
+    current_month = datetime.today()
     res = execute_command('GetLargestInvestigations', {
         'from': prev_month.strftime('%Y-%m-%d'),
-        'to': prev_month.strftime('%Y-%m-%d'),
+        'to': current_month.strftime('%Y-%m-%d'),
         'table_result': 'true',
     })
 
-    res_data = format_dict_keys(res['data'])
-    incidentsbiggerthan1mb = res_data
-    numberofincidentsbiggerthan1mb = res['total']
+    incidentsbiggerthan1mb = []
+    incidentsbiggerthan10mb = []
+    incidentswithmorethan500entries = []
+    for incident in res['data']:
+        formatted_incident = format_dict_keys(incident)
+        if incident['AmountOfEntries'] >= 500:
+            incidentswithmorethan500entries.append(formatted_incident)
+        if round(incident['Size(MB)']) >= 10:
+            incidentsbiggerthan10mb.append(formatted_incident)
+        else:
+            incidentsbiggerthan1mb.append(formatted_incident)
 
-    incidentsbiggerthan10mb = [incident for incident in res_data if int(incident['size'].split()[0]) > 10]
+    numberofincidentsbiggerthan1mb = len(incidentsbiggerthan1mb)
     numberofincidentsbiggerthan10mb = len(incidentsbiggerthan10mb)
-
-    incidentswithmorethan500entries = [incident for incident in res_data if incident['amountofentries'] > 500]
     numberofincidentswithmorethan500entries = len(incidentswithmorethan500entries)
 
     analyze_fields = {
         'healthcheckinvestigationsbiggerthan1mb': incidentsbiggerthan1mb,
         'healthcheckinvestigationsbiggerthan10mb': incidentsbiggerthan10mb,
-        'healthcheckinvestigationswithmorethan500entries': incidentswithmorethan500entries,
         'healthchecknumberofinvestigationsbiggerthan1mb': numberofincidentsbiggerthan1mb,
         'healthchecknumberofinvestigationsbiggerthan10mb': numberofincidentsbiggerthan10mb,
         'healthchecknumberofinvestigationswithmorethan500entries': numberofincidentswithmorethan500entries,
     }
-
     execute_command('setIncident', analyze_fields)
 
     action_items = []

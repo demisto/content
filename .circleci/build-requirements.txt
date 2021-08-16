@@ -14,3 +14,4 @@ boto3==1.16.39
 mock-open==1.4.0
 PyGithub==1.54.1
 python-gitlab==2.6.0
+xmltodict==0.12.0

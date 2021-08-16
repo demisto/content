@@ -168,6 +168,18 @@ class Client(BaseClient):
                                       json_data=data, headers=headers)
         return response
 
+    def vulnerabilities_add_annotation_request(self, id, text):
+        annotation = {
+            "text": text
+        }
+        data = {
+            "annotation": annotation
+        }
+        headers = self._headers
+        response = self._http_request('POST', 'api/v1/vulnerabilities/' + id + '/annotations.json',
+                                      json_data=data, headers=headers)
+        return response
+
 
 def host_get_hosts_command(client, args):
     response = client.host_get_hosts_request()['hosts']
@@ -185,7 +197,7 @@ def host_get_hosts_command(client, args):
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                     first_fetch_time: Optional[int], cvss_score: Optional[float],
-                    risk_more_than: Optional[str]
+                    risk_more_than: Optional[str], cvss_score_greater_than: Optional[float]
                     ) -> Tuple[Dict[str, int], List[dict]]:
 
     # Get the last fetch time, if exists
@@ -211,12 +223,19 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
     request = {
         "risk_more_than": risk_more_than,
+        "cvss_score_greater_than": cvss_score_greater_than,
         "cvss_score": cvss_score,
         "date_opened_after": str(datetime.fromtimestamp(last_fetch).isoformat()) + ".000Z"  # type: ignore
     }
 
     if cvss_score == "" or cvss_score is None:
         del request['cvss_score']
+
+    if cvss_score_greater_than == "" or cvss_score_greater_than is None:
+        del request['cvss_score_greater_than']
+
+    if risk_more_than == "" or risk_more_than is None:
+        del request['risk_more_than']
 
     response = client.vulnerabilities_get_query_request(request=request, limit=max_results, o=offset)
     offset += max_results
@@ -668,6 +687,22 @@ def vulnerabilities_risk_accept_command(client, args):
     return command_results
 
 
+def vulnerabilities_add_annotation_command(client, args):
+    text = args.get('text')
+    id = args.get('id')
+    response = client.vulnerabilities_add_annotation_request(text=text, id=id)['annotation']
+    readable_output = tableToMarkdown('Annotation added:' + id, response)
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Edgescan.AnnotationAdd',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -724,6 +759,7 @@ def main():
             'edgescan-vulnerabilities-get-query': vulnerabilities_get_query_command,
             'edgescan-vulnerabilities-retest': vulnerabilities_retest_command,
             'edgescan-vulnerabilities-risk-accept': vulnerabilities_risk_accept_command,
+            'edgescan-vulnerabilities-add-annotation': vulnerabilities_add_annotation_command,
         }
 
         if command == 'test-module':
@@ -732,6 +768,7 @@ def main():
         elif command == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
             cvss_score = demisto.params().get('cvss_score', None)
+            cvss_score_greater_than = demisto.params().get('cvss_score_greater_than', None)
             risk_more_than = demisto.params().get('risk_more_than', None)
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
@@ -743,13 +780,18 @@ def main():
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
 
+            if cvss_score and cvss_score_greater_than:
+                raise DemistoException('Both cvss_score and cvs_score_greater_than have been provided. Please provide '
+                                       'at most one.')
+
             next_run, incidents = fetch_incidents(
                 client=client,
                 max_results=max_results,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
                 first_fetch_time=first_fetch_timestamp,
                 cvss_score=cvss_score,
-                risk_more_than=risk_more_than
+                risk_more_than=risk_more_than,
+                cvss_score_greater_than=cvss_score_greater_than
             )
 
             demisto.setLastRun(next_run)

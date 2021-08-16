@@ -69,10 +69,6 @@
         }
     ],
     "content": true,
-    "defaultRows": [
-        {},
-        {}
-    ],
     "editForm": true,
     "group": 0,
     "hidden": false,
