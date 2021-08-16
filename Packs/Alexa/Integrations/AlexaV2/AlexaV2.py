@@ -114,6 +114,7 @@ def alexa_domain(client: Client, domains: List[str]) -> List[CommandResults]:
                                  'Awis.Results.Result.Alexa.TrafficData.DataUrl')
         if not domain_res or domain_res == '404':  # Not found on alexa
             raise DemistoException('Domain cannot be found')
+        domain_res = domain_res[:-1] if domain_res[-1] == '/' else domain_res
         rank = demisto.get(result,
                            'Awis.Results.Result.Alexa.TrafficData.Rank')
         domain_standard_context: Common.Domain = rank_to_context(domain=domain_res,
