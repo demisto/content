@@ -7130,7 +7130,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | community | List of SNMP community strings. | Optional | 
 | snmp_port | Port used by the SNMP agent. Default is 161. | Optional | 
 | trap_targets | A list of trap targets. You need to use `hostname`, `port`, and `community` for each trap target. | Optional | 
-| trap_filter | A list of trap oids for traps not to be sent by agent, e.g. [ 1.3.6.1.4.1.6876.4.1.1.0, 1.3.6.1.4.1.6876.4.1.1.1 ] Use value `reset` to clear settings. | Optional | 
+| trap_filter | A list of trap oids for traps not to be sent by agent, e.g. [ 1.1.1.1.4.1.6876.1.1.1.2, 1.1.1.1.4.1.6876.4.1.1.1 ] Use value `reset` to clear settings. | Optional | 
 | send_trap | Send a test trap to validate the configuration. Possible values are: Yes, No. Default is No. | Optional | 
 | hw_source | Source hardware events from IPMI sensors or CIM Indications. The embedded SNMP agent receives hardware events either from IPMI sensors `sensors` or CIM indications `indications`. Possible values are: indications, sensors. Default is indications. | Optional | 
 | log_level | Syslog logging level. Possible values are: debug, info, warning, error. Default is info. | Optional | 
