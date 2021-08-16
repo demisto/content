@@ -199,7 +199,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
             "host": "123.123.123.123",
             "status": "SUCCESS",
             "stdout": [
-                "Cisco IOS Software, IOSv Software (VIOS-ADVENTERPRISEK9-M), Version 15.7(3)M3, RELEASE SOFTWARE (fc2)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2018 by Cisco Systems, Inc.\nCompiled Wed 01-Aug-18 16:45 by prod_rel_team\n\n\nROM: Bootstrap program is IOSv\n\nIOSv01 uptime is 1 hour, 33 minutes\nSystem returned to ROM by reload\nSystem image file is \"flash0:/vios-adventerprisek9-m\"\nLast reload reason: Unknown reason\n\n\n\nThis product contains cryptographic features and is subject to United\nStates and local country laws governing import, export, transfer and\nuse. Delivery of Cisco cryptographic products does not imply\nthird-party authority to import, export, distribute or use encryption.\nImporters, exporters, distributors and users are responsible for\ncompliance with U.S. and local country laws. By using this product you\nagree to comply with applicable laws and regulations. If you are unable\nto comply with U.S. and local laws, return this product immediately.\n\nA summary of U.S. laws governing Cisco cryptographic products may be found at:\nhttp://www.cisco.com/wwl/export/crypto/tool/stqrg.html\n\nIf you require further assistance please contact us by sending email to\nexport@cisco.com.\n\nCisco IOSv (revision 1.0) with  with 460009K/62464K bytes of memory.\nProcessor board ID 98LY3RI28M0MQ3JPPKHJV\n4 Gigabit Ethernet interfaces\nDRAM configuration is 72 bits wide with parity disabled.\n256K bytes of non-volatile configuration memory.\n2097152K bytes of ATA System CompactFlash 0 (Read/Write)\n0K bytes of ATA CompactFlash 1 (Read/Write)\n1024K bytes of ATA CompactFlash 2 (Read/Write)\n0K bytes of ATA CompactFlash 3 (Read/Write)\n\n\n\nConfiguration register is 0x0"
+                "Cisco IOS Software, IOSv Software (VIOS-ADVENTERPRISEK9-M), Version 15.7(3)M3, RELEASE SOFTWARE (fc2)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2018 by Cisco Systems, Inc.\nCompiled Wed 01-Aug-18 16:45 by prod_rel_team\n\n\nROM: Bootstrap program is IOSv\n\nIOSv01 uptime is 1 hour, 33 minutes\nSystem returned to ROM by reload\nSystem image file is \"flash0:/vios-adventerprisek9-m\"\nLast reload reason: Unknown reason\n\n\n\nThis product contains cryptographic features and is subject to United\nStates and local country laws governing import, export, transfer and\nuse. Delivery of Cisco cryptographic products does not imply\nthird-party authority to import, export, distribute or use encryption.\nImporters, exporters, distributors and users are responsible for\ncompliance with U.S. and local country laws. By using this product you\nagree to comply with applicable laws and regulations. If you are unable\nto comply with U.S. and local laws, return this product immediately.\n\nA summary of U.S. laws governing Cisco cryptographic products may be found at:\nhttp://www.cisco.com/wwl/export/crypto/tool/stqrg.html\n\nIf you require further assistance please contact us by sending email to\nexport@cisco.com.\n\nCisco IOSv (revision 1.0) with  with 460009K/62464K bytes of memory.\nProcessor board ID XXXX\n4 Gigabit Ethernet interfaces\nDRAM configuration is 72 bits wide with parity disabled.\n256K bytes of non-volatile configuration memory.\n2097152K bytes of ATA System CompactFlash 0 (Read/Write)\n0K bytes of ATA CompactFlash 1 (Read/Write)\n1024K bytes of ATA CompactFlash 2 (Read/Write)\n0K bytes of ATA CompactFlash 3 (Read/Write)\n\n\n\nConfiguration register is 0x0"
             ],
             "stdout_lines": [
                 [
@@ -234,7 +234,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "export@cisco.com.",
                     "",
                     "Cisco IOSv (revision 1.0) with  with 460009K/62464K bytes of memory.",
-                    "Processor board ID 98LY3RI28M0MQ3JPPKHJV",
+                    "Processor board ID XXXX",
                     "4 Gigabit Ethernet interfaces",
                     "DRAM configuration is 72 bits wide with parity disabled.",
                     "256K bytes of non-volatile configuration memory.",
@@ -289,7 +289,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >export@cisco.com.
 >
 >Cisco IOSv (revision 1.0) with  with 460009K/62464K bytes of memory.
->Processor board ID 98LY3RI28M0MQ3JPPKHJV
+>Processor board ID XXXX
 >4 Gigabit Ethernet interfaces
 >DRAM configuration is 72 bits wide with parity disabled.
 >256K bytes of non-volatile configuration memory.
@@ -334,7 +334,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * 28: export@cisco.com.
 >    * 4: 
 >    * 30: Cisco IOSv (revision 1.0) with  with 460009K/62464K bytes of memory.
->    * 31: Processor board ID 98LY3RI28M0MQ3JPPKHJV
+>    * 31: Processor board ID XXXX
 >    * 32: 4 Gigabit Ethernet interfaces
 >    * 33: DRAM configuration is 72 bits wide with parity disabled.
 >    * 34: 256K bytes of non-volatile configuration memory.
@@ -485,10 +485,10 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                 "192.168.0.2"
             ],
             "net_all_ipv6_addresses": [
-                "FD5D:12C9:2201:1::1"
+                "1:11:11:11"
             ],
             "net_api": "cliconf",
-            "net_config": "!\n! Last configuration change at 08:56:26 UTC Sun Jul 11 2021 by admin\n!\nversion 15.7\nservice timestamps debug datetime msec\nservice timestamps log datetime msec\nno service password-encryption\n!\nhostname IOSv01\n!\nboot-start-marker\nboot-end-marker\n!\n!\nenable secret 5 $1$abcdefghijklmnopqrstuvwxyz.\n!\nno aaa new-model\n!\n!\n!\nmmi polling-interval 60\nno mmi auto-configure\nno mmi pvc\nmmi snmp-timeout 180\n!\n!\n!\n!\n!\nno ip icmp rate-limit unreachable\n!\n!\n!\n!\n!\n!\nip domain list ansible.com\nip domain list redhat.com\nip domain list cisco.com\nno ip domain lookup\nip domain name test.example.com\nip cef\nno ipv6 cef\n!\nmultilink bundle-name authenticated\n!\n!\n!\n!\nusername admin password 0 abcdef\nusername ansible nopassword\n!\nredundancy\n!\nlldp timer 10\nlldp holdtime 10\nlldp reinit 3\nlldp run\nno cdp log mismatch duplex\n!\nip tcp synwait-time 5\n! \n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\ninterface GigabitEthernet0/0\n ip address 123.123.123.123 255.255.255.0\n duplex auto\n speed auto\n media-type rj45\n!\ninterface GigabitEthernet0/1\n no ip address\n shutdown\n duplex auto\n speed auto\n media-type rj45\n!\ninterface GigabitEthernet0/2\n description Configured and Merged by Ansible Network\n ip address 192.168.0.2 255.255.255.0\n duplex auto\n speed auto\n media-type rj45\n!\ninterface GigabitEthernet0/3\n description Configured and Merged by Ansible Network\n mtu 2800\n no ip address\n shutdown\n duplex full\n speed 100\n media-type rj45\n ipv6 address FD5D:12C9:2201:1::1/64\n!\ninterface GigabitEthernet0/3.100\n!\nrouter bgp 64496\n bgp router-id 192.0.2.1\n bgp log-neighbor-changes\n neighbor 198.51.100.2 remote-as 64498\n neighbor 203.0.113.5 remote-as 64511\n neighbor 203.0.113.5 timers 300 360 360\n !\n address-family ipv4\n  network 192.0.2.0 mask 255.255.254.0\n  network 198.51.100.0 route-map RMAP_1\n  redistribute ospf 223 metric 10\n  neighbor 198.51.100.2 activate\n  neighbor 203.0.113.5 activate\n exit-address-family\n!\nip default-gateway 192.168.1.1\nip forward-protocol nd\n!\n!\nno ip http server\nno ip http secure-server\nip route 192.168.2.0 255.255.255.0 10.0.0.1\nip ssh version 2\nip ssh pubkey-chain\n  username ansible\n   key-hash ssh-rsa B1E29F17C950E2FEAB5BC3AC2A760208 \nip ssh server algorithm mac hmac-sha2-256\n!\nlogging host 172.16.0.1\nipv6 ioam timestamp\n!\n!\n!\ncontrol-plane\n!\nbanner exec ^C\n**************************************************************************\n* IOSv is strictly limited to use for evaluation, demonstration and IOS  *\n* education. IOSv is provided as-is and is not supported by Cisco's      *\n* Technical Advisory Center. Any use or disclosure, in whole or in part, *\n* of the IOSv Software or Documentation to any third party for any       *\n* purposes is expressly prohibited except as otherwise authorized by     *\n* Cisco in writing.                                                      *\n**************************************************************************^C\nbanner incoming ^C\n**************************************************************************\n* IOSv is strictly limited to use for evaluation, demonstration and IOS  *\n* education. IOSv is provided as-is and is not supported by Cisco's      *\n* Technical Advisory Center. Any use or disclosure, in whole or in part, *\n* of the IOSv Software or Documentation to any third party for any       *\n* purposes is expressly prohibited except as otherwise authorized by     *\n* Cisco in writing.                                                      *\n**************************************************************************^C\nbanner login ^C\nthis is my login banner\n^C\n!\nline con 0\n exec-timeout 0 0\n privilege level 15\n logging synchronous\nline aux 0\n exec-timeout 0 0\n privilege level 15\n logging synchronous\nline vty 0 4\n login local\n transport input ssh\n!\nno scheduler allocate\nntp server 10.0.255.10\n!\nend",
+            "net_config": "!\n! Last configuration change at 08:56:26 UTC Sun Jul 11 2021 by admin\n!\nversion 15.7\nservice timestamps debug datetime msec\nservice timestamps log datetime msec\nno service password-encryption\n!\nhostname IOSv01\n!\nboot-start-marker\nboot-end-marker\n!\n!\nenable secret 5 $1$abcdefghijklmnopqrstuvwxyz.\n!\nno aaa new-model\n!\n!\n!\nmmi polling-interval 60\nno mmi auto-configure\nno mmi pvc\nmmi snmp-timeout 180\n!\n!\n!\n!\n!\nno ip icmp rate-limit unreachable\n!\n!\n!\n!\n!\n!\nip domain list ansible.com\nip domain list redhat.com\nip domain list cisco.com\nno ip domain lookup\nip domain name test.example.com\nip cef\nno ipv6 cef\n!\nmultilink bundle-name authenticated\n!\n!\n!\n!\nusername admin password 0 abcdef\nusername ansible nopassword\n!\nredundancy\n!\nlldp timer 10\nlldp holdtime 10\nlldp reinit 3\nlldp run\nno cdp log mismatch duplex\n!\nip tcp synwait-time 5\n! \n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\ninterface GigabitEthernet0/0\n ip address 123.123.123.123 255.255.255.0\n duplex auto\n speed auto\n media-type rj45\n!\ninterface GigabitEthernet0/1\n no ip address\n shutdown\n duplex auto\n speed auto\n media-type rj45\n!\ninterface GigabitEthernet0/2\n description Configured and Merged by Ansible Network\n ip address 192.168.0.2 255.255.255.0\n duplex auto\n speed auto\n media-type rj45\n!\ninterface GigabitEthernet0/3\n description Configured and Merged by Ansible Network\n mtu 2800\n no ip address\n shutdown\n duplex full\n speed 100\n media-type rj45\n ipv6 address 1:11:11:11/64\n!\ninterface GigabitEthernet0/3.100\n!\nrouter bgp 64496\n bgp router-id 192.0.2.1\n bgp log-neighbor-changes\n neighbor 198.51.100.2 remote-as 64498\n neighbor 203.0.113.5 remote-as 64511\n neighbor 203.0.113.5 timers 300 360 360\n !\n address-family ipv4\n  network 192.0.2.0 mask 255.255.254.0\n  network 198.51.100.0 route-map RMAP_1\n  redistribute ospf 223 metric 10\n  neighbor 198.51.100.2 activate\n  neighbor 203.0.113.5 activate\n exit-address-family\n!\nip default-gateway 192.168.1.1\nip forward-protocol nd\n!\n!\nno ip http server\nno ip http secure-server\nip route 192.168.2.0 255.255.255.0 10.0.0.1\nip ssh version 2\nip ssh pubkey-chain\n  username ansible\n   key-hash ssh-rsa B1E29F17C950E2FEAB5BC3AC2A760208 \nip ssh server algorithm mac hmac-sha2-256\n!\nlogging host 172.16.0.1\nipv6 ioam timestamp\n!\n!\n!\ncontrol-plane\n!\nbanner exec ^C\n**************************************************************************\n* IOSv is strictly limited to use for evaluation, demonstration and IOS  *\n* education. IOSv is provided as-is and is not supported by Cisco's      *\n* Technical Advisory Center. Any use or disclosure, in whole or in part, *\n* of the IOSv Software or Documentation to any third party for any       *\n* purposes is expressly prohibited except as otherwise authorized by     *\n* Cisco in writing.                                                      *\n**************************************************************************^C\nbanner incoming ^C\n**************************************************************************\n* IOSv is strictly limited to use for evaluation, demonstration and IOS  *\n* education. IOSv is provided as-is and is not supported by Cisco's      *\n* Technical Advisory Center. Any use or disclosure, in whole or in part, *\n* of the IOSv Software or Documentation to any third party for any       *\n* purposes is expressly prohibited except as otherwise authorized by     *\n* Cisco in writing.                                                      *\n**************************************************************************^C\nbanner login ^C\nthis is my login banner\n^C\n!\nline con 0\n exec-timeout 0 0\n privilege level 15\n logging synchronous\nline aux 0\n exec-timeout 0 0\n privilege level 15\n logging synchronous\nline vty 0 4\n login local\n transport input ssh\n!\nno scheduler allocate\nntp server 10.0.255.10\n!\nend",
             "net_filesystems": [
                 "flash0:"
             ],
@@ -561,7 +561,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "ipv4": [],
                     "ipv6": [
                         {
-                            "address": "FD5D:12C9:2201:1::1",
+                            "address": "1:11:11:11",
                             "subnet": "FD5D:12C9:2201:1::/64 [TEN]"
                         }
                     ],
@@ -591,7 +591,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
             "net_model": "IOSv",
             "net_neighbors": {},
             "net_python_version": "3.9.5",
-            "net_serialnum": "98LY3RI28M0MQ3JPPKHJV",
+            "net_serialnum": "XXXX",
             "net_system": "ios",
             "net_version": "15.7(3)M3",
             "network_resources": {},
@@ -630,16 +630,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >no mmi pvc
 >mmi snmp-timeout 180
 >!
->!
->!
->!
->!
 >no ip icmp rate-limit unreachable
->!
->!
->!
->!
->!
 >!
 >ip domain list ansible.com
 >ip domain list redhat.com
@@ -667,18 +658,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >!
 >ip tcp synwait-time 5
 >! 
->!
->!
->!
->!
->!
->!
->!
->!
->!
->!
->!
->!
 >interface GigabitEthernet0/0
 > ip address 123.123.123.123 255.255.255.0
 > duplex auto
@@ -707,7 +686,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 > duplex full
 > speed 100
 > media-type rj45
-> ipv6 address FD5D:12C9:2201:1::1/64
+> ipv6 address 1:11:11:11/64
 >!
 >interface GigabitEthernet0/3.100
 >!
@@ -791,7 +770,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >  * net_memtotal_mb: 310087.16796875
 >  * net_model: IOSv
 >  * net_python_version: 3.9.5
->  * net_serialnum: 98LY3RI28M0MQ3JPPKHJV
+>  * net_serialnum: XXXX
 >  * net_system: ios
 >  * net_version: 15.7(3)M3
 >  * discovered_interpreter_python: /usr/local/bin/python
@@ -799,7 +778,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * 0: 123.123.123.123
 >    * 1: 192.168.0.2
 >  * ## Net_All_Ipv6_Addresses
->    * 0: FD5D:12C9:2201:1::1
+>    * 0: 1:11:11:11
 >  * ## Net_Filesystems
 >    * 0: flash0:
 >  * ## Net_Filesystems_Info
@@ -865,7 +844,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * #### Ipv4
 >      * #### Ipv6
 >      * #### List
->        * address: FD5D:12C9:2201:1::1
+>        * address: 1:11:11:11
 >        * subnet: FD5D:12C9:2201:1::/64 [TEN]
 >    * ### Gigabitethernet0/3.100
 >      * bandwidth: 100000
@@ -1049,7 +1028,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!ios-l3-interfaces host="123.123.123.123" config="{{ [{'name': 'GigabitEthernet0/3', 'ipv4': [{'address': '192.168.0.1/24', 'secondary': True}]}, {'name': 'GigabitEthernet0/2', 'ipv4': [{'address': '192.168.0.2/24'}]}, {'name': 'GigabitEthernet0/3', 'ipv6': [{'address': 'fd5d:12c9:2201:1::1/64'}]}, {'name': 'GigabitEthernet0/3.100', 'ipv4': [{'address': '192.168.0.3/24'}]}] }}" state="merged" ```
+```!ios-l3-interfaces host="123.123.123.123" config="{{ [{'name': 'GigabitEthernet0/3', 'ipv4': [{'address': '192.168.0.1/24', 'secondary': True}]}, {'name': 'GigabitEthernet0/2', 'ipv4': [{'address': '192.168.0.2/24'}]}, {'name': 'GigabitEthernet0/3', 'ipv6': [{'address': '1:11:11:11/64'}]}, {'name': 'GigabitEthernet0/3.100', 'ipv4': [{'address': '192.168.0.3/24'}]}] }}" state="merged" ```
 
 #### Context Example
 ```json
@@ -1079,7 +1058,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                 {
                     "ipv6": [
                         {
-                            "address": "fd5d:12c9:2201:1::1/64"
+                            "address": "1:11:11:11/64"
                         }
                     ],
                     "name": "GigabitEthernet0/3"
@@ -1111,7 +1090,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                 {
                     "ipv6": [
                         {
-                            "address": "fd5d:12c9:2201:1::1/64"
+                            "address": "1:11:11:11/64"
                         }
                     ],
                     "name": "GigabitEthernet0/3"
@@ -1155,7 +1134,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * name: GigabitEthernet0/3
 >    * ### Ipv6
 >    * ### List
->      * address: fd5d:12c9:2201:1::1/64
+>      * address: 1:11:11:11/64
 >  * ## Gigabitethernet0/3.100
 >    * name: GigabitEthernet0/3.100
 >  * ## Before
@@ -1175,7 +1154,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * name: GigabitEthernet0/3
 >    * ### Ipv6
 >    * ### List
->      * address: fd5d:12c9:2201:1::1/64
+>      * address: 1:11:11:11/64
 >  * ## Gigabitethernet0/3.100
 >    * name: GigabitEthernet0/3.100
 >  * ## Commands
