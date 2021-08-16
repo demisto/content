@@ -1012,11 +1012,11 @@ async def create_incidents(incidents: list, user_name: str, user_email: str, use
 async def listen(client: SocketModeClient, req: SocketModeRequest):
     if req:
         demisto.info("Handling request")
+        if req.envelope_id:
+            response = SocketModeResponse(envelope_id=req.envelope_id)
+            await client.send_socket_mode_response(response)
     data_type: str = req.type
     payload: dict = req.payload
-    if req.envelope_id:
-        response = SocketModeResponse(envelope_id=req.envelope_id)
-        await client.send_socket_mode_response(response)
     if data_type == 'error':
         error = payload.get('error', {})
         error_code = error.get('code')
@@ -1176,7 +1176,6 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
         text: The message text
         user: The user who sent the reply
         thread_id: The thread ID
-        integration_context: The integration's context
 
     Returns:
         If the message contains entitlement, return a reply.
