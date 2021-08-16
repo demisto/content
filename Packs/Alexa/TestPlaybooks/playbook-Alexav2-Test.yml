@@ -40,10 +40,10 @@ tasks:
       version: -1
       name: domain
       description: Provides an Alexa ranking of the Domain in question.
-      script: Alexa Rank Indicator V2|||domain
+      script: Alexa Rank Indicator v2|||domain
       type: regular
       iscommand: true
-      brand: Alexa Rank Indicator V2
+      brand: Alexa Rank Indicator v2
     nexttasks:
       '#none#':
       - "2"
@@ -146,7 +146,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Alexa Rank Indicator V2
+              simple: Alexa Rank Indicator v2
       - - operator: isEqualString
           left:
             value:
