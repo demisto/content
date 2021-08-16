@@ -88,10 +88,10 @@ def create_widget_content(entries_data: List[Dict[str, Any]]) -> str:
     content: str = ''
 
     for entry_data in entries_data:
-        content += f'<h3><a href={entry_data["link"]}>{entry_data["title"]}</a></h3>\n'
-        content += f'<i>{entry_data["timestamp"]}</i>\n'
-        content += f'<h5>{entry_data["summary"]}</h5>\n'
-        content += '<hr>\n'
+        content += f'## [{entry_data["title"]}]({entry_data["link"]})\n'
+        content += f'_{entry_data["timestamp"]}_\n'
+        content += f'#### {entry_data["summary"]}\n'
+        content += '---\n'
 
     return content
 
@@ -116,7 +116,7 @@ def main():
 
     demisto.results({
         'Type': EntryType.NOTE,
-        'ContentsFormat': EntryFormat.HTML,
+        'ContentsFormat': EntryFormat.MARKDOWN,
         'Contents': content,
     })
 
