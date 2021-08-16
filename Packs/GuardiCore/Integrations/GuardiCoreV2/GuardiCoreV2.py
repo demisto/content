@@ -1,6 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 import requests
 import traceback
@@ -19,7 +19,6 @@ INCIDENT_COLUMNS = ['id', 'incident_type', 'severity', 'start_time', 'end_time',
                     'ended', 'affected_assets']
 ASSET_COLUMNS = ['asset_id', 'name', 'status', 'last_seen', 'ip_addresses',
                  'tenant_name']
-INCIDENT_TYPE = 'GuardiCore Incident'
 ''' CLIENT CLASS '''
 
 INTEGRATION_CONTEXT_NAME = 'Guardicore'
@@ -34,7 +33,6 @@ class Client(BaseClient):
        Args:
           username (str): The GuardiCore username for API access.
           password (str): The GuardiCore password for API access.
-          access_token (str): The GuardiCore access token, generated automatically from username and password.
           base_url (str): The GuardiCore API server URL.
     """
 
@@ -43,29 +41,29 @@ class Client(BaseClient):
         super().__init__(proxy=proxy, verify=verify, base_url=base_url)
         self.username = username
         self.password = password
-        self.access_token = ""
         self.base_url = base_url
+        self.access_token = ""
+        self._headers = {}
 
         self.login()
 
     def login(self):
         integration_context = get_integration_context()
 
-        if self.is_access_token_valid(integration_context):
+        if self._is_access_token_valid(integration_context):
             access_token = integration_context.get('access_token')
-            self.save_access_token(access_token)
+            self._save_access_token(access_token)
         else:
             demisto.debug(
                 f"{INTEGRATION_NAME} - Generating a new token (old one isn't valid anymore).")
             self.generate_new_token()
 
-    def save_access_token(self, access_token: str):
+    def _save_access_token(self, access_token: str):
         self.access_token = access_token
-        authorization_value = f'bearer {access_token}'
         self._headers = {
-            "Authorization": authorization_value}
+            "Authorization": f'bearer {access_token}'}
 
-    def is_access_token_valid(self, integration_context: dict):
+    def _is_access_token_valid(self, integration_context: dict):
         access_token_expiration = integration_context.get('expires_in')
         access_token = integration_context.get('access_token')
         demisto.debug(
@@ -80,7 +78,7 @@ class Client(BaseClient):
     def generate_new_token(self):
         token = self.authenticate()
         self.save_jwt_token(token)
-        self.save_access_token(token)
+        self._save_access_token(token)
 
     def save_jwt_token(self, access_token: str):
         expiration = get_jwt_expiration(access_token)
@@ -471,21 +469,22 @@ def main() -> None:
                     base_url=base_url, proxy=proxy, verify=(not insecure))
     demisto.debug(f'Command being called is {demisto.command()}')
 
-    # These are for fetch incidents
+    # fetch incidents params
     severity = params.get('severity', None)
     source = params.get('source', None)
     destination = params.get('destination', None)
     incident_type = params.get('incident_type', None)
     tag = params.get('tag', None)
-    first_fetch = params.get('first_fetch', None)
+    first_fetch = params.get('first_fetch', '7 days')
     limit = int(params.get("max_fetch", 50))
     GLOBAL_TIMEOUT = int(params.get("timeout", 10))
 
     try:
         args = demisto.args()
-        if demisto.command() == 'test-module':
+        command = demisto.command()
+        if command == 'test-module':
             return_results(test_module(client, demisto.params().get('isFetch')))
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             incidents, last_fetch = fetch_incidents(client, {
                 'severity': severity,
                 'incident_type': incident_type,
@@ -497,23 +496,23 @@ def main() -> None:
             })
             demisto.setLastRun({"last_fetch": last_fetch})
             demisto.incidents(incidents)
-        elif demisto.command() == 'guardicore-get-incident':
+        elif command == 'guardicore-get-incident':
             return_results(get_indicent(client, args))
-        elif demisto.command() == 'guardicore-get-incidents':
+        elif command == 'guardicore-get-incidents':
             return_results(get_incidents(client, args))
-        elif demisto.command() == 'guardicore-search-asset':
+        elif command == 'guardicore-search-asset':
             return_results(get_assets(client, args))
-        elif demisto.command() == 'endpoint':
+        elif command == 'endpoint':
             return_results(endpoint_command(client, args))
         else:
             raise NotImplementedError(
-                f'Command {demisto.command()} is not implemented.')
+                f'Command {command} is not implemented.')
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(
-            f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+            f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

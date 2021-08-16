@@ -13,42 +13,47 @@ configuration:
     name: credentials
     type: 9
     required: true
+  - display: Fetch incidents
+    name: isFetch
+    required: false
+    type: 8
   - name: source
     display: Source
     required: false
     defaultvalue: null
     type: 0
-    additionalinfo: Fetch incidents - Guardicore Source Incident Value (eg Environment:*, App:*, Role:*)
+    additionalinfo: Guardicore Source Incident Value (eg Environment:*, App:*, Role:*)
   - name: destination
     display: Desctination
     required: false
     defaultvalue: null
     type: 0
-    additionalinfo: Fetch incidents - Guardicore Desctination Incident Value (eg Environment:*, App:*, Role:*)
+    additionalinfo: Guardicore Desctination Incident Value (eg Environment:*, App:*, Role:*)
   - name: tag
     display: Tag
     required: false
     defaultvalue: null
     type: 0
-    additionalinfo: Fetch incidents - Guardicore Tag Incident Value (eg Reputation, Internal, Blocked Traffic)
+    additionalinfo: Guardicore Tag Incident Value (eg Reputation, Internal, Blocked Traffic)
   - name: incident_type
     display: Incident Type
     required: false
     defaultvalue: null
     type: 16
-    additionalinfo: Fetch incidents - Guardicore Incident Type Value
+    additionalinfo: Guardicore incident types values
     options:
       - Incident
       - Deception
       - Network Scan
       - Reveal
       - Experimental
+      - All
   - name: severity
     display: Incident Severity
     required: false
     defaultvalue: null
     type: 16
-    additionalinfo: Fetch incidents - Guardicore Incident Severity Value (Default is All)
+    additionalinfo: Guardicore incident severity values
     options:
       - Low
       - Medium
@@ -59,7 +64,7 @@ configuration:
     required: false
     defaultvalue: "50"
     type: 0
-    additionalinfo: Fetch incidents - limit on incidents to fetch
+    additionalinfo: Limit on incidents to fetch
   - name: first_fetch
     display: First fetch time
     required: false
@@ -89,10 +94,6 @@ configuration:
     name: incidentType
     required: false
     type: 13
-  - display: Fetch incidents
-    name: isFetch
-    required: false
-    type: 8
 description: GuardiCore v2 Integration allows to get information about incidents
   and endpoints (assets) via the guardicore api.
 display: GuardiCore v2
@@ -137,175 +138,181 @@ script:
       name: guardicore-search-asset
       outputs:
         - contextPath: Guardicore.Endpoint._id
-          description: Guardicore Endpoint ID
+          description: The Endpoint's unique identifier.
           type: String
         - contextPath: Guardicore.Endpoint.active
-          description: Guardicore Endpoint Active
+          description: Whether the Endpoint is on or off.
           type: String
         - contextPath: Guardicore.Endpoint.bios_uuid
-          description: Guardicore Endpoint BIOS UUID
+          description: ' The Endpoint''s BIOS Universal unique identifier (UUID)'
           type: String
         - contextPath: Guardicore.Endpoint.first_seen
-          description: Guardicore Endpoint First Seen
+          description: The first time the Endpoint was seen.
           type: Date
         - contextPath: Guardicore.Endpoint.host_id
-          description: Guardicore Endpoint Host ID
+          description: The host identifier of the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.host_orchestration_id
-          description: Guardicore Endpoint Host Orchestration ID
+          description: The host orchestration identifier of the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.is_on
-          description: Guardicore Endpoint Is On Status
+          description: Whether the Endpoint is on or not.
           type: String
         - contextPath: Guardicore.Endpoint.last_seen
-          description: Guardicore Endpoint Last Seen
+          description: The last time the Endpoint was seen.
           type: Date
         - contextPath: Guardicore.Endpoint.metadata.InventoryAPI.report_source
-          description: Guardicore Endpoint Metadata InventoryAPI Report Source
+          description: The Endpoint's InvestoryAPI report source
           type: String
         - contextPath: Guardicore.Endpoint.metadata.InventoryAPI.OsType
-          description: Guardicore Endpoint Metadata InventoryAPI OsType
+          description: The Endpoint's Operating system (via the InventoryAPI).
           type: String
         - contextPath: Guardicore.Endpoint.metadata.InventoryAPI.OsVersion
-          description: Guardicore Endpoint Metadata InventoryAPI OsVersion
+          description: The Endpoint's Operating system version (via the InventoryAPI).
           type: String
         - contextPath: Guardicore.Endpoint.metadata.InventoryAPI.DeviceDescr
-          description: Guardicore Endpoint Metadata InventoryAPI DeviceDescr
+          description: The Endpoint's Device Description (via the InventoryAPI).
           type: String
         - contextPath: Guardicore.Endpoint.metadata.InventoryAPI.DeviceType
-          description: Guardicore Endpoint Metadata InventoryAPI DeviceType
+          description: The Endpoint's Device Type (via the InventoryAPI).
           type: String
         - contextPath: Guardicore.Endpoint.name
-          description: Guardicore Endpoint Name
+          description: The Endpoint's name.
           type: String
         - contextPath: Guardicore.Endpoint.nics.vif_id
-          description: Guardicore Endpoint NICs Vif ID
+          description: The network interface controller virtual interface identifier of
+            the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.nics.mac_address
-          description: Guardicore Endpoint NICs MAC Address
+          description: The network interface controller mac address of the Endpoint.
           type: Date
         - contextPath: Guardicore.Endpoint.nics.network_id
-          description: Guardicore Endpoint NICs Network ID
+          description: The network interface controller network identifier of the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.nics.network_name
-          description: Guardicore Endpoint NICs Network Name
+          description: The network interface controller's network name of the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.nics.cloud_network
-          description: Guardicore Endpoint NICs Cloud Network
+          description: The network interface controller's cloud network of the Endpoint.contextPath
           type: String
         - contextPath: Guardicore.Endpoint.nics.is_cloud_public
-          description: Guardicore Endpoint NICs Is Cloud Public Status
+          description: Whether the Endpoint's is in the public cloud or not (via the network
+            controller interface).
           type: String
         - contextPath: Guardicore.Endpoint.nics.vlan_id
-          description: Guardicore Endpoint NICs VLAN ID
+          description: The network interface controller's virtual LAN identifier of the
+            Endpoint.
           type: Number
         - contextPath: Guardicore.Endpoint.nics.switch_id
-          description: Guardicore Endpoint NICs Switch ID
+          description: The network interface controller's switch identifier of the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.nics.ip_addresses
-          description: Guardicore Endpoint NICs IP Addresses
+          description: The Endpoint's IP addresses (via the network interface controller).
           type: String
         - contextPath: Guardicore.Endpoint.orchestration_details.orchestration_id
-          description: Guardicore Endpoint Orchestration Details Orchestration ID
+          description: The orchestration details identifier for an Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.orchestration_details.orchestration_type
-          description: Guardicore Endpoint Orchestration Details Orchestration Type
+          description: The orchestration type of the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.orchestration_details.orchestration_obj_id
-          description: Guardicore Endpoint Orchestration Details Orchestration Object ID
+          description: The orchestration object identifier for an Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.orchestration_details.revision_id
-          description: Guardicore Endpoint Orchestration Details Revision ID
+          description: The Orchestration revision identifier for the Endpoint.
           type: Date
         - contextPath: Guardicore.Endpoint.orchestration_details.orchestration_name
-          description: Guardicore Endpoint Orchestration Details Orchestration Name
+          description: The orchestration name for the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.orchestration_labels
-          description: Guardicore Endpoint Orchestration Labels
+          description: The Orchestration Labels of the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.orchestration_labels_dict.Type
-          description: Guardicore Endpoint Orchestration Labels Dictionary Type
+          description: The orchestration labels type dictionary.
           type: String
         - contextPath: Guardicore.Endpoint.orchestration_labels_dict.Risk
-          description: Guardicore Endpoint Orchestration Labels Dictionary Risk
+          description: The Risk Labels for the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.orchestration_labels_dict.OS
-          description: Guardicore Endpoint Orchestration Labels Dictionary OS
+          description: The Orchestration labels operating system for the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.tenant_name
-          description: Guardicore Endpoint Tenant Name
+          description: The tenant name of the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.replicated_labels
-          description: Guardicore Endpoint Replicated Labels
+          description: The replicated labels of the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.asset_id
-          description: Guardicore Endpoint Asset ID
+          description: The asset identifier of the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.id
-          description: Guardicore Endpoint ID
+          description: The Endpoint's identifier.
           type: String
         - contextPath: Guardicore.Endpoint.vm_name
-          description: Guardicore Endpoint VM Name
+          description: The Endpoint's virtual machine name.
           type: String
         - contextPath: Guardicore.Endpoint.vm_id
-          description: Guardicore Endpoint VM ID
+          description: The Endpoint's virtual machine identifier.
           type: String
         - contextPath: Guardicore.Endpoint.ip_addresses
-          description: Guardicore Endpoint IP Addresses
+          description: The Endpoint's IP addresses.
           type: String
         - contextPath: Guardicore.Endpoint.mac_addresses
-          description: Guardicore Endpoint MAC Addresses
+          description: The Endpoint's MAC addresses.
           type: Date
         - contextPath: Guardicore.Endpoint.vm.name
-          description: Guardicore Endpoint VM Name
+          description: The Endpoint's virtual machine name.
           type: String
         - contextPath: Guardicore.Endpoint.vm.tenant_name
-          description: Guardicore Endpoint VM Tenant Name
+          description: The Endpoint's virtual machine's tenant name.
           type: String
         - contextPath: Guardicore.Endpoint.vm.vm_id
-          description: Guardicore Endpoint VM VM ID
+          description: The Endpoint's virtual machine's identifier.
           type: String
         - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_id
-          description: Guardicore Endpoint VM Orchestration Details Orchestration ID
+          description: The Orchestration object identifier for the Endpoint's virtual
+            machine.
           type: String
         - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_type
-          description: Guardicore Endpoint VM Orchestration Details Orchestration Type
+          description: The Orchestration type of the Endpoint's virtual machine.
           type: String
         - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_obj_id
-          description: Guardicore Endpoint VM Orchestration Details Orchestration Object ID
+          description: The Orchestration object identifier for the Endpoint's virtual
+            machine.
           type: String
         - contextPath: Guardicore.Endpoint.vm.orchestration_details.revision_id
-          description: Guardicore Endpoint VM Orchestration Details Revision ID
+          description: The Orchestration revision identifier of the Endpoint's virtual
+            machine.
           type: Date
         - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_name
-          description: Guardicore Endpoint VM Orchestration Details Orchestration Name
+          description: The Orchestration name of the Endpoint's virtual machine.
           type: String
         - contextPath: Guardicore.Endpoint.full_name
-          description: Guardicore Endpoint Full Name
+          description: The Endpoint's full name.
           type: String
         - contextPath: Guardicore.Endpoint.status
-          description: Guardicore Endpoint Status
+          description: The status of the Endpoint (off/on).
           type: String
         - contextPath: Guardicore.Endpoint.comments
-          description: Guardicore Endpoint Comments
+          description: The comments for the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.recent_domains
-          description: Guardicore Endpoint Recent Domains
+          description: The Endpoint's recent domains.
           type: String
         - contextPath: Guardicore.Endpoint.labels.id
-          description: Guardicore Endpoint Labels ID
+          description: The labels identifiers of the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.labels.key
-          description: Guardicore Endpoint Labels Key
+          description: The labels key of the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.labels.value
-          description: Guardicore Endpoint Labels Value
+          description: The labels value of the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.labels.name
-          description: Guardicore Endpoint Labels Name
+          description: The labels names of the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.labels.color_index
-          description: Guardicore Endpoint Labels Color Index
+          description: The color index of the Endpoint's labels.
           type: Number
     - arguments:
         - default: false
@@ -1000,42 +1007,42 @@ script:
           required: true
           secret: false
         - defaultValue: "50"
-          description: Limit results.
+          description: Limit the number of incidents returned.
           isArray: false
           name: limit
           required: false
           secret: false
-        - default: false
-          description: Results offset.
+        - defaultValue: "0"
+          description: Offset the incidents.
           isArray: false
           name: offset
           required: false
           secret: false
         - default: false
-          description: Severity (Low, Medium, High).
+          description: Severity (Low, Medium, High) default is All.
           isArray: true
           name: severity
           required: false
           secret: false
         - default: false
-          description: Source
+          description: Source (IP or Hostname).
           isArray: true
           name: source
           required: false
           secret: false
         - default: false
-          description: Destination.
+          description: Destination (IP or Hostname).
           isArray: true
           name: destination
           required: false
           secret: false
         - default: false
-          description: Tag.
+          description: Tag (eg Internal or Known malware).
           isArray: true
           name: tag
           required: false
           secret: false
-        - default: false
+        - defaultValue: false
           description: Type (Incident, Deception, Network Scan, Reveal, Experimental).
           isArray: true
           name: incident_type
@@ -1238,7 +1245,7 @@ script:
           required: false
           secret: false
       deprecated: false
-      description: Endpoint command (uses `guardicore-search-asset` internally).
+      description: Gets information regarding endpoints.
       execution: false
       name: endpoint
       outputs:
