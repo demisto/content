@@ -1,17 +1,6 @@
 {
-    "id": "Phishing_Incidents_Grouping_Dashboard",
-    "version": 5,
-    "modified": "2021-08-08T19:09:05.196667+03:00",
-    "sortValues": null,
-    "packID": "",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
-    "definitionId": "",
-    "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
+    "id": "Phishing Incidents Grouping",
+    "version": -1,
     "fromDate": "0001-01-01T00:00:00Z",
     "toDate": "0001-01-01T00:00:00Z",
     "period": {
@@ -23,16 +12,7 @@
         "field": ""
     },
     "fromDateLicense": "0001-01-01T00:00:00Z",
-    "roles": null,
-    "allRead": false,
-    "allReadWrite": false,
-    "previousRoles": null,
-    "previousAllRead": false,
-    "previousAllReadWrite": false,
-    "hasRole": false,
-    "dbotCreatedBy": "",
     "name": "Phishing Incidents Grouping",
-    "prevName": "Phishing Incidents Grouping",
     "layout": [
         {
             "id": "86530a30-f860-11eb-8c8e-ff299b3f9982",
@@ -191,12 +171,7 @@
             "reflectDimensions": true
         }
     ],
-    "system": false,
-    "isCommon": false,
-    "owner": "admin",
-    "locked": false,
-    "hidePivot": false,
-    "hideSearch": false,
-    "modulePage": false,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.2.0",
+    "description": "Phishing Incidents Grouping",
+    "isPredefined": true
 }
