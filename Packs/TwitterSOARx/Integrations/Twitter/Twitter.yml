@@ -1,12 +1,12 @@
 commonfields:
-  id: TwitterSOARx
+  id: Twitter
   version: -1
-name: TwitterSOARx
-display: TwitterSOARx
+name: Twitter
+display: Twitter
 category: Utilities
-description: 'The TwitterSOARx Integration allows users to parse Twitter for Users,
+description: 'The Twitter Integration allows users to parse Twitter for Users,
   Tweets, and additional info about users. Perform enhanced searches with additional
-  search arguments. TwitterSOARx returns search results as a markdown table. '
+  search arguments. Search results are returned as a markdown table. '
 configuration:
 - display: API Key
   name: apikey
