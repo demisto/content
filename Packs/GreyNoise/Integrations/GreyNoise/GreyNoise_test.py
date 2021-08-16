@@ -59,7 +59,7 @@ def test_test_module(api_key, api_response, status_code, expected_output, mocker
     if isinstance(api_key, str) and api_key == "true_key":
         mocker.patch('greynoise.GreyNoise._request', return_value=api_response)
         response = GreyNoise.test_module(client)
-        assert response == expected_output
+        assert response == str(expected_output)
     else:
         dummy_response = DummyResponse({}, api_response, status_code)
         mocker.patch('requests.Session.get', return_value=dummy_response)
