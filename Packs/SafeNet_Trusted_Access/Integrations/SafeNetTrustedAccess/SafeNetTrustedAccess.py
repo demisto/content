@@ -777,7 +777,7 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     base_url = urljoin(urljoin(demisto.params()['url'], 'api/v1/tenants/'), demisto.params()['tenant_code'])
-    api_key = demisto.params().get('apikey')
+    api_key = demisto.params().get('api_key')
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
