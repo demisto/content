@@ -209,76 +209,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "os_version": "9",
                     "status": "available",
                     "type": "system"
-                },
-                {
-                    "description": "CentOS 7",
-                    "id": "3",
-                    "labels": {},
-                    "name": "centos-7",
-                    "os_flavor": "centos",
-                    "os_version": "7",
-                    "status": "available",
-                    "type": "system"
-                },
-                {
-                    "description": "Ubuntu 18.04",
-                    "id": "168855",
-                    "labels": {},
-                    "name": "ubuntu-18.04",
-                    "os_flavor": "ubuntu",
-                    "os_version": "18.04",
-                    "status": "available",
-                    "type": "system"
-                },
-                {
-                    "description": "Debian 10",
-                    "id": "5924233",
-                    "labels": {},
-                    "name": "debian-10",
-                    "os_flavor": "debian",
-                    "os_version": "10",
-                    "status": "available",
-                    "type": "system"
-                },
-                {
-                    "description": "CentOS 8",
-                    "id": "8356453",
-                    "labels": {},
-                    "name": "centos-8",
-                    "os_flavor": "centos",
-                    "os_version": "8",
-                    "status": "available",
-                    "type": "system"
-                },
-                {
-                    "description": "Ubuntu 20.04",
-                    "id": "15512617",
-                    "labels": {},
-                    "name": "ubuntu-20.04",
-                    "os_flavor": "ubuntu",
-                    "os_version": "20.04",
-                    "status": "available",
-                    "type": "system"
-                },
-                {
-                    "description": "Fedora 33",
-                    "id": "25369365",
-                    "labels": {},
-                    "name": "fedora-33",
-                    "os_flavor": "fedora",
-                    "os_version": "33",
-                    "status": "available",
-                    "type": "system"
-                },
-                {
-                    "description": "Fedora 34",
-                    "id": "37004880",
-                    "labels": {},
-                    "name": "fedora-34",
-                    "os_flavor": "fedora",
-                    "os_version": "34",
-                    "status": "available",
-                    "type": "system"
                 }
             ]
         ]
@@ -295,69 +225,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >  * name: debian-9
 >  * os_flavor: debian
 >  * os_version: 9
->  * status: available
->  * type: system
->  * ## Labels
-># Centos-7
->  * description: CentOS 7
->  * id: 3
->  * name: centos-7
->  * os_flavor: centos
->  * os_version: 7
->  * status: available
->  * type: system
->  * ## Labels
-># Ubuntu-18.04
->  * description: Ubuntu 18.04
->  * id: 168855
->  * name: ubuntu-18.04
->  * os_flavor: ubuntu
->  * os_version: 18.04
->  * status: available
->  * type: system
->  * ## Labels
-># Debian-10
->  * description: Debian 10
->  * id: 5924233
->  * name: debian-10
->  * os_flavor: debian
->  * os_version: 10
->  * status: available
->  * type: system
->  * ## Labels
-># Centos-8
->  * description: CentOS 8
->  * id: 8356453
->  * name: centos-8
->  * os_flavor: centos
->  * os_version: 8
->  * status: available
->  * type: system
->  * ## Labels
-># Ubuntu-20.04
->  * description: Ubuntu 20.04
->  * id: 15512617
->  * name: ubuntu-20.04
->  * os_flavor: ubuntu
->  * os_version: 20.04
->  * status: available
->  * type: system
->  * ## Labels
-># Fedora-33
->  * description: Fedora 33
->  * id: 25369365
->  * name: fedora-33
->  * os_flavor: fedora
->  * os_version: 33
->  * status: available
->  * type: system
->  * ## Labels
-># Fedora-34
->  * description: Fedora 34
->  * id: 37004880
->  * name: fedora-34
->  * os_flavor: fedora
->  * os_version: 34
 >  * status: available
 >  * type: system
 >  * ## Labels
@@ -595,7 +462,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!hcloud-rdns server="my-server" ip_address="135.181.153.216" dns_ptr="example.com" state="present"```
+```!hcloud-rdns server="my-server" ip_address="1.1.1.1" dns_ptr="example.com" state="present"```
 
 #### Context Example
 ```json
@@ -605,7 +472,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
             {
                 "dns_ptr": "example.com",
                 "floating_ip": null,
-                "ip_address": "135.181.153.216",
+                "ip_address": "1.1.1.1",
                 "server": "my-server",
                 "status": "CHANGED"
             }
@@ -619,7 +486,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >#  CHANGED 
 >  * dns_ptr: example.com
 >  * floating_ip: None
->  * ip_address: 135.181.153.216
+>  * ip_address: 1.1.1.1
 >  * server: my-server
 
 ### hcloud-route
@@ -649,7 +516,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!hcloud-route network="my-network" destination="10.100.1.0/24" gateway="10.0.1.1" state="present" ```
+```!hcloud-route network="my-network" destination="1.1.1.1/24" gateway="1.1.1.1" state="present" ```
 
 #### Context Example
 ```json
@@ -657,8 +524,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
     "HCloud": {
         "hcloudRoute": [
             {
-                "destination": "10.100.1.0/24",
-                "gateway": "10.0.1.1",
+                "destination": "1.1.1.1/24",
+                "gateway": "1.1.1.1",
                 "network": "my-network",
                 "status": "CHANGED"
             }
@@ -670,8 +537,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 >#  CHANGED 
->  * destination: 10.100.1.0/24
->  * gateway: 10.0.1.1
+>  * destination: 1.1.1.1/24
+>  * gateway: 1.1.1.1
 >  * network: my-network
 
 
@@ -726,8 +593,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                 "delete_protection": false,
                 "id": "12829887",
                 "image": "ubuntu-18.04",
-                "ipv4_address": "135.181.153.216",
-                "ipv6": "2a01:4f9:c011:4adb::/64",
+                "ipv4_address": "1.1.1.1",
+                "ipv6": "11:11:11:11:11:11:11:12/64",
                 "labels": {},
                 "location": "hel1",
                 "name": "my-server",
@@ -749,8 +616,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >  * delete_protection: False
 >  * id: 12829887
 >  * image: ubuntu-18.04
->  * ipv4_address: 135.181.153.216
->  * ipv6: 2a01:4f9:c011:4adb::/64
+>  * ipv4_address: 1.1.1.1
+>  * ipv6: 11:11:11:11:11:11:11:12/64
 >  * location: hel1
 >  * name: my-server
 >  * rebuild_protection: False
@@ -800,8 +667,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "delete_protection": false,
                     "id": "12829887",
                     "image": "ubuntu-18.04",
-                    "ipv4_address": "135.181.153.216",
-                    "ipv6": "2a01:4f9:c011:4adb::/64",
+                    "ipv4_address": "1.1.1.1",
+                    "ipv6": "11:11:11:11:11:11:11:12/64",
                     "labels": {},
                     "location": "hel1",
                     "name": "my-server",
@@ -825,8 +692,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >  * delete_protection: False
 >  * id: 12829887
 >  * image: ubuntu-18.04
->  * ipv4_address: 135.181.153.216
->  * ipv6: 2a01:4f9:c011:4adb::/64
+>  * ipv4_address: 1.1.1.1
+>  * ipv6: 11:11:11:11:11:11:11:12/64
 >  * location: hel1
 >  * name: my-server
 >  * rebuild_protection: False
@@ -933,256 +800,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "memory": 2,
                     "name": "cx11",
                     "storage_type": "local"
-                },
-                {
-                    "cores": 1,
-                    "cpu_type": "shared",
-                    "description": "CX11 Ceph Disk",
-                    "disk": 20,
-                    "id": "2",
-                    "memory": 2,
-                    "name": "cx11-ceph",
-                    "storage_type": "network"
-                },
-                {
-                    "cores": 2,
-                    "cpu_type": "shared",
-                    "description": "CX21",
-                    "disk": 40,
-                    "id": "3",
-                    "memory": 4,
-                    "name": "cx21",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 2,
-                    "cpu_type": "shared",
-                    "description": "CX21 Ceph Disk",
-                    "disk": 40,
-                    "id": "4",
-                    "memory": 4,
-                    "name": "cx21-ceph",
-                    "storage_type": "network"
-                },
-                {
-                    "cores": 2,
-                    "cpu_type": "shared",
-                    "description": "CX31",
-                    "disk": 80,
-                    "id": "5",
-                    "memory": 8,
-                    "name": "cx31",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 2,
-                    "cpu_type": "shared",
-                    "description": "CX31 Ceph Disk",
-                    "disk": 80,
-                    "id": "6",
-                    "memory": 8,
-                    "name": "cx31-ceph",
-                    "storage_type": "network"
-                },
-                {
-                    "cores": 4,
-                    "cpu_type": "shared",
-                    "description": "CX41",
-                    "disk": 160,
-                    "id": "7",
-                    "memory": 16,
-                    "name": "cx41",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 4,
-                    "cpu_type": "shared",
-                    "description": "CX41 Ceph Disk",
-                    "disk": 160,
-                    "id": "8",
-                    "memory": 16,
-                    "name": "cx41-ceph",
-                    "storage_type": "network"
-                },
-                {
-                    "cores": 8,
-                    "cpu_type": "shared",
-                    "description": "CX51",
-                    "disk": 240,
-                    "id": "9",
-                    "memory": 32,
-                    "name": "cx51",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 8,
-                    "cpu_type": "shared",
-                    "description": "CX51 Ceph Disk",
-                    "disk": 240,
-                    "id": "10",
-                    "memory": 32,
-                    "name": "cx51-ceph",
-                    "storage_type": "network"
-                },
-                {
-                    "cores": 2,
-                    "cpu_type": "dedicated",
-                    "description": "CCX11 Dedicated CPU",
-                    "disk": 80,
-                    "id": "11",
-                    "memory": 8,
-                    "name": "ccx11",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 4,
-                    "cpu_type": "dedicated",
-                    "description": "CCX21 Dedicated CPU",
-                    "disk": 160,
-                    "id": "12",
-                    "memory": 16,
-                    "name": "ccx21",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 8,
-                    "cpu_type": "dedicated",
-                    "description": "CCX31 Dedicated CPU",
-                    "disk": 240,
-                    "id": "13",
-                    "memory": 32,
-                    "name": "ccx31",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 16,
-                    "cpu_type": "dedicated",
-                    "description": "CCX41 Dedicated CPU",
-                    "disk": 360,
-                    "id": "14",
-                    "memory": 64,
-                    "name": "ccx41",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 32,
-                    "cpu_type": "dedicated",
-                    "description": "CCX51 Dedicated CPU",
-                    "disk": 600,
-                    "id": "15",
-                    "memory": 128,
-                    "name": "ccx51",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 2,
-                    "cpu_type": "shared",
-                    "description": "CPX 11",
-                    "disk": 40,
-                    "id": "22",
-                    "memory": 2,
-                    "name": "cpx11",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 3,
-                    "cpu_type": "shared",
-                    "description": "CPX 21",
-                    "disk": 80,
-                    "id": "23",
-                    "memory": 4,
-                    "name": "cpx21",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 4,
-                    "cpu_type": "shared",
-                    "description": "CPX 31",
-                    "disk": 160,
-                    "id": "24",
-                    "memory": 8,
-                    "name": "cpx31",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 8,
-                    "cpu_type": "shared",
-                    "description": "CPX 41",
-                    "disk": 240,
-                    "id": "25",
-                    "memory": 16,
-                    "name": "cpx41",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 16,
-                    "cpu_type": "shared",
-                    "description": "CPX 51",
-                    "disk": 360,
-                    "id": "26",
-                    "memory": 32,
-                    "name": "cpx51",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 2,
-                    "cpu_type": "dedicated",
-                    "description": "CCX12 Dedicated CPU",
-                    "disk": 80,
-                    "id": "33",
-                    "memory": 8,
-                    "name": "ccx12",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 4,
-                    "cpu_type": "dedicated",
-                    "description": "CCX22 Dedicated CPU",
-                    "disk": 160,
-                    "id": "34",
-                    "memory": 16,
-                    "name": "ccx22",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 8,
-                    "cpu_type": "dedicated",
-                    "description": "CCX32 Dedicated CPU",
-                    "disk": 240,
-                    "id": "35",
-                    "memory": 32,
-                    "name": "ccx32",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 16,
-                    "cpu_type": "dedicated",
-                    "description": "CCX42 Dedicated CPU",
-                    "disk": 360,
-                    "id": "36",
-                    "memory": 64,
-                    "name": "ccx42",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 32,
-                    "cpu_type": "dedicated",
-                    "description": "CCX52 Dedicated CPU",
-                    "disk": 600,
-                    "id": "37",
-                    "memory": 128,
-                    "name": "ccx52",
-                    "storage_type": "local"
-                },
-                {
-                    "cores": 48,
-                    "cpu_type": "dedicated",
-                    "description": "CCX62 Dedicated CPU",
-                    "disk": 960,
-                    "id": "38",
-                    "memory": 192,
-                    "name": "ccx62",
-                    "storage_type": "local"
                 }
             ]
         ]
@@ -1201,231 +818,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >  * id: 1
 >  * memory: 2.0
 >  * name: cx11
->  * storage_type: local
-># Cx11-Ceph
->  * cores: 1
->  * cpu_type: shared
->  * description: CX11 Ceph Disk
->  * disk: 20
->  * id: 2
->  * memory: 2.0
->  * name: cx11-ceph
->  * storage_type: network
-># Cx21
->  * cores: 2
->  * cpu_type: shared
->  * description: CX21
->  * disk: 40
->  * id: 3
->  * memory: 4.0
->  * name: cx21
->  * storage_type: local
-># Cx21-Ceph
->  * cores: 2
->  * cpu_type: shared
->  * description: CX21 Ceph Disk
->  * disk: 40
->  * id: 4
->  * memory: 4.0
->  * name: cx21-ceph
->  * storage_type: network
-># Cx31
->  * cores: 2
->  * cpu_type: shared
->  * description: CX31
->  * disk: 80
->  * id: 5
->  * memory: 8.0
->  * name: cx31
->  * storage_type: local
-># Cx31-Ceph
->  * cores: 2
->  * cpu_type: shared
->  * description: CX31 Ceph Disk
->  * disk: 80
->  * id: 6
->  * memory: 8.0
->  * name: cx31-ceph
->  * storage_type: network
-># Cx41
->  * cores: 4
->  * cpu_type: shared
->  * description: CX41
->  * disk: 160
->  * id: 7
->  * memory: 16.0
->  * name: cx41
->  * storage_type: local
-># Cx41-Ceph
->  * cores: 4
->  * cpu_type: shared
->  * description: CX41 Ceph Disk
->  * disk: 160
->  * id: 8
->  * memory: 16.0
->  * name: cx41-ceph
->  * storage_type: network
-># Cx51
->  * cores: 8
->  * cpu_type: shared
->  * description: CX51
->  * disk: 240
->  * id: 9
->  * memory: 32.0
->  * name: cx51
->  * storage_type: local
-># Cx51-Ceph
->  * cores: 8
->  * cpu_type: shared
->  * description: CX51 Ceph Disk
->  * disk: 240
->  * id: 10
->  * memory: 32.0
->  * name: cx51-ceph
->  * storage_type: network
-># Ccx11
->  * cores: 2
->  * cpu_type: dedicated
->  * description: CCX11 Dedicated CPU
->  * disk: 80
->  * id: 11
->  * memory: 8.0
->  * name: ccx11
->  * storage_type: local
-># Ccx21
->  * cores: 4
->  * cpu_type: dedicated
->  * description: CCX21 Dedicated CPU
->  * disk: 160
->  * id: 12
->  * memory: 16.0
->  * name: ccx21
->  * storage_type: local
-># Ccx31
->  * cores: 8
->  * cpu_type: dedicated
->  * description: CCX31 Dedicated CPU
->  * disk: 240
->  * id: 13
->  * memory: 32.0
->  * name: ccx31
->  * storage_type: local
-># Ccx41
->  * cores: 16
->  * cpu_type: dedicated
->  * description: CCX41 Dedicated CPU
->  * disk: 360
->  * id: 14
->  * memory: 64.0
->  * name: ccx41
->  * storage_type: local
-># Ccx51
->  * cores: 32
->  * cpu_type: dedicated
->  * description: CCX51 Dedicated CPU
->  * disk: 600
->  * id: 15
->  * memory: 128.0
->  * name: ccx51
->  * storage_type: local
-># Cpx11
->  * cores: 2
->  * cpu_type: shared
->  * description: CPX 11
->  * disk: 40
->  * id: 22
->  * memory: 2.0
->  * name: cpx11
->  * storage_type: local
-># Cpx21
->  * cores: 3
->  * cpu_type: shared
->  * description: CPX 21
->  * disk: 80
->  * id: 23
->  * memory: 4.0
->  * name: cpx21
->  * storage_type: local
-># Cpx31
->  * cores: 4
->  * cpu_type: shared
->  * description: CPX 31
->  * disk: 160
->  * id: 24
->  * memory: 8.0
->  * name: cpx31
->  * storage_type: local
-># Cpx41
->  * cores: 8
->  * cpu_type: shared
->  * description: CPX 41
->  * disk: 240
->  * id: 25
->  * memory: 16.0
->  * name: cpx41
->  * storage_type: local
-># Cpx51
->  * cores: 16
->  * cpu_type: shared
->  * description: CPX 51
->  * disk: 360
->  * id: 26
->  * memory: 32.0
->  * name: cpx51
->  * storage_type: local
-># Ccx12
->  * cores: 2
->  * cpu_type: dedicated
->  * description: CCX12 Dedicated CPU
->  * disk: 80
->  * id: 33
->  * memory: 8.0
->  * name: ccx12
->  * storage_type: local
-># Ccx22
->  * cores: 4
->  * cpu_type: dedicated
->  * description: CCX22 Dedicated CPU
->  * disk: 160
->  * id: 34
->  * memory: 16.0
->  * name: ccx22
->  * storage_type: local
-># Ccx32
->  * cores: 8
->  * cpu_type: dedicated
->  * description: CCX32 Dedicated CPU
->  * disk: 240
->  * id: 35
->  * memory: 32.0
->  * name: ccx32
->  * storage_type: local
-># Ccx42
->  * cores: 16
->  * cpu_type: dedicated
->  * description: CCX42 Dedicated CPU
->  * disk: 360
->  * id: 36
->  * memory: 64.0
->  * name: ccx42
->  * storage_type: local
-># Ccx52
->  * cores: 32
->  * cpu_type: dedicated
->  * description: CCX52 Dedicated CPU
->  * disk: 600
->  * id: 37
->  * memory: 128.0
->  * name: ccx52
->  * storage_type: local
-># Ccx62
->  * cores: 48
->  * cpu_type: dedicated
->  * description: CCX62 Dedicated CPU
->  * disk: 960
->  * id: 38
->  * memory: 192.0
->  * name: ccx62
 >  * storage_type: local
 
 
@@ -1458,7 +850,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!hcloud-ssh-key name="my-ssh_key" public_key="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDGZkpkqr1WI0IQ45oy0KdGyGFJMxeBvOg47kdFx8s5ie17GY4GMiFAIV8GISt24DD73USBGtaVhHQFSLW47A2/Vla6j3pd4Ny9hFZw9dNp5p0opX1Mk9/WW1dl7nKUbDqT6fJHwvwja2iYD7wcdWtcltmw0ahDNiHgXeuhqDiPkG36zZ9605MLDaM5Jwz23TDGDteIa+LvqQ9QU96j+XCLnj14w1O0DL4PR2tTGQvEe2P7VU7HOgkaT7Ypg/3qUpZRDziVvgyjBgltcm/WtbDbwmJmpIDikufYc/qCKFttu74uUXlGnkM/5zZWHe3y5eTDVTdVYKmuM6toD+VJZRSB1mBsEuMmQeg/IxFiedWSGVTjDyb4FCCKcJcMVNwdgH/rSQWR3WDcXHNeTUev/ehn2ztCsq7Jdd0GOuQskgHCwwoQFLXw/dvIDz3n+c5ug2d8ItxotujsJIJccnYI73UfcAubmYX/VYbrOjVZU3RKHZyoiQEH9O2lBV/xjZJQOJs=" state="present" ```
+```!hcloud-ssh-key name="my-ssh_key" public_key="ssh-rsa XXXXX" state="present" ```
 
 #### Context Example
 ```json
@@ -1466,11 +858,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
     "HCloud": {
         "hcloudSshKey": [
             {
-                "fingerprint": "ae:b8:98:53:30:0f:13:78:97:a5:35:38:51:0e:6e:b0",
+                "fingerprint": "11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:11",
                 "id": "3964657",
                 "labels": {},
                 "name": "my-ssh_key",
-                "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDGZkpkqr1WI0IQ45oy0KdGyGFJMxeBvOg47kdFx8s5ie17GY4GMiFAIV8GISt24DD73USBGtaVhHQFSLW47A2/Vla6j3pd4Ny9hFZw9dNp5p0opX1Mk9/WW1dl7nKUbDqT6fJHwvwja2iYD7wcdWtcltmw0ahDNiHgXeuhqDiPkG36zZ9605MLDaM5Jwz23TDGDteIa+LvqQ9QU96j+XCLnj14w1O0DL4PR2tTGQvEe2P7VU7HOgkaT7Ypg/3qUpZRDziVvgyjBgltcm/WtbDbwmJmpIDikufYc/qCKFttu74uUXlGnkM/5zZWHe3y5eTDVTdVYKmuM6toD+VJZRSB1mBsEuMmQeg/IxFiedWSGVTjDyb4FCCKcJcMVNwdgH/rSQWR3WDcXHNeTUev/ehn2ztCsq7Jdd0GOuQskgHCwwoQFLXw/dvIDz3n+c5ug2d8ItxotujsJIJccnYI73UfcAubmYX/VYbrOjVZU3RKHZyoiQEH9O2lBV/xjZJQOJs=",
+                "public_key": "ssh-rsa XXXXX",
                 "status": "CHANGED"
             }
         ]
@@ -1481,10 +873,10 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 #### Human Readable Output
 
 >#  CHANGED 
->  * fingerprint: ae:b8:98:53:30:0f:13:78:97:a5:35:38:51:0e:6e:b0
+>  * fingerprint: 11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:11
 >  * id: 3964657
 >  * name: my-ssh_key
->  * public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDGZkpkqr1WI0IQ45oy0KdGyGFJMxeBvOg47kdFx8s5ie17GY4GMiFAIV8GISt24DD73USBGtaVhHQFSLW47A2/Vla6j3pd4Ny9hFZw9dNp5p0opX1Mk9/WW1dl7nKUbDqT6fJHwvwja2iYD7wcdWtcltmw0ahDNiHgXeuhqDiPkG36zZ9605MLDaM5Jwz23TDGDteIa+LvqQ9QU96j+XCLnj14w1O0DL4PR2tTGQvEe2P7VU7HOgkaT7Ypg/3qUpZRDziVvgyjBgltcm/WtbDbwmJmpIDikufYc/qCKFttu74uUXlGnkM/5zZWHe3y5eTDVTdVYKmuM6toD+VJZRSB1mBsEuMmQeg/IxFiedWSGVTjDyb4FCCKcJcMVNwdgH/rSQWR3WDcXHNeTUev/ehn2ztCsq7Jdd0GOuQskgHCwwoQFLXw/dvIDz3n+c5ug2d8ItxotujsJIJccnYI73UfcAubmYX/VYbrOjVZU3RKHZyoiQEH9O2lBV/xjZJQOJs=
+>  * public_key: ssh-rsa XXXXX
 >  * ## Labels
 
 
@@ -1524,11 +916,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
         "hcloudSshKeyInfo": [
             [
                 {
-                    "fingerprint": "ae:b8:98:53:30:0f:13:78:97:a5:35:38:51:0e:6e:b0",
+                    "fingerprint": "11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:11",
                     "id": "3964657",
                     "labels": {},
                     "name": "my-ssh_key",
-                    "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDGZkpkqr1WI0IQ45oy0KdGyGFJMxeBvOg47kdFx8s5ie17GY4GMiFAIV8GISt24DD73USBGtaVhHQFSLW47A2/Vla6j3pd4Ny9hFZw9dNp5p0opX1Mk9/WW1dl7nKUbDqT6fJHwvwja2iYD7wcdWtcltmw0ahDNiHgXeuhqDiPkG36zZ9605MLDaM5Jwz23TDGDteIa+LvqQ9QU96j+XCLnj14w1O0DL4PR2tTGQvEe2P7VU7HOgkaT7Ypg/3qUpZRDziVvgyjBgltcm/WtbDbwmJmpIDikufYc/qCKFttu74uUXlGnkM/5zZWHe3y5eTDVTdVYKmuM6toD+VJZRSB1mBsEuMmQeg/IxFiedWSGVTjDyb4FCCKcJcMVNwdgH/rSQWR3WDcXHNeTUev/ehn2ztCsq7Jdd0GOuQskgHCwwoQFLXw/dvIDz3n+c5ug2d8ItxotujsJIJccnYI73UfcAubmYX/VYbrOjVZU3RKHZyoiQEH9O2lBV/xjZJQOJs="
+                    "public_key": "ssh-rsa XXXXX"
                 }
             ]
         ]
@@ -1540,10 +932,10 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 >#  SUCCESS 
 ># My-Ssh_Key
->  * fingerprint: ae:b8:98:53:30:0f:13:78:97:a5:35:38:51:0e:6e:b0
+>  * fingerprint: 11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:11
 >  * id: 3964657
 >  * name: my-ssh_key
->  * public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDGZkpkqr1WI0IQ45oy0KdGyGFJMxeBvOg47kdFx8s5ie17GY4GMiFAIV8GISt24DD73USBGtaVhHQFSLW47A2/Vla6j3pd4Ny9hFZw9dNp5p0opX1Mk9/WW1dl7nKUbDqT6fJHwvwja2iYD7wcdWtcltmw0ahDNiHgXeuhqDiPkG36zZ9605MLDaM5Jwz23TDGDteIa+LvqQ9QU96j+XCLnj14w1O0DL4PR2tTGQvEe2P7VU7HOgkaT7Ypg/3qUpZRDziVvgyjBgltcm/WtbDbwmJmpIDikufYc/qCKFttu74uUXlGnkM/5zZWHe3y5eTDVTdVYKmuM6toD+VJZRSB1mBsEuMmQeg/IxFiedWSGVTjDyb4FCCKcJcMVNwdgH/rSQWR3WDcXHNeTUev/ehn2ztCsq7Jdd0GOuQskgHCwwoQFLXw/dvIDz3n+c5ug2d8ItxotujsJIJccnYI73UfcAubmYX/VYbrOjVZU3RKHZyoiQEH9O2lBV/xjZJQOJs=
+>  * public_key: ssh-rsa XXXXX
 >  * ## Labels
 
 
