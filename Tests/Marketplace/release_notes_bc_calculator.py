@@ -39,17 +39,17 @@ class ReleaseNotesBreakingChangesCalc:
         bc_version_to_text: Dict[str, Optional[str]] = self._breaking_changes_versions_to_text()
         loose_versions: List[LooseVersion] = [LooseVersion(bc_ver) for bc_ver in bc_version_to_text.keys()]
         predecessor_version: LooseVersion = LooseVersion('0.0.0')
-        for rn_version in sorted(changelog.keys(), key=LooseVersion):
-            rn_loose_version: LooseVersion = LooseVersion(rn_version)
+        for changelog_entry in sorted(changelog.keys(), key=LooseVersion):
+            rn_loose_version: LooseVersion = LooseVersion(changelog_entry)
             if bc_versions := self._changelog_entry_bc_versions(predecessor_version, rn_loose_version, loose_versions,
                                                                 bc_version_to_text):
-                changelog[rn_version]['breakingChanges'] = True
+                changelog[changelog_entry]['breakingChanges'] = True
                 if bc_text := self._calculate_bc_text(bc_versions):
-                    changelog[rn_version]['breakingChangesNotes'] = bc_text
+                    changelog[changelog_entry]['breakingChangesNotes'] = bc_text
                 else:
-                    changelog[rn_version].pop('breakingChangesNotes', None)
+                    changelog[changelog_entry].pop('breakingChangesNotes', None)
             else:
-                changelog[rn_version].pop('breakingChanges', None)
+                changelog[changelog_entry].pop('breakingChanges', None)
             predecessor_version = rn_loose_version
 
     def _calculate_bc_text(self, bc_version_to_text: Dict[str, Optional[str]]) -> Optional[str]:
