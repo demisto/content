@@ -1259,6 +1259,9 @@ def main():
     params = demisto.params()
     credentials = params.get('credentials')
     base_url = params.get('url').strip('/').replace('rsaarcher', '')
+    # base_url = params.get('url').strip('/')
+    # use_default_endpoint = params.get("use_default_api_endpoint", True)
+    # base_url = urljoin(base_url, "api") if use_default_endpoint else base_url
     api_endpoint = params.get('api_endpoint') or 'rsaarcher/api'
     if 'rsaarcher' in api_endpoint:
         base_url = urljoin(base_url, 'rsaarcher')

@@ -11,6 +11,7 @@ configuration:
   hidden: false
   name: api_endpoint
   required: false
+  additionalinfo: Fill only if you have other valid API Endpoint
   defaultvalue: rsaarcher/api
   type: 0
 - display: Instance name
@@ -70,6 +71,11 @@ configuration:
   type: 8
 - display: Use system proxy settings
   name: proxy
+  required: false
+  type: 8
+- display: Use default RSA Archer API endpoint (uncheck only if you have valid Archer API Endpoint)
+  name: use_default_api_endpoint
+  defaultvalue: true
   required: false
   type: 8
 description: The RSA Archer GRC Platform provides a common foundation for managing
