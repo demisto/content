@@ -440,7 +440,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                                     },
                                     "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/simpleLinuxVMPublicIP",
                                     "name": "simpleLinuxVMPublicIP",
-                                    "public_ip": "40.115.89.248",
+                                    "public_ip": "1.1.1.1",
                                     "public_ip_allocation_method": "Dynamic"
                                 }
                             ],
@@ -487,7 +487,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * #### Simplelinuxvmpublicip
 >        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/simpleLinuxVMPublicIP
 >        * name: simpleLinuxVMPublicIP
->        * public_ip: 40.115.89.248
+>        * public_ip: 1.1.1.1
 >        * public_ip_allocation_method: Dynamic
 >        * ##### Dns_Settings
 >          * domain_name_label: xsoarexample
@@ -1371,7 +1371,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                         "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/images/myImage",
                         "location": "australiasoutheast",
                         "name": "myImage",
-                        "os_blob_uri": "https://testvm106649.blob.core.windows.net/vhds/testvm10.vhd",
+                        "os_blob_uri": "https://test/vhds/testvm10.vhd",
                         "os_disk": null,
                         "os_disk_caching": "ReadOnly",
                         "os_state": "Generalized",
@@ -1399,7 +1399,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/images/myImage
 >    * location: australiasoutheast
 >    * name: myImage
->    * os_blob_uri: https://testvm106649.blob.core.windows.net/vhds/testvm10.vhd
+>    * os_blob_uri: https://test/vhds/testvm10.vhd
 >    * os_disk: None
 >    * os_disk_caching: ReadOnly
 >    * os_state: Generalized
@@ -3788,7 +3788,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                                 "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/azureFirewalls/myAzureFirewall/azureFirewallIpConfigurations/azureFirewallIpConfiguration",
                                 "name": "azureFirewallIpConfiguration",
                                 "properties": {
-                                    "privateIPAddress": "10.0.2.4",
+                                    "privateIPAddress": "1.1.1.2",
                                     "privateIPAllocationMethod": "Dynamic",
                                     "provisioningState": "Succeeded",
                                     "publicIPAddress": {
@@ -3836,7 +3836,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * name: azureFirewallIpConfiguration
 >      * type: Microsoft.Network/azureFirewalls/azureFirewallIpConfigurations
 >      * #### Properties
->        * privateIPAddress: 10.0.2.4
+>        * privateIPAddress: 1.1.1.2
 >        * privateIPAllocationMethod: Dynamic
 >        * provisioningState: Succeeded
 >        * ##### Publicipaddress
@@ -3883,7 +3883,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!azure-rm-virtualnetwork resource_group="myResourceGroup" name="myVirtualNetwork" address_prefixes_cidr="{{ ['10.1.0.0/16', '172.100.0.0/16'] }}" dns_servers="{{ ['127.0.0.1', '127.0.0.2'] }}" tags="{{ {'testing': 'testing', 'delete': 'on-exit'} }}" ```
+```!azure-rm-virtualnetwork resource_group="myResourceGroup" name="myVirtualNetwork" address_prefixes_cidr="{{ ['10.1.0.0/16', '1.1.1.3/16'] }}" dns_servers="{{ ['127.0.0.1', '127.0.0.2'] }}" tags="{{ {'testing': 'testing', 'delete': 'on-exit'} }}" ```
 
 #### Context Example
 ```json
@@ -3897,7 +3897,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "address_prefixes": [
                         "10.0.0.0/16",
                         "10.1.0.0/16",
-                        "172.100.0.0/16"
+                        "1.1.1.3/16"
                     ],
                     "dns_servers": [
                         "127.0.0.1",
@@ -3936,7 +3936,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * ### Address_Prefixes
 >      * 0: 10.0.0.0/16
 >      * 1: 10.1.0.0/16
->      * 2: 172.100.0.0/16
+>      * 2: 1.1.1.3/16
 >    * ### Dns_Servers
 >      * 0: 127.0.0.1
 >      * 1: 127.0.0.2
@@ -3988,7 +3988,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                         "address_prefixes": [
                             "10.0.0.0/16",
                             "10.1.0.0/16",
-                            "172.100.0.0/16"
+                            "1.1.1.3/16"
                         ],
                         "dns_servers": [
                             "127.0.0.1",
@@ -4013,24 +4013,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                                 "address_prefixes": null,
                                 "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/mySubnet",
                                 "name": "mySubnet",
-                                "network_security_group": null,
-                                "provisioning_state": "Succeeded",
-                                "route_table": null
-                            },
-                            {
-                                "address_prefix": "10.0.1.0/24",
-                                "address_prefixes": null,
-                                "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/GatewaySubnet",
-                                "name": "GatewaySubnet",
-                                "network_security_group": null,
-                                "provisioning_state": "Succeeded",
-                                "route_table": null
-                            },
-                            {
-                                "address_prefix": "10.0.2.0/24",
-                                "address_prefixes": null,
-                                "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/AzureFirewallSubnet",
-                                "name": "AzureFirewallSubnet",
                                 "network_security_group": null,
                                 "provisioning_state": "Succeeded",
                                 "route_table": null
@@ -4061,7 +4043,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * ### Address_Prefixes
 >      * 0: 10.0.0.0/16
 >      * 1: 10.1.0.0/16
->      * 2: 172.100.0.0/16
+>      * 2: 1.1.1.3/16
 >    * ### Dns_Servers
 >      * 0: 127.0.0.1
 >      * 1: 127.0.0.2
@@ -4079,22 +4061,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * address_prefixes: None
 >      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/mySubnet
 >      * name: mySubnet
->      * network_security_group: None
->      * provisioning_state: Succeeded
->      * route_table: None
->    * ### Gatewaysubnet
->      * address_prefix: 10.0.1.0/24
->      * address_prefixes: None
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/GatewaySubnet
->      * name: GatewaySubnet
->      * network_security_group: None
->      * provisioning_state: Succeeded
->      * route_table: None
->    * ### Azurefirewallsubnet
->      * address_prefix: 10.0.2.0/24
->      * address_prefixes: None
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVirtualNetwork/subnets/AzureFirewallSubnet
->      * name: AzureFirewallSubnet
 >      * network_security_group: None
 >      * provisioning_state: Succeeded
 >      * route_table: None
@@ -4269,7 +4235,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                         "provisioning_state": "Succeeded",
                         "remote_address_space": {
                             "address_prefixes": [
-                                "10.2.0.0/16"
+                                "1.1.1.3/16"
                             ]
                         },
                         "remote_virtual_network": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/mySecondResourceGroup/providers/Microsoft.Network/virtualNetworks/myRemoteVirtualNetwork",
@@ -4299,7 +4265,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * use_remote_gateways: False
 >    * ### Remote_Address_Space
 >      * #### Address_Prefixes
->        * 0: 10.2.0.0/16
+>        * 0: 1.1.1.3/16
 
 
 ### azure-rm-subnet
@@ -4864,7 +4830,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                         "load_balancer_backend_address_pools": null,
                         "name": "ipconfig1",
                         "primary": true,
-                        "private_ip_address": "10.1.0.4",
+                        "private_ip_address": "1.1.1.3",
                         "private_ip_allocation_method": "Dynamic",
                         "public_ip_address": {
                             "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/publicip001",
@@ -4884,7 +4850,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                             "load_balancer_backend_address_pools": null,
                             "name": "ipconfig1",
                             "primary": true,
-                            "private_ip_address": "10.1.0.4",
+                            "private_ip_address": "1.1.1.3",
                             "private_ip_allocation_method": "Dynamic",
                             "public_ip_address": {
                                 "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/publicip001",
@@ -4942,7 +4908,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * load_balancer_backend_address_pools: None
 >      * name: ipconfig1
 >      * primary: True
->      * private_ip_address: 10.1.0.4
+>      * private_ip_address: 1.1.1.3
 >      * private_ip_allocation_method: Dynamic
 >      * #### Public_Ip_Address
 >        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/publicip001
@@ -4959,7 +4925,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * load_balancer_backend_address_pools: None
 >      * name: ipconfig1
 >      * primary: True
->      * private_ip_address: 10.1.0.4
+>      * private_ip_address: 1.1.1.3
 >      * private_ip_allocation_method: Dynamic
 >      * #### Public_Ip_Address
 >        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/publicip001
@@ -5031,7 +4997,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                                 "load_balancer_backend_address_pools": null,
                                 "name": "ipconfig1",
                                 "primary": true,
-                                "private_ip_address": "10.1.0.4",
+                                "private_ip_address": "1.1.1.3",
                                 "private_ip_allocation_method": "Dynamic",
                                 "public_ip_address": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/publicip001",
                                 "public_ip_allocation_method": null
@@ -5087,7 +5053,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * load_balancer_backend_address_pools: None
 >      * name: ipconfig1
 >      * primary: True
->      * private_ip_address: 10.1.0.4
+>      * private_ip_address: 1.1.1.3
 >      * private_ip_allocation_method: Dynamic
 >      * public_ip_address: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/publicip001
 >      * public_ip_allocation_method: None
@@ -5149,7 +5115,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     },
                     "etag": "W/\"1bee56b0-3bdb-45c8-b378-ddc94cc8e504\"",
                     "idle_timeout_in_minutes": 4,
-                    "ip_address": "52.189.237.98",
+                    "ip_address": "1.1.1.3",
                     "location": "australiasoutheast",
                     "name": "my_public_ip",
                     "provisioning_state": "Succeeded",
@@ -5173,7 +5139,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >  * ## State
 >    * etag: W/"1bee56b0-3bdb-45c8-b378-ddc94cc8e504"
 >    * idle_timeout_in_minutes: 4
->    * ip_address: 52.189.237.98
+>    * ip_address: 1.1.1.3
 >    * location: australiasoutheast
 >    * name: my_public_ip
 >    * provisioning_state: Succeeded
@@ -5236,7 +5202,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                         "etag": "W/\"1bee56b0-3bdb-45c8-b378-ddc94cc8e504\"",
                         "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/my_public_ip",
                         "idle_timeout": 4,
-                        "ip_address": "52.189.237.98",
+                        "ip_address": "1.1.1.3",
                         "ip_tags": {},
                         "location": "australiasoutheast",
                         "name": "my_public_ip",
@@ -5264,7 +5230,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * etag: W/"1bee56b0-3bdb-45c8-b378-ddc94cc8e504"
 >    * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/publicIPAddresses/my_public_ip
 >    * idle_timeout: 4
->    * ip_address: 52.189.237.98
+>    * ip_address: 1.1.1.3
 >    * location: australiasoutheast
 >    * name: my_public_ip
 >    * provisioning_state: Succeeded
@@ -5482,7 +5448,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!azure-rm-securitygroup resource_group="myResourceGroup" name="mysecgroup" purge_rules="True" rules="{{ [{'name': 'DenySSH', 'protocol': 'Tcp', 'destination_port_range': 22, 'access': 'Deny', 'priority': 100, 'direction': 'Inbound'}, {'name': 'AllowSSH', 'protocol': 'Tcp', 'source_address_prefix': ['174.109.158.0/24', '174.109.159.0/24'], 'destination_port_range': 22, 'access': 'Allow', 'priority': 101, 'direction': 'Inbound'}, {'name': 'AllowMultiplePorts', 'protocol': 'Tcp', 'source_address_prefix': ['174.109.158.0/24', '174.109.159.0/24'], 'destination_port_range': [80, 443], 'access': 'Allow', 'priority': 102}] }}" ```
+```!azure-rm-securitygroup resource_group="myResourceGroup" name="mysecgroup" purge_rules="True" rules="{{ [{'name': 'DenySSH', 'protocol': 'Tcp', 'destination_port_range': 22, 'access': 'Deny', 'priority': 100, 'direction': 'Inbound'}, {'name': 'AllowSSH', 'protocol': 'Tcp', 'source_address_prefix': ['1.1.1.3/24', '1.1.1.4/24'], 'destination_port_range': 22, 'access': 'Allow', 'priority': 101, 'direction': 'Inbound'}, {'name': 'AllowMultiplePorts', 'protocol': 'Tcp', 'source_address_prefix': ['174.109.158.0/24', '1.1.1.4/24'], 'destination_port_range': [80, 443], 'access': 'Allow', 'priority': 102}] }}" ```
 
 #### Context Example
 ```json
@@ -5513,111 +5479,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                             "source_application_security_groups": null,
                             "source_port_range": "*",
                             "source_port_ranges": []
-                        },
-                        {
-                            "access": "Allow",
-                            "description": "Allow inbound traffic from azure load balancer",
-                            "destination_address_prefix": "*",
-                            "destination_address_prefixes": [],
-                            "destination_application_security_groups": null,
-                            "destination_port_range": "*",
-                            "destination_port_ranges": [],
-                            "direction": "Inbound",
-                            "etag": "W/\"eeeac0dc-126e-4b2f-abee-b8247bc16757\"",
-                            "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowAzureLoadBalancerInBound",
-                            "name": "AllowAzureLoadBalancerInBound",
-                            "priority": 65001,
-                            "protocol": "*",
-                            "provisioning_state": "Succeeded",
-                            "source_address_prefix": "AzureLoadBalancer",
-                            "source_address_prefixes": [],
-                            "source_application_security_groups": null,
-                            "source_port_range": "*",
-                            "source_port_ranges": []
-                        },
-                        {
-                            "access": "Deny",
-                            "description": "Deny all inbound traffic",
-                            "destination_address_prefix": "*",
-                            "destination_address_prefixes": [],
-                            "destination_application_security_groups": null,
-                            "destination_port_range": "*",
-                            "destination_port_ranges": [],
-                            "direction": "Inbound",
-                            "etag": "W/\"eeeac0dc-126e-4b2f-abee-b8247bc16757\"",
-                            "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/DenyAllInBound",
-                            "name": "DenyAllInBound",
-                            "priority": 65500,
-                            "protocol": "*",
-                            "provisioning_state": "Succeeded",
-                            "source_address_prefix": "*",
-                            "source_address_prefixes": [],
-                            "source_application_security_groups": null,
-                            "source_port_range": "*",
-                            "source_port_ranges": []
-                        },
-                        {
-                            "access": "Allow",
-                            "description": "Allow outbound traffic from all VMs to all VMs in VNET",
-                            "destination_address_prefix": "VirtualNetwork",
-                            "destination_address_prefixes": [],
-                            "destination_application_security_groups": null,
-                            "destination_port_range": "*",
-                            "destination_port_ranges": [],
-                            "direction": "Outbound",
-                            "etag": "W/\"eeeac0dc-126e-4b2f-abee-b8247bc16757\"",
-                            "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowVnetOutBound",
-                            "name": "AllowVnetOutBound",
-                            "priority": 65000,
-                            "protocol": "*",
-                            "provisioning_state": "Succeeded",
-                            "source_address_prefix": "VirtualNetwork",
-                            "source_address_prefixes": [],
-                            "source_application_security_groups": null,
-                            "source_port_range": "*",
-                            "source_port_ranges": []
-                        },
-                        {
-                            "access": "Allow",
-                            "description": "Allow outbound traffic from all VMs to Internet",
-                            "destination_address_prefix": "Internet",
-                            "destination_address_prefixes": [],
-                            "destination_application_security_groups": null,
-                            "destination_port_range": "*",
-                            "destination_port_ranges": [],
-                            "direction": "Outbound",
-                            "etag": "W/\"eeeac0dc-126e-4b2f-abee-b8247bc16757\"",
-                            "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowInternetOutBound",
-                            "name": "AllowInternetOutBound",
-                            "priority": 65001,
-                            "protocol": "*",
-                            "provisioning_state": "Succeeded",
-                            "source_address_prefix": "*",
-                            "source_address_prefixes": [],
-                            "source_application_security_groups": null,
-                            "source_port_range": "*",
-                            "source_port_ranges": []
-                        },
-                        {
-                            "access": "Deny",
-                            "description": "Deny all outbound traffic",
-                            "destination_address_prefix": "*",
-                            "destination_address_prefixes": [],
-                            "destination_application_security_groups": null,
-                            "destination_port_range": "*",
-                            "destination_port_ranges": [],
-                            "direction": "Outbound",
-                            "etag": "W/\"eeeac0dc-126e-4b2f-abee-b8247bc16757\"",
-                            "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/DenyAllOutBound",
-                            "name": "DenyAllOutBound",
-                            "priority": 65500,
-                            "protocol": "*",
-                            "provisioning_state": "Succeeded",
-                            "source_address_prefix": "*",
-                            "source_address_prefixes": [],
-                            "source_application_security_groups": null,
-                            "source_port_range": "*",
-                            "source_port_ranges": []
                         }
                     ],
                     "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup",
@@ -5642,57 +5503,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                             "provisioning_state": "Succeeded",
                             "source_address_prefix": "*",
                             "source_address_prefixes": [],
-                            "source_application_security_groups": null,
-                            "source_port_range": "*",
-                            "source_port_ranges": []
-                        },
-                        {
-                            "access": "Allow",
-                            "description": null,
-                            "destination_address_prefix": "*",
-                            "destination_address_prefixes": [],
-                            "destination_application_security_groups": null,
-                            "destination_port_range": "22",
-                            "destination_port_ranges": [],
-                            "direction": "Inbound",
-                            "etag": "W/\"eeeac0dc-126e-4b2f-abee-b8247bc16757\"",
-                            "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/securityRules/AllowSSH",
-                            "name": "AllowSSH",
-                            "priority": 101,
-                            "protocol": "Tcp",
-                            "provisioning_state": "Succeeded",
-                            "source_address_prefix": null,
-                            "source_address_prefixes": [
-                                "174.109.158.0/24",
-                                "174.109.159.0/24"
-                            ],
-                            "source_application_security_groups": null,
-                            "source_port_range": "*",
-                            "source_port_ranges": []
-                        },
-                        {
-                            "access": "Allow",
-                            "description": null,
-                            "destination_address_prefix": "*",
-                            "destination_address_prefixes": [],
-                            "destination_application_security_groups": null,
-                            "destination_port_range": null,
-                            "destination_port_ranges": [
-                                "80",
-                                "443"
-                            ],
-                            "direction": "Inbound",
-                            "etag": "W/\"eeeac0dc-126e-4b2f-abee-b8247bc16757\"",
-                            "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/securityRules/AllowMultiplePorts",
-                            "name": "AllowMultiplePorts",
-                            "priority": 102,
-                            "protocol": "Tcp",
-                            "provisioning_state": "Succeeded",
-                            "source_address_prefix": null,
-                            "source_address_prefixes": [
-                                "174.109.158.0/24",
-                                "174.109.159.0/24"
-                            ],
                             "source_application_security_groups": null,
                             "source_port_range": "*",
                             "source_port_ranges": []
@@ -5739,106 +5549,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * #### Destination_Port_Ranges
 >      * #### Source_Address_Prefixes
 >      * #### Source_Port_Ranges
->    * ### Allowazureloadbalancerinbound
->      * access: Allow
->      * description: Allow inbound traffic from azure load balancer
->      * destination_address_prefix: *
->      * destination_application_security_groups: None
->      * destination_port_range: *
->      * direction: Inbound
->      * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowAzureLoadBalancerInBound
->      * name: AllowAzureLoadBalancerInBound
->      * priority: 65001
->      * protocol: *
->      * provisioning_state: Succeeded
->      * source_address_prefix: AzureLoadBalancer
->      * source_application_security_groups: None
->      * source_port_range: *
->      * #### Destination_Address_Prefixes
->      * #### Destination_Port_Ranges
->      * #### Source_Address_Prefixes
->      * #### Source_Port_Ranges
->    * ### Denyallinbound
->      * access: Deny
->      * description: Deny all inbound traffic
->      * destination_address_prefix: *
->      * destination_application_security_groups: None
->      * destination_port_range: *
->      * direction: Inbound
->      * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/DenyAllInBound
->      * name: DenyAllInBound
->      * priority: 65500
->      * protocol: *
->      * provisioning_state: Succeeded
->      * source_address_prefix: *
->      * source_application_security_groups: None
->      * source_port_range: *
->      * #### Destination_Address_Prefixes
->      * #### Destination_Port_Ranges
->      * #### Source_Address_Prefixes
->      * #### Source_Port_Ranges
->    * ### Allowvnetoutbound
->      * access: Allow
->      * description: Allow outbound traffic from all VMs to all VMs in VNET
->      * destination_address_prefix: VirtualNetwork
->      * destination_application_security_groups: None
->      * destination_port_range: *
->      * direction: Outbound
->      * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowVnetOutBound
->      * name: AllowVnetOutBound
->      * priority: 65000
->      * protocol: *
->      * provisioning_state: Succeeded
->      * source_address_prefix: VirtualNetwork
->      * source_application_security_groups: None
->      * source_port_range: *
->      * #### Destination_Address_Prefixes
->      * #### Destination_Port_Ranges
->      * #### Source_Address_Prefixes
->      * #### Source_Port_Ranges
->    * ### Allowinternetoutbound
->      * access: Allow
->      * description: Allow outbound traffic from all VMs to Internet
->      * destination_address_prefix: Internet
->      * destination_application_security_groups: None
->      * destination_port_range: *
->      * direction: Outbound
->      * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowInternetOutBound
->      * name: AllowInternetOutBound
->      * priority: 65001
->      * protocol: *
->      * provisioning_state: Succeeded
->      * source_address_prefix: *
->      * source_application_security_groups: None
->      * source_port_range: *
->      * #### Destination_Address_Prefixes
->      * #### Destination_Port_Ranges
->      * #### Source_Address_Prefixes
->      * #### Source_Port_Ranges
->    * ### Denyalloutbound
->      * access: Deny
->      * description: Deny all outbound traffic
->      * destination_address_prefix: *
->      * destination_application_security_groups: None
->      * destination_port_range: *
->      * direction: Outbound
->      * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/DenyAllOutBound
->      * name: DenyAllOutBound
->      * priority: 65500
->      * protocol: *
->      * provisioning_state: Succeeded
->      * source_address_prefix: *
->      * source_application_security_groups: None
->      * source_port_range: *
->      * #### Destination_Address_Prefixes
->      * #### Destination_Port_Ranges
->      * #### Source_Address_Prefixes
->      * #### Source_Port_Ranges
 >    * ### Network_Interfaces
 >    * ### Rules
 >    * ### Denyssh
@@ -5860,52 +5570,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * #### Destination_Address_Prefixes
 >      * #### Destination_Port_Ranges
 >      * #### Source_Address_Prefixes
->      * #### Source_Port_Ranges
->    * ### Allowssh
->      * access: Allow
->      * description: None
->      * destination_address_prefix: *
->      * destination_application_security_groups: None
->      * destination_port_range: 22
->      * direction: Inbound
->      * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/securityRules/AllowSSH
->      * name: AllowSSH
->      * priority: 101
->      * protocol: Tcp
->      * provisioning_state: Succeeded
->      * source_address_prefix: None
->      * source_application_security_groups: None
->      * source_port_range: *
->      * #### Destination_Address_Prefixes
->      * #### Destination_Port_Ranges
->      * #### Source_Address_Prefixes
->        * 0: 174.109.158.0/24
->        * 1: 174.109.159.0/24
->      * #### Source_Port_Ranges
->    * ### Allowmultipleports
->      * access: Allow
->      * description: None
->      * destination_address_prefix: *
->      * destination_application_security_groups: None
->      * destination_port_range: None
->      * direction: Inbound
->      * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->      * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/securityRules/AllowMultiplePorts
->      * name: AllowMultiplePorts
->      * priority: 102
->      * protocol: Tcp
->      * provisioning_state: Succeeded
->      * source_address_prefix: None
->      * source_application_security_groups: None
->      * source_port_range: *
->      * #### Destination_Address_Prefixes
->      * #### Destination_Port_Ranges
->        * 0: 80
->        * 1: 443
->      * #### Source_Address_Prefixes
->        * 0: 174.109.158.0/24
->        * 1: 174.109.159.0/24
 >      * #### Source_Port_Ranges
 >    * ### Subnets
 >    * ### Tags
@@ -5975,111 +5639,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                                         "sourcePortRange": "*",
                                         "sourcePortRanges": []
                                     }
-                                },
-                                {
-                                    "etag": "W/\"eeeac0dc-126e-4b2f-abee-b8247bc16757\"",
-                                    "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowAzureLoadBalancerInBound",
-                                    "name": "AllowAzureLoadBalancerInBound",
-                                    "properties": {
-                                        "access": "Allow",
-                                        "description": "Allow inbound traffic from azure load balancer",
-                                        "destinationAddressPrefix": "*",
-                                        "destinationAddressPrefixes": [],
-                                        "destinationPortRange": "*",
-                                        "destinationPortRanges": [],
-                                        "direction": "Inbound",
-                                        "priority": 65001,
-                                        "protocol": "*",
-                                        "provisioningState": "Succeeded",
-                                        "sourceAddressPrefix": "AzureLoadBalancer",
-                                        "sourceAddressPrefixes": [],
-                                        "sourcePortRange": "*",
-                                        "sourcePortRanges": []
-                                    }
-                                },
-                                {
-                                    "etag": "W/\"eeeac0dc-126e-4b2f-abee-b8247bc16757\"",
-                                    "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/DenyAllInBound",
-                                    "name": "DenyAllInBound",
-                                    "properties": {
-                                        "access": "Deny",
-                                        "description": "Deny all inbound traffic",
-                                        "destinationAddressPrefix": "*",
-                                        "destinationAddressPrefixes": [],
-                                        "destinationPortRange": "*",
-                                        "destinationPortRanges": [],
-                                        "direction": "Inbound",
-                                        "priority": 65500,
-                                        "protocol": "*",
-                                        "provisioningState": "Succeeded",
-                                        "sourceAddressPrefix": "*",
-                                        "sourceAddressPrefixes": [],
-                                        "sourcePortRange": "*",
-                                        "sourcePortRanges": []
-                                    }
-                                },
-                                {
-                                    "etag": "W/\"eeeac0dc-126e-4b2f-abee-b8247bc16757\"",
-                                    "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowVnetOutBound",
-                                    "name": "AllowVnetOutBound",
-                                    "properties": {
-                                        "access": "Allow",
-                                        "description": "Allow outbound traffic from all VMs to all VMs in VNET",
-                                        "destinationAddressPrefix": "VirtualNetwork",
-                                        "destinationAddressPrefixes": [],
-                                        "destinationPortRange": "*",
-                                        "destinationPortRanges": [],
-                                        "direction": "Outbound",
-                                        "priority": 65000,
-                                        "protocol": "*",
-                                        "provisioningState": "Succeeded",
-                                        "sourceAddressPrefix": "VirtualNetwork",
-                                        "sourceAddressPrefixes": [],
-                                        "sourcePortRange": "*",
-                                        "sourcePortRanges": []
-                                    }
-                                },
-                                {
-                                    "etag": "W/\"eeeac0dc-126e-4b2f-abee-b8247bc16757\"",
-                                    "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowInternetOutBound",
-                                    "name": "AllowInternetOutBound",
-                                    "properties": {
-                                        "access": "Allow",
-                                        "description": "Allow outbound traffic from all VMs to Internet",
-                                        "destinationAddressPrefix": "Internet",
-                                        "destinationAddressPrefixes": [],
-                                        "destinationPortRange": "*",
-                                        "destinationPortRanges": [],
-                                        "direction": "Outbound",
-                                        "priority": 65001,
-                                        "protocol": "*",
-                                        "provisioningState": "Succeeded",
-                                        "sourceAddressPrefix": "*",
-                                        "sourceAddressPrefixes": [],
-                                        "sourcePortRange": "*",
-                                        "sourcePortRanges": []
-                                    }
-                                },
-                                {
-                                    "etag": "W/\"eeeac0dc-126e-4b2f-abee-b8247bc16757\"",
-                                    "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/DenyAllOutBound",
-                                    "name": "DenyAllOutBound",
-                                    "properties": {
-                                        "access": "Deny",
-                                        "description": "Deny all outbound traffic",
-                                        "destinationAddressPrefix": "*",
-                                        "destinationAddressPrefixes": [],
-                                        "destinationPortRange": "*",
-                                        "destinationPortRanges": [],
-                                        "direction": "Outbound",
-                                        "priority": 65500,
-                                        "protocol": "*",
-                                        "provisioningState": "Succeeded",
-                                        "sourceAddressPrefix": "*",
-                                        "sourceAddressPrefixes": [],
-                                        "sourcePortRange": "*",
-                                        "sourcePortRanges": []
-                                    }
                                 }
                             ],
                             "provisioningState": "Succeeded",
@@ -6101,52 +5660,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                                         "provisioningState": "Succeeded",
                                         "sourceAddressPrefix": "*",
                                         "sourceAddressPrefixes": [],
-                                        "sourcePortRange": "*",
-                                        "sourcePortRanges": []
-                                    }
-                                },
-                                {
-                                    "etag": "W/\"eeeac0dc-126e-4b2f-abee-b8247bc16757\"",
-                                    "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/securityRules/AllowSSH",
-                                    "name": "AllowSSH",
-                                    "properties": {
-                                        "access": "Allow",
-                                        "destinationAddressPrefix": "*",
-                                        "destinationAddressPrefixes": [],
-                                        "destinationPortRange": "22",
-                                        "destinationPortRanges": [],
-                                        "direction": "Inbound",
-                                        "priority": 101,
-                                        "protocol": "Tcp",
-                                        "provisioningState": "Succeeded",
-                                        "sourceAddressPrefixes": [
-                                            "174.109.158.0/24",
-                                            "174.109.159.0/24"
-                                        ],
-                                        "sourcePortRange": "*",
-                                        "sourcePortRanges": []
-                                    }
-                                },
-                                {
-                                    "etag": "W/\"eeeac0dc-126e-4b2f-abee-b8247bc16757\"",
-                                    "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/securityRules/AllowMultiplePorts",
-                                    "name": "AllowMultiplePorts",
-                                    "properties": {
-                                        "access": "Allow",
-                                        "destinationAddressPrefix": "*",
-                                        "destinationAddressPrefixes": [],
-                                        "destinationPortRanges": [
-                                            "80",
-                                            "443"
-                                        ],
-                                        "direction": "Inbound",
-                                        "priority": 102,
-                                        "protocol": "Tcp",
-                                        "provisioningState": "Succeeded",
-                                        "sourceAddressPrefixes": [
-                                            "174.109.158.0/24",
-                                            "174.109.159.0/24"
-                                        ],
                                         "sourcePortRange": "*",
                                         "sourcePortRanges": []
                                     }
@@ -6198,101 +5711,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >          * ###### Destinationportranges
 >          * ###### Sourceaddressprefixes
 >          * ###### Sourceportranges
->      * #### Allowazureloadbalancerinbound
->        * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowAzureLoadBalancerInBound
->        * name: AllowAzureLoadBalancerInBound
->        * ##### Properties
->          * access: Allow
->          * description: Allow inbound traffic from azure load balancer
->          * destinationAddressPrefix: *
->          * destinationPortRange: *
->          * direction: Inbound
->          * priority: 65001
->          * protocol: *
->          * provisioningState: Succeeded
->          * sourceAddressPrefix: AzureLoadBalancer
->          * sourcePortRange: *
->          * ###### Destinationaddressprefixes
->          * ###### Destinationportranges
->          * ###### Sourceaddressprefixes
->          * ###### Sourceportranges
->      * #### Denyallinbound
->        * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/DenyAllInBound
->        * name: DenyAllInBound
->        * ##### Properties
->          * access: Deny
->          * description: Deny all inbound traffic
->          * destinationAddressPrefix: *
->          * destinationPortRange: *
->          * direction: Inbound
->          * priority: 65500
->          * protocol: *
->          * provisioningState: Succeeded
->          * sourceAddressPrefix: *
->          * sourcePortRange: *
->          * ###### Destinationaddressprefixes
->          * ###### Destinationportranges
->          * ###### Sourceaddressprefixes
->          * ###### Sourceportranges
->      * #### Allowvnetoutbound
->        * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowVnetOutBound
->        * name: AllowVnetOutBound
->        * ##### Properties
->          * access: Allow
->          * description: Allow outbound traffic from all VMs to all VMs in VNET
->          * destinationAddressPrefix: VirtualNetwork
->          * destinationPortRange: *
->          * direction: Outbound
->          * priority: 65000
->          * protocol: *
->          * provisioningState: Succeeded
->          * sourceAddressPrefix: VirtualNetwork
->          * sourcePortRange: *
->          * ###### Destinationaddressprefixes
->          * ###### Destinationportranges
->          * ###### Sourceaddressprefixes
->          * ###### Sourceportranges
->      * #### Allowinternetoutbound
->        * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/AllowInternetOutBound
->        * name: AllowInternetOutBound
->        * ##### Properties
->          * access: Allow
->          * description: Allow outbound traffic from all VMs to Internet
->          * destinationAddressPrefix: Internet
->          * destinationPortRange: *
->          * direction: Outbound
->          * priority: 65001
->          * protocol: *
->          * provisioningState: Succeeded
->          * sourceAddressPrefix: *
->          * sourcePortRange: *
->          * ###### Destinationaddressprefixes
->          * ###### Destinationportranges
->          * ###### Sourceaddressprefixes
->          * ###### Sourceportranges
->      * #### Denyalloutbound
->        * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/defaultSecurityRules/DenyAllOutBound
->        * name: DenyAllOutBound
->        * ##### Properties
->          * access: Deny
->          * description: Deny all outbound traffic
->          * destinationAddressPrefix: *
->          * destinationPortRange: *
->          * direction: Outbound
->          * priority: 65500
->          * protocol: *
->          * provisioningState: Succeeded
->          * sourceAddressPrefix: *
->          * sourcePortRange: *
->          * ###### Destinationaddressprefixes
->          * ###### Destinationportranges
->          * ###### Sourceaddressprefixes
->          * ###### Sourceportranges
 >      * #### Securityrules
 >      * #### Denyssh
 >        * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
@@ -6311,45 +5729,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >          * ###### Destinationaddressprefixes
 >          * ###### Destinationportranges
 >          * ###### Sourceaddressprefixes
->          * ###### Sourceportranges
->      * #### Allowssh
->        * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/securityRules/AllowSSH
->        * name: AllowSSH
->        * ##### Properties
->          * access: Allow
->          * destinationAddressPrefix: *
->          * destinationPortRange: 22
->          * direction: Inbound
->          * priority: 101
->          * protocol: Tcp
->          * provisioningState: Succeeded
->          * sourcePortRange: *
->          * ###### Destinationaddressprefixes
->          * ###### Destinationportranges
->          * ###### Sourceaddressprefixes
->            * 0: 174.109.158.0/24
->            * 1: 174.109.159.0/24
->          * ###### Sourceportranges
->      * #### Allowmultipleports
->        * etag: W/"eeeac0dc-126e-4b2f-abee-b8247bc16757"
->        * id: /subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/networkSecurityGroups/mysecgroup/securityRules/AllowMultiplePorts
->        * name: AllowMultiplePorts
->        * ##### Properties
->          * access: Allow
->          * destinationAddressPrefix: *
->          * direction: Inbound
->          * priority: 102
->          * protocol: Tcp
->          * provisioningState: Succeeded
->          * sourcePortRange: *
->          * ###### Destinationaddressprefixes
->          * ###### Destinationportranges
->            * 0: 80
->            * 1: 443
->          * ###### Sourceaddressprefixes
->            * 0: 174.109.158.0/24
->            * 1: 174.109.159.0/24
 >          * ###### Sourceportranges
 >    * ### Tags
 
