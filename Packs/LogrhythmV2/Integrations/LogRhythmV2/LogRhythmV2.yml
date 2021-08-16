@@ -2026,18 +2026,41 @@ script:
   - name: lr-lists-get
     description: ''
     arguments:
-    - name: listtype
+    - name: list_type
       description: ''
       required: false
       isArray: false
-    - name: name
+      auto: PREDEFINED
+      predefined:
+      - None
+      - Application
+      - Classification
+      - CommonEvent
+      - Host
+      - Location
+      - MsgSource
+      - MsgSourceType
+      - MPERule
+      - Network
+      - User
+      - GeneralValue
+      - Entity
+      - RootEntity
+      - IP
+      - IPRange
+      - Identity
+    - name: list_name
       description: ''
       required: false
       isArray: false
-    - name: canedit
+    - name: can_edit
       description: ''
       required: false
       isArray: false
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
     outputs:
     - type: String
       contextPath: LogrhythmV2.ListsGet..listType
@@ -2160,9 +2183,9 @@ script:
     arguments:
     - name: list_id
       description: ''
-      required: false
+      required: true
       isArray: false
-    - name: maxitemsthreshold
+    - name: max_items
       description: ''
       required: false
       isArray: false
@@ -2259,55 +2282,11 @@ script:
     arguments:
     - name: list_id
       description: ''
-      required: false
+      required: true
       isArray: false
-    - name: displayvalue
+    - name: items
       description: ''
-      required: false
-      isArray: false
-    - name: expirationdate
-      description: ''
-      required: false
-      isArray: false
-    - name: isexpired
-      description: ''
-      required: false
-      isArray: false
-    - name: islistitem
-      description: ''
-      required: false
-      isArray: false
-    - name: ispattern
-      description: ''
-      required: false
-      isArray: false
-    - name: listitemdatatype
-      description: ''
-      required: false
-      isArray: false
-    - name: listitemtype
-      description: ''
-      required: false
-      isArray: false
-    - name: value
-      description: ''
-      required: false
-      isArray: false
-    - name: listid
-      description: ''
-      required: false
-      isArray: false
-    - name: guid
-      description: ''
-      required: false
-      isArray: false
-    - name: listtype
-      description: ''
-      required: false
-      isArray: false
-    - name: name
-      description: ''
-      required: false
+      required: true
       isArray: false
     outputs:
     - type: String
@@ -2378,39 +2357,11 @@ script:
     arguments:
     - name: list_id
       description: ''
-      required: false
+      required: true
       isArray: false
-    - name: displayvalue
+    - name: items
       description: ''
-      required: false
-      isArray: false
-    - name: expirationdate
-      description: ''
-      required: false
-      isArray: false
-    - name: isexpired
-      description: ''
-      required: false
-      isArray: false
-    - name: islistitem
-      description: ''
-      required: false
-      isArray: false
-    - name: ispattern
-      description: ''
-      required: false
-      isArray: false
-    - name: listitemdatatype
-      description: ''
-      required: false
-      isArray: false
-    - name: listitemtype
-      description: ''
-      required: false
-      isArray: false
-    - name: value
-      description: ''
-      required: false
+      required: true
       isArray: false
     outputs:
     - type: String
@@ -2479,59 +2430,65 @@ script:
   - name: lr-execute-search-query
     description: ''
     arguments:
-    - name: maxmsgstoquery
+    - name: number_of_date
+      description: ''
+      required: true
+      isArray: false
+    - name: source_type
       description: ''
       required: false
       isArray: false
-    - name: logcachesize
+    - name: host_name
       description: ''
       required: false
       isArray: false
-    - name: querytimeout
+    - name: username
       description: ''
       required: false
       isArray: false
-    - name: queryrawlog
+    - name: subject
       description: ''
       required: false
       isArray: false
-    - name: queryeventmanager
+    - name: sender
       description: ''
       required: false
       isArray: false
-    - name: useinserteddate
+    - name: recipient
       description: ''
       required: false
       isArray: false
-    - name: lastintervalvalue
+    - name: hash
       description: ''
       required: false
       isArray: false
-    - name: lastintervalunit
+    - name: url
       description: ''
       required: false
       isArray: false
-    - name: msgfiltertype
+    - name: process_name
       description: ''
       required: false
       isArray: false
-    - name: issavedfilter
+    - name: object
       description: ''
       required: false
       isArray: false
-    - name: filteritemtype
+    - name: ip_address
       description: ''
       required: false
       isArray: false
-    - name: fieldoperator
+    - name: max_message
       description: ''
       required: false
       isArray: false
-    - name: filtermode
+      defaultValue: "100"
+    - name: query_timeout
       description: ''
       required: false
       isArray: false
-    - name: filtergroupoperator
+      defaultValue: "60"
+    - name: entity_id
       description: ''
       required: false
       isArray: false
@@ -2554,62 +2511,15 @@ script:
   - name: lr-get-query-result
     description: ''
     arguments:
-    - name: maxmsgstoquery
+    - name: task_id
+      description: ''
+      required: true
+      isArray: false
+    - name: page_size
       description: ''
       required: false
       isArray: false
-    - name: logcachesize
-      description: ''
-      required: false
-      isArray: false
-    - name: querytimeout
-      description: ''
-      required: false
-      isArray: false
-    - name: queryrawlog
-      description: ''
-      required: false
-      isArray: false
-    - name: queryeventmanager
-      description: ''
-      required: false
-      isArray: false
-    - name: useinserteddate
-      description: ''
-      required: false
-      isArray: false
-    - name: lastintervalvalue
-      description: ''
-      required: false
-      isArray: false
-    - name: lastintervalunit
-      description: ''
-      required: false
-      isArray: false
-    - name: msgfiltertype
-      description: ''
-      required: false
-      isArray: false
-    - name: issavedfilter
-      description: ''
-      required: false
-      isArray: false
-    - name: filteritemtype
-      description: ''
-      required: false
-      isArray: false
-    - name: fieldoperator
-      description: ''
-      required: false
-      isArray: false
-    - name: filtermode
-      description: ''
-      required: false
-      isArray: false
-    - name: filtergroupoperator
-      description: ''
-      required: false
-      isArray: false
+      defaultValue: "50"
     outputs:
     - type: Number
       contextPath: LogrhythmV2.GetQueryResult.StatusCode
@@ -2632,42 +2542,117 @@ script:
   - name: lr-add-host
     description: ''
     arguments:
-    - name: id
+    - name: entity-id
       description: ''
       required: false
       isArray: false
-    - name: id
+    - name: entity-name
       description: ''
-      required: false
-      isArray: false
-    - name: name
-      description: ''
-      required: false
+      required: true
       isArray: false
     - name: name
       description: ''
-      required: false
+      required: true
       isArray: false
-    - name: risklevel
+    - name: short-description
       description: ''
       required: false
       isArray: false
-    - name: recordstatusname
+    - name: long-description
       description: ''
       required: false
       isArray: false
-    - name: hostzone
+    - name: risk-level
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - None
+      - Low-Low
+      - Low-Medium
+      - Low-High
+      - Medium-Low
+      - Medium-Medium
+      - Medium-High
+      - High-Low
+      - High-Medium
+      - High-High
+    - name: threat-level
       description: ''
       required: false
       isArray: false
+      auto: PREDEFINED
+      predefined:
+      - None
+      - Low-Low
+      - Low-Medium
+      - Low-High
+      - Medium-Low
+      - Medium-Medium
+      - Medium-High
+      - High-Low
+      - High-Medium
+      - High-High
+    - name: threat-level-comments
+      description: ''
+      required: false
+      isArray: false
+    - name: host-status
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - Retired
+      - Active
+    - name: host-zone
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - External
+      - DMZ
+      - Internal
+    - name: use-eventlog-credentials
+      description: ''
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
+    - name: os-type
+      description: ''
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - None
+      - Server
+      - Desktop
     - name: os
       description: ''
-      required: false
+      required: true
       isArray: false
-    - name: useeventlogcredentials
-      description: ''
-      required: false
-      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - Unknown
+      - Other
+      - WindowsNT4
+      - Windows2000Professional
+      - Windows2000Server
+      - Windows2003Standard
+      - Windows2003Enterprise
+      - Windows95
+      - WindowsXP
+      - WindowsVista
+      - Linux
+      - Solaris
+      - AIX
+      - HPUX
+      - Windows
     outputs:
     - type: Number
       contextPath: LogrhythmV2.AddHost.id

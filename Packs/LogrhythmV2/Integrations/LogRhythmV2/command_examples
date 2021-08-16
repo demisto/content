@@ -1,0 +1,3 @@
+lr-list-items-add list_id=EA778B8F-20CA-4413-9A2D-CF69FB536793 items=`{"displayValue": "string","expirationDate": "2021-08-08T15:27:30Z","isExpired": true,"isListItem": true,"isPattern": true,"listItemDataType": "PortRange","listItemType": "PortRange","value": "200,300","valueAsListReference": {"listId": -2147483648,"guid": "string","listType": "Network","name": "string"}}`
+!lr-list-items-remove list_id=EA778B8F-20CA-4413-9A2D-CF69FB536793 items=`{"displayValue": "201,301","listItemType": "PortRange","value": "201,301"}`
+!lr-add-host entity-name=`Global Entity` host-status=Retired host-zone=DMZ name=test_host2 os=AIX risk-level="High-High" use-eventlog-credentials=false
