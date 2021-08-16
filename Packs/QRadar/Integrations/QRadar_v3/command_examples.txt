@@ -22,3 +22,5 @@
 !qradar-log-sources-list qrd_encryption_algorithm=AES128 range=0-2
 !qradar-get-custom-properties filter="id between 90 and 100" range=1-1231
 !qradar-reset-last-run
+!qradar-ips-source-get filter=`source_ip="172.42.18.211"` range=0-2
+!qradar-ips-local-destination-get filter=`local_destination_ip="172.42.18.211"`
