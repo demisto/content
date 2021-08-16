@@ -513,7 +513,7 @@ script:
       required: true
       description: ID of the component. The cid is referenced in the data attribute for model breaches.
     description: Get details of a component given the CID
-  dockerimage: demisto/python3:3.9.5.22912
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: true
   longRunning: false
