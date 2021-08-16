@@ -177,6 +177,9 @@ class Client(BaseClient):
                                  full_url=self._base_url,
                                  resp_type='text',
                                  json_data=body,
+                                 headers={'Authorization': demisto.params().get('Authorization'),
+                                          "Accept": "application/json",
+                                          },
                                  )
         try:
             return json.loads(res)
@@ -296,8 +299,8 @@ def search_attributes_command(client: Client,
     """
     # limit = int(args.get('limit', '10'))
     # tlp_color = params.get('tlp_color')
-    tags = argToList(params.get('tags', ''))
-    attribute_type = argToList(params.get('tags', ''))
+    tags = argToList(args.get('tags', ''))
+    attribute_type = argToList(args.get('type', ''))
     params_dict = build_params_dict(tags, attribute_type)
     indicators = client.search_query(params_dict)
     # human_readable = tableToMarkdown('Indicators from HelloWorld Feed:', indicators, headers=['value', 'type'],
@@ -313,17 +316,19 @@ def search_attributes_command(client: Client,
 
 def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[str, Any]:
     params = {
-        "returnFormat": "json",
-        "type": {},
-        "tags": {
-            "OR": []
+        'returnFormat': 'json',
+        'type': {
+            'type': 'ip-src'
+        },
+        'tags': {
+            'OR': 'tlp:%'
         }
     }
-    if attribute_type:
-        params["type"]["type"] = attribute_type
-    if tags:
-        params["tags"]["OR"] = tags
-    return params
+    # if attribute_type:
+    #     params["type"]["type"] = attribute_type
+    # if tags:
+    #     params["tags"]["OR"] = tags
+    return json.dumps(params)
 
 
 def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
