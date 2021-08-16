@@ -128,8 +128,6 @@ class Client(BaseClient):
             int(demisto.args().get('page'))
         except ValueError:
             return_error("Page must be an integer.")
-        if int(demisto.args().get('count')) > 20:
-                print("Error: Count must not exceed 20. Count was set to 20.")
         for user in ((Client.auth().search_users(q=demisto.args().get('name'), page=int(demisto.args().get('page')), count=int(demisto.args().get('count')), include_entities=True))):
             if 'url' in user.entities.keys():
                 user_url = user.entities.get('url').get('urls')[0].get('expanded_url')
