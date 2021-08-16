@@ -2246,7 +2246,7 @@ class TestFetch:
 
     def test_fetch_incident_type(self, set_up_mocks, mocker):
         """
-        Tests the adding of incident_type field to the context
+        Tests the addition of incident_type field to the context
         Given:
             Old getLastRun which holds `first_behavior_time` and `last_detection_id`
         When:
@@ -2311,7 +2311,7 @@ class TestIncidentFetch:
                                                           'last_fetched_incident': 'ldt:1', 'incident_offset': 0}
 
     def test_incident_type_in_fetch(self, set_up_mocks, mocker):
-        """Tests the adding of incident_type field to the context
+        """Tests the addition of incident_type field to the context
         Given:
             Old getLastRun which holds `first_behavior_time` and `last_incident_id`
         When:
