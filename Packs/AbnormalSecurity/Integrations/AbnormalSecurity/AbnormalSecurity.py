@@ -52,7 +52,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_a_list_of_threats_request(self, filter_, page_size, page_number, source, subtenant):
+    def get_a_list_of_threats_request(self, filter_, page_size, page_number, source, subtenant=None):
         params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, source=source, subtenant=subtenant)
 
         headers = self._headers
@@ -210,7 +210,8 @@ def get_a_list_of_abnormal_cases_identified_by_abnormal_security_command(client,
         subtenant
     )
     markdown = '### List of Cases\n'
-    markdown += tableToMarkdown('Case IDs', response.get('cases', []), headers=['caseId', 'description'])
+    markdown += tableToMarkdown(
+        'Case IDs', response.get('cases', []), headers=['caseId', 'description'], removeNull=True)
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix='AbnormalSecurity.inline_response_200_1',
@@ -230,7 +231,7 @@ def get_a_list_of_campaigns_submitted_to_abuse_mailbox_command(client, args):
 
     response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(filter_, page_size, page_number, subtenant)
     markdown = '### List of Abuse Mailbox Campaigns\n'
-    markdown += tableToMarkdown('Campaign IDs', response.get('campaigns', []), headers=['campaignId'])
+    markdown += tableToMarkdown('Campaign IDs', response.get('campaigns', []), headers=['campaignId'], removeNull=True)
 
     command_results = CommandResults(
         readable_output=markdown,
@@ -252,7 +253,7 @@ def get_a_list_of_threats_command(client, args):
 
     response = client.get_a_list_of_threats_request(filter_, page_size, page_number, source, subtenant)
     markdown = '### List of Threats\n'
-    markdown += tableToMarkdown('Threat IDs', response.get('threats'), headers=['threatId'])
+    markdown += tableToMarkdown('Threat IDs', response.get('threats'), headers=['threatId'], removeNull=True)
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix='AbnormalSecurity.inline_response_200',
@@ -280,7 +281,12 @@ def get_details_of_a_threat_command(client, args):
         'returnPath'
     ]
     markdown = tableToMarkdown(
-        f"Messages in Threat {response.get('threatId', '')}", response.get('messages', []), headers=headers)
+        f"Messages in Threat {response.get('threatId', '')}",
+        response.get('messages', []),
+        headers=headers,
+        removeNull=True
+    )
+
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix='AbnormalSecurity.ThreatDetails',
@@ -304,7 +310,7 @@ def get_details_of_an_abnormal_case_command(client, args):
         'threatIds'
     ]
     markdown = tableToMarkdown(
-        f"Details of Case {response.get('caseId', '')}", response, headers=headers)
+        f"Details of Case {response.get('caseId', '')}", response, headers=headers, removeNull=True)
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix='AbnormalSecurity.AbnormalCaseDetails',
@@ -339,7 +345,7 @@ def get_employee_identity_analysis_genome_data_command(client, args):
     headers = ['description', 'key', 'name', 'values']
 
     markdown = tableToMarkdown(
-        f"Analysis of {email_address}", response.get('histograms', []), headers=headers)
+        f"Analysis of {email_address}", response.get('histograms', []), headers=headers, removeNull=True)
 
     command_results = CommandResults(
         readable_output=markdown,
@@ -427,7 +433,7 @@ def provides_the_analysis_and_timeline_details_of_a_case_command(client, args):
         'description'
     ]
     markdown = tableToMarkdown(
-        f"Insights for {response.get('caseId', '')}", response.get('insights', []), headers=insight_headers)
+        f"Insights for {case_id}", response.get('insights', []), headers=insight_headers, removeNull=True)
 
     timeline_headers = [
         'event_timestamp',
@@ -445,7 +451,11 @@ def provides_the_analysis_and_timeline_details_of_a_case_command(client, args):
     ]
 
     markdown += tableToMarkdown(
-        f"Event Timeline for {response.get('caseId', '')}", response.get('eventTimeline', []), headers=timeline_headers)
+        f"Event Timeline for {response.get('caseId', '')}",
+        response.get('eventTimeline', []),
+        headers=timeline_headers,
+        removeNull=True
+    )
 
     command_results = CommandResults(
         readable_output=markdown,

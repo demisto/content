@@ -425,22 +425,22 @@ script:
     description: Get employee identity analysis (Genome) data
     name: abnormal-security-get-employee-identity-analysis
     outputs:
-      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.histograms.key
+      - contextPath: AbnormalSecurity.Employee.histograms.key
         description: Genome key name
         type: String
-      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.histograms.name
+      - contextPath: AbnormalSecurity.Employee.histograms.name
         description: Genome title
         type: String
-      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.histograms.description
+      - contextPath: AbnormalSecurity.Employee.histograms.description
         description: Description of genome object
         type: String
-      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.histograms.values.value
+      - contextPath: AbnormalSecurity.Employee.histograms.values.value
         description: Category value
         type: String
-      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.histograms.values.percentage
+      - contextPath: AbnormalSecurity.Employee.histograms.values.percentage
         description: Ratio of this category relative to others
         type: Number
-      - contextPath: AbnormalSecurity.EmployeeIdentityDetails.histograms.values.total_count
+      - contextPath: AbnormalSecurity.Employee.histograms.values.total_count
         description: Number of occurences for this category
         type: Number
   - arguments:
@@ -455,16 +455,16 @@ script:
     description: Get employee information
     name: abnormal-security-get-employee-information
     outputs:
-    - contextPath: AbnormalSecurity.EmployeeDetails.name
+    - contextPath: AbnormalSecurity.Employee.name
       description: Name of the employee.
       type: String
-    - contextPath: AbnormalSecurity.EmployeeDetails.email
+    - contextPath: AbnormalSecurity.Employee.email
       description: Email of the employee.
       type: String
-    - contextPath: AbnormalSecurity.EmployeeDetails.title
+    - contextPath: AbnormalSecurity.Employee.title
       description: Job title of the employee.
       type: String
-    - contextPath: AbnormalSecurity.EmployeeDetails.manager
+    - contextPath: AbnormalSecurity.Employee.manager
       description: Email address of the employee's manager
       type: String
   - arguments:
@@ -531,7 +531,7 @@ script:
         description: URL of the status of the action
         type: String
   - arguments:
-    - description: A string representing the case
+    - description: A string representing the email case. Can be retrieved by first running command to list cases
       isArray: false
       name: case_id
       required: true

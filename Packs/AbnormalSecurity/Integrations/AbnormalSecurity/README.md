@@ -138,26 +138,29 @@ Download data from Threat Log in .csv format
 There is no context output for this command.
 
 #### Command Example
-```!abnormal-security-download-threat-log-csv filter="gte 2020-12-01T01:01:01Z"```
+```!abnormal-security-download-threat-log-csv filter="receivedTime gte 2020-12-01T01:01:01Z"```
 
 #### Context Example
 ```json
 {
     "File": {
-        "EntryID": "1675@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
+        "EntryID": "1996@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
         "Extension": "csv",
         "Info": "csv",
-        "MD5": "11afb4879c5026e25bd868dfcf23e811",
+        "MD5": "a981545ee72fe115888800725883ca8a",
         "Name": "threat_log.csv",
-        "SHA1": "345ea1d24b52c96baf6b0e4d892d13d4efcf666d",
-        "SHA256": "12620e0f576f4d74603b1f542919a3e5199e61435ffd99bcd68c26e02ed9c693",
-        "SHA512": "f0e788981ce70d9668100ae3f93d1f28660f0d8a9dfda02284a70f08ac14ca5a356872284f460d8fb7970791e314e0db4a6c84b0032c35046efce62368a00da5",
-        "SSDeep": "12:uR2xCC56aHoW2IY3zg05Eg05ng05Eg05V:uROjHn2IY3v5i5T5i5V",
-        "Size": 484,
+        "SHA1": "c3cbae11542dc7244e3bf04a0901d7063597d381",
+        "SHA256": "296463cad959803d64bfc94fbffa24e30c9438ba58827a100a9e7c219f26b382",
+        "SHA512": "21a53f61c7d22b533abd7181b16116bf9017b7a444c10e4d2336803794ef0d9dded56e65179f924252f0bf3231e35fa1b726c8d7723f10b2f08bae0b3bedddd1",
+        "SSDeep": "12:dB2XRzmZIm88Rvu8R7b7+I78RQC5+GUHwgfdvvq:dB2XRMrt/C5+GYw",
+        "Size": 449,
         "Type": "ASCII text, with CRLF line terminators"
     }
 }
 ```
+
+#### Human Readable Output
+
 
 
 ### abnormal-security-list-abuse-mailbox-campaigns
@@ -172,7 +175,7 @@ Get a list of campaigns submitted to Abuse Mailbox
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only the key `lastReportedTime` is supported for `/abusecampaigns`. At least one of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format. Do note that provided filter time is in UTC. | Optional | 
+| filter | Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently only the key `lastReportedTime` is supported for `/abusecampaigns`. At least one of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format. Do note that provided filter time is in UTC. | Optional | 
 | page_size | Number of abuse campaigns shown on each page. Each page of data will have at most page_size abuse campaign IDs. | Optional | 
 | page_number | 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified. | Optional | 
 | mock-data | Returns test data if set to `True`. | Optional | 
@@ -195,7 +198,7 @@ Get a list of campaigns submitted to Abuse Mailbox
 ```json
 {
     "AbnormalSecurity": {
-        "inline_response_200_3": {
+        "AbuseCampaigns": {
             "campaigns": [
                 {
                     "campaignId": "fff51768-c446-34e1-97a8-9802c29c3ebd"
@@ -395,6 +398,7 @@ Get details of a threat
                 {
                     "abxMessageId": 4551618356913732000,
                     "abxPortalUrl": "https://portal.abnormalsecurity.com/home/threat-center/remediation-history/4551618356913732076",
+                    "attachmentCount": null,
                     "attachmentNames": [
                         "attachment.pdf"
                     ],
@@ -419,6 +423,7 @@ Get details of a threat
                         "reply-to@example.com"
                     ],
                     "returnPath": "support@secure-reply.org",
+                    "senderDomain": "",
                     "senderIpAddress": "100.101.102.103",
                     "sentTime": "2020-06-09T17:42:59Z",
                     "subject": "Phishing Email",
@@ -429,6 +434,7 @@ Get details of a threat
                     ],
                     "threatId": "184712ab-6d8b-47b3-89d3-a314efef79e2",
                     "toAddresses": "example@example.com, another@example.com",
+                    "urlCount": 0,
                     "urls": [
                         "https://www.google.com/"
                     ]
@@ -443,9 +449,9 @@ Get details of a threat
 #### Human Readable Output
 
 >### Messages in Threat 184712ab-6d8b-47b3-89d3-a314efef79e2
->|subject|fromAddress|fromName|toAddresses|recipientAddress|receivedTime|attackType|attackStrategy|returnPath|
->|---|---|---|---|---|---|---|---|---|
->| Phishing Email | support@secure-reply.org |  | example@example.com, another@example.com | example@example.com | 2020-06-09T17:42:59Z | Extortion | Name Impersonation | support@secure-reply.org |
+>|subject|fromAddress|toAddresses|recipientAddress|receivedTime|attackType|attackStrategy|returnPath|
+>|---|---|---|---|---|---|---|---|
+>| Phishing Email | support@secure-reply.org | example@example.com, another@example.com | example@example.com | 2020-06-09T17:42:59Z | Extortion | Name Impersonation | support@secure-reply.org |
 
 
 ### abnormal-security-get-abnormal-case
@@ -476,7 +482,7 @@ Get details of an Abnormal case
 
 
 #### Command Example
-```!abnormal-security-get-abnormal-case case_id=1234```
+```!abnormal-security-get-abnormal-case case_id=12805```
 
 #### Context Example
 ```json
@@ -548,7 +554,7 @@ Get details of an Abuse Mailbox campaign
 ```json
 {
     "AbnormalSecurity": {
-        "AbuseCampaignDetails": {
+        "AbuseCampaign": {
             "attackType": "Attack Type: Spam",
             "campaignId": "fff51768-c446-34e1-97a8-9802c29c3ebd",
             "firstReported": "2020-11-11T13:11:40-08:00",
@@ -594,12 +600,12 @@ Get employee identity analysis (Genome) data
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.EmployeeIdentityDetails.histograms.key | String | Genome key name | 
-| AbnormalSecurity.EmployeeIdentityDetails.histograms.name | String | Genome title | 
-| AbnormalSecurity.EmployeeIdentityDetails.histograms.description | String | Description of genome object | 
-| AbnormalSecurity.EmployeeIdentityDetails.histograms.values.value | String | Category value | 
-| AbnormalSecurity.EmployeeIdentityDetails.histograms.values.percentage | Number | Ratio of this category relative to others | 
-| AbnormalSecurity.EmployeeIdentityDetails.histograms.values.total_count | Number | Number of occurences for this category | 
+| AbnormalSecurity.Employee.histograms.key | String | Genome key name | 
+| AbnormalSecurity.Employee.histograms.name | String | Genome title | 
+| AbnormalSecurity.Employee.histograms.description | String | Description of genome object | 
+| AbnormalSecurity.Employee.histograms.values.value | String | Category value | 
+| AbnormalSecurity.Employee.histograms.values.percentage | Number | Ratio of this category relative to others | 
+| AbnormalSecurity.Employee.histograms.values.total_count | Number | Number of occurences for this category | 
 
 
 #### Command Example
@@ -609,7 +615,7 @@ Get employee identity analysis (Genome) data
 ```json
 {
     "AbnormalSecurity": {
-        "EmployeeIdentityDetails": {
+        "Employee": {
             "histograms": [
                 {
                     "description": "Common IP addresses for user logins",
@@ -672,10 +678,10 @@ Get employee information
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.EmployeeDetails.name | String | Name of the employee. | 
-| AbnormalSecurity.EmployeeDetails.email | String | Email of the employee. | 
-| AbnormalSecurity.EmployeeDetails.title | String | Job title of the employee. | 
-| AbnormalSecurity.EmployeeDetails.manager | String | Email address of the employee's manager | 
+| AbnormalSecurity.Employee.name | String | Name of the employee. | 
+| AbnormalSecurity.Employee.email | String | Email of the employee. | 
+| AbnormalSecurity.Employee.title | String | Job title of the employee. | 
+| AbnormalSecurity.Employee.manager | String | Email address of the employee's manager | 
 
 
 #### Command Example
@@ -685,7 +691,7 @@ Get employee information
 ```json
 {
     "AbnormalSecurity": {
-        "EmployeeDetails": {
+        "Employee": {
             "email": "testemail@email.com",
             "manager": "testmanageremail@email.net",
             "name": "test_name",
@@ -730,7 +736,7 @@ There is no context output for this command.
 ```json
 {
     "File": {
-        "EntryID": "1675@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
+        "EntryID": "2040@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
         "Extension": "csv",
         "Info": "csv",
         "MD5": "11afb4879c5026e25bd868dfcf23e811",
@@ -744,6 +750,9 @@ There is no context output for this command.
     }
 }
 ```
+
+#### Human Readable Output
+
 
 
 ### abnormal-security-get-latest-threat-intel-feed
@@ -772,20 +781,24 @@ There is no context output for this command.
 ```json
 {
     "File": {
-        "EntryID": "1651@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
+        "EntryID": "2016@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
         "Extension": "json",
         "Info": "application/json",
-        "MD5": "b649104cfba71cc1c691dc859ff3e4a1",
+        "MD5": "5923d3a6038c4964b97e43da01818015",
         "Name": "threat_intel_feed.json",
-        "SHA1": "d7c6159a7c588a20dd1f2c6fe2d8306aaafe4a24",
-        "SHA256": "8cf8e70d081ce25cd427d416abea1951658a925e95398be694bfd7c3fe8e37d4",
-        "SHA512": "bbee5e60984309916c62d8a1113cba8dc2b3e58f52d95b6bc7d2f214a49f97c7e0f1304a36d0d89afcff059743a61e71ee5c3b809efe250a0e7ff368f5f04684",
-        "SSDeep": "49152:6IZdVn0zFV6rTSbliiX03PUkS1rDV/uYqX/VdId9UUOX8ygMhUcIc:r",
-        "Size": 7659733,
+        "SHA1": "12a18bc38e8409ec26394208193c3dc209452f15",
+        "SHA256": "3abce87474cdeadb243cdad24fef4052ac14f47cb245e77440a5ea53f5ffd401",
+        "SHA512": "f34f35bd5f30202931b21d2c9d3fecbc952ee76bc34827b02f6605b8af2502d6d86c8abf9cbee0594d0a36090bc6c89b481349ccb6e044408861c94d152cbb05",
+        "SSDeep": "49152:Whn3qgbXiYjgKDo1dKApGCZ7SE5/9oNGFCwzIiyzE86yjl7kOwuBT9/66HaG:I",
+        "Size": 8023286,
         "Type": "ASCII text"
     }
 }
 ```
+
+#### Human Readable Output
+
+
 
 ### abnormal-security-manage-threat
 ***
@@ -895,7 +908,7 @@ Provides the analysis and timeline details of a case
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | A string representing the case. | Required | 
+| case_id | A string representing the email case. Can be retrieved by first running command to list cases. | Required | 
 | mock-data | Returns test data if set to `True`. | Optional | 
 | subtenant | Subtenant of the user (if applicable). | Optional | 
 
@@ -994,17 +1007,17 @@ Provides the analysis and timeline details of a case
 
 #### Human Readable Output
 
->### Insights for 
+>### Insights for 12345
 >|signal|description|
 >|---|---|
 >| Risky Location | There was a signin into test@lamronba.com from a location frequently used to launch attacks. |
 >### Event Timeline for 
->|event_timestamp|category|title|field_labels|ip_address|description|location|sender|subject|title|flagging detectors|rule_name|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2021-07-14T22:41:54Z | Risk Event | Impossible Travel |  | 127.0.0.1 | Impossible Travel Event was observed for test@lamronba.com. | city: Aldie<br/>state: Virginia<br/>country: US |  |  | Impossible Travel |  |  |
->| 2021-07-14T22:41:54Z | Mail Rule | Mail Rule Change |  |  |  |  |  |  | Mail Rule Change |  | Swag Voice Note |
->| 2021-07-14T22:41:54Z | Mail Sent | Unusual Correspondence |  |  |  |  | test@lamronba.com | Spoof email subject | Unusual Correspondence |  |  |
->| 2021-07-14T22:41:54Z | Sign In | Suspicious Failed Sign In Attempt | ip_address: rare,<br/>proxy<br/>operating_system: legacy | 127.0.0.1 | Suspicious Failed Sign In Attempt for test@lamronba.com | country: Ireland |  |  | Suspicious Failed Sign In Attempt |  |  |
+>|event_timestamp|category|title|field_labels|ip_address|description|location|sender|subject|title|rule_name|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 2021-07-14T22:41:54Z | Risk Event | Impossible Travel |  | 127.0.0.1 | Impossible Travel Event was observed for test@lamronba.com. | city: Aldie<br/>state: Virginia<br/>country: US |  |  | Impossible Travel |  |
+>| 2021-07-14T22:41:54Z | Mail Rule | Mail Rule Change |  |  |  |  |  |  | Mail Rule Change | Swag Voice Note |
+>| 2021-07-14T22:41:54Z | Mail Sent | Unusual Correspondence |  |  |  |  | test@lamronba.com | Spoof email subject | Unusual Correspondence |  |
+>| 2021-07-14T22:41:54Z | Sign In | Suspicious Failed Sign In Attempt | ip_address: rare,<br/>proxy<br/>operating_system: legacy | 127.0.0.1 | Suspicious Failed Sign In Attempt for test@lamronba.com | country: Ireland |  |  | Suspicious Failed Sign In Attempt |  |
 
 
 ### abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement
@@ -1051,3 +1064,4 @@ Submit an Inquiry to request a report on misjudgement by Abnormal Security
 >|detail|
 >|---|
 >| Thank you for your feedback! We have sent your inquiry to our support staff. |
+
