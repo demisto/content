@@ -90,3 +90,5 @@ timeout: '0'
 type: python
 fromversion: 6.2.0
 dockerimage: demisto/python3:3.9.6.22912
+tests:
+- No test
