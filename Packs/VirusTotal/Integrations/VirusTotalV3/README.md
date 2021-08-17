@@ -57,6 +57,17 @@ If the YARA rules analysis threshold is enabled:
 - Indicators with positive results, the number of found YARA rules results, Sigma analysis, or IDS equal to or higher than the threshold, will be considered suspicious.
 - If both the the basic analysis and the rules analysis is suspicious, the indicator will be considered as malicious.
 If the indicator was found to be suspicious only by the rules thresholds, the indicator will be considered suspicious.
+- Domain popularity ranks: VirusTotal is returning a popularity ranks for each vendor. The integration will calculate its average and will compare it to the threshold.
+
+The DbotScore calculation process can be seen on the "description" field in any malicious/suspicious DBot score.
+You can aquire those calculation on all of the indicators also from the debug log.
+
+Example of a VirusTotal (API v3) DBot score log:
+
+```log
+Analysing file hash given hash. Those preferred vendors found the hash malicious: []. They do not pass the threshold 2. 0 vendors found malicious. 
+The malicious threshold is 1. Not found malicious by threshold: total_malicious=0 >= threshold=1. Crowdsourced Yara Rules analyzing enabled. Not found sigma analysis. Skipping. Not found crowdsourced IDS analysis. Skipping. Hash: "<file-hash>" was found good
+```
 
 ### Premium analysis - Relationship Files Threshold
 
