@@ -24,7 +24,7 @@ CLIENT_CREDENTIALS = 'client_credentials'
 AUTHORIZATION_CODE = 'authorization_code'
 REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
-REGEX_SEARCH_URL = '(?P<url>https?://[^\s]+)'
+REGEX_SEARCH_URL = r'(?P<url>https?://[^\s]+)'
 SESSION_STATE = 'session_state'
 
 
@@ -240,7 +240,8 @@ class MicrosoftClient(BaseClient):
                 'app_name': self.app_name,
                 'registration_id': self.auth_id,
                 'encrypted_token': self.get_encrypted(content, self.enc_key),
-                'scope': scope
+                'scope': scope,
+                'resource': resource
             },
             verify=self.verify
         )

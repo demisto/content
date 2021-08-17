@@ -1,8 +1,8 @@
 from CommonServerPython import *
 from GetCampaignIncidentsInfo import *
 
-REQUIRED_KEYS = ['id', 'name', 'email_from', 'recipients', 'severity', 'status', 'created']
-STR_VAL_KEYS = ['name', 'email_from', 'recipients', 'created']
+REQUIRED_KEYS = ['id', 'name', 'emailfrom', 'recipients', 'severity', 'status', 'created']
+STR_VAL_KEYS = ['name', 'emailfrom', 'recipients', 'created']
 
 NUM_OF_INCIDENTS = 5
 MOCKED_INCIDENTS = [
@@ -41,7 +41,7 @@ def test_incidents_info_md_happy_path(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'incidents', return_value=MOCKED_INCIDENTS)
     mocker.patch.object(demisto, 'executeCommand')
-
+    mocker.patch.object(demisto, 'context', return_value={'EmailCampaign': {'fieldsToDisplay': REQUIRED_KEYS}})
     # run
     main()
     hr = demisto.results.call_args[0][0]['HumanReadable']
@@ -164,4 +164,4 @@ def test_updated_status_and_severity(mocker):
     # validate
     hr = demisto.results.call_args[0][0]['HumanReadable']
     hr.count('| Archive |') == NUM_OF_INCIDENTS  # all incidents should have the 'Archive' status
-    hr.count('| 3 |') == NUM_OF_INCIDENTS        # all incidents should have severity 3
+    hr.count('| 3 |') == NUM_OF_INCIDENTS  # all incidents should have severity 3

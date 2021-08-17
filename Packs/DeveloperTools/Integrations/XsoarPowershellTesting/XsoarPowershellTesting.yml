@@ -55,7 +55,7 @@ script:
     description: Set integration versioned context.
     execution: false
     name: pwsh-test-set-integration-versioned-context
-  dockerimage: demisto/powershell-ubuntu:7.1.3.20650
+  dockerimage: demisto/powershell-ubuntu:7.1.3.22304
   isfetch: false
   longRunning: false
   longRunningPort: false

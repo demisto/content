@@ -1,0 +1,241 @@
+[
+  {
+    "id": "1",
+    "type": "comments",
+    "links": {
+      "self": "https://triage.example.com/api/public/v2/comments/1"
+    },
+    "attributes": {
+      "body_format": "text",
+      "body": "www.comments.com",
+      "created_at": "2021-04-01T20:52:59.342Z",
+      "updated_at": "2021-04-01T20:52:59.342Z"
+    },
+    "relationships": {
+      "commentable": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/comments/1/relationships/commentable",
+          "related": "https://triage.example.com/api/public/v2/comments/1/commentable"
+        },
+        "data": {
+          "type": "threat_indicators",
+          "id": "216"
+        }
+      },
+      "owner": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/comments/1/relationships/owner",
+          "related": "https://triage.example.com/api/public/v2/comments/1/owner"
+        },
+        "data": {
+          "type": "operators",
+          "id": "2"
+        }
+      }
+    }
+  },
+  {
+    "id": "2",
+    "type": "comments",
+    "links": {
+      "self": "https://triage.example.com/api/public/v2/comments/2"
+    },
+    "attributes": {
+      "body_format": "text",
+      "body": "www.bad-url-2.com/worse.html",
+      "created_at": "2021-04-02T12:58:25.496Z",
+      "updated_at": "2021-04-02T12:58:25.496Z"
+    },
+    "relationships": {
+      "commentable": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/comments/2/relationships/commentable",
+          "related": "https://triage.example.com/api/public/v2/comments/2/commentable"
+        },
+        "data": {
+          "type": "threat_indicators",
+          "id": "207"
+        }
+      },
+      "owner": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/comments/2/relationships/owner",
+          "related": "https://triage.example.com/api/public/v2/comments/2/owner"
+        },
+        "data": {
+          "type": "operators",
+          "id": "2"
+        }
+      }
+    }
+  },
+  {
+    "id": "4",
+    "type": "comments",
+    "links": {
+      "self": "https://triage.example.com/api/public/v2/comments/4"
+    },
+    "attributes": {
+      "body_format": "json",
+      "body": {
+        "type": "object",
+        "properties": {
+          "reported_time": {
+            "type": "Mar 31, 2021 at 14:40:45 UTC"
+          },
+          "srctag": {
+            "type": [
+              "Harbor",
+              "WigWag"
+            ]
+          },
+          "received_time": {
+            "type": "Mar 31, 2021 at 14:40:13 UTC"
+          },
+          "from": {
+            "type": "abc@xyz.net"
+          },
+          "reported_by": {
+            "type": "abc@xyz.com"
+          },
+          "notes": {
+            "type": "The email reported to the Cofense Phishing Defense Center was analyzed and determined to be malicious. The email contains URLs and/or attachments which attempts to have the recipient download and execute the malware. If successful, the attacker could steal information from a system and exfiltrate the data to the threat actor. Please see the recommendations for how to respond to this threat. This ticket will be automatically closed after 72 hours."
+          },
+          "summary": {
+            "type": "Subscription-themed emails entice victims into calling an embedded phone number. Victims are then directed to download a Microsoft Excel spreadsheet containing malicious Office macros. The Office macro laden spreadsheets drop BazarBackdoor malware which then downloads additional BazarBackdoor files."
+          },
+          "malware_families": {
+            "type": "BazarBackdoor"
+          },
+          "phenotypes": {
+            "type": " "
+          },
+          "message_id": {
+            "type": "trinity-73b5ec3e-3efa-4999-a6bf-528fe2f9deed-1617201608494@3c-app-mailcom-lxa07"
+          },
+          "reply_to": {
+            "type": " "
+          },
+          "report_url": {
+            "type": "https://triage.example.com/reports/804"
+          },
+          "escalation_type": {
+            "type": " "
+          },
+          "stage_1_iocs": {
+            "type": "object",
+            "properties": {
+              "files": {
+                "type": "subscription.xlsb"
+              },
+              "infection_ips": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "infection_urls": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "hxxps://inetservice.net/requested.php",
+                    "hxxps://icarpservicing.org/unsubscribe.html"
+                  ]
+                }
+              }
+            }
+          },
+          "brands": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "vision_results": {
+            "type": "object",
+            "properties": {
+              "results_id": "61",
+              "query_created": {
+                "type": "Apr 2, 2021 at 14:37:35 UTC"
+              },
+              "messages_removed": "0",
+              "messages_found": "2"
+            }
+          },
+          "subject": {
+            "type": "Extend your free trial"
+          },
+          "sent_to": {
+            "type": "abc@xyz.com"
+          },
+          "stage_2_iocs": {
+            "type": "object",
+            "properties": {
+              "files": {
+                "type": "172.dll"
+              },
+              "md5": {
+                "type": "af18cd9e099e6e7c56bd5a07502b1f0z"
+              },
+              "size": {
+                "type": "37,888"
+              },
+              "payload_ips": {
+                "type": "array",
+                "items": {
+                  "type": "1.1.1.1"
+                }
+              },
+              "payload_urls": {
+                "type": "array",
+                "items": {
+                  "type": "hxxp://call2.xyz/campo/j1/j1"
+                }
+              },
+              "c2_ips": {
+                "type": "1.1.1.1"
+              },
+              "c2_urls": {
+                "type": [
+                  "hxxps://gopigs.xyz/campo/u/u",
+                  "hxxp://gainme.xyz/campo/t/t"
+                ]
+              }
+            }
+          },
+          "report_id": {
+            "type": "804"
+          }
+        }
+      },
+      "tags": [
+        "stage_2_iocs",
+        "malicious"
+      ],
+      "created_at": "2021-04-13T20:40:59.856Z",
+      "updated_at": "2021-04-13T20:40:59.856Z"
+    },
+    "relationships": {
+      "commentable": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/comments/4/relationships/commentable",
+          "related": "https://triage.example.com/api/public/v2/comments/4/commentable"
+        },
+        "data": {
+          "type": "reports",
+          "id": "804"
+        }
+      },
+      "owner": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/comments/4/relationships/owner",
+          "related": "https://triage.example.com/api/public/v2/comments/4/owner"
+        },
+        "data": {
+          "type": "api_applications",
+          "id": "7"
+        }
+      }
+    }
+  }
+]

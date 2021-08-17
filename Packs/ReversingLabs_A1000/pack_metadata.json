@@ -1,8 +1,8 @@
 {
     "name": "ReversingLabs A1000",
-    "description": "ReversingLabs A1000 Malware Analysis Platform",
+    "description": "Powerful threat detection and file analysis platform. Get detailed information on each file's status and threat capabilities.",
     "support": "partner",
-    "currentVersion": "1.2.0",
+    "currentVersion": "2.0.2",
     "author": "ReversingLabs",
     "url": "https://www.reversinglabs.com/products/malware-threat-hunting-and-investigations",
     "email": "support@reversinglabs.com",
@@ -12,7 +12,8 @@
         "Forensics & Malware Analysis"
     ],
     "githubUser": [
-        "MislavReversingLabs"
+        "MislavReversingLabs",
+        "ivukovicRL"
     ],
     "tags": [
         "Forensics",
@@ -23,7 +24,6 @@
     "useCases": [],
     "keywords": [
         "Static Analysis",
-        "Dynamic Analysis",
         "File Analysis"
     ]
 }

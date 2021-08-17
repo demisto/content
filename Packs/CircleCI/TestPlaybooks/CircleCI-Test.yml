@@ -1,0 +1,323 @@
+id: CircleCI-Test
+version: -1
+name: CircleCI-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7822e301-44de-4939-8236-f5eb685d3720
+    type: start
+    task:
+      id: 7822e301-44de-4939-8236-f5eb685d3720
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: c512031d-9838-4c74-826e-578ec89c0851
+    type: regular
+    task:
+      id: c512031d-9838-4c74-826e-578ec89c0851
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9e5a5448-13ce-48e2-82bf-4283dc99e360
+    type: regular
+    task:
+      id: 9e5a5448-13ce-48e2-82bf-4283dc99e360
+      version: -1
+      name: Circle CI Get Workflow List
+      description: Get info of workflows.
+      script: '|||circleci-workflows-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d46f5b74-4997-47bb-8cd3-4f91f5130c17
+    type: condition
+    task:
+      id: d46f5b74-4997-47bb-8cd3-4f91f5130c17
+      version: -1
+      name: Are Outputs Valid
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: CircleCI.Workflow.name
+            iscontext: true
+          right:
+            value:
+              simple: nightly
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 48d1ec4e-36d3-4041-82f0-645907429ec8
+    type: regular
+    task:
+      id: 48d1ec4e-36d3-4041-82f0-645907429ec8
+      version: -1
+      name: CircleCI Get Last Workflow Runs
+      description: Retrieve jobs list from CircleCI workflow.
+      script: '|||circleci-workflow-last-runs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      limit:
+        simple: "3"
+      workflow_name:
+        simple: nightly
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 80f01949-6bd0-47c3-8ec6-56eb47d1f76a
+    type: condition
+    task:
+      id: 80f01949-6bd0-47c3-8ec6-56eb47d1f76a
+      version: -1
+      name: Are Outputs Valid
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: CircleCI.WorkflowRun.branch
+            iscontext: true
+          right:
+            value:
+              simple: master
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CircleCI.WorkflowRun.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 03b78cc0-a7a8-4db3-8f4a-0a63d5748b07
+    type: regular
+    task:
+      id: 03b78cc0-a7a8-4db3-8f4a-0a63d5748b07
+      version: -1
+      name: CircleCI Get Workflow Jobs
+      description: Retrieve jobs list from CircleCI workflow.
+      script: '|||circleci-workflow-jobs-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      workflow_id:
+        complex:
+          root: CircleCI.WorkflowRun
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 081f97ea-2656-4ca6-8fe7-20385d85c58f
+    type: condition
+    task:
+      id: 081f97ea-2656-4ca6-8fe7-20385d85c58f
+      version: -1
+      name: Are Outputs Valid
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: CircleCI.WorkflowJob.name
+            iscontext: true
+          right:
+            value:
+              simple: Run Validations
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: e4ae9ee9-0b47-4040-8b15-841cf3d84284
+    type: title
+    task:
+      id: e4ae9ee9-0b47-4040-8b15-841cf3d84284
+      version: -1
+      name: Playbook Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+description: CircleCI test playbook.

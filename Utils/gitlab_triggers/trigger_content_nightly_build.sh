@@ -3,20 +3,54 @@
 
 # For this script to work you will need to use a trigger token (see here for more about that: https://code.pan.run/help/ci/triggers/README#trigger-token)  # disable-secrets-detection
 
-# This script takes the gitlab-ci trigger token as first parameter and the branch name as an optional second parameter (the default is the current branch).
+# This script requires the gitlab-ci trigger token. The branch to run against is an optional second parameter (the default is the current branch). The slack channel to send messages to is an optional third parameter (the default is the 'dmst-content-team')
 
 # Ways to run this script are:
-# 1. Utils/gitlab_triggers/trigger_content_nightly_build.sh <trigger-token> <branch-name>
-# 2. Utils/gitlab_triggers/trigger_content_nightly_build.sh <trigger-token>
-if [[ "$#" -lt 1 ]]; then
-  echo "Usage: $0 <trigger-token> <branch-name>[current-branch as default]"
+# 1. Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct <trigger-token> -b <branch-name> -ch <slack-channel-name>
+# 2. Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct <trigger-token>
+if [ "$#" -lt "1" ]; then
+  echo "Usage:
+  $0 -ct <token>
+
+  -ct, --ci-token             The ci gitlab trigger token.
+  [-b, --branch]              The branch name. Default is the current branch.
+  [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-content-team.
+  "
   echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection
   exit 1
 fi
-_gitlab_token=$1
 
-[ -n "$2" ] && _branch="$2" || _branch="$(git branch  --show-current)"
+_branch="$(git branch  --show-current)"
+_slack_channel="dmst-content-team"
+
+# Parsing the user inputs.
+
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+
+  -ct|--ci-token) _ci_token="$2"
+    shift
+    shift;;
+
+  -b|--branch) _branch="$2"
+    shift
+    shift;;
+
+  -ch|--slack-channel) _slack_channel="$2"
+    shift
+    shift;;
+
+  *)    # unknown option.
+    shift;;
+  esac
+done
+
+
+if [ -z "$_ci_token" ]; then
+    echo "You must provide a ci token."
+    exit 1
+fi
 
 source Utils/gitlab_triggers/trigger_build_url.sh
 
-curl "$BUILD_TRIGGER_URL" -F "ref=$_branch" -F "token=$_gitlab_token" -F "variables[NIGHTLY]=true" -F "variables[IFRA_ENV_TYPE]=Nightly" | jq
+curl "$BUILD_TRIGGER_URL" -F "ref=$_branch" -F "token=$_ci_token" -F "variables[NIGHTLY]=true" -F "variables[IFRA_ENV_TYPE]=Nightly" -F "variables[SLACK_CHANNEL]=$_slack_channel" | jq

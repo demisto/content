@@ -14,9 +14,10 @@ For more information, please refer to the [Identity Lifecycle Management article
     | access_token | Access Token | True |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
-    | create_user_enabled | iam-create-user Command Enabled. If set to false, iam-create-user command will be skipped, and user will not be created. | False |
-    | update_user_enabled | iam-update-user Command Enabled | False |
-    | disable_user_enabled | iam-disable-user Command Enabled | False |
+    | create_user_enabled | Allow creating users. If set to false, iam-create-user command will be skipped, and user will not be created. | False |
+    | update_user_enabled | Allow updating users | False |
+    | enable_user_enabled | Allow enabling users | False |
+    | disable_user_enabled | Allow disabling users | False |
     | create_if_not_exists | Automatically create user if not found in update command | False |
     | mapper_in | Incoming Mapper | True |
     | mapper_out | Outgoing Mapper | True |

@@ -1,0 +1,301 @@
+{
+  "test-cases": {
+    "one-iteration-one-found": {
+      "responses": [
+        {
+          "assets": [
+            {
+              "name": "//cloudresourcemanager.googleapis.com/projects/123456789",
+              "assetType": "cloudresourcemanager.googleapis.com/Project",
+              "iamPolicy": {
+                "etag": "BwVcch5RSWA=",
+                "bindings": [
+                  {
+                    "role": "roles/owner",
+                    "members": [
+                      "user:dummyuser1@dummy.com"
+                    ]
+                  }
+                ]
+              },
+              "ancestors": [
+                "projects/123456789",
+                "organizations/123456789"
+              ],
+              "updateTime": "2021-05-15T10:00:00Z"
+            },
+            {
+              "name": "//cloudresourcemanager.googleapis.com/projects/234567890",
+              "assetType": "cloudresourcemanager.googleapis.com/Project",
+              "iamPolicy": {
+                "etag": "Asvcff5RSWA=",
+                "bindings": [
+                  {
+                    "role": "roles/owner",
+                    "members": [
+                      "user:dummyuser2@dummy.com",
+                      "serviceAccount.iam.gserviceaccount.com"
+                    ]
+                  }
+                ]
+              },
+              "ancestors": [
+                "projects/234567890",
+                "organizations/123456789"
+              ],
+              "updateTime": "2021-05-15T10:00:00Z"
+            }
+          ],
+          "readTime": "2021-05-15T10:00:00Z"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "//cloudresourcemanager.googleapis.com/projects/123456789",
+          "assetType": "cloudresourcemanager.googleapis.com/Project",
+          "iamPolicy": {
+            "etag": "BwVcch5RSWA=",
+            "bindings": [
+              {
+                "role": "roles/owner",
+                "members": [
+                  "user:dummyuser1@dummy.com"
+                ]
+              }
+            ]
+          },
+          "ancestors": [
+            "projects/123456789",
+            "organizations/123456789"
+          ],
+          "updateTime": "2021-05-15T10:00:00Z",
+          "owners": [
+            "user:dummyuser1@dummy.com"
+          ],
+          "readTime": "2021-05-15T10:00:00Z"
+        }
+      ]
+    },
+    "two-iteration-two-found": {
+      "responses": [
+        {
+          "assets": [
+            {
+              "name": "//cloudresourcemanager.googleapis.com/projects/123456789",
+              "assetType": "cloudresourcemanager.googleapis.com/Project",
+              "iamPolicy": {
+                "etag": "BwVcch5RSWA=",
+                "bindings": [
+                  {
+                    "role": "roles/owner",
+                    "members": [
+                      "user:dummyuser1@dummy.com"
+                    ]
+                  }
+                ]
+              },
+              "ancestors": [
+                "projects/123456789",
+                "organizations/123456789"
+              ],
+              "updateTime": "2021-05-15T10:00:00Z"
+            }
+          ],
+          "readTime": "2021-05-15T10:00:00Z",
+          "nextPageToken": "dummy-token"
+        },
+        {
+          "assets": [
+            {
+              "name": "//cloudresourcemanager.googleapis.com/projects/234567890",
+              "assetType": "cloudresourcemanager.googleapis.com/Project",
+              "iamPolicy": {
+                "version": 1,
+                "etag": "Asvcff5RSWA=",
+                "bindings": [
+                  {
+                    "role": "roles/owner",
+                    "members": [
+                      "user:dummyuser2@dummy.com",
+                      "serviceAccount.iam.gserviceaccount.com"
+                    ]
+                  }
+                ]
+              },
+              "ancestors": [
+                "projects/234567890",
+                "organizations/123456789"
+              ],
+              "updateTime": "2021-05-15T10:00:00Z"
+            }
+          ],
+          "readTime": "2021-05-15T10:00:00Z"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "//cloudresourcemanager.googleapis.com/projects/123456789",
+          "assetType": "cloudresourcemanager.googleapis.com/Project",
+          "iamPolicy": {
+            "etag": "BwVcch5RSWA=",
+            "bindings": [
+              {
+                "role": "roles/owner",
+                "members": [
+                  "user:dummyuser1@dummy.com"
+                ]
+              }
+            ]
+          },
+          "ancestors": [
+            "projects/123456789",
+            "organizations/123456789"
+          ],
+          "updateTime": "2021-05-15T10:00:00Z",
+          "owners": [
+            "user:dummyuser1@dummy.com"
+          ],
+          "readTime": "2021-05-15T10:00:00Z"
+        },
+        {
+          "name": "//cloudresourcemanager.googleapis.com/projects/234567890",
+          "assetType": "cloudresourcemanager.googleapis.com/Project",
+          "iamPolicy": {
+            "version": 1,
+            "etag": "Asvcff5RSWA=",
+            "bindings": [
+              {
+                "role": "roles/owner",
+                "members": [
+                  "user:dummyuser2@dummy.com",
+                  "serviceAccount.iam.gserviceaccount.com"
+                ]
+              }
+            ]
+          },
+          "ancestors": [
+            "projects/234567890",
+            "organizations/123456789"
+          ],
+          "updateTime": "2021-05-15T10:00:00Z",
+          "owners": [
+            "user:dummyuser2@dummy.com",
+            "serviceAccount.iam.gserviceaccount.com"
+          ],
+          "readTime": "2021-05-15T10:00:00Z"
+        }
+      ]
+    },
+    "two-iteration-one-only-found-no-token": {
+      "responses": [
+        {
+          "assets": [
+            {
+              "name": "//cloudresourcemanager.googleapis.com/projects/123456789",
+              "assetType": "cloudresourcemanager.googleapis.com/Project",
+              "iamPolicy": {
+                "etag": "BwVcch5RSWA=",
+                "bindings": [
+                  {
+                    "role": "roles/owner",
+                    "members": [
+                      "user:dummyuser1@dummy.com"
+                    ]
+                  }
+                ]
+              },
+              "ancestors": [
+                "projects/123456789",
+                "organizations/123456789"
+              ],
+              "updateTime": "2021-05-15T10:00:00Z"
+            }
+          ],
+          "readTime": "2021-05-15T10:00:00Z"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "//cloudresourcemanager.googleapis.com/projects/123456789",
+          "assetType": "cloudresourcemanager.googleapis.com/Project",
+          "iamPolicy": {
+            "etag": "BwVcch5RSWA=",
+            "bindings": [
+              {
+                "role": "roles/owner",
+                "members": [
+                  "user:dummyuser1@dummy.com"
+                ]
+              }
+            ]
+          },
+          "ancestors": [
+            "projects/123456789",
+            "organizations/123456789"
+          ],
+          "updateTime": "2021-05-15T10:00:00Z",
+          "owners": [
+            "user:dummyuser1@dummy.com"
+          ],
+          "readTime": "2021-05-15T10:00:00Z"
+        }
+      ]
+    },
+    "two-iteration-one-only-found-max-iteration-reached": {
+      "responses": [
+        {
+          "assets": [
+            {
+              "name": "//cloudresourcemanager.googleapis.com/projects/123456789",
+              "assetType": "cloudresourcemanager.googleapis.com/Project",
+              "iamPolicy": {
+                "etag": "BwVcch5RSWA=",
+                "bindings": [
+                  {
+                    "role": "roles/owner",
+                    "members": [
+                      "user:dummyuser1@dummy.com"
+                    ]
+                  }
+                ]
+              },
+              "ancestors": [
+                "projects/123456789",
+                "organizations/123456789"
+              ],
+              "updateTime": "2021-05-15T10:00:00Z"
+            }
+          ],
+          "readTime": "2021-05-15T10:00:00Z",
+          "nextPageToken": "dummy-token"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "//cloudresourcemanager.googleapis.com/projects/123456789",
+          "assetType": "cloudresourcemanager.googleapis.com/Project",
+          "iamPolicy": {
+            "etag": "BwVcch5RSWA=",
+            "bindings": [
+              {
+                "role": "roles/owner",
+                "members": [
+                  "user:dummyuser1@dummy.com"
+                ]
+              }
+            ]
+          },
+          "ancestors": [
+            "projects/123456789",
+            "organizations/123456789"
+          ],
+          "updateTime": "2021-05-15T10:00:00Z",
+          "owners": [
+            "user:dummyuser1@dummy.com"
+          ],
+          "readTime": "2021-05-15T10:00:00Z"
+        }
+      ]
+    }
+  }
+}

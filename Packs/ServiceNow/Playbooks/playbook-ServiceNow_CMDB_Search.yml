@@ -1,0 +1,361 @@
+id: ServiceNow CMDB Search
+version: -1
+name: ServiceNow CMDB Search
+description: |
+  Subplaybook for finding CI records in ServiceNow CMDB.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 95a33aa0-456c-4999-8d67-99c7e5559368
+    type: start
+    task:
+      id: 95a33aa0-456c-4999-8d67-99c7e5559368
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: d36ad1f6-c15d-47b5-878b-ee4a128b7ec1
+    type: regular
+    task:
+      id: d36ad1f6-c15d-47b5-878b-ee4a128b7ec1
+      version: -1
+      name: Search for CMDB record
+      description: Query records for a CMDB class.
+      script: ServiceNow CMDB|||servicenow-cmdb-records-list
+      type: regular
+      iscommand: true
+      brand: ServiceNow CMDB
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      class:
+        simple: ${inputs.SearchCIClass}
+      limit: {}
+      offset: {}
+      query:
+        simple: ${inputs.SearchQueryField}=${inputs.SearchQueryValue}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 3f33ff9e-9141-4a55-8cd4-c4be43ec194d
+    type: regular
+    task:
+      id: 3f33ff9e-9141-4a55-8cd4-c4be43ec194d
+      version: -1
+      name: Get record by ID
+      description: Query attributes and relationship information for a specific record.
+      script: ServiceNow CMDB|||servicenow-cmdb-record-get-by-id
+      type: regular
+      iscommand: true
+      brand: ServiceNow CMDB
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      class:
+        simple: ${inputs.SearchCIClass}
+      fields: {}
+      relation_limit: {}
+      relation_offset: {}
+      sys_id:
+        complex:
+          root: ServiceNowCMDB.Records
+          accessor: sys_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 0653b01d-3c11-4ba0-8ff1-ed3ae6f5da2e
+    type: regular
+    task:
+      id: 0653b01d-3c11-4ba0-8ff1-ed3ae6f5da2e
+      version: -1
+      name: Fetch related CMDB CI by ID
+      description: Query attributes and relationship information for a specific record.
+      script: ServiceNow CMDB|||servicenow-cmdb-record-get-by-id
+      type: regular
+      iscommand: true
+      brand: ServiceNow CMDB
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      class:
+        simple: cmdb_ci
+      fields: {}
+      relation_limit: {}
+      relation_offset: {}
+      sys_id:
+        complex:
+          root: ServiceNowCMDB.Record.Attributes.cmdb_ci
+          accessor: value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: cde6d170-9365-4889-86f2-e6e3400626d0
+    type: title
+    task:
+      id: cde6d170-9365-4889-86f2-e6e3400626d0
+      version: -1
+      name: Playbook End
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: df8740ef-6092-4ace-84b4-8d0713b7e334
+    type: condition
+    task:
+      id: df8740ef-6092-4ace-84b4-8d0713b7e334
+      version: -1
+      name: Do records exist?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "9"
+      "yes":
+      - "5"
+    scriptarguments:
+      value:
+        simple: ${ServiceNowCMDB.Records}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 163630a4-45e6-40c9-84a5-2b9d9f4fe3a6
+    type: condition
+    task:
+      id: 163630a4-45e6-40c9-84a5-2b9d9f4fe3a6
+      version: -1
+      name: Add asset in CMDB?
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      "No":
+      - "7"
+      "Yes":
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+      body:
+        simple: Do you want to add this asset in the CMDB?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "No"
+      - "Yes"
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: f66dc3c1-9989-4920-8abc-ffc7ad432413
+    type: regular
+    task:
+      id: f66dc3c1-9989-4920-8abc-ffc7ad432413
+      version: -1
+      name: Manually add asset in CMDB
+      description: The asset is not in your CMDB, please manually add asset in ServiceNow
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 1525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 76fe59cd-cf7c-44a1-8f8b-7d4751fee3b2
+    type: regular
+    task:
+      id: 76fe59cd-cf7c-44a1-8f8b-7d4751fee3b2
+      version: -1
+      name: Save CMDB information in Evidence
+      description: Convert an array to a nice table display. Usually, from the context.
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      columns:
+        simple: name,sys_class_name,sys_id,asset.display_value,asset.link,asset.value
+      data:
+        complex:
+          root: ${ServiceNowCMDB.Record
+          accessor: Attributes}
+      title: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1740
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: CMDB Evidence
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1255,
+        "width": 1300,
+        "x": 440,
+        "y": 730
+      }
+    }
+  }
+inputs:
+- key: SearchCIClass
+  value:
+    simple: cmdb_ci_network_adapter
+  required: false
+  description: The CMDB CI class to perform the search on (Defaults to cmdb_ci_network_adapter).
+  playbookInputQuery:
+- key: SearchQueryField
+  value:
+    simple: ip_address
+  required: false
+  description: The CI field used to perform the query (Defaults to ip_address).
+  playbookInputQuery:
+- key: SearchQueryValue
+  value: {}
+  required: true
+  description: The value used to perform the query.
+  playbookInputQuery:
+outputs:
+- contextPath: ServiceNowCMDB.Record
+  description: Discovered CI records
+  type: unknown
+tests:
+- No tests
+fromversion: 6.0.0

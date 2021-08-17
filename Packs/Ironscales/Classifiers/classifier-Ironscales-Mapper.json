@@ -1,0 +1,113 @@
+{
+    "description": "Maps incoming Ironscales incident fields.",
+    "feed": false,
+    "id": "Ironscales - Incoming Mapper",
+    "mapping": {
+        "Ironscales": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Ironscales-Classification": {
+                    "complex": null,
+                    "simple": "classification"
+                },
+                "Ironscales-ID": {
+                    "complex": null,
+                    "simple": "incident_id"
+                },
+                "Ironscales-Links": {
+                    "complex": null,
+                    "simple": "links"
+                },
+                "Ironscales-affected_mailbox_count": {
+                    "complex": null,
+                    "simple": "affected_mailbox_count"
+                },
+                "Ironscales-attachments": {
+                    "complex": null,
+                    "simple": "attachments"
+                },
+                "Ironscales-banner_displayed": {
+                    "complex": null,
+                    "simple": "banner_displayed"
+                },
+                "Ironscales-company_id": {
+                    "complex": null,
+                    "simple": "company_id"
+                },
+                "Ironscales-company_name": {
+                    "complex": null,
+                    "simple": "company_name"
+                },
+                "Ironscales-federation": {
+                    "complex": null,
+                    "simple": "federation"
+                },
+                "Ironscales-first_reported_by": {
+                    "complex": null,
+                    "simple": "first_reported_by"
+                },
+                "Ironscales-first_reported_date": {
+                    "complex": null,
+                    "simple": "first_reported_date"
+                },
+                "Ironscales-mail_server": {
+                    "complex": null,
+                    "simple": "mail_server"
+                },
+                "Ironscales-reply_to": {
+                    "complex": null,
+                    "simple": "reply_to"
+                },
+                "Ironscales-reports": {
+                    "complex": null,
+                    "simple": "reports"
+                },
+                "Ironscales-sender_email": {
+                    "complex": null,
+                    "simple": "sender_email"
+                },
+                "Ironscales-sender_is_internal": {
+                    "complex": null,
+                    "simple": "sender_is_internal"
+                },
+                "Ironscales-sender_reputation": {
+                    "complex": null,
+                    "simple": "sender_reputation"
+                },
+                "Ironscales-spf_Result": {
+                    "complex": null,
+                    "simple": "spf_result"
+                },
+                "Ironscales-themis_proba": {
+                    "complex": null,
+                    "simple": "themis_proba"
+                },
+                "Ironscales-themis_verdict": {
+                    "complex": null,
+                    "simple": "themis_verdict"
+                },
+                "Ironscales_incident_id": {
+                    "complex": null,
+                    "simple": "incident_id"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Ironscales-Classification": {
+                    "complex": null,
+                    "simple": "classification"
+                },
+                "Ironscales-ID": {
+                    "complex": null,
+                    "simple": "incident_id"
+                }
+            }
+        }
+    },
+    "name": "Ironscales - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

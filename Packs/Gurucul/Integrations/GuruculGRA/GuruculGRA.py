@@ -124,13 +124,14 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
                                first_fetch_time: Optional[int]
                                ) -> Tuple[Dict[str, int], List[dict]]:
     last_fetch = last_run.get('last_fetch', None)
+    case_anomaly = demisto.params().get('fetch_incident_cases') or 'Case Per Anomaly'
 
     if last_fetch is None:
         last_fetch = first_fetch_time
-        case_url = '/cases/OPEN/opendate/' + (datetime.fromtimestamp(cast(int, last_fetch)).strftime('%Y-%m-%d'))
     else:
         last_fetch = int(last_fetch)
-        case_url = '/cases/OPEN/opendate/lastminute'
+
+    case_url = '/cases/OPEN/opendate/' + (datetime.fromtimestamp(cast(int, last_fetch)).strftime('%Y-%m-%d'))
     latest_created_time = cast(int, last_fetch)
     incidents: List[Dict[str, Any]] = []
     page = 1
@@ -146,12 +147,43 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
             incident_created_time = datetime.now().timestamp()
             incident_created_time_ms = incident_created_time * 1000
             record['incidentType'] = 'GRACase'
-            inc = {
-                'name': record.get('entity'),
-                'occurred': timestamp_to_datestring(incident_created_time_ms),
-                'rawJSON': json.dumps(record)
-            }
-            incidents.append(inc)
+            anomalies = record.get('anomalies')
+            if record.get('caseId') is not None:
+                if case_anomaly == 'Case Per Anomaly':
+                    for anomaly in anomalies:
+                        record2 = {
+                            'entityId': record.get('entityId'),
+                            'entity': record.get('entity'),
+                            'entityTypeId': record.get('entityTypeId'),
+                            'caseId': record.get('caseId'),
+                            'openDate': record.get('openDate'),
+                            'ownerId': record.get('ownerId'),
+                            'ownerType': record.get('ownerType'),
+                            'ownerName': record.get('ownerName'),
+                            'riskDate': record.get('riskDate'),
+                            'status': record.get('status'),
+                            'anomalyName': anomaly.get('anomalyName'),
+                            'anomalyResourceName': anomaly.get('resourceName'),
+                            'assignee': anomaly.get('assignee'),
+                            'assigneeType': anomaly.get('assigneeType'),
+                            'riskAcceptedDate': anomaly.get('riskAcceptedDate'),
+                            'anomalyRiskScore': anomaly.get('riskScore'),
+                            'anomalyStatus': anomaly.get('status')
+                        }
+                        inc = {
+                            'name': record.get('entity'),
+                            'occurred': timestamp_to_datestring(incident_created_time_ms),
+                            'rawJSON': json.dumps(record2)
+                        }
+                        incidents.append(inc)
+
+                else:
+                    inc = {
+                        'name': record.get('entity'),
+                        'occurred': timestamp_to_datestring(incident_created_time_ms),
+                        'rawJSON': json.dumps(record)
+                    }
+                    incidents.append(inc)
             if incident_created_time > latest_created_time:
                 latest_created_time = int(incident_created_time)
 
@@ -165,11 +197,12 @@ def fetch_incidents_high_risk_users(client: Client, max_results: int, last_run: 
     last_fetch = last_run.get('last_fetch', None)
     if last_fetch is None:
         last_fetch = first_fetch_time
-        high_risk_user_url = '/users/highrisk/modifieddate/' \
-                             + (datetime.fromtimestamp(cast(int, last_fetch)).strftime('%Y-%m-%d'))
     else:
         last_fetch = int(last_fetch)
-        high_risk_user_url = '/users/highrisk/modifieddate/lastminute'
+
+    high_risk_user_url = '/users/highrisk/modifieddate/' \
+                         + (datetime.fromtimestamp(cast(int, last_fetch)).strftime('%Y-%m-%d'))
+
     latest_created_time = cast(int, last_fetch)
     incidents: List[Dict[str, Any]] = []
     page = 1
@@ -190,7 +223,8 @@ def fetch_incidents_high_risk_users(client: Client, max_results: int, last_run: 
                 'occurred': timestamp_to_datestring(incident_created_time_ms),
                 'rawJSON': json.dumps(record1)
             }
-            incidents.append(inc1)
+            if record1.get('employeeId') is not None:
+                incidents.append(inc1)
             if incident_created_time > latest_created_time:
                 latest_created_time = int(incident_created_time)
 

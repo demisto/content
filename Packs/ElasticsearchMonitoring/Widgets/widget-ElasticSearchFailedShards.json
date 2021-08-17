@@ -3,7 +3,7 @@
     "version": -1,
     "fromVersion": "6.1.0",
     "modified": "2021-01-12T08:00:56.215781Z",
-    "name": "Elasticsearch Failing Shards",
+    "name": "Elasticsearch Unassigned / Failing Shards",
     "dataType": "system",
     "widgetType": "number",
     "query": "es-shard.failed",

@@ -8,3 +8,6 @@ Using the commands in the integration, you can leverage what the QRadar API has 
 - Getting object lists
 - Adding notes
 Basically, you can perform tasks that a user would need to do manually in the QRadar UI or would need to provide automations to do.
+
+## How to use this pack?
+Follow the steps provided in this [article](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-tutorials/tutorials/ingest-incidents-from-a-siem.html) to configure fetching offenses from QRadar to XSOAR.

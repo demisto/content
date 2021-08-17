@@ -6,13 +6,13 @@ from CommonServerUserPython import *
 import csv
 import gzip
 import urllib3
-from dateutil.parser import parse
 from typing import Optional, Pattern, Dict, Any, Tuple, Union, List
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
 # Globals
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class Client(BaseClient):
@@ -240,17 +240,13 @@ def module_test_command(client: Client, args):
 
 
 def date_format_parsing(date_string):
-    formatted_date = parse(date_string).isoformat()
-    if "+" in formatted_date:
-        formatted_date = formatted_date.split('+')[0]
-
-    if "." in formatted_date:
-        formatted_date = formatted_date.split('.')[0]
-
-    if not formatted_date.endswith('Z'):
-        formatted_date = formatted_date + 'Z'
-
-    return formatted_date
+    """
+    formats a datestring to the ISO-8601 format which the server expects to recieve
+    :param date_string: Date represented as a tring
+    :return: ISO-8601 date string
+    """
+    formatted_date = dateparser.parse(date_string, settings={'TIMEZONE': 'UTC'})
+    return formatted_date.strftime(DATE_FORMAT)
 
 
 def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tuple, str]]):

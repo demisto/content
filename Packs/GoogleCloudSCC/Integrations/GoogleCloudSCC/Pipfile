@@ -14,7 +14,7 @@ freezegun = "*"
 pytest-datadir-ng = "*"
 
 [packages]
-google-api-python-client = "*"
+google-api-python-client = ">=2.8.0"
 oauth2client = "*"
 
 [requires]

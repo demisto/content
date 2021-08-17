@@ -1,0 +1,8 @@
+[file:playbook-Content_Update_Check_README.md]
+ignore=RM106
+
+[file:playbook-Check_For_Content_Installation_README.md]
+ignore=RM106
+
+[file:README.md]
+ignore=RM106,RM104

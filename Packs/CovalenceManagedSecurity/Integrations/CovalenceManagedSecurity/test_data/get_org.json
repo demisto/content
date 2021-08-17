@@ -1,0 +1,14 @@
+[
+    {
+        "ID": "80694bef-37ff-4aa5-94c5-ceafb30d628f",
+        "email": "eren.yeager@foo.bar",
+        "email_aro_details": false,
+        "name": "Acme Inc."
+    },
+    {
+        "ID": "7f5208da-e420-4178-8605-bc1409c83089",
+        "email": "erwin.smith@foo.bar",
+        "email_aro_details": false,
+        "name": "Capsule Corp"
+    }
+]

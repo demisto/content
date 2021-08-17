@@ -36,3 +36,4 @@ outputs:
 - contextPath: no
   description: if given value does not exist in context
 fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958
