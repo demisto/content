@@ -1486,6 +1486,20 @@ class TestCommandResults:
         assert list(results.to_context()['EntryContext'].keys())[0] == \
                'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
 
+    @pytest.mark.parametrize('score, expected_readable', [(CommonServerPython.Common.DBotScore.GOOD, 'Good'),
+                                                          (CommonServerPython.Common.DBotScore.BAD, 'Bad'),
+                                                          (CommonServerPython.Common.DBotScore.NONE, 'Unknown')])
+    def test_dbot_readable(self, score, expected_readable):
+        from CommonServerPython import Common, DBotScoreType
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Test',
+            indicator_type=DBotScoreType.IP,
+            score=score
+        )
+        assert dbot_score.to_readable() == expected_readable
+
+
     def test_readable_only_context(self):
         """
         Given:

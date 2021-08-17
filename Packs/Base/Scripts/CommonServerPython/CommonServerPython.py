@@ -2476,12 +2476,12 @@ class Common(object):
             }
             return ret_value
 
-        def to_readable(self):
+        def to_readable(self) -> Optional[str]:
             dbot_score_to_text = {0: 'Unknown',
                                   1: 'Good',
                                   2: 'Suspicious',
                                   3: 'Bad'}
-            return dbot_score_to_text[self.score]
+            return dbot_score_to_text.get(self.score, None)
 
     class IP(Indicator):
         """

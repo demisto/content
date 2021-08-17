@@ -63,7 +63,7 @@ def rank_to_context(domain: str,
         raise DemistoException(f'Rank {rank} is invalid. Rank should be positive')
     elif 0 < rank <= top_domain_threshold:
         score = Common.DBotScore.GOOD
-    elif rank > suspicious_domain_threshold:
+    elif suspicious_domain_threshold and rank > suspicious_domain_threshold:
         score = Common.DBotScore.SUSPICIOUS
     else:  # alexa_rank < client.threshold:
         score = Common.DBotScore.NONE
@@ -153,15 +153,16 @@ def main() -> None:
     proxy = params.get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        suspicious_domain_threshold = arg_to_number(params.get('suspicious_domain_threshold'),
-                                                    required=True,
+        suspicious_domain_threshold = arg_to_number(params.get('suspicious_domain_threshold', None),
+                                                    required=False,
                                                     arg_name='suspicious_domain_threshold')
         top_domain_threshold = arg_to_number(params.get('top_domain_threshold'),
                                              required=True,
                                              arg_name='top_domain_threshold')
-        if suspicious_domain_threshold < 0 or top_domain_threshold < 0:  # type: ignore
+        if (suspicious_domain_threshold and suspicious_domain_threshold < 0)\
+                or top_domain_threshold < 0:  # type: ignore
             raise DemistoException(f'All threshold values should be greater than 0.'
-                                   f'Suspicious domain threshold is {suspicious_domain_threshold}.'
+                                   f'Suspicious domain threshold is {suspicious_domain_threshold}. '
                                    f'Top domain threshold is {top_domain_threshold}.')
         client = Client(
             base_url=base_api,
