@@ -66,7 +66,7 @@
 !nxos-vrf host="192.168.1.19" name="ntc" description="testing" state="present"
 !nxos-vrf-af host="192.168.1.19" vrf="ntc" afi="ipv4" route_target_both_auto_evpn="True" state="present"
 !nxos-vrf-interface host="192.168.1.19" vrf="ntc" interface="Ethernet1/1" state="present"
-!nxos-vrrp host="192.168.1.19" interface="vlan10" group="100" vip="10.1.100.1"
+!nxos-vrrp host="192.168.1.19" interface="vlan10" group="100" vip="1.1.1.1"
 !nxos-vtp-domain host="192.168.1.19" domain="ntc" host="{{ inventory_hostname }}" username="{{ un }}" password="{{ pwd }}"
 !nxos-vtp-password host="192.168.1.19" state="present" host="{{ inventory_hostname }}" username="{{ un }}" password="{{ pwd }}"
 !nxos-vtp-version host="192.168.1.19" version="2" host="{{ inventory_hostname }}" username="{{ un }}" password="{{ pwd }}"
