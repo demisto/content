@@ -8,6 +8,7 @@ default:
     when: always
 
 stages:
+  - unittests-and-validations
   - create-instances
   - run-instances
   - upload-to-marketplace
