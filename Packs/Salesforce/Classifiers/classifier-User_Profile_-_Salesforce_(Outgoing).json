@@ -111,10 +111,6 @@
 					"complex": null,
 					"simple": "My_Sales_Level__c"
 				},
-				"Name": {
-					"complex": null,
-					"simple": "displayname"
-				},
 				"PAN_Internal_User__c": {
 					"complex": null,
 					"simple": "\"Yes\""
@@ -238,10 +234,6 @@
 					"complex": null,
 					"simple": "ManagerId"
 				},
-				"Name": {
-					"complex": null,
-					"simple": "displayname"
-				},
 				"SOX_Notes__c": {
 					"complex": null,
 					"simple": "Disabled by XSOAR: ${.=new Date().toISOString()}"
@@ -306,10 +298,6 @@
 				"ManagerId": {
 					"complex": null,
 					"simple": "ManagerId"
-				},
-				"Name": {
-					"complex": null,
-					"simple": "displayname"
 				},
 				"SOX_Notes__c": {
 					"complex": null,
