@@ -1159,8 +1159,13 @@ def send_message():
         # Got a notification from server
         channel_name = demisto.params().get('incident_notifications_channel', 'General')
         severity: int = int(demisto.args().get('severity'))
-        severity_threshold: int = translate_severity(demisto.params().get('min_incident_severity', 'Low'))
-        if severity < severity_threshold:
+        auto_notifications: bool = argToBoolean(demisto.params().get('auto_notifications') or True)
+
+        if auto_notifications:
+            severity_threshold: int = translate_severity(demisto.params().get('min_incident_severity', 'Low'))
+            if severity < severity_threshold:
+                return
+        else:
             return
 
     team_member: str = demisto.args().get('team_member', '') or demisto.args().get('to', '')
