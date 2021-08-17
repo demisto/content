@@ -5856,7 +5856,7 @@ script:
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
-      name: host
+      name: ansible-module-host
       required: true
     - description: MAC address to send Wake-on-LAN broadcast packet for.
       name: mac

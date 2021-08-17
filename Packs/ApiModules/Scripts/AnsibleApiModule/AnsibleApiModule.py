@@ -257,6 +257,10 @@ def generic_ansible(integration_name: str, command: str,
         # skip hardcoded host arg, as it doesn't related to module
         if arg_key == 'host':
             continue
+        # special condition for if there is a collision between the host argument used for ansible inventory
+        # and the host argument used by a module
+        if arg_key == 'ansible-module-host':
+            arg_key = 'host'
 
         module_args += "%s=\"%s\" " % (arg_key, arg_value)
 
