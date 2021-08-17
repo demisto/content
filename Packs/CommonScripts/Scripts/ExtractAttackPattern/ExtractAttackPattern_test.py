@@ -35,7 +35,7 @@ def test_extract_non_existing_mitre_ids(mocker):
     mocker.patch.object(demisto, 'executeCommand', return_value=[])
 
     indicators = is_valid_attack_pattern(['T1111', 'T2222'])
-    assert not indicators
+    assert indicators == ''
 
 
 def test_extract_existing_mitre_id(mocker):
