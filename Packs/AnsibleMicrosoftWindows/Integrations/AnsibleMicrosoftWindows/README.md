@@ -923,7 +923,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
             "status": "CHANGED",
             "stderr": "",
             "stderr_lines": [],
-            "stdout": "Microsoft Drive Optimizer\r\nCopyright (c) 2013 Microsoft Corp.\r\n\r\nAn invalid command line option was specified. (0x89000008)\r\n\r\nDescription:\r\n\r\n\tOptimizes and defragments files on local volumes to\r\n\timprove system performance.\r\n\r\nSyntax:\r\n\r\n\tdefrag <volumes> | /C | /E <volumes> [<task(s)>] [/H] [/M [n] | [/U] [/V]] [/I n]\r\n\r\n\tWhere <task(s)> is omitted (traditional defrag), or as follows:\r\n\t\t/A | [/D] [/K] [/L] | /O | /X\r\n\r\n\tOr, to track an operation already in progress on a volume:\r\n\tdefrag <volume> /T\r\n\r\nParameters:\r\n\r\n\tValue\tDescription\r\n\r\n\t/A\tPerform analysis on the specified volumes.\r\n\r\n\t/C\tPerform the operation on all volumes.\r\n\r\n\t/D\tPerform traditional defrag (this is the default).\r\n\r\n\t/E\tPerform the operation on all volumes except those specified.\r\n\r\n\t/G\tOptimize the storage tiers on the specified volumes.\r\n\r\n\t/H\tRun the operation at normal priority (default is low).\r\n\r\n\t/I n\tTier optimization would run for at most n seconds on each volume.\r\n\r\n\t/K\tPerform slab consolidation on the specified volumes.\r\n\r\n\t/L\tPerform retrim on the specified volumes.\r\n\r\n\t/M [n]\tRun the operation on each volume in parallel in the background.\r\n\t\tAt most n threads optimize the storage tiers in parallel.\r\n\r\n\t/O\tPerform the proper optimization for each media type.\r\n\r\n\t/T\tTrack an operation already in progress on the specified volume.\r\n\r\n\t/U\tPrint the progress of the operation on the screen.\r\n\r\n\t/V\tPrint verbose output containing the fragmentation statistics.\r\n\r\n\t/X\tPerform free space consolidation on the specified volumes.\r\n\r\nExamples:\r\n\r\n\tdefrag C: /U /V\r\n\tdefrag C: D: /M\r\n\tdefrag C:\\mountpoint /A /U\r\n\tdefrag /C /H /V\r\n",
+            "stdout": "Microsoft Drive Optimizer\r\nCopyright (c) 2013 Microsoft Corp.\r\n\r\nAn invalid command line option was specified. (0x89000008)\r\n\r\nDescription:\r\n\r\n\tOptimizes and defragments files on local volumes to\r\n\timprove system performance.\r\n\r\nSyntax:\r\n\r\n\tdefrag  | /C | /E  [<task(s)>] [/H] [/M [n] | [/U] [/V]] [/I n]\r\n\r\n\tWhere <task(s)> is omitted (traditional defrag), or as follows:\r\n\t\t/A | [/D] [/K] [/L] | /O | /X\r\n\r\n\tOr, to track an operation already in progress on a volume:\r\n\tdefrag  /T\r\n\r\nParameters:\r\n\r\n\tValue\tDescription\r\n\r\n\t/A\tPerform analysis on the specified volumes.\r\n\r\n\t/C\tPerform the operation on all volumes.\r\n\r\n\t/D\tPerform traditional defrag (this is the default).\r\n\r\n\t/E\tPerform the operation on all volumes except those specified.\r\n\r\n\t/G\tOptimize the storage tiers on the specified volumes.\r\n\r\n\t/H\tRun the operation at normal priority (default is low).\r\n\r\n\t/I n\tTier optimization would run for at most n seconds on each volume.\r\n\r\n\t/K\tPerform slab consolidation on the specified volumes.\r\n\r\n\t/L\tPerform retrim on the specified volumes.\r\n\r\n\t/M [n]\tRun the operation on each volume in parallel in the background.\r\n\t\tAt most n threads optimize the storage tiers in parallel.\r\n\r\n\t/O\tPerform the proper optimization for each media type.\r\n\r\n\t/T\tTrack an operation already in progress on the specified volume.\r\n\r\n\t/U\tPrint the progress of the operation on the screen.\r\n\r\n\t/V\tPrint verbose output containing the fragmentation statistics.\r\n\r\n\t/X\tPerform free space consolidation on the specified volumes.\r\n\r\nExamples:\r\n\r\n\tdefrag C: /U /V\r\n\tdefrag C: D: /M\r\n\tdefrag C:\\mountpoint /A /U\r\n\tdefrag /C /H /V\r\n",
             "stdout_lines": [
                 "Microsoft Drive Optimizer",
                 "Copyright (c) 2013 Microsoft Corp.",
@@ -937,13 +937,13 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                 "",
                 "Syntax:",
                 "",
-                "\tdefrag <volumes> | /C | /E <volumes> [<task(s)>] [/H] [/M [n] | [/U] [/V]] [/I n]",
+                "\tdefrag | /C | /E  [<task(s)>] [/H] [/M [n] | [/U] [/V]] [/I n]",
                 "",
                 "\tWhere <task(s)> is omitted (traditional defrag), or as follows:",
                 "\t\t/A | [/D] [/K] [/L] | /O | /X",
                 "",
                 "\tOr, to track an operation already in progress on a volume:",
-                "\tdefrag <volume> /T",
+                "\tdefrag  /T",
                 "",
                 "Parameters:",
                 "",
@@ -1014,13 +1014,13 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >
 >Syntax:
 >
->	defrag <volumes> | /C | /E <volumes> [<task(s)>] [/H] [/M [n] | [/U] [/V]] [/I n]
+>	defrag  | /C | /E  [<task(s)>] [/H] [/M [n] | [/U] [/V]] [/I n]
 >
 >	Where <task(s)> is omitted (traditional defrag), or as follows:
 >		/A | [/D] [/K] [/L] | /O | /X
 >
 >	Or, to track an operation already in progress on a volume:
->	defrag <volume> /T
+>	defrag  /T
 >
 >Parameters:
 >
@@ -1078,13 +1078,13 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * 2: 
 >    * 10: Syntax:
 >    * 2: 
->    * 12: 	defrag <volumes> | /C | /E <volumes> [<task(s)>] [/H] [/M [n] | [/U] [/V]] [/I n]
+>    * 12: 	defrag  | /C | /E  [<task(s)>] [/H] [/M [n] | [/U] [/V]] [/I n]
 >    * 2: 
 >    * 14: 	Where <task(s)> is omitted (traditional defrag), or as follows:
 >    * 15: 		/A | [/D] [/K] [/L] | /O | /X
 >    * 2: 
 >    * 17: 	Or, to track an operation already in progress on a volume:
->    * 18: 	defrag <volume> /T
+>    * 18: 	defrag  /T
 >    * 2: 
 >    * 20: Parameters:
 >    * 2: 
