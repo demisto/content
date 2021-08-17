@@ -65,8 +65,16 @@ You can aquire those calculation on all of the indicators also from the debug lo
 Example of a VirusTotal (API v3) DBot score log:
 
 ```log
-Analysing file hash given hash. Those preferred vendors found the hash malicious: []. They do not pass the threshold 2. 0 vendors found malicious. 
-The malicious threshold is 1. Not found malicious by threshold: total_malicious=0 >= threshold=1. Crowdsourced Yara Rules analyzing enabled. Not found sigma analysis. Skipping. Not found crowdsourced IDS analysis. Skipping. Hash: "<file-hash>" was found good
+Basic analyzing of "<domain>"
+Found popularity ranks. Analyzing. 
+The average of the ranks is 809009.0 and the threshold is 10000
+Indicator is good by popularity ranks.
+Analyzing by get_domain_communicating_files
+Found safe by relationship files. total_malicious=0 >= 3
+Analyzing by get_url_downloaded_files
+Found safe by relationship files. total_malicious=0 >= 3
+Analyzing by get_url_referrer_files
+Found safe by relationship files. total_malicious=0 >= 3
 ```
 
 ### Premium analysis - Relationship Files Threshold
