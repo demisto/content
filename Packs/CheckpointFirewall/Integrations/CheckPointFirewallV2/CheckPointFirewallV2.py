@@ -37,9 +37,15 @@ class Client(BaseClient):
             json_body['domain'] = domain_arg
 
         response = self._http_request(method='POST', url_suffix='login', json_data=json_body, headers=self.headers)
-        self.sid = response.get('sid')
+        sid = response.get('sid', '')
 
-        printable_result = {'session-id': self.sid}
+        if sid:
+            self.sid = sid
+            demisto.setIntegrationContext({'cp_sid': sid})
+        else:
+            demisto.setIntegrationContext({})
+
+        printable_result = {'session-id': sid}
         readable_output = tableToMarkdown('CheckPoint session data:', printable_result)
 
         return CommandResults(outputs_prefix='CheckPoint.Login',
