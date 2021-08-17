@@ -46,8 +46,8 @@ For more details about the authentication used in this integration, see [Microso
     | ---------             | -----------           | -------            |
     | Name | A meaningful name for the integration instance. | XXXXX Instance Alpha |
     | Host URL | The URL to the Microsoft Defender for Endpoint server, including the scheme. | `https://api.securitycenter.windows.com` |
-     | ID | The ID used to gain access to the integration. | N/A |
-     | Token | A piece of data that servers use to verify for authenticity. | eea810f5-a6f6 |
+    | ID | The ID used to gain access to the integration. | N/A |
+    | Token | A piece of data that servers use to verify for authenticity. | eea810f5-a6f6 |
     | Fetch Incidents | Whether to fetch the incidents. | N/A |
     | Incident Type | The type of incident to select. | Phishing |
     | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated values supported. | New,Resolved |
@@ -170,7 +170,7 @@ Machine.Isolate
 | MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time the action was created. | 
 | MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values. Can be, "SHA1" ,"SHA256" or "MD5". | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5".| 
 
 
 ##### Command Example
@@ -238,7 +238,7 @@ Machine.Isolate
 | MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
 | MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The fileIdentifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values. Can be, "SHA1" ,"SHA256" and "MD5". | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5". | 
 
 
 ##### Command Example
@@ -275,7 +275,7 @@ Machine.Isolate
 
 ### 3. microsoft-atp-get-machines
 ---
-Retrieves a collection of machines that has communicated with WDATP cloud within the last 30 days.
+Retrieves a collection of machines that has communicated with WDATP cloud in the last 30 days.
 
 ##### Required Permissions
 Machine.ReadWrite.All	
@@ -289,8 +289,8 @@ Machine.ReadWrite.All
 | --- | --- | --- |
 | hostname | The DNS name of the computer. | Optional | 
 | ip | The last machine IP address to access the internet. | Optional | 
-| risk_score | The risk score of the machine. | Optional | 
-| health_status | The health status of the machine. | Optional | 
+| risk_score | The risk score of the machine. Possible values: "Low", "Medium", and "High". | Optional | 
+| health_status | The health status of the machine. Possible values: "Active" and "Inactive". | Optional | 
 | os_platform | The machine's OS platform. Only a single platform can be added. | Optional | 
 
 
@@ -575,7 +575,7 @@ Machine.Scan
 | --- | --- | --- |
 | machine_id | The machine ID to run the scan on. | Required | 
 | comment | The comment to associate with the action. | Required | 
-| scan_type | Defines the type of the scan. | Required | 
+| scan_type | Defines the type of the scan. Possible values: "Quick" and "Full". | Required | 
 
 
 ##### Context Output
@@ -593,7 +593,7 @@ Machine.Scan
 | MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
 | MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values. Can be, "SHA1" ,"SHA256" and "MD5". | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5".| 
 
 
 ##### Command Example
@@ -642,8 +642,8 @@ Alert.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| severity | The alert's severity. | Optional | 
-| status | The alert's status. | Optional | 
+| severity | The alert's severity. Possible values: "High", "Medium", "Low", and "Informational". | Optional | 
+| status | The alert's status. Possible values: "New", "InProgress", and "Resolved". | Optional | 
 | category | The alert's category, only one can be added. | Optional | 
 
 
@@ -776,10 +776,10 @@ Alert.ReadWrite.All
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The alert ID to update. | Required | 
-| status | The alert status to update. | Optional | 
+| status | The alert status to update. Possible values: "New", "InProgress", and "Resolved". | Optional | 
 | assigned_to | The owner of the alert. | Optional | 
-| classification | Specifies the specification of the alert. | Optional | 
-| determination | Specifies the determination of the alert. | Optional | 
+| classification | Specifies the specification of the alert. Possible values: "Unknown", "FalsePositive", "TruePositive". | Optional | 
+| determination | Specifies the determination of the alert. Possible values: "NotAvailable", "Apt", "Malware", "SecurityPersonnel", "SecurityTesting", Unwan"tedSoftware, and "Other". | Optional | 
 | comment | The comment to be added to the alert. | Optional | 
 
 
@@ -846,7 +846,7 @@ AdvancedQuery.Read.All
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The query to run. | Required | 
-| timeout | The amount of time (in seconds) that a request will wait for the query response before a timeout occurs. | Optional | 
+| timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. | Optional | 
 
 
 ##### Context Output
@@ -894,12 +894,12 @@ Alert.ReadWrite.All
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | machine_id | The ID of the machine on which the event was identified. | Required | 
-| severity | The severity of the alert. | Required | 
+| severity | The severity of the alert. Severity of the alert. Possible values: "Low", "Medium", and "High". | Required | 
 | title | The title of the alert. | Required | 
 | description | The description of the alert. | Required | 
 | recommended_action | The action that is recommended to be taken by the security officer when analyzing the alert. | Required | 
 | event_time | The time of the event, as obtained from the advanced query. | Required | 
-| report_id | The reportId, as obtained from the advanced query. | Required | 
+| report_id | The report ID, as obtained from the advanced query. | Required | 
 | category | The category of the alert. | Required | 
 
 
@@ -1235,7 +1235,7 @@ Alert da637175364995825348_1865170845 Related Domains: []
 
 ### 15. microsoft-atp-list-machine-actions-details
 ---
-Returns the machine's actions. If an action ID is set it will return the information on the specific action.
+Returns the machine's actions. If an action ID is set it returns the information on the specific action.
 Filtering can only be done on a single argument.
 
 ##### Required Permissions
@@ -1249,9 +1249,9 @@ Machine.ReadWrite.All
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The ID of the action. | Optional | 
-| status | The action status of the machine. | Optional | 
+| status | The action status of the machine. Possible values: "Pending", "InProgress", "Succeeded", "Failed", "TimeOut", "Cancelled". | Optional | 
 | machine_id | The machine's ID which the action was executed on. Only one can be added. | Optional | 
-| type | The action type of the machine. | Optional | 
+| type | The action type of the machine. Possible values: "RunAntiVirusScan", "Offboard", "CollectInvestigationPackage", "Isolate", "Unisolate", "StopAndQuarantineFile", "RestrictCodeExecution", and "UnrestrictCodeExecution".| Optional | 
 | requestor | The ID of the user that executed the action. Only one can be added. | Optional | 
 
 
@@ -1264,13 +1264,13 @@ Machine.ReadWrite.All
 | MicrosoftATP.MachineAction.Scope | String | The scope of the action. | 
 | MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
 | MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. | 
-| MicrosoftATP.MachineAction.Status | String | The current status of the command.| 
+| MicrosoftATP.MachineAction.Status | String | The current status of the command. Possible values: "Pending", "InProgress", "Succeeded", "Failed", "TimeOut", "Cancelled". | 
 | MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. | 
 | MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name which the action was executed on. | 
 | MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
 | MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values. Can be, "SHA1" ,"SHA256" and "MD5" | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5". | 
 
 
 ##### Command Example
@@ -1357,7 +1357,7 @@ Machine.CollectForensics
 | MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
 | MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values. Can be, "SHA1" ,"SHA256" and "MD5". | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5". | 
 
 
 ##### Command Example
@@ -1466,7 +1466,7 @@ Machine.RestrictExecution
 | MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
 | MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values. Can be, "SHA1" ,"SHA256" and "MD5". | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5".| 
 
 
 ##### Command Example
@@ -1534,7 +1534,7 @@ Machine.RestrictExecution
 | MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
 | MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values. Can be, "SHA1" ,"SHA256" and "MD5". | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5".| 
 
 
 ##### Command Example
@@ -1603,7 +1603,7 @@ Machine.StopAndQuarantine
 | MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
 | MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier with the possible values. Can be, "SHA1" ,"SHA256" and "MD5". | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5". | 
 
 
 ##### Command Example
@@ -2661,7 +2661,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all i
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum amount of indicators to return. Default is 50. | Optional | 
+| limit | The maximum number of indicators to return. Default is 50. | Optional | 
 | page_size | Specify the page size of the result set. Maximum is 200. Default value is 50. | Optional |
 
 
@@ -2671,11 +2671,11 @@ Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all i
 | --- | --- | --- |
 | MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation will typically not be utilized by the targetProduct security tool. | 
-| MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
-| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Values are 0 – 100, with 100 being the highest. | 
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation is typically not be utilized by the targetProduct security tool. | 
+| MicrosoftATP.Indicators.azureTenantId | String | Stamped by the system when the indicator is ingested. The Azure Active Directory tenant ID of submitting client. | 
+| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
-| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
+| MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: "unknown", "adversary", "capability", "infrastructure", "victim". | 
 | MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. | 
 | MicrosoftATP.Indicators.emailEncoding | String | The type of text encoding used in the email. | 
 | MicrosoftATP.Indicators.emailLanguage | String | The language of the email. | 
@@ -2686,11 +2686,11 @@ Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all i
 | MicrosoftATP.Indicators.emailSourceIpAddress | String | Source IP address of the email. | 
 | MicrosoftATP.Indicators.emailSubject | String | Subject line of the email. | 
 | MicrosoftATP.Indicators.emailXMailer | String | X-Mailer value used in the email. | 
-| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). | 
-| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, or ctph. Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph. | 
+| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: "unknown", "sha1", "sha256", "md5", "authenticodeHash256", "lsHash", and "ctph". | 
 | MicrosoftATP.Indicators.fileHashValue | String | The file hash value. | 
 | MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. | 
 | MicrosoftATP.Indicators.fileName | String | Name of the file if the indicator is file-based. Supports comma-separate list of file names. | 
@@ -2698,10 +2698,10 @@ Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all i
 | MicrosoftATP.Indicators.filePath | String | Path of the file indicating a compromise. May be a Windows or \*nix style. | 
 | MicrosoftATP.Indicators.fileSize | Number | Size of the file in bytes. | 
 | MicrosoftATP.Indicators.fileType | String | Text description of the type of file. For example, “Word Document” or “Binary”. | 
-| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.isActive | Boolean | Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system. | 
 | MicrosoftATP.Indicators.knownFalsePositives | String | Scenarios in which the indicator may cause false positives. This should be human-readable text. | 
-| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.networkCidrBlock | String | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. | 
 | MicrosoftATP.Indicators.networkDestinationAsn | Number | The destination autonomous system identifier of the network referenced in the indicator. | 
 | MicrosoftATP.Indicators.networkDestinationCidrBlock | String | CIDR Block notation representation of the destination network in this indicator. | 
@@ -2718,7 +2718,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all i
 | MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. | 
 | MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. | 
 | MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end-user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
-| MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
+| MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
 | MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
 | MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
 | MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, amber, and red. | 
@@ -2784,7 +2784,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets a
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
 | MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation will typically not be utilized by the targetProduct security tool. | 
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
-| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Values are 0 – 100, with 100 being the highest. | 
+| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
 | MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
 | MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. | 
@@ -2797,10 +2797,10 @@ Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets a
 | MicrosoftATP.Indicators.emailSourceIpAddress | String | Source IP address of the email. | 
 | MicrosoftATP.Indicators.emailSubject | String | Subject line of the email. | 
 | MicrosoftATP.Indicators.emailXMailer | String | X-Mailer value used in the email. | 
-| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). | 
-| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, or ctph. Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph. | 
 | MicrosoftATP.Indicators.fileHashValue | String | The file hash value. | 
 | MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. | 
@@ -2809,10 +2809,10 @@ Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets a
 | MicrosoftATP.Indicators.filePath | String | Path of the file indicating a compromise. May be a Windows or \*nix style. | 
 | MicrosoftATP.Indicators.fileSize | Number | Size of the file in bytes. | 
 | MicrosoftATP.Indicators.fileType | String | Text description of the type of file. For example, “Word Document” or “Binary”. | 
-| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.isActive | Boolean | Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system. | 
 | MicrosoftATP.Indicators.knownFalsePositives | String | Scenarios in which the indicator may cause false positives. This should be human-readable text. | 
-| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.networkCidrBlock | String | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. | 
 | MicrosoftATP.Indicators.networkDestinationAsn | Number | The destination autonomous system identifier of the network referenced in the indicator. | 
 | MicrosoftATP.Indicators.networkDestinationCidrBlock | String | CIDR Block notation representation of the destination network in this indicator. | 
@@ -2829,7 +2829,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets a
 | MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. | 
 | MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. | 
 | MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end-user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
-| MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
+| MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
 | MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
 | MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
 | MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. Possible values are: unknown, white, green, amber, and red. | 
@@ -2890,7 +2890,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | threat_type | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, Cryptomining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, or WatchList. | Required | 
 | tlp_level | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | Optional | 
 | confidence | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100 with 100 being the highest. | Optional | 
-| severity | The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, MediumLow, MediumHigh, High, where 5 is the most severe and zero is not severe at all. | Optional | 
+| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values are Informational, Low, MediumLow, MediumHigh, High, where 5 is the most severe and zero is not severe at all. | Optional | 
 | tags | A comma-separated list that stores arbitrary tags/keywords. | Optional | 
 | domain_name | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain (For example, baddomain.domain.net) | Optional | 
 | network_cidr_block | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. | Optional | 
@@ -2920,7 +2920,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
 | MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation will typically not be utilized by the targetProduct security tool. | 
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
-| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Values are 0 – 100, with 100 being the highest. | 
+| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
 | MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
 | MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. | 
@@ -2933,10 +2933,10 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | MicrosoftATP.Indicators.emailSourceIpAddress | String | Source IP address of the email. | 
 | MicrosoftATP.Indicators.emailSubject | String | Subject line of the email. | 
 | MicrosoftATP.Indicators.emailXMailer | String | X-Mailer value used in the email. | 
-| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). | 
-| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, or ctph. Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph. | 
 | MicrosoftATP.Indicators.fileHashValue | String | The file hash value. | 
 | MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. | 
@@ -2945,10 +2945,10 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | MicrosoftATP.Indicators.filePath | String | Path of the file indicating a compromise. May be a Windows or \*nix style. | 
 | MicrosoftATP.Indicators.fileSize | Number | Size of the file in bytes. | 
 | MicrosoftATP.Indicators.fileType | String | Text description of the type of file. For example, “Word Document” or “Binary”. | 
-| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.isActive | Boolean | Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system. | 
 | MicrosoftATP.Indicators.knownFalsePositives | String | Scenarios in which the indicator may cause false positives. This should be human-readable text. | 
-| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.networkCidrBlock | String | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. | 
 | MicrosoftATP.Indicators.networkDestinationAsn | Number | The destination autonomous system identifier of the network referenced in the indicator. | 
 | MicrosoftATP.Indicators.networkDestinationCidrBlock | String | CIDR Block notation representation of the destination network in this indicator. | 
@@ -2965,7 +2965,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. | 
 | MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. | 
 | MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end-user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
-| MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
+| MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
 | MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
 | MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
 | MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. Possible values are: unknown, white, green, amber, and red. | 
@@ -3025,10 +3025,10 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | threat_type | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, Cryptomining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, or WatchList. | Required | 
 | tlp_level | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | Optional | 
 | confidence | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100 with 100 being the highest. | Optional | 
-| severity | The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, MediumLow, MediumHigh, High, where 5 is the most severe and zero is not severe at all. | Optional | 
+| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values are Informational, Low, MediumLow, MediumHigh, High, where 5 is the most severe and zero is not severe at all. | Optional | 
 | tags | A comma-separated list that stores arbitrary tags/keywords. | Optional | 
-| file_compile_date_time | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | Optional | 
-| file_created_date_time | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | Optional | 
+| file_compile_date_time | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | Optional | 
+| file_created_date_time | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | Optional | 
 | file_hash_type | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, or ctph. | Optional | 
 | file_hash_value | The file hash value. | Optional | 
 | file_mutex_name | Mutex name used in file-based detections. | Optional | 
@@ -3047,7 +3047,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
 | MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation will typically not be utilized by the targetProduct security tool. | 
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
-| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Values are 0 – 100, with 100 being the highest. | 
+| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
 | MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
 | MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. | 
@@ -3060,10 +3060,10 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | MicrosoftATP.Indicators.emailSourceIpAddress | String | Source IP address of the email. | 
 | MicrosoftATP.Indicators.emailSubject | String | Subject line of the email. | 
 | MicrosoftATP.Indicators.emailXMailer | String | X-Mailer value used in the email. | 
-| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). | 
-| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, or ctph. Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph. | 
 | MicrosoftATP.Indicators.fileHashValue | String | The file hash value. | 
 | MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. | 
@@ -3072,10 +3072,10 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | MicrosoftATP.Indicators.filePath | String | Path of the file indicating a compromise. May be a Windows or \*nix style. | 
 | MicrosoftATP.Indicators.fileSize | Number | Size of the file in bytes. | 
 | MicrosoftATP.Indicators.fileType | String | Text description of the type of file. For example, “Word Document” or “Binary”. | 
-| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.isActive | Boolean | Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system. | 
 | MicrosoftATP.Indicators.knownFalsePositives | String | Scenarios in which the indicator may cause false positives. This should be human-readable text. | 
-| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.networkCidrBlock | String | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. | 
 | MicrosoftATP.Indicators.networkDestinationAsn | Number | The destination autonomous system identifier of the network referenced in the indicator. | 
 | MicrosoftATP.Indicators.networkDestinationCidrBlock | String | CIDR Block notation representation of the destination network in this indicator. | 
@@ -3092,7 +3092,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. | 
 | MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. | 
 | MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end-user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
-| MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
+| MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
 | MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
 | MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
 | MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. Possible values are: unknown, white, green, amber, and red. | 
@@ -3148,7 +3148,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates t
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicator_id | The ID of the indicator to update. | Required | 
-| severity | The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, MediumLow, MediumHigh, High, where High is the most severe and Informational is not severe at all. | Optional | 
+| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values are Informational, Low, MediumLow, MediumHigh, High, where High is the most severe and Informational is not severe at all. | Optional | 
 | expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Required | 
 | description | Brief description (100 characters or less) of the threat represented by the indicator. | Optional | 
 
@@ -3161,7 +3161,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates t
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
 | MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation will typically not be utilized by the targetProduct security tool. | 
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
-| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Values are 0 – 100, with 100 being the highest. | 
+| MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
 | MicrosoftATP.Indicators.diamondModel | String | The area of the Diamond Model in which this indicator exists. Possible values are: unknown, adversary, capability, infrastructure, victim. | 
 | MicrosoftATP.Indicators.domainName | String | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain. | 
@@ -3174,10 +3174,10 @@ Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates t
 | MicrosoftATP.Indicators.emailSourceIpAddress | String | Source IP address of the email. | 
 | MicrosoftATP.Indicators.emailSubject | String | Subject line of the email. | 
 | MicrosoftATP.Indicators.emailXMailer | String | X-Mailer value used in the email. | 
-| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.expirationDateTime | Date | DateTime string indicating when the indicator expires. To avoid stale indicators persisting in the system, all indicators must have an expiration date. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). | 
-| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, or ctph. Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph. | 
 | MicrosoftATP.Indicators.fileHashValue | String | The file hash value. | 
 | MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. | 
@@ -3186,10 +3186,10 @@ Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates t
 | MicrosoftATP.Indicators.filePath | String | Path of the file indicating a compromise. May be a Windows or \*nix style. | 
 | MicrosoftATP.Indicators.fileSize | Number | Size of the file in bytes. | 
 | MicrosoftATP.Indicators.fileType | String | Text description of the type of file. For example, “Word Document” or “Binary”. | 
-| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.ingestedDateTime | Date | Stamped by the system when the indicator is ingested. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.isActive | Boolean | Used to deactivate indicators within system. By default, any indicator submitted is set as active. However, providers may submit existing indicators with this set to ‘False’ to deactivate indicators in the system. | 
 | MicrosoftATP.Indicators.knownFalsePositives | String | Scenarios in which the indicator may cause false positives. This should be human-readable text. | 
-| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | 
+| MicrosoftATP.Indicators.lastReportedDateTime | Date | The last time the indicator was seen. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.networkCidrBlock | String | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. | 
 | MicrosoftATP.Indicators.networkDestinationAsn | Number | The destination autonomous system identifier of the network referenced in the indicator. | 
 | MicrosoftATP.Indicators.networkDestinationCidrBlock | String | CIDR Block notation representation of the destination network in this indicator. | 
@@ -3206,7 +3206,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates t
 | MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. | 
 | MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. | 
 | MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end-user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
-| MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
+| MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
 | MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
 | MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
 | MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. Possible values are: unknown, white, green, amber, and red. | 
