@@ -13,7 +13,7 @@ class Client(BaseClient):
     Client for CheckPoint RESTful API.
     Args:
           base_url (str): the URL of CheckPoint.
-          sid (str): CheckPoint session ID of the current user session [Optional]
+          sid (str): CheckPoint session ID of the current user session. [Optional]
           use_ssl (bool): specifies whether to verify the SSL certificate or not.
           use_proxy (bool): specifies if to use Demisto proxy settings.
     """
@@ -53,6 +53,13 @@ class Client(BaseClient):
                               readable_output=readable_output,
                               outputs=printable_result,
                               raw_response=response)
+
+    def restore_sid_from_context_or_login(self, username: str, password: str, session_timeout: int,
+                                          domain_arg: str = None):
+        if sid_from_context := demisto.getIntegrationContext().get('cp_sid'):
+            self.sid = sid_from_context
+        else:
+            self.login(username, password, session_timeout, domain_arg)
 
     def test_connection(self):
         """
@@ -1825,7 +1832,8 @@ def main():
             return_results(client.logout())
 
         else:
-            client.login(**login_args)
+            if not client.sid:
+                client.restore_sid_from_context_or_login(**login_args)
             stay_logged_in = False
 
         demisto.info(f'Command being called is {demisto.command()}')
