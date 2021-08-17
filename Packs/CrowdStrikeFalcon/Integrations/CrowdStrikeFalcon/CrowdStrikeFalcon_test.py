@@ -75,7 +75,6 @@ response_incident = {"incident_id": "inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a
                      ],
                      "fine_score": 38}
 
-
 incident_context = {'name': 'Incident ID: inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd',
                     'occurred': '2020-05-17T17:30:38Z',
                     'rawJSON':
@@ -2170,6 +2169,7 @@ class TestFetch:
     """ Test the logic of the fetch
 
     """
+
     @pytest.fixture()
     def set_up_mocks(self, requests_mock, mocker):
         """ Sets up the mocks for the fetch.
@@ -2198,8 +2198,9 @@ class TestFetch:
 
         """
         from CrowdStrikeFalcon import fetch_incidents
-        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z',
-                                                                 'last_detection_id': 1234})
+        mocker.patch.object(demisto, 'getLastRun',
+                            return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z',
+                                          'last_detection_id': 1234})
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_detection_time': '2020-09-04T09:16:10Z',
                                                           'detection_offset': 2, 'last_detection_id': 1234}
@@ -2215,7 +2216,8 @@ class TestFetch:
             The `first_behavior_time` doesn't change and an `offset` of 2 is added.
         """
 
-        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z'})
+        mocker.patch.object(demisto, 'getLastRun',
+                            return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z'})
         from CrowdStrikeFalcon import fetch_incidents
 
         fetch_incidents()
@@ -2233,7 +2235,7 @@ class TestFetch:
             The `first_behavior_time` changes and no `offset` is added.
         """
         mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_detection_time':
-                                                                 '2020-09-04T09:16:10Z', 'detection_offset': 2})
+                                                                     '2020-09-04T09:16:10Z', 'detection_offset': 2})
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
@@ -2249,6 +2251,7 @@ class TestIncidentFetch:
     """ Test the logic of the fetch
 
     """
+
     @pytest.fixture()
     def set_up_mocks(self, requests_mock, mocker):
         """ Sets up the mocks for the fetch.
@@ -2272,7 +2275,8 @@ class TestIncidentFetch:
                                                           'last_incident_id': 1234}
 
     def test_new_fetch_with_offset(self, set_up_mocks, mocker):
-        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z'})
+        mocker.patch.object(demisto, 'getLastRun',
+                            return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z'})
         from CrowdStrikeFalcon import fetch_incidents
 
         fetch_incidents()
@@ -2787,5 +2791,73 @@ def test_get_endpint_command(requests_mock, mocker):
 
     assert context['Endpoint(val.ID && val.ID == obj.ID)'] == [endpoint_context]
 
-def test_create_hostgroup():
-    pass
+
+def test_create_hostgroup(requests_mock):
+    from CrowdStrikeFalcon import create_host_group
+    name = 'test name'
+    description = 'test description'
+    group_type = 'static'
+    response = {
+        "meta": {
+            "query_time": 1.42e-7,
+            "trace_id": "0d85e49a-930a-4842-bf90-7bf2c1704b69"
+        },
+        "errors": None,
+        "resources": [
+            {
+                "id": "b1a0cd73ecab411581cbe467fc3319f5",
+                "group_type": group_type,
+                "name": name,
+                "description": description,
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-17T11:58:42.453661998Z",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-17T11:58:42.453661998Z"
+            }
+        ]
+    }
+    requests_mock.post(
+        f'{SERVER_URL}/devices/entities/host-groups/v1',
+        json=response,
+        status_code=200
+    )
+    command_res = create_host_group('POST', name='test name', description='test description', group_type='static')
+    assert name == command_res.outputs.get('name')
+    assert description == command_res.outputs.get('description')
+    assert group_type == command_res.outputs.get('group_type')
+
+
+def test_update_hostgroup(requests_mock):
+    from CrowdStrikeFalcon import create_host_group
+    name = 'test name'
+    description = 'test description'
+    group_type = 'static'
+    response = {
+        "meta": {
+            "query_time": 1.42e-7,
+            "trace_id": "0d85e49a-930a-4842-bf90-7bf2c1704b69"
+        },
+        "errors": None,
+        "resources": [
+            {
+                "id": "b1a0cd73ecab411581cbe467fc3319f5",
+                "group_type": group_type,
+                "name": name,
+                "description": description,
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-17T11:58:42.453661998Z",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-17T11:58:42.453661998Z"
+            }
+        ]
+    }
+    requests_mock.patch(
+        f'{SERVER_URL}/devices/entities/host-groups/v1',
+        json=response,
+        status_code=200
+    )
+    command_res = create_host_group('PATCH', host_group_id='b1a0cd73ecab411581cbe467fc3319f5',
+                                    name='test name', description='test description', group_type='static')
+    assert name == command_res.outputs.get('name')
+    assert description == command_res.outputs.get('description')
+    assert group_type == command_res.outputs.get('group_type')

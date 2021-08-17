@@ -2167,7 +2167,7 @@ script:
       name: assignment_rule
       required: false
       secret: false
-    deprecated: false
+      deprecated: false
     description: Create a host group
     execution: false
     name: cs-falcon-create-host-group
@@ -2196,97 +2196,97 @@ script:
       - contextPath: CrowdStrike.HostGroup.modified_timestamp
         description: The integration name of the endpoint vendor.
         type: Date
-      - arguments:
-          - default: false
-            description: The host group id
-            isArray: false
-            name: host_group_id
-            required: true
-            secret: false
-          - default: false
-            description: The name of the host
-            isArray: false
-            name: name
-            required: false
-            secret: false
-          - default: true
-            description: Can be 'static' or 'dynamic'
-            isArray: false
-            name: group_type
-            required: false
-            secret: false
-          - default: false
-            description: Description of the host
-            isArray: false
-            name: description
-            required: false
-            secret: false
-          - default: false
-            description: The assignmet rule
-            isArray: false
-            name: assignment_rule
-            required: false
-            secret: false
-        deprecated: false
-        description: Update a host group
-        execution: false
-        name: cs-falcon-update-host-group
-        outputs:
-          - contextPath: CrowdStrike.HostGroup.id
-            description: The id of the host group.
-            type: String
-          - contextPath: CrowdStrike.HostGroup.group_type
-            description: The group type of the host group
-            type: String
-          - contextPath: CrowdStrike.HostGroup.name
-            description: The name of the hostgroup
-            type: String
-          - contextPath: CrowdStrike.HostGroup.description
-            description: The description of the hostgroup
-            type: String
-          - contextPath: CrowdStrike.HostGroup.created_by
-            description: The created client of the host group.
-            type: String
-          - contextPath: CrowdStrike.HostGroup.created_timestamp
-            description: The timestamp of created hostgroup
-            type: Date
-          - contextPath: CrowdStrike.HostGroup.modified_by
-            description: The client that modified the host group.
-            type: String
-          - contextPath: CrowdStrike.HostGroup.modified_timestamp
-            description: The integration name of the endpoint vendor.
-            type: Date
-      - arguments:
-          - default: false
-            description: The host group id
-            isArray: false
-            name: host_group_id
-            required: false
-            secret: false
-          - default: false
-            description: Filter the result
-            isArray: false
-            name: filter
-            required: false
-            secret: false
-          - default: true
-            description: Page offset
-            isArray: false
-            name: offset
-            required: false
-            secret: false
-          - default: true
-            defaultValue: 50
-            description: Number of result in a page
-            isArray: false
-            name: limit
-            required: false
-            secret: false
-        deprecated: false
-        description: Get the list of host group members
-        execution: false
-        name: cs-falcon-list-host-group-members
-        outputs:
+  - arguments:
+      - default: false
+        description: The host group id
+        isArray: false
+        name: host_group_id
+        required: true
+        secret: false
+      - default: false
+        description: The name of the host
+        isArray: false
+        name: name
+        required: false
+        secret: false
+      - default: true
+        description: Can be 'static' or 'dynamic'
+        isArray: false
+        name: group_type
+        required: false
+        secret: false
+      - default: false
+        description: Description of the host
+        isArray: false
+        name: description
+        required: false
+        secret: false
+      - default: false
+        description: The assignmet rule
+        isArray: false
+        name: assignment_rule
+        required: false
+        secret: false
+    deprecated: false
+    description: Update a host group
+    execution: false
+    name: cs-falcon-update-host-group
+    outputs:
+      - contextPath: CrowdStrike.HostGroup.id
+        description: The id of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.group_type
+        description: The group type of the host group
+        type: String
+      - contextPath: CrowdStrike.HostGroup.name
+        description: The name of the hostgroup
+        type: String
+      - contextPath: CrowdStrike.HostGroup.description
+        description: The description of the hostgroup
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_by
+        description: The created client of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_timestamp
+        description: The timestamp of created hostgroup
+        type: Date
+      - contextPath: CrowdStrike.HostGroup.modified_by
+        description: The client that modified the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.modified_timestamp
+        description: The integration name of the endpoint vendor.
+        type: Date
+  - arguments:
+      - default: false
+        description: The host group id
+        isArray: false
+        name: host_group_id
+        required: false
+        secret: false
+      - default: false
+        description: Filter the result
+        isArray: false
+        name: filter
+        required: false
+        secret: false
+      - default: true
+        description: Page offset
+        isArray: false
+        name: offset
+        required: false
+        secret: false
+      - default: true
+        defaultValue: 50
+        description: Number of result in a page
+        isArray: false
+        name: limit
+        required: false
+        secret: false
+    deprecated: false
+    description: Get the list of host group members
+    execution: false
+    name: cs-falcon-list-host-group-members
+    outputs:
           - contextPath: CrowdStrike.HostGroupMember.device_id
             description: ''
             type: String
@@ -2548,109 +2548,108 @@ script:
           - contextPath: CrowdStrike.HostGroupMember.zone_group
             description: ''
             type: String
-      - arguments:
-          - default: false
-            description: The host group id
-            isArray: false
-            name: host_group_id
-            required: true
-            secret: false
-          - default: false
-            description: The id of the host
-            isArray: true
-            name: host_ids
-            required: true
-            secret: false
-        deprecated: false
-        description: Add host group members
-        execution: false
-        name: cs-falcon-add-host-group-members
-        outputs:
-          - contextPath: CrowdStrike.HostGroup.id
-            description: The id of the host group.
-            type: String
-          - contextPath: CrowdStrike.HostGroup.group_type
-            description: The group type of the host group
-            type: String
-          - contextPath: CrowdStrike.HostGroup.name
-            description: The name of the hostgroup
-            type: String
-          - contextPath: CrowdStrike.HostGroup.description
-            description: The description of the hostgroup
-            type: String
-          - contextPath: CrowdStrike.HostGroup.created_by
-            description: The created client of the host group.
-            type: String
-          - contextPath: CrowdStrike.HostGroup.created_timestamp
-            description: The timestamp of created hostgroup
-            type: Date
-          - contextPath: CrowdStrike.HostGroup.modified_by
-            description: The client that modified the host group.
-            type: String
-          - contextPath: CrowdStrike.HostGroup.modified_timestamp
-            description: The integration name of the endpoint vendor.
-            type: Date
-      - arguments:
-          - default: false
-            description: The host group id
-            isArray: false
-            name: host_group_id
-            required: true
-            secret: false
-          - default: false
-            description: The id of the host
-            isArray: true
-            name: host_ids
-            required: true
-            secret: false
-        deprecated: false
-        description: Remove host group members
-        execution: false
-        name: cs-falcon-remove-host-group-members
-        outputs:
-          - contextPath: CrowdStrike.HostGroup.id
-            description: The id of the host group.
-            type: String
-          - contextPath: CrowdStrike.HostGroup.group_type
-            description: The group type of the host group
-            type: String
-          - contextPath: CrowdStrike.HostGroup.name
-            description: The name of the hostgroup
-            type: String
-          - contextPath: CrowdStrike.HostGroup.description
-            description: The description of the hostgroup
-            type: String
-          - contextPath: CrowdStrike.HostGroup.created_by
-            description: The created client of the host group.
-            type: String
-          - contextPath: CrowdStrike.HostGroup.created_timestamp
-            description: The timestamp of created hostgroup
-            type: Date
-          - contextPath: CrowdStrike.HostGroup.modified_by
-            description: The client that modified the host group.
-            type: String
-          - contextPath: CrowdStrike.HostGroup.modified_timestamp
-            description: The integration name of the endpoint vendor.
-            type: Date
-      - arguments:
-          - default: false
-            description: Incidents ids
-            isArray: true
-            name: ids
-            required: true
-            secret: false
-          - default: false
-            description: The new status of the incident
-            isArray: true
-            name: status
-            required: true
-            secret: false
-        deprecated: false
-        description: Resolve incidents
-        execution: false
-        name: cs-falcon-resolve-incident
-        outputs:
-          -
+  - arguments:
+      - default: false
+        description: The host group id
+        isArray: false
+        name: host_group_id
+        required: true
+        secret: false
+      - default: false
+        description: The id of the host
+        isArray: true
+        name: host_ids
+        required: true
+        secret: false
+    deprecated: false
+    description: Add host group members
+    execution: false
+    name: cs-falcon-add-host-group-members
+    outputs:
+      - contextPath: CrowdStrike.HostGroup.id
+        description: The id of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.group_type
+        description: The group type of the host group
+        type: String
+      - contextPath: CrowdStrike.HostGroup.name
+        description: The name of the hostgroup
+        type: String
+      - contextPath: CrowdStrike.HostGroup.description
+        description: The description of the hostgroup
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_by
+        description: The created client of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_timestamp
+        description: The timestamp of created hostgroup
+        type: Date
+      - contextPath: CrowdStrike.HostGroup.modified_by
+        description: The client that modified the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.modified_timestamp
+        description: The integration name of the endpoint vendor.
+        type: Date
+  - arguments:
+      - default: false
+        description: The host group id
+        isArray: false
+        name: host_group_id
+        required: true
+        secret: false
+      - default: false
+        description: The id of the host
+        isArray: true
+        name: host_ids
+        required: true
+        secret: false
+    deprecated: false
+    description: Remove host group members
+    execution: false
+    name: cs-falcon-remove-host-group-members
+    outputs:
+      - contextPath: CrowdStrike.HostGroup.id
+        description: The id of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.group_type
+        description: The group type of the host group
+        type: String
+      - contextPath: CrowdStrike.HostGroup.name
+        description: The name of the hostgroup
+        type: String
+      - contextPath: CrowdStrike.HostGroup.description
+        description: The description of the hostgroup
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_by
+        description: The created client of the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.created_timestamp
+        description: The timestamp of created hostgroup
+        type: Date
+      - contextPath: CrowdStrike.HostGroup.modified_by
+        description: The client that modified the host group.
+        type: String
+      - contextPath: CrowdStrike.HostGroup.modified_timestamp
+        description: The integration name of the endpoint vendor.
+        type: Date
+  - arguments:
+      - default: false
+        description: Incidents ids
+        isArray: true
+        name: ids
+        required: true
+        secret: false
+      - default: false
+        description: The new status of the incident
+        isArray: true
+        name: status
+        required: true
+        secret: false
+    deprecated: false
+    description: Resolve incidents
+    execution: false
+    name: cs-falcon-resolve-incident
+    outputs:
   dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: true

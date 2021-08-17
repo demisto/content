@@ -138,10 +138,10 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
     },
 ]
 
-STATUS_TEXT_TO_NUM = {'New': 20,
-                      'Reopened': 25,
-                      'In Progress': 30,
-                      'Closed': 40}
+STATUS_TEXT_TO_NUM = {'New': "20",
+                      'Reopened': "25",
+                      'In Progress': "30",
+                      'Closed': "40"}
 
 ''' HELPER FUNCTIONS '''
 
@@ -2467,7 +2467,7 @@ def list_incident_summaries_command():
     )
 
 
-def create_host_group(method, host_group_id: None, name: None, group_type: None, description=None,
+def create_host_group(method, host_group_id=None, name=None, group_type=None, description=None,
                       assignment_rule=None):
     data = {'resources': [{
         'id': host_group_id,
@@ -2494,21 +2494,22 @@ def list_host_group_members(host_group_id=None, filter=None, offset=None, limit=
     response = http_request(method='GET',
                             url_suffix='/devices/queries/host-group-members/v1',
                             params=params)
-    output = {'resources' : response.get('resources'),
-              'total' : demisto.get(response, 'meta.pagination.total')}
+    output = {'resources': response.get('resources'),
+              'total': demisto.get(response, 'meta.pagination.total')}
     return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
                           outputs=output)
 
 
 def host_group_members(action_name, host_group_id, host_ids):
     host_ids = argToList(host_ids)
-    dats = {'action_parameters': [{'name': 'filter',
+    data = {'action_parameters': [{'name': 'filter',
                                    'value': f"(device_id:{str(host_ids)})"}],
-            'id': [host_group_id]}
+            'ids': [host_group_id]}
+    demisto.debug(data)
     response = http_request(method='POST',
                             url_suffix='/devices/entities/host-group-actions/v1',
                             params={'action_name': action_name},
-                            json=dats)
+                            json=data)
     resources = response.get('resources')
     return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
                           outputs_key_field='id',
@@ -2529,9 +2530,10 @@ def resolve_incident(ids, status):
     response = http_request(method='POST',
                             url_suffix='/incidents/entities/incident-actions/v1',
                             json=data)
+    readables = [f"{id} status changed to {status} successfully" for id in ids] 
+    readable = '\n'.join(readables)
     return CommandResults(outputs_prefix='CrowdStrike.Incidents',
-                          outputs_key_field='id',
-                          outputs=response)
+                          readable_output=readable)
 
 
 def test_module():
@@ -2645,7 +2647,7 @@ def main():
             return_results(list_host_group_members(**args))
         elif command == 'cs-falcon-add-host-group-members':
             return_results(host_group_members(action_name='add-hosts', **args))
-        elif command == 'cs-falcon-remove-host-group-members:':
+        elif command == 'cs-falcon-remove-host-group-members':
             return_results(host_group_members(action_name='remove-hosts', **args))
         elif command == 'cs-falcon-resolve-incident':
             return_results(resolve_incident(**args))
