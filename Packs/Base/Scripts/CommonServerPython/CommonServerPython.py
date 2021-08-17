@@ -227,6 +227,8 @@ class DBotScoreType(object):
     DBotScoreType.CRYPTOCURRENCY
     DBotScoreType.EMAIL
     DBotScoreType.ATTACKPATTERN
+    DBotScoreType.CUSTOM
+
     :return: None
     :rtype: ``None``
     """
@@ -242,6 +244,7 @@ class DBotScoreType(object):
     CRYPTOCURRENCY = 'cryptocurrency'
     EMAIL = 'email'
     ATTACKPATTERN = 'attackpattern'
+    CUSTOM = 'custom'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -264,6 +267,7 @@ class DBotScoreType(object):
             DBotScoreType.CRYPTOCURRENCY,
             DBotScoreType.EMAIL,
             DBotScoreType.ATTACKPATTERN,
+            DBotScoreType.CUSTOM,
         )
 
 
@@ -2474,6 +2478,68 @@ class Common(object):
             ret_value = {
                 Common.DBotScore.get_context_path(): dbot_context
             }
+            return ret_value
+
+    class CustomIndicator(Indicator):
+
+        def __init__(self, indicator_type, value, dbot_score, data, context_prefix):
+            """
+            :type indicator_type: ``Str``
+            :param indicator_type: The name of the indicator type.
+
+            :type value: ``Any``
+            :param value: The value of the indicator.
+
+            :type dbot_score: ``DBotScore``
+            :param dbot_score: If custom indicator has a score then create and set a DBotScore object.
+
+            :type data: ``Dict(Str,Any)``
+            :param data: A dictionary containing all the param names and their values.
+
+            :type context_prefix: ``Str``
+            :param context_prefix: Will be used as the context path prefix.
+
+            :return: None
+            :rtype: ``None``
+            """
+            if hasattr(DBotScoreType, indicator_type.upper()):
+                raise ValueError('Creating a custom indicator type with an existing type name is not allowed')
+            if not value:
+                raise ValueError('value is mandatory for creating the indicator')
+            if not context_prefix:
+                raise ValueError('context_prefix is mandatory for creating the indicator')
+
+            self.CONTEXT_PATH = '{context_prefix}(val.value && val.value == obj.value)'.\
+                format(context_prefix=context_prefix)
+
+            self.value = value
+
+            if not isinstance(dbot_score, Common.DBotScore):
+                raise ValueError('dbot_score must be of type DBotScore')
+
+            self.dbot_score = dbot_score
+            self.indicator_type = indicator_type
+            self.data = data
+            INDICATOR_TYPE_TO_CONTEXT_KEY[indicator_type.lower()] = indicator_type.capitalize()
+
+            for key in self.data:
+                setattr(self, key, data[key])
+
+        def to_context(self):
+            custom_context = {
+                'Value': self.value
+            }
+
+            custom_context.update(self.data)
+
+            ret_value = {
+                self.CONTEXT_PATH: custom_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+            ret_value[Common.DBotScore.get_context_path()]['Type'] = self.indicator_type
+
             return ret_value
 
     class IP(Indicator):
