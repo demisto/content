@@ -390,13 +390,16 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
                 if allow_enable and is_enable_enabled:
                     salesforce_user['IsActive'] = True
+                    action = IAMActions.ENABLE_USER
+                else:
+                    action = IAMActions.UPDATE_USER
 
                 res = client.update_user(user_term=user_id, data=salesforce_user)
 
                 iam_user_profile.set_result(success=True,
                                             iden=user_id,
                                             active=active,
-                                            action=IAMActions.UPDATE_USER,
+                                            action=action,
                                             details=res
                                             )
 
@@ -454,6 +457,7 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
         return iam_user_profile
 
     except Exception as e:
+        return_error('error: ' + str(traceback.format_exc()))
         message, code = handle_exception(e)
         iam_user_profile.set_result(success=False,
                                     error_message=message,
