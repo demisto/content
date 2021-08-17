@@ -229,62 +229,6 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags: List = [], limit: int = -1) \
-        -> List[Dict]:
-    """Retrieves indicators from the feed
-    Args:
-        client (Client): Client object with request
-        tlp_color (str): Traffic Light Protocol color
-        feed_tags (list): tags to assign fetched indicators
-        limit (int): limit the results
-    Returns:
-        Indicators.
-    """
-    iterator = client.build_iterator()
-    indicators = []
-    if limit > 0:
-        iterator = iterator[:limit]
-
-    # extract values from iterator
-    for item in iterator:
-        value_ = item.get('value')
-        type_ = item.get('type')
-        raw_data = {
-            'value': value_,
-            'type': type_,
-        }
-
-        # Create indicator object for each value.
-        # The object consists of a dictionary with required and optional keys and values, as described blow.
-        for key, value in item.items():
-            raw_data.update({key: value})
-        indicator_obj = {
-            # The indicator value.
-            'value': value_,
-            # The indicator type as defined in Cortex XSOAR.
-            # One can use the FeedIndicatorType class under CommonServerPython to populate this field.
-            'type': type_,
-            # The name of the service supplying this feed.
-            'service': 'HelloWorld',
-            # A dictionary that maps values to existing indicator fields defined in Cortex XSOAR.
-            # One can use this section in order to map custom indicator fields previously defined
-            # in Cortex XSOAR to their values.
-            'fields': {},
-            # A dictionary of the raw data returned from the feed source about the indicator.
-            'rawJSON': raw_data
-        }
-
-        if feed_tags:
-            indicator_obj['fields']['tags'] = feed_tags
-
-        if tlp_color:
-            indicator_obj['fields']['trafficlightprotocol'] = tlp_color
-
-        indicators.append(indicator_obj)
-
-    return indicators
-
-
 def search_attributes_command(client: Client,
                            params: Dict[str, str],
                            args: Dict[str, str]
@@ -307,27 +251,27 @@ def search_attributes_command(client: Client,
     # headerTransform=string_to_table_header, removeNull=True)
     return CommandResults(
         readable_output="",
-        outputs_prefix='',
+        outputs_prefix='Test',
         outputs_key_field='',
         raw_response=indicators,
         outputs=indicators,
     )
 
 
-def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[str, Any]:
+def build_params_dict(tags: List[str], attribute_type: List[str]) -> str:
     params = {
         'returnFormat': 'json',
         'type': {
-            'type': 'ip-src'
+                'OR': []
         },
         'tags': {
-            'OR': 'tlp:%'
+            'OR': []
         }
     }
-    # if attribute_type:
-    #     params["type"]["type"] = attribute_type
-    # if tags:
-    #     params["tags"]["OR"] = tags
+    if attribute_type:
+        params["type"]["OR"] = attribute_type
+    if tags:
+        params["tags"]["OR"] = tags
     return json.dumps(params)
 
 
