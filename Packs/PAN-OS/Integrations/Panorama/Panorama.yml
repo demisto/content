@@ -2057,6 +2057,27 @@ script:
       name: profile_setting
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: bottom
+      default: false
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom".
+        If you specify "top" or "bottom", you need to supply the "dst" argument.
+      isArray: false
+      name: where
+      predefined:
+        - before
+        - after
+        - top
+        - bottom
+      required: false
+      secret: false
+    - default: false
+      description: Destination rule relative to the rule that you are moving. This
+        field is only relevant if you specify "top" or "bottom" in the "where" argument.
+      isArray: false
+      name: dst
+      required: false
+      secret: false
     deprecated: false
     description: Creates a policy rule.
     execution: true
@@ -2180,6 +2201,27 @@ script:
       description: Tags for which to use for the custom block policy rule.
       isArray: true
       name: tags
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: bottom
+      default: false
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom".
+        If you specify "top" or "bottom", you need to supply the "dst" argument.
+      isArray: false
+      name: where
+      predefined:
+        - before
+        - after
+        - top
+        - bottom
+      required: false
+      secret: false
+    - default: false
+      description: Destination rule relative to the rule that you are moving. This
+        field is only relevant if you specify "top" or "bottom" in the "where" argument.
+      isArray: false
+      name: dst
       required: false
       secret: false
     deprecated: false
