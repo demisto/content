@@ -102,7 +102,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "alternatives": {
+        "Alternatives": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -152,7 +152,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "at": {
+        "At": {
             "changed": true,
             "count": 20,
             "host": "123.123.123.123",
@@ -205,16 +205,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.authorizedKey.exclusive | boolean | If the key has been forced to be exclusive or not. | 
-| Linux.authorizedKey.key | string | The key that the module was running against. | 
-| Linux.authorizedKey.key_option | string | Key options related to the key. | 
-| Linux.authorizedKey.keyfile | string | Path for authorized key file. | 
-| Linux.authorizedKey.manage_dir | boolean | Whether this module managed the directory of the authorized key file. | 
-| Linux.authorizedKey.path | string | Alternate path to the authorized_keys file | 
-| Linux.authorizedKey.state | string | Whether the given key \(with the given key_options\) should or should not be in the file | 
-| Linux.authorizedKey.unique | boolean | Whether the key is unique | 
-| Linux.authorizedKey.user | string | The username on the remote host whose authorized_keys file will be modified | 
-| Linux.authorizedKey.validate_certs | boolean | This only applies if using a https url as the source of the keys. If set to \`no\`, the SSL certificates will not be validated. | 
+| Linux.AuthorizedKey.exclusive | boolean | If the key has been forced to be exclusive or not. | 
+| Linux.AuthorizedKey.key | string | The key that the module was running against. | 
+| Linux.AuthorizedKey.key_option | string | Key options related to the key. | 
+| Linux.AuthorizedKey.keyfile | string | Path for authorized key file. | 
+| Linux.AuthorizedKey.manage_dir | boolean | Whether this module managed the directory of the authorized key file. | 
+| Linux.AuthorizedKey.path | string | Alternate path to the authorized_keys file | 
+| Linux.AuthorizedKey.state | string | Whether the given key \(with the given key_options\) should or should not be in the file | 
+| Linux.AuthorizedKey.unique | boolean | Whether the key is unique | 
+| Linux.AuthorizedKey.user | string | The username on the remote host whose authorized_keys file will be modified | 
+| Linux.AuthorizedKey.validate_certs | boolean | This only applies if using a https url as the source of the keys. If set to \`no\`, the SSL certificates will not be validated. | 
 
 
 #### Command Example
@@ -224,7 +224,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "authorizedKey": {
+        "AuthorizedKey": {
             "changed": true,
             "comment": null,
             "exclusive": false,
@@ -332,7 +332,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "cron": {
+        "Cron": {
             "changed": false,
             "envs": [
                 "EMAIL"
@@ -394,7 +394,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "cronvar": {
+        "Cronvar": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS",
@@ -437,7 +437,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.dconf.value | string | value associated with the requested key | 
+| Linux.Dconf.value | string | value associated with the requested key | 
 
 
 #### Command Example
@@ -447,7 +447,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "dconf": {
+        "Dconf": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -524,7 +524,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "filesystem": {
+        "Filesystem": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -582,7 +582,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "firewalld": {
+        "Firewalld": {
             "changed": false,
             "host": "123.123.123.123",
             "msg": "Permanent operation",
@@ -629,7 +629,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "gatherFacts": {
+        "GatherFacts": {
             "all_ipv4_addresses": [
                 "123.123.123.123"
             ],
@@ -1589,9 +1589,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.gconftool2.key | string | The key specified in the module parameters | 
-| Linux.gconftool2.value_type | string | The type of the value that was changed | 
-| Linux.gconftool2.value | string | The value of the preference key after executing the module | 
+| Linux.Gconftool2.key | string | The key specified in the module parameters | 
+| Linux.Gconftool2.value_type | string | The type of the value that was changed | 
+| Linux.Gconftool2.value | string | The value of the preference key after executing the module | 
 
 
 #### Command Example
@@ -1601,7 +1601,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "gconftool2": {
+        "Gconftool2": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -1650,7 +1650,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "getent": {
+        "Getent": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -1700,7 +1700,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "group": {
+        "Group": {
             "changed": false,
             "gid": 1000,
             "host": "123.123.123.123",
@@ -1754,7 +1754,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "hostname": {
+        "Hostname": {
             "changed": false,
             "host": "123.123.123.123",
             "name": "web01",
@@ -1807,8 +1807,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.interfacesFile.dest | string | destination file/path | 
-| Linux.interfacesFile.ifaces | unknown | interfaces dictionary | 
+| Linux.InterfacesFile.dest | string | destination file/path | 
+| Linux.InterfacesFile.ifaces | unknown | interfaces dictionary | 
 
 
 
@@ -1881,7 +1881,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "iptables": {
+        "Iptables": {
             "chain": "INPUT",
             "changed": false,
             "flush": false,
@@ -1941,9 +1941,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.javaCert.msg | string | Output from stdout of keytool command after execution of given command. | 
-| Linux.javaCert.rc | number | Keytool command execution return value. | 
-| Linux.javaCert.cmd | string | Executed command to get action done. | 
+| Linux.JavaCert.msg | string | Output from stdout of keytool command after execution of given command. | 
+| Linux.JavaCert.rc | number | Keytool command execution return value. | 
+| Linux.JavaCert.cmd | string | Executed command to get action done. | 
 
 
 #### Command Example
@@ -1953,7 +1953,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "javaCert": {
+        "JavaCert": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -1997,9 +1997,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.javaKeystore.msg | string | Output from stdout of keytool/openssl command after execution of given command or an error. | 
-| Linux.javaKeystore.rc | number | keytool/openssl command execution return value | 
-| Linux.javaKeystore.cmd | string | Executed command to get action done | 
+| Linux.JavaKeystore.msg | string | Output from stdout of keytool/openssl command after execution of given command or an error. | 
+| Linux.JavaKeystore.rc | number | keytool/openssl command execution return value | 
+| Linux.JavaKeystore.cmd | string | Executed command to get action done | 
 
 
 #### Command Example
@@ -2009,7 +2009,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "javaKeystore": {
+        "JavaKeystore": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -2056,7 +2056,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "kernelBlacklist": {
+        "KernelBlacklist": {
             "changed": false,
             "host": "123.123.123.123",
             "name": "nouveau",
@@ -2109,7 +2109,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "knownHosts": {
+        "KnownHosts": {
             "changed": false,
             "gid": 0,
             "group": "root",
@@ -2168,7 +2168,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.listenPortsFacts.ansible_facts | unknown | Dictionary containing details of TCP and UDP ports with listening servers | 
+| Linux.ListenPortsFacts.ansible_facts | unknown | Dictionary containing details of TCP and UDP ports with listening servers | 
 
 
 #### Command Example
@@ -2178,7 +2178,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "listenPortsFacts": {
+        "ListenPortsFacts": {
             "discovered_interpreter_python": "/usr/libexec/platform-python",
             "host": "123.123.123.123",
             "status": "SUCCESS",
@@ -2288,7 +2288,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "modprobe": {
+        "Modprobe": {
             "changed": false,
             "host": "123.123.123.123",
             "name": "8021q",
@@ -2348,7 +2348,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "mount": {
+        "Mount": {
             "changed": false,
             "dump": "0",
             "fstab": "/etc/fstab",
@@ -2448,7 +2448,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "pamLimits": {
+        "PamLimits": {
             "changed": false,
             "host": "123.123.123.123",
             "msg": "joe\tsoft\tnofile\t64000\n",
@@ -2497,12 +2497,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.pamd.change_count | number | How many rules were changed. | 
-| Linux.pamd.new_rule | string | The changes to the rule.  This was available in Ansible 2.4 and Ansible 2.5.  It was removed in Ansible 2.6. | 
-| Linux.pamd.updated_rule_(n) | string | The rule\(s\) that was/were changed.  This is only available in Ansible 2.4 and was removed in Ansible 2.5. | 
-| Linux.pamd.action | string | That action that was taken and is one of: update_rule, insert_before_rule, insert_after_rule, args_present, args_absent, absent. This was available in Ansible 2.4 and removed in Ansible 2.8 | 
-| Linux.pamd.dest | string | Path to pam.d service that was changed.  This is only available in Ansible 2.3 and was removed in Ansible 2.4. | 
-| Linux.pamd.backupdest | string | The file name of the backup file, if created. | 
+| Linux.Pamd.change_count | number | How many rules were changed. | 
+| Linux.Pamd.new_rule | string | The changes to the rule.  This was available in Ansible 2.4 and Ansible 2.5.  It was removed in Ansible 2.6. | 
+| Linux.Pamd.updated_rule_(n) | string | The rule\(s\) that was/were changed.  This is only available in Ansible 2.4 and was removed in Ansible 2.5. | 
+| Linux.Pamd.action | string | That action that was taken and is one of: update_rule, insert_before_rule, insert_after_rule, args_present, args_absent, absent. This was available in Ansible 2.4 and removed in Ansible 2.8 | 
+| Linux.Pamd.dest | string | Path to pam.d service that was changed.  This is only available in Ansible 2.3 and was removed in Ansible 2.4. | 
+| Linux.Pamd.backupdest | string | The file name of the backup file, if created. | 
 
 
 #### Command Example
@@ -2512,7 +2512,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "pamd": {
+        "Pamd": {
             "backupdest": "",
             "change_count": 0,
             "changed": false,
@@ -2562,7 +2562,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.parted.partition_info | unknown | Current partition information | 
+| Linux.Parted.partition_info | unknown | Current partition information | 
 
 
 #### Command Example
@@ -2572,7 +2572,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "parted": {
+        "Parted": {
             "changed": false,
             "disk": {
                 "dev": "/dev/sdb",
@@ -2649,7 +2649,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.pids.pids | unknown | Process IDs of the given process | 
+| Linux.Pids.pids | unknown | Process IDs of the given process | 
 
 
 #### Command Example
@@ -2659,7 +2659,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "pids": [
+        "Pids": [
             []
         ]
     }
@@ -2692,7 +2692,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.ping.ping | string | value provided with the data parameter | 
+| Linux.Ping.ping | string | value provided with the data parameter | 
 
 
 #### Command Example
@@ -2702,7 +2702,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "ping": [
+        "Ping": [
             "pong"
         ]
     }
@@ -2735,12 +2735,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.pythonRequirementsInfo.python | string | path to python version used | 
-| Linux.pythonRequirementsInfo.python_version | string | version of python | 
-| Linux.pythonRequirementsInfo.python_system_path | unknown | List of paths python is looking for modules in | 
-| Linux.pythonRequirementsInfo.valid | unknown | A dictionary of dependencies that matched their desired versions. If no version was specified, then \`desired\` will be null | 
-| Linux.pythonRequirementsInfo.mismatched | unknown | A dictionary of dependencies that did not satisfy the desired version | 
-| Linux.pythonRequirementsInfo.not_found | unknown | A list of packages that could not be imported at all, and are not installed | 
+| Linux.PythonRequirementsInfo.python | string | path to python version used | 
+| Linux.PythonRequirementsInfo.python_version | string | version of python | 
+| Linux.PythonRequirementsInfo.python_system_path | unknown | List of paths python is looking for modules in | 
+| Linux.PythonRequirementsInfo.valid | unknown | A dictionary of dependencies that matched their desired versions. If no version was specified, then \`desired\` will be null | 
+| Linux.PythonRequirementsInfo.mismatched | unknown | A dictionary of dependencies that did not satisfy the desired version | 
+| Linux.PythonRequirementsInfo.not_found | unknown | A list of packages that could not be imported at all, and are not installed | 
 
 
 #### Command Example
@@ -2750,7 +2750,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "pythonRequirementsInfo": {
+        "PythonRequirementsInfo": {
             "changed": false,
             "host": "123.123.123.123",
             "mismatched": {},
@@ -2822,8 +2822,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.reboot.rebooted | boolean | true if the machine was rebooted | 
-| Linux.reboot.elapsed | number | The number of seconds that elapsed waiting for the system to be rebooted. | 
+| Linux.Reboot.rebooted | boolean | true if the machine was rebooted | 
+| Linux.Reboot.elapsed | number | The number of seconds that elapsed waiting for the system to be rebooted. | 
 
 
 
@@ -2908,11 +2908,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.selinux.msg | string | Messages that describe changes that were made. | 
-| Linux.selinux.configfile | string | Path to SELinux configuration file. | 
-| Linux.selinux.policy | string | Name of the SELinux policy. | 
-| Linux.selinux.state | string | SELinux mode. | 
-| Linux.selinux.reboot_required | boolean | Whether or not an reboot is required for the changes to take effect. | 
+| Linux.Selinux.msg | string | Messages that describe changes that were made. | 
+| Linux.Selinux.configfile | string | Path to SELinux configuration file. | 
+| Linux.Selinux.policy | string | Name of the SELinux policy. | 
+| Linux.Selinux.state | string | SELinux mode. | 
+| Linux.Selinux.reboot_required | boolean | Whether or not an reboot is required for the changes to take effect. | 
 
 
 #### Command Example
@@ -2922,7 +2922,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "selinux": {
+        "Selinux": {
             "changed": false,
             "configfile": "/etc/selinux/config",
             "host": "123.123.123.123",
@@ -3069,7 +3069,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "service": {
+        "Service": {
             "changed": false,
             "host": "123.123.123.123",
             "name": "httpd",
@@ -3329,7 +3329,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.serviceFacts.ansible_facts | unknown | Facts to add to ansible_facts about the services on the system | 
+| Linux.ServiceFacts.ansible_facts | unknown | Facts to add to ansible_facts about the services on the system | 
 
 
 #### Command Example
@@ -3339,7 +3339,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "serviceFacts": {
+        "ServiceFacts": {
             "discovered_interpreter_python": "/usr/libexec/platform-python",
             "host": "123.123.123.123",
             "services": {
@@ -5246,7 +5246,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "sysctl": {
+        "Sysctl": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -5291,7 +5291,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.systemd.status | unknown | A dictionary with the key=value pairs returned from \`systemctl show\` | 
+| Linux.Systemd.status | unknown | A dictionary with the key=value pairs returned from \`systemctl show\` | 
 
 
 #### Command Example
@@ -5301,7 +5301,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "systemd": {
+        "Systemd": {
             "changed": false,
             "host": "123.123.123.123",
             "name": "httpd",
@@ -5569,7 +5569,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.sysvinit.results | unknown | results from actions taken | 
+| Linux.Sysvinit.results | unknown | results from actions taken | 
 
 
 
@@ -5595,7 +5595,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.timezone.diff | unknown | The differences about the given arguments. | 
+| Linux.Timezone.diff | unknown | The differences about the given arguments. | 
 
 
 #### Command Example
@@ -5605,7 +5605,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "timezone": {
+        "Timezone": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -5714,25 +5714,25 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.user.append | boolean | Whether or not to append the user to groups | 
-| Linux.user.comment | string | Comment section from passwd file, usually the user name | 
-| Linux.user.create_home | boolean | Whether or not to create the home directory | 
-| Linux.user.force | boolean | Whether or not a user account was forcibly deleted | 
-| Linux.user.group | number | Primary user group ID | 
-| Linux.user.groups | string | List of groups of which the user is a member | 
-| Linux.user.home | string | Path to user's home directory | 
-| Linux.user.move_home | boolean | Whether or not to move an existing home directory | 
-| Linux.user.name | string | User account name | 
-| Linux.user.password | string | Masked value of the password | 
-| Linux.user.remove | boolean | Whether or not to remove the user account | 
-| Linux.user.shell | string | User login shell | 
-| Linux.user.ssh_fingerprint | string | Fingerprint of generated SSH key | 
-| Linux.user.ssh_key_file | string | Path to generated SSH private key file | 
-| Linux.user.ssh_public_key | string | Generated SSH public key file | 
-| Linux.user.stderr | string | Standard error from running commands | 
-| Linux.user.stdout | string | Standard output from running commands | 
-| Linux.user.system | boolean | Whether or not the account is a system account | 
-| Linux.user.uid | number | User ID of the user account | 
+| Linux.User.append | boolean | Whether or not to append the user to groups | 
+| Linux.User.comment | string | Comment section from passwd file, usually the user name | 
+| Linux.User.create_home | boolean | Whether or not to create the home directory | 
+| Linux.User.force | boolean | Whether or not a user account was forcibly deleted | 
+| Linux.User.group | number | Primary user group ID | 
+| Linux.User.groups | string | List of groups of which the user is a member | 
+| Linux.User.home | string | Path to user's home directory | 
+| Linux.User.move_home | boolean | Whether or not to move an existing home directory | 
+| Linux.User.name | string | User account name | 
+| Linux.User.password | string | Masked value of the password | 
+| Linux.User.remove | boolean | Whether or not to remove the user account | 
+| Linux.User.shell | string | User login shell | 
+| Linux.User.ssh_fingerprint | string | Fingerprint of generated SSH key | 
+| Linux.User.ssh_key_file | string | Path to generated SSH private key file | 
+| Linux.User.ssh_public_key | string | Generated SSH public key file | 
+| Linux.User.stderr | string | Standard error from running commands | 
+| Linux.User.stdout | string | Standard output from running commands | 
+| Linux.User.system | boolean | Whether or not the account is a system account | 
+| Linux.User.uid | number | User ID of the user account | 
 
 
 
@@ -5766,12 +5766,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.xfsQuota.bhard | number | the current bhard setting in bytes | 
-| Linux.xfsQuota.bsoft | number | the current bsoft setting in bytes | 
-| Linux.xfsQuota.ihard | number | the current ihard setting in bytes | 
-| Linux.xfsQuota.isoft | number | the current isoft setting in bytes | 
-| Linux.xfsQuota.rtbhard | number | the current rtbhard setting in bytes | 
-| Linux.xfsQuota.rtbsoft | number | the current rtbsoft setting in bytes | 
+| Linux.XfsQuota.bhard | number | the current bhard setting in bytes | 
+| Linux.XfsQuota.bsoft | number | the current bsoft setting in bytes | 
+| Linux.XfsQuota.ihard | number | the current ihard setting in bytes | 
+| Linux.XfsQuota.isoft | number | the current isoft setting in bytes | 
+| Linux.XfsQuota.rtbhard | number | the current rtbhard setting in bytes | 
+| Linux.XfsQuota.rtbsoft | number | the current rtbsoft setting in bytes | 
 
 
 
@@ -5886,9 +5886,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.opensshCert.type | string | type of the certificate \(host or user\) | 
-| Linux.opensshCert.filename | string | path to the certificate | 
-| Linux.opensshCert.info | unknown | Information about the certificate. Output of \`ssh-keygen -L -f\`. | 
+| Linux.OpensshCert.type | string | type of the certificate \(host or user\) | 
+| Linux.OpensshCert.filename | string | path to the certificate | 
+| Linux.OpensshCert.info | unknown | Information about the certificate. Output of \`ssh-keygen -L -f\`. | 
 
 
 
@@ -5927,12 +5927,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.opensshKeypair.size | number | Size \(in bits\) of the SSH private key | 
-| Linux.opensshKeypair.type | string | Algorithm used to generate the SSH private key | 
-| Linux.opensshKeypair.filename | string | Path to the generated SSH private key file | 
-| Linux.opensshKeypair.fingerprint | string | The fingerprint of the key. | 
-| Linux.opensshKeypair.public_key | string | The public key of the generated SSH private key | 
-| Linux.opensshKeypair.comment | string | The comment of the generated key | 
+| Linux.OpensshKeypair.size | number | Size \(in bits\) of the SSH private key | 
+| Linux.OpensshKeypair.type | string | Algorithm used to generate the SSH private key | 
+| Linux.OpensshKeypair.filename | string | Path to the generated SSH private key file | 
+| Linux.OpensshKeypair.fingerprint | string | The fingerprint of the key. | 
+| Linux.OpensshKeypair.public_key | string | The public key of the generated SSH private key | 
+| Linux.OpensshKeypair.comment | string | The comment of the generated key | 
 
 
 #### Command Example
@@ -5942,7 +5942,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "opensshKeypair": {
+        "OpensshKeypair": {
             "changed": false,
             "comment": "",
             "filename": "/tmp/id_ssh_rsa",
@@ -6000,7 +6000,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.acl.acl | unknown | Current ACL on provided path \(after changes, if any\) | 
+| Linux.Acl.acl | unknown | Current ACL on provided path \(after changes, if any\) | 
 
 
 
@@ -6039,12 +6039,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.archive.state | string | The current state of the archived file. If 'absent', then no source files were found and the archive does not exist. If 'compress', then the file source file is in the compressed state. If 'archive', then the source file or paths are currently archived. If 'incomplete', then an archive was created, but not all source paths were found. | 
-| Linux.archive.missing | unknown | Any files that were missing from the source. | 
-| Linux.archive.archived | unknown | Any files that were compressed or added to the archive. | 
-| Linux.archive.arcroot | string | The archive root. | 
-| Linux.archive.expanded_paths | unknown | The list of matching paths from paths argument. | 
-| Linux.archive.expanded_exclude_paths | unknown | The list of matching exclude paths from the exclude_path argument. | 
+| Linux.Archive.state | string | The current state of the archived file. If 'absent', then no source files were found and the archive does not exist. If 'compress', then the file source file is in the compressed state. If 'archive', then the source file or paths are currently archived. If 'incomplete', then an archive was created, but not all source paths were found. | 
+| Linux.Archive.missing | unknown | Any files that were missing from the source. | 
+| Linux.Archive.archived | unknown | Any files that were compressed or added to the archive. | 
+| Linux.Archive.arcroot | string | The archive root. | 
+| Linux.Archive.expanded_paths | unknown | The list of matching paths from paths argument. | 
+| Linux.Archive.expanded_exclude_paths | unknown | The list of matching exclude paths from the exclude_path argument. | 
 
 
 ### linux-assemble
@@ -6207,9 +6207,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.find.files | unknown | All matches found with the specified criteria \(see stat module for full output of each dictionary\) | 
-| Linux.find.matched | number | Number of matches | 
-| Linux.find.examined | number | Number of filesystem objects looked at | 
+| Linux.Find.files | unknown | All matches found with the specified criteria \(see stat module for full output of each dictionary\) | 
+| Linux.Find.matched | number | Number of matches | 
+| Linux.Find.examined | number | Number of filesystem objects looked at | 
 
 
 #### Command Example
@@ -6219,7 +6219,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "find": {
+        "Find": {
             "changed": false,
             "examined": 18,
             "files": [],
@@ -6289,7 +6289,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "iniFile": {
+        "IniFile": {
             "changed": false,
             "gid": 0,
             "group": "root",
@@ -6402,7 +6402,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "lineinfile": {
+        "Lineinfile": {
             "backup": "",
             "changed": false,
             "host": "123.123.123.123",
@@ -6468,7 +6468,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "replace": {
+        "Replace": {
             "changed": false,
             "host": "123.123.123.123",
             "msg": "",
@@ -6511,7 +6511,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.stat.stat | unknown | dictionary containing all the stat data, some platforms might add additional fields | 
+| Linux.Stat.stat | unknown | dictionary containing all the stat data, some platforms might add additional fields | 
 
 
 #### Command Example
@@ -6521,7 +6521,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "stat": {
+        "Stat": {
             "exists": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -6609,7 +6609,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.tempfile.path | string | Path to created file or directory | 
+| Linux.Tempfile.path | string | Path to created file or directory | 
 
 
 #### Command Example
@@ -6619,7 +6619,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "tempfile": {
+        "Tempfile": {
             "changed": true,
             "gid": 0,
             "group": "root",
@@ -6733,12 +6733,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.xml.actions | unknown | A dictionary with the original xpath, namespaces and state. | 
-| Linux.xml.backup_file | string | The name of the backup file that was created | 
-| Linux.xml.count | number | The count of xpath matches. | 
-| Linux.xml.matches | unknown | The xpath matches found. | 
-| Linux.xml.msg | string | A message related to the performed action\(s\). | 
-| Linux.xml.xmlstring | string | An XML string of the resulting output. | 
+| Linux.Xml.actions | unknown | A dictionary with the original xpath, namespaces and state. | 
+| Linux.Xml.backup_file | string | The name of the backup file that was created | 
+| Linux.Xml.count | number | The count of xpath matches. | 
+| Linux.Xml.matches | unknown | The xpath matches found. | 
+| Linux.Xml.msg | string | A message related to the performed action\(s\). | 
+| Linux.Xml.xmlstring | string | An XML string of the resulting output. | 
 
 
 
@@ -7084,11 +7084,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.pip.cmd | string | pip command used by the module | 
-| Linux.pip.name | unknown | list of python modules targetted by pip | 
-| Linux.pip.requirements | string | Path to the requirements file | 
-| Linux.pip.version | string | Version of the package specified in 'name' | 
-| Linux.pip.virtualenv | string | Path to the virtualenv | 
+| Linux.Pip.cmd | string | pip command used by the module | 
+| Linux.Pip.name | unknown | list of python modules targetted by pip | 
+| Linux.Pip.requirements | string | Path to the requirements file | 
+| Linux.Pip.version | string | Version of the package specified in 'name' | 
+| Linux.Pip.virtualenv | string | Path to the virtualenv | 
 
 
 #### Command Example
@@ -7098,7 +7098,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "pip": {
+        "Pip": {
             "changed": false,
             "cmd": [
                 "/usr/bin/pip3",
@@ -7172,7 +7172,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.pipPackageInfo.packages | unknown | a dictionary of installed package data | 
+| Linux.PipPackageInfo.packages | unknown | a dictionary of installed package data | 
 
 
 
@@ -7205,10 +7205,10 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.yarn.changed | boolean | Whether Yarn changed any package data | 
-| Linux.yarn.msg | string | Provides an error message if Yarn syntax was incorrect | 
-| Linux.yarn.invocation | unknown | Parameters and values used during execution | 
-| Linux.yarn.out | string | Output generated from Yarn with emojis removed. | 
+| Linux.Yarn.changed | boolean | Whether Yarn changed any package data | 
+| Linux.Yarn.msg | string | Provides an error message if Yarn syntax was incorrect | 
+| Linux.Yarn.invocation | unknown | Parameters and values used during execution | 
+| Linux.Yarn.out | string | Output generated from Yarn with emojis removed. | 
 
 
 
@@ -7238,7 +7238,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.apk.packages | unknown | a list of packages that have been changed | 
+| Linux.Apk.packages | unknown | a list of packages that have been changed | 
 
 
 
@@ -7279,10 +7279,10 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.apt.cache_updated | boolean | if the cache was updated or not | 
-| Linux.apt.cache_update_time | number | time of the last cache update \(0 if unknown\) | 
-| Linux.apt.stdout | string | output from apt | 
-| Linux.apt.stderr | string | error output from apt | 
+| Linux.Apt.cache_updated | boolean | if the cache was updated or not | 
+| Linux.Apt.cache_update_time | number | time of the last cache update \(0 if unknown\) | 
+| Linux.Apt.stdout | string | output from apt | 
+| Linux.Apt.stderr | string | error output from apt | 
 
 
 
@@ -7449,11 +7449,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.flatpak.command | string | The exact flatpak command that was executed | 
-| Linux.flatpak.msg | string | Module error message | 
-| Linux.flatpak.rc | number | Return code from flatpak binary | 
-| Linux.flatpak.stderr | string | Error output from flatpak binary | 
-| Linux.flatpak.stdout | string | Output from flatpak binary | 
+| Linux.Flatpak.command | string | The exact flatpak command that was executed | 
+| Linux.Flatpak.msg | string | Module error message | 
+| Linux.Flatpak.rc | number | Return code from flatpak binary | 
+| Linux.Flatpak.stderr | string | Error output from flatpak binary | 
+| Linux.Flatpak.stdout | string | Output from flatpak binary | 
 
 
 
@@ -7482,11 +7482,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.flatpakRemote.command | string | The exact flatpak command that was executed | 
-| Linux.flatpakRemote.msg | string | Module error message | 
-| Linux.flatpakRemote.rc | number | Return code from flatpak binary | 
-| Linux.flatpakRemote.stderr | string | Error output from flatpak binary | 
-| Linux.flatpakRemote.stdout | string | Output from flatpak binary | 
+| Linux.FlatpakRemote.command | string | The exact flatpak command that was executed | 
+| Linux.FlatpakRemote.msg | string | Module error message | 
+| Linux.FlatpakRemote.rc | number | Return code from flatpak binary | 
+| Linux.FlatpakRemote.stderr | string | Error output from flatpak binary | 
+| Linux.FlatpakRemote.stdout | string | Output from flatpak binary | 
 
 
 
@@ -7653,7 +7653,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.packageFacts.ansible_facts | unknown | facts to add to ansible_facts | 
+| Linux.PackageFacts.ansible_facts | unknown | facts to add to ansible_facts | 
 
 
 #### Command Example
@@ -7663,7 +7663,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "packageFacts": {
+        "PackageFacts": {
             "discovered_interpreter_python": "/usr/libexec/platform-python",
             "host": "123.123.123.123",
             "packages": {
@@ -7862,8 +7862,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.yumRepository.repo | string | repository name | 
-| Linux.yumRepository.state | string | state of the target, after execution | 
+| Linux.YumRepository.repo | string | repository name | 
+| Linux.YumRepository.state | string | state of the target, after execution | 
 
 
 #### Command Example
@@ -7873,7 +7873,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "yumRepository": {
+        "YumRepository": {
             "changed": false,
             "host": "123.123.123.123",
             "repo": "epel",
@@ -7983,11 +7983,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.snap.classic | boolean | Whether or not the snaps were installed with the classic confinement | 
-| Linux.snap.channel | string | The channel the snaps were installed from | 
-| Linux.snap.cmd | string | The command that was executed on the host | 
-| Linux.snap.snaps_installed | unknown | The list of actually installed snaps | 
-| Linux.snap.snaps_removed | unknown | The list of actually removed snaps | 
+| Linux.Snap.classic | boolean | Whether or not the snaps were installed with the classic confinement | 
+| Linux.Snap.channel | string | The channel the snaps were installed from | 
+| Linux.Snap.cmd | string | The command that was executed on the host | 
+| Linux.Snap.snaps_installed | unknown | The list of actually installed snaps | 
+| Linux.Snap.snaps_removed | unknown | The list of actually removed snaps | 
 
 
 
@@ -8006,8 +8006,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | --- | --- | --- |
 | host | hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance. | Required | 
 | state | whether to register and subscribe (`present`), or unregister (`absent`) a system. Possible values are: present, absent. Default is present. | Optional | 
-| username | access.redhat.com or Sat6  username. | Optional | 
-| password | access.redhat.com or Sat6 password. | Optional | 
+| username | access.Redhat.com or Sat6  username. | Optional | 
+| password | access.Redhat.com or Sat6 password. | Optional | 
 | server_hostname | Specify an alternative Red Hat Subscription Management or Sat6 server. | Optional | 
 | server_insecure | Enable or disable https server certificate verification when connecting to `server_hostname`. | Optional | 
 | rhsm_baseurl | Specify CDN baseurl. | Optional | 
@@ -8034,7 +8034,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.redhatSubscription.subscribed_pool_ids | unknown | List of pool IDs to which system is now subscribed | 
+| Linux.RedhatSubscription.subscribed_pool_ids | unknown | List of pool IDs to which system is now subscribed | 
 
 
 
@@ -8107,7 +8107,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Linux": {
-        "rhnRegister": {
+        "RhnRegister": {
             "changed": false,
             "host": "123.123.123.123",
             "msg": "System already unregistered.",
@@ -8145,7 +8145,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.rhsmRelease.current_release | string | The current RHSM release version value | 
+| Linux.RhsmRelease.current_release | string | The current RHSM release version value | 
 
 
 
@@ -8172,7 +8172,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.rhsmRepository.repositories | unknown | The list of RHSM repositories with their states.
+| Linux.RhsmRepository.repositories | unknown | The list of RHSM repositories with their states.
 When this module is used to change the repository states, this list contains the updated states after the changes. | 
 
 
@@ -8250,23 +8250,23 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Linux.getUrl.backup_file | string | name of backup file created after download | 
-| Linux.getUrl.checksum_dest | string | sha1 checksum of the file after copy | 
-| Linux.getUrl.checksum_src | string | sha1 checksum of the file | 
-| Linux.getUrl.dest | string | destination file/path | 
-| Linux.getUrl.elapsed | number | The number of seconds that elapsed while performing the download | 
-| Linux.getUrl.gid | number | group id of the file | 
-| Linux.getUrl.group | string | group of the file | 
-| Linux.getUrl.md5sum | string | md5 checksum of the file after download | 
-| Linux.getUrl.mode | string | permissions of the target | 
-| Linux.getUrl.msg | string | the HTTP message from the request | 
-| Linux.getUrl.owner | string | owner of the file | 
-| Linux.getUrl.secontext | string | the SELinux security context of the file | 
-| Linux.getUrl.size | number | size of the target | 
-| Linux.getUrl.src | string | source file used after download | 
-| Linux.getUrl.state | string | state of the target | 
-| Linux.getUrl.status_code | number | the HTTP status code from the request | 
-| Linux.getUrl.uid | number | owner id of the file, after execution | 
-| Linux.getUrl.url | string | the actual URL used for the request | 
+| Linux.GetUrl.backup_file | string | name of backup file created after download | 
+| Linux.GetUrl.checksum_dest | string | sha1 checksum of the file after copy | 
+| Linux.GetUrl.checksum_src | string | sha1 checksum of the file | 
+| Linux.GetUrl.dest | string | destination file/path | 
+| Linux.GetUrl.elapsed | number | The number of seconds that elapsed while performing the download | 
+| Linux.GetUrl.gid | number | group id of the file | 
+| Linux.GetUrl.group | string | group of the file | 
+| Linux.GetUrl.md5sum | string | md5 checksum of the file after download | 
+| Linux.GetUrl.mode | string | permissions of the target | 
+| Linux.GetUrl.msg | string | the HTTP message from the request | 
+| Linux.GetUrl.owner | string | owner of the file | 
+| Linux.GetUrl.secontext | string | the SELinux security context of the file | 
+| Linux.GetUrl.size | number | size of the target | 
+| Linux.GetUrl.src | string | source file used after download | 
+| Linux.GetUrl.state | string | state of the target | 
+| Linux.GetUrl.status_code | number | the HTTP status code from the request | 
+| Linux.GetUrl.uid | number | owner id of the file, after execution | 
+| Linux.GetUrl.url | string | the actual URL used for the request | 
 
 

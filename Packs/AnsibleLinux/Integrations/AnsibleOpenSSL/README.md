@@ -138,8 +138,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenSSL.opensslCertificate.filename | string | Path to the generated Certificate | 
-| OpenSSL.opensslCertificate.backup_file | string | Name of backup file created. | 
+| OpenSSL.OpensslCertificate.filename | string | Path to the generated Certificate | 
+| OpenSSL.OpensslCertificate.backup_file | string | Name of backup file created. | 
 
 
 #### Command Example
@@ -149,7 +149,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "OpenSSL": {
-        "opensslCertificate": {
+        "OpensslCertificate": {
             "changed": false,
             "csr": "/etc/ssl/csr/www.ansible.com.csr",
             "filename": "/etc/ssl/crt/ansible.com.crt",
@@ -199,44 +199,44 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenSSL.opensslCertificateInfo.expired | boolean | Whether the certificate is expired \(i.e. \`notAfter\` is in the past\) | 
-| OpenSSL.opensslCertificateInfo.basic_constraints | unknown | Entries in the \`basic_constraints\` extension, or \`none\` if extension is not present. | 
-| OpenSSL.opensslCertificateInfo.basic_constraints_critical | boolean | Whether the \`basic_constraints\` extension is critical. | 
-| OpenSSL.opensslCertificateInfo.extended_key_usage | unknown | Entries in the \`extended_key_usage\` extension, or \`none\` if extension is not present. | 
-| OpenSSL.opensslCertificateInfo.extended_key_usage_critical | boolean | Whether the \`extended_key_usage\` extension is critical. | 
-| OpenSSL.opensslCertificateInfo.extensions_by_oid | unknown | Returns a dictionary for every extension OID | 
-| OpenSSL.opensslCertificateInfo.key_usage | string | Entries in the \`key_usage\` extension, or \`none\` if extension is not present. | 
-| OpenSSL.opensslCertificateInfo.key_usage_critical | boolean | Whether the \`key_usage\` extension is critical. | 
-| OpenSSL.opensslCertificateInfo.subject_alt_name | unknown | Entries in the \`subject_alt_name\` extension, or \`none\` if extension is not present. | 
-| OpenSSL.opensslCertificateInfo.subject_alt_name_critical | boolean | Whether the \`subject_alt_name\` extension is critical. | 
-| OpenSSL.opensslCertificateInfo.ocsp_must_staple | boolean | \`yes\` if the OCSP Must Staple extension is present, \`none\` otherwise. | 
-| OpenSSL.opensslCertificateInfo.ocsp_must_staple_critical | boolean | Whether the \`ocsp_must_staple\` extension is critical. | 
-| OpenSSL.opensslCertificateInfo.issuer | unknown | The certificate's issuer.
+| OpenSSL.OpensslCertificateInfo.expired | boolean | Whether the certificate is expired \(i.e. \`notAfter\` is in the past\) | 
+| OpenSSL.OpensslCertificateInfo.basic_constraints | unknown | Entries in the \`basic_constraints\` extension, or \`none\` if extension is not present. | 
+| OpenSSL.OpensslCertificateInfo.basic_constraints_critical | boolean | Whether the \`basic_constraints\` extension is critical. | 
+| OpenSSL.OpensslCertificateInfo.extended_key_usage | unknown | Entries in the \`extended_key_usage\` extension, or \`none\` if extension is not present. | 
+| OpenSSL.OpensslCertificateInfo.extended_key_usage_critical | boolean | Whether the \`extended_key_usage\` extension is critical. | 
+| OpenSSL.OpensslCertificateInfo.extensions_by_oid | unknown | Returns a dictionary for every extension OID | 
+| OpenSSL.OpensslCertificateInfo.key_usage | string | Entries in the \`key_usage\` extension, or \`none\` if extension is not present. | 
+| OpenSSL.OpensslCertificateInfo.key_usage_critical | boolean | Whether the \`key_usage\` extension is critical. | 
+| OpenSSL.OpensslCertificateInfo.subject_alt_name | unknown | Entries in the \`subject_alt_name\` extension, or \`none\` if extension is not present. | 
+| OpenSSL.OpensslCertificateInfo.subject_alt_name_critical | boolean | Whether the \`subject_alt_name\` extension is critical. | 
+| OpenSSL.OpensslCertificateInfo.ocsp_must_staple | boolean | \`yes\` if the OCSP Must Staple extension is present, \`none\` otherwise. | 
+| OpenSSL.OpensslCertificateInfo.ocsp_must_staple_critical | boolean | Whether the \`ocsp_must_staple\` extension is critical. | 
+| OpenSSL.OpensslCertificateInfo.issuer | unknown | The certificate's issuer.
 Note that for repeated values, only the last one will be returned. | 
-| OpenSSL.opensslCertificateInfo.issuer_ordered | unknown | The certificate's issuer as an ordered list of tuples. | 
-| OpenSSL.opensslCertificateInfo.subject | unknown | The certificate's subject as a dictionary.
+| OpenSSL.OpensslCertificateInfo.issuer_ordered | unknown | The certificate's issuer as an ordered list of tuples. | 
+| OpenSSL.OpensslCertificateInfo.subject | unknown | The certificate's subject as a dictionary.
 Note that for repeated values, only the last one will be returned. | 
-| OpenSSL.opensslCertificateInfo.subject_ordered | unknown | The certificate's subject as an ordered list of tuples. | 
-| OpenSSL.opensslCertificateInfo.not_after | string | \`notAfter\` date as ASN.1 TIME | 
-| OpenSSL.opensslCertificateInfo.not_before | string | \`notBefore\` date as ASN.1 TIME | 
-| OpenSSL.opensslCertificateInfo.public_key | string | Certificate's public key in PEM format | 
-| OpenSSL.opensslCertificateInfo.public_key_fingerprints | unknown | Fingerprints of certificate's public key.
+| OpenSSL.OpensslCertificateInfo.subject_ordered | unknown | The certificate's subject as an ordered list of tuples. | 
+| OpenSSL.OpensslCertificateInfo.not_after | string | \`notAfter\` date as ASN.1 TIME | 
+| OpenSSL.OpensslCertificateInfo.not_before | string | \`notBefore\` date as ASN.1 TIME | 
+| OpenSSL.OpensslCertificateInfo.public_key | string | Certificate's public key in PEM format | 
+| OpenSSL.OpensslCertificateInfo.public_key_fingerprints | unknown | Fingerprints of certificate's public key.
 For every hash algorithm available, the fingerprint is computed. | 
-| OpenSSL.opensslCertificateInfo.signature_algorithm | string | The signature algorithm used to sign the certificate. | 
-| OpenSSL.opensslCertificateInfo.serial_number | number | The certificate's serial number. | 
-| OpenSSL.opensslCertificateInfo.version | number | The certificate version. | 
-| OpenSSL.opensslCertificateInfo.valid_at | unknown | For every time stamp provided in the \`valid_at\` option, a boolean whether the certificate is valid at that point in time or not. | 
-| OpenSSL.opensslCertificateInfo.subject_key_identifier | string | The certificate's subject key identifier.
+| OpenSSL.OpensslCertificateInfo.signature_algorithm | string | The signature algorithm used to sign the certificate. | 
+| OpenSSL.OpensslCertificateInfo.serial_number | number | The certificate's serial number. | 
+| OpenSSL.OpensslCertificateInfo.version | number | The certificate version. | 
+| OpenSSL.OpensslCertificateInfo.valid_at | unknown | For every time stamp provided in the \`valid_at\` option, a boolean whether the certificate is valid at that point in time or not. | 
+| OpenSSL.OpensslCertificateInfo.subject_key_identifier | string | The certificate's subject key identifier.
 The identifier is returned in hexadecimal, with \`:\` used to separate bytes.
 Is \`none\` if the \`SubjectKeyIdentifier\` extension is not present. | 
-| OpenSSL.opensslCertificateInfo.authority_key_identifier | string | The certificate's authority key identifier.
+| OpenSSL.OpensslCertificateInfo.authority_key_identifier | string | The certificate's authority key identifier.
 The identifier is returned in hexadecimal, with \`:\` used to separate bytes.
 Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. | 
-| OpenSSL.opensslCertificateInfo.authority_cert_issuer | unknown | The certificate's authority cert issuer as a list of general names.
+| OpenSSL.OpensslCertificateInfo.authority_cert_issuer | unknown | The certificate's authority cert issuer as a list of general names.
 Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. | 
-| OpenSSL.opensslCertificateInfo.authority_cert_serial_number | number | The certificate's authority cert serial number.
+| OpenSSL.OpensslCertificateInfo.authority_cert_serial_number | number | The certificate's authority cert serial number.
 Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. | 
-| OpenSSL.opensslCertificateInfo.ocsp_uri | string | The OCSP responder URI, if included in the certificate. Will be \`none\` if no OCSP responder URI is included. | 
+| OpenSSL.OpensslCertificateInfo.ocsp_uri | string | The OCSP responder URI, if included in the certificate. Will be \`none\` if no OCSP responder URI is included. | 
 
 
 #### Command Example
@@ -246,7 +246,7 @@ Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. |
 ```json
 {
     "OpenSSL": {
-        "opensslCertificateInfo": {
+        "OpensslCertificateInfo": {
             "authority_cert_issuer": null,
             "authority_cert_serial_number": null,
             "authority_key_identifier": null,
@@ -495,15 +495,15 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenSSL.opensslCsr.privatekey | string | Path to the TLS/SSL private key the CSR was generated for | 
-| OpenSSL.opensslCsr.filename | string | Path to the generated Certificate Signing Request | 
-| OpenSSL.opensslCsr.subject | unknown | A list of the subject tuples attached to the CSR | 
-| OpenSSL.opensslCsr.subjectAltName | unknown | The alternative names this CSR is valid for | 
-| OpenSSL.opensslCsr.keyUsage | unknown | Purpose for which the public key may be used | 
-| OpenSSL.opensslCsr.extendedKeyUsage | unknown | Additional restriction on the public key purposes | 
-| OpenSSL.opensslCsr.basicConstraints | unknown | Indicates if the certificate belongs to a CA | 
-| OpenSSL.opensslCsr.ocsp_must_staple | boolean | Indicates whether the certificate has the OCSP Must Staple feature enabled | 
-| OpenSSL.opensslCsr.backup_file | string | Name of backup file created. | 
+| OpenSSL.OpensslCsr.privatekey | string | Path to the TLS/SSL private key the CSR was generated for | 
+| OpenSSL.OpensslCsr.filename | string | Path to the generated Certificate Signing Request | 
+| OpenSSL.OpensslCsr.subject | unknown | A list of the subject tuples attached to the CSR | 
+| OpenSSL.OpensslCsr.subjectAltName | unknown | The alternative names this CSR is valid for | 
+| OpenSSL.OpensslCsr.keyUsage | unknown | Purpose for which the public key may be used | 
+| OpenSSL.OpensslCsr.extendedKeyUsage | unknown | Additional restriction on the public key purposes | 
+| OpenSSL.OpensslCsr.basicConstraints | unknown | Indicates if the certificate belongs to a CA | 
+| OpenSSL.OpensslCsr.ocsp_must_staple | boolean | Indicates whether the certificate has the OCSP Must Staple feature enabled | 
+| OpenSSL.OpensslCsr.backup_file | string | Name of backup file created. | 
 
 
 #### Command Example
@@ -513,7 +513,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "OpenSSL": {
-        "opensslCsr": {
+        "OpensslCsr": {
             "basicConstraints": null,
             "changed": false,
             "extendedKeyUsage": null,
@@ -581,34 +581,34 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenSSL.opensslCsrInfo.signature_valid | boolean | Whether the CSR's signature is valid.
+| OpenSSL.OpensslCsrInfo.signature_valid | boolean | Whether the CSR's signature is valid.
 In case the check returns \`no\`, the module will fail. | 
-| OpenSSL.opensslCsrInfo.basic_constraints | unknown | Entries in the \`basic_constraints\` extension, or \`none\` if extension is not present. | 
-| OpenSSL.opensslCsrInfo.basic_constraints_critical | boolean | Whether the \`basic_constraints\` extension is critical. | 
-| OpenSSL.opensslCsrInfo.extended_key_usage | unknown | Entries in the \`extended_key_usage\` extension, or \`none\` if extension is not present. | 
-| OpenSSL.opensslCsrInfo.extended_key_usage_critical | boolean | Whether the \`extended_key_usage\` extension is critical. | 
-| OpenSSL.opensslCsrInfo.extensions_by_oid | unknown | Returns a dictionary for every extension OID | 
-| OpenSSL.opensslCsrInfo.key_usage | string | Entries in the \`key_usage\` extension, or \`none\` if extension is not present. | 
-| OpenSSL.opensslCsrInfo.key_usage_critical | boolean | Whether the \`key_usage\` extension is critical. | 
-| OpenSSL.opensslCsrInfo.subject_alt_name | unknown | Entries in the \`subject_alt_name\` extension, or \`none\` if extension is not present. | 
-| OpenSSL.opensslCsrInfo.subject_alt_name_critical | boolean | Whether the \`subject_alt_name\` extension is critical. | 
-| OpenSSL.opensslCsrInfo.ocsp_must_staple | boolean | \`yes\` if the OCSP Must Staple extension is present, \`none\` otherwise. | 
-| OpenSSL.opensslCsrInfo.ocsp_must_staple_critical | boolean | Whether the \`ocsp_must_staple\` extension is critical. | 
-| OpenSSL.opensslCsrInfo.subject | unknown | The CSR's subject as a dictionary.
+| OpenSSL.OpensslCsrInfo.basic_constraints | unknown | Entries in the \`basic_constraints\` extension, or \`none\` if extension is not present. | 
+| OpenSSL.OpensslCsrInfo.basic_constraints_critical | boolean | Whether the \`basic_constraints\` extension is critical. | 
+| OpenSSL.OpensslCsrInfo.extended_key_usage | unknown | Entries in the \`extended_key_usage\` extension, or \`none\` if extension is not present. | 
+| OpenSSL.OpensslCsrInfo.extended_key_usage_critical | boolean | Whether the \`extended_key_usage\` extension is critical. | 
+| OpenSSL.OpensslCsrInfo.extensions_by_oid | unknown | Returns a dictionary for every extension OID | 
+| OpenSSL.OpensslCsrInfo.key_usage | string | Entries in the \`key_usage\` extension, or \`none\` if extension is not present. | 
+| OpenSSL.OpensslCsrInfo.key_usage_critical | boolean | Whether the \`key_usage\` extension is critical. | 
+| OpenSSL.OpensslCsrInfo.subject_alt_name | unknown | Entries in the \`subject_alt_name\` extension, or \`none\` if extension is not present. | 
+| OpenSSL.OpensslCsrInfo.subject_alt_name_critical | boolean | Whether the \`subject_alt_name\` extension is critical. | 
+| OpenSSL.OpensslCsrInfo.ocsp_must_staple | boolean | \`yes\` if the OCSP Must Staple extension is present, \`none\` otherwise. | 
+| OpenSSL.OpensslCsrInfo.ocsp_must_staple_critical | boolean | Whether the \`ocsp_must_staple\` extension is critical. | 
+| OpenSSL.OpensslCsrInfo.subject | unknown | The CSR's subject as a dictionary.
 Note that for repeated values, only the last one will be returned. | 
-| OpenSSL.opensslCsrInfo.subject_ordered | unknown | The CSR's subject as an ordered list of tuples. | 
-| OpenSSL.opensslCsrInfo.public_key | string | CSR's public key in PEM format | 
-| OpenSSL.opensslCsrInfo.public_key_fingerprints | unknown | Fingerprints of CSR's public key.
+| OpenSSL.OpensslCsrInfo.subject_ordered | unknown | The CSR's subject as an ordered list of tuples. | 
+| OpenSSL.OpensslCsrInfo.public_key | string | CSR's public key in PEM format | 
+| OpenSSL.OpensslCsrInfo.public_key_fingerprints | unknown | Fingerprints of CSR's public key.
 For every hash algorithm available, the fingerprint is computed. | 
-| OpenSSL.opensslCsrInfo.subject_key_identifier | string | The CSR's subject key identifier.
+| OpenSSL.OpensslCsrInfo.subject_key_identifier | string | The CSR's subject key identifier.
 The identifier is returned in hexadecimal, with \`:\` used to separate bytes.
 Is \`none\` if the \`SubjectKeyIdentifier\` extension is not present. | 
-| OpenSSL.opensslCsrInfo.authority_key_identifier | string | The CSR's authority key identifier.
+| OpenSSL.OpensslCsrInfo.authority_key_identifier | string | The CSR's authority key identifier.
 The identifier is returned in hexadecimal, with \`:\` used to separate bytes.
 Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. | 
-| OpenSSL.opensslCsrInfo.authority_cert_issuer | unknown | The CSR's authority cert issuer as a list of general names.
+| OpenSSL.OpensslCsrInfo.authority_cert_issuer | unknown | The CSR's authority cert issuer as a list of general names.
 Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. | 
-| OpenSSL.opensslCsrInfo.authority_cert_serial_number | number | The CSR's authority cert serial number.
+| OpenSSL.OpensslCsrInfo.authority_cert_serial_number | number | The CSR's authority cert serial number.
 Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. | 
 
 
@@ -619,7 +619,7 @@ Is \`none\` if the \`AuthorityKeyIdentifier\` extension is not present. |
 ```json
 {
     "OpenSSL": {
-        "opensslCsrInfo": {
+        "OpensslCsrInfo": {
             "authority_cert_issuer": null,
             "authority_cert_serial_number": null,
             "authority_key_identifier": null,
@@ -779,9 +779,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenSSL.opensslDhparam.size | number | Size \(in bits\) of the Diffie-Hellman parameters. | 
-| OpenSSL.opensslDhparam.filename | string | Path to the generated Diffie-Hellman parameters. | 
-| OpenSSL.opensslDhparam.backup_file | string | Name of backup file created. | 
+| OpenSSL.OpensslDhparam.size | number | Size \(in bits\) of the Diffie-Hellman parameters. | 
+| OpenSSL.OpensslDhparam.filename | string | Path to the generated Diffie-Hellman parameters. | 
+| OpenSSL.OpensslDhparam.backup_file | string | Name of backup file created. | 
 
 
 
@@ -829,9 +829,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenSSL.opensslPkcs12.filename | string | Path to the generate PKCS\#12 file. | 
-| OpenSSL.opensslPkcs12.privatekey | string | Path to the TLS/SSL private key the public key was generated from. | 
-| OpenSSL.opensslPkcs12.backup_file | string | Name of backup file created. | 
+| OpenSSL.OpensslPkcs12.filename | string | Path to the generate PKCS\#12 file. | 
+| OpenSSL.OpensslPkcs12.privatekey | string | Path to the TLS/SSL private key the public key was generated from. | 
+| OpenSSL.OpensslPkcs12.backup_file | string | Name of backup file created. | 
 
 
 #### Command Example
@@ -841,7 +841,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "OpenSSL": {
-        "opensslPkcs12": {
+        "OpensslPkcs12": {
             "changed": false,
             "filename": "/opt/certs/ansible.p12",
             "host": "123.123.123.123",
@@ -901,13 +901,13 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenSSL.opensslPrivatekey.size | number | Size \(in bits\) of the TLS/SSL private key. | 
-| OpenSSL.opensslPrivatekey.type | string | Algorithm used to generate the TLS/SSL private key. | 
-| OpenSSL.opensslPrivatekey.curve | string | Elliptic curve used to generate the TLS/SSL private key. | 
-| OpenSSL.opensslPrivatekey.filename | string | Path to the generated TLS/SSL private key file. | 
-| OpenSSL.opensslPrivatekey.fingerprint | unknown | The fingerprint of the public key. Fingerprint will be generated for each \`hashlib.algorithms\` available.
+| OpenSSL.OpensslPrivatekey.size | number | Size \(in bits\) of the TLS/SSL private key. | 
+| OpenSSL.OpensslPrivatekey.type | string | Algorithm used to generate the TLS/SSL private key. | 
+| OpenSSL.OpensslPrivatekey.curve | string | Elliptic curve used to generate the TLS/SSL private key. | 
+| OpenSSL.OpensslPrivatekey.filename | string | Path to the generated TLS/SSL private key file. | 
+| OpenSSL.OpensslPrivatekey.fingerprint | unknown | The fingerprint of the public key. Fingerprint will be generated for each \`hashlib.algorithms\` available.
 The PyOpenSSL backend requires PyOpenSSL &gt;= 16.0 for meaningful output. | 
-| OpenSSL.opensslPrivatekey.backup_file | string | Name of backup file created. | 
+| OpenSSL.OpensslPrivatekey.backup_file | string | Name of backup file created. | 
 
 
 #### Command Example
@@ -917,7 +917,7 @@ The PyOpenSSL backend requires PyOpenSSL &gt;= 16.0 for meaningful output. |
 ```json
 {
     "OpenSSL": {
-        "opensslPrivatekey": {
+        "OpensslPrivatekey": {
             "changed": false,
             "filename": "/etc/ssl/private/ansible.com.pem",
             "fingerprint": {
@@ -993,18 +993,18 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenSSL.opensslPrivatekeyInfo.can_load_key | boolean | Whether the module was able to load the private key from disk | 
-| OpenSSL.opensslPrivatekeyInfo.can_parse_key | boolean | Whether the module was able to parse the private key | 
-| OpenSSL.opensslPrivatekeyInfo.key_is_consistent | boolean | Whether the key is consistent. Can also return \`none\` next to \`yes\` and \`no\`, to indicate that consistency couldn't be checked.
+| OpenSSL.OpensslPrivatekeyInfo.can_load_key | boolean | Whether the module was able to load the private key from disk | 
+| OpenSSL.OpensslPrivatekeyInfo.can_parse_key | boolean | Whether the module was able to parse the private key | 
+| OpenSSL.OpensslPrivatekeyInfo.key_is_consistent | boolean | Whether the key is consistent. Can also return \`none\` next to \`yes\` and \`no\`, to indicate that consistency couldn't be checked.
 In case the check returns \`no\`, the module will fail. | 
-| OpenSSL.opensslPrivatekeyInfo.public_key | string | Private key's public key in PEM format | 
-| OpenSSL.opensslPrivatekeyInfo.public_key_fingerprints | unknown | Fingerprints of private key's public key.
+| OpenSSL.OpensslPrivatekeyInfo.public_key | string | Private key's public key in PEM format | 
+| OpenSSL.OpensslPrivatekeyInfo.public_key_fingerprints | unknown | Fingerprints of private key's public key.
 For every hash algorithm available, the fingerprint is computed. | 
-| OpenSSL.opensslPrivatekeyInfo.type | string | The key's type.
+| OpenSSL.OpensslPrivatekeyInfo.type | string | The key's type.
 One of \`RSA\`, \`DSA\`, \`ECC\`, \`Ed25519\`, \`X25519\`, \`Ed448\`, or \`X448\`.
 Will start with \`unknown\` if the key type cannot be determined. | 
-| OpenSSL.opensslPrivatekeyInfo.public_data | unknown | Public key data. Depends on key type. | 
-| OpenSSL.opensslPrivatekeyInfo.private_data | unknown | Private key data. Depends on key type. | 
+| OpenSSL.OpensslPrivatekeyInfo.public_data | unknown | Public key data. Depends on key type. | 
+| OpenSSL.OpensslPrivatekeyInfo.private_data | unknown | Private key data. Depends on key type. | 
 
 
 ### openssl-publickey
@@ -1044,12 +1044,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenSSL.opensslPublickey.privatekey | string | Path to the TLS/SSL private key the public key was generated from. | 
-| OpenSSL.opensslPublickey.format | string | The format of the public key \(PEM, OpenSSH, ...\). | 
-| OpenSSL.opensslPublickey.filename | string | Path to the generated TLS/SSL public key file. | 
-| OpenSSL.opensslPublickey.fingerprint | unknown | The fingerprint of the public key. Fingerprint will be generated for each hashlib.algorithms available.
+| OpenSSL.OpensslPublickey.privatekey | string | Path to the TLS/SSL private key the public key was generated from. | 
+| OpenSSL.OpensslPublickey.format | string | The format of the public key \(PEM, OpenSSH, ...\). | 
+| OpenSSL.OpensslPublickey.filename | string | Path to the generated TLS/SSL public key file. | 
+| OpenSSL.OpensslPublickey.fingerprint | unknown | The fingerprint of the public key. Fingerprint will be generated for each hashlib.algorithms available.
 Requires PyOpenSSL &gt;= 16.0 for meaningful output. | 
-| OpenSSL.opensslPublickey.backup_file | string | Name of backup file created. | 
+| OpenSSL.OpensslPublickey.backup_file | string | Name of backup file created. | 
 
 
 #### Command Example
@@ -1059,7 +1059,7 @@ Requires PyOpenSSL &gt;= 16.0 for meaningful output. |
 ```json
 {
     "OpenSSL": {
-        "opensslPublickey": {
+        "OpensslPublickey": {
             "changed": false,
             "filename": "/etc/ssl/public/ansible.com.pem",
             "fingerprint": {
@@ -1134,10 +1134,10 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenSSL.certificateCompleteChain.root | string | The root certificate in PEM format. | 
-| OpenSSL.certificateCompleteChain.chain | unknown | The chain added to the given input chain. Includes the root certificate.
+| OpenSSL.CertificateCompleteChain.root | string | The root certificate in PEM format. | 
+| OpenSSL.CertificateCompleteChain.chain | unknown | The chain added to the given input chain. Includes the root certificate.
 Returned as a list of PEM certificates. | 
-| OpenSSL.certificateCompleteChain.complete_chain | unknown | The completed chain, including leaf, all intermediates, and root.
+| OpenSSL.CertificateCompleteChain.complete_chain | unknown | The completed chain, including leaf, all intermediates, and root.
 Returned as a list of PEM certificates. | 
 
 
@@ -1169,14 +1169,13 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpenSSL.getCertificate.cert | string | The certificate retrieved from the port | 
-| OpenSSL.getCertificate.expired | boolean | Boolean indicating if the cert is expired | 
-| OpenSSL.getCertificate.extensions | unknown | Extensions applied to the cert | 
-| OpenSSL.getCertificate.issuer | unknown | Information about the issuer of the cert | 
-| OpenSSL.getCertificate.not_after | string | Expiration date of the cert | 
-| OpenSSL.getCertificate.not_before | string | Issue date of the cert | 
-| OpenSSL.getCertificate.serial_number | string | The serial number of the cert | 
-| OpenSSL.getCertificate.signature_algorithm | string | The algorithm used to sign the cert | 
-| OpenSSL.getCertificate.subject | unknown | Information about the subject of the cert \(OU, CN, etc\) | 
-| OpenSSL.getCertificate.version | string | The version number of the certificate | 
-
+| OpenSSL.GetCertificate.cert | string | The certificate retrieved from the port | 
+| OpenSSL.GetCertificate.expired | boolean | Boolean indicating if the cert is expired | 
+| OpenSSL.GetCertificate.extensions | unknown | Extensions applied to the cert | 
+| OpenSSL.GetCertificate.issuer | unknown | Information about the issuer of the cert | 
+| OpenSSL.GetCertificate.not_after | string | Expiration date of the cert | 
+| OpenSSL.GetCertificate.not_before | string | Issue date of the cert | 
+| OpenSSL.GetCertificate.serial_number | string | The serial number of the cert | 
+| OpenSSL.GetCertificate.signature_algorithm | string | The algorithm used to sign the cert | 
+| OpenSSL.GetCertificate.subject | unknown | Information about the subject of the cert \(OU, CN, etc\) | 
+| OpenSSL.GetCertificate.version | string | The version number of the certificate | 

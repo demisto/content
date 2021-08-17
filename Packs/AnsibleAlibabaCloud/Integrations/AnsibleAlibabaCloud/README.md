@@ -93,8 +93,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AlibabaCloud.aliInstance.instances | unknown | List of ECS instances | 
-| AlibabaCloud.aliInstance.ids | unknown | List of ECS instance IDs | 
+| AlibabaCloud.AliInstance.instances | unknown | List of ECS instances | 
+| AlibabaCloud.AliInstance.ids | unknown | List of ECS instance IDs | 
 
 
 #### Command Example
@@ -104,7 +104,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "AlibabaCloud": {
-        "aliInstance": [
+        "AliInstance": [
             {
                 "changed": true,
                 "instances": [],
@@ -145,8 +145,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AlibabaCloud.aliInstanceInfo.instances | unknown | List of ECS instances | 
-| AlibabaCloud.aliInstanceInfo.ids | unknown | List of ECS instance IDs | 
+| AlibabaCloud.AliInstanceInfo.instances | unknown | List of ECS instances | 
+| AlibabaCloud.AliInstanceInfo.ids | unknown | List of ECS instance IDs | 
 
 
 #### Command Example
@@ -156,7 +156,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "AlibabaCloud": {
-        "aliInstanceInfo": [
+        "AliInstanceInfo": [
             {
                 "changed": false,
                 "ids": [

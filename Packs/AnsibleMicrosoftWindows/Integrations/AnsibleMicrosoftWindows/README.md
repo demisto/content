@@ -114,7 +114,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winAcl": {
+        "WinAcl": {
             "changed": true,
             "host": "123.123.123.123",
             "status": "CHANGED"
@@ -161,7 +161,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winAclInheritance": {
+        "WinAclInheritance": {
             "changed": true,
             "host": "123.123.123.123",
             "status": "CHANGED"
@@ -199,7 +199,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winAuditPolicySystem.current_audit_policy | unknown | details on the policy being targetted | 
+| MicrosoftWindows.WinAuditPolicySystem.current_audit_policy | unknown | details on the policy being targetted | 
 
 
 #### Command Example
@@ -209,7 +209,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winAuditPolicySystem": {
+        "WinAuditPolicySystem": {
             "changed": false,
             "current_audit_policy": {
                 "file system": "failure"
@@ -256,9 +256,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winAuditRule.current_audit_rules | unknown | The current rules on the defined \`path\`
+| MicrosoftWindows.WinAuditRule.current_audit_rules | unknown | The current rules on the defined \`path\`
 Will return "No audit rules defined on \`path\`" | 
-| MicrosoftWindows.winAuditRule.path_type | string | The type of \`path\` being targetted.
+| MicrosoftWindows.WinAuditRule.path_type | string | The type of \`path\` being targetted.
 Will be one of file, directory, registry. | 
 
 
@@ -269,7 +269,7 @@ Will be one of file, directory, registry. |
 ```json
 {
     "MicrosoftWindows": {
-        "winAuditRule": {
+        "WinAuditRule": {
             "changed": true,
             "current_audit_rules": {
                 "audit_flags": "Success, Failure",
@@ -330,7 +330,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winCertificateStore.thumbprints | unknown | A list of certificate thumbprints that were touched by the module. | 
+| MicrosoftWindows.WinCertificateStore.thumbprints | unknown | A list of certificate thumbprints that were touched by the module. | 
 
 
 #### Command Example
@@ -340,7 +340,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winCertificateStore": {
+        "WinCertificateStore": {
             "changed": true,
             "host": "123.123.123.123",
             "status": "CHANGED",
@@ -402,9 +402,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winChocolatey.command | string | The full command used in the chocolatey task. | 
-| MicrosoftWindows.winChocolatey.rc | number | The return code from the chocolatey task. | 
-| MicrosoftWindows.winChocolatey.stdout | string | The stdout from the chocolatey task. The verbosity level of the messages are affected by Ansible verbosity setting, see notes for more details. | 
+| MicrosoftWindows.WinChocolatey.command | string | The full command used in the chocolatey task. | 
+| MicrosoftWindows.WinChocolatey.rc | number | The return code from the chocolatey task. | 
+| MicrosoftWindows.WinChocolatey.stdout | string | The stdout from the chocolatey task. The verbosity level of the messages are affected by Ansible verbosity setting, see notes for more details. | 
 
 
 #### Command Example
@@ -414,7 +414,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winChocolatey": {
+        "WinChocolatey": {
             "changed": true,
             "host": "123.123.123.123",
             "rc": 0,
@@ -463,7 +463,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winChocolateyConfig": {
+        "WinChocolateyConfig": {
             "changed": true,
             "host": "123.123.123.123",
             "status": "CHANGED"
@@ -498,7 +498,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winChocolateyFacts.ansible_facts | unknown | Detailed information about the Chocolatey installation | 
+| MicrosoftWindows.WinChocolateyFacts.ansible_facts | unknown | Detailed information about the Chocolatey installation | 
 
 
 #### Command Example
@@ -508,7 +508,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winChocolateyFacts": {
+        "WinChocolateyFacts": {
             "chocolatey": {
                 "config": {
                     "cacheLocation": "D:\\chocolatey_temp",
@@ -697,7 +697,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winChocolateyFeature": {
+        "WinChocolateyFeature": {
             "changed": true,
             "host": "123.123.123.123",
             "status": "CHANGED"
@@ -753,7 +753,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winChocolateySource": {
+        "WinChocolateySource": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -796,13 +796,13 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winCopy.backup_file | string | Name of the backup file that was created. | 
-| MicrosoftWindows.winCopy.dest | string | Destination file/path. | 
-| MicrosoftWindows.winCopy.src | string | Source file used for the copy on the target machine. | 
-| MicrosoftWindows.winCopy.checksum | string | SHA1 checksum of the file after running copy. | 
-| MicrosoftWindows.winCopy.size | number | Size of the target, after execution. | 
-| MicrosoftWindows.winCopy.operation | string | Whether a single file copy took place or a folder copy. | 
-| MicrosoftWindows.winCopy.original_basename | string | Basename of the copied file. | 
+| MicrosoftWindows.WinCopy.backup_file | string | Name of the backup file that was created. | 
+| MicrosoftWindows.WinCopy.dest | string | Destination file/path. | 
+| MicrosoftWindows.WinCopy.src | string | Source file used for the copy on the target machine. | 
+| MicrosoftWindows.WinCopy.checksum | string | SHA1 checksum of the file after running copy. | 
+| MicrosoftWindows.WinCopy.size | number | Size of the target, after execution. | 
+| MicrosoftWindows.WinCopy.operation | string | Whether a single file copy took place or a folder copy. | 
+| MicrosoftWindows.WinCopy.original_basename | string | Basename of the copied file. | 
 
 
 #### Command Example
@@ -812,7 +812,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winCopy": {
+        "WinCopy": {
             "changed": true,
             "checksum": "4a2446ee9651d90ac6c5613bddf416df197f6401",
             "dest": "C:\\Temp\\Executable.exe",
@@ -897,12 +897,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winDefrag.cmd | string | The complete command line used by the module. | 
-| MicrosoftWindows.winDefrag.rc | number | The return code for the command. | 
-| MicrosoftWindows.winDefrag.stdout | string | The standard output from the command. | 
-| MicrosoftWindows.winDefrag.stderr | string | The error output from the command. | 
-| MicrosoftWindows.winDefrag.msg | string | Possible error message on failure. | 
-| MicrosoftWindows.winDefrag.changed | boolean | Whether or not any changes were made. | 
+| MicrosoftWindows.WinDefrag.cmd | string | The complete command line used by the module. | 
+| MicrosoftWindows.WinDefrag.rc | number | The return code for the command. | 
+| MicrosoftWindows.WinDefrag.stdout | string | The standard output from the command. | 
+| MicrosoftWindows.WinDefrag.stderr | string | The error output from the command. | 
+| MicrosoftWindows.WinDefrag.msg | string | Possible error message on failure. | 
+| MicrosoftWindows.WinDefrag.changed | boolean | Whether or not any changes were made. | 
 
 
 #### Command Example
@@ -912,7 +912,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winDefrag": {
+        "WinDefrag": {
             "changed": true,
             "cmd": "defrag.exe /C /M /V",
             "delta": "0:00:00.062484",
@@ -1149,7 +1149,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winDiskFacts.ansible_facts | unknown | Dictionary containing all the detailed information about the disks of the target. | 
+| MicrosoftWindows.WinDiskFacts.ansible_facts | unknown | Dictionary containing all the detailed information about the disks of the target. | 
 
 
 #### Command Example
@@ -1159,7 +1159,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winDiskFacts": {
+        "WinDiskFacts": {
             "disks": [
                 {
                     "bootable": true,
@@ -1811,8 +1811,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winDiskImage.mount_path | string | Filesystem path where the target image is mounted, this has been deprecated in favour of \`mount_paths\`. | 
-| MicrosoftWindows.winDiskImage.mount_paths | unknown | A list of filesystem paths mounted from the target image. | 
+| MicrosoftWindows.WinDiskImage.mount_path | string | Filesystem path where the target image is mounted, this has been deprecated in favour of \`mount_paths\`. | 
+| MicrosoftWindows.WinDiskImage.mount_paths | unknown | A list of filesystem paths mounted from the target image. | 
 
 
 #### Command Example
@@ -1822,7 +1822,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winDiskImage": {
+        "WinDiskImage": {
             "changed": true,
             "host": "123.123.123.123",
             "mount_paths": [
@@ -1927,7 +1927,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winDomain.reboot_required | boolean | True if changes were made that require a reboot. | 
+| MicrosoftWindows.WinDomain.reboot_required | boolean | True if changes were made that require a reboot. | 
 
 
 #### Command Example
@@ -1937,7 +1937,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winDomain": {
+        "WinDomain": {
             "changed": true,
             "host": "123.123.123.123",
             "reboot_required": true,
@@ -2018,7 +2018,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winDomainController.reboot_required | boolean | True if changes were made that require a reboot. | 
+| MicrosoftWindows.WinDomainController.reboot_required | boolean | True if changes were made that require a reboot. | 
 
 
 
@@ -2057,19 +2057,19 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winDomainGroup.attributes | unknown | Custom attributes that were set by the module. This does not show all the custom attributes rather just the ones that were set by the module. | 
-| MicrosoftWindows.winDomainGroup.canonical_name | string | The canonical name of the group. | 
-| MicrosoftWindows.winDomainGroup.category | string | The Group type value of the group, i.e. Security or Distribution. | 
-| MicrosoftWindows.winDomainGroup.description | string | The Description of the group. | 
-| MicrosoftWindows.winDomainGroup.display_name | string | The Display name of the group. | 
-| MicrosoftWindows.winDomainGroup.distinguished_name | string | The full Distinguished Name of the group. | 
-| MicrosoftWindows.winDomainGroup.group_scope | string | The Group scope value of the group. | 
-| MicrosoftWindows.winDomainGroup.guid | string | The guid of the group. | 
-| MicrosoftWindows.winDomainGroup.managed_by | string | The full Distinguished Name of the AD object that is set on the managedBy attribute. | 
-| MicrosoftWindows.winDomainGroup.name | string | The name of the group. | 
-| MicrosoftWindows.winDomainGroup.protected_from_accidental_deletion | boolean | Whether the group is protected from accidental deletion. | 
-| MicrosoftWindows.winDomainGroup.sid | string | The Security ID of the group. | 
-| MicrosoftWindows.winDomainGroup.created | boolean | Whether a group was created | 
+| MicrosoftWindows.WinDomainGroup.attributes | unknown | Custom attributes that were set by the module. This does not show all the custom attributes rather just the ones that were set by the module. | 
+| MicrosoftWindows.WinDomainGroup.canonical_name | string | The canonical name of the group. | 
+| MicrosoftWindows.WinDomainGroup.category | string | The Group type value of the group, i.e. Security or Distribution. | 
+| MicrosoftWindows.WinDomainGroup.description | string | The Description of the group. | 
+| MicrosoftWindows.WinDomainGroup.display_name | string | The Display name of the group. | 
+| MicrosoftWindows.WinDomainGroup.distinguished_name | string | The full Distinguished Name of the group. | 
+| MicrosoftWindows.WinDomainGroup.group_scope | string | The Group scope value of the group. | 
+| MicrosoftWindows.WinDomainGroup.guid | string | The guid of the group. | 
+| MicrosoftWindows.WinDomainGroup.managed_by | string | The full Distinguished Name of the AD object that is set on the managedBy attribute. | 
+| MicrosoftWindows.WinDomainGroup.name | string | The name of the group. | 
+| MicrosoftWindows.WinDomainGroup.protected_from_accidental_deletion | boolean | Whether the group is protected from accidental deletion. | 
+| MicrosoftWindows.WinDomainGroup.sid | string | The Security ID of the group. | 
+| MicrosoftWindows.WinDomainGroup.created | boolean | Whether a group was created | 
 
 
 
@@ -2100,10 +2100,10 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winDomainGroupMembership.name | string | The name of the target domain group. | 
-| MicrosoftWindows.winDomainGroupMembership.added | unknown | A list of members added when \`state\` is \`present\` or \`pure\`; this is empty if no members are added. | 
-| MicrosoftWindows.winDomainGroupMembership.removed | unknown | A list of members removed when \`state\` is \`absent\` or \`pure\`; this is empty if no members are removed. | 
-| MicrosoftWindows.winDomainGroupMembership.members | unknown | A list of all domain group members at completion; this is empty if the group contains no members. | 
+| MicrosoftWindows.WinDomainGroupMembership.name | string | The name of the target domain group. | 
+| MicrosoftWindows.WinDomainGroupMembership.added | unknown | A list of members added when \`state\` is \`present\` or \`pure\`; this is empty if no members are added. | 
+| MicrosoftWindows.WinDomainGroupMembership.removed | unknown | A list of members removed when \`state\` is \`absent\` or \`pure\`; this is empty if no members are removed. | 
+| MicrosoftWindows.WinDomainGroupMembership.members | unknown | A list of all domain group members at completion; this is empty if the group contains no members. | 
 
 
 
@@ -2135,7 +2135,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winDomainMembership.reboot_required | boolean | True if changes were made that require a reboot. | 
+| MicrosoftWindows.WinDomainMembership.reboot_required | boolean | True if changes were made that require a reboot. | 
 
 
 
@@ -2187,30 +2187,30 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winDomainUser.account_locked | boolean | true if the account is locked | 
-| MicrosoftWindows.winDomainUser.changed | boolean | true if the account changed during execution | 
-| MicrosoftWindows.winDomainUser.city | string | The user city | 
-| MicrosoftWindows.winDomainUser.company | string | The user company | 
-| MicrosoftWindows.winDomainUser.country | string | The user country | 
-| MicrosoftWindows.winDomainUser.description | string | A description of the account | 
-| MicrosoftWindows.winDomainUser.distinguished_name | string | DN of the user account | 
-| MicrosoftWindows.winDomainUser.email | string | The user email address | 
-| MicrosoftWindows.winDomainUser.enabled | string | true if the account is enabled and false if disabled | 
-| MicrosoftWindows.winDomainUser.firstname | string | The user first name | 
-| MicrosoftWindows.winDomainUser.groups | unknown | AD Groups to which the account belongs | 
-| MicrosoftWindows.winDomainUser.msg | string | Summary message of whether the user is present or absent | 
-| MicrosoftWindows.winDomainUser.name | string | The username on the account | 
-| MicrosoftWindows.winDomainUser.password_expired | boolean | true if the account password has expired | 
-| MicrosoftWindows.winDomainUser.password_updated | boolean | true if the password changed during this execution | 
-| MicrosoftWindows.winDomainUser.postal_code | string | The user postal code | 
-| MicrosoftWindows.winDomainUser.sid | string | The SID of the account | 
-| MicrosoftWindows.winDomainUser.state | string | The state of the user account | 
-| MicrosoftWindows.winDomainUser.state_province | string | The user state or province | 
-| MicrosoftWindows.winDomainUser.street | string | The user street address | 
-| MicrosoftWindows.winDomainUser.surname | string | The user last name | 
-| MicrosoftWindows.winDomainUser.upn | string | The User Principal Name of the account | 
-| MicrosoftWindows.winDomainUser.user_cannot_change_password | string | true if the user is not allowed to change password | 
-| MicrosoftWindows.winDomainUser.created | boolean | Whether a user was created | 
+| MicrosoftWindows.WinDomainUser.account_locked | boolean | true if the account is locked | 
+| MicrosoftWindows.WinDomainUser.changed | boolean | true if the account changed during execution | 
+| MicrosoftWindows.WinDomainUser.city | string | The user city | 
+| MicrosoftWindows.WinDomainUser.company | string | The user company | 
+| MicrosoftWindows.WinDomainUser.country | string | The user country | 
+| MicrosoftWindows.WinDomainUser.description | string | A description of the account | 
+| MicrosoftWindows.WinDomainUser.distinguished_name | string | DN of the user account | 
+| MicrosoftWindows.WinDomainUser.email | string | The user email address | 
+| MicrosoftWindows.WinDomainUser.enabled | string | true if the account is enabled and false if disabled | 
+| MicrosoftWindows.WinDomainUser.firstname | string | The user first name | 
+| MicrosoftWindows.WinDomainUser.groups | unknown | AD Groups to which the account belongs | 
+| MicrosoftWindows.WinDomainUser.msg | string | Summary message of whether the user is present or absent | 
+| MicrosoftWindows.WinDomainUser.name | string | The username on the account | 
+| MicrosoftWindows.WinDomainUser.password_expired | boolean | true if the account password has expired | 
+| MicrosoftWindows.WinDomainUser.password_updated | boolean | true if the password changed during this execution | 
+| MicrosoftWindows.WinDomainUser.postal_code | string | The user postal code | 
+| MicrosoftWindows.WinDomainUser.sid | string | The SID of the account | 
+| MicrosoftWindows.WinDomainUser.state | string | The state of the user account | 
+| MicrosoftWindows.WinDomainUser.state_province | string | The user state or province | 
+| MicrosoftWindows.WinDomainUser.street | string | The user street address | 
+| MicrosoftWindows.WinDomainUser.surname | string | The user last name | 
+| MicrosoftWindows.WinDomainUser.upn | string | The User Principal Name of the account | 
+| MicrosoftWindows.WinDomainUser.user_cannot_change_password | string | true if the user is not allowed to change password | 
+| MicrosoftWindows.WinDomainUser.created | boolean | Whether a user was created | 
 
 
 
@@ -2235,14 +2235,14 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winDotnetNgen.dotnet_ngen_update_exit_code | number | The exit code after running the 32-bit ngen.exe update /force command. | 
-| MicrosoftWindows.winDotnetNgen.dotnet_ngen_update_output | string | The stdout after running the 32-bit ngen.exe update /force command. | 
-| MicrosoftWindows.winDotnetNgen.dotnet_ngen_eqi_exit_code | number | The exit code after running the 32-bit ngen.exe executeQueuedItems command. | 
-| MicrosoftWindows.winDotnetNgen.dotnet_ngen_eqi_output | string | The stdout after running the 32-bit ngen.exe executeQueuedItems command. | 
-| MicrosoftWindows.winDotnetNgen.dotnet_ngen64_update_exit_code | number | The exit code after running the 64-bit ngen.exe update /force command. | 
-| MicrosoftWindows.winDotnetNgen.dotnet_ngen64_update_output | string | The stdout after running the 64-bit ngen.exe update /force command. | 
-| MicrosoftWindows.winDotnetNgen.dotnet_ngen64_eqi_exit_code | number | The exit code after running the 64-bit ngen.exe executeQueuedItems command. | 
-| MicrosoftWindows.winDotnetNgen.dotnet_ngen64_eqi_output | string | The stdout after running the 64-bit ngen.exe executeQueuedItems command. | 
+| MicrosoftWindows.WinDotnetNgen.dotnet_ngen_update_exit_code | number | The exit code after running the 32-bit ngen.exe update /force command. | 
+| MicrosoftWindows.WinDotnetNgen.dotnet_ngen_update_output | string | The stdout after running the 32-bit ngen.exe update /force command. | 
+| MicrosoftWindows.WinDotnetNgen.dotnet_ngen_eqi_exit_code | number | The exit code after running the 32-bit ngen.exe executeQueuedItems command. | 
+| MicrosoftWindows.WinDotnetNgen.dotnet_ngen_eqi_output | string | The stdout after running the 32-bit ngen.exe executeQueuedItems command. | 
+| MicrosoftWindows.WinDotnetNgen.dotnet_ngen64_update_exit_code | number | The exit code after running the 64-bit ngen.exe update /force command. | 
+| MicrosoftWindows.WinDotnetNgen.dotnet_ngen64_update_output | string | The stdout after running the 64-bit ngen.exe update /force command. | 
+| MicrosoftWindows.WinDotnetNgen.dotnet_ngen64_eqi_exit_code | number | The exit code after running the 64-bit ngen.exe executeQueuedItems command. | 
+| MicrosoftWindows.WinDotnetNgen.dotnet_ngen64_eqi_output | string | The stdout after running the 64-bit ngen.exe executeQueuedItems command. | 
 
 
 
@@ -2270,10 +2270,10 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winDsc.module_version | string | The version of the dsc resource/module used. | 
-| MicrosoftWindows.winDsc.reboot_required | boolean | Flag returned from the DSC engine indicating whether or not the machine requires a reboot for the invoked changes to take effect. | 
-| MicrosoftWindows.winDsc.verbose_test | unknown | The verbose output as a list from executing the DSC test method. | 
-| MicrosoftWindows.winDsc.verbose_set | unknown | The verbose output as a list from executing the DSC Set method. | 
+| MicrosoftWindows.WinDsc.module_version | string | The version of the dsc resource/module used. | 
+| MicrosoftWindows.WinDsc.reboot_required | boolean | Flag returned from the DSC engine indicating whether or not the machine requires a reboot for the invoked changes to take effect. | 
+| MicrosoftWindows.WinDsc.verbose_test | unknown | The verbose output as a list from executing the DSC test method. | 
+| MicrosoftWindows.WinDsc.verbose_set | unknown | The verbose output as a list from executing the DSC Set method. | 
 
 
 
@@ -2302,8 +2302,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winEnvironment.before_value | string | the value of the environment key before a change, this is null if it didn't exist | 
-| MicrosoftWindows.winEnvironment.value | string | the value the environment key has been set to, this is null if removed | 
+| MicrosoftWindows.WinEnvironment.before_value | string | the value of the environment key before a change, this is null if it didn't exist | 
+| MicrosoftWindows.WinEnvironment.value | string | the value the environment key has been set to, this is null if removed | 
 
 
 #### Command Example
@@ -2313,7 +2313,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winEnvironment": {
+        "WinEnvironment": {
             "before_value": "Test value",
             "changed": false,
             "host": "123.123.123.123",
@@ -2373,14 +2373,14 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winEventlog.name | string | The name of the event log. | 
-| MicrosoftWindows.winEventlog.exists | boolean | Whether the event log exists or not. | 
-| MicrosoftWindows.winEventlog.entries | number | The count of entries present in the event log. | 
-| MicrosoftWindows.winEventlog.maximum_size_kb | number | Maximum size of the log in KB. | 
-| MicrosoftWindows.winEventlog.overflow_action | string | The action the log takes once it reaches its maximum size. | 
-| MicrosoftWindows.winEventlog.retention_days | number | The minimum number of days entries are retained in the log. | 
-| MicrosoftWindows.winEventlog.sources | unknown | A list of the current sources for the log. | 
-| MicrosoftWindows.winEventlog.sources_changed | unknown | A list of sources changed \(e.g. re/created, removed\) for the log; this is empty if no sources are changed. | 
+| MicrosoftWindows.WinEventlog.name | string | The name of the event log. | 
+| MicrosoftWindows.WinEventlog.exists | boolean | Whether the event log exists or not. | 
+| MicrosoftWindows.WinEventlog.entries | number | The count of entries present in the event log. | 
+| MicrosoftWindows.WinEventlog.maximum_size_kb | number | Maximum size of the log in KB. | 
+| MicrosoftWindows.WinEventlog.overflow_action | string | The action the log takes once it reaches its maximum size. | 
+| MicrosoftWindows.WinEventlog.retention_days | number | The minimum number of days entries are retained in the log. | 
+| MicrosoftWindows.WinEventlog.sources | unknown | A list of the current sources for the log. | 
+| MicrosoftWindows.WinEventlog.sources_changed | unknown | A list of sources changed \(e.g. re/created, removed\) for the log; this is empty if no sources are changed. | 
 
 
 #### Command Example
@@ -2390,7 +2390,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winEventlog": {
+        "WinEventlog": {
             "changed": false,
             "entries": 0,
             "exists": true,
@@ -2464,7 +2464,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winEventlogEntry": {
+        "WinEventlogEntry": {
             "changed": true,
             "host": "123.123.123.123",
             "msg": "Entry added to log System from source System",
@@ -2506,9 +2506,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winFeature.exitcode | string | The stringified exit code from the feature installation/removal command. | 
-| MicrosoftWindows.winFeature.feature_result | unknown | List of features that were installed or removed. | 
-| MicrosoftWindows.winFeature.reboot_required | boolean | True when the target server requires a reboot to complete updates \(no further updates can be installed until after a reboot\). | 
+| MicrosoftWindows.WinFeature.exitcode | string | The stringified exit code from the feature installation/removal command. | 
+| MicrosoftWindows.WinFeature.feature_result | unknown | List of features that were installed or removed. | 
+| MicrosoftWindows.WinFeature.reboot_required | boolean | True when the target server requires a reboot to complete updates \(no further updates can be installed until after a reboot\). | 
 
 
 #### Command Example
@@ -2518,7 +2518,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winFeature": {
+        "WinFeature": {
             "changed": false,
             "exitcode": "NoChangeNeeded",
             "feature_result": [],
@@ -2572,7 +2572,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winFile": {
+        "WinFile": {
             "changed": true,
             "host": "123.123.123.123",
             "status": "CHANGED"
@@ -2608,13 +2608,13 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winFileVersion.path | string | file path | 
-| MicrosoftWindows.winFileVersion.file_version | string | File version number.. | 
-| MicrosoftWindows.winFileVersion.product_version | string | The version of the product this file is distributed with. | 
-| MicrosoftWindows.winFileVersion.file_major_part | string | the major part of the version number. | 
-| MicrosoftWindows.winFileVersion.file_minor_part | string | the minor part of the version number of the file. | 
-| MicrosoftWindows.winFileVersion.file_build_part | string | build number of the file. | 
-| MicrosoftWindows.winFileVersion.file_private_part | string | file private part number. | 
+| MicrosoftWindows.WinFileVersion.path | string | file path | 
+| MicrosoftWindows.WinFileVersion.file_version | string | File version number.. | 
+| MicrosoftWindows.WinFileVersion.product_version | string | The version of the product this file is distributed with. | 
+| MicrosoftWindows.WinFileVersion.file_major_part | string | the major part of the version number. | 
+| MicrosoftWindows.WinFileVersion.file_minor_part | string | the minor part of the version number of the file. | 
+| MicrosoftWindows.WinFileVersion.file_build_part | string | build number of the file. | 
+| MicrosoftWindows.WinFileVersion.file_private_part | string | file private part number. | 
 
 
 #### Command Example
@@ -2624,7 +2624,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winFileVersion": {
+        "WinFileVersion": {
             "file_build_part": "14393",
             "file_major_part": "10",
             "file_minor_part": "0",
@@ -2683,9 +2683,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winFind.examined | number | The number of files/folders that was checked. | 
-| MicrosoftWindows.winFind.matched | number | The number of files/folders that match the criteria. | 
-| MicrosoftWindows.winFind.files | unknown | Information on the files/folders that match the criteria returned as a list of dictionary elements for each file matched. The entries are sorted by the path value alphabetically. | 
+| MicrosoftWindows.WinFind.examined | number | The number of files/folders that was checked. | 
+| MicrosoftWindows.WinFind.matched | number | The number of files/folders that match the criteria. | 
+| MicrosoftWindows.WinFind.files | unknown | Information on the files/folders that match the criteria returned as a list of dictionary elements for each file matched. The entries are sorted by the path value alphabetically. | 
 
 
 #### Command Example
@@ -2695,7 +2695,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winFind": {
+        "WinFind": {
             "changed": false,
             "examined": 2,
             "files": [
@@ -2790,9 +2790,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winFirewall.enabled | boolean | Current firewall status for chosen profile \(after any potential change\). | 
-| MicrosoftWindows.winFirewall.profiles | string | Chosen profile. | 
-| MicrosoftWindows.winFirewall.state | unknown | Desired state of the given firewall profile\(s\). | 
+| MicrosoftWindows.WinFirewall.enabled | boolean | Current firewall status for chosen profile \(after any potential change\). | 
+| MicrosoftWindows.WinFirewall.profiles | string | Chosen profile. | 
+| MicrosoftWindows.WinFirewall.state | unknown | Desired state of the given firewall profile\(s\). | 
 
 
 #### Command Example
@@ -2802,7 +2802,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winFirewall": {
+        "WinFirewall": {
             "Domain": {
                 "considered": false,
                 "currentstate": 1,
@@ -2899,7 +2899,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winFirewallRule": {
+        "WinFirewallRule": {
             "changed": false,
             "host": "123.123.123.123",
             "msg": "Firewall rule(s) changed '' - unchanged 'SMTP'",
@@ -2956,7 +2956,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winFormat": {
+        "WinFormat": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -3015,14 +3015,14 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winGetUrl.dest | string | destination file/path | 
-| MicrosoftWindows.winGetUrl.checksum_dest | string | &lt;algorithm&gt; checksum of the file after the download | 
-| MicrosoftWindows.winGetUrl.checksum_src | string | &lt;algorithm&gt; checksum of the remote resource | 
-| MicrosoftWindows.winGetUrl.elapsed | unknown | The elapsed seconds between the start of poll and the end of the module. | 
-| MicrosoftWindows.winGetUrl.size | number | size of the dest file | 
-| MicrosoftWindows.winGetUrl.url | string | requested url | 
-| MicrosoftWindows.winGetUrl.msg | string | Error message, or HTTP status message from web-server | 
-| MicrosoftWindows.winGetUrl.status_code | number | HTTP status code | 
+| MicrosoftWindows.WinGetUrl.dest | string | destination file/path | 
+| MicrosoftWindows.WinGetUrl.checksum_dest | string | &lt;algorithm&gt; checksum of the file after the download | 
+| MicrosoftWindows.WinGetUrl.checksum_src | string | &lt;algorithm&gt; checksum of the remote resource | 
+| MicrosoftWindows.WinGetUrl.elapsed | unknown | The elapsed seconds between the start of poll and the end of the module. | 
+| MicrosoftWindows.WinGetUrl.size | number | size of the dest file | 
+| MicrosoftWindows.WinGetUrl.url | string | requested url | 
+| MicrosoftWindows.WinGetUrl.msg | string | Error message, or HTTP status message from web-server | 
+| MicrosoftWindows.WinGetUrl.status_code | number | HTTP status code | 
 
 
 #### Command Example
@@ -3032,7 +3032,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winGetUrl": {
+        "WinGetUrl": {
             "changed": true,
             "checksum_dest": "40c7d97574e7c791d649582912620f7d816829e4",
             "checksum_src": "40c7d97574e7c791d649582912620f7d816829e4",
@@ -3095,7 +3095,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winGroup": {
+        "WinGroup": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -3133,10 +3133,10 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winGroupMembership.name | string | The name of the target local group. | 
-| MicrosoftWindows.winGroupMembership.added | unknown | A list of members added when \`state\` is \`present\` or \`pure\`; this is empty if no members are added. | 
-| MicrosoftWindows.winGroupMembership.removed | unknown | A list of members removed when \`state\` is \`absent\` or \`pure\`; this is empty if no members are removed. | 
-| MicrosoftWindows.winGroupMembership.members | unknown | A list of all local group members at completion; this is empty if the group contains no members. | 
+| MicrosoftWindows.WinGroupMembership.name | string | The name of the target local group. | 
+| MicrosoftWindows.WinGroupMembership.added | unknown | A list of members added when \`state\` is \`present\` or \`pure\`; this is empty if no members are added. | 
+| MicrosoftWindows.WinGroupMembership.removed | unknown | A list of members removed when \`state\` is \`absent\` or \`pure\`; this is empty if no members are removed. | 
+| MicrosoftWindows.WinGroupMembership.members | unknown | A list of all local group members at completion; this is empty if the group contains no members. | 
 
 
 #### Command Example
@@ -3146,7 +3146,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winGroupMembership": {
+        "WinGroupMembership": {
             "added": [
                 "WIN-U425UI0HPP7\\fed-phil"
             ],
@@ -3194,8 +3194,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winHostname.old_name | string | The original hostname that was set before it was changed. | 
-| MicrosoftWindows.winHostname.reboot_required | boolean | Whether a reboot is required to complete the hostname change. | 
+| MicrosoftWindows.WinHostname.old_name | string | The original hostname that was set before it was changed. | 
+| MicrosoftWindows.WinHostname.reboot_required | boolean | Whether a reboot is required to complete the hostname change. | 
 
 
 #### Command Example
@@ -3205,7 +3205,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winHostname": {
+        "WinHostname": {
             "changed": true,
             "host": "123.123.123.123",
             "old_name": "WIN-U425UI0HPP7",
@@ -3258,7 +3258,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winHosts": {
+        "WinHosts": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -3297,9 +3297,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winHotfix.identifier | string | The DISM identifier for the hotfix. | 
-| MicrosoftWindows.winHotfix.kb | string | The KB the hotfix relates to. | 
-| MicrosoftWindows.winHotfix.reboot_required | string | Whether a reboot is required for the install or uninstall to finalise. | 
+| MicrosoftWindows.WinHotfix.identifier | string | The DISM identifier for the hotfix. | 
+| MicrosoftWindows.WinHotfix.kb | string | The KB the hotfix relates to. | 
+| MicrosoftWindows.WinHotfix.reboot_required | string | Whether a reboot is required for the install or uninstall to finalise. | 
 
 
 
@@ -3336,7 +3336,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winHttpProxy": {
+        "WinHttpProxy": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -3405,8 +3405,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winIisWebapplication.application_pool | string | The used/implemented application_pool value. | 
-| MicrosoftWindows.winIisWebapplication.physical_path | string | The used/implemented physical_path value. | 
+| MicrosoftWindows.WinIisWebapplication.application_pool | string | The used/implemented application_pool value. | 
+| MicrosoftWindows.WinIisWebapplication.physical_path | string | The used/implemented physical_path value. | 
 
 
 
@@ -3434,8 +3434,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winIisWebapppool.attributes | unknown | Application Pool attributes that were set and processed by this module invocation. | 
-| MicrosoftWindows.winIisWebapppool.info | unknown | Information on current state of the Application Pool. See https://www.iis.net/configreference/system.applicationhost/applicationpools/add\#005 for the full list of return attributes based on your IIS version. | 
+| MicrosoftWindows.WinIisWebapppool.attributes | unknown | Application Pool attributes that were set and processed by this module invocation. | 
+| MicrosoftWindows.WinIisWebapppool.info | unknown | Information on current state of the Application Pool. See https://www.iis.net/configreference/system.applicationhost/applicationpools/add\#005 for the full list of return attributes based on your IIS version. | 
 
 
 
@@ -3469,11 +3469,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winIisWebbinding.website_state | string | The state of the website being targetted
+| MicrosoftWindows.WinIisWebbinding.website_state | string | The state of the website being targetted
 Can be helpful in case you accidentally cause a binding collision which can result in the targetted site being stopped | 
-| MicrosoftWindows.winIisWebbinding.operation_type | string | The type of operation performed
+| MicrosoftWindows.WinIisWebbinding.operation_type | string | The type of operation performed
 Can be removed, updated, matched, or added | 
-| MicrosoftWindows.winIisWebbinding.binding_info | unknown | Information on the binding being manipulated | 
+| MicrosoftWindows.WinIisWebbinding.binding_info | unknown | Information on the binding being manipulated | 
 
 
 
@@ -3546,7 +3546,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winInetProxy": {
+        "WinInetProxy": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -3593,9 +3593,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winLineinfile.backup | string | Name of the backup file that was created.
+| MicrosoftWindows.WinLineinfile.backup | string | Name of the backup file that was created.
 This is now deprecated, use \`backup_file\` instead. | 
-| MicrosoftWindows.winLineinfile.backup_file | string | Name of the backup file that was created. | 
+| MicrosoftWindows.WinLineinfile.backup_file | string | Name of the backup file that was created. | 
 
 
 #### Command Example
@@ -3605,7 +3605,7 @@ This is now deprecated, use \`backup_file\` instead. |
 ```json
 {
     "MicrosoftWindows": {
-        "winLineinfile": {
+        "WinLineinfile": {
             "backup": "",
             "changed": true,
             "encoding": "utf-8",
@@ -3679,12 +3679,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winMsg.msg | string | Test of the message that was sent. | 
-| MicrosoftWindows.winMsg.display_seconds | string | Value of display_seconds module parameter. | 
-| MicrosoftWindows.winMsg.rc | number | The return code of the API call. | 
-| MicrosoftWindows.winMsg.runtime_seconds | string | How long the module took to run on the remote windows host. | 
-| MicrosoftWindows.winMsg.sent_localtime | string | local time from windows host when the message was sent. | 
-| MicrosoftWindows.winMsg.wait | boolean | Value of wait module parameter. | 
+| MicrosoftWindows.WinMsg.msg | string | Test of the message that was sent. | 
+| MicrosoftWindows.WinMsg.display_seconds | string | Value of display_seconds module parameter. | 
+| MicrosoftWindows.WinMsg.rc | number | The return code of the API call. | 
+| MicrosoftWindows.WinMsg.runtime_seconds | string | How long the module took to run on the remote windows host. | 
+| MicrosoftWindows.WinMsg.sent_localtime | string | local time from windows host when the message was sent. | 
+| MicrosoftWindows.WinMsg.wait | boolean | Value of wait module parameter. | 
 
 
 #### Command Example
@@ -3694,7 +3694,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winMsg": {
+        "WinMsg": {
             "changed": true,
             "display_seconds": 60,
             "host": "123.123.123.123",
@@ -3743,7 +3743,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winNetbios.reboot_required | boolean | Boolean value stating whether a system reboot is required. | 
+| MicrosoftWindows.WinNetbios.reboot_required | boolean | Boolean value stating whether a system reboot is required. | 
 
 
 #### Command Example
@@ -3753,7 +3753,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winNetbios": {
+        "WinNetbios": {
             "changed": false,
             "host": "123.123.123.123",
             "reboot_required": false,
@@ -3814,7 +3814,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winNssm": {
+        "WinNssm": {
             "changed": true,
             "changed_by": "AppRotateBytes",
             "host": "123.123.123.123",
@@ -3855,7 +3855,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winOptionalFeature.reboot_required | boolean | True when the target server requires a reboot to complete updates | 
+| MicrosoftWindows.WinOptionalFeature.reboot_required | boolean | True when the target server requires a reboot to complete updates | 
 
 
 #### Command Example
@@ -3865,7 +3865,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winOptionalFeature": {
+        "WinOptionalFeature": {
             "changed": false,
             "host": "123.123.123.123",
             "reboot_required": false,
@@ -3914,7 +3914,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winOwner": {
+        "WinOwner": {
             "changed": true,
             "host": "123.123.123.123",
             "status": "CHANGED"
@@ -3962,11 +3962,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winPackage.log | string | The contents of the MSI log. | 
-| MicrosoftWindows.winPackage.rc | number | The return code of the package process. | 
-| MicrosoftWindows.winPackage.reboot_required | boolean | Whether a reboot is required to finalise package. This is set to true if the executable return code is 3010. | 
-| MicrosoftWindows.winPackage.stdout | string | The stdout stream of the package process. | 
-| MicrosoftWindows.winPackage.stderr | string | The stderr stream of the package process. | 
+| MicrosoftWindows.WinPackage.log | string | The contents of the MSI log. | 
+| MicrosoftWindows.WinPackage.rc | number | The return code of the package process. | 
+| MicrosoftWindows.WinPackage.reboot_required | boolean | Whether a reboot is required to finalise package. This is set to true if the executable return code is 3010. | 
+| MicrosoftWindows.WinPackage.stdout | string | The stdout stream of the package process. | 
+| MicrosoftWindows.WinPackage.stderr | string | The stderr stream of the package process. | 
 
 
 
@@ -4000,8 +4000,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winPagefile.automatic_managed_pagefiles | boolean | Whether the pagefiles is automatically managed. | 
-| MicrosoftWindows.winPagefile.pagefiles | unknown | Contains caption, description, initial_size, maximum_size and name for each pagefile in the system. | 
+| MicrosoftWindows.WinPagefile.automatic_managed_pagefiles | boolean | Whether the pagefiles is automatically managed. | 
+| MicrosoftWindows.WinPagefile.pagefiles | unknown | Contains caption, description, initial_size, maximum_size and name for each pagefile in the system. | 
 
 
 #### Command Example
@@ -4011,7 +4011,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winPagefile": {
+        "WinPagefile": {
             "automatic_managed_pagefiles": true,
             "changed": false,
             "host": "123.123.123.123",
@@ -4070,7 +4070,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winPartition": {
+        "WinPartition": {
             "changed": true,
             "host": "123.123.123.123",
             "status": "CHANGED"
@@ -4117,7 +4117,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winPath": {
+        "WinPath": {
             "changed": false,
             "host": "123.123.123.123",
             "path_value": "%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ProgramData\\chocolatey\\bin;['%SystemRoot%\\system32', '%SystemRoot%\\system32\\WindowsPowerShell\\v1.0'];C:\\Program Files\\Git\\cmd",
@@ -4158,8 +4158,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winPester.pester_version | string | Version of the pester module found on the remote host. | 
-| MicrosoftWindows.winPester.output | unknown | Results of the Pester tests. | 
+| MicrosoftWindows.WinPester.pester_version | string | Version of the pester module found on the remote host. | 
+| MicrosoftWindows.WinPester.output | unknown | Results of the Pester tests. | 
 
 
 
@@ -4185,7 +4185,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winPing.ping | string | Value provided with the data parameter. | 
+| MicrosoftWindows.WinPing.ping | string | Value provided with the data parameter. | 
 
 
 #### Command Example
@@ -4195,7 +4195,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winPing": {
+        "WinPing": {
             "changed": false,
             "host": "123.123.123.123",
             "ping": "pong",
@@ -4233,9 +4233,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winPowerPlan.power_plan_name | string | Value of the intended power plan. | 
-| MicrosoftWindows.winPowerPlan.power_plan_enabled | boolean | State of the intended power plan. | 
-| MicrosoftWindows.winPowerPlan.all_available_plans | unknown | The name and enabled state of all power plans. | 
+| MicrosoftWindows.WinPowerPlan.power_plan_name | string | Value of the intended power plan. | 
+| MicrosoftWindows.WinPowerPlan.power_plan_enabled | boolean | State of the intended power plan. | 
+| MicrosoftWindows.WinPowerPlan.all_available_plans | unknown | The name and enabled state of all power plans. | 
 
 
 #### Command Example
@@ -4245,7 +4245,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winPowerPlan": {
+        "WinPowerPlan": {
             "all_available_plans": {
                 "Balanced": false,
                 "High performance": true,
@@ -4293,7 +4293,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winProductFacts.ansible_facts | unknown | Dictionary containing all the detailed information about the Windows product and license. | 
+| MicrosoftWindows.WinProductFacts.ansible_facts | unknown | Dictionary containing all the detailed information about the Windows product and license. | 
 
 
 #### Command Example
@@ -4303,7 +4303,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winProductFacts": {
+        "WinProductFacts": {
             "host": "123.123.123.123",
             "os_license_channel": "Retail:TB:Eval",
             "os_license_edition": "Windows(R), ServerStandardEval edition",
@@ -4363,11 +4363,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winPsexec.cmd | string | The complete command line used by the module, including PsExec call and additional options. | 
-| MicrosoftWindows.winPsexec.pid | number | The PID of the async process created by PsExec. | 
-| MicrosoftWindows.winPsexec.rc | number | The return code for the command. | 
-| MicrosoftWindows.winPsexec.stdout | string | The standard output from the command. | 
-| MicrosoftWindows.winPsexec.stderr | string | The error output from the command. | 
+| MicrosoftWindows.WinPsexec.cmd | string | The complete command line used by the module, including PsExec call and additional options. | 
+| MicrosoftWindows.WinPsexec.pid | number | The PID of the async process created by PsExec. | 
+| MicrosoftWindows.WinPsexec.rc | number | The return code for the command. | 
+| MicrosoftWindows.WinPsexec.stdout | string | The standard output from the command. | 
+| MicrosoftWindows.WinPsexec.stderr | string | The error output from the command. | 
 
 
 #### Command Example
@@ -4377,7 +4377,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winPsexec": {
+        "WinPsexec": {
             "changed": true,
             "delta": "0:00:01.375000",
             "end": "2021-06-29 04:18:35.671487",
@@ -4459,9 +4459,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winPsmodule.output | string | A message describing the task result. | 
-| MicrosoftWindows.winPsmodule.nuget_changed | boolean | True when Nuget package provider is installed. | 
-| MicrosoftWindows.winPsmodule.repository_changed | boolean | True when a custom repository is installed or removed. | 
+| MicrosoftWindows.WinPsmodule.output | string | A message describing the task result. | 
+| MicrosoftWindows.WinPsmodule.nuget_changed | boolean | True when Nuget package provider is installed. | 
+| MicrosoftWindows.WinPsmodule.repository_changed | boolean | True when a custom repository is installed or removed. | 
 
 
 #### Command Example
@@ -4471,7 +4471,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winPsmodule": {
+        "WinPsmodule": {
             "changed": false,
             "host": "123.123.123.123",
             "nuget_changed": false,
@@ -4525,7 +4525,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winPsrepository": {
+        "WinPsrepository": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -4564,8 +4564,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winRabbitmqPlugin.enabled | unknown | List of plugins enabled during task run. | 
-| MicrosoftWindows.winRabbitmqPlugin.disabled | unknown | List of plugins disabled during task run. | 
+| MicrosoftWindows.WinRabbitmqPlugin.enabled | unknown | List of plugins enabled during task run. | 
+| MicrosoftWindows.WinRabbitmqPlugin.disabled | unknown | List of plugins disabled during task run. | 
 
 
 
@@ -4695,8 +4695,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winReboot.rebooted | boolean | True if the machine was rebooted. | 
-| MicrosoftWindows.winReboot.elapsed | unknown | The number of seconds that elapsed waiting for the system to be rebooted. | 
+| MicrosoftWindows.WinReboot.rebooted | boolean | True if the machine was rebooted. | 
+| MicrosoftWindows.WinReboot.elapsed | unknown | The number of seconds that elapsed waiting for the system to be rebooted. | 
 
 
 #### Command Example
@@ -4706,7 +4706,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winPsrepository": {
+        "WinPsrepository": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS"
@@ -4742,13 +4742,13 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winRegStat.changed | boolean | Whether anything was changed. | 
-| MicrosoftWindows.winRegStat.exists | boolean | States whether the registry key/property exists. | 
-| MicrosoftWindows.winRegStat.properties | unknown | A dictionary containing all the properties and their values in the registry key. | 
-| MicrosoftWindows.winRegStat.sub_keys | unknown | A list of all the sub keys of the key specified. | 
-| MicrosoftWindows.winRegStat.raw_value | string | Returns the raw value of the registry property, REG_EXPAND_SZ has no string expansion, REG_BINARY or REG_NONE is in hex 0x format. REG_NONE, this value is a hex string in the 0x format. | 
-| MicrosoftWindows.winRegStat.type | string | The property type. | 
-| MicrosoftWindows.winRegStat.value | string | The value of the property. | 
+| MicrosoftWindows.WinRegStat.changed | boolean | Whether anything was changed. | 
+| MicrosoftWindows.WinRegStat.exists | boolean | States whether the registry key/property exists. | 
+| MicrosoftWindows.WinRegStat.properties | unknown | A dictionary containing all the properties and their values in the registry key. | 
+| MicrosoftWindows.WinRegStat.sub_keys | unknown | A list of all the sub keys of the key specified. | 
+| MicrosoftWindows.WinRegStat.raw_value | string | Returns the raw value of the registry property, REG_EXPAND_SZ has no string expansion, REG_BINARY or REG_NONE is in hex 0x format. REG_NONE, this value is a hex string in the 0x format. | 
+| MicrosoftWindows.WinRegStat.type | string | The property type. | 
+| MicrosoftWindows.WinRegStat.value | string | The value of the property. | 
 
 
 #### Command Example
@@ -4758,7 +4758,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winRegStat": {
+        "WinRegStat": {
             "changed": false,
             "exists": true,
             "host": "123.123.123.123",
@@ -4911,8 +4911,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winRegedit.data_changed | boolean | Whether this invocation changed the data in the registry value. | 
-| MicrosoftWindows.winRegedit.data_type_changed | boolean | Whether this invocation changed the datatype of the registry value. | 
+| MicrosoftWindows.WinRegedit.data_changed | boolean | Whether this invocation changed the data in the registry value. | 
+| MicrosoftWindows.WinRegedit.data_type_changed | boolean | Whether this invocation changed the datatype of the registry value. | 
 
 
 #### Command Example
@@ -4922,7 +4922,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winRegedit": {
+        "WinRegedit": {
             "changed": false,
             "data_changed": false,
             "data_type_changed": false,
@@ -4965,7 +4965,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winRegion.restart_required | boolean | Whether a reboot is required for the change to take effect. | 
+| MicrosoftWindows.WinRegion.restart_required | boolean | Whether a reboot is required for the change to take effect. | 
 
 
 #### Command Example
@@ -4975,7 +4975,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winRegion": {
+        "WinRegion": {
             "changed": false,
             "host": "123.123.123.123",
             "restart_required": false,
@@ -5014,9 +5014,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winRegmerge.compare_to_key_found | boolean | whether the parent registry key has been found for comparison | 
-| MicrosoftWindows.winRegmerge.difference_count | number | number of differences between the registry and the file | 
-| MicrosoftWindows.winRegmerge.compared | boolean | whether a comparison has taken place between the registry and the file | 
+| MicrosoftWindows.WinRegmerge.compare_to_key_found | boolean | whether the parent registry key has been found for comparison | 
+| MicrosoftWindows.WinRegmerge.difference_count | number | number of differences between the registry and the file | 
+| MicrosoftWindows.WinRegmerge.compared | boolean | whether a comparison has taken place between the registry and the file | 
 
 
 #### Command Example
@@ -5026,7 +5026,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winRegmerge": {
+        "WinRegmerge": {
             "changed": true,
             "compared": false,
             "host": "123.123.123.123",
@@ -5068,15 +5068,15 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winRobocopy.cmd | string | The used command line. | 
-| MicrosoftWindows.winRobocopy.src | string | The Source file/directory of the sync. | 
-| MicrosoftWindows.winRobocopy.dest | string | The Destination file/directory of the sync. | 
-| MicrosoftWindows.winRobocopy.recurse | boolean | Whether or not the recurse flag was toggled. | 
-| MicrosoftWindows.winRobocopy.purge | boolean | Whether or not the purge flag was toggled. | 
-| MicrosoftWindows.winRobocopy.flags | string | Any flags passed in by the user. | 
-| MicrosoftWindows.winRobocopy.rc | number | The return code returned by robocopy. | 
-| MicrosoftWindows.winRobocopy.output | string | The output of running the robocopy command. | 
-| MicrosoftWindows.winRobocopy.msg | string | Output interpreted into a concise message. | 
+| MicrosoftWindows.WinRobocopy.cmd | string | The used command line. | 
+| MicrosoftWindows.WinRobocopy.src | string | The Source file/directory of the sync. | 
+| MicrosoftWindows.WinRobocopy.dest | string | The Destination file/directory of the sync. | 
+| MicrosoftWindows.WinRobocopy.recurse | boolean | Whether or not the recurse flag was toggled. | 
+| MicrosoftWindows.WinRobocopy.purge | boolean | Whether or not the purge flag was toggled. | 
+| MicrosoftWindows.WinRobocopy.flags | string | Any flags passed in by the user. | 
+| MicrosoftWindows.WinRobocopy.rc | number | The return code returned by robocopy. | 
+| MicrosoftWindows.WinRobocopy.output | string | The output of running the robocopy command. | 
+| MicrosoftWindows.WinRobocopy.msg | string | Output interpreted into a concise message. | 
 
 
 #### Command Example
@@ -5086,7 +5086,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winRobocopy": {
+        "WinRobocopy": {
             "changed": true,
             "cmd": " C:/temp C:/temp2",
             "dest": "C:/temp2",
@@ -5240,7 +5240,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winRoute.output | string | A message describing the task result. | 
+| MicrosoftWindows.WinRoute.output | string | A message describing the task result. | 
 
 
 #### Command Example
@@ -5250,7 +5250,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winRoute": {
+        "WinRoute": {
             "changed": false,
             "host": "123.123.123.123",
             "output": "Static route already exists",
@@ -5293,9 +5293,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winSay.message_text | string | The text that the module attempted to speak. | 
-| MicrosoftWindows.winSay.voice | string | The voice used to speak the text. | 
-| MicrosoftWindows.winSay.voice_info | string | The voice used to speak the text. | 
+| MicrosoftWindows.WinSay.message_text | string | The text that the module attempted to speak. | 
+| MicrosoftWindows.WinSay.voice | string | The voice used to speak the text. | 
+| MicrosoftWindows.WinSay.voice_info | string | The voice used to speak the text. | 
 
 
 #### Command Example
@@ -5305,7 +5305,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winSay": {
+        "WinSay": {
             "changed": false,
             "host": "123.123.123.123",
             "message_text": "Warning, deployment commencing in 5 minutes, please log out.",
@@ -5409,16 +5409,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winScheduledTaskStat.actions | unknown | A list of actions. | 
-| MicrosoftWindows.winScheduledTaskStat.folder_exists | boolean | Whether the folder set at path exists. | 
-| MicrosoftWindows.winScheduledTaskStat.folder_task_count | number | The number of tasks that exist in the folder. | 
-| MicrosoftWindows.winScheduledTaskStat.folder_task_names | unknown | A list of tasks that exist in the folder. | 
-| MicrosoftWindows.winScheduledTaskStat.principal | unknown | Details on the principal configured to run the task. | 
-| MicrosoftWindows.winScheduledTaskStat.registration_info | unknown | Details on the task registration info. | 
-| MicrosoftWindows.winScheduledTaskStat.settings | unknown | Details on the task settings. | 
-| MicrosoftWindows.winScheduledTaskStat.state | unknown | Details on the state of the task | 
-| MicrosoftWindows.winScheduledTaskStat.task_exists | boolean | Whether the task at the folder exists. | 
-| MicrosoftWindows.winScheduledTaskStat.triggers | unknown | A list of triggers. | 
+| MicrosoftWindows.WinScheduledTaskStat.actions | unknown | A list of actions. | 
+| MicrosoftWindows.WinScheduledTaskStat.folder_exists | boolean | Whether the folder set at path exists. | 
+| MicrosoftWindows.WinScheduledTaskStat.folder_task_count | number | The number of tasks that exist in the folder. | 
+| MicrosoftWindows.WinScheduledTaskStat.folder_task_names | unknown | A list of tasks that exist in the folder. | 
+| MicrosoftWindows.WinScheduledTaskStat.principal | unknown | Details on the principal configured to run the task. | 
+| MicrosoftWindows.WinScheduledTaskStat.registration_info | unknown | Details on the task registration info. | 
+| MicrosoftWindows.WinScheduledTaskStat.settings | unknown | Details on the task settings. | 
+| MicrosoftWindows.WinScheduledTaskStat.state | unknown | Details on the state of the task | 
+| MicrosoftWindows.WinScheduledTaskStat.task_exists | boolean | Whether the task at the folder exists. | 
+| MicrosoftWindows.WinScheduledTaskStat.triggers | unknown | A list of triggers. | 
 
 
 #### Command Example
@@ -5428,7 +5428,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winScheduledTaskStat": {
+        "WinScheduledTaskStat": {
             "changed": false,
             "folder_exists": false,
             "host": "123.123.123.123",
@@ -5468,13 +5468,13 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winSecurityPolicy.rc | number | The return code after a failure when running SecEdit.exe. | 
-| MicrosoftWindows.winSecurityPolicy.stdout | string | The output of the STDOUT buffer after a failure when running SecEdit.exe. | 
-| MicrosoftWindows.winSecurityPolicy.stderr | string | The output of the STDERR buffer after a failure when running SecEdit.exe. | 
-| MicrosoftWindows.winSecurityPolicy.import_log | string | The log of the SecEdit.exe /configure job that configured the local policies. This is used for debugging purposes on failures. | 
-| MicrosoftWindows.winSecurityPolicy.key | string | The key in the section passed to the module to modify. | 
-| MicrosoftWindows.winSecurityPolicy.section | string | The section passed to the module to modify. | 
-| MicrosoftWindows.winSecurityPolicy.value | string | The value passed to the module to modify to. | 
+| MicrosoftWindows.WinSecurityPolicy.rc | number | The return code after a failure when running SecEdit.exe. | 
+| MicrosoftWindows.WinSecurityPolicy.stdout | string | The output of the STDOUT buffer after a failure when running SecEdit.exe. | 
+| MicrosoftWindows.WinSecurityPolicy.stderr | string | The output of the STDERR buffer after a failure when running SecEdit.exe. | 
+| MicrosoftWindows.WinSecurityPolicy.import_log | string | The log of the SecEdit.exe /configure job that configured the local policies. This is used for debugging purposes on failures. | 
+| MicrosoftWindows.WinSecurityPolicy.key | string | The key in the section passed to the module to modify. | 
+| MicrosoftWindows.WinSecurityPolicy.section | string | The section passed to the module to modify. | 
+| MicrosoftWindows.WinSecurityPolicy.value | string | The value passed to the module to modify to. | 
 
 
 #### Command Example
@@ -5484,7 +5484,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winSecurityPolicy": {
+        "WinSecurityPolicy": {
             "changed": false,
             "host": "123.123.123.123",
             "key": "NewGuestName",
@@ -5537,18 +5537,18 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winService.exists | boolean | Whether the service exists or not. | 
-| MicrosoftWindows.winService.name | string | The service name or id of the service. | 
-| MicrosoftWindows.winService.display_name | string | The display name of the installed service. | 
-| MicrosoftWindows.winService.state | string | The current running status of the service. | 
-| MicrosoftWindows.winService.start_mode | string | The startup type of the service. | 
-| MicrosoftWindows.winService.path | string | The path to the service executable. | 
-| MicrosoftWindows.winService.can_pause_and_continue | boolean | Whether the service can be paused and unpaused. | 
-| MicrosoftWindows.winService.description | string | The description of the service. | 
-| MicrosoftWindows.winService.username | string | The username that runs the service. | 
-| MicrosoftWindows.winService.desktop_interact | boolean | Whether the current user is allowed to interact with the desktop. | 
-| MicrosoftWindows.winService.dependencies | unknown | A list of services that is depended by this service. | 
-| MicrosoftWindows.winService.depended_by | unknown | A list of services that depend on this service. | 
+| MicrosoftWindows.WinService.exists | boolean | Whether the service exists or not. | 
+| MicrosoftWindows.WinService.name | string | The service name or id of the service. | 
+| MicrosoftWindows.WinService.display_name | string | The display name of the installed service. | 
+| MicrosoftWindows.WinService.state | string | The current running status of the service. | 
+| MicrosoftWindows.WinService.start_mode | string | The startup type of the service. | 
+| MicrosoftWindows.WinService.path | string | The path to the service executable. | 
+| MicrosoftWindows.WinService.can_pause_and_continue | boolean | Whether the service can be paused and unpaused. | 
+| MicrosoftWindows.WinService.description | string | The description of the service. | 
+| MicrosoftWindows.WinService.username | string | The username that runs the service. | 
+| MicrosoftWindows.WinService.desktop_interact | boolean | Whether the current user is allowed to interact with the desktop. | 
+| MicrosoftWindows.WinService.dependencies | unknown | A list of services that is depended by this service. | 
+| MicrosoftWindows.WinService.depended_by | unknown | A list of services that depend on this service. | 
 
 
 #### Command Example
@@ -5558,7 +5558,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winService": {
+        "WinService": {
             "can_pause_and_continue": false,
             "changed": true,
             "depended_by": [],
@@ -5633,7 +5633,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winShare.actions | unknown | A list of action cmdlets that were run by the module. | 
+| MicrosoftWindows.WinShare.actions | unknown | A list of action cmdlets that were run by the module. | 
 
 
 #### Command Example
@@ -5643,7 +5643,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winShare": {
+        "WinShare": {
             "actions": [
                 "New-SmbShare -Name internal -Path C:\\temp",
                 "Set-SmbShare -Force -Name internal -Description top secret share",
@@ -5714,7 +5714,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winShortcut": {
+        "WinShortcut": {
             "args": "",
             "changed": false,
             "description": "",
@@ -5770,8 +5770,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winSnmp.community_strings | unknown | The list of community strings for this machine. | 
-| MicrosoftWindows.winSnmp.permitted_managers | unknown | The list of permitted managers for this machine. | 
+| MicrosoftWindows.WinSnmp.community_strings | unknown | The list of community strings for this machine. | 
+| MicrosoftWindows.WinSnmp.permitted_managers | unknown | The list of permitted managers for this machine. | 
 
 
 
@@ -5801,8 +5801,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winStat.changed | boolean | Whether anything was changed | 
-| MicrosoftWindows.winStat.stat | unknown | dictionary containing all the stat data | 
+| MicrosoftWindows.WinStat.changed | boolean | Whether anything was changed | 
+| MicrosoftWindows.WinStat.stat | unknown | dictionary containing all the stat data | 
 
 
 #### Command Example
@@ -5812,7 +5812,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winStat": {
+        "WinStat": {
             "changed": false,
             "host": "123.123.123.123",
             "stat": {
@@ -5897,7 +5897,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winTempfile.path | string | The absolute path to the created file or directory. | 
+| MicrosoftWindows.WinTempfile.path | string | The absolute path to the created file or directory. | 
 
 
 #### Command Example
@@ -5907,7 +5907,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winTempfile": {
+        "WinTempfile": {
             "changed": true,
             "host": "123.123.123.123",
             "path": "C:\\Users\\Administrator\\AppData\\Local\\Temp\\ansible.orvo45xg.ldhbuild",
@@ -5958,7 +5958,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winTemplate.backup_file | string | Name of the backup file that was created. | 
+| MicrosoftWindows.WinTemplate.backup_file | string | Name of the backup file that was created. | 
 
 
 #### Command Example
@@ -5989,8 +5989,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winTimezone.previous_timezone | string | The previous timezone if it was changed, otherwise the existing timezone. | 
-| MicrosoftWindows.winTimezone.timezone | string | The current timezone \(possibly changed\). | 
+| MicrosoftWindows.WinTimezone.previous_timezone | string | The previous timezone if it was changed, otherwise the existing timezone. | 
+| MicrosoftWindows.WinTimezone.timezone | string | The current timezone \(possibly changed\). | 
 
 
 #### Command Example
@@ -6000,7 +6000,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winTimezone": {
+        "WinTimezone": {
             "changed": false,
             "host": "123.123.123.123",
             "previous_timezone": "Romance Standard Time",
@@ -6045,11 +6045,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winToast.expire_at_utc | string | Calculated utc date time when the notification expires. | 
-| MicrosoftWindows.winToast.no_toast_sent_reason | string | Text containing the reason why a notification was not sent. | 
-| MicrosoftWindows.winToast.sent_localtime | string | local date time when the notification was sent. | 
-| MicrosoftWindows.winToast.time_taken | unknown | How long the module took to run on the remote windows host in seconds. | 
-| MicrosoftWindows.winToast.toast_sent | boolean | Whether the module was able to send a toast notification or not. | 
+| MicrosoftWindows.WinToast.expire_at_utc | string | Calculated utc date time when the notification expires. | 
+| MicrosoftWindows.WinToast.no_toast_sent_reason | string | Text containing the reason why a notification was not sent. | 
+| MicrosoftWindows.WinToast.sent_localtime | string | local date time when the notification was sent. | 
+| MicrosoftWindows.WinToast.time_taken | unknown | How long the module took to run on the remote windows host in seconds. | 
+| MicrosoftWindows.WinToast.toast_sent | boolean | Whether the module was able to send a toast notification or not. | 
 
 
 #### Command Example
@@ -6059,7 +6059,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winToast": {
+        "WinToast": {
             "changed": false,
             "expire_at": "6/29/2021 5:21:50 AM",
             "expire_at_utc": "Tuesday, June 29, 2021 3:21:50 AM",
@@ -6109,9 +6109,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winUnzip.dest | string | The provided destination path | 
-| MicrosoftWindows.winUnzip.removed | boolean | Whether the module did remove any files during task run | 
-| MicrosoftWindows.winUnzip.src | string | The provided source path | 
+| MicrosoftWindows.WinUnzip.dest | string | The provided destination path | 
+| MicrosoftWindows.WinUnzip.removed | boolean | Whether the module did remove any files during task run | 
+| MicrosoftWindows.WinUnzip.src | string | The provided source path | 
 
 
 #### Command Example
@@ -6121,7 +6121,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winUnzip": {
+        "WinUnzip": {
             "changed": true,
             "dest": "C:/temp/OldLogs",
             "host": "123.123.123.123",
@@ -6171,12 +6171,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winUpdates.reboot_required | boolean | True when the target server requires a reboot to complete updates \(no further updates can be installed until after a reboot\). | 
-| MicrosoftWindows.winUpdates.updates | unknown | List of updates that were found/installed. | 
-| MicrosoftWindows.winUpdates.filtered_updates | unknown | List of updates that were found but were filtered based on \`blacklist\`, \`whitelist\` or \`category_names\`. The return value is in the same form as \`updates\`, along with \`filtered_reason\`. | 
-| MicrosoftWindows.winUpdates.found_update_count | number | The number of updates found needing to be applied. | 
-| MicrosoftWindows.winUpdates.installed_update_count | number | The number of updates successfully installed or downloaded. | 
-| MicrosoftWindows.winUpdates.failed_update_count | number | The number of updates that failed to install. | 
+| MicrosoftWindows.WinUpdates.reboot_required | boolean | True when the target server requires a reboot to complete updates \(no further updates can be installed until after a reboot\). | 
+| MicrosoftWindows.WinUpdates.updates | unknown | List of updates that were found/installed. | 
+| MicrosoftWindows.WinUpdates.filtered_updates | unknown | List of updates that were found but were filtered based on \`blacklist\`, \`whitelist\` or \`category_names\`. The return value is in the same form as \`updates\`, along with \`filtered_reason\`. | 
+| MicrosoftWindows.WinUpdates.found_update_count | number | The number of updates found needing to be applied. | 
+| MicrosoftWindows.WinUpdates.installed_update_count | number | The number of updates successfully installed or downloaded. | 
+| MicrosoftWindows.WinUpdates.failed_update_count | number | The number of updates that failed to install. | 
 
 
 #### Command Example
@@ -6186,7 +6186,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winUpdates": {
+        "WinUpdates": {
             "changed": false,
             "filtered_updates": {
                 "95335a9a-923a-47b2-abb1-7584d685de6a": {
@@ -6328,13 +6328,13 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winUri.elapsed | unknown | The number of seconds that elapsed while performing the download. | 
-| MicrosoftWindows.winUri.url | string | The Target URL. | 
-| MicrosoftWindows.winUri.status_code | number | The HTTP Status Code of the response. | 
-| MicrosoftWindows.winUri.status_description | string | A summary of the status. | 
-| MicrosoftWindows.winUri.content | string | The raw content of the HTTP response. | 
-| MicrosoftWindows.winUri.content_length | number | The byte size of the response. | 
-| MicrosoftWindows.winUri.json | unknown | The json structure returned under content as a dictionary. | 
+| MicrosoftWindows.WinUri.elapsed | unknown | The number of seconds that elapsed while performing the download. | 
+| MicrosoftWindows.WinUri.url | string | The Target URL. | 
+| MicrosoftWindows.WinUri.status_code | number | The HTTP Status Code of the response. | 
+| MicrosoftWindows.WinUri.status_description | string | A summary of the status. | 
+| MicrosoftWindows.WinUri.content | string | The raw content of the HTTP response. | 
+| MicrosoftWindows.WinUri.content_length | number | The byte size of the response. | 
+| MicrosoftWindows.WinUri.json | unknown | The json structure returned under content as a dictionary. | 
 
 
 #### Command Example
@@ -6344,7 +6344,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winUri": {
+        "WinUri": {
             "accept_ranges": "none",
             "cache_control": "private, max-age=0",
             "changed": false,
@@ -6488,17 +6488,17 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winUser.account_disabled | boolean | Whether the user is disabled. | 
-| MicrosoftWindows.winUser.account_locked | boolean | Whether the user is locked. | 
-| MicrosoftWindows.winUser.description | string | The description set for the user. | 
-| MicrosoftWindows.winUser.fullname | string | The full name set for the user. | 
-| MicrosoftWindows.winUser.groups | unknown | A list of groups and their ADSI path the user is a member of. | 
-| MicrosoftWindows.winUser.name | string | The name of the user | 
-| MicrosoftWindows.winUser.password_expired | boolean | Whether the password is expired. | 
-| MicrosoftWindows.winUser.password_never_expires | boolean | Whether the password is set to never expire. | 
-| MicrosoftWindows.winUser.path | string | The ADSI path for the user. | 
-| MicrosoftWindows.winUser.sid | string | The SID for the user. | 
-| MicrosoftWindows.winUser.user_cannot_change_password | boolean | Whether the user can change their own password. | 
+| MicrosoftWindows.WinUser.account_disabled | boolean | Whether the user is disabled. | 
+| MicrosoftWindows.WinUser.account_locked | boolean | Whether the user is locked. | 
+| MicrosoftWindows.WinUser.description | string | The description set for the user. | 
+| MicrosoftWindows.WinUser.fullname | string | The full name set for the user. | 
+| MicrosoftWindows.WinUser.groups | unknown | A list of groups and their ADSI path the user is a member of. | 
+| MicrosoftWindows.WinUser.name | string | The name of the user | 
+| MicrosoftWindows.WinUser.password_expired | boolean | Whether the password is expired. | 
+| MicrosoftWindows.WinUser.password_never_expires | boolean | Whether the password is set to never expire. | 
+| MicrosoftWindows.WinUser.path | string | The ADSI path for the user. | 
+| MicrosoftWindows.WinUser.sid | string | The SID for the user. | 
+| MicrosoftWindows.WinUser.user_cannot_change_password | boolean | Whether the user can change their own password. | 
 
 
 #### Command Example
@@ -6508,7 +6508,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winUser": {
+        "WinUser": {
             "account_disabled": false,
             "account_locked": false,
             "changed": true,
@@ -6579,7 +6579,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winUserProfile.path | string | The full path to the profile for the account. This will be null if \`state=absent\` and no profile was deleted. | 
+| MicrosoftWindows.WinUserProfile.path | string | The full path to the profile for the account. This will be null if \`state=absent\` and no profile was deleted. | 
 
 
 #### Command Example
@@ -6589,7 +6589,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winUserProfile": {
+        "WinUserProfile": {
             "changed": true,
             "host": "123.123.123.123",
             "path": "C:\\Users\\fed-phil",
@@ -6629,8 +6629,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winUserRight.added | unknown | A list of accounts that were added to the right, this is empty if no accounts were added. | 
-| MicrosoftWindows.winUserRight.removed | unknown | A list of accounts that were removed from the right, this is empty if no accounts were removed. | 
+| MicrosoftWindows.WinUserRight.added | unknown | A list of accounts that were added to the right, this is empty if no accounts were added. | 
+| MicrosoftWindows.WinUserRight.removed | unknown | A list of accounts that were removed from the right, this is empty if no accounts were removed. | 
 
 
 #### Command Example
@@ -6640,7 +6640,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winUserRight": {
+        "WinUserRight": {
             "added": [
                 "WIN-U425UI0HPP7\\Guest"
             ],
@@ -6692,8 +6692,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winWaitFor.wait_attempts | number | The number of attempts to poll the file or port before module finishes. | 
-| MicrosoftWindows.winWaitFor.elapsed | unknown | The elapsed seconds between the start of poll and the end of the module. This includes the delay if the option is set. | 
+| MicrosoftWindows.WinWaitFor.wait_attempts | number | The number of attempts to poll the file or port before module finishes. | 
+| MicrosoftWindows.WinWaitFor.elapsed | unknown | The elapsed seconds between the start of poll and the end of the module. This includes the delay if the option is set. | 
 
 
 #### Command Example
@@ -6703,7 +6703,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winWaitFor": {
+        "WinWaitFor": {
             "changed": false,
             "elapsed": 10.031336099999999,
             "host": "123.123.123.123",
@@ -6752,8 +6752,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winWaitForProcess.elapsed | unknown | The elapsed seconds between the start of poll and the end of the module. | 
-| MicrosoftWindows.winWaitForProcess.matched_processes | unknown | List of matched processes \(either stopped or started\). | 
+| MicrosoftWindows.WinWaitForProcess.elapsed | unknown | The elapsed seconds between the start of poll and the end of the module. | 
+| MicrosoftWindows.WinWaitForProcess.matched_processes | unknown | List of matched processes \(either stopped or started\). | 
 
 
 #### Command Example
@@ -6763,7 +6763,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winWaitForProcess": {
+        "WinWaitForProcess": {
             "changed": false,
             "elapsed": 0.0468785,
             "host": "123.123.123.123",
@@ -6814,7 +6814,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winWakeonlan": {
+        "WinWakeonlan": {
             "changed": true,
             "host": "123.123.123.123",
             "status": "CHANGED"
@@ -6874,22 +6874,22 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winWhoami.authentication_package | string | The name of the authentication package used to authenticate the user in the session. | 
-| MicrosoftWindows.winWhoami.user_flags | string | The user flags for the logon session, see UserFlags in \`https://msdn.microsoft.com/en-us/library/windows/desktop/aa380128\`. | 
-| MicrosoftWindows.winWhoami.upn | string | The user principal name of the current user. | 
-| MicrosoftWindows.winWhoami.logon_type | string | The logon type that identifies the logon method, see \`https://msdn.microsoft.com/en-us/library/windows/desktop/aa380129.aspx\`. | 
-| MicrosoftWindows.winWhoami.privileges | unknown | A dictionary of privileges and their state on the logon token. | 
-| MicrosoftWindows.winWhoami.label | unknown | The mandatory label set to the logon session. | 
-| MicrosoftWindows.winWhoami.impersonation_level | string | The impersonation level of the token, only valid if \`token_type\` is \`TokenImpersonation\`, see \`https://msdn.microsoft.com/en-us/library/windows/desktop/aa379572.aspx\`. | 
-| MicrosoftWindows.winWhoami.login_time | string | The logon time in ISO 8601 format | 
-| MicrosoftWindows.winWhoami.groups | unknown | A list of groups and attributes that the user is a member of. | 
-| MicrosoftWindows.winWhoami.account | unknown | The running account SID details. | 
-| MicrosoftWindows.winWhoami.login_domain | string | The name of the domain used to authenticate the owner of the session. | 
-| MicrosoftWindows.winWhoami.rights | unknown | A list of logon rights assigned to the logon. | 
-| MicrosoftWindows.winWhoami.logon_server | string | The name of the server used to authenticate the owner of the logon session. | 
-| MicrosoftWindows.winWhoami.logon_id | number | The unique identifier of the logon session. | 
-| MicrosoftWindows.winWhoami.dns_domain_name | string | The DNS name of the logon session, this is an empty string if this is not set. | 
-| MicrosoftWindows.winWhoami.token_type | string | The token type to indicate whether it is a primary or impersonation token. | 
+| MicrosoftWindows.WinWhoami.authentication_package | string | The name of the authentication package used to authenticate the user in the session. | 
+| MicrosoftWindows.WinWhoami.user_flags | string | The user flags for the logon session, see UserFlags in \`https://msdn.microsoft.com/en-us/library/windows/desktop/aa380128\`. | 
+| MicrosoftWindows.WinWhoami.upn | string | The user principal name of the current user. | 
+| MicrosoftWindows.WinWhoami.logon_type | string | The logon type that identifies the logon method, see \`https://msdn.microsoft.com/en-us/library/windows/desktop/aa380129.aspx\`. | 
+| MicrosoftWindows.WinWhoami.privileges | unknown | A dictionary of privileges and their state on the logon token. | 
+| MicrosoftWindows.WinWhoami.label | unknown | The mandatory label set to the logon session. | 
+| MicrosoftWindows.WinWhoami.impersonation_level | string | The impersonation level of the token, only valid if \`token_type\` is \`TokenImpersonation\`, see \`https://msdn.microsoft.com/en-us/library/windows/desktop/aa379572.aspx\`. | 
+| MicrosoftWindows.WinWhoami.login_time | string | The logon time in ISO 8601 format | 
+| MicrosoftWindows.WinWhoami.groups | unknown | A list of groups and attributes that the user is a member of. | 
+| MicrosoftWindows.WinWhoami.account | unknown | The running account SID details. | 
+| MicrosoftWindows.WinWhoami.login_domain | string | The name of the domain used to authenticate the owner of the session. | 
+| MicrosoftWindows.WinWhoami.rights | unknown | A list of logon rights assigned to the logon. | 
+| MicrosoftWindows.WinWhoami.logon_server | string | The name of the server used to authenticate the owner of the logon session. | 
+| MicrosoftWindows.WinWhoami.logon_id | number | The unique identifier of the logon session. | 
+| MicrosoftWindows.WinWhoami.dns_domain_name | string | The DNS name of the logon session, this is an empty string if this is not set. | 
+| MicrosoftWindows.WinWhoami.token_type | string | The token type to indicate whether it is a primary or impersonation token. | 
 
 
 #### Command Example
@@ -6899,7 +6899,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "MicrosoftWindows": {
-        "winWhoami": {
+        "WinWhoami": {
             "account": {
                 "account_name": "Administrator",
                 "domain_name": "WIN-U425UI0HPP7",
@@ -7066,10 +7066,10 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.winXml.backup_file | string | Name of the backup file that was created. | 
-| MicrosoftWindows.winXml.count | number | Number of nodes matched by xpath. | 
-| MicrosoftWindows.winXml.msg | string | What was done. | 
-| MicrosoftWindows.winXml.err | unknown | XML comparison exceptions. | 
+| MicrosoftWindows.WinXml.backup_file | string | Name of the backup file that was created. | 
+| MicrosoftWindows.WinXml.count | number | Number of nodes matched by xpath. | 
+| MicrosoftWindows.WinXml.msg | string | What was done. | 
+| MicrosoftWindows.WinXml.err | unknown | XML comparison exceptions. | 
 
 
 

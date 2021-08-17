@@ -80,7 +80,7 @@ Manages AAA server global configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosAaaServer.commands | unknown | command sent to the device | 
+| CiscoNXOS.NxosAaaServer.commands | unknown | command sent to the device | 
 
 
 #### Command Example
@@ -90,7 +90,7 @@ Manages AAA server global configuration.
 ```json
 {
     "CiscoNXOS": {
-        "nxosAaaServer": {
+        "NxosAaaServer": {
             "changed": true,
             "commands": [
                 "radius-server deadtime 20",
@@ -143,11 +143,11 @@ Manages AAA server host-specific configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosAaaServerHost.proposed | unknown | k/v pairs of parameters passed into module | 
-| CiscoNXOS.nxosAaaServerHost.existing | unknown | k/v pairs of existing configuration | 
-| CiscoNXOS.nxosAaaServerHost.end_state | unknown | k/v pairs of configuration after module execution | 
-| CiscoNXOS.nxosAaaServerHost.updates | unknown | command sent to the device | 
-| CiscoNXOS.nxosAaaServerHost.changed | boolean | check to see if a change was made on the device | 
+| CiscoNXOS.NxosAaaServerHost.proposed | unknown | k/v pairs of parameters passed into module | 
+| CiscoNXOS.NxosAaaServerHost.existing | unknown | k/v pairs of existing configuration | 
+| CiscoNXOS.NxosAaaServerHost.end_state | unknown | k/v pairs of configuration after module execution | 
+| CiscoNXOS.NxosAaaServerHost.updates | unknown | command sent to the device | 
+| CiscoNXOS.NxosAaaServerHost.changed | boolean | check to see if a change was made on the device | 
 
 
 #### Command Example
@@ -157,7 +157,7 @@ Manages AAA server host-specific configuration.
 ```json
 {
     "CiscoNXOS": {
-        "nxosAaaServerHost": {
+        "NxosAaaServerHost": {
             "changed": true,
             "end_state": {
                 "acct_port": "2084",
@@ -251,7 +251,7 @@ Manages access list entries for ACLs.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosAcl.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosAcl.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -261,7 +261,7 @@ Manages access list entries for ACLs.
 ```json
 {
     "CiscoNXOS": {
-        "nxosAcl": {
+        "NxosAcl": {
             "changed": true,
             "commands": [
                 "ip access-list ANSIBLE",
@@ -307,8 +307,8 @@ Manages applying ACLs to interfaces.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosAclInterface.acl_applied_to | unknown | list of interfaces the ACL is applied to | 
-| CiscoNXOS.nxosAclInterface.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosAclInterface.acl_applied_to | unknown | list of interfaces the ACL is applied to | 
+| CiscoNXOS.NxosAclInterface.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -318,7 +318,7 @@ Manages applying ACLs to interfaces.
 ```json
 {
     "CiscoNXOS": {
-        "nxosAclInterface": {
+        "NxosAclInterface": {
             "changed": true,
             "commands": [
                 "interface ethernet1/41",
@@ -362,7 +362,7 @@ Manage multiline banners on Cisco NXOS devices
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosBanner.commands | unknown | The list of configuration mode commands to send to the device | 
+| CiscoNXOS.NxosBanner.commands | unknown | The list of configuration mode commands to send to the device | 
 
 
 #### Command Example
@@ -372,7 +372,7 @@ Manage multiline banners on Cisco NXOS devices
 ```json
 {
     "CiscoNXOS": {
-        "nxosBanner": {
+        "NxosBanner": {
             "changed": true,
             "commands": [
                 "banner exec @\nthis is my exec banner\n@"
@@ -427,7 +427,7 @@ Bidirectional Forwarding Detection (BFD) global-level configuration
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosBfdGlobal.cmds | unknown | commands sent to the device | 
+| CiscoNXOS.NxosBfdGlobal.cmds | unknown | commands sent to the device | 
 
 
 
@@ -438,7 +438,7 @@ Bidirectional Forwarding Detection (BFD) global-level configuration
 ```json
 {
     "CiscoNXOS": {
-        "nxosBfdGlobal": {
+        "NxosBfdGlobal": {
             "changed": false,
             "check_mode": false,
             "commands": [],
@@ -478,9 +478,9 @@ Manages BFD attributes of nxos interfaces.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosBfdInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoNXOS.nxosBfdInterfaces.after | unknown | The configuration as structured data after module completion. | 
-| CiscoNXOS.nxosBfdInterfaces.commands | unknown | The set of commands pushed to the remote device. | 
+| CiscoNXOS.NxosBfdInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoNXOS.NxosBfdInterfaces.after | unknown | The configuration as structured data after module completion. | 
+| CiscoNXOS.NxosBfdInterfaces.commands | unknown | The set of commands pushed to the remote device. | 
 
 
 #### Command Example
@@ -490,7 +490,7 @@ Manages BFD attributes of nxos interfaces.
 ```json
 {
     "CiscoNXOS": {
-        "nxosBfdInterfaces": {
+        "NxosBfdInterfaces": {
             "before": [
                 {
                     "bfd": "enable",
@@ -588,7 +588,7 @@ Manages BGP configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosBgp.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosBgp.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -598,7 +598,7 @@ Manages BGP configuration.
 ```json
 {
     "CiscoNXOS": {
-        "nxosBgp": {
+        "NxosBgp": {
             "changed": false,
             "commands": [],
             "host": "192.168.1.19",
@@ -666,7 +666,7 @@ Manages BGP Address-family configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosBgpAf.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosBgpAf.commands | unknown | commands sent to the device | 
 
 
 
@@ -714,7 +714,7 @@ Manages BGP neighbors configurations.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosBgpNeighbor.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosBgpNeighbor.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -724,7 +724,7 @@ Manages BGP neighbors configurations.
 ```json
 {
     "CiscoNXOS": {
-        "nxosBgpNeighbor": {
+        "NxosBgpNeighbor": {
             "changed": true,
             "commands": [
                 "router bgp 65535",
@@ -810,7 +810,7 @@ Manages BGP address-family's neighbors configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosBgpNeighborAf.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosBgpNeighborAf.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -820,7 +820,7 @@ Manages BGP address-family's neighbors configuration.
 ```json
 {
     "CiscoNXOS": {
-        "nxosBgpNeighborAf": {
+        "NxosBgpNeighborAf": {
             "changed": true,
             "commands": [
                 "router bgp 65535",
@@ -869,9 +869,9 @@ Run arbitrary command on Cisco NXOS devices
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosCommand.stdout | unknown | The set of responses from the commands | 
-| CiscoNXOS.nxosCommand.stdout_lines | unknown | The value of stdout split into a list | 
-| CiscoNXOS.nxosCommand.failed_conditions | unknown | The list of conditionals that have failed | 
+| CiscoNXOS.NxosCommand.stdout | unknown | The set of responses from the commands | 
+| CiscoNXOS.NxosCommand.stdout_lines | unknown | The value of stdout split into a list | 
+| CiscoNXOS.NxosCommand.failed_conditions | unknown | The list of conditionals that have failed | 
 
 
 #### Command Example
@@ -881,7 +881,7 @@ Run arbitrary command on Cisco NXOS devices
 ```json
 {
     "CiscoNXOS": {
-        "nxosCommand": {
+        "NxosCommand": {
             "changed": false,
             "host": "192.168.1.19",
             "status": "SUCCESS",
@@ -1056,13 +1056,13 @@ Manage Cisco NXOS configuration sections
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosConfig.commands | unknown | The set of commands that will be pushed to the remote device | 
-| CiscoNXOS.nxosConfig.updates | unknown | The set of commands that will be pushed to the remote device | 
-| CiscoNXOS.nxosConfig.backup_path | string | The full path to the backup file | 
-| CiscoNXOS.nxosConfig.filename | string | The name of the backup file | 
-| CiscoNXOS.nxosConfig.shortname | string | The full path to the backup file excluding the timestamp | 
-| CiscoNXOS.nxosConfig.date | string | The date extracted from the backup file name | 
-| CiscoNXOS.nxosConfig.time | string | The time extracted from the backup file name | 
+| CiscoNXOS.NxosConfig.commands | unknown | The set of commands that will be pushed to the remote device | 
+| CiscoNXOS.NxosConfig.updates | unknown | The set of commands that will be pushed to the remote device | 
+| CiscoNXOS.NxosConfig.backup_path | string | The full path to the backup file | 
+| CiscoNXOS.NxosConfig.filename | string | The name of the backup file | 
+| CiscoNXOS.NxosConfig.shortname | string | The full path to the backup file excluding the timestamp | 
+| CiscoNXOS.NxosConfig.date | string | The date extracted from the backup file name | 
+| CiscoNXOS.NxosConfig.time | string | The time extracted from the backup file name | 
 
 
 #### Command Example
@@ -1072,7 +1072,7 @@ Manage Cisco NXOS configuration sections
 ```json
 {
     "CiscoNXOS": {
-        "nxosConfig": {
+        "NxosConfig": {
             "backup_path": "./backup/192.168.1.19_config.2021-07-11@00:43:34",
             "changed": true,
             "commands": [
@@ -1127,7 +1127,7 @@ Handles the EVPN control plane for VXLAN.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosEvpnGlobal.commands | unknown | The set of commands to be sent to the remote device | 
+| CiscoNXOS.NxosEvpnGlobal.commands | unknown | The set of commands to be sent to the remote device | 
 
 
 #### Command Example
@@ -1137,7 +1137,7 @@ Handles the EVPN control plane for VXLAN.
 ```json
 {
     "CiscoNXOS": {
-        "nxosEvpnGlobal": {
+        "NxosEvpnGlobal": {
             "changed": true,
             "commands": [
                 "nv overlay evpn"
@@ -1183,7 +1183,7 @@ Manages Cisco EVPN VXLAN Network Identifier (VNI).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosEvpnVni.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosEvpnVni.commands | unknown | commands sent to the device | 
 
 
 
@@ -1209,32 +1209,32 @@ Gets facts about NX-OS switches
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosFacts.ansible_net_gather_subset | unknown | The list of fact subsets collected from the device | 
-| CiscoNXOS.nxosFacts.ansible_net_gather_network_resources | unknown | The list of fact for network resource subsets collected from the device | 
-| CiscoNXOS.nxosFacts.ansible_net_model | string | The model name returned from the device | 
-| CiscoNXOS.nxosFacts.ansible_net_serialnum | string | The serial number of the remote device | 
-| CiscoNXOS.nxosFacts.ansible_net_version | string | The operating system version running on the remote device | 
-| CiscoNXOS.nxosFacts.ansible_net_hostname | string | The configured hostname of the device | 
-| CiscoNXOS.nxosFacts.ansible_net_image | string | The image file the device is running | 
-| CiscoNXOS.nxosFacts.ansible_net_api | string | The name of the transport | 
-| CiscoNXOS.nxosFacts.ansible_net_license_hostid | string | The License host id of the device | 
-| CiscoNXOS.nxosFacts.ansible_net_python_version | string | The Python version Ansible controller is using | 
-| CiscoNXOS.nxosFacts.ansible_net_filesystems | unknown | All file system names available on the device | 
-| CiscoNXOS.nxosFacts.ansible_net_memfree_mb | number | The available free memory on the remote device in Mb | 
-| CiscoNXOS.nxosFacts.ansible_net_memtotal_mb | number | The total memory on the remote device in Mb | 
-| CiscoNXOS.nxosFacts.ansible_net_config | string | The current active config from the device | 
-| CiscoNXOS.nxosFacts.ansible_net_all_ipv4_addresses | unknown | All IPv4 addresses configured on the device | 
-| CiscoNXOS.nxosFacts.ansible_net_all_ipv6_addresses | unknown | All IPv6 addresses configured on the device | 
-| CiscoNXOS.nxosFacts.ansible_net_interfaces | unknown | A hash of all interfaces running on the system | 
-| CiscoNXOS.nxosFacts.ansible_net_neighbors | unknown | The list of LLDP and CDP neighbors from the device. If both, CDP and LLDP neighbor data is present on one port, CDP is preferred. | 
-| CiscoNXOS.nxosFacts.fan_info | unknown | A hash of facts about fans in the remote device | 
-| CiscoNXOS.nxosFacts.hostname | unknown | The configured hostname of the remote device | 
-| CiscoNXOS.nxosFacts.interfaces_list | unknown | The list of interface names on the remote device | 
-| CiscoNXOS.nxosFacts.kickstart | string | The software version used to boot the system | 
-| CiscoNXOS.nxosFacts.module | unknown | A hash of facts about the modules in a remote device | 
-| CiscoNXOS.nxosFacts.platform | string | The hardware platform reported by the remote device | 
-| CiscoNXOS.nxosFacts.power_supply_info | string | A hash of facts about the power supplies in the remote device | 
-| CiscoNXOS.nxosFacts.vlan_list | unknown | The list of VLAN IDs configured on the remote device | 
+| CiscoNXOS.NxosFacts.ansible_net_gather_subset | unknown | The list of fact subsets collected from the device | 
+| CiscoNXOS.NxosFacts.ansible_net_gather_network_resources | unknown | The list of fact for network resource subsets collected from the device | 
+| CiscoNXOS.NxosFacts.ansible_net_model | string | The model name returned from the device | 
+| CiscoNXOS.NxosFacts.ansible_net_serialnum | string | The serial number of the remote device | 
+| CiscoNXOS.NxosFacts.ansible_net_version | string | The operating system version running on the remote device | 
+| CiscoNXOS.NxosFacts.ansible_net_hostname | string | The configured hostname of the device | 
+| CiscoNXOS.NxosFacts.ansible_net_image | string | The image file the device is running | 
+| CiscoNXOS.NxosFacts.ansible_net_api | string | The name of the transport | 
+| CiscoNXOS.NxosFacts.ansible_net_license_hostid | string | The License host id of the device | 
+| CiscoNXOS.NxosFacts.ansible_net_python_version | string | The Python version Ansible controller is using | 
+| CiscoNXOS.NxosFacts.ansible_net_filesystems | unknown | All file system names available on the device | 
+| CiscoNXOS.NxosFacts.ansible_net_memfree_mb | number | The available free memory on the remote device in Mb | 
+| CiscoNXOS.NxosFacts.ansible_net_memtotal_mb | number | The total memory on the remote device in Mb | 
+| CiscoNXOS.NxosFacts.ansible_net_config | string | The current active config from the device | 
+| CiscoNXOS.NxosFacts.ansible_net_all_ipv4_addresses | unknown | All IPv4 addresses configured on the device | 
+| CiscoNXOS.NxosFacts.ansible_net_all_ipv6_addresses | unknown | All IPv6 addresses configured on the device | 
+| CiscoNXOS.NxosFacts.ansible_net_interfaces | unknown | A hash of all interfaces running on the system | 
+| CiscoNXOS.NxosFacts.ansible_net_neighbors | unknown | The list of LLDP and CDP neighbors from the device. If both, CDP and LLDP neighbor data is present on one port, CDP is preferred. | 
+| CiscoNXOS.NxosFacts.fan_info | unknown | A hash of facts about fans in the remote device | 
+| CiscoNXOS.NxosFacts.hostname | unknown | The configured hostname of the remote device | 
+| CiscoNXOS.NxosFacts.interfaces_list | unknown | The list of interface names on the remote device | 
+| CiscoNXOS.NxosFacts.kickstart | string | The software version used to boot the system | 
+| CiscoNXOS.NxosFacts.module | unknown | A hash of facts about the modules in a remote device | 
+| CiscoNXOS.NxosFacts.platform | string | The hardware platform reported by the remote device | 
+| CiscoNXOS.NxosFacts.power_supply_info | string | A hash of facts about the power supplies in the remote device | 
+| CiscoNXOS.NxosFacts.vlan_list | unknown | The list of VLAN IDs configured on the remote device | 
 
 
 #### Command Example
@@ -1244,7 +1244,7 @@ Gets facts about NX-OS switches
 ```json
 {
     "CiscoNXOS": {
-        "nxosFacts": {
+        "NxosFacts": {
             "discovered_interpreter_python": "/usr/local/bin/python",
             "host": "192.168.1.19",
             "net__hostname": "192.168.1.19",
@@ -1491,7 +1491,7 @@ Manage features in NX-OS switches.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosFeature.commands | unknown | The set of commands to be sent to the remote device | 
+| CiscoNXOS.NxosFeature.commands | unknown | The set of commands to be sent to the remote device | 
 
 
 #### Command Example
@@ -1501,7 +1501,7 @@ Manage features in NX-OS switches.
 ```json
 {
     "CiscoNXOS": {
-        "nxosFeature": {
+        "NxosFeature": {
             "changed": true,
             "commands": [
                 "terminal dont-ask",
@@ -1549,9 +1549,9 @@ Trigger a graceful removal or insertion (GIR) of the switch.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosGir.final_system_mode | string | describe the last system mode | 
-| CiscoNXOS.nxosGir.updates | unknown | commands sent to the device | 
-| CiscoNXOS.nxosGir.changed | boolean | check to see if a change was made on the device | 
+| CiscoNXOS.NxosGir.final_system_mode | string | describe the last system mode | 
+| CiscoNXOS.NxosGir.updates | unknown | commands sent to the device | 
+| CiscoNXOS.NxosGir.changed | boolean | check to see if a change was made on the device | 
 
 
 #### Command Example
@@ -1561,7 +1561,7 @@ Trigger a graceful removal or insertion (GIR) of the switch.
 ```json
 {
     "CiscoNXOS": {
-        "nxosGir": {
+        "NxosGir": {
             "changed": true,
             "host": "192.168.1.19",
             "status": "CHANGED"
@@ -1599,11 +1599,11 @@ Create a maintenance-mode or normal-mode profile for GIR.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosGirProfileManagement.proposed | unknown | list of commands passed into module. | 
-| CiscoNXOS.nxosGirProfileManagement.existing | unknown | list of existing profile commands. | 
-| CiscoNXOS.nxosGirProfileManagement.end_state | unknown | list of profile entries after module execution. | 
-| CiscoNXOS.nxosGirProfileManagement.updates | unknown | commands sent to the device | 
-| CiscoNXOS.nxosGirProfileManagement.changed | boolean | check to see if a change was made on the device | 
+| CiscoNXOS.NxosGirProfileManagement.proposed | unknown | list of commands passed into module. | 
+| CiscoNXOS.NxosGirProfileManagement.existing | unknown | list of existing profile commands. | 
+| CiscoNXOS.NxosGirProfileManagement.end_state | unknown | list of profile entries after module execution. | 
+| CiscoNXOS.NxosGirProfileManagement.updates | unknown | commands sent to the device | 
+| CiscoNXOS.NxosGirProfileManagement.changed | boolean | check to see if a change was made on the device | 
 
 
 #### Command Example
@@ -1613,7 +1613,7 @@ Create a maintenance-mode or normal-mode profile for GIR.
 ```json
 {
     "CiscoNXOS": {
-        "nxosGirProfileManagement": {
+        "NxosGirProfileManagement": {
             "changed": true,
             "host": "192.168.1.19",
             "status": "CHANGED"
@@ -1656,7 +1656,7 @@ Manages HSRP configuration on NX-OS switches.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosHsrp.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosHsrp.commands | unknown | commands sent to the device | 
 
 
 
@@ -1684,7 +1684,7 @@ Manages IGMP global configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosIgmp.updates | unknown | commands sent to the device | 
+| CiscoNXOS.NxosIgmp.updates | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -1694,7 +1694,7 @@ Manages IGMP global configuration.
 ```json
 {
     "CiscoNXOS": {
-        "nxosIgmp": {
+        "NxosIgmp": {
             "changed": false,
             "host": "192.168.1.19",
             "status": "SUCCESS",
@@ -1750,11 +1750,11 @@ Manages IGMP interface configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosIgmpInterface.proposed | unknown | k/v pairs of parameters passed into module | 
-| CiscoNXOS.nxosIgmpInterface.existing | unknown | k/v pairs of existing igmp_interface configuration | 
-| CiscoNXOS.nxosIgmpInterface.end_state | unknown | k/v pairs of igmp interface configuration after module execution | 
-| CiscoNXOS.nxosIgmpInterface.updates | unknown | commands sent to the device | 
-| CiscoNXOS.nxosIgmpInterface.changed | boolean | check to see if a change was made on the device | 
+| CiscoNXOS.NxosIgmpInterface.proposed | unknown | k/v pairs of parameters passed into module | 
+| CiscoNXOS.NxosIgmpInterface.existing | unknown | k/v pairs of existing igmp_interface configuration | 
+| CiscoNXOS.NxosIgmpInterface.end_state | unknown | k/v pairs of igmp interface configuration after module execution | 
+| CiscoNXOS.NxosIgmpInterface.updates | unknown | commands sent to the device | 
+| CiscoNXOS.NxosIgmpInterface.changed | boolean | check to see if a change was made on the device | 
 
 
 
@@ -1784,7 +1784,7 @@ Manages IGMP snooping global configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosIgmpSnooping.commands | unknown | command sent to the device | 
+| CiscoNXOS.NxosIgmpSnooping.commands | unknown | command sent to the device | 
 
 
 #### Command Example
@@ -1794,7 +1794,7 @@ Manages IGMP snooping global configuration.
 ```json
 {
     "CiscoNXOS": {
-        "nxosIgmpSnooping": {
+        "NxosIgmpSnooping": {
             "changed": false,
             "commands": [],
             "host": "192.168.1.19",
@@ -1834,7 +1834,7 @@ Set boot options like boot, kickstart image and issu.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosInstallOs.install_state | unknown | Boot and install information. | 
+| CiscoNXOS.NxosInstallOs.install_state | unknown | Boot and install information. | 
 
 
 
@@ -1873,7 +1873,7 @@ Manages configuration of an OSPF interface instance.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosInterfaceOspf.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosInterfaceOspf.commands | unknown | commands sent to the device | 
 
 
 
@@ -1899,9 +1899,9 @@ Manages interface attributes of NX-OS Interfaces
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoNXOS.nxosInterfaces.after | unknown | The configuration as structured data after module completion. | 
-| CiscoNXOS.nxosInterfaces.commands | unknown | The set of commands pushed to the remote device. | 
+| CiscoNXOS.NxosInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoNXOS.NxosInterfaces.after | unknown | The configuration as structured data after module completion. | 
+| CiscoNXOS.NxosInterfaces.commands | unknown | The set of commands pushed to the remote device. | 
 
 #### Command Example
 ```!nxos-interfaces host="192.168.1.19" config="{{ [{'name': 'Ethernet1/1', 'description': 'Configured by Ansible', 'enabled': True}, {'name': 'Ethernet1/2', 'description': 'Configured by Ansible Network', 'enabled': False}] }}" state="merged" ```
@@ -1910,7 +1910,7 @@ Manages interface attributes of NX-OS Interfaces
 ```json
 {
     "CiscoNXOS": {
-        "nxosInterfaces": {
+        "NxosInterfaces": {
             "before": [
                 {
                     "description": "Configured by Ansible",
@@ -1984,9 +1984,9 @@ Manages Layer-2 Interfaces attributes of NX-OS Interfaces
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosL2Interfaces.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoNXOS.nxosL2Interfaces.after | unknown | The configuration as structured data after module completion. | 
-| CiscoNXOS.nxosL2Interfaces.commands | unknown | The set of commands pushed to the remote device. | 
+| CiscoNXOS.NxosL2Interfaces.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoNXOS.NxosL2Interfaces.after | unknown | The configuration as structured data after module completion. | 
+| CiscoNXOS.NxosL2Interfaces.commands | unknown | The set of commands pushed to the remote device. | 
 
 #### Command Example
 ```!nxos-l2-interfaces host="192.168.1.19" config="{{ [{'name': 'Ethernet1/1', 'trunk': {'native_vlan': 10, 'allowed_vlans': '2,4,15'}}, {'name': 'Ethernet1/2', 'access': {'vlan': 30}}] }}" state="merged" ```
@@ -1995,7 +1995,7 @@ Manages Layer-2 Interfaces attributes of NX-OS Interfaces
 ```json
 {
     "CiscoNXOS": {
-        "nxosL2Interfaces": {
+        "NxosL2Interfaces": {
             "before": [
                 {
                     "name": "Ethernet1/1",
@@ -2080,9 +2080,9 @@ Manages Layer-3 Interfaces attributes of NX-OS Interfaces
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosL3Interfaces.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoNXOS.nxosL3Interfaces.after | unknown | The configuration as structured data after module completion. | 
-| CiscoNXOS.nxosL3Interfaces.commands | unknown | The set of commands pushed to the remote device. | 
+| CiscoNXOS.NxosL3Interfaces.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoNXOS.NxosL3Interfaces.after | unknown | The configuration as structured data after module completion. | 
+| CiscoNXOS.NxosL3Interfaces.commands | unknown | The set of commands pushed to the remote device. | 
 
 
 
@@ -2108,9 +2108,9 @@ Manage Global Link Aggregation Control Protocol (LACP) on Cisco NX-OS devices.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosLacp.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoNXOS.nxosLacp.after | unknown | The configuration as structured data after module completion. | 
-| CiscoNXOS.nxosLacp.commands | unknown | The set of commands pushed to the remote device. | 
+| CiscoNXOS.NxosLacp.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoNXOS.NxosLacp.after | unknown | The configuration as structured data after module completion. | 
+| CiscoNXOS.NxosLacp.commands | unknown | The set of commands pushed to the remote device. | 
 
 
 #### Command Example
@@ -2120,7 +2120,7 @@ Manage Global Link Aggregation Control Protocol (LACP) on Cisco NX-OS devices.
 ```json
 {
     "CiscoNXOS": {
-        "nxosLacp": {
+        "NxosLacp": {
             "after": {
                 "system": {
                     "mac": {
@@ -2181,9 +2181,9 @@ Manage Link Aggregation Control Protocol (LACP) attributes of interfaces on Cisc
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosLacpInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoNXOS.nxosLacpInterfaces.after | unknown | The configuration as structured data after module completion. | 
-| CiscoNXOS.nxosLacpInterfaces.commands | unknown | The set of commands pushed to the remote device. | 
+| CiscoNXOS.NxosLacpInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoNXOS.NxosLacpInterfaces.after | unknown | The configuration as structured data after module completion. | 
+| CiscoNXOS.NxosLacpInterfaces.commands | unknown | The set of commands pushed to the remote device. | 
 
 
 
@@ -2209,9 +2209,9 @@ Manages link aggregation groups of NX-OS Interfaces
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosLagInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoNXOS.nxosLagInterfaces.after | unknown | The configuration as structured data after module completion. | 
-| CiscoNXOS.nxosLagInterfaces.commands | unknown | The set of commands pushed to the remote device. | 
+| CiscoNXOS.NxosLagInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoNXOS.NxosLagInterfaces.after | unknown | The configuration as structured data after module completion. | 
+| CiscoNXOS.NxosLagInterfaces.commands | unknown | The set of commands pushed to the remote device. | 
 
 
 #### Command Example
@@ -2221,7 +2221,7 @@ Manages link aggregation groups of NX-OS Interfaces
 ```json
 {
     "CiscoNXOS": {
-        "nxosLagInterfaces": {
+        "NxosLagInterfaces": {
             "after": [
                 {
                     "members": [
@@ -2282,7 +2282,7 @@ Manage LLDP configuration on Cisco NXOS network devices.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosLldp.commands | unknown | The list of configuration mode commands to send to the device | 
+| CiscoNXOS.NxosLldp.commands | unknown | The list of configuration mode commands to send to the device | 
 
 
 #### Command Example
@@ -2292,7 +2292,7 @@ Manage LLDP configuration on Cisco NXOS network devices.
 ```json
 {
     "CiscoNXOS": {
-        "nxosLldp": {
+        "NxosLldp": {
             "changed": true,
             "commands": [
                 "terminal dont-ask",
@@ -2336,9 +2336,9 @@ Configure and manage Link Layer Discovery Protocol(LLDP) attributes on NX-OS pla
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosLldpGlobal.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoNXOS.nxosLldpGlobal.after | unknown | The configuration as structured data after module completion. | 
-| CiscoNXOS.nxosLldpGlobal.commands | unknown | The set of commands pushed to the remote device. | 
+| CiscoNXOS.NxosLldpGlobal.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoNXOS.NxosLldpGlobal.after | unknown | The configuration as structured data after module completion. | 
+| CiscoNXOS.NxosLldpGlobal.commands | unknown | The set of commands pushed to the remote device. | 
 
 
 #### Command Example
@@ -2348,7 +2348,7 @@ Configure and manage Link Layer Discovery Protocol(LLDP) attributes on NX-OS pla
 ```json
 {
     "CiscoNXOS": {
-        "nxosLldpGlobal": {
+        "NxosLldpGlobal": {
             "after": {
                 "holdtime": 100,
                 "timer": 35
@@ -2415,7 +2415,7 @@ Manage logging on network devices
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosLogging.commands | unknown | The list of configuration mode commands to send to the device | 
+| CiscoNXOS.NxosLogging.commands | unknown | The list of configuration mode commands to send to the device | 
 
 
 
@@ -2447,11 +2447,11 @@ Manages core NTP configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosNtp.proposed | unknown | k/v pairs of parameters passed into module | 
-| CiscoNXOS.nxosNtp.existing | unknown | k/v pairs of existing ntp server/peer | 
-| CiscoNXOS.nxosNtp.end_state | unknown | k/v pairs of ntp info after module execution | 
-| CiscoNXOS.nxosNtp.updates | unknown | command sent to the device | 
-| CiscoNXOS.nxosNtp.changed | boolean | check to see if a change was made on the device | 
+| CiscoNXOS.NxosNtp.proposed | unknown | k/v pairs of parameters passed into module | 
+| CiscoNXOS.NxosNtp.existing | unknown | k/v pairs of existing ntp server/peer | 
+| CiscoNXOS.NxosNtp.end_state | unknown | k/v pairs of ntp info after module execution | 
+| CiscoNXOS.NxosNtp.updates | unknown | command sent to the device | 
+| CiscoNXOS.NxosNtp.changed | boolean | check to see if a change was made on the device | 
 
 
 #### Command Example
@@ -2461,7 +2461,7 @@ Manages core NTP configuration.
 ```json
 {
     "CiscoNXOS": {
-        "nxosNtp": {
+        "NxosNtp": {
             "changed": true,
             "end_state": {
                 "address": "1.2.3.4",
@@ -2535,7 +2535,7 @@ Manages NTP authentication.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosNtpAuth.commands | unknown | command sent to the device | 
+| CiscoNXOS.NxosNtpAuth.commands | unknown | command sent to the device | 
 
 
 #### Command Example
@@ -2545,7 +2545,7 @@ Manages NTP authentication.
 ```json
 {
     "CiscoNXOS": {
-        "nxosNtpAuth": {
+        "NxosNtpAuth": {
             "changed": true,
             "end_state": {
                 "auth_type": "encrypt",
@@ -2620,7 +2620,7 @@ Manages NTP options.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosNtpOptions.updates | unknown | command sent to the device | 
+| CiscoNXOS.NxosNtpOptions.updates | unknown | command sent to the device | 
 
 
 #### Command Example
@@ -2630,7 +2630,7 @@ Manages NTP options.
 ```json
 {
     "CiscoNXOS": {
-        "nxosNtpOptions": {
+        "NxosNtpOptions": {
             "changed": true,
             "commands": [
                 "ntp master",
@@ -2689,7 +2689,7 @@ Manage NXAPI configuration on an NXOS device.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosNxapi.updates | unknown | Returns the list of commands that need to be pushed into the remote device to satisfy the arguments | 
+| CiscoNXOS.NxosNxapi.updates | unknown | Returns the list of commands that need to be pushed into the remote device to satisfy the arguments | 
 
 
 #### Command Example
@@ -2699,7 +2699,7 @@ Manage NXAPI configuration on an NXOS device.
 ```json
 {
     "CiscoNXOS": {
-        "nxosNxapi": {
+        "NxosNxapi": {
             "changed": false,
             "commands": [],
             "host": "192.168.1.19",
@@ -2737,7 +2737,7 @@ Manages configuration of an ospf instance.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosOspf.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosOspf.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -2747,7 +2747,7 @@ Manages configuration of an ospf instance.
 ```json
 {
     "CiscoNXOS": {
-        "nxosOspf": {
+        "NxosOspf": {
             "changed": false,
             "commands": [],
             "host": "192.168.1.19",
@@ -2799,7 +2799,7 @@ Manages a VRF for an OSPF router.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosOspfVrf.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosOspfVrf.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -2809,7 +2809,7 @@ Manages a VRF for an OSPF router.
 ```json
 {
     "CiscoNXOS": {
-        "nxosOspfVrf": {
+        "NxosOspfVrf": {
             "changed": false,
             "commands": [],
             "host": "192.168.1.19",
@@ -2846,7 +2846,7 @@ Configures anycast gateway MAC of the switch.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosOverlayGlobal.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosOverlayGlobal.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -2856,7 +2856,7 @@ Configures anycast gateway MAC of the switch.
 ```json
 {
     "CiscoNXOS": {
-        "nxosOverlayGlobal": {
+        "NxosOverlayGlobal": {
             "changed": true,
             "commands": [
                 "fabric forwarding anycast-gateway-mac 000B.000B.000B"
@@ -2898,7 +2898,7 @@ Manages configuration of a PIM instance.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosPim.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosPim.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -2908,7 +2908,7 @@ Manages configuration of a PIM instance.
 ```json
 {
     "CiscoNXOS": {
-        "nxosPim": {
+        "NxosPim": {
             "changed": false,
             "commands": [],
             "host": "192.168.1.19",
@@ -2958,7 +2958,7 @@ Manages PIM interface configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosPimInterface.commands | unknown | command sent to the device | 
+| CiscoNXOS.NxosPimInterface.commands | unknown | command sent to the device | 
 
 
 
@@ -2988,7 +2988,7 @@ Manages configuration of an PIM static RP address instance.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosPimRpAddress.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosPimRpAddress.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -2998,7 +2998,7 @@ Manages configuration of an PIM static RP address instance.
 ```json
 {
     "CiscoNXOS": {
-        "nxosPimRpAddress": {
+        "NxosPimRpAddress": {
             "changed": false,
             "commands": [],
             "host": "192.168.1.19",
@@ -3039,11 +3039,11 @@ Tests reachability using ping from Nexus switch.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosPing.commands | unknown | Show the command sent | 
-| CiscoNXOS.nxosPing.rtt | unknown | Show RTT stats | 
-| CiscoNXOS.nxosPing.packets_rx | number | Packets successfully received | 
-| CiscoNXOS.nxosPing.packets_tx | number | Packets successfully transmitted | 
-| CiscoNXOS.nxosPing.packet_loss | string | Percentage of packets lost | 
+| CiscoNXOS.NxosPing.commands | unknown | Show the command sent | 
+| CiscoNXOS.NxosPing.rtt | unknown | Show RTT stats | 
+| CiscoNXOS.NxosPing.packets_rx | number | Packets successfully received | 
+| CiscoNXOS.NxosPing.packets_tx | number | Packets successfully transmitted | 
+| CiscoNXOS.NxosPing.packet_loss | string | Percentage of packets lost | 
 
 
 #### Command Example
@@ -3053,7 +3053,7 @@ Tests reachability using ping from Nexus switch.
 ```json
 {
     "CiscoNXOS": {
-        "nxosPing": {
+        "NxosPing": {
             "changed": false,
             "commands": [
                 "ping 8.8.8.8 count 5 vrf management"
@@ -3109,7 +3109,7 @@ Reboot a network device.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosReboot.rebooted | boolean | Whether the device was instructed to reboot. | 
+| CiscoNXOS.NxosReboot.rebooted | boolean | Whether the device was instructed to reboot. | 
 
 
 #### Command Example
@@ -3119,7 +3119,7 @@ Reboot a network device.
 ```json
 {
     "CiscoNXOS": {
-        "nxosReboot": {
+        "NxosReboot": {
             "changed": true,
             "host": "192.168.1.19",
             "status": "CHANGED"
@@ -3156,8 +3156,8 @@ Set a checkpoint or rollback to a checkpoint.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosRollback.filename | string | The filename of the checkpoint/rollback file. | 
-| CiscoNXOS.nxosRollback.status | string | Which operation took place and whether it was successful. | 
+| CiscoNXOS.NxosRollback.filename | string | The filename of the checkpoint/rollback file. | 
+| CiscoNXOS.NxosRollback.status | string | Which operation took place and whether it was successful. | 
 
 
 #### Command Example
@@ -3167,7 +3167,7 @@ Set a checkpoint or rollback to a checkpoint.
 ```json
 {
     "CiscoNXOS": {
-        "nxosRollback": {
+        "NxosRollback": {
             "changed": true,
             "filename": "backup.cfg",
             "host": "192.168.1.19",
@@ -3208,7 +3208,7 @@ Install patch or feature rpms on Cisco NX-OS devices.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosRpm.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosRpm.commands | unknown | commands sent to the device | 
 
 
 
@@ -3234,7 +3234,7 @@ Perform SMUs on Cisco NX-OS devices.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosSmu.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosSmu.commands | unknown | commands sent to the device | 
 
 
 
@@ -3272,7 +3272,7 @@ Manage snapshots of the running states of selected features.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosSnapshot.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosSnapshot.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -3282,7 +3282,7 @@ Manage snapshots of the running states of selected features.
 ```json
 {
     "CiscoNXOS": {
-        "nxosSnapshot": {
+        "NxosSnapshot": {
             "changed": false,
             "commands": [],
             "host": "192.168.1.19",
@@ -3323,7 +3323,7 @@ Manages SNMP community configs.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosSnmpCommunity.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosSnmpCommunity.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -3333,7 +3333,7 @@ Manages SNMP community configs.
 ```json
 {
     "CiscoNXOS": {
-        "nxosSnmpCommunity": {
+        "NxosSnmpCommunity": {
             "changed": false,
             "commands": [],
             "host": "192.168.1.19",
@@ -3371,7 +3371,7 @@ Manages SNMP contact info.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosSnmpContact.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosSnmpContact.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -3381,7 +3381,7 @@ Manages SNMP contact info.
 ```json
 {
     "CiscoNXOS": {
-        "nxosSnmpContact": {
+        "NxosSnmpContact": {
             "changed": true,
             "commands": [
                 "snmp-server contact Test"
@@ -3431,7 +3431,7 @@ Manages SNMP host configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosSnmpHost.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosSnmpHost.commands | unknown | commands sent to the device | 
 
 #### Command Example
 ```!nxos-snmp-host host="192.168.1.19" snmp_host="1.1.1.1" community="TESTING" state="present" ```
@@ -3440,7 +3440,7 @@ Manages SNMP host configuration.
 ```json
 {
     "CiscoNXOS": {
-        "nxosSnmpHost": {
+        "NxosSnmpHost": {
             "changed": true,
             "commands": [
                 "snmp-server host 1.1.1.1 trap version 1 TESTING  udp-port 162"
@@ -3483,7 +3483,7 @@ Manages SNMP location information.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosSnmpLocation.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosSnmpLocation.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -3493,7 +3493,7 @@ Manages SNMP location information.
 ```json
 {
     "CiscoNXOS": {
-        "nxosSnmpLocation": {
+        "NxosSnmpLocation": {
             "changed": true,
             "commands": [
                 "snmp-server location Test"
@@ -3534,7 +3534,7 @@ Manages SNMP traps.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosSnmpTraps.commands | unknown | command sent to the device | 
+| CiscoNXOS.NxosSnmpTraps.commands | unknown | command sent to the device | 
 
 
 
@@ -3565,7 +3565,7 @@ Manages SNMP users for monitoring.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosSnmpUser.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosSnmpUser.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -3575,7 +3575,7 @@ Manages SNMP users for monitoring.
 ```json
 {
     "CiscoNXOS": {
-        "nxosSnmpUser": {
+        "NxosSnmpUser": {
             "changed": true,
             "commands": [
                 "snmp-server user ntc auth md5 ********"
@@ -3624,7 +3624,7 @@ Manages static route configuration
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosStaticRoute.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosStaticRoute.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -3634,7 +3634,7 @@ Manages static route configuration
 ```json
 {
     "CiscoNXOS": {
-        "nxosStaticRoute": {
+        "NxosStaticRoute": {
             "changed": false,
             "commands": [],
             "host": "192.168.1.19",
@@ -3677,7 +3677,7 @@ Manage the system attributes on Cisco NXOS devices
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosSystem.commands | unknown | The list of configuration mode commands to send to the device | 
+| CiscoNXOS.NxosSystem.commands | unknown | The list of configuration mode commands to send to the device | 
 
 
 #### Command Example
@@ -3687,7 +3687,7 @@ Manage the system attributes on Cisco NXOS devices
 ```json
 {
     "CiscoNXOS": {
-        "nxosSystem": {
+        "NxosSystem": {
             "changed": true,
             "commands": [
                 "hostname nxos01"
@@ -3729,9 +3729,9 @@ Telemetry Monitoring Service (TMS) configuration
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosTelemetry.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoNXOS.nxosTelemetry.after | unknown | The configuration as structured data after module completion. | 
-| CiscoNXOS.nxosTelemetry.commands | unknown | The set of commands pushed to the remote device. | 
+| CiscoNXOS.NxosTelemetry.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoNXOS.NxosTelemetry.after | unknown | The configuration as structured data after module completion. | 
+| CiscoNXOS.NxosTelemetry.commands | unknown | The set of commands pushed to the remote device. | 
 
 
 #### Command Example
@@ -3741,7 +3741,7 @@ Telemetry Monitoring Service (TMS) configuration
 ```json
 {
     "CiscoNXOS": {
-        "nxosTelemetry": {
+        "NxosTelemetry": {
             "before": {},
             "changed": false,
             "commands": [],
@@ -3783,11 +3783,11 @@ Manages UDLD global configuration params.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosUdld.proposed | unknown | k/v pairs of parameters passed into module | 
-| CiscoNXOS.nxosUdld.existing | unknown | k/v pairs of existing udld configuration | 
-| CiscoNXOS.nxosUdld.end_state | unknown | k/v pairs of udld configuration after module execution | 
-| CiscoNXOS.nxosUdld.updates | unknown | command sent to the device | 
-| CiscoNXOS.nxosUdld.changed | boolean | check to see if a change was made on the device | 
+| CiscoNXOS.NxosUdld.proposed | unknown | k/v pairs of parameters passed into module | 
+| CiscoNXOS.NxosUdld.existing | unknown | k/v pairs of existing udld configuration | 
+| CiscoNXOS.NxosUdld.end_state | unknown | k/v pairs of udld configuration after module execution | 
+| CiscoNXOS.NxosUdld.updates | unknown | command sent to the device | 
+| CiscoNXOS.NxosUdld.changed | boolean | check to see if a change was made on the device | 
 
 
 
@@ -3814,11 +3814,11 @@ Manages UDLD interface configuration params.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosUdldInterface.proposed | unknown | k/v pairs of parameters passed into module | 
-| CiscoNXOS.nxosUdldInterface.existing | unknown | k/v pairs of existing configuration | 
-| CiscoNXOS.nxosUdldInterface.end_state | unknown | k/v pairs of configuration after module execution | 
-| CiscoNXOS.nxosUdldInterface.updates | unknown | command sent to the device | 
-| CiscoNXOS.nxosUdldInterface.changed | boolean | check to see if a change was made on the device | 
+| CiscoNXOS.NxosUdldInterface.proposed | unknown | k/v pairs of parameters passed into module | 
+| CiscoNXOS.NxosUdldInterface.existing | unknown | k/v pairs of existing configuration | 
+| CiscoNXOS.NxosUdldInterface.end_state | unknown | k/v pairs of configuration after module execution | 
+| CiscoNXOS.NxosUdldInterface.updates | unknown | command sent to the device | 
+| CiscoNXOS.NxosUdldInterface.changed | boolean | check to see if a change was made on the device | 
 
 
 
@@ -3850,10 +3850,10 @@ Manage the collection of local users on Nexus devices
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosUser.commands | unknown | The list of configuration mode commands to send to the device | 
-| CiscoNXOS.nxosUser.start | string | The time the job started | 
-| CiscoNXOS.nxosUser.end | string | The time the job ended | 
-| CiscoNXOS.nxosUser.delta | string | The time elapsed to perform all operations | 
+| CiscoNXOS.NxosUser.commands | unknown | The list of configuration mode commands to send to the device | 
+| CiscoNXOS.NxosUser.start | string | The time the job started | 
+| CiscoNXOS.NxosUser.end | string | The time the job ended | 
+| CiscoNXOS.NxosUser.delta | string | The time elapsed to perform all operations | 
 
 
 #### Command Example
@@ -3863,7 +3863,7 @@ Manage the collection of local users on Nexus devices
 ```json
 {
     "CiscoNXOS": {
-        "nxosUser": {
+        "NxosUser": {
             "changed": true,
             "commands": [
                 "username ansible",
@@ -3907,9 +3907,9 @@ Create VLAN and manage VLAN configurations on NX-OS Interfaces
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosVlans.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoNXOS.nxosVlans.after | unknown | The configuration as structured data after module completion. | 
-| CiscoNXOS.nxosVlans.commands | unknown | The set of commands pushed to the remote device. | 
+| CiscoNXOS.NxosVlans.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoNXOS.NxosVlans.after | unknown | The configuration as structured data after module completion. | 
+| CiscoNXOS.NxosVlans.commands | unknown | The set of commands pushed to the remote device. | 
 
 
 
@@ -3946,7 +3946,7 @@ Manages global VPC configuration
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosVpc.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosVpc.commands | unknown | commands sent to the device | 
 
 
 
@@ -3974,7 +3974,7 @@ Manages interface VPC configuration
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosVpcInterface.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosVpcInterface.commands | unknown | commands sent to the device | 
 
 
 
@@ -4009,7 +4009,7 @@ Manages global VRF configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosVrf.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosVrf.commands | unknown | commands sent to the device | 
 
 
 #### Command Example
@@ -4019,7 +4019,7 @@ Manages global VRF configuration.
 ```json
 {
     "CiscoNXOS": {
-        "nxosVrf": {
+        "NxosVrf": {
             "changed": true,
             "commands": [
                 "vrf context ntc",
@@ -4068,7 +4068,7 @@ Manages VRF AF.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosVrfAf.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosVrfAf.commands | unknown | commands sent to the device | 
 
 
 
@@ -4095,7 +4095,7 @@ Manages interface specific VRF configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosVrfInterface.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosVrfInterface.commands | unknown | commands sent to the device | 
 
 
 
@@ -4128,7 +4128,7 @@ Manages VRRP configuration on NX-OS switches.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosVrrp.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosVrrp.commands | unknown | commands sent to the device | 
 
 
 
@@ -4153,11 +4153,11 @@ Manages VTP domain configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosVtpDomain.proposed | unknown | k/v pairs of parameters passed into module | 
-| CiscoNXOS.nxosVtpDomain.existing | unknown | k/v pairs of existing vtp domain | 
-| CiscoNXOS.nxosVtpDomain.end_state | unknown | k/v pairs of vtp domain after module execution | 
-| CiscoNXOS.nxosVtpDomain.updates | unknown | command sent to the device | 
-| CiscoNXOS.nxosVtpDomain.changed | boolean | check to see if a change was made on the device | 
+| CiscoNXOS.NxosVtpDomain.proposed | unknown | k/v pairs of parameters passed into module | 
+| CiscoNXOS.NxosVtpDomain.existing | unknown | k/v pairs of existing vtp domain | 
+| CiscoNXOS.NxosVtpDomain.end_state | unknown | k/v pairs of vtp domain after module execution | 
+| CiscoNXOS.NxosVtpDomain.updates | unknown | command sent to the device | 
+| CiscoNXOS.NxosVtpDomain.changed | boolean | check to see if a change was made on the device | 
 
 
 
@@ -4183,11 +4183,11 @@ Manages VTP password configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosVtpPassword.proposed | unknown | k/v pairs of parameters passed into module | 
-| CiscoNXOS.nxosVtpPassword.existing | unknown | k/v pairs of existing vtp | 
-| CiscoNXOS.nxosVtpPassword.end_state | unknown | k/v pairs of vtp after module execution | 
-| CiscoNXOS.nxosVtpPassword.updates | unknown | command sent to the device | 
-| CiscoNXOS.nxosVtpPassword.changed | boolean | check to see if a change was made on the device | 
+| CiscoNXOS.NxosVtpPassword.proposed | unknown | k/v pairs of parameters passed into module | 
+| CiscoNXOS.NxosVtpPassword.existing | unknown | k/v pairs of existing vtp | 
+| CiscoNXOS.NxosVtpPassword.end_state | unknown | k/v pairs of vtp after module execution | 
+| CiscoNXOS.NxosVtpPassword.updates | unknown | command sent to the device | 
+| CiscoNXOS.NxosVtpPassword.changed | boolean | check to see if a change was made on the device | 
 
 
 
@@ -4212,11 +4212,11 @@ Manages VTP version configuration.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosVtpVersion.proposed | unknown | k/v pairs of parameters passed into module | 
-| CiscoNXOS.nxosVtpVersion.existing | unknown | k/v pairs of existing vtp | 
-| CiscoNXOS.nxosVtpVersion.end_state | unknown | k/v pairs of vtp after module execution | 
-| CiscoNXOS.nxosVtpVersion.updates | unknown | command sent to the device | 
-| CiscoNXOS.nxosVtpVersion.changed | boolean | check to see if a change was made on the device | 
+| CiscoNXOS.NxosVtpVersion.proposed | unknown | k/v pairs of parameters passed into module | 
+| CiscoNXOS.NxosVtpVersion.existing | unknown | k/v pairs of existing vtp | 
+| CiscoNXOS.NxosVtpVersion.end_state | unknown | k/v pairs of vtp after module execution | 
+| CiscoNXOS.NxosVtpVersion.updates | unknown | command sent to the device | 
+| CiscoNXOS.NxosVtpVersion.changed | boolean | check to see if a change was made on the device | 
 
 
 
@@ -4251,7 +4251,7 @@ Manages VXLAN Network Virtualization Endpoint (NVE).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosVxlanVtep.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosVxlanVtep.commands | unknown | commands sent to the device | 
 
 
 
@@ -4284,6 +4284,6 @@ Creates a Virtual Network Identifier member (VNI)
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoNXOS.nxosVxlanVtepVni.commands | unknown | commands sent to the device | 
+| CiscoNXOS.NxosVxlanVtepVni.commands | unknown | commands sent to the device | 
 
 

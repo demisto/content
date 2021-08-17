@@ -76,7 +76,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosBanner.commands | unknown | The list of configuration mode commands to send to the device | 
+| CiscoIOS.IosBanner.commands | unknown | The list of configuration mode commands to send to the device | 
 
 
 #### Command Example
@@ -86,7 +86,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "CiscoIOS": {
-        "iosBanner": {
+        "IosBanner": {
             "changed": true,
             "commands": [
                 "banner login @\nthis is my login banner\n@"
@@ -130,7 +130,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosBgp.commands | unknown | The list of configuration mode commands to send to the device | 
+| CiscoIOS.IosBgp.commands | unknown | The list of configuration mode commands to send to the device | 
 
 
 #### Command Example
@@ -140,7 +140,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "CiscoIOS": {
-        "iosBgp": {
+        "IosBgp": {
             "changed": false,
             "commands": [],
             "host": "123.123.123.123",
@@ -182,9 +182,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosCommand.stdout | unknown | The set of responses from the commands | 
-| CiscoIOS.iosCommand.stdout_lines | unknown | The value of stdout split into a list | 
-| CiscoIOS.iosCommand.failed_conditions | unknown | The list of conditionals that have failed | 
+| CiscoIOS.IosCommand.stdout | unknown | The set of responses from the commands | 
+| CiscoIOS.IosCommand.stdout_lines | unknown | The value of stdout split into a list | 
+| CiscoIOS.IosCommand.failed_conditions | unknown | The list of conditionals that have failed | 
 
 
 #### Command Example
@@ -194,7 +194,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "CiscoIOS": {
-        "iosCommand": {
+        "IosCommand": {
             "changed": false,
             "host": "123.123.123.123",
             "status": "SUCCESS",
@@ -384,13 +384,13 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosConfig.updates | unknown | The set of commands that will be pushed to the remote device | 
-| CiscoIOS.iosConfig.commands | unknown | The set of commands that will be pushed to the remote device | 
-| CiscoIOS.iosConfig.backup_path | string | The full path to the backup file | 
-| CiscoIOS.iosConfig.filename | string | The name of the backup file | 
-| CiscoIOS.iosConfig.shortname | string | The full path to the backup file excluding the timestamp | 
-| CiscoIOS.iosConfig.date | string | The date extracted from the backup file name | 
-| CiscoIOS.iosConfig.time | string | The time extracted from the backup file name | 
+| CiscoIOS.IosConfig.updates | unknown | The set of commands that will be pushed to the remote device | 
+| CiscoIOS.IosConfig.commands | unknown | The set of commands that will be pushed to the remote device | 
+| CiscoIOS.IosConfig.backup_path | string | The full path to the backup file | 
+| CiscoIOS.IosConfig.filename | string | The name of the backup file | 
+| CiscoIOS.IosConfig.shortname | string | The full path to the backup file excluding the timestamp | 
+| CiscoIOS.IosConfig.date | string | The date extracted from the backup file name | 
+| CiscoIOS.IosConfig.time | string | The time extracted from the backup file name | 
 
 
 #### Command Example
@@ -400,7 +400,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "CiscoIOS": {
-        "iosConfig": {
+        "IosConfig": {
             "backup_path": "./backup/123.123.123.123_config.2021-07-11@09:08:02",
             "changed": true,
             "date": "2021-07-11",
@@ -447,27 +447,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosFacts.ansible_net_gather_subset | unknown | The list of fact subsets collected from the device | 
-| CiscoIOS.iosFacts.ansible_net_gather_network_resources | unknown | The list of fact for network resource subsets collected from the device | 
-| CiscoIOS.iosFacts.ansible_net_model | string | The model name returned from the device | 
-| CiscoIOS.iosFacts.ansible_net_serialnum | string | The serial number of the remote device | 
-| CiscoIOS.iosFacts.ansible_net_version | string | The operating system version running on the remote device | 
-| CiscoIOS.iosFacts.ansible_net_iostype | string | The operating system type \(IOS or IOS-XE\) running on the remote device | 
-| CiscoIOS.iosFacts.ansible_net_hostname | string | The configured hostname of the device | 
-| CiscoIOS.iosFacts.ansible_net_image | string | The image file the device is running | 
-| CiscoIOS.iosFacts.ansible_net_stacked_models | unknown | The model names of each device in the stack | 
-| CiscoIOS.iosFacts.ansible_net_stacked_serialnums | unknown | The serial numbers of each device in the stack | 
-| CiscoIOS.iosFacts.ansible_net_api | string | The name of the transport | 
-| CiscoIOS.iosFacts.ansible_net_python_version | string | The Python version Ansible controller is using | 
-| CiscoIOS.iosFacts.ansible_net_filesystems | unknown | All file system names available on the device | 
-| CiscoIOS.iosFacts.ansible_net_filesystems_info | unknown | A hash of all file systems containing info about each file system \(e.g. free and total space\) | 
-| CiscoIOS.iosFacts.ansible_net_memfree_mb | number | The available free memory on the remote device in Mb | 
-| CiscoIOS.iosFacts.ansible_net_memtotal_mb | number | The total memory on the remote device in Mb | 
-| CiscoIOS.iosFacts.ansible_net_config | string | The current active config from the device | 
-| CiscoIOS.iosFacts.ansible_net_all_ipv4_addresses | unknown | All IPv4 addresses configured on the device | 
-| CiscoIOS.iosFacts.ansible_net_all_ipv6_addresses | unknown | All IPv6 addresses configured on the device | 
-| CiscoIOS.iosFacts.ansible_net_interfaces | unknown | A hash of all interfaces running on the system | 
-| CiscoIOS.iosFacts.ansible_net_neighbors | unknown | The list of CDP and LLDP neighbors from the remote device. If both, CDP and LLDP neighbor data is present on one port, CDP is preferred. | 
+| CiscoIOS.IosFacts.ansible_net_gather_subset | unknown | The list of fact subsets collected from the device | 
+| CiscoIOS.IosFacts.ansible_net_gather_network_resources | unknown | The list of fact for network resource subsets collected from the device | 
+| CiscoIOS.IosFacts.ansible_net_model | string | The model name returned from the device | 
+| CiscoIOS.IosFacts.ansible_net_serialnum | string | The serial number of the remote device | 
+| CiscoIOS.IosFacts.ansible_net_version | string | The operating system version running on the remote device | 
+| CiscoIOS.IosFacts.ansible_net_iostype | string | The operating system type \(IOS or IOS-XE\) running on the remote device | 
+| CiscoIOS.IosFacts.ansible_net_hostname | string | The configured hostname of the device | 
+| CiscoIOS.IosFacts.ansible_net_image | string | The image file the device is running | 
+| CiscoIOS.IosFacts.ansible_net_stacked_models | unknown | The model names of each device in the stack | 
+| CiscoIOS.IosFacts.ansible_net_stacked_serialnums | unknown | The serial numbers of each device in the stack | 
+| CiscoIOS.IosFacts.ansible_net_api | string | The name of the transport | 
+| CiscoIOS.IosFacts.ansible_net_python_version | string | The Python version Ansible controller is using | 
+| CiscoIOS.IosFacts.ansible_net_filesystems | unknown | All file system names available on the device | 
+| CiscoIOS.IosFacts.ansible_net_filesystems_info | unknown | A hash of all file systems containing info about each file system \(e.g. free and total space\) | 
+| CiscoIOS.IosFacts.ansible_net_memfree_mb | number | The available free memory on the remote device in Mb | 
+| CiscoIOS.IosFacts.ansible_net_memtotal_mb | number | The total memory on the remote device in Mb | 
+| CiscoIOS.IosFacts.ansible_net_config | string | The current active config from the device | 
+| CiscoIOS.IosFacts.ansible_net_all_ipv4_addresses | unknown | All IPv4 addresses configured on the device | 
+| CiscoIOS.IosFacts.ansible_net_all_ipv6_addresses | unknown | All IPv6 addresses configured on the device | 
+| CiscoIOS.IosFacts.ansible_net_interfaces | unknown | A hash of all interfaces running on the system | 
+| CiscoIOS.IosFacts.ansible_net_neighbors | unknown | The list of CDP and LLDP neighbors from the remote device. If both, CDP and LLDP neighbor data is present on one port, CDP is preferred. | 
 
 
 #### Command Example
@@ -477,7 +477,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "CiscoIOS": {
-        "iosFacts": {
+        "IosFacts": {
             "discovered_interpreter_python": "/usr/local/bin/python",
             "host": "123.123.123.123",
             "net_all_ipv4_addresses": [
@@ -883,9 +883,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoIOS.iosInterfaces.after | unknown | The configuration as structured data after module completion. | 
-| CiscoIOS.iosInterfaces.commands | unknown | The set of commands pushed to the remote device | 
+| CiscoIOS.IosInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoIOS.IosInterfaces.after | unknown | The configuration as structured data after module completion. | 
+| CiscoIOS.IosInterfaces.commands | unknown | The set of commands pushed to the remote device | 
 
 
 #### Command Example
@@ -895,7 +895,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "CiscoIOS": {
-        "iosInterfaces": {
+        "IosInterfaces": {
             "before": [
                 {
                     "duplex": "auto",
@@ -994,9 +994,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosL2Interfaces.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoIOS.iosL2Interfaces.after | unknown | The configuration as structured data after module completion. | 
-| CiscoIOS.iosL2Interfaces.commands | unknown | The set of commands pushed to the remote device | 
+| CiscoIOS.IosL2Interfaces.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoIOS.IosL2Interfaces.after | unknown | The configuration as structured data after module completion. | 
+| CiscoIOS.IosL2Interfaces.commands | unknown | The set of commands pushed to the remote device | 
 
 
 
@@ -1022,9 +1022,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosL3Interfaces.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoIOS.iosL3Interfaces.after | unknown | The configuration as structured data after module completion. | 
-| CiscoIOS.iosL3Interfaces.commands | unknown | The set of commands pushed to the remote device | 
+| CiscoIOS.IosL3Interfaces.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoIOS.IosL3Interfaces.after | unknown | The configuration as structured data after module completion. | 
+| CiscoIOS.IosL3Interfaces.commands | unknown | The set of commands pushed to the remote device | 
 
 
 #### Command Example
@@ -1034,7 +1034,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "CiscoIOS": {
-        "iosL3Interfaces": {
+        "IosL3Interfaces": {
             "after": [
                 {
                     "ipv4": [
@@ -1186,9 +1186,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosLacp.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoIOS.iosLacp.after | unknown | The configuration as structured data after module completion. | 
-| CiscoIOS.iosLacp.commands | unknown | The set of commands pushed to the remote device. | 
+| CiscoIOS.IosLacp.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoIOS.IosLacp.after | unknown | The configuration as structured data after module completion. | 
+| CiscoIOS.IosLacp.commands | unknown | The set of commands pushed to the remote device. | 
 
 
 
@@ -1214,9 +1214,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosLacpInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoIOS.iosLacpInterfaces.after | unknown | The configuration as structured data after module completion. | 
-| CiscoIOS.iosLacpInterfaces.commands | unknown | The set of commands pushed to the remote device. | 
+| CiscoIOS.IosLacpInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoIOS.IosLacpInterfaces.after | unknown | The configuration as structured data after module completion. | 
+| CiscoIOS.IosLacpInterfaces.commands | unknown | The set of commands pushed to the remote device. | 
 
 
 
@@ -1242,9 +1242,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosLagInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoIOS.iosLagInterfaces.after | unknown | The configuration as structured data after module completion. | 
-| CiscoIOS.iosLagInterfaces.commands | unknown | The set of commands pushed to the remote device | 
+| CiscoIOS.IosLagInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoIOS.IosLagInterfaces.after | unknown | The configuration as structured data after module completion. | 
+| CiscoIOS.IosLagInterfaces.commands | unknown | The set of commands pushed to the remote device | 
 
 
 
@@ -1274,7 +1274,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosLinkagg.commands | unknown | The list of configuration mode commands to send to the device | 
+| CiscoIOS.IosLinkagg.commands | unknown | The list of configuration mode commands to send to the device | 
 
 
 
@@ -1299,7 +1299,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosLldp.commands | unknown | The list of configuration mode commands to send to the device | 
+| CiscoIOS.IosLldp.commands | unknown | The list of configuration mode commands to send to the device | 
 
 
 #### Command Example
@@ -1309,7 +1309,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "CiscoIOS": {
-        "iosLldp": {
+        "IosLldp": {
             "changed": false,
             "commands": [],
             "host": "123.123.123.123",
@@ -1348,9 +1348,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosLldpGlobal.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoIOS.iosLldpGlobal.after | unknown | The configuration as structured data after module completion. | 
-| CiscoIOS.iosLldpGlobal.commands | unknown | The set of commands pushed to the remote device | 
+| CiscoIOS.IosLldpGlobal.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoIOS.IosLldpGlobal.after | unknown | The configuration as structured data after module completion. | 
+| CiscoIOS.IosLldpGlobal.commands | unknown | The set of commands pushed to the remote device | 
 
 
 #### Command Example
@@ -1360,7 +1360,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "CiscoIOS": {
-        "iosLldpGlobal": {
+        "IosLldpGlobal": {
             "before": {
                 "enabled": true,
                 "holdtime": 10,
@@ -1410,9 +1410,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosLldpInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoIOS.iosLldpInterfaces.after | unknown | The configuration as structured data after module completion. | 
-| CiscoIOS.iosLldpInterfaces.commands | unknown | The set of commands pushed to the remote device. | 
+| CiscoIOS.IosLldpInterfaces.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoIOS.IosLldpInterfaces.after | unknown | The configuration as structured data after module completion. | 
+| CiscoIOS.IosLldpInterfaces.commands | unknown | The set of commands pushed to the remote device. | 
 
 
 #### Command Example
@@ -1422,7 +1422,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "CiscoIOS": {
-        "iosLldpInterfaces": {
+        "IosLldpInterfaces": {
             "before": [
                 {
                     "name": "GigabitEthernet0/0",
@@ -1514,7 +1514,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosLogging.commands | unknown | The list of configuration mode commands to send to the device | 
+| CiscoIOS.IosLogging.commands | unknown | The list of configuration mode commands to send to the device | 
 
 
 #### Command Example
@@ -1524,7 +1524,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "CiscoIOS": {
-        "iosLogging": {
+        "IosLogging": {
             "changed": false,
             "commands": [],
             "host": "123.123.123.123",
@@ -1569,7 +1569,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosNtp.commands | unknown | command sent to the device | 
+| CiscoIOS.IosNtp.commands | unknown | command sent to the device | 
 
 
 #### Command Example
@@ -1579,7 +1579,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "CiscoIOS": {
-        "iosNtp": {
+        "IosNtp": {
             "changed": true,
             "commands": [
                 "ntp source GigabitEthernet0/1"
@@ -1624,11 +1624,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosPing.commands | unknown | Show the command sent. | 
-| CiscoIOS.iosPing.packet_loss | string | Percentage of packets lost. | 
-| CiscoIOS.iosPing.packets_rx | number | Packets successfully received. | 
-| CiscoIOS.iosPing.packets_tx | number | Packets successfully transmitted. | 
-| CiscoIOS.iosPing.rtt | unknown | Show RTT stats. | 
+| CiscoIOS.IosPing.commands | unknown | Show the command sent. | 
+| CiscoIOS.IosPing.packet_loss | string | Percentage of packets lost. | 
+| CiscoIOS.IosPing.packets_rx | number | Packets successfully received. | 
+| CiscoIOS.IosPing.packets_tx | number | Packets successfully transmitted. | 
+| CiscoIOS.IosPing.rtt | unknown | Show RTT stats. | 
 
 
 
@@ -1663,7 +1663,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosStaticRoute.commands | unknown | The list of configuration mode commands to send to the device | 
+| CiscoIOS.IosStaticRoute.commands | unknown | The list of configuration mode commands to send to the device | 
 
 
 #### Command Example
@@ -1673,7 +1673,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "CiscoIOS": {
-        "iosStaticRoute": {
+        "IosStaticRoute": {
             "changed": false,
             "commands": [],
             "host": "123.123.123.123",
@@ -1717,7 +1717,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosSystem.commands | unknown | The list of configuration mode commands to send to the device | 
+| CiscoIOS.IosSystem.commands | unknown | The list of configuration mode commands to send to the device | 
 
 
 #### Command Example
@@ -1727,7 +1727,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "CiscoIOS": {
-        "iosSystem": {
+        "IosSystem": {
             "changed": true,
             "commands": [
                 "hostname ios01"
@@ -1779,7 +1779,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosUser.commands | unknown | The list of configuration mode commands to send to the device | 
+| CiscoIOS.IosUser.commands | unknown | The list of configuration mode commands to send to the device | 
 
 
 #### Command Example
@@ -1789,7 +1789,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "CiscoIOS": {
-        "iosUser": {
+        "IosUser": {
             "changed": true,
             "commands": [
                 "ip ssh pubkey-chain",
@@ -1839,9 +1839,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosVlans.before | unknown | The configuration as structured data prior to module invocation. | 
-| CiscoIOS.iosVlans.after | unknown | The configuration as structured data after module completion. | 
-| CiscoIOS.iosVlans.commands | unknown | The set of commands pushed to the remote device. | 
+| CiscoIOS.IosVlans.before | unknown | The configuration as structured data prior to module invocation. | 
+| CiscoIOS.IosVlans.after | unknown | The configuration as structured data after module completion. | 
+| CiscoIOS.IosVlans.commands | unknown | The set of commands pushed to the remote device. | 
 
 
 
@@ -1883,9 +1883,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.iosVrf.commands | unknown | The list of configuration mode commands to send to the device | 
-| CiscoIOS.iosVrf.start | string | The time the job started | 
-| CiscoIOS.iosVrf.end | string | The time the job ended | 
-| CiscoIOS.iosVrf.delta | string | The time elapsed to perform all operations | 
+| CiscoIOS.IosVrf.commands | unknown | The list of configuration mode commands to send to the device | 
+| CiscoIOS.IosVrf.start | string | The time the job started | 
+| CiscoIOS.IosVrf.end | string | The time the job ended | 
+| CiscoIOS.IosVrf.delta | string | The time elapsed to perform all operations | 
 
 

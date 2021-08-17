@@ -63,7 +63,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareAboutInfo.about_info | string | dict about VMware server | 
+| VMware.VmwareAboutInfo.about_info | string | dict about VMware server | 
 
 
 #### Command Example
@@ -73,7 +73,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareAboutInfo": [
+        "VmwareAboutInfo": [
             {
                 "about_info": {
                     "api_type": "VirtualCenter",
@@ -145,7 +145,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareCategory.category_results | unknown | dictionary of category metadata | 
+| VMware.VmwareCategory.category_results | unknown | dictionary of category metadata | 
 
 
 
@@ -170,7 +170,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareCategoryInfo.tag_category_info | unknown | metadata of tag categories | 
+| VMware.VmwareCategoryInfo.tag_category_info | unknown | metadata of tag categories | 
 
 
 
@@ -198,7 +198,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareCfgBackup.dest_file | string | The full path of where the file holding the ESXi configurations was stored | 
+| VMware.VmwareCfgBackup.dest_file | string | The full path of where the file holding the ESXi configurations was stored | 
 
 
 #### Command Example
@@ -208,7 +208,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareCfgBackup": [
+        "VmwareCfgBackup": [
             {
                 "changed": true,
                 "dest_file": "/tmp/configBundle-esxi01.tgz",
@@ -276,7 +276,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareCluster": [
+        "VmwareCluster": [
             {
                 "changed": false,
                 "result": null,
@@ -328,7 +328,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareClusterDrs": [
+        "VmwareClusterDrs": [
             {
                 "changed": false,
                 "result": null,
@@ -388,7 +388,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareClusterHa": [
+        "VmwareClusterHa": [
             {
                 "changed": false,
                 "result": null,
@@ -428,7 +428,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareClusterInfo.clusters | unknown | metadata about the available clusters | 
+| VMware.VmwareClusterInfo.clusters | unknown | metadata about the available clusters | 
 
 
 #### Command Example
@@ -438,7 +438,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareClusterInfo": [
+        "VmwareClusterInfo": [
             {
                 "changed": false,
                 "clusters": {
@@ -603,7 +603,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareContentDeployTemplate.vm_deploy_info | unknown | Virtual machine deployment message and vm_id | 
+| VMware.VmwareContentDeployTemplate.vm_deploy_info | unknown | Virtual machine deployment message and vm_id | 
 
 
 
@@ -629,8 +629,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareContentLibraryInfo.content_lib_details | unknown | list of content library metadata | 
-| VMware.vmwareContentLibraryInfo.content_libs | unknown | list of content libraries | 
+| VMware.VmwareContentLibraryInfo.content_lib_details | unknown | list of content library metadata | 
+| VMware.VmwareContentLibraryInfo.content_libs | unknown | list of content libraries | 
 
 
 
@@ -660,7 +660,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareContentLibraryManager.content_library_info | unknown | library creation success and library_id | 
+| VMware.VmwareContentLibraryManager.content_library_info | unknown | library creation success and library_id | 
 
 
 
@@ -695,7 +695,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareDatacenter": [
+        "VmwareDatacenter": [
             {
                 "changed": false,
                 "status": "SUCCESS"
@@ -734,7 +734,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareDatastoreCluster.result | string | information about datastore cluster operation | 
+| VMware.VmwareDatastoreCluster.result | string | information about datastore cluster operation | 
 
 
 #### Command Example
@@ -744,7 +744,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareDatastoreCluster": [
+        "VmwareDatastoreCluster": [
             {
                 "changed": true,
                 "result": "Datastore cluster 'Storage_Cluster' created successfully.",
@@ -786,7 +786,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareDatastoreInfo.datastores | unknown | metadata about the available datastores | 
+| VMware.VmwareDatastoreInfo.datastores | unknown | metadata about the available datastores | 
 
 
 #### Command Example
@@ -796,7 +796,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareDatastoreInfo": [
+        "VmwareDatastoreInfo": [
             {
                 "changed": false,
                 "datastores": [
@@ -863,7 +863,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareDatastoreMaintenancemode.results | unknown | Action taken for datastore | 
+| VMware.VmwareDatastoreMaintenancemode.results | unknown | Action taken for datastore | 
 
 
 #### Command Example
@@ -873,7 +873,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareDatastoreMaintenancemode": [
+        "VmwareDatastoreMaintenancemode": [
             {
                 "changed": true,
                 "datastore_status": {
@@ -925,7 +925,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareDnsConfig": [
+        "VmwareDnsConfig": [
             {
                 "changed": false,
                 "status": "SUCCESS"
@@ -965,7 +965,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareDrsGroup.drs_group_facts | unknown | Metadata about DRS group created | 
+| VMware.VmwareDrsGroup.drs_group_facts | unknown | Metadata about DRS group created | 
 
 
 #### Command Example
@@ -975,7 +975,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareDrsGroup": [
+        "VmwareDrsGroup": [
             {
                 "changed": false,
                 "msg": "Updated vm group TEST_VM_01 successfully",
@@ -1032,7 +1032,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareDrsGroupInfo.drs_group_info | unknown | Metadata about DRS group from given cluster / datacenter | 
+| VMware.VmwareDrsGroupInfo.drs_group_info | unknown | Metadata about DRS group from given cluster / datacenter | 
 
 
 #### Command Example
@@ -1042,7 +1042,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareDrsGroupInfo": [
+        "VmwareDrsGroupInfo": [
             {
                 "changed": false,
                 "drs_group_info": {
@@ -1096,7 +1096,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareDrsRuleInfo.drs_rule_info | unknown | metadata about DRS rule from given cluster / datacenter | 
+| VMware.VmwareDrsRuleInfo.drs_rule_info | unknown | metadata about DRS rule from given cluster / datacenter | 
 
 
 #### Command Example
@@ -1106,7 +1106,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareDrsRuleInfo": [
+        "VmwareDrsRuleInfo": [
             {
                 "changed": false,
                 "drs_rule_info": {
@@ -1193,7 +1193,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareDvsPortgroup": [
+        "VmwareDvsPortgroup": [
             {
                 "changed": true,
                 "result": "None",
@@ -1233,7 +1233,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareDvsPortgroupFind.dvs_portgroups | unknown | basic details of portgroups found | 
+| VMware.VmwareDvsPortgroupFind.dvs_portgroups | unknown | basic details of portgroups found | 
 
 
 #### Command Example
@@ -1243,7 +1243,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareDvsPortgroupFind": [
+        "VmwareDvsPortgroupFind": [
             {
                 "changed": false,
                 "dvs_portgroups": [
@@ -1313,7 +1313,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareDvsPortgroupInfo.dvs_portgroup_info | unknown | metadata about DVS portgroup configuration | 
+| VMware.VmwareDvsPortgroupInfo.dvs_portgroup_info | unknown | metadata about DVS portgroup configuration | 
 
 
 #### Command Example
@@ -1323,7 +1323,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareDvsPortgroupInfo": [
+        "VmwareDvsPortgroupInfo": [
             {
                 "changed": false,
                 "dvs_portgroup_info": {
@@ -1502,7 +1502,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareDvswitch.result | string | information about performed operation | 
+| VMware.VmwareDvswitch.result | string | information about performed operation | 
 
 
 #### Command Example
@@ -1512,7 +1512,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareDvswitch": [
+        "VmwareDvswitch": [
             {
                 "changed": true,
                 "result": "DVS created",
@@ -1551,7 +1551,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareDvswitchLacp.result | string | information about performed operation | 
+| VMware.VmwareDvswitchLacp.result | string | information about performed operation | 
 
 
 #### Command Example
@@ -1561,7 +1561,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareDvswitchLacp": [
+        "VmwareDvswitchLacp": [
             {
                 "changed": true,
                 "dvswitch": "dvSwitch",
@@ -1609,8 +1609,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareDvswitchNioc.dvswitch_nioc_status | string | result of the changes | 
-| VMware.vmwareDvswitchNioc.resources_changed | unknown | list of resources which were changed | 
+| VMware.VmwareDvswitchNioc.dvswitch_nioc_status | string | result of the changes | 
+| VMware.VmwareDvswitchNioc.resources_changed | unknown | list of resources which were changed | 
 
 
 #### Command Example
@@ -1620,7 +1620,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareDvswitchNioc": [
+        "VmwareDvswitchNioc": [
             {
                 "changed": true,
                 "dvswitch_nioc_status": "Enabled NIOC with version version3",
@@ -1666,7 +1666,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareDvswitchPvlans.result | string | information about performed operation | 
+| VMware.VmwareDvswitchPvlans.result | string | information about performed operation | 
 
 
 
@@ -1698,7 +1698,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareDvswitchUplinkPg.result | string | information about performed operation | 
+| VMware.VmwareDvswitchUplinkPg.result | string | information about performed operation | 
 
 
 #### Command Example
@@ -1708,7 +1708,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareDvswitchUplinkPg": [
+        "VmwareDvswitchUplinkPg": [
             {
                 "adv_block_ports": true,
                 "adv_netflow": false,
@@ -1777,7 +1777,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareEvcMode.result | string | information about performed operation | 
+| VMware.VmwareEvcMode.result | string | information about performed operation | 
 
 
 #### Command Example
@@ -1787,7 +1787,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareEvcMode": [
+        "VmwareEvcMode": [
             {
                 "changed": false,
                 "msg": "EVC Mode is already set to 'intel-merom' on 'cluster'.",
@@ -1826,7 +1826,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareFolderInfo.folder_info | string | dict about folders | 
+| VMware.VmwareFolderInfo.folder_info | string | dict about folders | 
 
 
 #### Command Example
@@ -1836,7 +1836,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareFolderInfo": [
+        "VmwareFolderInfo": [
             {
                 "changed": false,
                 "flat_folder_info": [
@@ -1970,7 +1970,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuest.instance | unknown | metadata about the new virtual machine | 
+| VMware.VmwareGuest.instance | unknown | metadata about the new virtual machine | 
 
 
 
@@ -1999,7 +1999,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestBootInfo.vm_boot_info | unknown | metadata about boot order of virtual machine | 
+| VMware.VmwareGuestBootInfo.vm_boot_info | unknown | metadata about boot order of virtual machine | 
 
 
 
@@ -2035,7 +2035,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestBootManager.vm_boot_status | unknown | metadata about boot order of virtual machine | 
+| VMware.VmwareGuestBootManager.vm_boot_status | unknown | metadata about boot order of virtual machine | 
 
 
 
@@ -2061,7 +2061,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestCustomAttributeDefs.custom_attribute_defs | unknown | list of all current attribute definitions | 
+| VMware.VmwareGuestCustomAttributeDefs.custom_attribute_defs | unknown | list of all current attribute definitions | 
 
 
 #### Command Example
@@ -2071,7 +2071,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareGuestCustomAttributeDefs": [
+        "VmwareGuestCustomAttributeDefs": [
             {
                 "changed": true,
                 "custom_attribute_defs": [
@@ -2127,7 +2127,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestCustomAttributes.custom_attributes | unknown | metadata about the virtual machine attributes | 
+| VMware.VmwareGuestCustomAttributes.custom_attributes | unknown | metadata about the virtual machine attributes | 
 
 
 
@@ -2152,7 +2152,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestCustomizationInfo.custom_spec_info | unknown | metadata about the customization specification | 
+| VMware.VmwareGuestCustomizationInfo.custom_spec_info | unknown | metadata about the customization specification | 
 
 
 #### Command Example
@@ -2162,7 +2162,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareGuestCustomizationInfo": [
+        "VmwareGuestCustomizationInfo": [
             {
                 "changed": false,
                 "custom_spec_info": {},
@@ -2206,7 +2206,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestDisk.disk_status | unknown | metadata about the virtual machine's disks after managing them | 
+| VMware.VmwareGuestDisk.disk_status | unknown | metadata about the virtual machine's disks after managing them | 
 
 
 
@@ -2236,7 +2236,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestDiskInfo.guest_disk_info | unknown | metadata about the virtual machine's disks | 
+| VMware.VmwareGuestDiskInfo.guest_disk_info | unknown | metadata about the virtual machine's disks | 
 
 
 #### Command Example
@@ -2246,7 +2246,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareGuestDiskInfo": [
+        "VmwareGuestDiskInfo": [
             {
                 "changed": false,
                 "guest_disk_info": {
@@ -2327,7 +2327,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestFind.folders | unknown | List of folders for user specified virtual machine | 
+| VMware.VmwareGuestFind.folders | unknown | List of folders for user specified virtual machine | 
 
 
 #### Command Example
@@ -2337,7 +2337,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareGuestFind": [
+        "VmwareGuestFind": [
             {
                 "changed": false,
                 "folders": [
@@ -2387,7 +2387,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestInfo.instance | unknown | metadata about the virtual machine | 
+| VMware.VmwareGuestInfo.instance | unknown | metadata about the virtual machine | 
 
 
 #### Command Example
@@ -2397,7 +2397,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareGuestInfo": [
+        "VmwareGuestInfo": [
             {
                 "changed": false,
                 "instance": {
@@ -2537,7 +2537,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestMove.instance | unknown | metadata about the virtual machine | 
+| VMware.VmwareGuestMove.instance | unknown | metadata about the virtual machine | 
 
 
 #### Command Example
@@ -2547,7 +2547,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareGuestMove": [
+        "VmwareGuestMove": [
             {
                 "changed": false,
                 "instance": {
@@ -2690,7 +2690,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestNetwork.network_data | unknown | metadata about the virtual machine's network adapter after managing them | 
+| VMware.VmwareGuestNetwork.network_data | unknown | metadata about the virtual machine's network adapter after managing them | 
 
 
 
@@ -2758,7 +2758,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestScreenshot.screenshot_info | unknown | display the facts of captured virtual machine screenshot file | 
+| VMware.VmwareGuestScreenshot.screenshot_info | unknown | display the facts of captured virtual machine screenshot file | 
 
 
 
@@ -2791,7 +2791,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestSendkey.sendkey_info | unknown | display the keys and the number of keys sent to the virtual machine | 
+| VMware.VmwareGuestSendkey.sendkey_info | unknown | display the keys and the number of keys sent to the virtual machine | 
 
 
 
@@ -2830,7 +2830,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestSnapshot.snapshot_results | unknown | metadata about the virtual machine snapshots | 
+| VMware.VmwareGuestSnapshot.snapshot_results | unknown | metadata about the virtual machine snapshots | 
 
 
 #### Command Example
@@ -2840,7 +2840,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareGuestSnapshot": [
+        "VmwareGuestSnapshot": [
             {
                 "changed": true,
                 "snapshot_results": {
@@ -2912,7 +2912,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestSnapshotInfo.guest_snapshots | unknown | metadata about the snapshot information | 
+| VMware.VmwareGuestSnapshotInfo.guest_snapshots | unknown | metadata about the snapshot information | 
 
 
 
@@ -2971,7 +2971,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestToolsWait.instance | unknown | metadata about the virtual machine | 
+| VMware.VmwareGuestToolsWait.instance | unknown | metadata about the virtual machine | 
 
 
 
@@ -3007,7 +3007,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestVideo.video_status | unknown | metadata about the virtual machine's video card after managing them | 
+| VMware.VmwareGuestVideo.video_status | unknown | metadata about the virtual machine's video card after managing them | 
 
 
 
@@ -3041,9 +3041,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareGuestVnc.changed | boolean | If anything changed on VM's extraConfig. | 
-| VMware.vmwareGuestVnc.failed | boolean | If changes failed. | 
-| VMware.vmwareGuestVnc.instance | unknown | Dictionary describing the VM, including VNC info. | 
+| VMware.VmwareGuestVnc.changed | boolean | If anything changed on VM's extraConfig. | 
+| VMware.VmwareGuestVnc.failed | boolean | If changes failed. | 
+| VMware.VmwareGuestVnc.instance | unknown | Dictionary describing the VM, including VNC info. | 
 
 
 #### Command Example
@@ -3053,7 +3053,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareGuestVnc": [
+        "VmwareGuestVnc": [
             {
                 "changed": true,
                 "instance": {
@@ -3236,7 +3236,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHost.result | string | metadata about the new host system added | 
+| VMware.VmwareHost.result | string | metadata about the new host system added | 
 
 
 #### Command Example
@@ -3246,7 +3246,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHost": [
+        "VmwareHost": [
             {
                 "changed": false,
                 "result": "Host already connected to vCenter 'vcenter' in cluster 'cluster'",
@@ -3287,7 +3287,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostAcceptance.facts | unknown | dict with hostname as key and dict with acceptance level facts, error as value | 
+| VMware.VmwareHostAcceptance.facts | unknown | dict with hostname as key and dict with acceptance level facts, error as value | 
 
 
 #### Command Example
@@ -3297,7 +3297,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostAcceptance": [
+        "VmwareHostAcceptance": [
             {
                 "changed": true,
                 "facts": {
@@ -3348,7 +3348,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostActiveDirectory.results | unknown | metadata about host system's AD domain join state | 
+| VMware.VmwareHostActiveDirectory.results | unknown | metadata about host system's AD domain join state | 
 
 
 
@@ -3374,7 +3374,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostCapabilityInfo.hosts_capability_info | unknown | metadata about host's capability info | 
+| VMware.VmwareHostCapabilityInfo.hosts_capability_info | unknown | metadata about host's capability info | 
 
 
 #### Command Example
@@ -3384,7 +3384,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostCapabilityInfo": [
+        "VmwareHostCapabilityInfo": [
             {
                 "changed": false,
                 "hosts_capability_info": {
@@ -3658,7 +3658,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostConfigInfo.hosts_info | unknown | dict with hostname as key and dict with host config information | 
+| VMware.VmwareHostConfigInfo.hosts_info | unknown | dict with hostname as key and dict with host config information | 
 
 
 #### Command Example
@@ -3668,7 +3668,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostConfigInfo": [
+        "VmwareHostConfigInfo": [
             {
                 "changed": false,
                 "hosts_info": {
@@ -5971,7 +5971,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostConfigManager": [
+        "VmwareHostConfigManager": [
             {
                 "changed": false,
                 "msg": "All settings are already configured.",
@@ -6027,7 +6027,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostDatastore": [
+        "VmwareHostDatastore": [
             {
                 "changed": false,
                 "status": "SUCCESS"
@@ -6063,7 +6063,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostDnsInfo.hosts_dns_info | unknown | metadata about DNS config from given cluster / host system | 
+| VMware.VmwareHostDnsInfo.hosts_dns_info | unknown | metadata about DNS config from given cluster / host system | 
 
 
 #### Command Example
@@ -6073,7 +6073,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostDnsInfo": [
+        "VmwareHostDnsInfo": [
             {
                 "changed": false,
                 "hosts_dns_info": {
@@ -6131,7 +6131,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostFacts.ansible_facts | unknown | system info about the host machine | 
+| VMware.VmwareHostFacts.ansible_facts | unknown | system info about the host machine | 
 
 
 
@@ -6157,7 +6157,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostFeatureInfo.hosts_feature_info | unknown | metadata about host's feature capability information | 
+| VMware.VmwareHostFeatureInfo.hosts_feature_info | unknown | metadata about host's feature capability information | 
 
 
 #### Command Example
@@ -6167,7 +6167,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostFeatureInfo": [
+        "VmwareHostFeatureInfo": [
             {
                 "changed": false,
                 "hosts_feature_info": {
@@ -6219,7 +6219,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostFirewallInfo.hosts_firewall_info | unknown | metadata about host's firewall configuration | 
+| VMware.VmwareHostFirewallInfo.hosts_firewall_info | unknown | metadata about host's firewall configuration | 
 
 
 #### Command Example
@@ -6229,7 +6229,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostFirewallInfo": [
+        "VmwareHostFirewallInfo": [
             {
                 "changed": false,
                 "hosts_firewall_info": {
@@ -6311,7 +6311,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostFirewallManager.rule_set_state | unknown | dict with hostname as key and dict with firewall rule set facts as value | 
+| VMware.VmwareHostFirewallManager.rule_set_state | unknown | dict with hostname as key and dict with firewall rule set facts as value | 
 
 
 #### Command Example
@@ -6321,7 +6321,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostFirewallManager": [
+        "VmwareHostFirewallManager": [
             {
                 "changed": true,
                 "rule_set_state": {
@@ -6395,7 +6395,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostHyperthreading.results | unknown | metadata about host system's Hyperthreading configuration | 
+| VMware.VmwareHostHyperthreading.results | unknown | metadata about host system's Hyperthreading configuration | 
 
 
 #### Command Example
@@ -6405,7 +6405,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostHyperthreading": [
+        "VmwareHostHyperthreading": [
             {
                 "changed": true,
                 "result": {
@@ -6457,7 +6457,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostIpv6.result | unknown | metadata about host system's IPv6 configuration | 
+| VMware.VmwareHostIpv6.result | unknown | metadata about host system's IPv6 configuration | 
 
 
 #### Command Example
@@ -6467,7 +6467,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostIpv6": [
+        "VmwareHostIpv6": [
             {
                 "changed": false,
                 "result": {
@@ -6514,7 +6514,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostKernelManager.results | unknown | dict with information on what was changed, by ESXi host in scope. | 
+| VMware.VmwareHostKernelManager.results | unknown | dict with information on what was changed, by ESXi host in scope. | 
 
 
 #### Command Example
@@ -6524,7 +6524,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostKernelManager": [
+        "VmwareHostKernelManager": [
             {
                 "changed": true,
                 "host_kernel_status": {
@@ -6576,7 +6576,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostLockdown.results | unknown | metadata about state of Host system lock down | 
+| VMware.VmwareHostLockdown.results | unknown | metadata about state of Host system lock down | 
 
 
 #### Command Example
@@ -6586,7 +6586,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostLockdown": [
+        "VmwareHostLockdown": [
             {
                 "changed": true,
                 "host_lockdown_state": {
@@ -6638,7 +6638,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostNtp.results | unknown | metadata about host system's NTP configuration | 
+| VMware.VmwareHostNtp.results | unknown | metadata about host system's NTP configuration | 
 
 
 #### Command Example
@@ -6648,7 +6648,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostNtp": [
+        "VmwareHostNtp": [
             {
                 "changed": false,
                 "host_ntp_status": {
@@ -6699,7 +6699,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostNtpInfo.hosts_ntp_info | unknown | dict with hostname as key and dict with NTP infos as value | 
+| VMware.VmwareHostNtpInfo.hosts_ntp_info | unknown | dict with hostname as key and dict with NTP infos as value | 
 
 
 #### Command Example
@@ -6709,7 +6709,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostNtpInfo": [
+        "VmwareHostNtpInfo": [
             {
                 "changed": false,
                 "hosts_ntp_info": {
@@ -6770,7 +6770,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostPackageInfo.hosts_package_info | unknown | dict with hostname as key and dict with package information as value | 
+| VMware.VmwareHostPackageInfo.hosts_package_info | unknown | dict with hostname as key and dict with package information as value | 
 
 
 #### Command Example
@@ -6780,7 +6780,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostPackageInfo": [
+        "VmwareHostPackageInfo": [
             {
                 "changed": false,
                 "hosts_package_info": {
@@ -6843,7 +6843,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostPowermgmtPolicy.result | unknown | metadata about host system's Power Management Policy | 
+| VMware.VmwareHostPowermgmtPolicy.result | unknown | metadata about host system's Power Management Policy | 
 
 
 #### Command Example
@@ -6853,7 +6853,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostPowermgmtPolicy": [
+        "VmwareHostPowermgmtPolicy": [
             {
                 "changed": true,
                 "result": {
@@ -6909,7 +6909,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostPowerstate.result | unknown | metadata about host system's state | 
+| VMware.VmwareHostPowerstate.result | unknown | metadata about host system's state | 
 
 
 
@@ -6936,7 +6936,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostScanhba.result | unknown | return confirmation of requested host and updated / refreshed storage system | 
+| VMware.VmwareHostScanhba.result | unknown | return confirmation of requested host and updated / refreshed storage system | 
 
 
 #### Command Example
@@ -6946,7 +6946,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostScanhba": [
+        "VmwareHostScanhba": [
             {
                 "changed": true,
                 "result": {
@@ -6993,7 +6993,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostServiceInfo.host_service_info | unknown | dict with hostname as key and dict with host service config information | 
+| VMware.VmwareHostServiceInfo.host_service_info | unknown | dict with hostname as key and dict with host service config information | 
 
 
 #### Command Example
@@ -7003,7 +7003,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostServiceInfo": [
+        "VmwareHostServiceInfo": [
             {
                 "changed": false,
                 "host_service_info": {
@@ -7077,7 +7077,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostServiceManager": [
+        "VmwareHostServiceManager": [
             {
                 "changed": true,
                 "host_service_status": {
@@ -7140,7 +7140,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostSnmp.results | unknown | metadata about host system's SNMP configuration | 
+| VMware.VmwareHostSnmp.results | unknown | metadata about host system's SNMP configuration | 
 
 
 
@@ -7166,7 +7166,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostSslInfo.host_ssl_info | unknown | dict with hostname as key and dict with SSL thumbprint related info | 
+| VMware.VmwareHostSslInfo.host_ssl_info | unknown | dict with hostname as key and dict with SSL thumbprint related info | 
 
 
 #### Command Example
@@ -7176,7 +7176,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostSslInfo": [
+        "VmwareHostSslInfo": [
             {
                 "changed": false,
                 "host_ssl_info": {
@@ -7225,7 +7225,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostVmhbaInfo.hosts_vmhbas_info | unknown | dict with hostname as key and dict with vmhbas information as value. | 
+| VMware.VmwareHostVmhbaInfo.hosts_vmhbas_info | unknown | dict with hostname as key and dict with vmhbas information as value. | 
 
 
 #### Command Example
@@ -7235,7 +7235,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostVmhbaInfo": [
+        "VmwareHostVmhbaInfo": [
             {
                 "changed": false,
                 "hosts_vmhbas_info": {
@@ -7303,7 +7303,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareHostVmnicInfo.hosts_vmnics_info | unknown | dict with hostname as key and dict with vmnics information as value. for \`num_vmnics\`, only NICs starting with vmnic are counted. NICs like vusb\* are not counted. details about vswitch and dvswitch was added in version 2.7. details about vmnics was added in version 2.8. | 
+| VMware.VmwareHostVmnicInfo.hosts_vmnics_info | unknown | dict with hostname as key and dict with vmnics information as value. for \`num_vmnics\`, only NICs starting with vmnic are counted. NICs like vusb\* are not counted. details about vswitch and dvswitch was added in version 2.7. details about vmnics was added in version 2.8. | 
 
 
 #### Command Example
@@ -7313,7 +7313,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareHostVmnicInfo": [
+        "VmwareHostVmnicInfo": [
             {
                 "changed": false,
                 "hosts_vmnics_info": {
@@ -7432,7 +7432,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareLocalRoleInfo.local_role_info | unknown | Info about role present on ESXi host | 
+| VMware.VmwareLocalRoleInfo.local_role_info | unknown | Info about role present on ESXi host | 
 
 
 #### Command Example
@@ -7442,7 +7442,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareLocalRoleInfo": [
+        "VmwareLocalRoleInfo": [
             {
                 "changed": false,
                 "local_role_info": [
@@ -7505,13 +7505,13 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareLocalRoleManager.role_name | string | Name of local role | 
-| VMware.vmwareLocalRoleManager.role_id | number | ESXi generated local role id | 
-| VMware.vmwareLocalRoleManager.privileges | unknown | List of privileges | 
-| VMware.vmwareLocalRoleManager.privileges_previous | unknown | List of privileges of role before the update | 
-| VMware.vmwareLocalRoleManager.local_role_name | string | Name of local role | 
-| VMware.vmwareLocalRoleManager.new_privileges | unknown | List of privileges | 
-| VMware.vmwareLocalRoleManager.old_privileges | unknown | List of privileges of role before the update | 
+| VMware.VmwareLocalRoleManager.role_name | string | Name of local role | 
+| VMware.VmwareLocalRoleManager.role_id | number | ESXi generated local role id | 
+| VMware.VmwareLocalRoleManager.privileges | unknown | List of privileges | 
+| VMware.VmwareLocalRoleManager.privileges_previous | unknown | List of privileges of role before the update | 
+| VMware.VmwareLocalRoleManager.local_role_name | string | Name of local role | 
+| VMware.VmwareLocalRoleManager.new_privileges | unknown | List of privileges | 
+| VMware.VmwareLocalRoleManager.old_privileges | unknown | List of privileges of role before the update | 
 
 
 #### Command Example
@@ -7521,7 +7521,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareLocalRoleManager": [
+        "VmwareLocalRoleManager": [
             {
                 "changed": true,
                 "result": {
@@ -7571,7 +7571,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareLocalUserInfo.local_user_info | unknown | metadata about all local users | 
+| VMware.VmwareLocalUserInfo.local_user_info | unknown | metadata about all local users | 
 
 
 
@@ -7627,9 +7627,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareMaintenancemode.hostsystem | string | Name of vim reference | 
-| VMware.vmwareMaintenancemode.hostname | string | Name of host in vCenter | 
-| VMware.vmwareMaintenancemode.status | string | Action taken | 
+| VMware.VmwareMaintenancemode.hostsystem | string | Name of vim reference | 
+| VMware.VmwareMaintenancemode.hostname | string | Name of host in vCenter | 
+| VMware.VmwareMaintenancemode.status | string | Action taken | 
 
 
 #### Command Example
@@ -7639,7 +7639,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareMaintenancemode": [
+        "VmwareMaintenancemode": [
             {
                 "changed": true,
                 "hostname": "esxi01",
@@ -7717,7 +7717,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareObjectRolePermission.changed | boolean | whether or not a change was made to the object's role | 
+| VMware.VmwareObjectRolePermission.changed | boolean | whether or not a change was made to the object's role | 
 
 
 
@@ -7750,7 +7750,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwarePortgroup.result | unknown | metadata about the portgroup | 
+| VMware.VmwarePortgroup.result | unknown | metadata about the portgroup | 
 
 
 #### Command Example
@@ -7760,7 +7760,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwarePortgroup": [
+        "VmwarePortgroup": [
             {
                 "changed": true,
                 "result": {
@@ -7828,7 +7828,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwarePortgroupInfo.hosts_portgroup_info | unknown | metadata about host's portgroup configuration | 
+| VMware.VmwarePortgroupInfo.hosts_portgroup_info | unknown | metadata about host's portgroup configuration | 
 
 
 
@@ -7864,7 +7864,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareResourcePool.instance | unknown | metadata about the new resource pool | 
+| VMware.VmwareResourcePool.instance | unknown | metadata about the new resource pool | 
 
 
 
@@ -7888,7 +7888,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareResourcePoolInfo.resource_pool_info | unknown | metadata about resource pool configuration | 
+| VMware.VmwareResourcePoolInfo.resource_pool_info | unknown | metadata about resource pool configuration | 
 
 
 #### Command Example
@@ -7898,7 +7898,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareResourcePoolInfo": [
+        "VmwareResourcePoolInfo": [
             {
                 "changed": false,
                 "resource_pool_info": [
@@ -7998,7 +7998,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareTag.results | unknown | dictionary of tag metadata | 
+| VMware.VmwareTag.results | unknown | dictionary of tag metadata | 
 
 
 
@@ -8023,7 +8023,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareTagInfo.results | unknown | dictionary of tag metadata | 
+| VMware.VmwareTagInfo.results | unknown | dictionary of tag metadata | 
 
 
 
@@ -8052,7 +8052,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareTagManager.tag_status | unknown | metadata about tags related to object configuration | 
+| VMware.VmwareTagManager.tag_status | unknown | metadata about tags related to object configuration | 
 
 
 
@@ -8079,8 +8079,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareTargetCanonicalInfo.canonical | string | metadata about SCSI Target device | 
-| VMware.vmwareTargetCanonicalInfo.scsi_tgt_info | unknown | metadata about all SCSI Target devices | 
+| VMware.VmwareTargetCanonicalInfo.canonical | string | metadata about SCSI Target device | 
+| VMware.VmwareTargetCanonicalInfo.scsi_tgt_info | unknown | metadata about all SCSI Target devices | 
 
 
 #### Command Example
@@ -8090,7 +8090,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareTargetCanonicalInfo": [
+        "VmwareTargetCanonicalInfo": [
             {
                 "canonical": "",
                 "changed": false,
@@ -8133,7 +8133,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareVcenterSettings.results | unknown | metadata about vCenter settings | 
+| VMware.VmwareVcenterSettings.results | unknown | metadata about vCenter settings | 
 
 
 
@@ -8161,7 +8161,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareVcenterStatistics.results | unknown | metadata about vCenter statistics settings | 
+| VMware.VmwareVcenterStatistics.results | unknown | metadata about vCenter statistics settings | 
 
 
 #### Command Example
@@ -8171,7 +8171,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareVcenterStatistics": [
+        "VmwareVcenterStatistics": [
             {
                 "changed": false,
                 "msg": "vCenter statistics already configured properly",
@@ -8276,7 +8276,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareVmInfo.virtual_machines | unknown | list of dictionary of virtual machines and their information | 
+| VMware.VmwareVmInfo.virtual_machines | unknown | list of dictionary of virtual machines and their information | 
 
 
 #### Command Example
@@ -8286,7 +8286,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareVmInfo": [
+        "VmwareVmInfo": [
             {
                 "changed": false,
                 "status": "SUCCESS",
@@ -8371,7 +8371,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareVmShell.results | unknown | metadata about the new process after completion with wait_for_process | 
+| VMware.VmwareVmShell.results | unknown | metadata about the new process after completion with wait_for_process | 
 
 
 
@@ -8395,7 +8395,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareVmStoragePolicyInfo.spbm_profiles | unknown | list of dictionary of SPBM info | 
+| VMware.VmwareVmStoragePolicyInfo.spbm_profiles | unknown | list of dictionary of SPBM info | 
 
 
 #### Command Example
@@ -8405,7 +8405,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareVmStoragePolicyInfo": [
+        "VmwareVmStoragePolicyInfo": [
             {
                 "changed": false,
                 "spbm_profiles": [
@@ -8543,7 +8543,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareVmVmDrsRule.result | unknown | metadata about DRS VM and VM rule | 
+| VMware.VmwareVmVmDrsRule.result | unknown | metadata about DRS VM and VM rule | 
 
 
 
@@ -8609,7 +8609,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareVmkernel.result | unknown | metadata about VMKernel name | 
+| VMware.VmwareVmkernel.result | unknown | metadata about VMKernel name | 
 
 
 
@@ -8635,7 +8635,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareVmkernelInfo.host_vmk_info | unknown | metadata about VMKernel present on given host system | 
+| VMware.VmwareVmkernelInfo.host_vmk_info | unknown | metadata about VMKernel present on given host system | 
 
 
 #### Command Example
@@ -8645,7 +8645,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareVmkernelInfo": [
+        "VmwareVmkernelInfo": [
             {
                 "changed": false,
                 "host_vmk_info": {
@@ -8747,7 +8747,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareVmotion.running_host | string | List the host the virtual machine is registered to | 
+| VMware.VmwareVmotion.running_host | string | List the host the virtual machine is registered to | 
 
 
 
@@ -8781,7 +8781,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareVsanCluster": [
+        "VmwareVsanCluster": [
             {
                 "changed": true,
                 "cluster_uuid": "525e42db-3df5-4184-b178-874f4ef18006",
@@ -8866,7 +8866,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareVswitch.result | string | information about performed operation | 
+| VMware.VmwareVswitch.result | string | information about performed operation | 
 
 
 #### Command Example
@@ -8876,7 +8876,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareVswitch": [
+        "VmwareVswitch": [
             {
                 "changed": false,
                 "result": "No change in vSwitch 'vswitch_name'",
@@ -8915,7 +8915,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vmwareVswitchInfo.hosts_vswitch_info | unknown | metadata about host's vswitch configuration | 
+| VMware.VmwareVswitchInfo.hosts_vswitch_info | unknown | metadata about host's vswitch configuration | 
 
 
 #### Command Example
@@ -8925,7 +8925,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vmwareVswitchInfo": [
+        "VmwareVswitchInfo": [
             {
                 "changed": false,
                 "hosts_vswitch_info": {
@@ -9031,7 +9031,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vcenterExtension.result | string | information about performed operation | 
+| VMware.VcenterExtension.result | string | information about performed operation | 
 
 
 
@@ -9055,7 +9055,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vcenterExtensionInfo.extension_info | unknown | List of extensions | 
+| VMware.VcenterExtensionInfo.extension_info | unknown | List of extensions | 
 
 
 #### Command Example
@@ -9065,7 +9065,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vcenterExtensionInfo": [
+        "VcenterExtensionInfo": [
             {
                 "changed": false,
                 "extension_info": [
@@ -9127,7 +9127,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vcenterFolder.result | unknown | The detail about the new folder | 
+| VMware.VcenterFolder.result | unknown | The detail about the new folder | 
 
 
 #### Command Example
@@ -9137,7 +9137,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "VMware": {
-        "vcenterFolder": [
+        "VcenterFolder": [
             {
                 "changed": false,
                 "result": {
@@ -9184,7 +9184,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.vcenterLicense.licenses | unknown | list of license keys after module executed | 
+| VMware.VcenterLicense.licenses | unknown | list of license keys after module executed | 
 
 
 

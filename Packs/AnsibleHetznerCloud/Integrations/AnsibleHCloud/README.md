@@ -65,7 +65,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudDatacenterInfo.hcloud_datacenter_info | unknown | The datacenter info as list
+| HCloud.HcloudDatacenterInfo.hcloud_datacenter_info | unknown | The datacenter info as list
 This module was called \`hcloud_datacenter_facts\` before Ansible 2.9, returning \`ansible_facts\` and \`hcloud_datacenter_facts\`. Note that the \`hcloud_datacenter_info\` module no longer returns \`ansible_facts\` and the value was renamed to \`hcloud_datacenter_info\`\! | 
 
 
@@ -76,7 +76,7 @@ This module was called \`hcloud_datacenter_facts\` before Ansible 2.9, returning
 ```json
 {
     "HCloud": {
-        "hcloudDatacenterInfo": [
+        "HcloudDatacenterInfo": [
             [
                 {
                     "description": "Nuremberg 1 DC 3",
@@ -143,7 +143,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudFloatingIpInfo.hcloud_floating_ip_info | unknown | The Floating ip infos as list | 
+| HCloud.HcloudFloatingIpInfo.hcloud_floating_ip_info | unknown | The Floating ip infos as list | 
 
 
 #### Command Example
@@ -153,7 +153,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudFloatingIpInfo": [
+        "HcloudFloatingIpInfo": [
             []
         ]
     }
@@ -188,7 +188,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudImageInfo.hcloud_image_info | unknown | The image infos as list | 
+| HCloud.HcloudImageInfo.hcloud_image_info | unknown | The image infos as list | 
 
 
 #### Command Example
@@ -198,7 +198,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudImageInfo": [
+        "HcloudImageInfo": [
             [
                 {
                     "description": "Debian 9",
@@ -251,7 +251,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudLocationInfo.hcloud_location_info | unknown | The location infos as list | 
+| HCloud.HcloudLocationInfo.hcloud_location_info | unknown | The location infos as list | 
 
 
 #### Command Example
@@ -261,7 +261,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudLocationInfo": [
+        "HcloudLocationInfo": [
             [
                 {
                     "city": "Falkenstein",
@@ -337,7 +337,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudNetwork.hcloud_network | unknown | The Network | 
+| HCloud.HcloudNetwork.hcloud_network | unknown | The Network | 
 
 
 #### Command Example
@@ -347,7 +347,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudNetwork": [
+        "HcloudNetwork": [
             {
                 "delete_protection": false,
                 "id": "1156447",
@@ -393,7 +393,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudNetworkInfo.hcloud_network_info | unknown | The network info as list | 
+| HCloud.HcloudNetworkInfo.hcloud_network_info | unknown | The network info as list | 
 
 
 #### Command Example
@@ -403,7 +403,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudNetworkInfo": [
+        "HcloudNetworkInfo": [
             [
                 {
                     "delete_protection": false,
@@ -458,7 +458,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudRdns.hcloud_rdns | unknown | The reverse DNS entry | 
+| HCloud.HcloudRdns.hcloud_rdns | unknown | The reverse DNS entry | 
 
 
 #### Command Example
@@ -468,7 +468,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudRdns": [
+        "HcloudRdns": [
             {
                 "dns_ptr": "example.com",
                 "floating_ip": null,
@@ -512,7 +512,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudRoute.hcloud_route | unknown | One Route of a Network | 
+| HCloud.HcloudRoute.hcloud_route | unknown | One Route of a Network | 
 
 
 #### Command Example
@@ -522,7 +522,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudRoute": [
+        "HcloudRoute": [
             {
                 "destination": "1.1.1.1/24",
                 "gateway": "1.1.1.1",
@@ -576,7 +576,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudServer.hcloud_server | unknown | The server instance | 
+| HCloud.HcloudServer.hcloud_server | unknown | The server instance | 
 
 
 #### Command Example
@@ -586,7 +586,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudServer": [
+        "HcloudServer": [
             {
                 "backup_window": "None",
                 "datacenter": "hel1-dc2",
@@ -649,7 +649,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudServerInfo.hcloud_server_info | unknown | The server infos as list | 
+| HCloud.HcloudServerInfo.hcloud_server_info | unknown | The server infos as list | 
 
 
 #### Command Example
@@ -659,7 +659,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudServerInfo": [
+        "HcloudServerInfo": [
             [
                 {
                     "backup_window": "None",
@@ -727,7 +727,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudServerNetwork.hcloud_server_network | unknown | The relationship between a server and a network | 
+| HCloud.HcloudServerNetwork.hcloud_server_network | unknown | The relationship between a server and a network | 
 
 
 #### Command Example
@@ -737,7 +737,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudServerNetwork": [
+        "HcloudServerNetwork": [
             {
                 "alias_ips": [],
                 "ip": "10.0.0.2",
@@ -779,7 +779,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudServerTypeInfo.hcloud_server_type_info | unknown | The server type infos as list | 
+| HCloud.HcloudServerTypeInfo.hcloud_server_type_info | unknown | The server type infos as list | 
 
 
 #### Command Example
@@ -789,7 +789,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudServerTypeInfo": [
+        "HcloudServerTypeInfo": [
             [
                 {
                     "cores": 1,
@@ -846,7 +846,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudSshKey.hcloud_ssh_key | unknown | The ssh_key instance | 
+| HCloud.HcloudSshKey.hcloud_ssh_key | unknown | The ssh_key instance | 
 
 
 #### Command Example
@@ -856,7 +856,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudSshKey": [
+        "HcloudSshKey": [
             {
                 "fingerprint": "11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:11",
                 "id": "3964657",
@@ -903,7 +903,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudSshKeyInfo.hcloud_ssh_key_info | unknown | The ssh key instances | 
+| HCloud.HcloudSshKeyInfo.hcloud_ssh_key_info | unknown | The ssh key instances | 
 
 
 #### Command Example
@@ -913,7 +913,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudSshKeyInfo": [
+        "HcloudSshKeyInfo": [
             [
                 {
                     "fingerprint": "11:11:11:11:11:11:11:12:11:11:11:11:11:11:11:11",
@@ -963,7 +963,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudSubnetwork.hcloud_subnetwork | unknown | One Subnet of a Network | 
+| HCloud.HcloudSubnetwork.hcloud_subnetwork | unknown | One Subnet of a Network | 
 
 
 #### Command Example
@@ -973,7 +973,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudSubnetwork": [
+        "HcloudSubnetwork": [
             {
                 "gateway": "10.0.0.1",
                 "ip_range": "10.0.0.0/16",
@@ -1027,7 +1027,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudVolume.hcloud_volume | unknown | The block volume | 
+| HCloud.HcloudVolume.hcloud_volume | unknown | The block volume | 
 
 
 #### Command Example
@@ -1037,7 +1037,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudVolume": [
+        "HcloudVolume": [
             {
                 "delete_protection": false,
                 "id": "12052962",
@@ -1089,7 +1089,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HCloud.hcloudVolumeInfo.hcloud_volume_info | unknown | The volume infos as list | 
+| HCloud.HcloudVolumeInfo.hcloud_volume_info | unknown | The volume infos as list | 
 
 
 #### Command Example
@@ -1099,7 +1099,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "HCloud": {
-        "hcloudVolumeInfo": [
+        "HcloudVolumeInfo": [
             [
                 {
                     "delete_protection": false,

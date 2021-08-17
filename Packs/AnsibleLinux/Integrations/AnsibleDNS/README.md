@@ -92,14 +92,14 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DNS.nsupdate.changed | string | If module has modified record | 
-| DNS.nsupdate.record | string | DNS record | 
-| DNS.nsupdate.ttl | number | DNS record TTL | 
-| DNS.nsupdate.type | string | DNS record type | 
-| DNS.nsupdate.value | unknown | DNS record value\(s\) | 
-| DNS.nsupdate.zone | string | DNS record zone | 
-| DNS.nsupdate.dns_rc | number | dnspython return code | 
-| DNS.nsupdate.dns_rc_str | string | dnspython return code \(string representation\) | 
+| DNS.Nsupdate.changed | string | If module has modified record | 
+| DNS.Nsupdate.record | string | DNS record | 
+| DNS.Nsupdate.ttl | number | DNS record TTL | 
+| DNS.Nsupdate.type | string | DNS record type | 
+| DNS.Nsupdate.value | unknown | DNS record value\(s\) | 
+| DNS.Nsupdate.zone | string | DNS record zone | 
+| DNS.Nsupdate.dns_rc | number | dnspython return code | 
+| DNS.Nsupdate.dns_rc_str | string | dnspython return code \(string representation\) | 
 
 
 #### Command Example
@@ -109,7 +109,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "DNS": {
-        "nsupdate": [
+        "Nsupdate": [
             {
                 "changed": true,
                 "dns_rc": 0,

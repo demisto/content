@@ -79,7 +79,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmAutoscale.state | unknown | Current state of the resource. | 
+| Azure.AzureRmAutoscale.state | unknown | Current state of the resource. | 
 
 
 #### Command Example
@@ -89,7 +89,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmAutoscale": [
+        "AzureRmAutoscale": [
             {
                 "changed": true,
                 "enabled": true,
@@ -175,7 +175,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmAutoscaleInfo.autoscales | unknown | List of Azure Scale Settings dicts. | 
+| Azure.AzureRmAutoscaleInfo.autoscales | unknown | List of Azure Scale Settings dicts. | 
 
 
 #### Command Example
@@ -185,7 +185,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmAutoscaleInfo": [
+        "AzureRmAutoscaleInfo": [
             {
                 "autoscales": [
                     {
@@ -283,8 +283,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmAvailabilityset.state | unknown | Current state of the availability set. | 
-| Azure.azureRmAvailabilityset.changed | boolean | Whether or not the resource has changed | 
+| Azure.AzureRmAvailabilityset.state | unknown | Current state of the availability set. | 
+| Azure.AzureRmAvailabilityset.changed | boolean | Whether or not the resource has changed | 
 
 
 #### Command Example
@@ -294,7 +294,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmAvailabilityset": [
+        "AzureRmAvailabilityset": [
             {
                 "changed": true,
                 "state": {
@@ -350,7 +350,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmAvailabilitysetInfo.azure_availabilityset | unknown | List of availability sets dicts. | 
+| Azure.AzureRmAvailabilitysetInfo.azure_availabilityset | unknown | List of availability sets dicts. | 
 
 
 #### Command Example
@@ -360,7 +360,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmAvailabilitysetInfo": [
+        "AzureRmAvailabilitysetInfo": [
             {
                 "changed": false,
                 "info": {
@@ -414,7 +414,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmDeployment.deployment | unknown | Deployment details. | 
+| Azure.AzureRmDeployment.deployment | unknown | Deployment details. | 
 
 
 #### Command Example
@@ -424,7 +424,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmDeployment": [
+        "AzureRmDeployment": [
             {
                 "changed": true,
                 "deployment": {
@@ -526,7 +526,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmDeploymentInfo.deployments | unknown | A list of dictionaries containing facts for deployments. | 
+| Azure.AzureRmDeploymentInfo.deployments | unknown | A list of dictionaries containing facts for deployments. | 
 
 
 #### Command Example
@@ -536,7 +536,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmDeploymentInfo": [
+        "AzureRmDeploymentInfo": [
             {
                 "changed": false,
                 "deployments": [
@@ -770,7 +770,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmFunctionapp.state | unknown | Current state of the Azure Function App. | 
+| Azure.AzureRmFunctionapp.state | unknown | Current state of the Azure Function App. | 
 
 
 #### Command Example
@@ -780,7 +780,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmFunctionapp": [
+        "AzureRmFunctionapp": [
             {
                 "changed": false,
                 "state": {},
@@ -821,7 +821,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmFunctionappInfo.azure_functionapps | unknown | List of Azure Function Apps dicts. | 
+| Azure.AzureRmFunctionappInfo.azure_functionapps | unknown | List of Azure Function Apps dicts. | 
 
 
 #### Command Example
@@ -831,7 +831,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmFunctionappInfo": [
+        "AzureRmFunctionappInfo": [
             {
                 "changed": false,
                 "info": {
@@ -879,7 +879,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmGallery.id | string | Resource Id | 
+| Azure.AzureRmGallery.id | string | Resource Id | 
 
 
 #### Command Example
@@ -889,7 +889,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmGallery": [
+        "AzureRmGallery": [
             {
                 "changed": true,
                 "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/myGallery1283",
@@ -929,7 +929,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmGalleryInfo.galleries | unknown | A list of dict results where the key is the name of the gallery and the values are the info for that gallery. | 
+| Azure.AzureRmGalleryInfo.galleries | unknown | A list of dict results where the key is the name of the gallery and the values are the info for that gallery. | 
 
 
 #### Command Example
@@ -939,7 +939,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmGalleryInfo": [
+        "AzureRmGalleryInfo": [
             {
                 "changed": false,
                 "galleries": [
@@ -1011,7 +1011,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmGalleryimage.id | string | Resource Id | 
+| Azure.AzureRmGalleryimage.id | string | Resource Id | 
 
 
 #### Command Example
@@ -1021,7 +1021,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmGalleryimage": [
+        "AzureRmGalleryimage": [
             {
                 "changed": true,
                 "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/myGallery1283/images/myImage",
@@ -1062,7 +1062,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmGalleryimageInfo.images | unknown | A list of dict results where the key is the name of the image and the values are the info for that image. | 
+| Azure.AzureRmGalleryimageInfo.images | unknown | A list of dict results where the key is the name of the image and the values are the info for that image. | 
 
 
 #### Command Example
@@ -1072,7 +1072,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmGalleryimageInfo": [
+        "AzureRmGalleryimageInfo": [
             {
                 "changed": false,
                 "images": [
@@ -1144,7 +1144,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmGalleryimageversion.id | string | Resource Id | 
+| Azure.AzureRmGalleryimageversion.id | string | Resource Id | 
 
 
 #### Command Example
@@ -1154,7 +1154,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmGalleryimageversion": [
+        "AzureRmGalleryimageversion": [
             {
                 "changed": true,
                 "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/galleries/myGallery1283/images/myImage/versions/10.1.3",
@@ -1196,7 +1196,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmGalleryimageversionInfo.versions | unknown | A list of dict results where the key is the name of the version and the values are the info for that version. | 
+| Azure.AzureRmGalleryimageversionInfo.versions | unknown | A list of dict results where the key is the name of the version and the values are the info for that version. | 
 
 
 #### Command Example
@@ -1206,7 +1206,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmGalleryimageversionInfo": [
+        "AzureRmGalleryimageversionInfo": [
             {
                 "changed": false,
                 "status": "SUCCESS",
@@ -1300,7 +1300,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmImage.id | string | Image resource path. | 
+| Azure.AzureRmImage.id | string | Image resource path. | 
 
 
 #### Command Example
@@ -1310,7 +1310,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmImage": [
+        "AzureRmImage": [
             {
                 "changed": true,
                 "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/images/myImage",
@@ -1352,7 +1352,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmImageInfo.images | unknown | List of image dicts. | 
+| Azure.AzureRmImageInfo.images | unknown | List of image dicts. | 
 
 
 #### Command Example
@@ -1362,7 +1362,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmImageInfo": [
+        "AzureRmImageInfo": [
             {
                 "changed": false,
                 "images": [
@@ -1460,8 +1460,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmLoadbalancer.state | unknown | Current state of the load balancer. | 
-| Azure.azureRmLoadbalancer.changed | boolean | Whether or not the resource has changed. | 
+| Azure.AzureRmLoadbalancer.state | unknown | Current state of the load balancer. | 
+| Azure.AzureRmLoadbalancer.changed | boolean | Whether or not the resource has changed. | 
 
 
 #### Command Example
@@ -1471,7 +1471,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmLoadbalancer": [
+        "AzureRmLoadbalancer": [
             {
                 "changed": true,
                 "state": {
@@ -1709,7 +1709,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmLoadbalancerInfo.azure_loadbalancers | unknown | List of load balancer dicts. | 
+| Azure.AzureRmLoadbalancerInfo.azure_loadbalancers | unknown | List of load balancer dicts. | 
 
 
 #### Command Example
@@ -1719,7 +1719,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmLoadbalancerInfo": [
+        "AzureRmLoadbalancerInfo": [
             {
                 "changed": false,
                 "info": {
@@ -1992,9 +1992,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmManageddisk.id | unknown | The managed disk resource ID. | 
-| Azure.azureRmManageddisk.state | unknown | Current state of the managed disk. | 
-| Azure.azureRmManageddisk.changed | boolean | Whether or not the resource has changed. | 
+| Azure.AzureRmManageddisk.id | unknown | The managed disk resource ID. | 
+| Azure.AzureRmManageddisk.state | unknown | Current state of the managed disk. | 
+| Azure.AzureRmManageddisk.changed | boolean | Whether or not the resource has changed. | 
 
 
 #### Command Example
@@ -2004,7 +2004,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmManageddisk": [
+        "AzureRmManageddisk": [
             {
                 "changed": true,
                 "state": {
@@ -2069,7 +2069,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmManageddiskInfo.azure_managed_disk | unknown | List of managed disk dicts. | 
+| Azure.AzureRmManageddiskInfo.azure_managed_disk | unknown | List of managed disk dicts. | 
 
 
 #### Command Example
@@ -2079,7 +2079,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmManageddiskInfo": [
+        "AzureRmManageddiskInfo": [
             {
                 "changed": false,
                 "info": {
@@ -2153,7 +2153,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmResourceInfo.response | unknown | Response specific to resource type. | 
+| Azure.AzureRmResourceInfo.response | unknown | Response specific to resource type. | 
 
 
 #### Command Example
@@ -2163,7 +2163,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmResourceInfo": [
+        "AzureRmResourceInfo": [
             {
                 "changed": false,
                 "response": [
@@ -2355,8 +2355,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmResourcegroup.contains_resources | boolean | Whether or not the resource group contains associated resources. | 
-| Azure.azureRmResourcegroup.state | unknown | Current state of the resource group. | 
+| Azure.AzureRmResourcegroup.contains_resources | boolean | Whether or not the resource group contains associated resources. | 
+| Azure.AzureRmResourcegroup.state | unknown | Current state of the resource group. | 
 
 
 #### Command Example
@@ -2366,7 +2366,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmResourcegroup": [
+        "AzureRmResourcegroup": [
             {
                 "changed": true,
                 "contains_resources": false,
@@ -2425,7 +2425,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmResourcegroupInfo.azure_resourcegroups | unknown | List of resource group dicts. | 
+| Azure.AzureRmResourcegroupInfo.azure_resourcegroups | unknown | List of resource group dicts. | 
 
 
 #### Command Example
@@ -2435,7 +2435,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmResourcegroupInfo": [
+        "AzureRmResourcegroupInfo": [
             {
                 "changed": false,
                 "resourcegroups": [
@@ -2504,7 +2504,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmSnapshot.id | string | Resource Id | 
+| Azure.AzureRmSnapshot.id | string | Resource Id | 
 
 
 #### Command Example
@@ -2514,7 +2514,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmSnapshot": [
+        "AzureRmSnapshot": [
             {
                 "changed": true,
                 "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot",
@@ -2595,11 +2595,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualmachine.powerstate | string | Indicates if the state is \`running\`, \`stopped\`, \`deallocated\`, \`generalized\`. | 
-| Azure.azureRmVirtualmachine.deleted_vhd_uris | unknown | List of deleted Virtual Hard Disk URIs. | 
-| Azure.azureRmVirtualmachine.deleted_network_interfaces | unknown | List of deleted NICs. | 
-| Azure.azureRmVirtualmachine.deleted_public_ips | unknown | List of deleted public IP address names. | 
-| Azure.azureRmVirtualmachine.azure_vm | unknown | Facts about the current state of the object. Note that facts are not part of the registered output but available directly. | 
+| Azure.AzureRmVirtualmachine.powerstate | string | Indicates if the state is \`running\`, \`stopped\`, \`deallocated\`, \`generalized\`. | 
+| Azure.AzureRmVirtualmachine.deleted_vhd_uris | unknown | List of deleted Virtual Hard Disk URIs. | 
+| Azure.AzureRmVirtualmachine.deleted_network_interfaces | unknown | List of deleted NICs. | 
+| Azure.AzureRmVirtualmachine.deleted_public_ips | unknown | List of deleted public IP address names. | 
+| Azure.AzureRmVirtualmachine.azure_vm | unknown | Facts about the current state of the object. Note that facts are not part of the registered output but available directly. | 
 
 
 #### Command Example
@@ -2609,7 +2609,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmVirtualmachine": [
+        "AzureRmVirtualmachine": [
             {
                 "changed": true,
                 "powerstate_change": null,
@@ -2650,7 +2650,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualmachineInfo.vms | unknown | List of virtual machines. | 
+| Azure.AzureRmVirtualmachineInfo.vms | unknown | List of virtual machines. | 
 
 
 #### Command Example
@@ -2660,7 +2660,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmVirtualmachineInfo": [
+        "AzureRmVirtualmachineInfo": [
             {
                 "changed": false,
                 "status": "SUCCESS",
@@ -2825,8 +2825,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualmachineextension.state | unknown | Current state of the vm extension. | 
-| Azure.azureRmVirtualmachineextension.changed | boolean | Whether or not the resource has changed. | 
+| Azure.AzureRmVirtualmachineextension.state | unknown | Current state of the vm extension. | 
+| Azure.AzureRmVirtualmachineextension.changed | boolean | Whether or not the resource has changed. | 
 
 
 #### Command Example
@@ -2836,7 +2836,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmVirtualmachineextension": [
+        "AzureRmVirtualmachineextension": [
             {
                 "changed": true,
                 "state": {
@@ -2900,7 +2900,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualmachineextensionInfo.extensions | unknown | A list of dictionaries containing facts for Virtual Machine Extension. | 
+| Azure.AzureRmVirtualmachineextensionInfo.extensions | unknown | A list of dictionaries containing facts for Virtual Machine Extension. | 
 
 
 #### Command Example
@@ -2910,7 +2910,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmVirtualmachineextensionInfo": [
+        "AzureRmVirtualmachineextensionInfo": [
             {
                 "changed": false,
                 "extensions": [
@@ -2982,7 +2982,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualmachineimageInfo.azure_vmimages | unknown | List of image dicts. | 
+| Azure.AzureRmVirtualmachineimageInfo.azure_vmimages | unknown | List of image dicts. | 
 
 
 #### Command Example
@@ -2992,7 +2992,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmVirtualmachineimageInfo": [
+        "AzureRmVirtualmachineimageInfo": [
             {
                 "changed": false,
                 "status": "SUCCESS",
@@ -3089,7 +3089,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualmachinescaleset.azure_vmss | unknown | Facts about the current state of the object.
+| Azure.AzureRmVirtualmachinescaleset.azure_vmss | unknown | Facts about the current state of the object.
 Note that facts are not part of the registered output but available directly. | 
 
 
@@ -3100,7 +3100,7 @@ Note that facts are not part of the registered output but available directly. |
 ```json
 {
     "Azure": {
-        "azureRmVirtualmachinescaleset": [
+        "AzureRmVirtualmachinescaleset": [
             {
                 "changed": true,
                 "status": "CHANGED"
@@ -3140,7 +3140,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualmachinescalesetInfo.vmss | unknown | List of virtual machine scale sets. | 
+| Azure.AzureRmVirtualmachinescalesetInfo.vmss | unknown | List of virtual machine scale sets. | 
 
 
 #### Command Example
@@ -3150,7 +3150,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmVirtualmachinescalesetInfo": [
+        "AzureRmVirtualmachinescalesetInfo": [
             {
                 "changed": false,
                 "status": "SUCCESS",
@@ -3256,7 +3256,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualmachinescalesetextension.id | string | VMSS extension resource ID. | 
+| Azure.AzureRmVirtualmachinescalesetextension.id | string | VMSS extension resource ID. | 
 
 
 #### Command Example
@@ -3266,7 +3266,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmVirtualmachinescalesetextension": [
+        "AzureRmVirtualmachinescalesetextension": [
             {
                 "changed": true,
                 "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachineScaleSets/testvmss/extensions/myvmssextension",
@@ -3309,7 +3309,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualmachinescalesetextensionInfo.extensions | unknown | A list of dictionaries containing facts for Virtual Machine Extension. | 
+| Azure.AzureRmVirtualmachinescalesetextensionInfo.extensions | unknown | A list of dictionaries containing facts for Virtual Machine Extension. | 
 
 
 #### Command Example
@@ -3319,7 +3319,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmVirtualmachinescalesetextensionInfo": [
+        "AzureRmVirtualmachinescalesetextensionInfo": [
             {
                 "changed": false,
                 "extensions": [
@@ -3388,7 +3388,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualmachinescalesetinstance.instances | unknown | A list of instances. | 
+| Azure.AzureRmVirtualmachinescalesetinstance.instances | unknown | A list of instances. | 
 
 
 #### Command Example
@@ -3398,7 +3398,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmVirtualmachinescalesetinstance": [
+        "AzureRmVirtualmachinescalesetinstance": [
             {
                 "changed": false,
                 "instances": [],
@@ -3440,7 +3440,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualmachinescalesetinstanceInfo.instances | unknown | A list of dictionaries containing facts for Virtual Machine Scale Set VM. | 
+| Azure.AzureRmVirtualmachinescalesetinstanceInfo.instances | unknown | A list of dictionaries containing facts for Virtual Machine Scale Set VM. | 
 
 
 #### Command Example
@@ -3450,7 +3450,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmVirtualmachinescalesetinstanceInfo": [
+        "AzureRmVirtualmachinescalesetinstanceInfo": [
             {
                 "changed": false,
                 "instances": [
@@ -3577,7 +3577,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmWebapp.azure_webapp | string | ID of current web app. | 
+| Azure.AzureRmWebapp.azure_webapp | string | ID of current web app. | 
 
 
 
@@ -3605,7 +3605,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmWebappInfo.webapps | unknown | List of web apps. | 
+| Azure.AzureRmWebappInfo.webapps | unknown | List of web apps. | 
 
 
 #### Command Example
@@ -3615,7 +3615,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmWebappInfo": [
+        "AzureRmWebappInfo": [
             {
                 "changed": false,
                 "status": "SUCCESS",
@@ -3670,7 +3670,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmWebappslot.id | string | ID of current slot. | 
+| Azure.AzureRmWebappslot.id | string | ID of current slot. | 
 
 
 ### azure-rm-azurefirewall
@@ -3703,7 +3703,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmAzurefirewall.id | string | Resource ID. | 
+| Azure.AzureRmAzurefirewall.id | string | Resource ID. | 
 
 
 #### Command Example
@@ -3713,7 +3713,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmAzurefirewall": [
+        "AzureRmAzurefirewall": [
             {
                 "changed": false,
                 "compare": [],
@@ -3765,7 +3765,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmAzurefirewallInfo.firewalls | unknown | A list of dict results where the key is the name of the AzureFirewall and the values are the facts for that AzureFirewall. | 
+| Azure.AzureRmAzurefirewallInfo.firewalls | unknown | A list of dict results where the key is the name of the AzureFirewall and the values are the facts for that AzureFirewall. | 
 
 
 #### Command Example
@@ -3775,7 +3775,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmAzurefirewallInfo": [
+        "AzureRmAzurefirewallInfo": [
             {
                 "changed": false,
                 "firewalls": [
@@ -3879,7 +3879,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualnetwork.state | unknown | Current state of the virtual network. | 
+| Azure.AzureRmVirtualnetwork.state | unknown | Current state of the virtual network. | 
 
 
 #### Command Example
@@ -3889,7 +3889,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmVirtualnetwork": [
+        "AzureRmVirtualnetwork": [
             {
                 "changed": false,
                 "check_mode": false,
@@ -3968,8 +3968,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualnetworkInfo.azure_virtualnetworks | unknown | List of virtual network dicts. | 
-| Azure.azureRmVirtualnetworkInfo.virtualnetworks | unknown | List of virtual network dicts with same format as \`azure_rm_virtualnetwork\` module parameters. | 
+| Azure.AzureRmVirtualnetworkInfo.azure_virtualnetworks | unknown | List of virtual network dicts. | 
+| Azure.AzureRmVirtualnetworkInfo.virtualnetworks | unknown | List of virtual network dicts with same format as \`azure_rm_virtualnetwork\` module parameters. | 
 
 
 #### Command Example
@@ -3979,7 +3979,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmVirtualnetworkInfo": [
+        "AzureRmVirtualnetworkInfo": [
             {
                 "changed": false,
                 "status": "SUCCESS",
@@ -4102,7 +4102,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualnetworkgateway.id | string | Virtual Network Gateway resource ID. | 
+| Azure.AzureRmVirtualnetworkgateway.id | string | Virtual Network Gateway resource ID. | 
 
 
 #### Command Example
@@ -4112,7 +4112,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmVirtualnetworkgateway": [
+        "AzureRmVirtualnetworkgateway": [
             {
                 "changed": false,
                 "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworkGateways/myVirtualNetworkGateway",
@@ -4161,7 +4161,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualnetworkpeering.id | string | ID of the Azure virtual network peering. | 
+| Azure.AzureRmVirtualnetworkpeering.id | string | ID of the Azure virtual network peering. | 
 
 
 #### Command Example
@@ -4171,7 +4171,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmVirtualnetworkpeering": [
+        "AzureRmVirtualnetworkpeering": [
             {
                 "changed": false,
                 "status": "SUCCESS"
@@ -4210,7 +4210,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmVirtualnetworkpeeringInfo.vnetpeerings | unknown | A list of Virtual Network Peering facts. | 
+| Azure.AzureRmVirtualnetworkpeeringInfo.vnetpeerings | unknown | A list of Virtual Network Peering facts. | 
 
 
 #### Command Example
@@ -4220,7 +4220,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmVirtualnetworkpeeringInfo": [
+        "AzureRmVirtualnetworkpeeringInfo": [
             {
                 "changed": false,
                 "status": "SUCCESS",
@@ -4296,7 +4296,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmSubnet.state | unknown | Current state of the subnet. | 
+| Azure.AzureRmSubnet.state | unknown | Current state of the subnet. | 
 
 
 #### Command Example
@@ -4306,7 +4306,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmSubnet": [
+        "AzureRmSubnet": [
             {
                 "changed": false,
                 "state": {
@@ -4366,7 +4366,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmSubnetInfo.subnets | unknown | A list of dictionaries containing facts for subnet. | 
+| Azure.AzureRmSubnetInfo.subnets | unknown | A list of dictionaries containing facts for subnet. | 
 
 
 #### Command Example
@@ -4376,7 +4376,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmSubnetInfo": [
+        "AzureRmSubnetInfo": [
             {
                 "changed": false,
                 "status": "SUCCESS",
@@ -4457,7 +4457,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmTrafficmanagerendpoint.id | string | The ID of the traffic manager endpoint. | 
+| Azure.AzureRmTrafficmanagerendpoint.id | string | The ID of the traffic manager endpoint. | 
 
 
 #### Command Example
@@ -4467,7 +4467,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmTrafficmanagerendpoint": [
+        "AzureRmTrafficmanagerendpoint": [
             {
                 "changed": false,
                 "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myresourcegroup/providers/Microsoft.Network/trafficManagerProfiles/tmtest/externalEndpoints/testendpoint1",
@@ -4509,7 +4509,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmTrafficmanagerendpointInfo.endpoints | unknown | List of Traffic Manager endpoints. | 
+| Azure.AzureRmTrafficmanagerendpointInfo.endpoints | unknown | List of Traffic Manager endpoints. | 
 
 
 #### Command Example
@@ -4519,7 +4519,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmTrafficmanagerendpointInfo": [
+        "AzureRmTrafficmanagerendpointInfo": [
             {
                 "changed": false,
                 "endpoints": [
@@ -4597,8 +4597,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmTrafficmanagerprofile.id | string | The ID of the traffic manager profile. | 
-| Azure.azureRmTrafficmanagerprofile.endpoints | unknown | List of endpoint IDs attached to the profile. | 
+| Azure.AzureRmTrafficmanagerprofile.id | string | The ID of the traffic manager profile. | 
+| Azure.AzureRmTrafficmanagerprofile.endpoints | unknown | List of endpoint IDs attached to the profile. | 
 
 
 #### Command Example
@@ -4608,7 +4608,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmTrafficmanagerprofile": [
+        "AzureRmTrafficmanagerprofile": [
             {
                 "changed": false,
                 "endpoints": [
@@ -4654,7 +4654,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmTrafficmanagerprofileInfo.tms | unknown | List of Traffic Manager profiles. | 
+| Azure.AzureRmTrafficmanagerprofileInfo.tms | unknown | List of Traffic Manager profiles. | 
 
 
 #### Command Example
@@ -4664,7 +4664,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmTrafficmanagerprofileInfo": [
+        "AzureRmTrafficmanagerprofileInfo": [
             {
                 "changed": false,
                 "status": "SUCCESS",
@@ -4800,7 +4800,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmNetworkinterface.state | unknown | The current state of the network interface. | 
+| Azure.AzureRmNetworkinterface.state | unknown | The current state of the network interface. | 
 
 
 #### Command Example
@@ -4810,7 +4810,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmNetworkinterface": [
+        "AzureRmNetworkinterface": [
             {
                 "changed": false,
                 "state": {
@@ -4965,8 +4965,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmNetworkinterfaceInfo.azure_networkinterfaces | unknown | List of network interface dicts. | 
-| Azure.azureRmNetworkinterfaceInfo.networkinterfaces | unknown | List of network interface dicts. Each dict contains parameters can be passed to \`azure_rm_networkinterface\` module. | 
+| Azure.AzureRmNetworkinterfaceInfo.azure_networkinterfaces | unknown | List of network interface dicts. | 
+| Azure.AzureRmNetworkinterfaceInfo.networkinterfaces | unknown | List of network interface dicts. Each dict contains parameters can be passed to \`azure_rm_networkinterface\` module. | 
 
 
 #### Command Example
@@ -4976,7 +4976,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmNetworkinterfaceInfo": [
+        "AzureRmNetworkinterfaceInfo": [
             {
                 "changed": false,
                 "networkinterfaces": [
@@ -5094,7 +5094,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmPublicipaddress.state | unknown | Facts about the current state of the object. | 
+| Azure.AzureRmPublicipaddress.state | unknown | Facts about the current state of the object. | 
 
 
 #### Command Example
@@ -5104,7 +5104,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmPublicipaddress": [
+        "AzureRmPublicipaddress": [
             {
                 "changed": false,
                 "state": {
@@ -5177,8 +5177,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmPublicipaddressInfo.azure_publicipaddresses | unknown | List of public IP address dicts. Please note that this option will be deprecated in 2.10 when curated format will become the only supported format. | 
-| Azure.azureRmPublicipaddressInfo.publicipaddresses | unknown | List of publicipaddress. Contains the detail which matches azure_rm_publicipaddress parameters. Returned when the format parameter set to curated. | 
+| Azure.AzureRmPublicipaddressInfo.azure_publicipaddresses | unknown | List of public IP address dicts. Please note that this option will be deprecated in 2.10 when curated format will become the only supported format. | 
+| Azure.AzureRmPublicipaddressInfo.publicipaddresses | unknown | List of publicipaddress. Contains the detail which matches azure_rm_publicipaddress parameters. Returned when the format parameter set to curated. | 
 
 
 #### Command Example
@@ -5188,7 +5188,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmPublicipaddressInfo": [
+        "AzureRmPublicipaddressInfo": [
             {
                 "changed": false,
                 "publicipaddresses": [
@@ -5274,7 +5274,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmRoute.id | string | Current state of the route. | 
+| Azure.AzureRmRoute.id | string | Current state of the route. | 
 
 
 #### Command Example
@@ -5284,7 +5284,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmRoute": [
+        "AzureRmRoute": [
             {
                 "changed": false,
                 "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/routeTables/myRouteTable/routes/myRoute",
@@ -5329,8 +5329,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmRoutetable.changed | boolean | Whether the resource is changed. | 
-| Azure.azureRmRoutetable.id | string | Resource ID. | 
+| Azure.AzureRmRoutetable.changed | boolean | Whether the resource is changed. | 
+| Azure.AzureRmRoutetable.id | string | Resource ID. | 
 
 
 #### Command Example
@@ -5340,7 +5340,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmRoutetable": [
+        "AzureRmRoutetable": [
             {
                 "changed": false,
                 "id": "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/myResourceGroup/providers/Microsoft.Network/routeTables/myRouteTable",
@@ -5381,12 +5381,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmRoutetableInfo.id | string | Resource ID. | 
-| Azure.azureRmRoutetableInfo.name | string | Name of the resource. | 
-| Azure.azureRmRoutetableInfo.resource_group | string | Resource group of the route table. | 
-| Azure.azureRmRoutetableInfo.disable_bgp_route_propagation | boolean | Whether the routes learned by BGP on that route table disabled. | 
-| Azure.azureRmRoutetableInfo.tags | unknown | Tags of the route table. | 
-| Azure.azureRmRoutetableInfo.routes | unknown | Current routes of the route table. | 
+| Azure.AzureRmRoutetableInfo.id | string | Resource ID. | 
+| Azure.AzureRmRoutetableInfo.name | string | Name of the resource. | 
+| Azure.AzureRmRoutetableInfo.resource_group | string | Resource group of the route table. | 
+| Azure.AzureRmRoutetableInfo.disable_bgp_route_propagation | boolean | Whether the routes learned by BGP on that route table disabled. | 
+| Azure.AzureRmRoutetableInfo.tags | unknown | Tags of the route table. | 
+| Azure.AzureRmRoutetableInfo.routes | unknown | Current routes of the route table. | 
 
 
 #### Command Example
@@ -5396,7 +5396,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmRoutetableInfo": [
+        "AzureRmRoutetableInfo": [
             {
                 "changed": false,
                 "route_tables": [],
@@ -5444,7 +5444,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmSecuritygroup.state | unknown | Current state of the security group. | 
+| Azure.AzureRmSecuritygroup.state | unknown | Current state of the security group. | 
 
 
 #### Command Example
@@ -5454,7 +5454,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmSecuritygroup": [
+        "AzureRmSecuritygroup": [
             {
                 "changed": true,
                 "state": {
@@ -5598,7 +5598,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmSecuritygroupInfo.securitygroups | unknown | List containing security group dicts. | 
+| Azure.AzureRmSecuritygroupInfo.securitygroups | unknown | List containing security group dicts. | 
 
 
 #### Command Example
@@ -5608,7 +5608,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmSecuritygroupInfo": [
+        "AzureRmSecuritygroupInfo": [
             {
                 "changed": false,
                 "securitygroups": [
@@ -5763,7 +5763,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmDnsrecordset.state | unknown | Current state of the DNS record set. | 
+| Azure.AzureRmDnsrecordset.state | unknown | Current state of the DNS record set. | 
 
 
 #### Command Example
@@ -5773,7 +5773,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmDnsrecordset": [
+        "AzureRmDnsrecordset": [
             {
                 "changed": false,
                 "state": {
@@ -5853,8 +5853,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmDnsrecordsetInfo.azure_dnsrecordset | unknown | List of record set dicts. | 
-| Azure.azureRmDnsrecordsetInfo.dnsrecordsets | unknown | List of record set dicts, which shares the same hierarchy as \`azure_rm_dnsrecordset\` module's parameter. | 
+| Azure.AzureRmDnsrecordsetInfo.azure_dnsrecordset | unknown | List of record set dicts. | 
+| Azure.AzureRmDnsrecordsetInfo.dnsrecordsets | unknown | List of record set dicts, which shares the same hierarchy as \`azure_rm_dnsrecordset\` module's parameter. | 
 
 
 #### Command Example
@@ -5864,7 +5864,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmDnsrecordsetInfo": [
+        "AzureRmDnsrecordsetInfo": [
             {
                 "changed": false,
                 "dnsrecordsets": [
@@ -5944,7 +5944,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmDnszone.state | unknown | Current state of the zone. | 
+| Azure.AzureRmDnszone.state | unknown | Current state of the zone. | 
 
 
 #### Command Example
@@ -5954,7 +5954,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmDnszone": [
+        "AzureRmDnszone": [
             {
                 "changed": false,
                 "check_mode": false,
@@ -6024,8 +6024,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.azureRmDnszoneInfo.azure_dnszones | unknown | List of zone dicts. | 
-| Azure.azureRmDnszoneInfo.dnszones | unknown | List of zone dicts, which share the same layout as azure_rm_dnszone module parameter. | 
+| Azure.AzureRmDnszoneInfo.azure_dnszones | unknown | List of zone dicts. | 
+| Azure.AzureRmDnszoneInfo.dnszones | unknown | List of zone dicts, which share the same layout as azure_rm_dnszone module parameter. | 
 
 
 #### Command Example
@@ -6035,7 +6035,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Azure": {
-        "azureRmDnszoneInfo": [
+        "AzureRmDnszoneInfo": [
             {
                 "changed": false,
                 "dnszones": [

@@ -113,7 +113,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kubernetes.k8s.result | unknown | The created, patched, or otherwise present object. Will be empty in the case of a deletion. | 
+| Kubernetes.K8s.result | unknown | The created, patched, or otherwise present object. Will be empty in the case of a deletion. | 
 
 
 #### Command Example
@@ -123,7 +123,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Kubernetes": {
-        "k8S": [
+        "K8S": [
             {
                 "changed": false,
                 "method": "patch",
@@ -221,7 +221,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kubernetes.k8sInfo.resources | unknown | The object\(s\) that exists | 
+| Kubernetes.K8sInfo.resources | unknown | The object\(s\) that exists | 
 
 
 #### Command Example
@@ -231,7 +231,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Kubernetes": {
-        "k8SInfo": [
+        "K8SInfo": [
             {
                 "changed": false,
                 "resources": [
@@ -334,7 +334,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kubernetes.k8sScale.result | unknown | If a change was made, will return the patched object, otherwise returns the existing object. | 
+| Kubernetes.K8sScale.result | unknown | If a change was made, will return the patched object, otherwise returns the existing object. | 
 
 
 #### Command Example
@@ -344,7 +344,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Kubernetes": {
-        "k8SScale": [
+        "K8SScale": [
             {
                 "changed": true,
                 "duration": 5,
@@ -693,7 +693,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kubernetes.k8sService.result | unknown | The created, patched, or otherwise present Service object. Will be empty in the case of a deletion. | 
+| Kubernetes.K8sService.result | unknown | The created, patched, or otherwise present Service object. Will be empty in the case of a deletion. | 
 
 
 #### Command Example
@@ -703,7 +703,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ```json
 {
     "Kubernetes": {
-        "k8SService": [
+        "K8SService": [
             {
                 "changed": true,
                 "method": "create",
