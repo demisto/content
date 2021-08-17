@@ -773,7 +773,8 @@ inputs:
     script. Possible values are: Pass, Fail, Suspicious, and Undetermined.'
   playbookInputQuery:
 - key: MicrosoftHeadersSeverityCheck
-  value: {}
+  value:
+    simple: ${MicrosoftHeadersSeverityCheck}
   required: false
   description: This value is being set by the "Process Microsoft's Anti-Spam Headers" Playbook.
     It will represent the calculated severity after processing PCL, BCL and PCL values inside Microsoft's headers.
