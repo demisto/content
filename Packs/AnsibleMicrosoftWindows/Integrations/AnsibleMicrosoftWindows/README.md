@@ -6679,7 +6679,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | connect_timeout | The maximum number of seconds to wait for a connection to happen before closing and retrying. Default is 5. | Optional | 
 | delay | The number of seconds to wait before starting to poll. | Optional | 
 | exclude_hosts | The list of hosts or IPs to ignore when looking for active TCP connections when `state=drained`. | Optional | 
-| host | A resolvable hostname or IP address to wait for.<br/>If `state=drained` then it will only check for connections on the IP specified, you can use '0.0.0.0' to use all host IPs. Default is 127.0.0.1. | Optional | 
+| ansible-module-host | A resolvable hostname or IP address to wait for.<br/>If `state=drained` then it will only check for connections on the IP specified, you can use '0.0.0.0' to use all host IPs. Default is 127.0.0.1. | Optional | 
 | path | The path to a file on the filesystem to check.<br/>If `state` is present or started then it will wait until the file exists.<br/>If `state` is absent then it will wait until the file does not exist. | Optional | 
 | port | The port number to poll on `host`. | Optional | 
 | regex | Can be used to match a string in a file.<br/>If `state` is present or started then it will wait until the regex matches.<br/>If `state` is absent then it will wait until the regex does not match.<br/>Defaults to a multiline regex. | Optional | 

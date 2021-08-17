@@ -1139,3 +1139,44 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 Returned as a list of PEM certificates. | 
 | OpenSSL.certificateCompleteChain.complete_chain | unknown | The completed chain, including leaf, all intermediates, and root.
 Returned as a list of PEM certificates. | 
+
+
+
+### openssl-get-certificate
+***
+Get a certificate from a host:port
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/get_certificate_module.html
+
+
+#### Base Command
+
+`openssl-get-certificate`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host | hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance. | Required | 
+| ansible-module-host | The host to get the cert for (IP is fine). | Required | 
+| ca_cert | A PEM file containing one or more root certificates; if present, the cert will be validated against these root certs.<br/>Note that this only validates the certificate is signed by the chain; not that the cert is valid for the host presenting it. | Optional | 
+| port | The port to connect to. | Required | 
+| proxy_host | Proxy host used when get a certificate. | Optional | 
+| proxy_port | Proxy port used when get a certificate. Default is 8080. | Optional | 
+| timeout | The timeout in seconds. Default is 10. | Optional | 
+| select_crypto_backend | Determines which crypto backend to use.<br/>The default choice is `auto`, which tries to use `cryptography` if available, and falls back to `pyopenssl`.<br/>If set to `pyopenssl`, will try to use the `pyOpenSSL,https://pypi.org/project/pyOpenSSL/` library.<br/>If set to `cryptography`, will try to use the `cryptography,https://cryptography.io/` library. Possible values are: auto, cryptography, pyopenssl. Default is auto. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpenSSL.getCertificate.cert | string | The certificate retrieved from the port | 
+| OpenSSL.getCertificate.expired | boolean | Boolean indicating if the cert is expired | 
+| OpenSSL.getCertificate.extensions | unknown | Extensions applied to the cert | 
+| OpenSSL.getCertificate.issuer | unknown | Information about the issuer of the cert | 
+| OpenSSL.getCertificate.not_after | string | Expiration date of the cert | 
+| OpenSSL.getCertificate.not_before | string | Issue date of the cert | 
+| OpenSSL.getCertificate.serial_number | string | The serial number of the cert | 
+| OpenSSL.getCertificate.signature_algorithm | string | The algorithm used to sign the cert | 
+| OpenSSL.getCertificate.subject | unknown | Information about the subject of the cert \(OU, CN, etc\) | 
+| OpenSSL.getCertificate.version | string | The version number of the certificate | 
+
