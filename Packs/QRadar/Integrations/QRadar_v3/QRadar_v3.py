@@ -1155,6 +1155,13 @@ def print_debug_msg(msg: str):
 
 
 def reset_mirroring_events_variables(mirror_options: str):
+    """In case of change in mirror_options initialize mirror with events context data variables.
+
+    Args:
+        mirror_options: The current mirror options
+
+    Returns: None
+    """
     ctx = get_integration_context()
     print_mirror_events_stats(ctx, f"New Long Running Container - Before Mirroring Variables Reset, "
                                    f"Mirror Option {mirror_options}")
@@ -1394,7 +1401,6 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         if not search_response:
             continue
 
-        print_debug_msg(f"Getting events for offense with id: {offense.get('id')}")
         events = poll_offense_events_with_retry(client, search_response['search_id'], offense['id'])
         if len(events) >= min(offense.get('event_count', 0), events_limit):
             offense = dict(offense, events=events)
@@ -1467,6 +1473,15 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
 
 
 def exclude_lists(original: List[dict], exclude: List[dict], key: str):
+    """Exclude nodes of exclude list from the original list by key
+
+    Args:
+        original: The original list to exclude from
+        exclude: The list of nodes to exclude
+        key: The key to exclude by
+
+    Returns: A list with the original nodes that were not excluded.
+    """
     new_list = original.copy()
     exclude_keys = [excluded_node.get(key) for excluded_node in exclude]
     for element in original:
@@ -1541,7 +1556,6 @@ def print_mirror_events_stats(context_data: dict, stage: str) -> List[str]:
         stage: A prefix for the debug message.
 
     Returns: The ids of the mirrored offenses being currently processed.
-
     """
     updated = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
     waiting_for_update = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
@@ -2959,7 +2973,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     offenses = client.offenses_list(range_=range_,
                                     filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}',
                                     sort='+last_persisted_time',
-                                    fields='id,status,start_time,last_persisted_time')
+                                    fields='id,start_time,last_persisted_time')
     new_modified_records_ids = [str(offense.get('id')) for offense in offenses if 'id' in offense]
     current_last_update = ctx.get('last_mirror_update') if not offenses else offenses[-1].get('last_persisted_time')
     new_context_data = ctx.copy()
