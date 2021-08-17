@@ -104,6 +104,12 @@ def rec_ansible_key_strip(obj: Dict[Any, Any]):
     return obj
 
 
+# Convert to TitleCase, like .title() but only letters/numbers.
+def title_case(st: str):
+    output = ''.join(x for x in st.title() if x.isalnum())
+    return output
+
+
 def generate_ansible_inventory(args: Dict[str, Any], int_params: Dict[str, Any], host_type: str = "local"):
     host_types = ['ssh', 'winrm', 'nxos', 'ios', 'local']
     if host_type not in host_types:
@@ -325,7 +331,7 @@ def generic_ansible(integration_name: str, command: str,
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=integration_name + '.' + command.title(),
+        outputs_prefix=integration_name + '.' + title_case(command),
         outputs_key_field=outputs_key_field,
         outputs=results
     )
