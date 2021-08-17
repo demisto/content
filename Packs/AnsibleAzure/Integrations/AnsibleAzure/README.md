@@ -5448,7 +5448,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!azure-rm-securitygroup resource_group="myResourceGroup" name="mysecgroup" purge_rules="True" rules="{{ [{'name': 'DenySSH', 'protocol': 'Tcp', 'destination_port_range': 22, 'access': 'Deny', 'priority': 100, 'direction': 'Inbound'}, {'name': 'AllowSSH', 'protocol': 'Tcp', 'source_address_prefix': ['1.1.1.3/24', '1.1.1.4/24'], 'destination_port_range': 22, 'access': 'Allow', 'priority': 101, 'direction': 'Inbound'}, {'name': 'AllowMultiplePorts', 'protocol': 'Tcp', 'source_address_prefix': ['174.109.158.0/24', '1.1.1.4/24'], 'destination_port_range': [80, 443], 'access': 'Allow', 'priority': 102}] }}" ```
+```!azure-rm-securitygroup resource_group="myResourceGroup" name="mysecgroup" purge_rules="True" rules="{{ [{'name': 'DenySSH', 'protocol': 'Tcp', 'destination_port_range': 22, 'access': 'Deny', 'priority': 100, 'direction': 'Inbound'}, {'name': 'AllowSSH', 'protocol': 'Tcp', 'source_address_prefix': ['1.1.1.3/24', '1.1.1.4/24'], 'destination_port_range': 22, 'access': 'Allow', 'priority': 101, 'direction': 'Inbound'}, {'name': 'AllowMultiplePorts', 'protocol': 'Tcp', 'source_address_prefix': ['1.1.1.1/24', '1.1.1.4/24'], 'destination_port_range': [80, 443], 'access': 'Allow', 'priority': 102}] }}" ```
 
 #### Context Example
 ```json

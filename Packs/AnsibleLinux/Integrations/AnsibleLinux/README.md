@@ -634,8 +634,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                 "123.123.123.123"
             ],
             "all_ipv6_addresses": [
-                "fd5f:d212:297d:0:f8a1:86b8:e2ee:33f4",
-                "fe80::a291:d0c1:61f2:cb4d"
+                "11:11:11:11:11:11:11:11",
+                "11:11:11:11:11:11:11:12"
             ],
             "apparmor": {
                 "status": "disabled"
@@ -835,12 +835,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                 },
                 "ipv6": [
                     {
-                        "address": "fd5f:d212:297d:0:f8a1:86b8:e2ee:33f4",
+                        "address": "11:11:11:11:11:11:11:11",
                         "prefix": "64",
                         "scope": "global"
                     },
                     {
-                        "address": "fe80::a291:d0c1:61f2:cb4d",
+                        "address": "11:11:11:11:11:11:11:12",
                         "prefix": "64",
                         "scope": "link"
                     }
@@ -1202,8 +1202,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >  * ## All_Ipv4_Addresses
 >    * 0: 123.123.123.123
 >  * ## All_Ipv6_Addresses
->    * 0: fd5f:d212:297d:0:f8a1:86b8:e2ee:33f4
->    * 1: fe80::a291:d0c1:61f2:cb4d
+>    * 0: 11:11:11:11:11:11:11:11
+>    * 1: 11:11:11:11:11:11:11:12
 >  * ## Apparmor
 >    * status: disabled
 >  * ## Cmdline
@@ -1364,11 +1364,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * network: 192.168.1.0
 >    * ### Ipv6
 >    * ### List
->      * address: fd5f:d212:297d:0:f8a1:86b8:e2ee:33f4
+>      * address: 11:11:11:11:11:11:11:11
 >      * prefix: 64
 >      * scope: global
 >    * ### List
->      * address: fe80::a291:d0c1:61f2:cb4d
+>      * address: 11:11:11:11:11:11:11:12
 >      * prefix: 64
 >      * scope: link
 >    * ### Timestamping
@@ -3577,8 +3577,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "state": "unknown",
                     "status": "enabled"
                 },
-                "getty@tty1.service": {
-                    "name": "getty@tty1.service",
+                "test@test.service": {
+                    "name": "test@test.service",
                     "source": "systemd",
                     "state": "running",
                     "status": "unknown"
@@ -3871,20 +3871,20 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "state": "unknown",
                     "status": "disabled"
                 },
-                "sshd-keygen@ecdsa.service": {
-                    "name": "sshd-keygen@ecdsa.service",
+                "test1@test.service": {
+                    "name": "test1@test.service",
                     "source": "systemd",
                     "state": "stopped",
                     "status": "unknown"
                 },
-                "sshd-keygen@ed25519.service": {
-                    "name": "sshd-keygen@ed25519.service",
+                "test2@test.service": {
+                    "name": "test2@test.service",
                     "source": "systemd",
                     "state": "stopped",
                     "status": "unknown"
                 },
-                "sshd-keygen@rsa.service": {
-                    "name": "sshd-keygen@rsa.service",
+                "test3@test.service": {
+                    "name": "test3@test.service",
                     "source": "systemd",
                     "state": "stopped",
                     "status": "unknown"
@@ -3997,8 +3997,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "state": "unknown",
                     "status": "static"
                 },
-                "systemd-coredump@0.service": {
-                    "name": "systemd-coredump@0.service",
+                "test4@test.service": {
+                    "name": "test4@test.service",
                     "source": "systemd",
                     "state": "stopped",
                     "status": "unknown"
@@ -4309,8 +4309,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "state": "unknown",
                     "status": "static"
                 },
-                "user-runtime-dir@0.service": {
-                    "name": "user-runtime-dir@0.service",
+                "test5@test.service": {
+                    "name": "test5@test.service",
                     "source": "systemd",
                     "state": "stopped",
                     "status": "unknown"
@@ -4321,8 +4321,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "state": "unknown",
                     "status": "static"
                 },
-                "user@0.service": {
-                    "name": "user@0.service",
+                "test6@test.service": {
+                    "name": "test6@test.service",
                     "source": "systemd",
                     "state": "running",
                     "status": "unknown"
@@ -4546,8 +4546,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * source: systemd
 >      * state: unknown
 >      * status: enabled
->    * ### Getty@Tty1.Service
->      * name: getty@tty1.service
+>    * ### test@test.service
+>      * name: test@test.service
 >      * source: systemd
 >      * state: running
 >      * status: unknown
@@ -4791,18 +4791,18 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * source: systemd
 >      * state: unknown
 >      * status: disabled
->    * ### Sshd-Keygen@Ecdsa.Service
->      * name: sshd-keygen@ecdsa.service
+>    * ### test1@test.service
+>      * name: test1@test.service
 >      * source: systemd
 >      * state: stopped
 >      * status: unknown
->    * ### Sshd-Keygen@Ed25519.Service
->      * name: sshd-keygen@ed25519.service
+>    * ### test2@test.service
+>      * name: test2@test.service
 >      * source: systemd
 >      * state: stopped
 >      * status: unknown
->    * ### Sshd-Keygen@Rsa.Service
->      * name: sshd-keygen@rsa.service
+>    * ### test3@test.service
+>      * name: test3@test.service
 >      * source: systemd
 >      * state: stopped
 >      * status: unknown
@@ -4896,8 +4896,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * source: systemd
 >      * state: unknown
 >      * status: static
->    * ### Systemd-Coredump@0.Service
->      * name: systemd-coredump@0.service
+>    * ### test4@test.service
+>      * name: test4@test.service
 >      * source: systemd
 >      * state: stopped
 >      * status: unknown
@@ -5156,8 +5156,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * source: systemd
 >      * state: unknown
 >      * status: static
->    * ### User-Runtime-Dir@0.Service
->      * name: user-runtime-dir@0.service
+>    * ### test5@test.service
+>      * name: test5@test.service
 >      * source: systemd
 >      * state: stopped
 >      * status: unknown
@@ -5166,8 +5166,8 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * source: systemd
 >      * state: unknown
 >      * status: static
->    * ### User@0.Service
->      * name: user@0.service
+>    * ### test6@test.service
+>      * name: test6@test.service
 >      * source: systemd
 >      * state: running
 >      * status: unknown
