@@ -1,4 +1,5 @@
 import demistomock as demisto
+from CommonServerPython import *
 
 import requests
 
@@ -25,3 +26,19 @@ def is_valid_attack_pattern(items):
     except Exception as e:
         demisto.info(f'MITRE Attack formatting script, {str(e)}')
         return False
+
+
+def main():
+    the_input = demisto.args().get('input')
+
+    entries_list = is_valid_attack_pattern(the_input)
+
+    if entries_list:
+        return_results(entries_list)
+    else:
+        return_results('')
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
