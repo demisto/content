@@ -45,7 +45,7 @@ script:
       \ to\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_about_info_module.html"
     name: vmware-about-info
     outputs:
-    - contextPath: VMware.vmwareAboutInfo.about_info
+    - contextPath: VMware.VmwareAboutInfo.about_info
       description: dict about VMware server
       type: string
   - arguments:
@@ -88,7 +88,7 @@ script:
     description: "Manage VMware categories\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_category_module.html"
     name: vmware-category
     outputs:
-    - contextPath: VMware.vmwareCategory.category_results
+    - contextPath: VMware.VmwareCategory.category_results
       description: dictionary of category metadata
       type: unknown
   - arguments:
@@ -103,7 +103,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_category_info_module.html"
     name: vmware-category-info
     outputs:
-    - contextPath: VMware.vmwareCategoryInfo.tag_category_info
+    - contextPath: VMware.VmwareCategoryInfo.tag_category_info
       description: metadata of tag categories
       type: unknown
   - arguments:
@@ -132,7 +132,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_cfg_backup_module.html"
     name: vmware-cfg-backup
     outputs:
-    - contextPath: VMware.vmwareCfgBackup.dest_file
+    - contextPath: VMware.VmwareCfgBackup.dest_file
       description: The full path of where the file holding the ESXi configurations
         was stored
       type: string
@@ -495,7 +495,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_info_module.html"
     name: vmware-cluster-info
     outputs:
-    - contextPath: VMware.vmwareClusterInfo.clusters
+    - contextPath: VMware.VmwareClusterInfo.clusters
       description: metadata about the available clusters
       type: unknown
   - arguments:
@@ -566,7 +566,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_content_deploy_template_module.html"
     name: vmware-content-deploy-template
     outputs:
-    - contextPath: VMware.vmwareContentDeployTemplate.vm_deploy_info
+    - contextPath: VMware.VmwareContentDeployTemplate.vm_deploy_info
       description: Virtual machine deployment message and vm_id
       type: unknown
   - arguments:
@@ -583,10 +583,10 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_content_library_info_module.html"
     name: vmware-content-library-info
     outputs:
-    - contextPath: VMware.vmwareContentLibraryInfo.content_lib_details
+    - contextPath: VMware.VmwareContentLibraryInfo.content_lib_details
       description: list of content library metadata
       type: unknown
-    - contextPath: VMware.vmwareContentLibraryInfo.content_libs
+    - contextPath: VMware.VmwareContentLibraryInfo.content_libs
       description: list of content libraries
       type: unknown
   - arguments:
@@ -633,7 +633,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_content_library_manager_module.html"
     name: vmware-content-library-manager
     outputs:
-    - contextPath: VMware.vmwareContentLibraryManager.content_library_info
+    - contextPath: VMware.VmwareContentLibraryManager.content_library_info
       description: library creation success and library_id
       type: unknown
   - arguments:
@@ -676,7 +676,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_cluster_module.html"
     name: vmware-datastore-cluster
     outputs:
-    - contextPath: VMware.vmwareDatastoreCluster.result
+    - contextPath: VMware.VmwareDatastoreCluster.result
       description: information about datastore cluster operation
       type: string
   - arguments:
@@ -710,7 +710,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_info_module.html"
     name: vmware-datastore-info
     outputs:
-    - contextPath: VMware.vmwareDatastoreInfo.datastores
+    - contextPath: VMware.VmwareDatastoreInfo.datastores
       description: metadata about the available datastores
       type: unknown
   - arguments:
@@ -740,7 +740,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_maintenancemode_module.html"
     name: vmware-datastore-maintenancemode
     outputs:
-    - contextPath: VMware.vmwareDatastoreMaintenancemode.results
+    - contextPath: VMware.VmwareDatastoreMaintenancemode.results
       description: Action taken for datastore
       type: unknown
   - arguments:
@@ -790,7 +790,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_drs_group_module.html"
     name: vmware-drs-group
     outputs:
-    - contextPath: VMware.vmwareDrsGroup.drs_group_facts
+    - contextPath: VMware.VmwareDrsGroup.drs_group_facts
       description: Metadata about DRS group created
       type: unknown
   - arguments:
@@ -805,7 +805,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_drs_group_info_module.html"
     name: vmware-drs-group-info
     outputs:
-    - contextPath: VMware.vmwareDrsGroupInfo.drs_group_info
+    - contextPath: VMware.VmwareDrsGroupInfo.drs_group_info
       description: Metadata about DRS group from given cluster / datacenter
       type: unknown
   - arguments:
@@ -820,7 +820,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_drs_rule_info_module.html"
     name: vmware-drs-rule-info
     outputs:
-    - contextPath: VMware.vmwareDrsRuleInfo.drs_rule_info
+    - contextPath: VMware.VmwareDrsRuleInfo.drs_rule_info
       description: metadata about DRS rule from given cluster / datacenter
       type: unknown
   - arguments:
@@ -961,7 +961,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_portgroup_find_module.html"
     name: vmware-dvs-portgroup-find
     outputs:
-    - contextPath: VMware.vmwareDvsPortgroupFind.dvs_portgroups
+    - contextPath: VMware.VmwareDvsPortgroupFind.dvs_portgroups
       description: basic details of portgroups found
       type: unknown
   - arguments:
@@ -1002,7 +1002,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_portgroup_info_module.html"
     name: vmware-dvs-portgroup-info
     outputs:
-    - contextPath: VMware.vmwareDvsPortgroupInfo.dvs_portgroup_info
+    - contextPath: VMware.VmwareDvsPortgroupInfo.dvs_portgroup_info
       description: metadata about DVS portgroup configuration
       type: unknown
   - arguments:
@@ -1116,7 +1116,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_module.html"
     name: vmware-dvswitch
     outputs:
-    - contextPath: VMware.vmwareDvswitch.result
+    - contextPath: VMware.VmwareDvswitch.result
       description: information about performed operation
       type: string
   - arguments:
@@ -1157,7 +1157,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_lacp_module.html"
     name: vmware-dvswitch-lacp
     outputs:
-    - contextPath: VMware.vmwareDvswitchLacp.result
+    - contextPath: VMware.VmwareDvswitchLacp.result
       description: information about performed operation
       type: string
   - arguments:
@@ -1197,10 +1197,10 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_nioc_module.html"
     name: vmware-dvswitch-nioc
     outputs:
-    - contextPath: VMware.vmwareDvswitchNioc.dvswitch_nioc_status
+    - contextPath: VMware.VmwareDvswitchNioc.dvswitch_nioc_status
       description: result of the changes
       type: string
-    - contextPath: VMware.vmwareDvswitchNioc.resources_changed
+    - contextPath: VMware.VmwareDvswitchNioc.resources_changed
       description: list of resources which were changed
       type: unknown
   - arguments:
@@ -1228,7 +1228,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_pvlans_module.html"
     name: vmware-dvswitch-pvlans
     outputs:
-    - contextPath: VMware.vmwareDvswitchPvlans.result
+    - contextPath: VMware.VmwareDvswitchPvlans.result
       description: information about performed operation
       type: string
   - arguments:
@@ -1287,7 +1287,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_uplink_pg_module.html"
     name: vmware-dvswitch-uplink-pg
     outputs:
-    - contextPath: VMware.vmwareDvswitchUplinkPg.result
+    - contextPath: VMware.VmwareDvswitchUplinkPg.result
       description: information about performed operation
       type: string
   - arguments:
@@ -1313,7 +1313,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_evc_mode_module.html"
     name: vmware-evc-mode
     outputs:
-    - contextPath: VMware.vmwareEvcMode.result
+    - contextPath: VMware.VmwareEvcMode.result
       description: information about performed operation
       type: string
   - arguments:
@@ -1324,7 +1324,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_folder_info_module.html"
     name: vmware-folder-info
     outputs:
-    - contextPath: VMware.vmwareFolderInfo.folder_info
+    - contextPath: VMware.VmwareFolderInfo.folder_info
       description: dict about folders
       type: string
   - arguments:
@@ -1625,7 +1625,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_module.html"
     name: vmware-guest
     outputs:
-    - contextPath: VMware.vmwareGuest.instance
+    - contextPath: VMware.VmwareGuest.instance
       description: metadata about the new virtual machine
       type: unknown
   - arguments:
@@ -1658,7 +1658,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_boot_info_module.html"
     name: vmware-guest-boot-info
     outputs:
-    - contextPath: VMware.vmwareGuestBootInfo.vm_boot_info
+    - contextPath: VMware.VmwareGuestBootInfo.vm_boot_info
       description: metadata about boot order of virtual machine
       type: unknown
   - arguments:
@@ -1734,7 +1734,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_boot_manager_module.html"
     name: vmware-guest-boot-manager
     outputs:
-    - contextPath: VMware.vmwareGuestBootManager.vm_boot_status
+    - contextPath: VMware.VmwareGuestBootManager.vm_boot_status
       description: metadata about boot order of virtual machine
       type: unknown
   - arguments:
@@ -1757,7 +1757,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_custom_attribute_defs_module.html"
     name: vmware-guest-custom-attribute-defs
     outputs:
-    - contextPath: VMware.vmwareGuestCustomAttributeDefs.custom_attribute_defs
+    - contextPath: VMware.VmwareGuestCustomAttributeDefs.custom_attribute_defs
       description: list of all current attribute definitions
       type: unknown
   - arguments:
@@ -1803,7 +1803,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_custom_attributes_module.html"
     name: vmware-guest-custom-attributes
     outputs:
-    - contextPath: VMware.vmwareGuestCustomAttributes.custom_attributes
+    - contextPath: VMware.VmwareGuestCustomAttributes.custom_attributes
       description: metadata about the virtual machine attributes
       type: unknown
   - arguments:
@@ -1813,7 +1813,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_customization_info_module.html"
     name: vmware-guest-customization-info
     outputs:
-    - contextPath: VMware.vmwareGuestCustomizationInfo.custom_spec_info
+    - contextPath: VMware.VmwareGuestCustomizationInfo.custom_spec_info
       description: metadata about the customization specification
       type: unknown
   - arguments:
@@ -1877,7 +1877,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_disk_module.html"
     name: vmware-guest-disk
     outputs:
-    - contextPath: VMware.vmwareGuestDisk.disk_status
+    - contextPath: VMware.VmwareGuestDisk.disk_status
       description: metadata about the virtual machine's disks after managing them
       type: unknown
   - arguments:
@@ -1913,7 +1913,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_disk_info_module.html"
     name: vmware-guest-disk-info
     outputs:
-    - contextPath: VMware.vmwareGuestDiskInfo.guest_disk_info
+    - contextPath: VMware.VmwareGuestDiskInfo.guest_disk_info
       description: metadata about the virtual machine's disks
       type: unknown
   - arguments:
@@ -1937,7 +1937,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_find_module.html"
     name: vmware-guest-find
     outputs:
-    - contextPath: VMware.vmwareGuestFind.folders
+    - contextPath: VMware.VmwareGuestFind.folders
       description: List of folders for user specified virtual machine
       type: unknown
   - arguments:
@@ -1999,7 +1999,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_info_module.html"
     name: vmware-guest-info
     outputs:
-    - contextPath: VMware.vmwareGuestInfo.instance
+    - contextPath: VMware.VmwareGuestInfo.instance
       description: metadata about the virtual machine
       type: unknown
   - arguments:
@@ -2043,7 +2043,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_move_module.html"
     name: vmware-guest-move
     outputs:
-    - contextPath: VMware.vmwareGuestMove.instance
+    - contextPath: VMware.VmwareGuestMove.instance
       description: metadata about the virtual machine
       type: unknown
   - arguments:
@@ -2121,7 +2121,7 @@ script:
       \ infrastructure\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_network_module.html"
     name: vmware-guest-network
     outputs:
-    - contextPath: VMware.vmwareGuestNetwork.network_data
+    - contextPath: VMware.VmwareGuestNetwork.network_data
       description: metadata about the virtual machine's network adapter after managing
         them
       type: unknown
@@ -2246,7 +2246,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_screenshot_module.html"
     name: vmware-guest-screenshot
     outputs:
-    - contextPath: VMware.vmwareGuestScreenshot.screenshot_info
+    - contextPath: VMware.VmwareGuestScreenshot.screenshot_info
       description: display the facts of captured virtual machine screenshot file
       type: unknown
   - arguments:
@@ -2293,7 +2293,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_sendkey_module.html"
     name: vmware-guest-sendkey
     outputs:
-    - contextPath: VMware.vmwareGuestSendkey.sendkey_info
+    - contextPath: VMware.VmwareGuestSendkey.sendkey_info
       description: display the keys and the number of keys sent to the virtual machine
       type: unknown
   - arguments:
@@ -2393,7 +2393,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_snapshot_module.html"
     name: vmware-guest-snapshot
     outputs:
-    - contextPath: VMware.vmwareGuestSnapshot.snapshot_results
+    - contextPath: VMware.VmwareGuestSnapshot.snapshot_results
       description: metadata about the virtual machine snapshots
       type: unknown
   - arguments:
@@ -2430,7 +2430,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_snapshot_info_module.html"
     name: vmware-guest-snapshot-info
     outputs:
-    - contextPath: VMware.vmwareGuestSnapshotInfo.guest_snapshots
+    - contextPath: VMware.VmwareGuestSnapshotInfo.guest_snapshots
       description: metadata about the snapshot information
       type: unknown
   - arguments:
@@ -2502,7 +2502,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_tools_wait_module.html"
     name: vmware-guest-tools-wait
     outputs:
-    - contextPath: VMware.vmwareGuestToolsWait.instance
+    - contextPath: VMware.VmwareGuestToolsWait.instance
       description: metadata about the virtual machine
       type: unknown
   - arguments:
@@ -2567,7 +2567,7 @@ script:
       \ given vCenter infrastructure\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_video_module.html"
     name: vmware-guest-video
     outputs:
-    - contextPath: VMware.vmwareGuestVideo.video_status
+    - contextPath: VMware.VmwareGuestVideo.video_status
       description: metadata about the virtual machine's video card after managing
         them
       type: unknown
@@ -2621,13 +2621,13 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_vnc_module.html"
     name: vmware-guest-vnc
     outputs:
-    - contextPath: VMware.vmwareGuestVnc.changed
+    - contextPath: VMware.VmwareGuestVnc.changed
       description: If anything changed on VM's extraConfig.
       type: boolean
-    - contextPath: VMware.vmwareGuestVnc.failed
+    - contextPath: VMware.VmwareGuestVnc.failed
       description: If changes failed.
       type: boolean
-    - contextPath: VMware.vmwareGuestVnc.instance
+    - contextPath: VMware.VmwareGuestVnc.instance
       description: Dictionary describing the VM, including VNC info.
       type: unknown
   - arguments:
@@ -2717,7 +2717,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_module.html"
     name: vmware-host
     outputs:
-    - contextPath: VMware.vmwareHost.result
+    - contextPath: VMware.VmwareHost.result
       description: metadata about the new host system added
       type: string
   - arguments:
@@ -2753,7 +2753,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_acceptance_module.html"
     name: vmware-host-acceptance
     outputs:
-    - contextPath: VMware.vmwareHostAcceptance.facts
+    - contextPath: VMware.VmwareHostAcceptance.facts
       description: dict with hostname as key and dict with acceptance level facts,
         error as value
       type: unknown
@@ -2781,7 +2781,7 @@ script:
       \ it\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_active_directory_module.html"
     name: vmware-host-active-directory
     outputs:
-    - contextPath: VMware.vmwareHostActiveDirectory.results
+    - contextPath: VMware.VmwareHostActiveDirectory.results
       description: metadata about host system's AD domain join state
       type: unknown
   - arguments:
@@ -2795,7 +2795,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_capability_info_module.html"
     name: vmware-host-capability-info
     outputs:
-    - contextPath: VMware.vmwareHostCapabilityInfo.hosts_capability_info
+    - contextPath: VMware.VmwareHostCapabilityInfo.hosts_capability_info
       description: metadata about host's capability info
       type: unknown
   - arguments:
@@ -2809,7 +2809,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_config_info_module.html"
     name: vmware-host-config-info
     outputs:
-    - contextPath: VMware.vmwareHostConfigInfo.hosts_info
+    - contextPath: VMware.VmwareHostConfigInfo.hosts_info
       description: dict with hostname as key and dict with host config information
       type: unknown
   - arguments:
@@ -2890,7 +2890,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_dns_info_module.html"
     name: vmware-host-dns-info
     outputs:
-    - contextPath: VMware.vmwareHostDnsInfo.hosts_dns_info
+    - contextPath: VMware.VmwareHostDnsInfo.hosts_dns_info
       description: metadata about DNS config from given cluster / host system
       type: unknown
   - arguments:
@@ -2909,7 +2909,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_facts_module.html"
     name: vmware-host-facts
     outputs:
-    - contextPath: VMware.vmwareHostFacts.ansible_facts
+    - contextPath: VMware.VmwareHostFacts.ansible_facts
       description: system info about the host machine
       type: unknown
   - arguments:
@@ -2923,7 +2923,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_feature_info_module.html"
     name: vmware-host-feature-info
     outputs:
-    - contextPath: VMware.vmwareHostFeatureInfo.hosts_feature_info
+    - contextPath: VMware.VmwareHostFeatureInfo.hosts_feature_info
       description: metadata about host's feature capability information
       type: unknown
   - arguments:
@@ -2937,7 +2937,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_firewall_info_module.html"
     name: vmware-host-firewall-info
     outputs:
-    - contextPath: VMware.vmwareHostFirewallInfo.hosts_firewall_info
+    - contextPath: VMware.VmwareHostFirewallInfo.hosts_firewall_info
       description: metadata about host's firewall configuration
       type: unknown
   - arguments:
@@ -2958,7 +2958,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_firewall_manager_module.html"
     name: vmware-host-firewall-manager
     outputs:
-    - contextPath: VMware.vmwareHostFirewallManager.rule_set_state
+    - contextPath: VMware.VmwareHostFirewallManager.rule_set_state
       description: dict with hostname as key and dict with firewall rule set facts
         as value
       type: unknown
@@ -2982,7 +2982,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_hyperthreading_module.html"
     name: vmware-host-hyperthreading
     outputs:
-    - contextPath: VMware.vmwareHostHyperthreading.results
+    - contextPath: VMware.VmwareHostHyperthreading.results
       description: metadata about host system's Hyperthreading configuration
       type: unknown
   - arguments:
@@ -3004,7 +3004,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ipv6_module.html"
     name: vmware-host-ipv6
     outputs:
-    - contextPath: VMware.vmwareHostIpv6.result
+    - contextPath: VMware.VmwareHostIpv6.result
       description: metadata about host system's IPv6 configuration
       type: unknown
   - arguments:
@@ -3027,7 +3027,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_kernel_manager_module.html"
     name: vmware-host-kernel-manager
     outputs:
-    - contextPath: VMware.vmwareHostKernelManager.results
+    - contextPath: VMware.VmwareHostKernelManager.results
       description: dict with information on what was changed, by ESXi host in scope.
       type: unknown
   - arguments:
@@ -3053,7 +3053,7 @@ script:
       \ for the ESXi host\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_lockdown_module.html"
     name: vmware-host-lockdown
     outputs:
-    - contextPath: VMware.vmwareHostLockdown.results
+    - contextPath: VMware.VmwareHostLockdown.results
       description: metadata about state of Host system lock down
       type: unknown
   - arguments:
@@ -3089,7 +3089,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ntp_module.html"
     name: vmware-host-ntp
     outputs:
-    - contextPath: VMware.vmwareHostNtp.results
+    - contextPath: VMware.VmwareHostNtp.results
       description: metadata about host system's NTP configuration
       type: unknown
   - arguments:
@@ -3104,7 +3104,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ntp_info_module.html"
     name: vmware-host-ntp-info
     outputs:
-    - contextPath: VMware.vmwareHostNtpInfo.hosts_ntp_info
+    - contextPath: VMware.VmwareHostNtpInfo.hosts_ntp_info
       description: dict with hostname as key and dict with NTP infos as value
       type: unknown
   - arguments:
@@ -3119,7 +3119,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_package_info_module.html"
     name: vmware-host-package-info
     outputs:
-    - contextPath: VMware.vmwareHostPackageInfo.hosts_package_info
+    - contextPath: VMware.VmwareHostPackageInfo.hosts_package_info
       description: dict with hostname as key and dict with package information as
         value
       type: unknown
@@ -3143,7 +3143,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_powermgmt_policy_module.html"
     name: vmware-host-powermgmt-policy
     outputs:
-    - contextPath: VMware.vmwareHostPowermgmtPolicy.result
+    - contextPath: VMware.VmwareHostPowermgmtPolicy.result
       description: metadata about host system's Power Management Policy
       type: unknown
   - arguments:
@@ -3185,7 +3185,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_powerstate_module.html"
     name: vmware-host-powerstate
     outputs:
-    - contextPath: VMware.vmwareHostPowerstate.result
+    - contextPath: VMware.VmwareHostPowerstate.result
       description: metadata about host system's state
       type: unknown
   - arguments:
@@ -3206,7 +3206,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_scanhba_module.html"
     name: vmware-host-scanhba
     outputs:
-    - contextPath: VMware.vmwareHostScanhba.result
+    - contextPath: VMware.VmwareHostScanhba.result
       description: return confirmation of requested host and updated / refreshed storage
         system
       type: unknown
@@ -3222,7 +3222,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_service_info_module.html"
     name: vmware-host-service-info
     outputs:
-    - contextPath: VMware.vmwareHostServiceInfo.host_service_info
+    - contextPath: VMware.VmwareHostServiceInfo.host_service_info
       description: dict with hostname as key and dict with host service config information
       type: unknown
   - arguments:
@@ -3316,7 +3316,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_host_snmp_module.html"
     name: vmware-host-snmp
     outputs:
-    - contextPath: VMware.vmwareHostSnmp.results
+    - contextPath: VMware.VmwareHostSnmp.results
       description: metadata about host system's SNMP configuration
       type: unknown
   - arguments:
@@ -3331,7 +3331,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ssl_info_module.html"
     name: vmware-host-ssl-info
     outputs:
-    - contextPath: VMware.vmwareHostSslInfo.host_ssl_info
+    - contextPath: VMware.VmwareHostSslInfo.host_ssl_info
       description: dict with hostname as key and dict with SSL thumbprint related
         info
       type: unknown
@@ -3348,7 +3348,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_vmhba_info_module.html"
     name: vmware-host-vmhba-info
     outputs:
-    - contextPath: VMware.vmwareHostVmhbaInfo.hosts_vmhbas_info
+    - contextPath: VMware.VmwareHostVmhbaInfo.hosts_vmhbas_info
       description: dict with hostname as key and dict with vmhbas information as value.
       type: unknown
   - arguments:
@@ -3386,7 +3386,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_vmnic_info_module.html"
     name: vmware-host-vmnic-info
     outputs:
-    - contextPath: VMware.vmwareHostVmnicInfo.hosts_vmnics_info
+    - contextPath: VMware.VmwareHostVmnicInfo.hosts_vmnics_info
       description: 'dict with hostname as key and dict with vmnics information as
         value. for `num_vmnics`, only NICs starting with vmnic are counted. NICs like
         vusb* are not counted. details about vswitch and dvswitch was added in version
@@ -3397,7 +3397,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_local_role_info_module.html"
     name: vmware-local-role-info
     outputs:
-    - contextPath: VMware.vmwareLocalRoleInfo.local_role_info
+    - contextPath: VMware.VmwareLocalRoleInfo.local_role_info
       description: Info about role present on ESXi host
       type: unknown
   - arguments:
@@ -3439,25 +3439,25 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_local_role_manager_module.html"
     name: vmware-local-role-manager
     outputs:
-    - contextPath: VMware.vmwareLocalRoleManager.role_name
+    - contextPath: VMware.VmwareLocalRoleManager.role_name
       description: Name of local role
       type: string
-    - contextPath: VMware.vmwareLocalRoleManager.role_id
+    - contextPath: VMware.VmwareLocalRoleManager.role_id
       description: ESXi generated local role id
       type: number
-    - contextPath: VMware.vmwareLocalRoleManager.privileges
+    - contextPath: VMware.VmwareLocalRoleManager.privileges
       description: List of privileges
       type: unknown
-    - contextPath: VMware.vmwareLocalRoleManager.privileges_previous
+    - contextPath: VMware.VmwareLocalRoleManager.privileges_previous
       description: List of privileges of role before the update
       type: unknown
-    - contextPath: VMware.vmwareLocalRoleManager.local_role_name
+    - contextPath: VMware.VmwareLocalRoleManager.local_role_name
       description: Name of local role
       type: string
-    - contextPath: VMware.vmwareLocalRoleManager.new_privileges
+    - contextPath: VMware.VmwareLocalRoleManager.new_privileges
       description: List of privileges
       type: unknown
-    - contextPath: VMware.vmwareLocalRoleManager.old_privileges
+    - contextPath: VMware.VmwareLocalRoleManager.old_privileges
       description: List of privileges of role before the update
       type: unknown
   - arguments: []
@@ -3465,7 +3465,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_local_user_info_module.html"
     name: vmware-local-user-info
     outputs:
-    - contextPath: VMware.vmwareLocalUserInfo.local_user_info
+    - contextPath: VMware.VmwareLocalUserInfo.local_user_info
       description: metadata about all local users
       type: unknown
   - arguments:
@@ -3520,13 +3520,13 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_maintenancemode_module.html"
     name: vmware-maintenancemode
     outputs:
-    - contextPath: VMware.vmwareMaintenancemode.hostsystem
+    - contextPath: VMware.VmwareMaintenancemode.hostsystem
       description: Name of vim reference
       type: string
-    - contextPath: VMware.vmwareMaintenancemode.hostname
+    - contextPath: VMware.VmwareMaintenancemode.hostname
       description: Name of host in vCenter
       type: string
-    - contextPath: VMware.vmwareMaintenancemode.status
+    - contextPath: VMware.VmwareMaintenancemode.status
       description: Action taken
       type: string
   - arguments:
@@ -3600,7 +3600,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_object_role_permission_module.html"
     name: vmware-object-role-permission
     outputs:
-    - contextPath: VMware.vmwareObjectRolePermission.changed
+    - contextPath: VMware.VmwareObjectRolePermission.changed
       description: whether or not a change was made to the object's role
       type: boolean
   - arguments:
@@ -3667,7 +3667,7 @@ script:
     description: "Create a VMware portgroup\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_portgroup_module.html"
     name: vmware-portgroup
     outputs:
-    - contextPath: VMware.vmwarePortgroup.result
+    - contextPath: VMware.VmwarePortgroup.result
       description: metadata about the portgroup
       type: unknown
   - arguments:
@@ -3691,7 +3691,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_portgroup_info_module.html"
     name: vmware-portgroup-info
     outputs:
-    - contextPath: VMware.vmwarePortgroupInfo.hosts_portgroup_info
+    - contextPath: VMware.VmwarePortgroupInfo.hosts_portgroup_info
       description: metadata about host's portgroup configuration
       type: unknown
   - arguments:
@@ -3767,7 +3767,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_resource_pool_module.html"
     name: vmware-resource-pool
     outputs:
-    - contextPath: VMware.vmwareResourcePool.instance
+    - contextPath: VMware.VmwareResourcePool.instance
       description: metadata about the new resource pool
       type: unknown
   - arguments: []
@@ -3775,7 +3775,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_resource_pool_info_module.html"
     name: vmware-resource-pool-info
     outputs:
-    - contextPath: VMware.vmwareResourcePoolInfo.resource_pool_info
+    - contextPath: VMware.VmwareResourcePoolInfo.resource_pool_info
       description: metadata about resource pool configuration
       type: unknown
   - arguments:
@@ -3810,7 +3810,7 @@ script:
     description: "Manage VMware tags\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_tag_module.html"
     name: vmware-tag
     outputs:
-    - contextPath: VMware.vmwareTag.results
+    - contextPath: VMware.VmwareTag.results
       description: dictionary of tag metadata
       type: unknown
   - arguments:
@@ -3824,7 +3824,7 @@ script:
     description: "Manage VMware tag info\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_tag_info_module.html"
     name: vmware-tag-info
     outputs:
-    - contextPath: VMware.vmwareTagInfo.results
+    - contextPath: VMware.VmwareTagInfo.results
       description: dictionary of tag metadata
       type: unknown
   - arguments:
@@ -3874,7 +3874,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_tag_manager_module.html"
     name: vmware-tag-manager
     outputs:
-    - contextPath: VMware.vmwareTagManager.tag_status
+    - contextPath: VMware.VmwareTagManager.tag_status
       description: metadata about tags related to object configuration
       type: unknown
   - arguments:
@@ -3893,10 +3893,10 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_target_canonical_info_module.html"
     name: vmware-target-canonical-info
     outputs:
-    - contextPath: VMware.vmwareTargetCanonicalInfo.canonical
+    - contextPath: VMware.VmwareTargetCanonicalInfo.canonical
       description: metadata about SCSI Target device
       type: string
-    - contextPath: VMware.vmwareTargetCanonicalInfo.scsi_tgt_info
+    - contextPath: VMware.VmwareTargetCanonicalInfo.scsi_tgt_info
       description: metadata about all SCSI Target devices
       type: unknown
   - arguments:
@@ -3974,7 +3974,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_vcenter_settings_module.html"
     name: vmware-vcenter-settings
     outputs:
-    - contextPath: VMware.vmwareVcenterSettings.results
+    - contextPath: VMware.VmwareVcenterSettings.results
       description: metadata about vCenter settings
       type: unknown
   - arguments:
@@ -4014,7 +4014,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_vcenter_statistics_module.html"
     name: vmware-vcenter-statistics
     outputs:
-    - contextPath: VMware.vmwareVcenterStatistics.results
+    - contextPath: VMware.VmwareVcenterStatistics.results
       description: metadata about vCenter statistics settings
       type: unknown
   - arguments:
@@ -4110,7 +4110,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_info_module.html"
     name: vmware-vm-info
     outputs:
-    - contextPath: VMware.vmwareVmInfo.virtual_machines
+    - contextPath: VMware.VmwareVmInfo.virtual_machines
       description: list of dictionary of virtual machines and their information
       type: unknown
   - arguments:
@@ -4178,7 +4178,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_shell_module.html"
     name: vmware-vm-shell
     outputs:
-    - contextPath: VMware.vmwareVmShell.results
+    - contextPath: VMware.VmwareVmShell.results
       description: metadata about the new process after completion with wait_for_process
       type: unknown
   - arguments: []
@@ -4186,7 +4186,7 @@ script:
       \ policy information.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_storage_policy_info_module.html"
     name: vmware-vm-storage-policy-info
     outputs:
-    - contextPath: VMware.vmwareVmStoragePolicyInfo.spbm_profiles
+    - contextPath: VMware.VmwareVmStoragePolicyInfo.spbm_profiles
       description: list of dictionary of SPBM info
       type: unknown
   - arguments:
@@ -4240,7 +4240,7 @@ script:
       \ cluster\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_vm_drs_rule_module.html"
     name: vmware-vm-vm-drs-rule
     outputs:
-    - contextPath: VMware.vmwareVmVmDrsRule.result
+    - contextPath: VMware.VmwareVmVmDrsRule.result
       description: metadata about DRS VM and VM rule
       type: unknown
   - arguments:
@@ -4334,7 +4334,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_vmkernel_module.html"
     name: vmware-vmkernel
     outputs:
-    - contextPath: VMware.vmwareVmkernel.result
+    - contextPath: VMware.VmwareVmkernel.result
       description: metadata about VMKernel name
       type: unknown
   - arguments:
@@ -4349,7 +4349,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_vmkernel_info_module.html"
     name: vmware-vmkernel-info
     outputs:
-    - contextPath: VMware.vmwareVmkernelInfo.host_vmk_info
+    - contextPath: VMware.VmwareVmkernelInfo.host_vmk_info
       description: metadata about VMKernel present on given host system
       type: unknown
   - arguments:
@@ -4396,7 +4396,7 @@ script:
       \ vMotion.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vmotion_module.html"
     name: vmware-vmotion
     outputs:
-    - contextPath: VMware.vmwareVmotion.running_host
+    - contextPath: VMware.VmwareVmotion.running_host
       description: List the host the virtual machine is registered to
       type: string
   - arguments:
@@ -4521,7 +4521,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_vswitch_module.html"
     name: vmware-vswitch
     outputs:
-    - contextPath: VMware.vmwareVswitch.result
+    - contextPath: VMware.VmwareVswitch.result
       description: information about performed operation
       type: string
   - arguments:
@@ -4536,7 +4536,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vswitch_info_module.html"
     name: vmware-vswitch-info
     outputs:
-    - contextPath: VMware.vmwareVswitchInfo.hosts_vswitch_info
+    - contextPath: VMware.VmwareVswitchInfo.hosts_vswitch_info
       description: metadata about host's vswitch configuration
       type: unknown
   - arguments:
@@ -4620,7 +4620,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/vcenter_extension_module.html"
     name: vmware-vcenter-extension
     outputs:
-    - contextPath: VMware.vcenterExtension.result
+    - contextPath: VMware.VcenterExtension.result
       description: information about performed operation
       type: string
   - arguments: []
@@ -4628,7 +4628,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/vcenter_extension_info_module.html"
     name: vmware-vcenter-extension-info
     outputs:
-    - contextPath: VMware.vcenterExtensionInfo.extension_info
+    - contextPath: VMware.VcenterExtensionInfo.extension_info
       description: List of extensions
       type: unknown
   - arguments:
@@ -4673,7 +4673,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/vcenter_folder_module.html"
     name: vmware-vcenter-folder
     outputs:
-    - contextPath: VMware.vcenterFolder.result
+    - contextPath: VMware.VcenterFolder.result
       description: The detail about the new folder
       type: unknown
   - arguments:
@@ -4703,7 +4703,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/vcenter_license_module.html"
     name: vmware-vcenter-license
     outputs:
-    - contextPath: VMware.vcenterLicense.licenses
+    - contextPath: VMware.VcenterLicense.licenses
       description: list of license keys after module executed
       type: unknown
   dockerimage: demisto/ansible-runner:1.0.0.23806

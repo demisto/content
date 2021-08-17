@@ -164,7 +164,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_audit_policy_system_module.html"
     name: win-audit-policy-system
     outputs:
-    - contextPath: MicrosoftWindows.winAuditPolicySystem.current_audit_policy
+    - contextPath: MicrosoftWindows.WinAuditPolicySystem.current_audit_policy
       description: details on the policy being targetted
       type: unknown
   - arguments:
@@ -233,11 +233,11 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_audit_rule_module.html"
     name: win-audit-rule
     outputs:
-    - contextPath: MicrosoftWindows.winAuditRule.current_audit_rules
+    - contextPath: MicrosoftWindows.WinAuditRule.current_audit_rules
       description: 'The current rules on the defined `path` Will return "No audit
         rules defined on `path`"'
       type: unknown
-    - contextPath: MicrosoftWindows.winAuditRule.path_type
+    - contextPath: MicrosoftWindows.WinAuditRule.path_type
       description: 'The type of `path` being targetted. Will be one of file, directory,
         registry.'
       type: string
@@ -344,7 +344,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_certificate_store_module.html"
     name: win-certificate-store
     outputs:
-    - contextPath: MicrosoftWindows.winCertificateStore.thumbprints
+    - contextPath: MicrosoftWindows.WinCertificateStore.thumbprints
       description: A list of certificate thumbprints that were touched by the module.
       type: unknown
   - arguments:
@@ -511,13 +511,13 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_module.html"
     name: win-chocolatey
     outputs:
-    - contextPath: MicrosoftWindows.winChocolatey.command
+    - contextPath: MicrosoftWindows.WinChocolatey.command
       description: The full command used in the chocolatey task.
       type: string
-    - contextPath: MicrosoftWindows.winChocolatey.rc
+    - contextPath: MicrosoftWindows.WinChocolatey.rc
       description: The return code from the chocolatey task.
       type: number
-    - contextPath: MicrosoftWindows.winChocolatey.stdout
+    - contextPath: MicrosoftWindows.WinChocolatey.stdout
       description: The stdout from the chocolatey task. The verbosity level of the
         messages are affected by Ansible verbosity setting, see notes for more details.
       type: string
@@ -561,7 +561,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_facts_module.html"
     name: win-chocolatey-facts
     outputs:
-    - contextPath: MicrosoftWindows.winChocolateyFacts.ansible_facts
+    - contextPath: MicrosoftWindows.WinChocolateyFacts.ansible_facts
       description: Detailed information about the Chocolatey installation
       type: unknown
   - arguments:
@@ -723,25 +723,25 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_copy_module.html"
     name: win-copy
     outputs:
-    - contextPath: MicrosoftWindows.winCopy.backup_file
+    - contextPath: MicrosoftWindows.WinCopy.backup_file
       description: Name of the backup file that was created.
       type: string
-    - contextPath: MicrosoftWindows.winCopy.dest
+    - contextPath: MicrosoftWindows.WinCopy.dest
       description: Destination file/path.
       type: string
-    - contextPath: MicrosoftWindows.winCopy.src
+    - contextPath: MicrosoftWindows.WinCopy.src
       description: Source file used for the copy on the target machine.
       type: string
-    - contextPath: MicrosoftWindows.winCopy.checksum
+    - contextPath: MicrosoftWindows.WinCopy.checksum
       description: SHA1 checksum of the file after running copy.
       type: string
-    - contextPath: MicrosoftWindows.winCopy.size
+    - contextPath: MicrosoftWindows.WinCopy.size
       description: Size of the target, after execution.
       type: number
-    - contextPath: MicrosoftWindows.winCopy.operation
+    - contextPath: MicrosoftWindows.WinCopy.operation
       description: Whether a single file copy took place or a folder copy.
       type: string
-    - contextPath: MicrosoftWindows.winCopy.original_basename
+    - contextPath: MicrosoftWindows.WinCopy.original_basename
       description: Basename of the copied file.
       type: string
   - arguments:
@@ -877,22 +877,22 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_defrag_module.html"
     name: win-defrag
     outputs:
-    - contextPath: MicrosoftWindows.winDefrag.cmd
+    - contextPath: MicrosoftWindows.WinDefrag.cmd
       description: The complete command line used by the module.
       type: string
-    - contextPath: MicrosoftWindows.winDefrag.rc
+    - contextPath: MicrosoftWindows.WinDefrag.rc
       description: The return code for the command.
       type: number
-    - contextPath: MicrosoftWindows.winDefrag.stdout
+    - contextPath: MicrosoftWindows.WinDefrag.stdout
       description: The standard output from the command.
       type: string
-    - contextPath: MicrosoftWindows.winDefrag.stderr
+    - contextPath: MicrosoftWindows.WinDefrag.stderr
       description: The error output from the command.
       type: string
-    - contextPath: MicrosoftWindows.winDefrag.msg
+    - contextPath: MicrosoftWindows.WinDefrag.msg
       description: Possible error message on failure.
       type: string
-    - contextPath: MicrosoftWindows.winDefrag.changed
+    - contextPath: MicrosoftWindows.WinDefrag.changed
       description: Whether or not any changes were made.
       type: boolean
   - arguments:
@@ -906,7 +906,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_disk_facts_module.html"
     name: win-disk-facts
     outputs:
-    - contextPath: MicrosoftWindows.winDiskFacts.ansible_facts
+    - contextPath: MicrosoftWindows.WinDiskFacts.ansible_facts
       description: Dictionary containing all the detailed information about the disks
         of the target.
       type: unknown
@@ -933,11 +933,11 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_disk_image_module.html"
     name: win-disk-image
     outputs:
-    - contextPath: MicrosoftWindows.winDiskImage.mount_path
+    - contextPath: MicrosoftWindows.WinDiskImage.mount_path
       description: Filesystem path where the target image is mounted, this has been
         deprecated in favour of `mount_paths`.
       type: string
-    - contextPath: MicrosoftWindows.winDiskImage.mount_paths
+    - contextPath: MicrosoftWindows.WinDiskImage.mount_paths
       description: A list of filesystem paths mounted from the target image.
       type: unknown
   - arguments:
@@ -1070,7 +1070,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_domain_module.html"
     name: win-domain
     outputs:
-    - contextPath: MicrosoftWindows.winDomain.reboot_required
+    - contextPath: MicrosoftWindows.WinDomain.reboot_required
       description: True if changes were made that require a reboot.
       type: boolean
   - arguments:
@@ -1187,7 +1187,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_controller_module.html"
     name: win-domain-controller
     outputs:
-    - contextPath: MicrosoftWindows.winDomainController.reboot_required
+    - contextPath: MicrosoftWindows.WinDomainController.reboot_required
       description: True if changes were made that require a reboot.
       type: boolean
   - arguments:
@@ -1270,45 +1270,45 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_domain_group_module.html"
     name: win-domain-group
     outputs:
-    - contextPath: MicrosoftWindows.winDomainGroup.attributes
+    - contextPath: MicrosoftWindows.WinDomainGroup.attributes
       description: Custom attributes that were set by the module. This does not show
         all the custom attributes rather just the ones that were set by the module.
       type: unknown
-    - contextPath: MicrosoftWindows.winDomainGroup.canonical_name
+    - contextPath: MicrosoftWindows.WinDomainGroup.canonical_name
       description: The canonical name of the group.
       type: string
-    - contextPath: MicrosoftWindows.winDomainGroup.category
+    - contextPath: MicrosoftWindows.WinDomainGroup.category
       description: The Group type value of the group, i.e. Security or Distribution.
       type: string
-    - contextPath: MicrosoftWindows.winDomainGroup.description
+    - contextPath: MicrosoftWindows.WinDomainGroup.description
       description: The Description of the group.
       type: string
-    - contextPath: MicrosoftWindows.winDomainGroup.display_name
+    - contextPath: MicrosoftWindows.WinDomainGroup.display_name
       description: The Display name of the group.
       type: string
-    - contextPath: MicrosoftWindows.winDomainGroup.distinguished_name
+    - contextPath: MicrosoftWindows.WinDomainGroup.distinguished_name
       description: The full Distinguished Name of the group.
       type: string
-    - contextPath: MicrosoftWindows.winDomainGroup.group_scope
+    - contextPath: MicrosoftWindows.WinDomainGroup.group_scope
       description: The Group scope value of the group.
       type: string
-    - contextPath: MicrosoftWindows.winDomainGroup.guid
+    - contextPath: MicrosoftWindows.WinDomainGroup.guid
       description: The guid of the group.
       type: string
-    - contextPath: MicrosoftWindows.winDomainGroup.managed_by
+    - contextPath: MicrosoftWindows.WinDomainGroup.managed_by
       description: The full Distinguished Name of the AD object that is set on the
         managedBy attribute.
       type: string
-    - contextPath: MicrosoftWindows.winDomainGroup.name
+    - contextPath: MicrosoftWindows.WinDomainGroup.name
       description: The name of the group.
       type: string
-    - contextPath: MicrosoftWindows.winDomainGroup.protected_from_accidental_deletion
+    - contextPath: MicrosoftWindows.WinDomainGroup.protected_from_accidental_deletion
       description: Whether the group is protected from accidental deletion.
       type: boolean
-    - contextPath: MicrosoftWindows.winDomainGroup.sid
+    - contextPath: MicrosoftWindows.WinDomainGroup.sid
       description: The Security ID of the group.
       type: string
-    - contextPath: MicrosoftWindows.winDomainGroup.created
+    - contextPath: MicrosoftWindows.WinDomainGroup.created
       description: Whether a group was created
       type: boolean
   - arguments:
@@ -1352,18 +1352,18 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_domain_group_membership_module.html"
     name: win-domain-group-membership
     outputs:
-    - contextPath: MicrosoftWindows.winDomainGroupMembership.name
+    - contextPath: MicrosoftWindows.WinDomainGroupMembership.name
       description: The name of the target domain group.
       type: string
-    - contextPath: MicrosoftWindows.winDomainGroupMembership.added
+    - contextPath: MicrosoftWindows.WinDomainGroupMembership.added
       description: A list of members added when `state` is `present` or `pure`; this
         is empty if no members are added.
       type: unknown
-    - contextPath: MicrosoftWindows.winDomainGroupMembership.removed
+    - contextPath: MicrosoftWindows.WinDomainGroupMembership.removed
       description: A list of members removed when `state` is `absent` or `pure`; this
         is empty if no members are removed.
       type: unknown
-    - contextPath: MicrosoftWindows.winDomainGroupMembership.members
+    - contextPath: MicrosoftWindows.WinDomainGroupMembership.members
       description: A list of all domain group members at completion; this is empty
         if the group contains no members.
       type: unknown
@@ -1402,7 +1402,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_membership_module.html"
     name: win-domain-membership
     outputs:
-    - contextPath: MicrosoftWindows.winDomainMembership.reboot_required
+    - contextPath: MicrosoftWindows.WinDomainMembership.reboot_required
       description: True if changes were made that require a reboot.
       type: boolean
   - arguments:
@@ -1532,76 +1532,76 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_domain_user_module.html"
     name: win-domain-user
     outputs:
-    - contextPath: MicrosoftWindows.winDomainUser.account_locked
+    - contextPath: MicrosoftWindows.WinDomainUser.account_locked
       description: true if the account is locked
       type: boolean
-    - contextPath: MicrosoftWindows.winDomainUser.changed
+    - contextPath: MicrosoftWindows.WinDomainUser.changed
       description: true if the account changed during execution
       type: boolean
-    - contextPath: MicrosoftWindows.winDomainUser.city
+    - contextPath: MicrosoftWindows.WinDomainUser.city
       description: The user city
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.company
+    - contextPath: MicrosoftWindows.WinDomainUser.company
       description: The user company
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.country
+    - contextPath: MicrosoftWindows.WinDomainUser.country
       description: The user country
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.description
+    - contextPath: MicrosoftWindows.WinDomainUser.description
       description: A description of the account
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.distinguished_name
+    - contextPath: MicrosoftWindows.WinDomainUser.distinguished_name
       description: DN of the user account
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.email
+    - contextPath: MicrosoftWindows.WinDomainUser.email
       description: The user email address
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.enabled
+    - contextPath: MicrosoftWindows.WinDomainUser.enabled
       description: true if the account is enabled and false if disabled
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.firstname
+    - contextPath: MicrosoftWindows.WinDomainUser.firstname
       description: The user first name
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.groups
+    - contextPath: MicrosoftWindows.WinDomainUser.groups
       description: AD Groups to which the account belongs
       type: unknown
-    - contextPath: MicrosoftWindows.winDomainUser.msg
+    - contextPath: MicrosoftWindows.WinDomainUser.msg
       description: Summary message of whether the user is present or absent
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.name
+    - contextPath: MicrosoftWindows.WinDomainUser.name
       description: The username on the account
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.password_expired
+    - contextPath: MicrosoftWindows.WinDomainUser.password_expired
       description: true if the account password has expired
       type: boolean
-    - contextPath: MicrosoftWindows.winDomainUser.password_updated
+    - contextPath: MicrosoftWindows.WinDomainUser.password_updated
       description: true if the password changed during this execution
       type: boolean
-    - contextPath: MicrosoftWindows.winDomainUser.postal_code
+    - contextPath: MicrosoftWindows.WinDomainUser.postal_code
       description: The user postal code
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.sid
+    - contextPath: MicrosoftWindows.WinDomainUser.sid
       description: The SID of the account
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.state
+    - contextPath: MicrosoftWindows.WinDomainUser.state
       description: The state of the user account
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.state_province
+    - contextPath: MicrosoftWindows.WinDomainUser.state_province
       description: The user state or province
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.street
+    - contextPath: MicrosoftWindows.WinDomainUser.street
       description: The user street address
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.surname
+    - contextPath: MicrosoftWindows.WinDomainUser.surname
       description: The user last name
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.upn
+    - contextPath: MicrosoftWindows.WinDomainUser.upn
       description: The User Principal Name of the account
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.user_cannot_change_password
+    - contextPath: MicrosoftWindows.WinDomainUser.user_cannot_change_password
       description: true if the user is not allowed to change password
       type: string
-    - contextPath: MicrosoftWindows.winDomainUser.created
+    - contextPath: MicrosoftWindows.WinDomainUser.created
       description: Whether a user was created
       type: boolean
   - arguments:
@@ -1615,31 +1615,31 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_dotnet_ngen_module.html"
     name: win-dotnet-ngen
     outputs:
-    - contextPath: MicrosoftWindows.winDotnetNgen.dotnet_ngen_update_exit_code
+    - contextPath: MicrosoftWindows.WinDotnetNgen.dotnet_ngen_update_exit_code
       description: The exit code after running the 32-bit ngen.exe update /force command.
       type: number
-    - contextPath: MicrosoftWindows.winDotnetNgen.dotnet_ngen_update_output
+    - contextPath: MicrosoftWindows.WinDotnetNgen.dotnet_ngen_update_output
       description: The stdout after running the 32-bit ngen.exe update /force command.
       type: string
-    - contextPath: MicrosoftWindows.winDotnetNgen.dotnet_ngen_eqi_exit_code
+    - contextPath: MicrosoftWindows.WinDotnetNgen.dotnet_ngen_eqi_exit_code
       description: The exit code after running the 32-bit ngen.exe executeQueuedItems
         command.
       type: number
-    - contextPath: MicrosoftWindows.winDotnetNgen.dotnet_ngen_eqi_output
+    - contextPath: MicrosoftWindows.WinDotnetNgen.dotnet_ngen_eqi_output
       description: The stdout after running the 32-bit ngen.exe executeQueuedItems
         command.
       type: string
-    - contextPath: MicrosoftWindows.winDotnetNgen.dotnet_ngen64_update_exit_code
+    - contextPath: MicrosoftWindows.WinDotnetNgen.dotnet_ngen64_update_exit_code
       description: The exit code after running the 64-bit ngen.exe update /force command.
       type: number
-    - contextPath: MicrosoftWindows.winDotnetNgen.dotnet_ngen64_update_output
+    - contextPath: MicrosoftWindows.WinDotnetNgen.dotnet_ngen64_update_output
       description: The stdout after running the 64-bit ngen.exe update /force command.
       type: string
-    - contextPath: MicrosoftWindows.winDotnetNgen.dotnet_ngen64_eqi_exit_code
+    - contextPath: MicrosoftWindows.WinDotnetNgen.dotnet_ngen64_eqi_exit_code
       description: The exit code after running the 64-bit ngen.exe executeQueuedItems
         command.
       type: number
-    - contextPath: MicrosoftWindows.winDotnetNgen.dotnet_ngen64_eqi_output
+    - contextPath: MicrosoftWindows.WinDotnetNgen.dotnet_ngen64_eqi_output
       description: The stdout after running the 64-bit ngen.exe executeQueuedItems
         command.
       type: string
@@ -1682,17 +1682,17 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_dsc_module.html"
     name: win-dsc
     outputs:
-    - contextPath: MicrosoftWindows.winDsc.module_version
+    - contextPath: MicrosoftWindows.WinDsc.module_version
       description: The version of the dsc resource/module used.
       type: string
-    - contextPath: MicrosoftWindows.winDsc.reboot_required
+    - contextPath: MicrosoftWindows.WinDsc.reboot_required
       description: Flag returned from the DSC engine indicating whether or not the
         machine requires a reboot for the invoked changes to take effect.
       type: boolean
-    - contextPath: MicrosoftWindows.winDsc.verbose_test
+    - contextPath: MicrosoftWindows.WinDsc.verbose_test
       description: The verbose output as a list from executing the DSC test method.
       type: unknown
-    - contextPath: MicrosoftWindows.winDsc.verbose_set
+    - contextPath: MicrosoftWindows.WinDsc.verbose_set
       description: The verbose output as a list from executing the DSC Set method.
       type: unknown
   - arguments:
@@ -1731,11 +1731,11 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_environment_module.html"
     name: win-environment
     outputs:
-    - contextPath: MicrosoftWindows.winEnvironment.before_value
+    - contextPath: MicrosoftWindows.WinEnvironment.before_value
       description: the value of the environment key before a change, this is null
         if it didn't exist
       type: string
-    - contextPath: MicrosoftWindows.winEnvironment.value
+    - contextPath: MicrosoftWindows.WinEnvironment.value
       description: the value the environment key has been set to, this is null if
         removed
       type: string
@@ -1795,28 +1795,28 @@ script:
     description: "Manage Windows event logs\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_eventlog_module.html"
     name: win-eventlog
     outputs:
-    - contextPath: MicrosoftWindows.winEventlog.name
+    - contextPath: MicrosoftWindows.WinEventlog.name
       description: The name of the event log.
       type: string
-    - contextPath: MicrosoftWindows.winEventlog.exists
+    - contextPath: MicrosoftWindows.WinEventlog.exists
       description: Whether the event log exists or not.
       type: boolean
-    - contextPath: MicrosoftWindows.winEventlog.entries
+    - contextPath: MicrosoftWindows.WinEventlog.entries
       description: The count of entries present in the event log.
       type: number
-    - contextPath: MicrosoftWindows.winEventlog.maximum_size_kb
+    - contextPath: MicrosoftWindows.WinEventlog.maximum_size_kb
       description: Maximum size of the log in KB.
       type: number
-    - contextPath: MicrosoftWindows.winEventlog.overflow_action
+    - contextPath: MicrosoftWindows.WinEventlog.overflow_action
       description: The action the log takes once it reaches its maximum size.
       type: string
-    - contextPath: MicrosoftWindows.winEventlog.retention_days
+    - contextPath: MicrosoftWindows.WinEventlog.retention_days
       description: The minimum number of days entries are retained in the log.
       type: number
-    - contextPath: MicrosoftWindows.winEventlog.sources
+    - contextPath: MicrosoftWindows.WinEventlog.sources
       description: A list of the current sources for the log.
       type: unknown
-    - contextPath: MicrosoftWindows.winEventlog.sources_changed
+    - contextPath: MicrosoftWindows.WinEventlog.sources_changed
       description: A list of sources changed (e.g. re/created, removed) for the log;
         this is empty if no sources are changed.
       type: unknown
@@ -1902,14 +1902,14 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_feature_module.html"
     name: win-feature
     outputs:
-    - contextPath: MicrosoftWindows.winFeature.exitcode
+    - contextPath: MicrosoftWindows.WinFeature.exitcode
       description: The stringified exit code from the feature installation/removal
         command.
       type: string
-    - contextPath: MicrosoftWindows.winFeature.feature_result
+    - contextPath: MicrosoftWindows.WinFeature.feature_result
       description: List of features that were installed or removed.
       type: unknown
-    - contextPath: MicrosoftWindows.winFeature.reboot_required
+    - contextPath: MicrosoftWindows.WinFeature.reboot_required
       description: True when the target server requires a reboot to complete updates
         (no further updates can be installed until after a reboot).
       type: boolean
@@ -1955,25 +1955,25 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_file_version_module.html"
     name: win-file-version
     outputs:
-    - contextPath: MicrosoftWindows.winFileVersion.path
+    - contextPath: MicrosoftWindows.WinFileVersion.path
       description: file path
       type: string
-    - contextPath: MicrosoftWindows.winFileVersion.file_version
+    - contextPath: MicrosoftWindows.WinFileVersion.file_version
       description: File version number..
       type: string
-    - contextPath: MicrosoftWindows.winFileVersion.product_version
+    - contextPath: MicrosoftWindows.WinFileVersion.product_version
       description: The version of the product this file is distributed with.
       type: string
-    - contextPath: MicrosoftWindows.winFileVersion.file_major_part
+    - contextPath: MicrosoftWindows.WinFileVersion.file_major_part
       description: the major part of the version number.
       type: string
-    - contextPath: MicrosoftWindows.winFileVersion.file_minor_part
+    - contextPath: MicrosoftWindows.WinFileVersion.file_minor_part
       description: the minor part of the version number of the file.
       type: string
-    - contextPath: MicrosoftWindows.winFileVersion.file_build_part
+    - contextPath: MicrosoftWindows.WinFileVersion.file_build_part
       description: build number of the file.
       type: string
-    - contextPath: MicrosoftWindows.winFileVersion.file_private_part
+    - contextPath: MicrosoftWindows.WinFileVersion.file_private_part
       description: file private part number.
       type: string
   - arguments:
@@ -2074,13 +2074,13 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_find_module.html"
     name: win-find
     outputs:
-    - contextPath: MicrosoftWindows.winFind.examined
+    - contextPath: MicrosoftWindows.WinFind.examined
       description: The number of files/folders that was checked.
       type: number
-    - contextPath: MicrosoftWindows.winFind.matched
+    - contextPath: MicrosoftWindows.WinFind.matched
       description: The number of files/folders that match the criteria.
       type: number
-    - contextPath: MicrosoftWindows.winFind.files
+    - contextPath: MicrosoftWindows.WinFind.files
       description: Information on the files/folders that match the criteria returned
         as a list of dictionary elements for each file matched. The entries are sorted
         by the path value alphabetically.
@@ -2111,14 +2111,14 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_firewall_module.html"
     name: win-firewall
     outputs:
-    - contextPath: MicrosoftWindows.winFirewall.enabled
+    - contextPath: MicrosoftWindows.WinFirewall.enabled
       description: Current firewall status for chosen profile (after any potential
         change).
       type: boolean
-    - contextPath: MicrosoftWindows.winFirewall.profiles
+    - contextPath: MicrosoftWindows.WinFirewall.profiles
       description: Chosen profile.
       type: string
-    - contextPath: MicrosoftWindows.winFirewall.state
+    - contextPath: MicrosoftWindows.WinFirewall.state
       description: Desired state of the given firewall profile(s).
       type: unknown
   - arguments:
@@ -2395,29 +2395,29 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_get_url_module.html"
     name: win-get-url
     outputs:
-    - contextPath: MicrosoftWindows.winGetUrl.dest
+    - contextPath: MicrosoftWindows.WinGetUrl.dest
       description: destination file/path
       type: string
-    - contextPath: MicrosoftWindows.winGetUrl.checksum_dest
+    - contextPath: MicrosoftWindows.WinGetUrl.checksum_dest
       description: <algorithm> checksum of the file after the download
       type: string
-    - contextPath: MicrosoftWindows.winGetUrl.checksum_src
+    - contextPath: MicrosoftWindows.WinGetUrl.checksum_src
       description: <algorithm> checksum of the remote resource
       type: string
-    - contextPath: MicrosoftWindows.winGetUrl.elapsed
+    - contextPath: MicrosoftWindows.WinGetUrl.elapsed
       description: The elapsed seconds between the start of poll and the end of the
         module.
       type: unknown
-    - contextPath: MicrosoftWindows.winGetUrl.size
+    - contextPath: MicrosoftWindows.WinGetUrl.size
       description: size of the dest file
       type: number
-    - contextPath: MicrosoftWindows.winGetUrl.url
+    - contextPath: MicrosoftWindows.WinGetUrl.url
       description: requested url
       type: string
-    - contextPath: MicrosoftWindows.winGetUrl.msg
+    - contextPath: MicrosoftWindows.WinGetUrl.msg
       description: Error message, or HTTP status message from web-server
       type: string
-    - contextPath: MicrosoftWindows.winGetUrl.status_code
+    - contextPath: MicrosoftWindows.WinGetUrl.status_code
       description: HTTP status code
       type: number
   - arguments:
@@ -2475,18 +2475,18 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_group_membership_module.html"
     name: win-group-membership
     outputs:
-    - contextPath: MicrosoftWindows.winGroupMembership.name
+    - contextPath: MicrosoftWindows.WinGroupMembership.name
       description: The name of the target local group.
       type: string
-    - contextPath: MicrosoftWindows.winGroupMembership.added
+    - contextPath: MicrosoftWindows.WinGroupMembership.added
       description: A list of members added when `state` is `present` or `pure`; this
         is empty if no members are added.
       type: unknown
-    - contextPath: MicrosoftWindows.winGroupMembership.removed
+    - contextPath: MicrosoftWindows.WinGroupMembership.removed
       description: A list of members removed when `state` is `absent` or `pure`; this
         is empty if no members are removed.
       type: unknown
-    - contextPath: MicrosoftWindows.winGroupMembership.members
+    - contextPath: MicrosoftWindows.WinGroupMembership.members
       description: A list of all local group members at completion; this is empty
         if the group contains no members.
       type: unknown
@@ -2504,10 +2504,10 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_hostname_module.html"
     name: win-hostname
     outputs:
-    - contextPath: MicrosoftWindows.winHostname.old_name
+    - contextPath: MicrosoftWindows.WinHostname.old_name
       description: The original hostname that was set before it was changed.
       type: string
-    - contextPath: MicrosoftWindows.winHostname.reboot_required
+    - contextPath: MicrosoftWindows.WinHostname.reboot_required
       description: Whether a reboot is required to complete the hostname change.
       type: boolean
   - arguments:
@@ -2588,13 +2588,13 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_hotfix_module.html"
     name: win-hotfix
     outputs:
-    - contextPath: MicrosoftWindows.winHotfix.identifier
+    - contextPath: MicrosoftWindows.WinHotfix.identifier
       description: The DISM identifier for the hotfix.
       type: string
-    - contextPath: MicrosoftWindows.winHotfix.kb
+    - contextPath: MicrosoftWindows.WinHotfix.kb
       description: The KB the hotfix relates to.
       type: string
-    - contextPath: MicrosoftWindows.winHotfix.reboot_required
+    - contextPath: MicrosoftWindows.WinHotfix.reboot_required
       description: Whether a reboot is required for the install or uninstall to finalise.
       type: string
   - arguments:
@@ -2695,10 +2695,10 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_iis_webapplication_module.html"
     name: win-iis-webapplication
     outputs:
-    - contextPath: MicrosoftWindows.winIisWebapplication.application_pool
+    - contextPath: MicrosoftWindows.WinIisWebapplication.application_pool
       description: The used/implemented application_pool value.
       type: string
-    - contextPath: MicrosoftWindows.winIisWebapplication.physical_path
+    - contextPath: MicrosoftWindows.WinIisWebapplication.physical_path
       description: The used/implemented physical_path value.
       type: string
   - arguments:
@@ -2742,11 +2742,11 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_iis_webapppool_module.html"
     name: win-iis-webapppool
     outputs:
-    - contextPath: MicrosoftWindows.winIisWebapppool.attributes
+    - contextPath: MicrosoftWindows.WinIisWebapppool.attributes
       description: Application Pool attributes that were set and processed by this
         module invocation.
       type: unknown
-    - contextPath: MicrosoftWindows.winIisWebapppool.info
+    - contextPath: MicrosoftWindows.WinIisWebapppool.info
       description: Information on current state of the Application Pool. See https://www.iis.net/configreference/system.applicationhost/applicationpools/add#005
         for the full list of return attributes based on your IIS version.
       type: unknown
@@ -2796,16 +2796,16 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_iis_webbinding_module.html"
     name: win-iis-webbinding
     outputs:
-    - contextPath: MicrosoftWindows.winIisWebbinding.website_state
+    - contextPath: MicrosoftWindows.WinIisWebbinding.website_state
       description: 'The state of the website being targetted Can be helpful in case
         you accidentally cause a binding collision which can result in the targetted
         site being stopped'
       type: string
-    - contextPath: MicrosoftWindows.winIisWebbinding.operation_type
+    - contextPath: MicrosoftWindows.WinIisWebbinding.operation_type
       description: 'The type of operation performed Can be removed, updated, matched,
         or added'
       type: string
-    - contextPath: MicrosoftWindows.winIisWebbinding.binding_info
+    - contextPath: MicrosoftWindows.WinIisWebbinding.binding_info
       description: Information on the binding being manipulated
       type: unknown
   - arguments:
@@ -3007,11 +3007,11 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_lineinfile_module.html"
     name: win-lineinfile
     outputs:
-    - contextPath: MicrosoftWindows.winLineinfile.backup
+    - contextPath: MicrosoftWindows.WinLineinfile.backup
       description: 'Name of the backup file that was created. This is now deprecated,
         use `backup_file` instead.'
       type: string
-    - contextPath: MicrosoftWindows.winLineinfile.backup_file
+    - contextPath: MicrosoftWindows.WinLineinfile.backup_file
       description: Name of the backup file that was created.
       type: string
   - arguments:
@@ -3086,22 +3086,22 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_msg_module.html"
     name: win-msg
     outputs:
-    - contextPath: MicrosoftWindows.winMsg.msg
+    - contextPath: MicrosoftWindows.WinMsg.msg
       description: Test of the message that was sent.
       type: string
-    - contextPath: MicrosoftWindows.winMsg.display_seconds
+    - contextPath: MicrosoftWindows.WinMsg.display_seconds
       description: Value of display_seconds module parameter.
       type: string
-    - contextPath: MicrosoftWindows.winMsg.rc
+    - contextPath: MicrosoftWindows.WinMsg.rc
       description: The return code of the API call.
       type: number
-    - contextPath: MicrosoftWindows.winMsg.runtime_seconds
+    - contextPath: MicrosoftWindows.WinMsg.runtime_seconds
       description: How long the module took to run on the remote windows host.
       type: string
-    - contextPath: MicrosoftWindows.winMsg.sent_localtime
+    - contextPath: MicrosoftWindows.WinMsg.sent_localtime
       description: local time from windows host when the message was sent.
       type: string
-    - contextPath: MicrosoftWindows.winMsg.wait
+    - contextPath: MicrosoftWindows.WinMsg.wait
       description: Value of wait module parameter.
       type: boolean
   - arguments:
@@ -3130,7 +3130,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_netbios_module.html"
     name: win-netbios
     outputs:
-    - contextPath: MicrosoftWindows.winNetbios.reboot_required
+    - contextPath: MicrosoftWindows.WinNetbios.reboot_required
       description: Boolean value stating whether a system reboot is required.
       type: boolean
   - arguments:
@@ -3243,7 +3243,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_optional_feature_module.html"
     name: win-optional-feature
     outputs:
-    - contextPath: MicrosoftWindows.winOptionalFeature.reboot_required
+    - contextPath: MicrosoftWindows.WinOptionalFeature.reboot_required
       description: True when the target server requires a reboot to complete updates
       type: boolean
   - arguments:
@@ -3358,20 +3358,20 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_package_module.html"
     name: win-package
     outputs:
-    - contextPath: MicrosoftWindows.winPackage.log
+    - contextPath: MicrosoftWindows.WinPackage.log
       description: The contents of the MSI log.
       type: string
-    - contextPath: MicrosoftWindows.winPackage.rc
+    - contextPath: MicrosoftWindows.WinPackage.rc
       description: The return code of the package process.
       type: number
-    - contextPath: MicrosoftWindows.winPackage.reboot_required
+    - contextPath: MicrosoftWindows.WinPackage.reboot_required
       description: Whether a reboot is required to finalise package. This is set to
         true if the executable return code is 3010.
       type: boolean
-    - contextPath: MicrosoftWindows.winPackage.stdout
+    - contextPath: MicrosoftWindows.WinPackage.stdout
       description: The stdout stream of the package process.
       type: string
-    - contextPath: MicrosoftWindows.winPackage.stderr
+    - contextPath: MicrosoftWindows.WinPackage.stderr
       description: The stderr stream of the package process.
       type: string
   - arguments:
@@ -3430,10 +3430,10 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_pagefile_module.html"
     name: win-pagefile
     outputs:
-    - contextPath: MicrosoftWindows.winPagefile.automatic_managed_pagefiles
+    - contextPath: MicrosoftWindows.WinPagefile.automatic_managed_pagefiles
       description: Whether the pagefiles is automatically managed.
       type: boolean
-    - contextPath: MicrosoftWindows.winPagefile.pagefiles
+    - contextPath: MicrosoftWindows.WinPagefile.pagefiles
       description: Contains caption, description, initial_size, maximum_size and name
         for each pagefile in the system.
       type: unknown
@@ -3579,10 +3579,10 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_pester_module.html"
     name: win-pester
     outputs:
-    - contextPath: MicrosoftWindows.winPester.pester_version
+    - contextPath: MicrosoftWindows.WinPester.pester_version
       description: Version of the pester module found on the remote host.
       type: string
-    - contextPath: MicrosoftWindows.winPester.output
+    - contextPath: MicrosoftWindows.WinPester.output
       description: Results of the Pester tests.
       type: unknown
   - arguments:
@@ -3600,7 +3600,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_ping_module.html"
     name: win-ping
     outputs:
-    - contextPath: MicrosoftWindows.winPing.ping
+    - contextPath: MicrosoftWindows.WinPing.ping
       description: Value provided with the data parameter.
       type: string
   - arguments:
@@ -3619,13 +3619,13 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_power_plan_module.html"
     name: win-power-plan
     outputs:
-    - contextPath: MicrosoftWindows.winPowerPlan.power_plan_name
+    - contextPath: MicrosoftWindows.WinPowerPlan.power_plan_name
       description: Value of the intended power plan.
       type: string
-    - contextPath: MicrosoftWindows.winPowerPlan.power_plan_enabled
+    - contextPath: MicrosoftWindows.WinPowerPlan.power_plan_enabled
       description: State of the intended power plan.
       type: boolean
-    - contextPath: MicrosoftWindows.winPowerPlan.all_available_plans
+    - contextPath: MicrosoftWindows.WinPowerPlan.all_available_plans
       description: The name and enabled state of all power plans.
       type: unknown
   - arguments:
@@ -3639,7 +3639,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_product_facts_module.html"
     name: win-product-facts
     outputs:
-    - contextPath: MicrosoftWindows.winProductFacts.ansible_facts
+    - contextPath: MicrosoftWindows.WinProductFacts.ansible_facts
       description: Dictionary containing all the detailed information about the Windows
         product and license.
       type: unknown
@@ -3746,20 +3746,20 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_psexec_module.html"
     name: win-psexec
     outputs:
-    - contextPath: MicrosoftWindows.winPsexec.cmd
+    - contextPath: MicrosoftWindows.WinPsexec.cmd
       description: The complete command line used by the module, including PsExec
         call and additional options.
       type: string
-    - contextPath: MicrosoftWindows.winPsexec.pid
+    - contextPath: MicrosoftWindows.WinPsexec.pid
       description: The PID of the async process created by PsExec.
       type: number
-    - contextPath: MicrosoftWindows.winPsexec.rc
+    - contextPath: MicrosoftWindows.WinPsexec.rc
       description: The return code for the command.
       type: number
-    - contextPath: MicrosoftWindows.winPsexec.stdout
+    - contextPath: MicrosoftWindows.WinPsexec.stdout
       description: The standard output from the command.
       type: string
-    - contextPath: MicrosoftWindows.winPsexec.stderr
+    - contextPath: MicrosoftWindows.WinPsexec.stderr
       description: The error output from the command.
       type: string
   - arguments:
@@ -3824,13 +3824,13 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_psmodule_module.html"
     name: win-psmodule
     outputs:
-    - contextPath: MicrosoftWindows.winPsmodule.output
+    - contextPath: MicrosoftWindows.WinPsmodule.output
       description: A message describing the task result.
       type: string
-    - contextPath: MicrosoftWindows.winPsmodule.nuget_changed
+    - contextPath: MicrosoftWindows.WinPsmodule.nuget_changed
       description: True when Nuget package provider is installed.
       type: boolean
-    - contextPath: MicrosoftWindows.winPsmodule.repository_changed
+    - contextPath: MicrosoftWindows.WinPsmodule.repository_changed
       description: True when a custom repository is installed or removed.
       type: boolean
   - arguments:
@@ -3896,10 +3896,10 @@ script:
     description: "Manage RabbitMQ plugins\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rabbitmq_plugin_module.html"
     name: win-rabbitmq-plugin
     outputs:
-    - contextPath: MicrosoftWindows.winRabbitmqPlugin.enabled
+    - contextPath: MicrosoftWindows.WinRabbitmqPlugin.enabled
       description: List of plugins enabled during task run.
       type: unknown
-    - contextPath: MicrosoftWindows.winRabbitmqPlugin.disabled
+    - contextPath: MicrosoftWindows.WinRabbitmqPlugin.disabled
       description: List of plugins disabled during task run.
       type: unknown
   - arguments:
@@ -4098,10 +4098,10 @@ script:
     description: "Reboot a windows machine\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_reboot_module.html"
     name: win-reboot
     outputs:
-    - contextPath: MicrosoftWindows.winReboot.rebooted
+    - contextPath: MicrosoftWindows.WinReboot.rebooted
       description: True if the machine was rebooted.
       type: boolean
-    - contextPath: MicrosoftWindows.winReboot.elapsed
+    - contextPath: MicrosoftWindows.WinReboot.elapsed
       description: The number of seconds that elapsed waiting for the system to be
         rebooted.
       type: unknown
@@ -4124,28 +4124,28 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_reg_stat_module.html"
     name: win-reg-stat
     outputs:
-    - contextPath: MicrosoftWindows.winRegStat.changed
+    - contextPath: MicrosoftWindows.WinRegStat.changed
       description: Whether anything was changed.
       type: boolean
-    - contextPath: MicrosoftWindows.winRegStat.exists
+    - contextPath: MicrosoftWindows.WinRegStat.exists
       description: States whether the registry key/property exists.
       type: boolean
-    - contextPath: MicrosoftWindows.winRegStat.properties
+    - contextPath: MicrosoftWindows.WinRegStat.properties
       description: A dictionary containing all the properties and their values in
         the registry key.
       type: unknown
-    - contextPath: MicrosoftWindows.winRegStat.sub_keys
+    - contextPath: MicrosoftWindows.WinRegStat.sub_keys
       description: A list of all the sub keys of the key specified.
       type: unknown
-    - contextPath: MicrosoftWindows.winRegStat.raw_value
+    - contextPath: MicrosoftWindows.WinRegStat.raw_value
       description: Returns the raw value of the registry property, REG_EXPAND_SZ has
         no string expansion, REG_BINARY or REG_NONE is in hex 0x format. REG_NONE,
         this value is a hex string in the 0x format.
       type: string
-    - contextPath: MicrosoftWindows.winRegStat.type
+    - contextPath: MicrosoftWindows.WinRegStat.type
       description: The property type.
       type: string
-    - contextPath: MicrosoftWindows.winRegStat.value
+    - contextPath: MicrosoftWindows.WinRegStat.value
       description: The value of the property.
       type: string
   - arguments:
@@ -4210,10 +4210,10 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html"
     name: win-regedit
     outputs:
-    - contextPath: MicrosoftWindows.winRegedit.data_changed
+    - contextPath: MicrosoftWindows.WinRegedit.data_changed
       description: Whether this invocation changed the data in the registry value.
       type: boolean
-    - contextPath: MicrosoftWindows.winRegedit.data_type_changed
+    - contextPath: MicrosoftWindows.WinRegedit.data_type_changed
       description: Whether this invocation changed the datatype of the registry value.
       type: boolean
   - arguments:
@@ -4250,7 +4250,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_region_module.html"
     name: win-region
     outputs:
-    - contextPath: MicrosoftWindows.winRegion.restart_required
+    - contextPath: MicrosoftWindows.WinRegion.restart_required
       description: Whether a reboot is required for the change to take effect.
       type: boolean
   - arguments:
@@ -4274,13 +4274,13 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regmerge_module.html"
     name: win-regmerge
     outputs:
-    - contextPath: MicrosoftWindows.winRegmerge.compare_to_key_found
+    - contextPath: MicrosoftWindows.WinRegmerge.compare_to_key_found
       description: whether the parent registry key has been found for comparison
       type: boolean
-    - contextPath: MicrosoftWindows.winRegmerge.difference_count
+    - contextPath: MicrosoftWindows.WinRegmerge.difference_count
       description: number of differences between the registry and the file
       type: number
-    - contextPath: MicrosoftWindows.winRegmerge.compared
+    - contextPath: MicrosoftWindows.WinRegmerge.compared
       description: whether a comparison has taken place between the registry and the
         file
       type: boolean
@@ -4321,31 +4321,31 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_robocopy_module.html"
     name: win-robocopy
     outputs:
-    - contextPath: MicrosoftWindows.winRobocopy.cmd
+    - contextPath: MicrosoftWindows.WinRobocopy.cmd
       description: The used command line.
       type: string
-    - contextPath: MicrosoftWindows.winRobocopy.src
+    - contextPath: MicrosoftWindows.WinRobocopy.src
       description: The Source file/directory of the sync.
       type: string
-    - contextPath: MicrosoftWindows.winRobocopy.dest
+    - contextPath: MicrosoftWindows.WinRobocopy.dest
       description: The Destination file/directory of the sync.
       type: string
-    - contextPath: MicrosoftWindows.winRobocopy.recurse
+    - contextPath: MicrosoftWindows.WinRobocopy.recurse
       description: Whether or not the recurse flag was toggled.
       type: boolean
-    - contextPath: MicrosoftWindows.winRobocopy.purge
+    - contextPath: MicrosoftWindows.WinRobocopy.purge
       description: Whether or not the purge flag was toggled.
       type: boolean
-    - contextPath: MicrosoftWindows.winRobocopy.flags
+    - contextPath: MicrosoftWindows.WinRobocopy.flags
       description: Any flags passed in by the user.
       type: string
-    - contextPath: MicrosoftWindows.winRobocopy.rc
+    - contextPath: MicrosoftWindows.WinRobocopy.rc
       description: The return code returned by robocopy.
       type: number
-    - contextPath: MicrosoftWindows.winRobocopy.output
+    - contextPath: MicrosoftWindows.WinRobocopy.output
       description: The output of running the robocopy command.
       type: string
-    - contextPath: MicrosoftWindows.winRobocopy.msg
+    - contextPath: MicrosoftWindows.WinRobocopy.msg
       description: Output interpreted into a concise message.
       type: string
   - arguments:
@@ -4376,7 +4376,7 @@ script:
       \ https://docs.ansible.com/ansible/2.9/modules/win_route_module.html"
     name: win-route
     outputs:
-    - contextPath: MicrosoftWindows.winRoute.output
+    - contextPath: MicrosoftWindows.WinRoute.output
       description: A message describing the task result.
       type: string
   - arguments:
@@ -4414,13 +4414,13 @@ script:
       \ play sounds\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_say_module.html"
     name: win-say
     outputs:
-    - contextPath: MicrosoftWindows.winSay.message_text
+    - contextPath: MicrosoftWindows.WinSay.message_text
       description: The text that the module attempted to speak.
       type: string
-    - contextPath: MicrosoftWindows.winSay.voice
+    - contextPath: MicrosoftWindows.WinSay.voice
       description: The voice used to speak the text.
       type: string
-    - contextPath: MicrosoftWindows.winSay.voice_info
+    - contextPath: MicrosoftWindows.WinSay.voice_info
       description: The voice used to speak the text.
       type: string
   - arguments:
@@ -4611,34 +4611,34 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_scheduled_task_stat_module.html"
     name: win-scheduled-task-stat
     outputs:
-    - contextPath: MicrosoftWindows.winScheduledTaskStat.actions
+    - contextPath: MicrosoftWindows.WinScheduledTaskStat.actions
       description: A list of actions.
       type: unknown
-    - contextPath: MicrosoftWindows.winScheduledTaskStat.folder_exists
+    - contextPath: MicrosoftWindows.WinScheduledTaskStat.folder_exists
       description: Whether the folder set at path exists.
       type: boolean
-    - contextPath: MicrosoftWindows.winScheduledTaskStat.folder_task_count
+    - contextPath: MicrosoftWindows.WinScheduledTaskStat.folder_task_count
       description: The number of tasks that exist in the folder.
       type: number
-    - contextPath: MicrosoftWindows.winScheduledTaskStat.folder_task_names
+    - contextPath: MicrosoftWindows.WinScheduledTaskStat.folder_task_names
       description: A list of tasks that exist in the folder.
       type: unknown
-    - contextPath: MicrosoftWindows.winScheduledTaskStat.principal
+    - contextPath: MicrosoftWindows.WinScheduledTaskStat.principal
       description: Details on the principal configured to run the task.
       type: unknown
-    - contextPath: MicrosoftWindows.winScheduledTaskStat.registration_info
+    - contextPath: MicrosoftWindows.WinScheduledTaskStat.registration_info
       description: Details on the task registration info.
       type: unknown
-    - contextPath: MicrosoftWindows.winScheduledTaskStat.settings
+    - contextPath: MicrosoftWindows.WinScheduledTaskStat.settings
       description: Details on the task settings.
       type: unknown
-    - contextPath: MicrosoftWindows.winScheduledTaskStat.state
+    - contextPath: MicrosoftWindows.WinScheduledTaskStat.state
       description: Details on the state of the task
       type: unknown
-    - contextPath: MicrosoftWindows.winScheduledTaskStat.task_exists
+    - contextPath: MicrosoftWindows.WinScheduledTaskStat.task_exists
       description: Whether the task at the folder exists.
       type: boolean
-    - contextPath: MicrosoftWindows.winScheduledTaskStat.triggers
+    - contextPath: MicrosoftWindows.WinScheduledTaskStat.triggers
       description: A list of triggers.
       type: unknown
   - arguments:
@@ -4667,26 +4667,26 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_security_policy_module.html"
     name: win-security-policy
     outputs:
-    - contextPath: MicrosoftWindows.winSecurityPolicy.rc
+    - contextPath: MicrosoftWindows.WinSecurityPolicy.rc
       description: The return code after a failure when running SecEdit.exe.
       type: number
-    - contextPath: MicrosoftWindows.winSecurityPolicy.stdout
+    - contextPath: MicrosoftWindows.WinSecurityPolicy.stdout
       description: The output of the STDOUT buffer after a failure when running SecEdit.exe.
       type: string
-    - contextPath: MicrosoftWindows.winSecurityPolicy.stderr
+    - contextPath: MicrosoftWindows.WinSecurityPolicy.stderr
       description: The output of the STDERR buffer after a failure when running SecEdit.exe.
       type: string
-    - contextPath: MicrosoftWindows.winSecurityPolicy.import_log
+    - contextPath: MicrosoftWindows.WinSecurityPolicy.import_log
       description: The log of the SecEdit.exe /configure job that configured the local
         policies. This is used for debugging purposes on failures.
       type: string
-    - contextPath: MicrosoftWindows.winSecurityPolicy.key
+    - contextPath: MicrosoftWindows.WinSecurityPolicy.key
       description: The key in the section passed to the module to modify.
       type: string
-    - contextPath: MicrosoftWindows.winSecurityPolicy.section
+    - contextPath: MicrosoftWindows.WinSecurityPolicy.section
       description: The section passed to the module to modify.
       type: string
-    - contextPath: MicrosoftWindows.winSecurityPolicy.value
+    - contextPath: MicrosoftWindows.WinSecurityPolicy.value
       description: The value passed to the module to modify to.
       type: string
   - arguments:
@@ -4780,40 +4780,40 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_service_module.html"
     name: win-service
     outputs:
-    - contextPath: MicrosoftWindows.winService.exists
+    - contextPath: MicrosoftWindows.WinService.exists
       description: Whether the service exists or not.
       type: boolean
-    - contextPath: MicrosoftWindows.winService.name
+    - contextPath: MicrosoftWindows.WinService.name
       description: The service name or id of the service.
       type: string
-    - contextPath: MicrosoftWindows.winService.display_name
+    - contextPath: MicrosoftWindows.WinService.display_name
       description: The display name of the installed service.
       type: string
-    - contextPath: MicrosoftWindows.winService.state
+    - contextPath: MicrosoftWindows.WinService.state
       description: The current running status of the service.
       type: string
-    - contextPath: MicrosoftWindows.winService.start_mode
+    - contextPath: MicrosoftWindows.WinService.start_mode
       description: The startup type of the service.
       type: string
-    - contextPath: MicrosoftWindows.winService.path
+    - contextPath: MicrosoftWindows.WinService.path
       description: The path to the service executable.
       type: string
-    - contextPath: MicrosoftWindows.winService.can_pause_and_continue
+    - contextPath: MicrosoftWindows.WinService.can_pause_and_continue
       description: Whether the service can be paused and unpaused.
       type: boolean
-    - contextPath: MicrosoftWindows.winService.description
+    - contextPath: MicrosoftWindows.WinService.description
       description: The description of the service.
       type: string
-    - contextPath: MicrosoftWindows.winService.username
+    - contextPath: MicrosoftWindows.WinService.username
       description: The username that runs the service.
       type: string
-    - contextPath: MicrosoftWindows.winService.desktop_interact
+    - contextPath: MicrosoftWindows.WinService.desktop_interact
       description: Whether the current user is allowed to interact with the desktop.
       type: boolean
-    - contextPath: MicrosoftWindows.winService.dependencies
+    - contextPath: MicrosoftWindows.WinService.dependencies
       description: A list of services that is depended by this service.
       type: unknown
-    - contextPath: MicrosoftWindows.winService.depended_by
+    - contextPath: MicrosoftWindows.WinService.depended_by
       description: A list of services that depend on this service.
       type: unknown
   - arguments:
@@ -4880,7 +4880,7 @@ script:
     description: "Manage Windows shares\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_share_module.html"
     name: win-share
     outputs:
-    - contextPath: MicrosoftWindows.winShare.actions
+    - contextPath: MicrosoftWindows.WinShare.actions
       description: A list of action cmdlets that were run by the module.
       type: unknown
   - arguments:
@@ -4969,10 +4969,10 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_snmp_module.html"
     name: win-snmp
     outputs:
-    - contextPath: MicrosoftWindows.winSnmp.community_strings
+    - contextPath: MicrosoftWindows.WinSnmp.community_strings
       description: The list of community strings for this machine.
       type: unknown
-    - contextPath: MicrosoftWindows.winSnmp.permitted_managers
+    - contextPath: MicrosoftWindows.WinSnmp.permitted_managers
       description: The list of permitted managers for this machine.
       type: unknown
   - arguments:
@@ -5017,10 +5017,10 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_stat_module.html"
     name: win-stat
     outputs:
-    - contextPath: MicrosoftWindows.winStat.changed
+    - contextPath: MicrosoftWindows.WinStat.changed
       description: Whether anything was changed
       type: boolean
-    - contextPath: MicrosoftWindows.winStat.stat
+    - contextPath: MicrosoftWindows.WinStat.stat
       description: dictionary containing all the stat data
       type: unknown
   - arguments:
@@ -5052,7 +5052,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_tempfile_module.html"
     name: win-tempfile
     outputs:
-    - contextPath: MicrosoftWindows.winTempfile.path
+    - contextPath: MicrosoftWindows.WinTempfile.path
       description: The absolute path to the created file or directory.
       type: string
   - arguments:
@@ -5137,7 +5137,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_template_module.html"
     name: win-template
     outputs:
-    - contextPath: MicrosoftWindows.winTemplate.backup_file
+    - contextPath: MicrosoftWindows.WinTemplate.backup_file
       description: Name of the backup file that was created.
       type: string
   - arguments:
@@ -5154,11 +5154,11 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_timezone_module.html"
     name: win-timezone
     outputs:
-    - contextPath: MicrosoftWindows.winTimezone.previous_timezone
+    - contextPath: MicrosoftWindows.WinTimezone.previous_timezone
       description: The previous timezone if it was changed, otherwise the existing
         timezone.
       type: string
-    - contextPath: MicrosoftWindows.winTimezone.timezone
+    - contextPath: MicrosoftWindows.WinTimezone.timezone
       description: The current timezone (possibly changed).
       type: string
   - arguments:
@@ -5196,19 +5196,19 @@ script:
       \ or later hosts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_toast_module.html"
     name: win-toast
     outputs:
-    - contextPath: MicrosoftWindows.winToast.expire_at_utc
+    - contextPath: MicrosoftWindows.WinToast.expire_at_utc
       description: Calculated utc date time when the notification expires.
       type: string
-    - contextPath: MicrosoftWindows.winToast.no_toast_sent_reason
+    - contextPath: MicrosoftWindows.WinToast.no_toast_sent_reason
       description: Text containing the reason why a notification was not sent.
       type: string
-    - contextPath: MicrosoftWindows.winToast.sent_localtime
+    - contextPath: MicrosoftWindows.WinToast.sent_localtime
       description: local date time when the notification was sent.
       type: string
-    - contextPath: MicrosoftWindows.winToast.time_taken
+    - contextPath: MicrosoftWindows.WinToast.time_taken
       description: How long the module took to run on the remote windows host in seconds.
       type: unknown
-    - contextPath: MicrosoftWindows.winToast.toast_sent
+    - contextPath: MicrosoftWindows.WinToast.toast_sent
       description: Whether the module was able to send a toast notification or not.
       type: boolean
   - arguments:
@@ -5247,13 +5247,13 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_unzip_module.html"
     name: win-unzip
     outputs:
-    - contextPath: MicrosoftWindows.winUnzip.dest
+    - contextPath: MicrosoftWindows.WinUnzip.dest
       description: The provided destination path
       type: string
-    - contextPath: MicrosoftWindows.winUnzip.removed
+    - contextPath: MicrosoftWindows.WinUnzip.removed
       description: Whether the module did remove any files during task run
       type: boolean
-    - contextPath: MicrosoftWindows.winUnzip.src
+    - contextPath: MicrosoftWindows.WinUnzip.src
       description: The provided source path
       type: string
   - arguments:
@@ -5343,25 +5343,25 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_updates_module.html"
     name: win-updates
     outputs:
-    - contextPath: MicrosoftWindows.winUpdates.reboot_required
+    - contextPath: MicrosoftWindows.WinUpdates.reboot_required
       description: True when the target server requires a reboot to complete updates
         (no further updates can be installed until after a reboot).
       type: boolean
-    - contextPath: MicrosoftWindows.winUpdates.updates
+    - contextPath: MicrosoftWindows.WinUpdates.updates
       description: List of updates that were found/installed.
       type: unknown
-    - contextPath: MicrosoftWindows.winUpdates.filtered_updates
+    - contextPath: MicrosoftWindows.WinUpdates.filtered_updates
       description: List of updates that were found but were filtered based on `blacklist`,
         `whitelist` or `category_names`. The return value is in the same form as `updates`,
         along with `filtered_reason`.
       type: unknown
-    - contextPath: MicrosoftWindows.winUpdates.found_update_count
+    - contextPath: MicrosoftWindows.WinUpdates.found_update_count
       description: The number of updates found needing to be applied.
       type: number
-    - contextPath: MicrosoftWindows.winUpdates.installed_update_count
+    - contextPath: MicrosoftWindows.WinUpdates.installed_update_count
       description: The number of updates successfully installed or downloaded.
       type: number
-    - contextPath: MicrosoftWindows.winUpdates.failed_update_count
+    - contextPath: MicrosoftWindows.WinUpdates.failed_update_count
       description: The number of updates that failed to install.
       type: number
   - arguments:
@@ -5513,25 +5513,25 @@ script:
       \ https://docs.ansible.com/ansible/2.9/modules/win_uri_module.html"
     name: win-uri
     outputs:
-    - contextPath: MicrosoftWindows.winUri.elapsed
+    - contextPath: MicrosoftWindows.WinUri.elapsed
       description: The number of seconds that elapsed while performing the download.
       type: unknown
-    - contextPath: MicrosoftWindows.winUri.url
+    - contextPath: MicrosoftWindows.WinUri.url
       description: The Target URL.
       type: string
-    - contextPath: MicrosoftWindows.winUri.status_code
+    - contextPath: MicrosoftWindows.WinUri.status_code
       description: The HTTP Status Code of the response.
       type: number
-    - contextPath: MicrosoftWindows.winUri.status_description
+    - contextPath: MicrosoftWindows.WinUri.status_description
       description: A summary of the status.
       type: string
-    - contextPath: MicrosoftWindows.winUri.content
+    - contextPath: MicrosoftWindows.WinUri.content
       description: The raw content of the HTTP response.
       type: string
-    - contextPath: MicrosoftWindows.winUri.content_length
+    - contextPath: MicrosoftWindows.WinUri.content_length
       description: The byte size of the response.
       type: number
-    - contextPath: MicrosoftWindows.winUri.json
+    - contextPath: MicrosoftWindows.WinUri.json
       description: The json structure returned under content as a dictionary.
       type: unknown
   - arguments:
@@ -5605,37 +5605,37 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_user_module.html"
     name: win-user
     outputs:
-    - contextPath: MicrosoftWindows.winUser.account_disabled
+    - contextPath: MicrosoftWindows.WinUser.account_disabled
       description: Whether the user is disabled.
       type: boolean
-    - contextPath: MicrosoftWindows.winUser.account_locked
+    - contextPath: MicrosoftWindows.WinUser.account_locked
       description: Whether the user is locked.
       type: boolean
-    - contextPath: MicrosoftWindows.winUser.description
+    - contextPath: MicrosoftWindows.WinUser.description
       description: The description set for the user.
       type: string
-    - contextPath: MicrosoftWindows.winUser.fullname
+    - contextPath: MicrosoftWindows.WinUser.fullname
       description: The full name set for the user.
       type: string
-    - contextPath: MicrosoftWindows.winUser.groups
+    - contextPath: MicrosoftWindows.WinUser.groups
       description: A list of groups and their ADSI path the user is a member of.
       type: unknown
-    - contextPath: MicrosoftWindows.winUser.name
+    - contextPath: MicrosoftWindows.WinUser.name
       description: The name of the user
       type: string
-    - contextPath: MicrosoftWindows.winUser.password_expired
+    - contextPath: MicrosoftWindows.WinUser.password_expired
       description: Whether the password is expired.
       type: boolean
-    - contextPath: MicrosoftWindows.winUser.password_never_expires
+    - contextPath: MicrosoftWindows.WinUser.password_never_expires
       description: Whether the password is set to never expire.
       type: boolean
-    - contextPath: MicrosoftWindows.winUser.path
+    - contextPath: MicrosoftWindows.WinUser.path
       description: The ADSI path for the user.
       type: string
-    - contextPath: MicrosoftWindows.winUser.sid
+    - contextPath: MicrosoftWindows.WinUser.sid
       description: The SID for the user.
       type: string
-    - contextPath: MicrosoftWindows.winUser.user_cannot_change_password
+    - contextPath: MicrosoftWindows.WinUser.user_cannot_change_password
       description: Whether the user can change their own password.
       type: boolean
   - arguments:
@@ -5683,7 +5683,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/win_user_profile_module.html"
     name: win-user-profile
     outputs:
-    - contextPath: MicrosoftWindows.winUserProfile.path
+    - contextPath: MicrosoftWindows.WinUserProfile.path
       description: The full path to the profile for the account. This will be null
         if `state=absent` and no profile was deleted.
       type: string
@@ -5722,11 +5722,11 @@ script:
       \ https://docs.ansible.com/ansible/2.9/modules/win_user_right_module.html"
     name: win-user-right
     outputs:
-    - contextPath: MicrosoftWindows.winUserRight.added
+    - contextPath: MicrosoftWindows.WinUserRight.added
       description: A list of accounts that were added to the right, this is empty
         if no accounts were added.
       type: unknown
-    - contextPath: MicrosoftWindows.winUserRight.removed
+    - contextPath: MicrosoftWindows.WinUserRight.removed
       description: A list of accounts that were removed from the right, this is empty
         if no accounts were removed.
       type: unknown
@@ -5782,10 +5782,10 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_wait_for_module.html"
     name: win-wait-for
     outputs:
-    - contextPath: MicrosoftWindows.winWaitFor.wait_attempts
+    - contextPath: MicrosoftWindows.WinWaitFor.wait_attempts
       description: The number of attempts to poll the file or port before module finishes.
       type: number
-    - contextPath: MicrosoftWindows.winWaitFor.elapsed
+    - contextPath: MicrosoftWindows.WinWaitFor.elapsed
       description: The elapsed seconds between the start of poll and the end of the
         module. This includes the delay if the option is set.
       type: unknown
@@ -5844,11 +5844,11 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_wait_for_process_module.html"
     name: win-wait-for-process
     outputs:
-    - contextPath: MicrosoftWindows.winWaitForProcess.elapsed
+    - contextPath: MicrosoftWindows.WinWaitForProcess.elapsed
       description: The elapsed seconds between the start of poll and the end of the
         module.
       type: unknown
-    - contextPath: MicrosoftWindows.winWaitForProcess.matched_processes
+    - contextPath: MicrosoftWindows.WinWaitForProcess.matched_processes
       description: List of matched processes (either stopped or started).
       type: unknown
   - arguments:
@@ -5897,56 +5897,56 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_whoami_module.html"
     name: win-whoami
     outputs:
-    - contextPath: MicrosoftWindows.winWhoami.authentication_package
+    - contextPath: MicrosoftWindows.WinWhoami.authentication_package
       description: The name of the authentication package used to authenticate the
         user in the session.
       type: string
-    - contextPath: MicrosoftWindows.winWhoami.user_flags
+    - contextPath: MicrosoftWindows.WinWhoami.user_flags
       description: The user flags for the logon session, see UserFlags in `https://msdn.microsoft.com/en-us/library/windows/desktop/aa380128`.
       type: string
-    - contextPath: MicrosoftWindows.winWhoami.upn
+    - contextPath: MicrosoftWindows.WinWhoami.upn
       description: The user principal name of the current user.
       type: string
-    - contextPath: MicrosoftWindows.winWhoami.logon_type
+    - contextPath: MicrosoftWindows.WinWhoami.logon_type
       description: The logon type that identifies the logon method, see `https://msdn.microsoft.com/en-us/library/windows/desktop/aa380129.aspx`.
       type: string
-    - contextPath: MicrosoftWindows.winWhoami.privileges
+    - contextPath: MicrosoftWindows.WinWhoami.privileges
       description: A dictionary of privileges and their state on the logon token.
       type: unknown
-    - contextPath: MicrosoftWindows.winWhoami.label
+    - contextPath: MicrosoftWindows.WinWhoami.label
       description: The mandatory label set to the logon session.
       type: unknown
-    - contextPath: MicrosoftWindows.winWhoami.impersonation_level
+    - contextPath: MicrosoftWindows.WinWhoami.impersonation_level
       description: The impersonation level of the token, only valid if `token_type`
         is `TokenImpersonation`, see `https://msdn.microsoft.com/en-us/library/windows/desktop/aa379572.aspx`.
       type: string
-    - contextPath: MicrosoftWindows.winWhoami.login_time
+    - contextPath: MicrosoftWindows.WinWhoami.login_time
       description: The logon time in ISO 8601 format
       type: string
-    - contextPath: MicrosoftWindows.winWhoami.groups
+    - contextPath: MicrosoftWindows.WinWhoami.groups
       description: A list of groups and attributes that the user is a member of.
       type: unknown
-    - contextPath: MicrosoftWindows.winWhoami.account
+    - contextPath: MicrosoftWindows.WinWhoami.account
       description: The running account SID details.
       type: unknown
-    - contextPath: MicrosoftWindows.winWhoami.login_domain
+    - contextPath: MicrosoftWindows.WinWhoami.login_domain
       description: The name of the domain used to authenticate the owner of the session.
       type: string
-    - contextPath: MicrosoftWindows.winWhoami.rights
+    - contextPath: MicrosoftWindows.WinWhoami.rights
       description: A list of logon rights assigned to the logon.
       type: unknown
-    - contextPath: MicrosoftWindows.winWhoami.logon_server
+    - contextPath: MicrosoftWindows.WinWhoami.logon_server
       description: The name of the server used to authenticate the owner of the logon
         session.
       type: string
-    - contextPath: MicrosoftWindows.winWhoami.logon_id
+    - contextPath: MicrosoftWindows.WinWhoami.logon_id
       description: The unique identifier of the logon session.
       type: number
-    - contextPath: MicrosoftWindows.winWhoami.dns_domain_name
+    - contextPath: MicrosoftWindows.WinWhoami.dns_domain_name
       description: The DNS name of the logon session, this is an empty string if this
         is not set.
       type: string
-    - contextPath: MicrosoftWindows.winWhoami.token_type
+    - contextPath: MicrosoftWindows.WinWhoami.token_type
       description: The token type to indicate whether it is a primary or impersonation
         token.
       type: string
@@ -6004,16 +6004,16 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/win_xml_module.html"
     name: win-xml
     outputs:
-    - contextPath: MicrosoftWindows.winXml.backup_file
+    - contextPath: MicrosoftWindows.WinXml.backup_file
       description: Name of the backup file that was created.
       type: string
-    - contextPath: MicrosoftWindows.winXml.count
+    - contextPath: MicrosoftWindows.WinXml.count
       description: Number of nodes matched by xpath.
       type: number
-    - contextPath: MicrosoftWindows.winXml.msg
+    - contextPath: MicrosoftWindows.WinXml.msg
       description: What was done.
       type: string
-    - contextPath: MicrosoftWindows.winXml.err
+    - contextPath: MicrosoftWindows.WinXml.err
       description: XML comparison exceptions.
       type: unknown
   dockerimage: demisto/ansible-runner:1.0.0.23806

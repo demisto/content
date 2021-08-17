@@ -82,28 +82,28 @@ script:
     description: "Manage DNS records.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nsupdate_module.html"
     name: dns-nsupdate
     outputs:
-    - contextPath: DNS.nsupdate.changed
+    - contextPath: DNS.Nsupdate.changed
       description: If module has modified record
       type: string
-    - contextPath: DNS.nsupdate.record
+    - contextPath: DNS.Nsupdate.record
       description: DNS record
       type: string
-    - contextPath: DNS.nsupdate.ttl
+    - contextPath: DNS.Nsupdate.ttl
       description: DNS record TTL
       type: number
-    - contextPath: DNS.nsupdate.type
+    - contextPath: DNS.Nsupdate.type
       description: DNS record type
       type: string
-    - contextPath: DNS.nsupdate.value
+    - contextPath: DNS.Nsupdate.value
       description: DNS record value(s)
       type: unknown
-    - contextPath: DNS.nsupdate.zone
+    - contextPath: DNS.Nsupdate.zone
       description: DNS record zone
       type: string
-    - contextPath: DNS.nsupdate.dns_rc
+    - contextPath: DNS.Nsupdate.dns_rc
       description: dnspython return code
       type: number
-    - contextPath: DNS.nsupdate.dns_rc_str
+    - contextPath: DNS.Nsupdate.dns_rc_str
       description: dnspython return code (string representation)
       type: string
   dockerimage: demisto/ansible-runner:1.0.0.23806

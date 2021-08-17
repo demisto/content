@@ -113,7 +113,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_autoscale_module.html"
     name: azure-rm-autoscale
     outputs:
-    - contextPath: Azure.azureRmAutoscale.state
+    - contextPath: Azure.AzureRmAutoscale.state
       description: Current state of the resource.
       type: unknown
   - arguments:
@@ -131,7 +131,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_autoscale_info_module.html"
     name: azure-rm-autoscale-info
     outputs:
-    - contextPath: Azure.azureRmAutoscaleInfo.autoscales
+    - contextPath: Azure.AzureRmAutoscaleInfo.autoscales
       description: List of Azure Scale Settings dicts.
       type: unknown
   - arguments:
@@ -191,10 +191,10 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_availabilityset_module.html"
     name: azure-rm-availabilityset
     outputs:
-    - contextPath: Azure.azureRmAvailabilityset.state
+    - contextPath: Azure.AzureRmAvailabilityset.state
       description: Current state of the availability set.
       type: unknown
-    - contextPath: Azure.azureRmAvailabilityset.changed
+    - contextPath: Azure.AzureRmAvailabilityset.changed
       description: Whether or not the resource has changed
       type: boolean
   - arguments:
@@ -210,7 +210,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_availabilityset_info_module.html"
     name: azure-rm-availabilityset-info
     outputs:
-    - contextPath: Azure.azureRmAvailabilitysetInfo.azure_availabilityset
+    - contextPath: Azure.AzureRmAvailabilitysetInfo.azure_availabilityset
       description: List of availability sets dicts.
       type: unknown
   - arguments:
@@ -292,7 +292,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_deployment_module.html"
     name: azure-rm-deployment
     outputs:
-    - contextPath: Azure.azureRmDeployment.deployment
+    - contextPath: Azure.AzureRmDeployment.deployment
       description: Deployment details.
       type: unknown
   - arguments:
@@ -307,7 +307,7 @@ script:
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_deployment_info_module.html"
     name: azure-rm-deployment-info
     outputs:
-    - contextPath: Azure.azureRmDeploymentInfo.deployments
+    - contextPath: Azure.AzureRmDeploymentInfo.deployments
       description: A list of dictionaries containing facts for deployments.
       type: unknown
   - arguments:
@@ -365,7 +365,7 @@ script:
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_functionapp_module.html"
     name: azure-rm-functionapp
     outputs:
-    - contextPath: Azure.azureRmFunctionapp.state
+    - contextPath: Azure.AzureRmFunctionapp.state
       description: Current state of the Azure Function App.
       type: unknown
   - arguments:
@@ -382,7 +382,7 @@ script:
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_functionapp_info_module.html"
     name: azure-rm-functionapp-info
     outputs:
-    - contextPath: Azure.azureRmFunctionappInfo.azure_functionapps
+    - contextPath: Azure.AzureRmFunctionappInfo.azure_functionapps
       description: List of Azure Function Apps dicts.
       type: unknown
   - arguments:
@@ -428,7 +428,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_gallery_module.html"
     name: azure-rm-gallery
     outputs:
-    - contextPath: Azure.azureRmGallery.id
+    - contextPath: Azure.AzureRmGallery.id
       description: Resource Id
       type: string
   - arguments:
@@ -442,7 +442,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_gallery_info_module.html"
     name: azure-rm-gallery-info
     outputs:
-    - contextPath: Azure.azureRmGalleryInfo.galleries
+    - contextPath: Azure.AzureRmGalleryInfo.galleries
       description: A list of dict results where the key is the name of the gallery
         and the values are the info for that gallery.
       type: unknown
@@ -532,7 +532,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimage_module.html"
     name: azure-rm-galleryimage
     outputs:
-    - contextPath: Azure.azureRmGalleryimage.id
+    - contextPath: Azure.AzureRmGalleryimage.id
       description: Resource Id
       type: string
   - arguments:
@@ -550,7 +550,7 @@ script:
     description: "Get Azure SIG Image info.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimage_info_module.html"
     name: azure-rm-galleryimage-info
     outputs:
-    - contextPath: Azure.azureRmGalleryimageInfo.images
+    - contextPath: Azure.AzureRmGalleryimageInfo.images
       description: A list of dict results where the key is the name of the image and
         the values are the info for that image.
       type: unknown
@@ -608,7 +608,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimageversion_module.html"
     name: azure-rm-galleryimageversion
     outputs:
-    - contextPath: Azure.azureRmGalleryimageversion.id
+    - contextPath: Azure.AzureRmGalleryimageversion.id
       description: Resource Id
       type: string
   - arguments:
@@ -631,7 +631,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimageversion_info_module.html"
     name: azure-rm-galleryimageversion-info
     outputs:
-    - contextPath: Azure.azureRmGalleryimageversionInfo.versions
+    - contextPath: Azure.AzureRmGalleryimageversionInfo.versions
       description: A list of dict results where the key is the name of the version
         and the values are the info for that version.
       type: unknown
@@ -693,7 +693,7 @@ script:
     description: "Manage Azure image\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_image_module.html"
     name: azure-rm-image
     outputs:
-    - contextPath: Azure.azureRmImage.id
+    - contextPath: Azure.AzureRmImage.id
       description: Image resource path.
       type: string
   - arguments:
@@ -709,7 +709,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_image_info_module.html"
     name: azure-rm-image-info
     outputs:
-    - contextPath: Azure.azureRmImageInfo.images
+    - contextPath: Azure.AzureRmImageInfo.images
       description: List of image dicts.
       type: unknown
   - arguments:
@@ -868,10 +868,10 @@ script:
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_loadbalancer_module.html"
     name: azure-rm-loadbalancer
     outputs:
-    - contextPath: Azure.azureRmLoadbalancer.state
+    - contextPath: Azure.AzureRmLoadbalancer.state
       description: Current state of the load balancer.
       type: unknown
-    - contextPath: Azure.azureRmLoadbalancer.changed
+    - contextPath: Azure.AzureRmLoadbalancer.changed
       description: Whether or not the resource has changed.
       type: boolean
   - arguments:
@@ -887,7 +887,7 @@ script:
     description: "Get load balancer facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_loadbalancer_info_module.html"
     name: azure-rm-loadbalancer-info
     outputs:
-    - contextPath: Azure.azureRmLoadbalancerInfo.azure_loadbalancers
+    - contextPath: Azure.AzureRmLoadbalancerInfo.azure_loadbalancers
       description: List of load balancer dicts.
       type: unknown
   - arguments:
@@ -994,13 +994,13 @@ script:
     description: "Manage Azure Manage Disks\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_manageddisk_module.html"
     name: azure-rm-manageddisk
     outputs:
-    - contextPath: Azure.azureRmManageddisk.id
+    - contextPath: Azure.AzureRmManageddisk.id
       description: The managed disk resource ID.
       type: unknown
-    - contextPath: Azure.azureRmManageddisk.state
+    - contextPath: Azure.AzureRmManageddisk.state
       description: Current state of the managed disk.
       type: unknown
-    - contextPath: Azure.azureRmManageddisk.changed
+    - contextPath: Azure.AzureRmManageddisk.changed
       description: Whether or not the resource has changed.
       type: boolean
   - arguments:
@@ -1027,7 +1027,7 @@ script:
     description: "Get managed disk facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_manageddisk_info_module.html"
     name: azure-rm-manageddisk-info
     outputs:
-    - contextPath: Azure.azureRmManageddiskInfo.azure_managed_disk
+    - contextPath: Azure.AzureRmManageddiskInfo.azure_managed_disk
       description: List of managed disk dicts.
       type: unknown
   - arguments:
@@ -1052,7 +1052,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resource_info_module.html"
     name: azure-rm-resource-info
     outputs:
-    - contextPath: Azure.azureRmResourceInfo.response
+    - contextPath: Azure.AzureRmResourceInfo.response
       description: Response specific to resource type.
       type: unknown
   - arguments:
@@ -1099,10 +1099,10 @@ script:
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_module.html"
     name: azure-rm-resourcegroup
     outputs:
-    - contextPath: Azure.azureRmResourcegroup.contains_resources
+    - contextPath: Azure.AzureRmResourcegroup.contains_resources
       description: Whether or not the resource group contains associated resources.
       type: boolean
-    - contextPath: Azure.azureRmResourcegroup.state
+    - contextPath: Azure.AzureRmResourcegroup.state
       description: Current state of the resource group.
       type: unknown
   - arguments:
@@ -1120,7 +1120,7 @@ script:
     description: "Get resource group facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_info_module.html"
     name: azure-rm-resourcegroup-info
     outputs:
-    - contextPath: Azure.azureRmResourcegroupInfo.azure_resourcegroups
+    - contextPath: Azure.AzureRmResourcegroupInfo.azure_resourcegroups
       description: List of resource group dicts.
       type: unknown
   - arguments:
@@ -1174,7 +1174,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_snapshot_module.html"
     name: azure-rm-snapshot
     outputs:
-    - contextPath: Azure.azureRmSnapshot.id
+    - contextPath: Azure.AzureRmSnapshot.id
       description: Resource Id
       type: string
   - arguments:
@@ -1422,20 +1422,20 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachine_module.html"
     name: azure-rm-virtualmachine
     outputs:
-    - contextPath: Azure.azureRmVirtualmachine.powerstate
+    - contextPath: Azure.AzureRmVirtualmachine.powerstate
       description: Indicates if the state is `running`, `stopped`, `deallocated`,
         `generalized`.
       type: string
-    - contextPath: Azure.azureRmVirtualmachine.deleted_vhd_uris
+    - contextPath: Azure.AzureRmVirtualmachine.deleted_vhd_uris
       description: List of deleted Virtual Hard Disk URIs.
       type: unknown
-    - contextPath: Azure.azureRmVirtualmachine.deleted_network_interfaces
+    - contextPath: Azure.AzureRmVirtualmachine.deleted_network_interfaces
       description: List of deleted NICs.
       type: unknown
-    - contextPath: Azure.azureRmVirtualmachine.deleted_public_ips
+    - contextPath: Azure.AzureRmVirtualmachine.deleted_public_ips
       description: List of deleted public IP address names.
       type: unknown
-    - contextPath: Azure.azureRmVirtualmachine.azure_vm
+    - contextPath: Azure.AzureRmVirtualmachine.azure_vm
       description: Facts about the current state of the object. Note that facts are
         not part of the registered output but available directly.
       type: unknown
@@ -1453,7 +1453,7 @@ script:
     description: "Get virtual machine facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachine_info_module.html"
     name: azure-rm-virtualmachine-info
     outputs:
-    - contextPath: Azure.azureRmVirtualmachineInfo.vms
+    - contextPath: Azure.AzureRmVirtualmachineInfo.vms
       description: List of virtual machines.
       type: unknown
   - arguments:
@@ -1496,10 +1496,10 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineextension_module.html"
     name: azure-rm-virtualmachineextension
     outputs:
-    - contextPath: Azure.azureRmVirtualmachineextension.state
+    - contextPath: Azure.AzureRmVirtualmachineextension.state
       description: Current state of the vm extension.
       type: unknown
-    - contextPath: Azure.azureRmVirtualmachineextension.changed
+    - contextPath: Azure.AzureRmVirtualmachineextension.changed
       description: Whether or not the resource has changed.
       type: boolean
   - arguments:
@@ -1520,7 +1520,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineextension_info_module.html"
     name: azure-rm-virtualmachineextension-info
     outputs:
-    - contextPath: Azure.azureRmVirtualmachineextensionInfo.extensions
+    - contextPath: Azure.AzureRmVirtualmachineextensionInfo.extensions
       description: A list of dictionaries containing facts for Virtual Machine Extension.
       type: unknown
   - arguments:
@@ -1547,7 +1547,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineimage_info_module.html"
     name: azure-rm-virtualmachineimage-info
     outputs:
-    - contextPath: Azure.azureRmVirtualmachineimageInfo.azure_vmimages
+    - contextPath: Azure.AzureRmVirtualmachineimageInfo.azure_vmimages
       description: List of image dicts.
       type: unknown
   - arguments:
@@ -1724,7 +1724,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescaleset_module.html"
     name: azure-rm-virtualmachinescaleset
     outputs:
-    - contextPath: Azure.azureRmVirtualmachinescaleset.azure_vmss
+    - contextPath: Azure.AzureRmVirtualmachinescaleset.azure_vmss
       description: 'Facts about the current state of the object.
         Note that facts are not part of the registered output but available directly.'
       type: unknown
@@ -1756,7 +1756,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescaleset_info_module.html"
     name: azure-rm-virtualmachinescaleset-info
     outputs:
-    - contextPath: Azure.azureRmVirtualmachinescalesetInfo.vmss
+    - contextPath: Azure.AzureRmVirtualmachinescalesetInfo.vmss
       description: List of virtual machine scale sets.
       type: unknown
   - arguments:
@@ -1805,7 +1805,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetextension_module.html"
     name: azure-rm-virtualmachinescalesetextension
     outputs:
-    - contextPath: Azure.azureRmVirtualmachinescalesetextension.id
+    - contextPath: Azure.AzureRmVirtualmachinescalesetextension.id
       description: VMSS extension resource ID.
       type: string
   - arguments:
@@ -1823,7 +1823,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetextension_info_module.html"
     name: azure-rm-virtualmachinescalesetextension-info
     outputs:
-    - contextPath: Azure.azureRmVirtualmachinescalesetextensionInfo.extensions
+    - contextPath: Azure.AzureRmVirtualmachinescalesetextensionInfo.extensions
       description: A list of dictionaries containing facts for Virtual Machine Extension.
       type: unknown
   - arguments:
@@ -1860,7 +1860,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetinstance_module.html"
     name: azure-rm-virtualmachinescalesetinstance
     outputs:
-    - contextPath: Azure.azureRmVirtualmachinescalesetinstance.instances
+    - contextPath: Azure.AzureRmVirtualmachinescalesetinstance.instances
       description: A list of instances.
       type: unknown
   - arguments:
@@ -1881,7 +1881,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetinstance_info_module.html"
     name: azure-rm-virtualmachinescalesetinstance-info
     outputs:
-    - contextPath: Azure.azureRmVirtualmachinescalesetinstanceInfo.instances
+    - contextPath: Azure.AzureRmVirtualmachinescalesetinstanceInfo.instances
       description: A list of dictionaries containing facts for Virtual Machine Scale
         Set VM.
       type: unknown
@@ -1982,7 +1982,7 @@ script:
     description: "Manage Web App instances\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webapp_module.html"
     name: azure-rm-webapp
     outputs:
-    - contextPath: Azure.azureRmWebapp.azure_webapp
+    - contextPath: Azure.AzureRmWebapp.azure_webapp
       description: ID of current web app.
       type: string
   - arguments:
@@ -2005,7 +2005,7 @@ script:
     description: "Get Azure web app facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webapp_info_module.html"
     name: azure-rm-webapp-info
     outputs:
-    - contextPath: Azure.azureRmWebappInfo.webapps
+    - contextPath: Azure.AzureRmWebappInfo.webapps
       description: List of web apps.
       type: unknown
   - arguments:
@@ -2085,7 +2085,7 @@ script:
     description: "Manage Azure Web App slot\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webappslot_module.html"
     name: azure-rm-webappslot
     outputs:
-    - contextPath: Azure.azureRmWebappslot.id
+    - contextPath: Azure.AzureRmWebappslot.id
       description: ID of current slot.
       type: string
   - arguments:
@@ -2140,7 +2140,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_azurefirewall_module.html"
     name: azure-rm-azurefirewall
     outputs:
-    - contextPath: Azure.azureRmAzurefirewall.id
+    - contextPath: Azure.AzureRmAzurefirewall.id
       description: Resource ID.
       type: string
   - arguments:
@@ -2153,7 +2153,7 @@ script:
     description: "Get AzureFirewall info.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_azurefirewall_info_module.html"
     name: azure-rm-azurefirewall-info
     outputs:
-    - contextPath: Azure.azureRmAzurefirewallInfo.firewalls
+    - contextPath: Azure.AzureRmAzurefirewallInfo.firewalls
       description: A list of dict results where the key is the name of the AzureFirewall
         and the values are the facts for that AzureFirewall.
       type: unknown
@@ -2213,7 +2213,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetwork_module.html"
     name: azure-rm-virtualnetwork
     outputs:
-    - contextPath: Azure.azureRmVirtualnetwork.state
+    - contextPath: Azure.AzureRmVirtualnetwork.state
       description: Current state of the virtual network.
       type: unknown
   - arguments:
@@ -2229,10 +2229,10 @@ script:
     description: "Get virtual network facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetwork_info_module.html"
     name: azure-rm-virtualnetwork-info
     outputs:
-    - contextPath: Azure.azureRmVirtualnetworkInfo.azure_virtualnetworks
+    - contextPath: Azure.AzureRmVirtualnetworkInfo.azure_virtualnetworks
       description: List of virtual network dicts.
       type: unknown
-    - contextPath: Azure.azureRmVirtualnetworkInfo.virtualnetworks
+    - contextPath: Azure.AzureRmVirtualnetworkInfo.virtualnetworks
       description: List of virtual network dicts with same format as `azure_rm_virtualnetwork`
         module parameters.
       type: unknown
@@ -2318,7 +2318,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetworkgateway_module.html"
     name: azure-rm-virtualnetworkgateway
     outputs:
-    - contextPath: Azure.azureRmVirtualnetworkgateway.id
+    - contextPath: Azure.AzureRmVirtualnetworkgateway.id
       description: Virtual Network Gateway resource ID.
       type: string
   - arguments:
@@ -2383,7 +2383,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetworkpeering_module.html"
     name: azure-rm-virtualnetworkpeering
     outputs:
-    - contextPath: Azure.azureRmVirtualnetworkpeering.id
+    - contextPath: Azure.AzureRmVirtualnetworkpeering.id
       description: ID of the Azure virtual network peering.
       type: string
   - arguments:
@@ -2401,7 +2401,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetworkpeering_info_module.html"
     name: azure-rm-virtualnetworkpeering-info
     outputs:
-    - contextPath: Azure.azureRmVirtualnetworkpeeringInfo.vnetpeerings
+    - contextPath: Azure.AzureRmVirtualnetworkpeeringInfo.vnetpeerings
       description: A list of Virtual Network Peering facts.
       type: unknown
   - arguments:
@@ -2443,7 +2443,7 @@ script:
     description: "Manage Azure subnets\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_subnet_module.html"
     name: azure-rm-subnet
     outputs:
-    - contextPath: Azure.azureRmSubnet.state
+    - contextPath: Azure.AzureRmSubnet.state
       description: Current state of the subnet.
       type: unknown
   - arguments:
@@ -2460,7 +2460,7 @@ script:
     description: "Get Azure Subnet facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_subnet_info_module.html"
     name: azure-rm-subnet-info
     outputs:
-    - contextPath: Azure.azureRmSubnetInfo.subnets
+    - contextPath: Azure.AzureRmSubnetInfo.subnets
       description: A list of dictionaries containing facts for subnet.
       type: unknown
   - arguments:
@@ -2529,7 +2529,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_trafficmanagerendpoint_module.html"
     name: azure-rm-trafficmanagerendpoint
     outputs:
-    - contextPath: Azure.azureRmTrafficmanagerendpoint.id
+    - contextPath: Azure.AzureRmTrafficmanagerendpoint.id
       description: The ID of the traffic manager endpoint.
       type: string
   - arguments:
@@ -2554,7 +2554,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_trafficmanagerendpoint_info_module.html"
     name: azure-rm-trafficmanagerendpoint-info
     outputs:
-    - contextPath: Azure.azureRmTrafficmanagerendpointInfo.endpoints
+    - contextPath: Azure.AzureRmTrafficmanagerendpointInfo.endpoints
       description: List of Traffic Manager endpoints.
       type: unknown
   - arguments:
@@ -2621,10 +2621,10 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_trafficmanagerprofile_module.html"
     name: azure-rm-trafficmanagerprofile
     outputs:
-    - contextPath: Azure.azureRmTrafficmanagerprofile.id
+    - contextPath: Azure.AzureRmTrafficmanagerprofile.id
       description: The ID of the traffic manager profile.
       type: string
-    - contextPath: Azure.azureRmTrafficmanagerprofile.endpoints
+    - contextPath: Azure.AzureRmTrafficmanagerprofile.endpoints
       description: List of endpoint IDs attached to the profile.
       type: unknown
   - arguments:
@@ -2641,7 +2641,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_trafficmanagerprofile_info_module.html"
     name: azure-rm-trafficmanagerprofile-info
     outputs:
-    - contextPath: Azure.azureRmTrafficmanagerprofileInfo.tms
+    - contextPath: Azure.AzureRmTrafficmanagerprofileInfo.tms
       description: List of Traffic Manager profiles.
       type: unknown
   - arguments:
@@ -2794,7 +2794,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_networkinterface_module.html"
     name: azure-rm-networkinterface
     outputs:
-    - contextPath: Azure.azureRmNetworkinterface.state
+    - contextPath: Azure.AzureRmNetworkinterface.state
       description: The current state of the network interface.
       type: unknown
   - arguments:
@@ -2812,10 +2812,10 @@ script:
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_networkinterface_info_module.html"
     name: azure-rm-networkinterface-info
     outputs:
-    - contextPath: Azure.azureRmNetworkinterfaceInfo.azure_networkinterfaces
+    - contextPath: Azure.AzureRmNetworkinterfaceInfo.azure_networkinterfaces
       description: List of network interface dicts.
       type: unknown
-    - contextPath: Azure.azureRmNetworkinterfaceInfo.networkinterfaces
+    - contextPath: Azure.AzureRmNetworkinterfaceInfo.networkinterfaces
       description: List of network interface dicts. Each dict contains parameters
         can be passed to `azure_rm_networkinterface` module.
       type: unknown
@@ -2895,7 +2895,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_publicipaddress_module.html"
     name: azure-rm-publicipaddress
     outputs:
-    - contextPath: Azure.azureRmPublicipaddress.state
+    - contextPath: Azure.AzureRmPublicipaddress.state
       description: Facts about the current state of the object.
       type: unknown
   - arguments:
@@ -2911,12 +2911,12 @@ script:
     description: "Get public IP facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_publicipaddress_info_module.html"
     name: azure-rm-publicipaddress-info
     outputs:
-    - contextPath: Azure.azureRmPublicipaddressInfo.azure_publicipaddresses
+    - contextPath: Azure.AzureRmPublicipaddressInfo.azure_publicipaddresses
       description: 'List of public IP address dicts.
         Please note that this option will be deprecated in 2.10 when curated format
         will become the only supported format.'
       type: unknown
-    - contextPath: Azure.azureRmPublicipaddressInfo.publicipaddresses
+    - contextPath: Azure.AzureRmPublicipaddressInfo.publicipaddresses
       description: 'List of publicipaddress.
         Contains the detail which matches azure_rm_publicipaddress parameters.
         Returned when the format parameter set to curated.'
@@ -2976,7 +2976,7 @@ script:
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_route_module.html"
     name: azure-rm-route
     outputs:
-    - contextPath: Azure.azureRmRoute.id
+    - contextPath: Azure.AzureRmRoute.id
       description: Current state of the route.
       type: string
   - arguments:
@@ -3027,10 +3027,10 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_routetable_module.html"
     name: azure-rm-routetable
     outputs:
-    - contextPath: Azure.azureRmRoutetable.changed
+    - contextPath: Azure.AzureRmRoutetable.changed
       description: Whether the resource is changed.
       type: boolean
-    - contextPath: Azure.azureRmRoutetable.id
+    - contextPath: Azure.AzureRmRoutetable.id
       description: Resource ID.
       type: string
   - arguments:
@@ -3046,22 +3046,22 @@ script:
     description: "Get route table facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_routetable_info_module.html"
     name: azure-rm-routetable-info
     outputs:
-    - contextPath: Azure.azureRmRoutetableInfo.id
+    - contextPath: Azure.AzureRmRoutetableInfo.id
       description: Resource ID.
       type: string
-    - contextPath: Azure.azureRmRoutetableInfo.name
+    - contextPath: Azure.AzureRmRoutetableInfo.name
       description: Name of the resource.
       type: string
-    - contextPath: Azure.azureRmRoutetableInfo.resource_group
+    - contextPath: Azure.AzureRmRoutetableInfo.resource_group
       description: Resource group of the route table.
       type: string
-    - contextPath: Azure.azureRmRoutetableInfo.disable_bgp_route_propagation
+    - contextPath: Azure.AzureRmRoutetableInfo.disable_bgp_route_propagation
       description: Whether the routes learned by BGP on that route table disabled.
       type: boolean
-    - contextPath: Azure.azureRmRoutetableInfo.tags
+    - contextPath: Azure.AzureRmRoutetableInfo.tags
       description: Tags of the route table.
       type: unknown
-    - contextPath: Azure.azureRmRoutetableInfo.routes
+    - contextPath: Azure.AzureRmRoutetableInfo.routes
       description: Current routes of the route table.
       type: unknown
   - arguments:
@@ -3119,7 +3119,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_securitygroup_module.html"
     name: azure-rm-securitygroup
     outputs:
-    - contextPath: Azure.azureRmSecuritygroup.state
+    - contextPath: Azure.AzureRmSecuritygroup.state
       description: Current state of the security group.
       type: unknown
   - arguments:
@@ -3136,7 +3136,7 @@ script:
     description: "Get security group facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_securitygroup_info_module.html"
     name: azure-rm-securitygroup-info
     outputs:
-    - contextPath: Azure.azureRmSecuritygroupInfo.securitygroups
+    - contextPath: Azure.AzureRmSecuritygroupInfo.securitygroups
       description: List containing security group dicts.
       type: unknown
   - arguments:
@@ -3207,7 +3207,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnsrecordset_module.html"
     name: azure-rm-dnsrecordset
     outputs:
-    - contextPath: Azure.azureRmDnsrecordset.state
+    - contextPath: Azure.AzureRmDnsrecordset.state
       description: Current state of the DNS record set.
       type: unknown
   - arguments:
@@ -3243,10 +3243,10 @@ script:
     description: "Get DNS Record Set facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnsrecordset_info_module.html"
     name: azure-rm-dnsrecordset-info
     outputs:
-    - contextPath: Azure.azureRmDnsrecordsetInfo.azure_dnsrecordset
+    - contextPath: Azure.AzureRmDnsrecordsetInfo.azure_dnsrecordset
       description: List of record set dicts.
       type: unknown
-    - contextPath: Azure.azureRmDnsrecordsetInfo.dnsrecordsets
+    - contextPath: Azure.AzureRmDnsrecordsetInfo.dnsrecordsets
       description: List of record set dicts, which shares the same hierarchy as `azure_rm_dnsrecordset`
         module's parameter.
       type: unknown
@@ -3306,7 +3306,7 @@ script:
     description: "Manage Azure DNS zones\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnszone_module.html"
     name: azure-rm-dnszone
     outputs:
-    - contextPath: Azure.azureRmDnszone.state
+    - contextPath: Azure.AzureRmDnszone.state
       description: Current state of the zone.
       type: unknown
   - arguments:
@@ -3333,10 +3333,10 @@ script:
     description: "Get DNS zone facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnszone_info_module.html"
     name: azure-rm-dnszone-info
     outputs:
-    - contextPath: Azure.azureRmDnszoneInfo.azure_dnszones
+    - contextPath: Azure.AzureRmDnszoneInfo.azure_dnszones
       description: List of zone dicts.
       type: unknown
-    - contextPath: Azure.azureRmDnszoneInfo.dnszones
+    - contextPath: Azure.AzureRmDnszoneInfo.dnszones
       description: List of zone dicts, which share the same layout as azure_rm_dnszone
         module parameter.
       type: unknown

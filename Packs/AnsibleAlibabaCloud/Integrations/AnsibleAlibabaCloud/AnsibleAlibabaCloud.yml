@@ -161,10 +161,10 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/ali_instance_module.html"
     name: ali-instance
     outputs:
-    - contextPath: AlibabaCloud.aliInstance.instances
+    - contextPath: AlibabaCloud.AliInstance.instances
       description: List of ECS instances
       type: unknown
-    - contextPath: AlibabaCloud.aliInstance.ids
+    - contextPath: AlibabaCloud.AliInstance.ids
       description: List of ECS instance IDs
       type: unknown
   - arguments:
@@ -180,10 +180,10 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_info_module.html"
     name: ali-instance-info
     outputs:
-    - contextPath: AlibabaCloud.aliInstanceInfo.instances
+    - contextPath: AlibabaCloud.AliInstanceInfo.instances
       description: List of ECS instances
       type: unknown
-    - contextPath: AlibabaCloud.aliInstanceInfo.ids
+    - contextPath: AlibabaCloud.AliInstanceInfo.ids
       description: List of ECS instance IDs
       type: unknown
   dockerimage: demisto/ansible-runner:1.0.0.23806

@@ -148,7 +148,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/k8s_module.html"
     name: k8s-k8s
     outputs:
-    - contextPath: Kubernetes.k8s.result
+    - contextPath: Kubernetes.K8s.result
       description: The created, patched, or otherwise present object. Will be empty
         in the case of a deletion.
       type: unknown
@@ -175,7 +175,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/k8s_info_module.html"
     name: k8s-info
     outputs:
-    - contextPath: Kubernetes.k8sInfo.resources
+    - contextPath: Kubernetes.K8sInfo.resources
       description: The object(s) that exists
       type: unknown
   - arguments:
@@ -235,7 +235,7 @@ script:
       \ or Job.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/k8s_scale_module.html"
     name: k8s-scale
     outputs:
-    - contextPath: Kubernetes.k8sScale.result
+    - contextPath: Kubernetes.K8sScale.result
       description: If a change was made, will return the patched object, otherwise
         returns the existing object.
       type: unknown
@@ -308,7 +308,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/k8s_service_module.html"
     name: k8s-service
     outputs:
-    - contextPath: Kubernetes.k8sService.result
+    - contextPath: Kubernetes.K8sService.result
       description: The created, patched, or otherwise present Service object. Will
         be empty in the case of a deletion.
       type: unknown

@@ -208,37 +208,37 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/authorized_key_module.html"
     name: linux-authorized-key
     outputs:
-    - contextPath: Linux.authorizedKey.exclusive
+    - contextPath: Linux.AuthorizedKey.exclusive
       description: If the key has been forced to be exclusive or not.
       type: boolean
-    - contextPath: Linux.authorizedKey.key
+    - contextPath: Linux.AuthorizedKey.key
       description: The key that the module was running against.
       type: string
-    - contextPath: Linux.authorizedKey.key_option
+    - contextPath: Linux.AuthorizedKey.key_option
       description: Key options related to the key.
       type: string
-    - contextPath: Linux.authorizedKey.keyfile
+    - contextPath: Linux.AuthorizedKey.keyfile
       description: Path for authorized key file.
       type: string
-    - contextPath: Linux.authorizedKey.manage_dir
+    - contextPath: Linux.AuthorizedKey.manage_dir
       description: Whether this module managed the directory of the authorized key
         file.
       type: boolean
-    - contextPath: Linux.authorizedKey.path
+    - contextPath: Linux.AuthorizedKey.path
       description: Alternate path to the authorized_keys file
       type: string
-    - contextPath: Linux.authorizedKey.state
+    - contextPath: Linux.AuthorizedKey.state
       description: Whether the given key (with the given key_options) should or should
         not be in the file
       type: string
-    - contextPath: Linux.authorizedKey.unique
+    - contextPath: Linux.AuthorizedKey.unique
       description: Whether the key is unique
       type: boolean
-    - contextPath: Linux.authorizedKey.user
+    - contextPath: Linux.AuthorizedKey.user
       description: The username on the remote host whose authorized_keys file will
         be modified
       type: string
-    - contextPath: Linux.authorizedKey.validate_certs
+    - contextPath: Linux.AuthorizedKey.validate_certs
       description: This only applies if using a https url as the source of the keys.
         If set to `no`, the SSL certificates will not be validated.
       type: boolean
@@ -441,7 +441,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/dconf_module.html"
     name: linux-dconf
     outputs:
-    - contextPath: Linux.dconf.value
+    - contextPath: Linux.Dconf.value
       description: value associated with the requested key
       type: string
   - arguments:
@@ -651,13 +651,13 @@ script:
     description: "Edit GNOME Configurations\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gconftool2_module.html"
     name: linux-gconftool2
     outputs:
-    - contextPath: Linux.gconftool2.key
+    - contextPath: Linux.Gconftool2.key
       description: The key specified in the module parameters
       type: string
-    - contextPath: Linux.gconftool2.value_type
+    - contextPath: Linux.Gconftool2.value_type
       description: The type of the value that was changed
       type: string
-    - contextPath: Linux.gconftool2.value
+    - contextPath: Linux.Gconftool2.value
       description: The value of the preference key after executing the module
       type: string
   - arguments:
@@ -858,10 +858,10 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/interfaces_file_module.html"
     name: linux-interfaces-file
     outputs:
-    - contextPath: Linux.interfacesFile.dest
+    - contextPath: Linux.InterfacesFile.dest
       description: destination file/path
       type: string
-    - contextPath: Linux.interfacesFile.ifaces
+    - contextPath: Linux.InterfacesFile.ifaces
       description: interfaces dictionary
       type: unknown
   - arguments:
@@ -1144,14 +1144,14 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/java_cert_module.html"
     name: linux-java-cert
     outputs:
-    - contextPath: Linux.javaCert.msg
+    - contextPath: Linux.JavaCert.msg
       description: Output from stdout of keytool command after execution of given
         command.
       type: string
-    - contextPath: Linux.javaCert.rc
+    - contextPath: Linux.JavaCert.rc
       description: Keytool command execution return value.
       type: number
-    - contextPath: Linux.javaCert.cmd
+    - contextPath: Linux.JavaCert.cmd
       description: Executed command to get action done.
       type: string
   - arguments:
@@ -1189,14 +1189,14 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/java_keystore_module.html"
     name: linux-java-keystore
     outputs:
-    - contextPath: Linux.javaKeystore.msg
+    - contextPath: Linux.JavaKeystore.msg
       description: Output from stdout of keytool/openssl command after execution of
         given command or an error.
       type: string
-    - contextPath: Linux.javaKeystore.rc
+    - contextPath: Linux.JavaKeystore.rc
       description: keytool/openssl command execution return value
       type: number
-    - contextPath: Linux.javaKeystore.cmd
+    - contextPath: Linux.JavaKeystore.cmd
       description: Executed command to get action done
       type: string
   - arguments:
@@ -1270,7 +1270,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/listen_ports_facts_module.html"
     name: linux-listen-ports-facts
     outputs:
-    - contextPath: Linux.listenPortsFacts.ansible_facts
+    - contextPath: Linux.ListenPortsFacts.ansible_facts
       description: Dictionary containing details of TCP and UDP ports with listening
         servers
       type: unknown
@@ -1588,27 +1588,27 @@ script:
     description: "Manage PAM Modules\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pamd_module.html"
     name: linux-pamd
     outputs:
-    - contextPath: Linux.pamd.change_count
+    - contextPath: Linux.Pamd.change_count
       description: How many rules were changed.
       type: number
-    - contextPath: Linux.pamd.new_rule
+    - contextPath: Linux.Pamd.new_rule
       description: The changes to the rule.  This was available in Ansible 2.4 and
         Ansible 2.5.  It was removed in Ansible 2.6.
       type: string
-    - contextPath: Linux.pamd.updated_rule_(n)
+    - contextPath: Linux.Pamd.updated_rule_(n)
       description: The rule(s) that was/were changed.  This is only available in Ansible
         2.4 and was removed in Ansible 2.5.
       type: string
-    - contextPath: Linux.pamd.action
+    - contextPath: Linux.Pamd.action
       description: 'That action that was taken and is one of: update_rule, insert_before_rule,
         insert_after_rule, args_present, args_absent, absent. This was available in
         Ansible 2.4 and removed in Ansible 2.8'
       type: string
-    - contextPath: Linux.pamd.dest
+    - contextPath: Linux.Pamd.dest
       description: Path to pam.d service that was changed.  This is only available
         in Ansible 2.3 and was removed in Ansible 2.4.
       type: string
-    - contextPath: Linux.pamd.backupdest
+    - contextPath: Linux.Pamd.backupdest
       description: The file name of the backup file, if created.
       type: string
   - arguments:
@@ -1712,7 +1712,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/parted_module.html"
     name: linux-parted
     outputs:
-    - contextPath: Linux.parted.partition_info
+    - contextPath: Linux.Parted.partition_info
       description: Current partition information
       type: unknown
   - arguments:
@@ -1729,7 +1729,7 @@ script:
       \ empty list\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pids_module.html"
     name: linux-pids
     outputs:
-    - contextPath: Linux.pids.pids
+    - contextPath: Linux.Pids.pids
       description: Process IDs of the given process
       type: unknown
   - arguments:
@@ -1747,7 +1747,7 @@ script:
       \ on success\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ping_module.html"
     name: linux-ping
     outputs:
-    - contextPath: Linux.ping.ping
+    - contextPath: Linux.Ping.ping
       description: value provided with the data parameter
       type: string
   - arguments:
@@ -1766,23 +1766,23 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/python_requirements_info_module.html"
     name: linux-python-requirements-info
     outputs:
-    - contextPath: Linux.pythonRequirementsInfo.python
+    - contextPath: Linux.PythonRequirementsInfo.python
       description: path to python version used
       type: string
-    - contextPath: Linux.pythonRequirementsInfo.python_version
+    - contextPath: Linux.PythonRequirementsInfo.python_version
       description: version of python
       type: string
-    - contextPath: Linux.pythonRequirementsInfo.python_system_path
+    - contextPath: Linux.PythonRequirementsInfo.python_system_path
       description: List of paths python is looking for modules in
       type: unknown
-    - contextPath: Linux.pythonRequirementsInfo.valid
+    - contextPath: Linux.PythonRequirementsInfo.valid
       description: A dictionary of dependencies that matched their desired versions.
         If no version was specified, then `desired` will be null
       type: unknown
-    - contextPath: Linux.pythonRequirementsInfo.mismatched
+    - contextPath: Linux.PythonRequirementsInfo.mismatched
       description: A dictionary of dependencies that did not satisfy the desired version
       type: unknown
-    - contextPath: Linux.pythonRequirementsInfo.not_found
+    - contextPath: Linux.PythonRequirementsInfo.not_found
       description: A list of packages that could not be imported at all, and are not
         installed
       type: unknown
@@ -1830,10 +1830,10 @@ script:
     description: "Reboot a machine\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/reboot_module.html"
     name: linux-reboot
     outputs:
-    - contextPath: Linux.reboot.rebooted
+    - contextPath: Linux.Reboot.rebooted
       description: true if the machine was rebooted
       type: boolean
-    - contextPath: Linux.reboot.elapsed
+    - contextPath: Linux.Reboot.elapsed
       description: The number of seconds that elapsed waiting for the system to be
         rebooted.
       type: number
@@ -1949,19 +1949,19 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/selinux_module.html"
     name: linux-selinux
     outputs:
-    - contextPath: Linux.selinux.msg
+    - contextPath: Linux.Selinux.msg
       description: Messages that describe changes that were made.
       type: string
-    - contextPath: Linux.selinux.configfile
+    - contextPath: Linux.Selinux.configfile
       description: Path to SELinux configuration file.
       type: string
-    - contextPath: Linux.selinux.policy
+    - contextPath: Linux.Selinux.policy
       description: Name of the SELinux policy.
       type: string
-    - contextPath: Linux.selinux.state
+    - contextPath: Linux.Selinux.state
       description: SELinux mode.
       type: string
-    - contextPath: Linux.selinux.reboot_required
+    - contextPath: Linux.Selinux.reboot_required
       description: Whether or not an reboot is required for the changes to take effect.
       type: boolean
   - arguments:
@@ -2148,7 +2148,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/service_facts_module.html"
     name: linux-service-facts
     outputs:
-    - contextPath: Linux.serviceFacts.ansible_facts
+    - contextPath: Linux.ServiceFacts.ansible_facts
       description: Facts to add to ansible_facts about the services on the system
       type: unknown
   - arguments:
@@ -2304,7 +2304,7 @@ script:
     description: "Manage services\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/systemd_module.html"
     name: linux-systemd
     outputs:
-    - contextPath: Linux.systemd.status
+    - contextPath: Linux.Systemd.status
       description: A dictionary with the key=value pairs returned from `systemctl
         show`
       type: unknown
@@ -2360,7 +2360,7 @@ script:
     description: "Manage SysV services.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/sysvinit_module.html"
     name: linux-sysvinit
     outputs:
-    - contextPath: Linux.sysvinit.results
+    - contextPath: Linux.Sysvinit.results
       description: results from actions taken
       type: unknown
   - arguments:
@@ -2386,7 +2386,7 @@ script:
       \ https://docs.ansible.com/ansible/2.9/modules/timezone_module.html"
     name: linux-timezone
     outputs:
-    - contextPath: Linux.timezone.diff
+    - contextPath: Linux.Timezone.diff
       description: The differences about the given arguments.
       type: unknown
   - arguments:
@@ -2695,61 +2695,61 @@ script:
     description: "Manage user accounts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/user_module.html"
     name: linux-user
     outputs:
-    - contextPath: Linux.user.append
+    - contextPath: Linux.User.append
       description: Whether or not to append the user to groups
       type: boolean
-    - contextPath: Linux.user.comment
+    - contextPath: Linux.User.comment
       description: Comment section from passwd file, usually the user name
       type: string
-    - contextPath: Linux.user.create_home
+    - contextPath: Linux.User.create_home
       description: Whether or not to create the home directory
       type: boolean
-    - contextPath: Linux.user.force
+    - contextPath: Linux.User.force
       description: Whether or not a user account was forcibly deleted
       type: boolean
-    - contextPath: Linux.user.group
+    - contextPath: Linux.User.group
       description: Primary user group ID
       type: number
-    - contextPath: Linux.user.groups
+    - contextPath: Linux.User.groups
       description: List of groups of which the user is a member
       type: string
-    - contextPath: Linux.user.home
+    - contextPath: Linux.User.home
       description: Path to user's home directory
       type: string
-    - contextPath: Linux.user.move_home
+    - contextPath: Linux.User.move_home
       description: Whether or not to move an existing home directory
       type: boolean
-    - contextPath: Linux.user.name
+    - contextPath: Linux.User.name
       description: User account name
       type: string
-    - contextPath: Linux.user.password
+    - contextPath: Linux.User.password
       description: Masked value of the password
       type: string
-    - contextPath: Linux.user.remove
+    - contextPath: Linux.User.remove
       description: Whether or not to remove the user account
       type: boolean
-    - contextPath: Linux.user.shell
+    - contextPath: Linux.User.shell
       description: User login shell
       type: string
-    - contextPath: Linux.user.ssh_fingerprint
+    - contextPath: Linux.User.ssh_fingerprint
       description: Fingerprint of generated SSH key
       type: string
-    - contextPath: Linux.user.ssh_key_file
+    - contextPath: Linux.User.ssh_key_file
       description: Path to generated SSH private key file
       type: string
-    - contextPath: Linux.user.ssh_public_key
+    - contextPath: Linux.User.ssh_public_key
       description: Generated SSH public key file
       type: string
-    - contextPath: Linux.user.stderr
+    - contextPath: Linux.User.stderr
       description: Standard error from running commands
       type: string
-    - contextPath: Linux.user.stdout
+    - contextPath: Linux.User.stdout
       description: Standard output from running commands
       type: string
-    - contextPath: Linux.user.system
+    - contextPath: Linux.User.system
       description: Whether or not the account is a system account
       type: boolean
-    - contextPath: Linux.user.uid
+    - contextPath: Linux.User.uid
       description: User ID of the user account
       type: number
   - arguments:
@@ -2801,22 +2801,22 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/xfs_quota_module.html"
     name: linux-xfs-quota
     outputs:
-    - contextPath: Linux.xfsQuota.bhard
+    - contextPath: Linux.XfsQuota.bhard
       description: the current bhard setting in bytes
       type: number
-    - contextPath: Linux.xfsQuota.bsoft
+    - contextPath: Linux.XfsQuota.bsoft
       description: the current bsoft setting in bytes
       type: number
-    - contextPath: Linux.xfsQuota.ihard
+    - contextPath: Linux.XfsQuota.ihard
       description: the current ihard setting in bytes
       type: number
-    - contextPath: Linux.xfsQuota.isoft
+    - contextPath: Linux.XfsQuota.isoft
       description: the current isoft setting in bytes
       type: number
-    - contextPath: Linux.xfsQuota.rtbhard
+    - contextPath: Linux.XfsQuota.rtbhard
       description: the current rtbhard setting in bytes
       type: number
-    - contextPath: Linux.xfsQuota.rtbsoft
+    - contextPath: Linux.XfsQuota.rtbsoft
       description: the current rtbsoft setting in bytes
       type: number
   - arguments:
@@ -3103,13 +3103,13 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/openssh_cert_module.html"
     name: linux-openssh-cert
     outputs:
-    - contextPath: Linux.opensshCert.type
+    - contextPath: Linux.OpensshCert.type
       description: type of the certificate (host or user)
       type: string
-    - contextPath: Linux.opensshCert.filename
+    - contextPath: Linux.OpensshCert.filename
       description: path to the certificate
       type: string
-    - contextPath: Linux.opensshCert.info
+    - contextPath: Linux.OpensshCert.info
       description: Information about the certificate. Output of `ssh-keygen -L -f`.
       type: unknown
   - arguments:
@@ -3219,22 +3219,22 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/openssh_keypair_module.html"
     name: linux-openssh-keypair
     outputs:
-    - contextPath: Linux.opensshKeypair.size
+    - contextPath: Linux.OpensshKeypair.size
       description: Size (in bits) of the SSH private key
       type: number
-    - contextPath: Linux.opensshKeypair.type
+    - contextPath: Linux.OpensshKeypair.type
       description: Algorithm used to generate the SSH private key
       type: string
-    - contextPath: Linux.opensshKeypair.filename
+    - contextPath: Linux.OpensshKeypair.filename
       description: Path to the generated SSH private key file
       type: string
-    - contextPath: Linux.opensshKeypair.fingerprint
+    - contextPath: Linux.OpensshKeypair.fingerprint
       description: The fingerprint of the key.
       type: string
-    - contextPath: Linux.opensshKeypair.public_key
+    - contextPath: Linux.OpensshKeypair.public_key
       description: The public key of the generated SSH private key
       type: string
-    - contextPath: Linux.opensshKeypair.comment
+    - contextPath: Linux.OpensshKeypair.comment
       description: The comment of the generated key
       type: string
   - arguments:
@@ -3320,7 +3320,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/acl_module.html"
     name: linux-acl
     outputs:
-    - contextPath: Linux.acl.acl
+    - contextPath: Linux.Acl.acl
       description: Current ACL on provided path (after changes, if any)
       type: unknown
   - arguments:
@@ -3427,26 +3427,26 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/archive_module.html"
     name: linux-archive
     outputs:
-    - contextPath: Linux.archive.state
+    - contextPath: Linux.Archive.state
       description: The current state of the archived file. If 'absent', then no source
         files were found and the archive does not exist. If 'compress', then the file
         source file is in the compressed state. If 'archive', then the source file
         or paths are currently archived. If 'incomplete', then an archive was created,
         but not all source paths were found.
       type: string
-    - contextPath: Linux.archive.missing
+    - contextPath: Linux.Archive.missing
       description: Any files that were missing from the source.
       type: unknown
-    - contextPath: Linux.archive.archived
+    - contextPath: Linux.Archive.archived
       description: Any files that were compressed or added to the archive.
       type: unknown
-    - contextPath: Linux.archive.arcroot
+    - contextPath: Linux.Archive.arcroot
       description: The archive root.
       type: string
-    - contextPath: Linux.archive.expanded_paths
+    - contextPath: Linux.Archive.expanded_paths
       description: The list of matching paths from paths argument.
       type: unknown
-    - contextPath: Linux.archive.expanded_exclude_paths
+    - contextPath: Linux.Archive.expanded_exclude_paths
       description: The list of matching exclude paths from the exclude_path argument.
       type: unknown
   - arguments:
@@ -3947,14 +3947,14 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/find_module.html"
     name: linux-find
     outputs:
-    - contextPath: Linux.find.files
+    - contextPath: Linux.Find.files
       description: All matches found with the specified criteria (see stat module
         for full output of each dictionary)
       type: unknown
-    - contextPath: Linux.find.matched
+    - contextPath: Linux.Find.matched
       description: Number of matches
       type: number
-    - contextPath: Linux.find.examined
+    - contextPath: Linux.Find.examined
       description: Number of filesystem objects looked at
       type: number
   - arguments:
@@ -4442,7 +4442,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/stat_module.html"
     name: linux-stat
     outputs:
-    - contextPath: Linux.stat.stat
+    - contextPath: Linux.Stat.stat
       description: dictionary containing all the stat data, some platforms might add
         additional fields
       type: unknown
@@ -4630,7 +4630,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/tempfile_module.html"
     name: linux-tempfile
     outputs:
-    - contextPath: Linux.tempfile.path
+    - contextPath: Linux.Tempfile.path
       description: Path to created file or directory
       type: string
   - arguments:
@@ -4901,22 +4901,22 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/xml_module.html"
     name: linux-xml
     outputs:
-    - contextPath: Linux.xml.actions
+    - contextPath: Linux.Xml.actions
       description: A dictionary with the original xpath, namespaces and state.
       type: unknown
-    - contextPath: Linux.xml.backup_file
+    - contextPath: Linux.Xml.backup_file
       description: The name of the backup file that was created
       type: string
-    - contextPath: Linux.xml.count
+    - contextPath: Linux.Xml.count
       description: The count of xpath matches.
       type: number
-    - contextPath: Linux.xml.matches
+    - contextPath: Linux.Xml.matches
       description: The xpath matches found.
       type: unknown
-    - contextPath: Linux.xml.msg
+    - contextPath: Linux.Xml.msg
       description: A message related to the performed action(s).
       type: string
-    - contextPath: Linux.xml.xmlstring
+    - contextPath: Linux.Xml.xmlstring
       description: An XML string of the resulting output.
       type: string
   - arguments:
@@ -5559,19 +5559,19 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/pip_module.html"
     name: linux-pip
     outputs:
-    - contextPath: Linux.pip.cmd
+    - contextPath: Linux.Pip.cmd
       description: pip command used by the module
       type: string
-    - contextPath: Linux.pip.name
+    - contextPath: Linux.Pip.name
       description: list of python modules targetted by pip
       type: unknown
-    - contextPath: Linux.pip.requirements
+    - contextPath: Linux.Pip.requirements
       description: Path to the requirements file
       type: string
-    - contextPath: Linux.pip.version
+    - contextPath: Linux.Pip.version
       description: Version of the package specified in 'name'
       type: string
-    - contextPath: Linux.pip.virtualenv
+    - contextPath: Linux.Pip.virtualenv
       description: Path to the virtualenv
       type: string
   - arguments:
@@ -5589,7 +5589,7 @@ script:
     description: "pip package information\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pip_package_info_module.html"
     name: linux-pip-package-info
     outputs:
-    - contextPath: Linux.pipPackageInfo.packages
+    - contextPath: Linux.PipPackageInfo.packages
       description: a dictionary of installed package data
       type: unknown
   - arguments:
@@ -5647,16 +5647,16 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/yarn_module.html"
     name: linux-yarn
     outputs:
-    - contextPath: Linux.yarn.changed
+    - contextPath: Linux.Yarn.changed
       description: Whether Yarn changed any package data
       type: boolean
-    - contextPath: Linux.yarn.msg
+    - contextPath: Linux.Yarn.msg
       description: Provides an error message if Yarn syntax was incorrect
       type: string
-    - contextPath: Linux.yarn.invocation
+    - contextPath: Linux.Yarn.invocation
       description: Parameters and values used during execution
       type: unknown
-    - contextPath: Linux.yarn.out
+    - contextPath: Linux.Yarn.out
       description: Output generated from Yarn with emojis removed.
       type: string
   - arguments:
@@ -5697,7 +5697,7 @@ script:
     description: "Manages apk packages\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apk_module.html"
     name: linux-apk
     outputs:
-    - contextPath: Linux.apk.packages
+    - contextPath: Linux.Apk.packages
       description: a list of packages that have been changed
       type: unknown
   - arguments:
@@ -5805,16 +5805,16 @@ script:
     description: "Manages apt-packages\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_module.html"
     name: linux-apt
     outputs:
-    - contextPath: Linux.apt.cache_updated
+    - contextPath: Linux.Apt.cache_updated
       description: if the cache was updated or not
       type: boolean
-    - contextPath: Linux.apt.cache_update_time
+    - contextPath: Linux.Apt.cache_update_time
       description: time of the last cache update (0 if unknown)
       type: number
-    - contextPath: Linux.apt.stdout
+    - contextPath: Linux.Apt.stdout
       description: output from apt
       type: string
-    - contextPath: Linux.apt.stderr
+    - contextPath: Linux.Apt.stderr
       description: error output from apt
       type: string
   - arguments:
@@ -6016,19 +6016,19 @@ script:
     description: "Manage flatpaks\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/flatpak_module.html"
     name: linux-flatpak
     outputs:
-    - contextPath: Linux.flatpak.command
+    - contextPath: Linux.Flatpak.command
       description: The exact flatpak command that was executed
       type: string
-    - contextPath: Linux.flatpak.msg
+    - contextPath: Linux.Flatpak.msg
       description: Module error message
       type: string
-    - contextPath: Linux.flatpak.rc
+    - contextPath: Linux.Flatpak.rc
       description: Return code from flatpak binary
       type: number
-    - contextPath: Linux.flatpak.stderr
+    - contextPath: Linux.Flatpak.stderr
       description: Error output from flatpak binary
       type: string
-    - contextPath: Linux.flatpak.stdout
+    - contextPath: Linux.Flatpak.stdout
       description: Output from flatpak binary
       type: string
   - arguments:
@@ -6072,19 +6072,19 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/flatpak_remote_module.html"
     name: linux-flatpak-remote
     outputs:
-    - contextPath: Linux.flatpakRemote.command
+    - contextPath: Linux.FlatpakRemote.command
       description: The exact flatpak command that was executed
       type: string
-    - contextPath: Linux.flatpakRemote.msg
+    - contextPath: Linux.FlatpakRemote.msg
       description: Module error message
       type: string
-    - contextPath: Linux.flatpakRemote.rc
+    - contextPath: Linux.FlatpakRemote.rc
       description: Return code from flatpak binary
       type: number
-    - contextPath: Linux.flatpakRemote.stderr
+    - contextPath: Linux.FlatpakRemote.stderr
       description: Error output from flatpak binary
       type: string
-    - contextPath: Linux.flatpakRemote.stdout
+    - contextPath: Linux.FlatpakRemote.stdout
       description: Output from flatpak binary
       type: string
   - arguments:
@@ -6291,7 +6291,7 @@ script:
       \ https://docs.ansible.com/ansible/2.9/modules/package_facts_module.html"
     name: linux-package-facts
     outputs:
-    - contextPath: Linux.packageFacts.ansible_facts
+    - contextPath: Linux.PackageFacts.ansible_facts
       description: facts to add to ansible_facts
       type: unknown
   - arguments:
@@ -6734,10 +6734,10 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/yum_repository_module.html"
     name: linux-yum-repository
     outputs:
-    - contextPath: Linux.yumRepository.repo
+    - contextPath: Linux.YumRepository.repo
       description: repository name
       type: string
-    - contextPath: Linux.yumRepository.state
+    - contextPath: Linux.YumRepository.state
       description: state of the target, after execution
       type: string
   - arguments:
@@ -6897,19 +6897,19 @@ script:
     description: "Manages snaps\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/snap_module.html"
     name: linux-snap
     outputs:
-    - contextPath: Linux.snap.classic
+    - contextPath: Linux.Snap.classic
       description: Whether or not the snaps were installed with the classic confinement
       type: boolean
-    - contextPath: Linux.snap.channel
+    - contextPath: Linux.Snap.channel
       description: The channel the snaps were installed from
       type: string
-    - contextPath: Linux.snap.cmd
+    - contextPath: Linux.Snap.cmd
       description: The command that was executed on the host
       type: string
-    - contextPath: Linux.snap.snaps_installed
+    - contextPath: Linux.Snap.snaps_installed
       description: The list of actually installed snaps
       type: unknown
-    - contextPath: Linux.snap.snaps_removed
+    - contextPath: Linux.Snap.snaps_removed
       description: The list of actually removed snaps
       type: unknown
   - arguments:
@@ -7000,7 +7000,7 @@ script:
       \ command\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/redhat_subscription_module.html"
     name: linux-redhat-subscription
     outputs:
-    - contextPath: Linux.redhatSubscription.subscribed_pool_ids
+    - contextPath: Linux.RedhatSubscription.subscribed_pool_ids
       description: List of pool IDs to which system is now subscribed
       type: unknown
   - arguments:
@@ -7099,7 +7099,7 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/rhsm_release_module.html"
     name: linux-rhsm-release
     outputs:
-    - contextPath: Linux.rhsmRelease.current_release
+    - contextPath: Linux.RhsmRelease.current_release
       description: The current RHSM release version value
       type: string
   - arguments:
@@ -7138,7 +7138,7 @@ script:
       \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhsm_repository_module.html"
     name: linux-rhsm-repository
     outputs:
-    - contextPath: Linux.rhsmRepository.repositories
+    - contextPath: Linux.RhsmRepository.repositories
       description: 'The list of RHSM repositories with their states. When this module
         is used to change the repository states, this list contains the updated states
         after the changes.'
@@ -7344,58 +7344,58 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/get_url_module.html"
     name: linux-get-url
     outputs:
-    - contextPath: Linux.getUrl.backup_file
+    - contextPath: Linux.GetUrl.backup_file
       description: name of backup file created after download
       type: string
-    - contextPath: Linux.getUrl.checksum_dest
+    - contextPath: Linux.GetUrl.checksum_dest
       description: sha1 checksum of the file after copy
       type: string
-    - contextPath: Linux.getUrl.checksum_src
+    - contextPath: Linux.GetUrl.checksum_src
       description: sha1 checksum of the file
       type: string
-    - contextPath: Linux.getUrl.dest
+    - contextPath: Linux.GetUrl.dest
       description: destination file/path
       type: string
-    - contextPath: Linux.getUrl.elapsed
+    - contextPath: Linux.GetUrl.elapsed
       description: The number of seconds that elapsed while performing the download
       type: number
-    - contextPath: Linux.getUrl.gid
+    - contextPath: Linux.GetUrl.gid
       description: group id of the file
       type: number
-    - contextPath: Linux.getUrl.group
+    - contextPath: Linux.GetUrl.group
       description: group of the file
       type: string
-    - contextPath: Linux.getUrl.md5sum
+    - contextPath: Linux.GetUrl.md5sum
       description: md5 checksum of the file after download
       type: string
-    - contextPath: Linux.getUrl.mode
+    - contextPath: Linux.GetUrl.mode
       description: permissions of the target
       type: string
-    - contextPath: Linux.getUrl.msg
+    - contextPath: Linux.GetUrl.msg
       description: the HTTP message from the request
       type: string
-    - contextPath: Linux.getUrl.owner
+    - contextPath: Linux.GetUrl.owner
       description: owner of the file
       type: string
-    - contextPath: Linux.getUrl.secontext
+    - contextPath: Linux.GetUrl.secontext
       description: the SELinux security context of the file
       type: string
-    - contextPath: Linux.getUrl.size
+    - contextPath: Linux.GetUrl.size
       description: size of the target
       type: number
-    - contextPath: Linux.getUrl.src
+    - contextPath: Linux.GetUrl.src
       description: source file used after download
       type: string
-    - contextPath: Linux.getUrl.state
+    - contextPath: Linux.GetUrl.state
       description: state of the target
       type: string
-    - contextPath: Linux.getUrl.status_code
+    - contextPath: Linux.GetUrl.status_code
       description: the HTTP status code from the request
       type: number
-    - contextPath: Linux.getUrl.uid
+    - contextPath: Linux.GetUrl.uid
       description: owner id of the file, after execution
       type: number
-    - contextPath: Linux.getUrl.url
+    - contextPath: Linux.GetUrl.url
       description: the actual URL used for the request
       type: string
   dockerimage: demisto/ansible-runner:1.0.0.23806
