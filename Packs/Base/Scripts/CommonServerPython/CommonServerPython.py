@@ -5503,13 +5503,24 @@ class EntityRelationship:
 
         @staticmethod
         def is_valid(_type):
-            # type: (str) -> bool
+            """
+            :type _type: ``str``
+            :param _type: the data to be returned and will be set to context
 
+            :return: Is the given type supported
+            :rtype: ``bool``
+            """
             return _type in EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 
         @staticmethod
         def get_reverse(name):
-            # type: (str) -> str
+            """
+            :type name: ``str``
+            :param name: Relationship name
+
+            :return: Returns the reversed relationship name
+            :rtype: ``str``
+            """
 
             return EntityRelationship.Relationships.RELATIONSHIPS_NAMES[name]
 
