@@ -2453,6 +2453,7 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
+      - all
       - API_-_AWS_CloudTrail
       - API_-_AWS_CloudWatch_Alarm
       - API_-_AWS_Config_Event
