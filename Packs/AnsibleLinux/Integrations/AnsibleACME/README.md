@@ -110,7 +110,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!acme-account host="123.123.123.123" account_key_src = "/etc/letsencrypt/keys/example.com.key" state="present" terms_agreed="True" contact="mailto:user@example.com" acme_version=2 acme_directory=https://acme-staging-v02.api.letsencrypt.org/directory```
+```!acme-account host="123.123.123.123" "account_key_src"="/etc/letsencrypt/keys/example.com.key" state="present" terms_agreed="True" contact="mailto:user@example.com" acme_version=2 acme_directory=https://acme-staging-v02.api.letsencrypt.org/directory```
 
 #### Context Example
 ```json
@@ -168,7 +168,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!acme-account-info host="123.123.123.123" account_key_src = "/etc/letsencrypt/keys/example.com.key" acme_version=2 acme_directory=https://acme-staging-v02.api.letsencrypt.org/directory```
+```!acme-account-info host="123.123.123.123" "account_key_src"="/etc/letsencrypt/keys/example.com.key" acme_version=2 acme_directory=https://acme-staging-v02.api.letsencrypt.org/directory```
 
 #### Context Example
 ```json
@@ -277,7 +277,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!acme-certificate host="123.123.123.123" account_key_src = "/etc/letsencrypt/keys/example.com.key" dest=/etc/letsencrypt/certs/test.example.com.crt csr=/etc/letsencrypt/csrs/example.com.csr acme_directory=https://acme-v02.api.letsencrypt.org/directory acme_version=2 challenge="dns-01" terms_agreed=1```
+```!acme-certificate host="123.123.123.123" "account_key_src"="/etc/letsencrypt/keys/example.com.key" dest=/etc/letsencrypt/certs/test.example.com.crt csr=/etc/letsencrypt/csrs/example.com.csr acme_directory=https://acme-v02.api.letsencrypt.org/directory acme_version=2 challenge="dns-01" terms_agreed=1```
 
 #### Context Example
 ```json

@@ -5747,11 +5747,6 @@ script:
         connections when `state=drained`.
       isArray: true
       name: exclude_hosts
-    - defaultValue: 127.0.0.1
-      description: 'A resolvable hostname or IP address to wait for. If `state=drained`
-        then it will only check for connections on the IP specified, you can use ''0.0.0.0''
-        to use all host IPs.'
-      name: host
     - description: 'The path to a file on the filesystem to check. If `state` is present
         or started then it will wait until the file exists. If `state` is absent then
         it will wait until the file does not exist.'
