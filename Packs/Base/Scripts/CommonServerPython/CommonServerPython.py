@@ -389,8 +389,8 @@ class FeedIndicatorType(object):
         :type ip: ``str``
         :param ip: IP address to get it's indicator type.
 
-        :rtype: ``str``
         :return:: Indicator type from FeedIndicatorType, or None if invalid IP address.
+        :rtype: ``str``
         """
         if re.match(ipv4cidrRegex, ip):
             return FeedIndicatorType.CIDR
@@ -415,8 +415,8 @@ class FeedIndicatorType(object):
         :type indicator_type: ``str``
         :param indicator_type: Type of an indicator.
 
-        :rtype: ``str``
         :return:: Indicator type .
+        :rtype: ``str``
         """
         if is_demisto_version_ge("6.2.0") and indicator_type.startswith(STIX_PREFIX):
             return indicator_type[len(STIX_PREFIX):]
@@ -595,8 +595,8 @@ def add_http_prefix_if_missing(address=''):
         :type address: ``string``
         :param address: Proxy address.
 
-        :rtype: ``string``
         :return: proxy address after the 'http://' prefix was added, if needed.
+        :rtype: ``string``
     """
     PROXY_PREFIXES = ['http://', 'https://', 'socks5://', 'socks5h://', 'socks4://', 'socks4a://']
     if not address:
@@ -629,8 +629,8 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
         :type insecure_param_name: ``string``
         :param insecure_param_name: Name of insecure param. If None will search insecure and unsecure
 
-        :rtype: ``dict``
         :return: proxies dict for the 'proxies' parameter of 'requests' functions
+        :rtype: ``dict``
     """
     proxies = {}  # type: dict
     if demisto.params().get(proxy_param_name, checkbox_default_value):
@@ -710,8 +710,8 @@ def urljoin(url, suffix=""):
         :type suffix: ``string``
         :param suffix: the second part of the url
 
-        :rtype: ``string``
         :return: Full joined url
+        :rtype: ``string``
     """
     if url[-1:] != "/":
         url = url + "/"
@@ -5576,8 +5576,8 @@ class EntityRelationship:
 
     def to_entry(self):
         """ Convert object to XSOAR entry
-        :rtype: ``dict``
         :return: XSOAR entry representation.
+        :rtype: ``dict``
         """
         entry = {}
 
@@ -5602,8 +5602,8 @@ class EntityRelationship:
 
     def to_indicator(self):
         """ Convert object to XSOAR entry
-        :rtype: ``dict``
         :return: XSOAR entry representation.
+        :rtype: ``dict``
         """
         indicator_relationship = {}
 
@@ -5624,8 +5624,8 @@ class EntityRelationship:
 
     def to_context(self):
         """ Convert object to XSOAR context
-        :rtype: ``dict``
         :return: XSOAR context representation.
+        :rtype: ``dict``
         """
         indicator_relationship_context = {}
 
