@@ -1,0 +1,93 @@
+args:
+- description: The user profile.
+  name: user_profile
+  required: true
+- description: Org Level 1 of the user.
+  name: org_level_1
+- description: Org Level 2 of the user.
+  name: org_level_2
+- description: Org Level 3 of the user.
+  name: org_level_3
+- description: The Salesforce IAM instance name.
+  name: app_instance
+  required: true
+comment: Reads the list "salesforce-provisioning-settings" and and updates user profile
+  information for IAM operations.
+commonfields:
+  id: SalesforceIAMExtendUserProfileData
+  version: -1
+dockerimage: demisto/python3:3.7.5.4583
+enabled: true
+name: SalesforceIAMExtendUserProfileData
+outputs:
+- contextPath: Salesforce.OrgUnit
+  description: Org Unit mapped in the provisioning settings. User account is synced
+    only if the user is in the org that's mapped.
+  type: String
+- contextPath: Salesforce.LookupKey
+  description: Lookup key used to find the salesforce provisioning settings for the
+    user.
+  type: String
+- contextPath: Salesforce.ProvisioningSettings.profileId
+  description: Salesforce Profile ID.
+  type: String
+- contextPath: Salesforce.ProvisioningSettings.roleId
+  description: Salesforce Role ID.
+  type: String
+- contextPath: Salesforce.ProvisioningSettings.salesforceCRMContentUser
+  description: Maps to "Salesforce CRM Content User" checkbox on UI.
+  type: Boolean
+- contextPath: Salesforce.ProvisioningSettings.mobileUser
+  description: Maps to UserPermissionsMobileUser.
+  type: Boolean
+- contextPath: Salesforce.ProvisioningSettings.marketingUser
+  description: Maps to UserPermissionsMarketingUser.
+  type: Boolean
+- contextPath: Salesforce.ProvisioningSettings.mySalesLevel
+  description: Maps to My_Sales_Level__c
+  type: String
+- contextPath: Salesforce.ProvisioningSettings.permissionSets
+  description: A list of Permission Set IDs.
+  type: Unknown
+- contextPath: Salesforce.ProvisioningSettings.permissionSetNames
+  description: A list of Permission Set Names.
+  type: Unknown
+- contextPath: Salesforce.ProvisioningSettings.permissionSetLicences
+  description: A list of Permission Set Licences.
+  type: Unknown
+- contextPath: Salesforce.ProvisioningSettings.permissionSetLicenceNames
+  description: A list of Permission Set Licence Names.
+  type: Unknown
+- contextPath: Salesforce.ProvisioningSettings.packageLicences
+  description: A list of Package Licences.
+  type: Unknown
+- contextPath: Salesforce.ProvisioningSettings.packageLicenceNames
+  description: A list of Package Licence Names.
+  type: Unknown
+- contextPath: Salesforce.UserProfile
+  description: The User Profile information.
+- contextPath: IAM.Vendor.success
+  description: If true, the command was executed successfully, otherwise false.
+  type: boolean
+- contextPath: IAM.Vendor.brand
+  description: Name of the integration.
+  type: string
+- contextPath: IAM.Vendor.instanceName
+  description: Name of the integration instance.
+  type: string
+- contextPath: IAM.Vendor.errorMessage
+  description: Reason why the command failed.
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utilities
+- Utility
+- util
+type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
