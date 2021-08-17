@@ -201,3 +201,20 @@ def test_ip_command(mocker):
              'Indicator': '4.4.4.4',
              'Score': 0,
              'Type': 'ip'}}
+
+
+def test_get_whois_ip_proxy_param(mocker):
+    """
+    Given:
+        - proxy address
+
+    When:
+        - running the get_whois_ip function
+
+    Then:
+        - Verify the function doesn't fail due to type errors
+    """
+    from Whois import get_whois_ip
+    mocker.patch.object(demisto, 'params', return_value={"proxy": "https://test.com"})
+    result = get_whois_ip('1.1.1.1')
+    assert result
