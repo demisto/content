@@ -34,5 +34,5 @@ microsoft-atp-add-remove-machine-tag action=Add machine_id=f70f9fe6b29cd95116524
 microsoft-atp-sc-indicator-list limit=2
 microsoft-atp-sc-indicator-create action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Informational
 microsoft-atp-sc-indicator-update action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Low
-microsoft-atp-sc-indicator-get-by-id indicator_id=5064
-microsoft-atp-sc-indicator-delete indicator_id=5067
+microsoft-atp-sc-indicator-get-by-id indicator_id=5142
+microsoft-atp-sc-indicator-delete indicator_id=5142
