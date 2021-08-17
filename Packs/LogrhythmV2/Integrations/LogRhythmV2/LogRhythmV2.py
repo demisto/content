@@ -1203,8 +1203,13 @@ class Client(BaseClient):
         return response
 
     def tags_list_request(self, tag_name, offset, count):
-        params = assign_params(tag=tag_name, offset=offset, count=count)
+        params = assign_params(tag=tag_name)
         headers = self._headers
+
+        if offset:
+            headers['offset'] = offset
+        if count:
+            headers['count'] = count
 
         response = self._http_request('GET', 'lr-case-api/tags', params=params, headers=headers)
 
@@ -1212,7 +1217,6 @@ class Client(BaseClient):
 
     def case_collaborators_list_request(self, case_id):
         headers = self._headers
-        headers['Content-Type'] = 'multipart/form-data'
 
         response = self._http_request('GET', f'lr-case-api/cases/{case_id}/collaborators', headers=headers)
 
@@ -1240,13 +1244,22 @@ class Client(BaseClient):
             entities = next((entity for entity in entities if entity.get('id') == int(entity_id)), None)
         return entities
 
-    def hosts_list_request(self, host_id, host_name, entity_name, record_status, offset, count):
+    def hosts_list_request(self, host_id=None, host_name=None, entity_name=None, record_status=None, offset=None,
+                           count=None, endpoint_id_list=None, endpoint_hostname_list=None):
         params = assign_params(name=host_name, entity=entity_name, recordStatus=record_status, offset=offset, count=count)
         headers = self._headers
 
         hosts = self._http_request('GET', 'lr-admin-api/hosts', params=params, headers=headers)
         if host_id:
             hosts = next((host for host in hosts if host.get('id') == int(host_id)), None)
+
+        if endpoint_id_list:
+            endpoint_id_list = [int(id_) for id_ in endpoint_id_list]
+            hosts = list(filter(lambda host: host.get('id') in endpoint_id_list, hosts))
+
+        if endpoint_hostname_list:
+            hosts = list(filter(lambda host: host.get('name') in endpoint_hostname_list, hosts))
+
         return hosts
 
     def users_list_request(self, user_ids, entity_ids, user_status, offset, count):
@@ -1306,7 +1319,6 @@ class Client(BaseClient):
                                      query_timeout, entity_id):
 
         headers = self._headers
-        headers['Content-Type'] = 'application/json'
 
         # Create filter query
         query = []
@@ -1429,7 +1441,6 @@ class Client(BaseClient):
     def add_host_request(self, entity_id, entity_name, name, short_desc, long_desc, risk_level, threat_level,
                          threat_level_comments, status, host_zone, use_eventlog_credentials, os, os_type):
         headers = self._headers
-        headers['Content-Type'] = 'application/json'
 
         data = {
             "id": -1,
@@ -2189,6 +2200,44 @@ def add_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
+def endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    endpoint_id_list = argToList(args.get('id'))
+    endpoint_hostname_list = argToList(args.get('hostname'))
+
+
+    endpoints = client.hosts_list_request(endpoint_id_list = endpoint_id_list,
+                                          endpoint_hostname_list=endpoint_hostname_list)
+
+    if type(endpoints) is dict:
+        endpoints=[endpoints]
+
+    command_results = []
+
+    if endpoints:
+        for endpoint in endpoints:
+
+            hr = tableToMarkdown('Logrhythm endpoint', endpoint, headerTransform=pascalToSpace)
+
+            endpoint_indicator = Common.Endpoint(
+                id=endpoint.get('id'),
+                hostname=endpoint.get('name'),
+                os=endpoint.get('os'),
+                os_version=endpoint.get('osVersion'))
+
+            command_results.append(CommandResults(
+                readable_output=hr,
+                raw_response=endpoint,
+                indicator=endpoint_indicator
+            ))
+
+    else:
+        command_results.append(CommandResults(
+            readable_output="No endpoints were found.",
+            raw_response=endpoints,
+        ))
+    return command_results
+
+
 def test_module(client: Client) -> None:
     client.lists_get_request(None, None, None)
     return_results('ok')
@@ -2197,6 +2246,7 @@ def test_module(client: Client) -> None:
 def fetch_incidents_command(client: Client):
     last_run = demisto.getLastRun()
     if last_run:
+        demisto.info(last_run.get('start_time'))
         cases = client.cases_list_request(timestamp_filter_type='createdAfter', timestamp=last_run.get('start_time'))
     else:
         cases = client.cases_list_request()
@@ -2270,6 +2320,7 @@ def main() -> None:
             'lr-execute-search-query': execute_search_query_command,
             'lr-get-query-result': get_query_result_command,
             'lr-add-host': add_host_command,
+            'endpoint': endpoint_command,
         }
 
         if command == 'test-module':

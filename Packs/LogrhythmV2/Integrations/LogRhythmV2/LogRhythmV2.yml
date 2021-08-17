@@ -3668,3 +3668,14 @@ script:
     - type: Date
       contextPath: LogrhythmV2.AddHost.dateUpdated
       description: ''
+  - name: endpoint
+    description: 'Returns information about an endpoint.'
+    arguments:
+    - name: id
+      description: 'The endpoint ID.'
+      required: false
+      isArray: false
+    - name: hostname
+      description: 'The endpoint hostname.'
+      required: false
+      isArray: false
