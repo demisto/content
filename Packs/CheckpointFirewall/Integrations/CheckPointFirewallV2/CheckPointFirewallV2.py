@@ -65,7 +65,7 @@ class Client(BaseClient):
 
     def logout(self) -> str:
         """logout from current session, returning the response message"""
-        response = self._http_request(method='POST', url_suffix='logout', headers=self.headers)
+        response = self._http_request(method='POST', url_suffix='logout', headers=self.headers, json_data={})
         self.sid = None
         demisto.setIntegrationContext({})
         return response.get('message')
