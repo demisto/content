@@ -4,7 +4,7 @@
     "modified": "2021-08-10T10:47:05.734048Z",
     "name": "Azure Active Directory Identity Protection Activity",
     "ownerOnly": false,
-    "cliName": "aazureactivedirectoryidentityprotectionactivity",
+    "cliName": "azureactivedirectoryidentityprotectionactivity",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

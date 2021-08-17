@@ -3,7 +3,7 @@
     "feed": false,
     "id": "Azure Active Directory Identity Protection Incoming Mapper",
     "mapping": {
-        "AAD Identity Protection Risk Detection": {
+        "Azure Active Directory Identity Protection": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Alert Type": {

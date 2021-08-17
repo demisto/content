@@ -1,33 +1,29 @@
 {
-    "description": "",
-    "feed": false,
-    "id": "a340d3be-055d-4a06-89d1-de01f3531ab9",
-    "keyTypeMap": {
-        "unlikelyTravel": "AAD Identity Protection Risk Detection",
-        "anonymizedIPAddress": "AAD Identity Protection Risk Detection",
-        "maliciousIPAddress": "AAD Identity Protection Risk Detection",
-        "unfamiliarFeatures": "AAD Identity Protection Risk Detection",
-        "malwareInfectedIPAddress": "AAD Identity Protection Risk Detection",
-        "suspiciousIPAddress": "AAD Identity Protection Risk Detection",
-        "leakedCredentials": "AAD Identity Protection Risk Detection",
-        "investigationsThreatIntelligence": "AAD Identity Protection Risk Detection",
-        "generic": "AAD Identity Protection Risk Detection",
-        "adminConfirmedUserCompromised": "AAD Identity Protection Risk Detection",
-        "mcasImpossibleTravel": "AAD Identity Protection Risk Detection",
-        "mcasSuspiciousInboxManipulationRules": "AAD Identity Protection Risk Detection",
-        "investigationsThreatIntelligenceSigninLinked": "AAD Identity Protection Risk Detection",
-        "maliciousIPAddressValidCredentialsBlockedIP": "AAD Identity Protection Risk Detection",
-        "unknownFutureValue": "AAD Identity Protection Risk Detection"
-    },
-    "name": "AAD Identity Protection Risk Detection",
-    "propagationLabels": [
-        "all"
-    ],
-    "transformer": {
-        "complex": null,
-        "simple": "riskEventType"
-    },
-    "type": "classification",
+    "id": "Azure Active Directory Identity Protection",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Azure Active Directory Identity Protection",
+    "prevName": "Azure Active Directory Identity Protection",
+    "color": "#4B897A",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Azure Active Directory Identity Protection Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "5.5.0"
 }

@@ -271,19 +271,10 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "details",
-                                "height": 106,
-                                "id": "incident-details-field",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "alerttype",
                                 "height": 53,
                                 "id": "alert-type-field",
-                                "index": 1,
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -292,7 +283,7 @@
                                 "fieldId": "state",
                                 "height": 53,
                                 "id": "state-field",
-                                "index": 2,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -301,7 +292,7 @@
                                 "fieldId": "riskrating",
                                 "height": 53,
                                 "id": "riskrating-field",
-                                "index": 3,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -310,7 +301,7 @@
                                 "fieldId": "subtype",
                                 "height": 53,
                                 "id": "subtype-field",
-                                "index": 4,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -319,7 +310,7 @@
                                 "fieldId": "azureactivedirectoryidentityprotectiondetectiontimingtype",
                                 "height": 53,
                                 "id": "protection-detection-timing-type-field",
-                                "index": 5,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -328,7 +319,7 @@
                                 "fieldId": "azureactivedirectoryidentityprotectionactivity",
                                 "height": 53,
                                 "id": "302e6e30-fb65-11eb-9a44-1f2c7ba8ceab",
-                                "index": 6,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -337,7 +328,7 @@
                                 "fieldId": "azureactivedirectoryidentityprotectiontokenissuertype",
                                 "height": 53,
                                 "id": "3a90d110-fb65-11eb-9a44-1f2c7ba8ceab",
-                                "index": 7,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -346,7 +337,7 @@
                                 "fieldId": "sourceip",
                                 "height": 53,
                                 "id": "source-ip-field",
-                                "index": 8,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -355,7 +346,7 @@
                                 "fieldId": "location",
                                 "height": 53,
                                 "id": "location-field",
-                                "index": 9,
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -364,16 +355,7 @@
                                 "fieldId": "locationregion",
                                 "height": 53,
                                 "id": "location-region-field",
-                                "index": 10,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "azureactivedirectoryidentityprotectionactivitydatetime",
-                                "height": 53,
-                                "id": "316c1e50-fb65-11eb-9a44-1f2c7ba8ceab",
-                                "index": 11,
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -382,7 +364,7 @@
                                 "fieldId": "azureactivedirectoryidentityprotectiondetecteddatetime",
                                 "height": 53,
                                 "id": "37814720-fb65-11eb-9a44-1f2c7ba8ceab",
-                                "index": 12,
+                                "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -391,7 +373,7 @@
                                 "fieldId": "lastupdatetime",
                                 "height": 53,
                                 "id": "last-update-time-field",
-                                "index": 13,
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -400,7 +382,7 @@
                                 "fieldId": "username",
                                 "height": 53,
                                 "id": "username-field",
-                                "index": 14,
+                                "index": 12,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
