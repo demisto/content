@@ -26,6 +26,19 @@ configuration:
   defaultvalue: ''
   type: 4
   required: true
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 1 days
+  display: First fetch timestamp, in days.
+  name: fetch_time
+  required: false
+  type: 0
 script:
   script: ''
   type: python

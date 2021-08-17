@@ -1039,13 +1039,23 @@ class Client(BaseClient):
         alarm_summary = response.get('alarmSummaryDetails')
         return alarm_summary, response
 
-    def cases_list_request(self, case_id, timestamp_filter_type, timestamp, priority, status, owners, tags,
-                                         text, evidence_type, reference_id, external_id, entity_number, offset, count):
+    def cases_list_request(self, case_id=None, timestamp_filter_type=None, timestamp=None, priority=None, status=None,
+                           owners=None, tags=None, text=None, evidence_type=None, reference_id=None, external_id=None,
+                           entity_number=None, offset=None, count=None):
 
         params = assign_params(priority=priority, statusNumber=status, ownerNumber=owners, tagNumber=tags, text=text,
                                evidenceType=evidence_type, referenceId=reference_id, externalId=external_id,
-                               entityNumber=entity_number, offset=offset, count=count)
+                               entityNumber=entity_number)
         headers = self._headers
+
+        headers['orderBy'] = 'dateCreated'
+
+        if timestamp_filter_type and timestamp:
+            headers[timestamp_filter_type] = timestamp
+        if offset:
+            headers['offset'] = offset
+        if count:
+            headers['count'] = count
 
         cases = self._http_request('GET', 'lr-case-api/cases', params=params, headers=headers)
 
@@ -2184,6 +2194,30 @@ def test_module(client: Client) -> None:
     return_results('ok')
 
 
+def fetch_incidents_command(client: Client):
+    last_run = demisto.getLastRun()
+    if last_run:
+        cases = client.cases_list_request(timestamp_filter_type='createdAfter', timestamp=last_run.get('start_time'))
+    else:
+        cases = client.cases_list_request()
+
+    if cases:
+        demisto.setLastRun({
+            'start_time': cases[-1].get('dateCreated')
+        })
+
+    incidents = []
+    for case in cases:
+        incident = {
+            'name': 'Case #' + str(case['number']) + ' ' + str(case['name']),
+            'occurred': str(case['dateCreated']),
+            'rawJSON': json.dumps(case)
+        }
+        incidents.append(incident)
+
+    demisto.incidents(incidents)
+
+
 def main() -> None:
 
     params: Dict[str, Any] = demisto.params()
@@ -2240,6 +2274,8 @@ def main() -> None:
 
         if command == 'test-module':
             test_module(client)
+        elif command == 'fetch-incidents':
+            fetch_incidents_command(client)
         elif command in commands:
             return_results(commands[command](client, args))
         else:
