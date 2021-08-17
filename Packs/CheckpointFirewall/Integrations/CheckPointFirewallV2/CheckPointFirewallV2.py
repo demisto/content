@@ -13,7 +13,7 @@ class Client(BaseClient):
     Client for CheckPoint RESTful API.
     Args:
           base_url (str): the URL of CheckPoint.
-          sid (str): CheckPoint session ID of the current user session.
+          sid (str): CheckPoint session ID of the current user session [Optional]
           use_ssl (bool): specifies whether to verify the SSL certificate or not.
           use_proxy (bool): specifies if to use Demisto proxy settings.
     """
@@ -1759,19 +1759,6 @@ def build_group_data(result: dict, readable_output: str, printable_result: dict)
     return readable_output, printable_result
 
 
-def login(base_url: str, username: str, password: str, verify_certificate: bool):
-    """login to checkpoint admin account using username and password."""
-    response = requests.post(base_url + 'login', verify=verify_certificate,
-                             headers={'Content-Type': 'application/json'},
-                             json={'user': username, 'password': password}).json()
-
-    sid = response.get('sid')
-    if sid:
-        demisto.setIntegrationContext({'cp_sid': sid})
-        return
-    demisto.setIntegrationContext({})
-
-
 def checkpoint_logout_command(client: Client, sid: str = None) -> str:
     """logout from given session """
     if sid is not None:
@@ -1814,7 +1801,7 @@ def main():
     stay_logged_in = True
 
     try:
-        # commands that handle login
+        # commands that perform login
         command = demisto.command()
         if demisto.command() == 'test-module':
             client.login(**login_args)
