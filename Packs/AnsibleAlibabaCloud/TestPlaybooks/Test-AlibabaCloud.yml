@@ -182,7 +182,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AlibabaCloud.aliInstance.status
+              simple: AlibabaCloud.AliInstance.status
             iscontext: true
           right:
             value:
@@ -257,7 +257,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AlibabaCloud.aliInstanceInfo.status
+              simple: AlibabaCloud.AliInstanceInfo.status
             iscontext: true
           right:
             value:
@@ -265,7 +265,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: AlibabaCloud.aliInstanceInfo.instances
+              simple: AlibabaCloud.AliInstanceInfo.instances
             iscontext: true
     view: |-
       {

@@ -179,7 +179,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: hcloud.hcloudDatacenterInfo.[0]
+              simple: Hcloud.HcloudDatacenterInfo.[0]
             iscontext: true
     view: |-
       {
@@ -250,7 +250,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: hcloud.hcloudFloatingIpInfo.[0]
+              simple: Hcloud.HcloudFloatingIpInfo.[0]
             iscontext: true
     view: |-
       {
@@ -321,7 +321,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: hcloud.hcloudImageInfo.[0]
+              simple: Hcloud.HcloudImageInfo.[0]
             iscontext: true
     view: |-
       {
@@ -390,7 +390,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: hcloud.hcloudLocationInfo.[0]
+              simple: Hcloud.HcloudLocationInfo.[0]
             iscontext: true
     view: |-
       {
@@ -459,7 +459,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: hcloud.hcloudServerTypeInfo.[0]
+              simple: Hcloud.HcloudServerTypeInfo.[0]
             iscontext: true
     view: |-
       {
@@ -560,7 +560,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: hcloud.hcloudNetwork.[0].status
+              simple: Hcloud.HcloudNetwork.[0].status
             iscontext: true
           right:
             value:
@@ -633,7 +633,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: hcloud.hcloudNetworkInfo.[0]
+              simple: Hcloud.HcloudNetworkInfo.[0]
             iscontext: true
     view: |-
       {
@@ -707,7 +707,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: hcloud.hcloudRoute.[0].status
+              simple: Hcloud.HcloudRoute.[0].status
             iscontext: true
           right:
             value:
@@ -795,7 +795,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: hcloud.hcloudServer.[0].status
+              simple: Hcloud.HcloudServer.[0].status
             iscontext: true
           right:
             value:
@@ -869,7 +869,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: hcloud.hcloudServerInfo.[0].status
+              simple: Hcloud.HcloudServerInfo.[0].status
             iscontext: true
           right:
             value:
@@ -877,7 +877,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: hcloud.hcloudServerInfo.[0].[0]
+              simple: Hcloud.HcloudServerInfo.[0].[0]
             iscontext: true
     view: |-
       {
@@ -951,7 +951,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: hcloud.hcloudRdns.[0].status
+              simple: Hcloud.HcloudRdns.[0].status
             iscontext: true
           right:
             value:
@@ -1095,7 +1095,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: hcloud.hcloudSshKey.[0].status
+              simple: Hcloud.HcloudSshKey.[0].status
             iscontext: true
           right:
             value:
@@ -1169,7 +1169,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: hcloud.hcloudSshKeyInfo.[0].[0]
+              simple: Hcloud.HcloudSshKeyInfo.[0].[0]
             iscontext: true
     view: |-
       {
@@ -1245,7 +1245,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: hcloud.hcloudSubnetwork.[0].status
+              simple: Hcloud.HcloudSubnetwork.[0].status
             iscontext: true
           right:
             value:
@@ -1357,7 +1357,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: hcloud.hcloudVolume.[0].status
+              simple: Hcloud.HcloudVolume.[0].status
             iscontext: true
           right:
             value:
@@ -1430,7 +1430,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: hcloud.hcloudVolumeInfo.[0].[0]
+              simple: Hcloud.HcloudVolumeInfo.[0].[0]
             iscontext: true
     view: |-
       {
@@ -1465,7 +1465,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: hcloud.hcloudServerNetwork.[0].status
+              simple: Hcloud.HcloudServerNetwork.[0].status
             iscontext: true
           right:
             value:

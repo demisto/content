@@ -80,7 +80,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: ${microsoftwindows.winPing.[].ping}
+              simple: ${MicrosoftWindows.WinPing.[].ping}
           operator: isEqualString
           right:
             value:

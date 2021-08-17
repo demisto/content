@@ -127,7 +127,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: ${microsoftwindows.winPing.[].ping}
+              simple: ${Microsoftwindows.WinPing.[].ping}
           operator: isEqualString
           right:
             value:
@@ -270,7 +270,7 @@ tasks:
       host:
         complex:
           accessor: host
-          root: microsoftwindows.winChocolatey(val.rc==0)
+          root: Microsoftwindows.WinChocolatey(val.rc==0)
       msg:
         complex:
           accessor: "0"
@@ -321,7 +321,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       host:
-        simple: microsoftwindows.winChocolatey(val.rc!=0).host
+        simple: Microsoftwindows.WinChocolatey(val.rc!=0).host
       parallel: {}
     separatecontext: false
     skipunavailable: false
@@ -378,14 +378,14 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: microsoftwindows.winChocolatey(val.rc==0).host
+              simple: Microsoftwindows.WinChocolatey(val.rc==0).host
           operator: isNotEmpty
       label: "yes"
     - condition:
       - - left:
             iscontext: true
             value:
-              simple: microsoftwindows.winChocolatey(val.rc!=0).host
+              simple: Microsoftwindows.WinChocolatey(val.rc!=0).host
           operator: isNotEmpty
       label: "No"
     id: "14"
