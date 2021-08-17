@@ -63,6 +63,15 @@ MAPPING: dict = {
                 }
             ]
     },
+    "compromised/breached": {
+        "date":
+            "uploadTime",
+        "name":
+            "email",
+        "prefix":
+            "Data Breach",
+        "indicators": []
+    },
     "bp/phishing": {
         "date":
             "dateDetected",
@@ -377,6 +386,10 @@ MAPPING: dict = {
     "apt/threat_actor": {"prefix": "Threat Actor"}
 }
 
+TIMEOUT = 60.
+RETRIES = 4
+STATUS_LIST_TO_RETRY = [429, 500]
+
 
 class Client(BaseClient):
     """
@@ -384,8 +397,26 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def create_update_generator(self, collection_name: str, date_from: Optional[str] = None,
-                                seq_update: Union[int, str] = None, limit: int = 200) -> Generator:
+    def create_generator(self, collection_name: str, reason: str = "automatic", **kwargs):
+        """
+        Interface to work with different types of indicators.
+        """
+        date_from = kwargs.get("date_from")
+        limit = kwargs.get("limit", 200)
+        if collection_name == "compromised/breached" or reason == "manual":
+            date_to = kwargs.get("date_to")
+            query = kwargs.get("query")
+            if kwargs.get("last_fetch"):
+                date_from = kwargs.get("last_fetch")
+            return self._create_search_generator(collection_name=collection_name, reason=reason, date_from=date_from,
+                                                 date_to=date_to, limit=limit, query=query)
+        else:
+            seq_update = kwargs.get("last_fetch")
+            return self._create_update_generator(collection_name=collection_name, date_from=date_from,
+                                                 seq_update=seq_update, limit=limit)
+
+    def _create_update_generator(self, collection_name: str, date_from: Optional[str] = None,
+                                 seq_update: Union[int, str] = None, limit: int = 200) -> Generator:
         """
         Creates generator of lists with feeds class objects for an update session
         (feeds are sorted in ascending order) `collection_name` with set parameters.
@@ -408,16 +439,17 @@ class Client(BaseClient):
         while True:
             params = {"df": date_from, "limit": limit, "seqUpdate": seq_update}
             params = {key: value for key, value in params.items() if value}
-            portion = self._http_request(method="GET", url_suffix=collection_name + "/updated", params=params,
-                                         timeout=60., retries=4, status_list_to_retry=[429, 500])
+            portion = self._http_request(method="GET", url_suffix=collection_name + "/updated",
+                                         params=params, timeout=TIMEOUT, retries=RETRIES,
+                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
             if portion.get("count") == 0:
                 break
             seq_update = portion.get("seqUpdate")
             date_from = None
             yield portion.get("items")
 
-    def create_search_generator(self, collection_name: str, date_from: str = None, date_to: str = None,
-                                limit: int = 200, query: str = None) -> Generator:
+    def _create_search_generator(self, collection_name: str, reason: str, date_from: str = None,
+                                 date_to: str = None, limit: int = 200, query: str = None,) -> Generator:
         """
         Creates generator of lists with feeds for the search session
         (feeds are sorted in descending order) for `collection_name` with set parameters.
@@ -434,10 +466,11 @@ class Client(BaseClient):
             params = {'df': date_from, 'dt': date_to, 'limit': limit, 'resultId': result_id, 'q': query}
             params = {key: value for key, value in params.items() if value}
             portion = self._http_request(method="GET", url_suffix=collection_name,
-                                         params=params, timeout=60., retries=4, status_list_to_retry=[429, 500])
-            if portion.get('count') > 2000:
+                                         params=params, timeout=TIMEOUT, retries=RETRIES,
+                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
+            if portion.get('count') > 2000 and reason == "manual":
                 raise DemistoException('Portion is too large (count > 2000), this can cause timeout in Demisto.'
-                                       'Please, change or set date_from/date_to arguments.')
+                                       'Please, change or set date_from/date_to arguments or change query.')
             if len(portion.get('items')) == 0:
                 break
             result_id = portion.get("resultId")
@@ -451,9 +484,9 @@ class Client(BaseClient):
         :param collection_name: in what collection to search.
         :param feed_id: id of feed to search.
         """
-        portion = self._http_request(method="GET", url_suffix=collection_name + "/" + feed_id, timeout=60.,
-                                     retries=4, backoff_factor=random.random() * 10 + 1,
-                                     status_list_to_retry=[429, 500])
+        portion = self._http_request(method="GET", url_suffix=collection_name + "/" + feed_id, timeout=TIMEOUT,
+                                     retries=RETRIES, status_list_to_retry=STATUS_LIST_TO_RETRY,
+                                     backoff_factor=random.random() * 10 + 1)
 
         return portion
 
@@ -461,8 +494,9 @@ class Client(BaseClient):
         """
         Gets list of available collections from GIB Ti&A API.
         """
-        response = self._http_request(method="GET", url_suffix="sequence_list", timeout=60.,
-                                      retries=4, status_list_to_retry=[429, 500])
+        response = self._http_request(method="GET", url_suffix="sequence_list",
+                                      timeout=TIMEOUT, retries=RETRIES,
+                                      status_list_to_retry=STATUS_LIST_TO_RETRY)
         buffer_list = list(response.get("list").keys())
         collections_list = []
         for key in MAPPING:
@@ -471,9 +505,9 @@ class Client(BaseClient):
         return {"collections": collections_list}, buffer_list
 
     def search_by_query(self, q):
-        results = self._http_request(method="GET", url_suffix="search",
-                                     params={'q': q}, timeout=60., retries=4,
-                                     status_list_to_retry=[429, 500])
+        results = self._http_request(method="GET", url_suffix="search", params={'q': q},
+                                     timeout=TIMEOUT, retries=RETRIES,
+                                     status_list_to_retry=STATUS_LIST_TO_RETRY)
         return results
 
 
@@ -770,24 +804,28 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
 
         # Handle first time fetch
         date_from = None
-        seq_update = None
         if not last_fetch:
             date_from = dateparser.parse(first_fetch_time)
             if date_from is None:
                 raise DemistoException('Inappropriate first_fetch format, '
                                        'please use something like this: 2020-01-01 or January 1 2020 or 3 days')
             date_from = date_from.strftime('%Y-%m-%d')
-        else:
-            seq_update = last_fetch
 
-        portions = client.create_update_generator(collection_name=collection_name,
-                                                  date_from=date_from, seq_update=seq_update)
+        portions = client.create_generator(collection_name=collection_name,
+                                           date_from=date_from, last_fetch=last_fetch)
         k = 0
         for portion in portions:
             for feed in portion:
                 mapping = MAPPING.get(collection_name, {})
-                seq_update = feed.get("seqUpdate")
-                feed.update({"name": mapping.get("prefix", "") + ": " + find_element_by_key(feed, mapping.get("name"))})
+                if collection_name == "compromised/breached":
+                    last_fetch = feed.get("uploadTime")
+                    feed.update({"name": mapping.get("prefix", "") + ": " + ', '.join(find_element_by_key(feed,
+                                                                                                          mapping.get("name")))})
+                else:
+                    last_fetch = feed.get("seqUpdate")
+                    feed.update({"name": mapping.get("prefix", "") + ": " + str(find_element_by_key(feed,
+                                                                                                    mapping.get("name")))})
+
                 feed.update({"gibType": collection_name})
 
                 severity = feed.get("evaluation", {}).get("severity")
@@ -820,7 +858,7 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
             if k >= requests_count:
                 break
 
-        next_run["last_fetch"][collection_name] = seq_update
+        next_run["last_fetch"][collection_name] = last_fetch
 
     return next_run, incidents
 
@@ -867,7 +905,8 @@ def get_info_by_id_command(collection_name: str):
             else:
                 coll_name = "hi/" + coll_name
             result = client.search_feed_by_id(coll_name, id_)
-            del result["displayOptions"]
+            if "displayOptions" in result:
+                del result["displayOptions"]
 
         else:
             result = client.search_feed_by_id(coll_name, id_)
@@ -875,7 +914,9 @@ def get_info_by_id_command(collection_name: str):
                 del result["isFavourite"]
             if "isHidden" in result:
                 del result["isHidden"]
-        del result["seqUpdate"]
+
+        if "seqUpdate" in result:
+            del result["seqUpdate"]
 
         indicators: List[CommandResults] = []
         if coll_name not in ["apt/threat_actor", "hi/threat_actor"]:
@@ -886,7 +927,12 @@ def get_info_by_id_command(collection_name: str):
                 result["indicatorToolRelationships"], result["indicatorsIds"], \
                 result["indicators"]
 
-        main_table_data, additional_tables = transform_function(result)
+        if coll_name == "compromised/breached":
+            if "updateTime" in result:
+                del result["updateTime"]
+            main_table_data, additional_tables = result, []
+        else:
+            main_table_data, additional_tables = transform_function(result)
         results.append(CommandResults(
             outputs_prefix="GIBTIA.{0}".format(MAPPING.get(coll_name, {}).get("prefix", "").replace(" ", "")),
             outputs_key_field="id",
@@ -953,8 +999,8 @@ def local_search_command(client: Client, args: Dict):
     else:
         date_to_parsed = date_to
 
-    portions = client.create_search_generator(collection_name=collection_name, query=query,
-                                              date_from=date_from_parsed, date_to=date_to_parsed)
+    portions = client.create_generator(collection_name=collection_name, reason="manual", query=query,
+                                       date_from=date_from_parsed, date_to=date_to_parsed)
     result_list = []
     name = MAPPING.get(collection_name, {}).get('name')
     for portion in portions:
@@ -1006,6 +1052,7 @@ def main():
             "gibtia-get-compromised-card-info": get_info_by_id_command("compromised/card"),
             "gibtia-get-compromised-mule-info": get_info_by_id_command("compromised/mule"),
             "gibtia-get-compromised-imei-info": get_info_by_id_command("compromised/imei"),
+            "gibtia-get-compromised-breached-info": get_info_by_id_command("compromised/breached"),
             "gibtia-get-phishing-kit-info": get_info_by_id_command("attacks/phishing_kit"),
             "gibtia-get-phishing-info": get_info_by_id_command("attacks/phishing"),
             "gibtia-get-osi-git-leak-info": get_info_by_id_command("osi/git_leak"),

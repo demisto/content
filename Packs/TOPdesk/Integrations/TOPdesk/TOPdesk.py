@@ -1,18 +1,18 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 """TOPdesk integration for Cortex XSOAR"""
 
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-from distutils.version import LooseVersion
 
-import os
 import math
+import os
 import shutil
-import urllib3
 import traceback
-import dateparser
+from distutils.version import LooseVersion
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-from typing import Any, Dict, List, Optional, Callable, Tuple, Union
+import dateparser
+import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -259,8 +259,10 @@ class Client(BaseClient):
                                               url_suffix=f"{endpoint}/attachments",
                                               files=files,
                                               data=request_params)
-        finally:
+        except Exception as e:
             os.remove(file_name)
+            raise e
+        os.remove(file_name)
         return response
 
     def list_attachments(self, incident_id: Optional[str], incident_number: Optional[str]) -> List[Dict[str, Any]]:
@@ -283,6 +285,26 @@ class Client(BaseClient):
             attachments = self.get_list(f"/incidents/number/{incident_number}/attachments")
 
         return attachments
+
+    def list_actions(self, incident_id: Optional[str], incident_number: Optional[str]) -> List[Dict[str, Any]]:
+        """List actions of a given incident.
+
+        Args:
+            incident_id: The incident id to list actions of.
+            incident_number: The incident number to list actions of.
+                If both id and number are specified, id will be used.
+
+        Return list of actions of the incident.
+        """
+        if not incident_id and not incident_number:
+            raise ValueError('Either id or number must be specified to update incident.')
+
+        if incident_id:
+            actions = self.get_list(f"/incidents/id/{incident_id}/actions")
+
+        else:
+            actions = self.get_list(f"/incidents/number/{incident_number}/actions")
+        return actions
 
     @staticmethod
     def add_filter_to_query(query: Optional[str], filter_name: str, filter_arg: str,
@@ -418,6 +440,36 @@ def attachments_to_command_results(client: Client, attachments: List[Dict[str, A
         outputs_key_field='Id',
         outputs=capitalized_attachments,
         raw_response=attachments
+    )
+
+
+def actions_to_command_results(client: Client, actions: List[Dict[str, Any]], incident_id: Optional[str],
+                               incident_number: Optional[str]) -> CommandResults:
+    """Transform raw actions to CommandResults.
+
+    Args:
+        client: The client from which to take the base_url for clickable links.
+        actions: The raw actions list from the API
+        incident_id: The incident id of the actions.
+        incident_number: The incident number of the actions.
+
+    Return CommandResults of actions.
+    """
+    headers = ['Id', 'Memotext', 'Flag', 'InvisibleForCaller', 'EntryDate', 'Operator', 'Person']
+    capitalized_actions = capitalize_for_outputs(actions)
+
+    incident_identifier = incident_number if incident_number else incident_id
+    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} action of incident {incident_identifier}",
+                                      capitalized_actions,
+                                      headers=headers,
+                                      removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_NAME}.Action',
+        outputs_key_field='Id',
+        outputs=capitalized_actions,
+        raw_response=actions
     )
 
 
@@ -964,6 +1016,25 @@ def list_attachments_command(client: Client, args: Dict[str, Any]) -> CommandRes
                                           args.get('incident_number', None))
 
 
+def list_actions_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Get actions list from TOPdesk incident.
+
+    Args:
+        client: The client to preform command on.
+        args: The arguments of the command, specifically 'limit' will be used.
+
+    Return CommadResults of list of attachments."""
+    actions = client.list_actions(incident_id=args.get('incident_id', None),
+                                  incident_number=args.get('incident_number', None))
+
+    if len(actions) == 0:
+        return CommandResults(readable_output='No actions found')
+
+    actions = trim_results_by_limit(actions, args.get('limit', 100))
+    return actions_to_command_results(client, actions, args.get('incident_id', None),
+                                      args.get('incident_number', None))
+
+
 def branches_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Get branches list from TOPdesk.
 
@@ -1154,7 +1225,7 @@ def fetch_incidents(client: Client,
 
     topdesk_incidents = get_incidents_with_pagination(client=client,
                                                       max_fetch=int(demisto_params.get('max_fetch', 10)),
-                                                      query=demisto_params.get('query', None),
+                                                      query=demisto_params.get('fetch_query', None),
                                                       creation_date_start=creation_date_start)
 
     for topdesk_incident in topdesk_incidents:
@@ -1280,6 +1351,9 @@ def main() -> None:
 
         elif demisto.command() == 'topdesk-incident-attachment-upload':
             return_results(attachment_upload_command(client, demisto.args()))
+
+        elif demisto.command() == 'topdesk-incident-actions-list':
+            return_results(list_actions_command(client, demisto.args()))
 
         elif demisto.command() == 'fetch-incidents':
             last_fetch, incidents = fetch_incidents(client=client,

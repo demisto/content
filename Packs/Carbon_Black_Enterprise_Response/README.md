@@ -9,5 +9,3 @@ This response and threat hunting pack provides you with endpoint data enabling y
 - Investigates processes and related files with potential malware or threats.
 
 This pack includes several automations and playbooks to help with the malware investigations.
-
-(https://raw.githubusercontent.com/demisto/content/master/Packs/Carbon_Black_Enterprise_Response/doc_files/Block_Endpoint_-_Carbon_Black_Response_V2.png)

@@ -1,6 +1,7 @@
 import pytest
 from collections import OrderedDict
-from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command
+from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command, \
+    remove_duplicate_indicators
 
 GET_INDICATOR_TYPE_INPUTS = [
     ('ip', OrderedDict([('Name', '192.168.1.1'), ('Risk', '89'), ('RiskString', '5/12'),
@@ -162,3 +163,36 @@ def test_feed_tags(mocker, tags):
     mocker.patch('FeedRecordedFuture.Client.get_batches_from_file', return_value=[[{'Name': '192.168.1.1'}]])
     indicators = next(fetch_indicators_command(client, 'ip'))
     assert tags == indicators[0]['fields']['tags']
+
+
+def test_remove_duplicate_indicators():
+    """
+        Given:
+            - Indicators list with duplicate indicators values ("test" and "TEST" are considered duplicates)
+        When:
+            - Calling the remove_duplicate_indicators method
+        Then:
+            - Validate the list returned from the method does not contain indicators with the same value
+    """
+    indicators_list_with_duplicates = [
+        {
+            'value': 'test',
+            'type': 'test type 1',
+        },
+        {
+            'value': 'test',
+            'type': 'test type 2',
+        },
+        {
+            'value': 'TEST',
+            'type': 'test type 3',
+        },
+    ]
+
+    non_duplicates_list = remove_duplicate_indicators(indicators_list_with_duplicates)
+    assert non_duplicates_list == [
+        {
+            'value': 'test',
+            'type': 'test type 1',
+        }
+    ]

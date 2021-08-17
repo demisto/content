@@ -1,3 +1,7 @@
+id: O365 - Security And Compliance - Search And Delete
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: O365 - Security And Compliance - Search And Delete
 description: |-
   This playbook performs the following steps:
@@ -7,7 +11,6 @@ description: |-
   4. Gets the results of the compliance search.
   5. Gets the preview results, if specified.
   6. Deletes the search results (Hard/Soft).
-id: O365 - Security And Compliance - Search And Delete
 starttaskid: "0"
 tasks:
   "0":
@@ -23,13 +26,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "33"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 152.5,
-          "y": 50
+          "y": 40
         }
       }
     note: false
@@ -68,7 +71,7 @@ tasks:
       {
         "position": {
           "x": 152.5,
-          "y": 440
+          "y": 820
         }
       }
     note: false
@@ -93,7 +96,7 @@ tasks:
       {
         "position": {
           "x": -990,
-          "y": 2610
+          "y": 2990
         }
       }
     note: false
@@ -129,7 +132,7 @@ tasks:
       {
         "position": {
           "x": -980,
-          "y": 2380
+          "y": 2760
         }
       }
     note: false
@@ -167,7 +170,7 @@ tasks:
       {
         "position": {
           "x": -250,
-          "y": 2300
+          "y": 2680
         }
       }
     note: false
@@ -177,16 +180,16 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: fdb4b9af-e147-4ca6-8798-02164a334746
+    taskid: a4757abb-ddc7-493b-8879-c0e0710ce8f0
     type: playbook
     task:
-      id: fdb4b9af-e147-4ca6-8798-02164a334746
+      id: a4757abb-ddc7-493b-8879-c0e0710ce8f0
       version: -1
       name: O365 - Security And Compliance - Search
       description: |-
         This playbook performs the following steps:
-        1. Creates the compliance search.
-        2. Starts the compliance search.
+        1. Creates a compliance search.
+        2. Starts a compliance search.
         3. Waits for the compliance search to complete.
         4. Gets the results of the compliance search as an output.
         5. Gets the preview results, if specified.
@@ -212,20 +215,18 @@ tasks:
           root: inputs.description
       exchange_location:
         complex:
-          root: inputs.exchange_location
+          root: ExchangeLocation
       force:
         complex:
           root: inputs.force
       kql:
         complex:
           root: inputs.kql
-      preview: {}
-      public_folder_location: {}
+      preview:
+        simple: "false"
       search_name:
         complex:
           root: inputs.search_name
-      share_point_location: {}
-      share_point_location_exclusion: {}
     separatecontext: true
     loop:
       iscommand: false
@@ -236,7 +237,7 @@ tasks:
       {
         "position": {
           "x": 152.5,
-          "y": 240
+          "y": 620
         }
       }
     note: false
@@ -306,7 +307,7 @@ tasks:
       {
         "position": {
           "x": 152.5,
-          "y": 660
+          "y": 1040
         }
       }
     note: false
@@ -338,7 +339,7 @@ tasks:
       {
         "position": {
           "x": 810,
-          "y": 860
+          "y": 1240
         }
       }
     note: false
@@ -381,7 +382,7 @@ tasks:
       {
         "position": {
           "x": 810,
-          "y": 1240
+          "y": 1620
         }
       }
     note: false
@@ -452,7 +453,7 @@ tasks:
       {
         "position": {
           "x": 152.5,
-          "y": 1420
+          "y": 1800
         }
       }
     note: false
@@ -486,7 +487,7 @@ tasks:
       {
         "position": {
           "x": 730,
-          "y": 1600
+          "y": 1980
         }
       }
     note: false
@@ -531,7 +532,7 @@ tasks:
       {
         "position": {
           "x": 730,
-          "y": 2100
+          "y": 2480
         }
       }
     note: false
@@ -576,7 +577,7 @@ tasks:
       {
         "position": {
           "x": 152.5,
-          "y": 2090
+          "y": 2470
         }
       }
     note: false
@@ -605,7 +606,7 @@ tasks:
       {
         "position": {
           "x": -340,
-          "y": 860
+          "y": 1240
         }
       }
     note: false
@@ -634,7 +635,7 @@ tasks:
       {
         "position": {
           "x": -320,
-          "y": 1600
+          "y": 1980
         }
       }
     note: false
@@ -671,7 +672,116 @@ tasks:
       {
         "position": {
           "x": 1310,
-          "y": 2090
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: def40f3a-e3ba-496d-88af-39731e3d320b
+    type: condition
+    task:
+      id: def40f3a-e3ba-496d-88af-39731e3d320b
+      version: -1
+      name: From where should emails be searched and deleted?
+      description: Checks if a target to search and delete emails from was specified.
+        Determined by the O365ExchangeLocation playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      User Input:
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: User Input
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.exchange_location
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: b51ca904-5901-47db-8a6a-06cd5b6f31f1
+    type: regular
+    task:
+      id: b51ca904-5901-47db-8a6a-06cd5b6f31f1
+      version: -1
+      name: Set all mailboxes to be searched
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: ExchangeLocation
+      value:
+        simple: All
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 7bffe37a-56c1-4b6a-8f22-d93e811a3ce4
+    type: regular
+    task:
+      id: 7bffe37a-56c1-4b6a-8f22-d93e811a3ce4
+      version: -1
+      name: Set the "email to" as the mailbox to search
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: ExchangeLocation
+      value:
+        complex:
+          root: inputs.exchange_location
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 420
         }
       }
     note: false
@@ -692,14 +802,16 @@ view: |-
       "25_29_Hard": 0.25,
       "27_28_Soft": 0.43,
       "27_29_Hard": 0.2,
-      "27_32_Skip": 0.31
+      "27_32_Skip": 0.31,
+      "33_35_#default#": 0.62,
+      "33_36_User Input": 0.6
     },
     "paper": {
       "dimensions": {
-        "height": 2625,
+        "height": 3015,
         "width": 2680,
         "x": -990,
-        "y": 50
+        "y": 40
       }
     }
   }
@@ -735,7 +847,7 @@ inputs:
   playbookInputQuery:
 - key: exchange_location
   value: {}
-  required: true
+  required: false
   description: Comma-separated list of mailboxes/distribution groups to include, or
     use the value "All" to include all.
   playbookInputQuery:
@@ -768,7 +880,6 @@ inputs:
     Soft=Recoverable)
   playbookInputQuery:
 outputs: []
-version: -1
-fromversion: 5.5.0
 tests:
 - O365-SecurityAndCompliance-Test
+fromversion: 5.5.0

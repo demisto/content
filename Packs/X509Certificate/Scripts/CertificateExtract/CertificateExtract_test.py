@@ -1,3 +1,12 @@
+import demistomock as demisto
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'script': True})
+
+
 def load_json_data(path):
     import json
 
