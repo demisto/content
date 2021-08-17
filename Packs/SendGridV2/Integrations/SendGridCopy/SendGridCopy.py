@@ -66,13 +66,13 @@ def test_module(sg):
 
 
 def get_email_activity_list(args: dict, sg):
+    params = {}
     limit = args.get('limit')
     query = args.get('query')
     headers = args.get('headers')
+    params['limit'] = int(limit)
     if query:
-        params = {'limit': int(limit), 'query': query}
-    else:
-        params = {'limit': int(limit)}
+        params['query'] = query
     response = sg.client.messages.get(query_params=params)
     if response.status_code == 200:
         rBody = response.body
