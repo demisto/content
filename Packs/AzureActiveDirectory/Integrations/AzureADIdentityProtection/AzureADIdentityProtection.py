@@ -245,8 +245,11 @@ def create_incidents_from_input(input: List[Dict[str, str]], last_fetch_datetime
 
     for current_input in input:
         activity_date_time: str = current_input.get('activityDateTime', '')  # 'activityDateTime': '2021-07-15T11:02:54Z' / 'activityDateTime': '2021-07-15T11:02:54.12345Z'
+        current_id: str = current_input.get('id', '')
+        current_risk_event_type: str = current_input.get('riskEventType', '')
+        current_risk_detail: str = current_input.get('riskDetail', '')
         incident = {
-            'name': 'incident_name',
+            'name': f'Azure Active Directory Identity Protection Incident {current_risk_event_type} {current_risk_detail} {current_id}',
             'occurred': activity_date_time,
             'rawJSON': json.dumps(current_input)
         }
