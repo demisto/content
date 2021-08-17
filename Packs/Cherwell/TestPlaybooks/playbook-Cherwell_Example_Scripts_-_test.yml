@@ -54,10 +54,6 @@ tasks:
         simple: "1"
       service:
         simple: Account Management
-      category:
-        simple: PeopleSoft
-      sub_category:
-        simple: Submit incident
     separatecontext: false
     view: |-
       {

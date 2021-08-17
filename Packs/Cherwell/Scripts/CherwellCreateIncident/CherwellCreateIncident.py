@@ -36,8 +36,7 @@ FIELDS = {
     'CustomerDisplayName': args.get('customer_display_name'),
     'OwnedBy': args.get('owned_by'),
     'Service': args.get('service'),
-    'Category': args.get('category'),
-    'Subcategory': args.get('sub_category'),
+    'CallSource': 'Event',
 }
 
 
