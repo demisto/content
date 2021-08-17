@@ -2342,7 +2342,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!linux-mount host="123.123.123.123" path="/mnt/dvd" src="/dev/sr0" fstype="iso9660" opts="ro,noauto" state="present" ```
+```!linux-mount host="123.123.123.123" path="/mnt/dvd" "src"="/dev/sr0" fstype="iso9660" opts="ro,noauto" state="present" ```
 
 #### Context Example
 ```json
@@ -6666,7 +6666,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host | hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance. | Required | 
-| src | If `remote_src=no` (default), local path to archive file to copy to the target server; can be absolute or relative. If `remote_src=yes`, path on the target server to existing archive file to unpack.<br/>If `remote_src=yes` and `src` contains `://`, the remote machine will download the file from the URL first. (version_added 2.0). This is only for simple cases, for full download support use the `get_url` module. | Required | 
+| src | If `remote_"src"=no` (default), local path to archive file to copy to the target server; can be absolute or relative. If `remote_"src"=yes`, path on the target server to existing archive file to unpack.<br/>If `remote_"src"=yes` and `src` contains `://`, the remote machine will download the file from the URL first. (version_added 2.0). This is only for simple cases, for full download support use the `get_url` module. | Required | 
 | dest | Remote absolute path where the archive should be unpacked. | Required | 
 | copy | If true, the file is copied from local 'master' to the target machine, otherwise, the plugin will look for src archive at the target machine.<br/>This option has been deprecated in favor of `remote_src`.<br/>This option is mutually exclusive with `remote_src`. Possible values are: Yes, No. Default is Yes. | Optional | 
 | creates | If the specified absolute path (file or directory) already exists, this step will `not` be run. | Optional | 

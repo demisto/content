@@ -230,12 +230,12 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                             {
                                 "mac_address": "00:16:3e:11:bb:a2",
                                 "network_interface_id": "eni-bp129akowq29d0ocv18q",
-                                "primary_ip_address": "172.16.0.58",
+                                "primary_ip_address": "1.1.1.1",
                                 "private_ip_sets": {
                                     "private_ip_set": [
                                         {
                                             "primary": true,
-                                            "private_ip_address": "172.16.0.58"
+                                            "private_ip_address": "1.1.1.1"
                                         }
                                     ]
                                 },
@@ -245,7 +245,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                         "osname": "Ubuntu  20.04 64\u4f4d",
                         "osname_en": "Ubuntu  20.04 64 bit",
                         "ostype": "linux",
-                        "private_ip_address": "172.16.0.58",
+                        "private_ip_address": "1.1.1.1",
                         "public_ip_address": "",
                         "resource_group_id": "",
                         "status": "running",
@@ -296,7 +296,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * osname: Ubuntu  20.04 64位
 >    * osname_en: Ubuntu  20.04 64 bit
 >    * ostype: linux
->    * private_ip_address: 172.16.0.58
+>    * private_ip_address: 1.1.1.1
 >    * public_ip_address: 
 >    * resource_group_id: 
 >    * status: running
@@ -337,11 +337,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >    * ### Eni-Bp129Akowq29D0Ocv18Q
 >      * mac_address: 00:16:3e:11:bb:a2
 >      * network_interface_id: eni-bp129akowq29d0ocv18q
->      * primary_ip_address: 172.16.0.58
+>      * primary_ip_address: 1.1.1.1
 >      * type: Primary
 >      * #### Private_Ip_Sets
 >        * ##### Private_Ip_Set
 >        * ##### List
 >          * primary: True
->          * private_ip_address: 172.16.0.58
+>          * private_ip_address: 1.1.1.1
 >    * ### Tags
