@@ -70,7 +70,8 @@ def get_email_activity_list(args: dict, sg):
     limit = args.get('limit')
     query = args.get('query')
     headers = args.get('headers')
-    params['limit'] = int(limit)
+    if limit:
+        params['limit'] = int(limit)
     if query:
         params['query'] = query
     response = sg.client.messages.get(query_params=params)

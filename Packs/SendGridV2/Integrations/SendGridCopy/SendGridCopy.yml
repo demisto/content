@@ -324,8 +324,7 @@ script:
     description: Delete the cancellation/pause of a scheduled send.
     name: sg-delete-scheduled-send
   - arguments:
-    - defaultValue: "10"
-      description: The number of messages returned. This parameter must be greater
+    - description: The number of messages returned. This parameter must be greater
         than 0 and less than or equal to 1000
       name: limit
       required: true
@@ -341,8 +340,8 @@ script:
       sent. NOTE: This Email Activity API returns email list up to last 30 days.'
     name: sg-get-email-activity-list
     outputs:
-    - contextPath: endgrid.EmailList
-      description: email activity list associated with the messages matching your
+    - contextPath: Sendgrid.EmailList
+      description: Email activity list associated with the messages matching your
         query.
   dockerimage: demisto/sendgrid:1.0.0.19425
   runonce: false

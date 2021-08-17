@@ -384,7 +384,7 @@ Retrieves the email activity list associated with the messages matching your que
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of messages returned. This parameter must be greater than 0 and less than or equal to 1000. Default is 10. | Required | 
+| limit | The number of messages returned. This parameter must be greater than 0 and less than or equal to 1000. | Required | 
 | query | Use the query syntax to filter your email activity.     For example: query to get email list for category - "Last Login": query=`(Contains(categories,"Last Login"))`     Document link for query samples: https://docs.sendgrid.com/for-developers/sending-email/getting-started-email-activity-api#query-reference. | Optional | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers). Available headers: clicks_count,from_email,last_event_time,msg_id,opens_count,status,subject,to_email. | Optional | 
 
@@ -393,7 +393,7 @@ Retrieves the email activity list associated with the messages matching your que
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| endgrid.EmailList | unknown | email activity list associated with the messages matching your query. | 
+| Sendgrid.EmailList | unknown | Email activity list associated with the messages matching your query. | 
 
 
 #### Command Example
