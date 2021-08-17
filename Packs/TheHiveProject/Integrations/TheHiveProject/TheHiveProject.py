@@ -424,13 +424,13 @@ def list_cases_command(client: Client, args: dict):
                 case['createdAt'] = case_date_dt.strftime(DATE_FORMAT)
         read = tableToMarkdown('TheHive Cases:', res, ['id', 'title', 'description', 'createdAt'])
     else:
-        read = "No cases to be displayed"
+        read = "No cases to be displayed."
 
     return CommandResults(
         outputs_prefix='TheHive.Cases',
         outputs_key_field="id",
         outputs=res,
-        readable_output=read
+        readable_output=read,
     )
 
 
@@ -445,12 +445,12 @@ def get_case_command(client: Client, args: dict):
         headers = ['id', 'title', 'description', 'createdAt']
         read = tableToMarkdown(f'TheHive Case ID {case_id}:', case, headers)
     else:
-        read = "No case with the given ID"
+        read = "No case with the given ID."
     return CommandResults(
         outputs_prefix='TheHive.Cases',
         outputs_key_field='id',
         outputs=case,
-        readable_output=read
+        readable_output=read,
     )
 
 
