@@ -90,16 +90,9 @@ if customPlaybooks is not None:
                         "resolution": f"{RESOLUTION[4]}"
                         })
 
-    results = CommandResults(
-        readable_output="HealthCheckPlaybookAnalysis Done",
-        outputs_prefix="HealthCheck.ActionableItems",
-        outputs=res)
+results = CommandResults(
+    readable_output="HealthCheckPlaybookAnalysis Done",
+    outputs_prefix="HealthCheck.ActionableItems",
+    outputs=res)
 
-    return_results(results)
-else:
-    results = CommandResults(
-        readable_output="HealthCheckPlaybookAnalysis Done",
-        outputs_prefix="HealthCheck.ActionableItems",
-        outputs=res)
-
-    return_results(results)
+return_results(results)
