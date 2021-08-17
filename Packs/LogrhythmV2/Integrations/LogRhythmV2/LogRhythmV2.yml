@@ -30,21 +30,21 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 - display: Incident type
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 1 days
-  display: First fetch timestamp, in days.
-  name: fetch_time
-  required: false
-  type: 0
 script:
   script: ''
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.9.6.22912
-  isfetch: false
+  isfetch: true
   commands:
   - name: lr-alarms-list
     description: ''
