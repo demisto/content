@@ -39,7 +39,7 @@
                 "prevName": "Test 2",
                 "dataType": "indicators",
                 "widgetType": "bar",
-                "query": "type:\"MITRE ATT&CK\" and investigationsCount:>0",
+                "query": "type:\"MITRE ATT&CK\" and investigationsCount:>0 and -incident.type:\"MITRE ATT&CK CoA\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -158,7 +158,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.mitrekillchainphases.phase_name:\"initial-access\"",
+                "query": "-status:closed -category:job -incident.type:\"MITRE ATT&CK CoA\" indicator.mitrekillchainphases.phase_name:\"initial-access\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -280,7 +280,7 @@
                 "prevName": "Active Incidents - Pie chart",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.mitrekillchainphases.phase_name:\"execution\"",
+                "query": "-status:closed -category:job -incident.type:\"MITRE ATT&CK CoA\" indicator.mitrekillchainphases.phase_name:\"execution\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -402,7 +402,7 @@
                 "prevName": "Active Incidents - Pie chart",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.mitrekillchainphases.phase_name:\"persistence\"",
+                "query": "-status:closed -category:job -incident.type:\"MITRE ATT&CK CoA\" indicator.mitrekillchainphases.phase_name:\"persistence\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -524,7 +524,7 @@
                 "prevName": "Active Incidents - Pie chart",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.mitrekillchainphases.phase_name:\"privilege-escalation\"",
+                "query": "-status:closed -category:job -incident.type:\"MITRE ATT&CK CoA\" indicator.mitrekillchainphases.phase_name:\"privilege-escalation\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -646,7 +646,7 @@
                 "prevName": "Incidents in Error Run Status",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.mitrekillchainphases.phase_name:\"defense-evasion\"",
+                "query": "-status:closed -category:job -incident.type:\"MITRE ATT&CK CoA\" indicator.mitrekillchainphases.phase_name:\"defense-evasion\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -706,7 +706,7 @@
                 "prevName": "Incidents Dropped in Preprocessing",
                 "dataType": "audit",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.mitrekillchainphases.phase_name:\"credential-access\"",
+                "query": "-status:closed -category:job -incident.type:\"MITRE ATT&CK CoA\" indicator.mitrekillchainphases.phase_name:\"credential-access\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -767,7 +767,7 @@
                 "prevName": "Incidents in Error Run Status",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.mitrekillchainphases.phase_name:\"discovery\"",
+                "query": "-status:closed -category:job -incident.type:\"MITRE ATT&CK CoA\" indicator.mitrekillchainphases.phase_name:\"discovery\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -827,7 +827,7 @@
                 "prevName": "Incidents in Error Run Status",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.mitrekillchainphases.phase_name:\"lateral-movement\"",
+                "query": "-status:closed -category:job -incident.type:\"MITRE ATT&CK CoA\" indicator.mitrekillchainphases.phase_name:\"lateral-movement\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -887,7 +887,7 @@
                 "prevName": "Incidents in Error Run Status",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.mitrekillchainphases.phase_name:\"collection\"",
+                "query": "-status:closed -category:job -incident.type:\"MITRE ATT&CK CoA\" indicator.mitrekillchainphases.phase_name:\"collection\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -947,7 +947,7 @@
                 "prevName": "Incidents in Error Run Status",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.mitrekillchainphases.phase_name:\"command-and-control\"",
+                "query": "-status:closed -category:job -incident.type:\"MITRE ATT&CK CoA\" indicator.mitrekillchainphases.phase_name:\"command-and-control\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -1007,7 +1007,7 @@
                 "prevName": "Late Incidents",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.mitrekillchainphases.phase_name:\"exfiltration\"",
+                "query": "-status:closed -category:job -incident.type:\"MITRE ATT&CK CoA\" indicator.mitrekillchainphases.phase_name:\"exfiltration\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -1067,7 +1067,7 @@
                 "prevName": "Late Incidents",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.mitrekillchainphases.phase_name:\"impact\"",
+                "query": "-status:closed -category:job -incident.type:\"MITRE ATT&CK CoA\" indicator.mitrekillchainphases.phase_name:\"impact\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {

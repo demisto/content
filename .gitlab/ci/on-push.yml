@@ -4,6 +4,8 @@
 
 
 trigger-private-build:
+  tags:
+    - gke
   needs: []
   stage: unittests-and-validations
   extends:
@@ -36,6 +38,8 @@ run-validations:
 
 
 create-instances:
+  tags:
+    - gke
   extends:
     - .default-job-settings
   rules:
@@ -102,6 +106,8 @@ create-instances:
 
 
 .test_content_on_server_instances_base:
+  tags:
+    - gke
   extends:
     - .default-job-settings
     - .push-rule
@@ -182,6 +188,8 @@ server_master:
 
 
 fan-in-nightly:
+  tags:
+    - gke
   stage: fan-in
   rules:
     - if: '$NIGHTLY'

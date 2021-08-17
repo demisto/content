@@ -41,12 +41,13 @@ def is_key_match_fields_to_hash(key, fields_to_hash):
 
 def hash_incident_labels(incident_labels, fields_to_hash):
     labels = []
-    for label in incident_labels:
-        if is_key_match_fields_to_hash(label.get('type'), fields_to_hash):
-            value = label.get('value') or ''
-            if value:
-                label['value'] = hash_value(value)
-        labels.append(label)
+    if isinstance(incident_labels, list):
+        for label in incident_labels:
+            if is_key_match_fields_to_hash(label.get('type'), fields_to_hash):
+                value = label.get('value') or ''
+                if value:
+                    label['value'] = hash_value(value)
+            labels.append(label)
     return labels
 
 
