@@ -6,6 +6,8 @@ from CommonServerUserPython import *
 import json
 import requests
 import dateparser
+import traceback
+import uuid
 from MicrosoftApiModule import *  # noqa: E402
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -19,6 +21,8 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = '2021-04-01'
 
 NEXTLINK_DESCRIPTION = 'NextLink for listing commands'
+
+XSOAR_USER_AGENT = 'SentinelPartner-PaloAltoNetworks-CortexXsoar/1.0.0'
 
 AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n'\
                           'The response from the server did not contain the expected content.'
@@ -35,12 +39,12 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel
 
 
 class AzureSentinelClient(MicrosoftClient):
-    def __init__(self, tenant_id: str,  client_id: str,
+    def __init__(self, server_url: str, tenant_id: str,  client_id: str,
                  client_secret: str, subscription_id: str,
                  resource_group_name: str,  workspace_name: str,
                  *args, **kwargs):
 
-        base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
+        base_url = f'{server_url}/subscriptions/{subscription_id}/' \
                    f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
                    f'{workspace_name}/providers/Microsoft.SecurityInsights'
 
@@ -65,12 +69,14 @@ class AzureSentinelClient(MicrosoftClient):
             method=method,  # disable-secrets-detection
             url_suffix=url_suffix,
             full_url=full_url,
+            headers={'User-Agent': XSOAR_USER_AGENT},
             json_data=data,
             params=params,
             error_handler=error_handler,
             resp_type='response')
 
-        return res.json()
+        if res.content:
+            return res.json()
 
 
 ''' INTEGRATION HELPER METHODS '''
@@ -95,11 +101,7 @@ def format_date(date):
     return dateparser.parse(date).strftime(DATE_FORMAT)  # type:ignore
 
 
-def str_to_bool(str_bool):
-    return str_bool.lower() == 'true'
-
-
-def incident_data_to_demisto_format(inc_data):
+def incident_data_to_xsoar_format(inc_data):
     properties = inc_data.get('properties', {})
 
     formatted_data = {
@@ -132,6 +134,62 @@ def incident_data_to_demisto_format(inc_data):
     return formatted_data
 
 
+def watchlist_data_to_xsoar_format(watchlist_data):
+    properties = watchlist_data.get('properties', {})
+
+    formatted_data = {
+        'Name': watchlist_data.get('name'),
+        'ID': properties.get('watchlistId'),
+        'Description': properties.get('description'),
+        'Provider': properties.get('provider'),
+        'Source': properties.get('source'),
+        "Created": format_date(properties.get('created')),
+        "Updated": format_date(properties.get('updated')),
+        "CreatedBy": properties.get('createdBy', {}).get('name'),
+        "UpdatedBy": properties.get('updatedBy', {}).get('name'),
+        'Alias': properties.get('watchlistAlias'),
+        'Label': properties.get('labels', []),
+        'ItemsSearchKey': properties.get('itemsSearchKey')
+    }
+    return formatted_data
+
+
+def alert_data_to_xsoar_format(alert_data):
+    """
+    Convert the data alert data from the raw to XSOAR format.
+
+    :param alert_data: (dict) The alert raw data.
+    """
+    properties = alert_data.get('properties', {})
+    formatted_data = {
+        'ID': properties.get('systemAlertId'),
+        'Kind': alert_data.get('kind'),
+        'Tactic': properties.get('tactics'),
+        'DisplayName': properties.get('alertDisplayName'),
+        'Description': properties.get('description'),
+        "ConfidenceLevel": properties.get('confidenceLevel'),
+        "Severity": properties.get('severity'),
+        "VendorName": properties.get('vendorName'),
+        "ProductName": properties.get('productName'),
+        'ProductComponentName': properties.get('productComponentName')
+    }
+    return formatted_data
+
+
+def watchlist_item_data_to_xsoar_format(item_data):
+    properties = item_data.get('properties', {})
+    formatted_data = {
+        'Name': item_data.get('name'),
+        'ID': properties.get('watchlistItemId'),
+        "Created": format_date(properties.get('created')),
+        "Updated": format_date(properties.get('updated')),
+        "CreatedBy": properties.get('createdBy', {}).get('name'),
+        "UpdatedBy": properties.get('updatedBy', {}).get('name'),
+        'ItemsKeyValue': properties.get('itemsKeyValue')
+    }
+    return formatted_data
+
+
 def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str, str]):
     # Get Etag and other mandatory properties (title, severity, status) for update_incident command
     _, _, fetched_incident_data = get_incident_by_id_command(client, args)
@@ -141,6 +199,7 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
     severity = args.get('severity')
     status = args.get('status')
     classification = args.get('classification')
+    classification_comment = args.get('classification_comment')
     classification_reason = args.get('classification_reason')
     assignee_email = args.get('assignee_email')
     labels = argToList(args.get('labels', ''))
@@ -171,6 +230,7 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
             'severity': severity,
             'status': status,
             'classification': classification,
+            'classificationComment': classification_comment,
             'classificationReason': classification_reason,
             'labels': labels_formatted,
             'owner': {'email': assignee_email}
@@ -181,7 +241,7 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
     return incident_data
 
 
-def comment_data_to_demisto_format(comment_data, inc_id):
+def comment_data_to_xsoar_format(comment_data, inc_id):
     properties = comment_data.get('properties', {})
 
     formatted_data = {
@@ -195,7 +255,7 @@ def comment_data_to_demisto_format(comment_data, inc_id):
     return formatted_data
 
 
-def incident_related_resource_data_to_demisto_format(resource_data, incident_id):
+def incident_related_resource_data_to_xsoar_format(resource_data, incident_id):
     properties = resource_data.get('properties', {})
 
     formatted_data = {
@@ -206,7 +266,7 @@ def incident_related_resource_data_to_demisto_format(resource_data, incident_id)
     return formatted_data
 
 
-def entity_related_resource_data_to_demisto_format(resource_data, entity_id):
+def entity_related_resource_data_to_xsoar_format(resource_data, entity_id):
     properties = resource_data.get('properties', {})
 
     formatted_data = {
@@ -237,6 +297,39 @@ def severity_to_level(severity):
     return 0
 
 
+def generic_list_incident_items(client, incident_id, items_kind, key_in_raw_result, context_key, xsoar_transformer):
+    """
+    Get a list of incident's items
+
+    :param client: (AzureSentinelClient) The Azure Sentinel client to work with.
+    :param incident_id:  (str) the incident id.
+    :param items_kind: (str) the name of the entity e.g. entities, alerts.
+    :param key_in_raw_result: (str) the key hold the relevant result in the raw data.
+    :param context_key: (str) the context output key that will hold the command result.
+    :param xsoar_transformer: (function) a function to transform the raw data to xsoar format.
+    """
+
+    url_suffix = f'incidents/{incident_id}/{items_kind}'
+
+    result = client.http_request('POST', url_suffix)
+    raw_items = result.get(key_in_raw_result, [])
+    items = [
+       dict(IncidentId=incident_id, **xsoar_transformer(item)) for item in raw_items
+    ]
+
+    outputs = {f'{context_key}(val.ID === obj.ID && val.IncidentId == obj.IncidentId)': items}
+    readable_output = tableToMarkdown(f'Incident {incident_id} {items_kind.capitalize()} ({len(items)} results)', items,
+                                      headers=['ID', 'Kind', 'IncidentId'],
+                                      headerTransform=pascalToSpace,
+                                      removeNull=True)
+
+    return (
+        readable_output,
+        outputs,
+        result
+    )
+
+
 ''' INTEGRATION COMMANDS '''
 
 
@@ -250,7 +343,7 @@ def get_incident_by_id_command(client, args):
     url_suffix = f'incidents/{inc_id}'
 
     result = client.http_request('GET', url_suffix)
-    incident = incident_data_to_demisto_format(result)
+    incident = incident_data_to_xsoar_format(result)
 
     outputs = {'AzureSentinel.Incident(val.ID === obj.ID)': incident}
 
@@ -285,24 +378,190 @@ def list_incidents_command(client, args, is_fetch_incidents=False):
 
         result = client.http_request('GET', url_suffix, params=params)
 
-    incidents = [incident_data_to_demisto_format(inc) for inc in result.get('value')]
+    incidents = [incident_data_to_xsoar_format(inc) for inc in result.get('value')]
 
     if is_fetch_incidents:
         return None, incidents, {}
 
     outputs = {'AzureSentinel.Incident(val.ID === obj.ID)': incidents}
 
-    # we don't want whitespaces in this value, so it won't be considered as two arguments in the CLI by mistake
-    next_link = result.get('nextLink', '').replace(' ', '%20')
-    if next_link:
-        next_link_item = {
-            'Description': NEXTLINK_DESCRIPTION,
-            'URL': next_link
-        }
-        outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item  # type: ignore
+    update_next_link_in_context(result, outputs)
 
     readable_output = tableToMarkdown(f'Incidents List ({len(incidents)} results)', incidents,
                                       headers=INCIDENT_HEADERS,
+                                      headerTransform=pascalToSpace,
+                                      removeNull=True)
+
+    return (
+        readable_output,
+        outputs,
+        result
+    )
+
+
+def list_watchlists_command(client, args):
+
+    url_suffix = 'watchlists'
+    specific_watchlists_alias = args.get('watchlist_alias')
+    if specific_watchlists_alias:
+        url_suffix += f'/{specific_watchlists_alias}'
+
+    result = client.http_request('GET', url_suffix)
+
+    raw_watchlists = [result] if specific_watchlists_alias else result.get('value')
+    watchlists = [watchlist_data_to_xsoar_format(watchlist) for watchlist in raw_watchlists]
+
+    outputs = {'AzureSentinel.Watchlist(val.ID === obj.ID)': watchlists}
+
+    readable_output = tableToMarkdown('Watchlists results', watchlists,
+                                      headers=['Name', 'ID', 'Description'],
+                                      headerTransform=pascalToSpace,
+                                      removeNull=True)
+
+    return (
+        readable_output,
+        outputs,
+        result
+    )
+
+
+def delete_watchlist_command(client, args):
+    alias = args.get('watchlist_alias')
+    url_suffix = f'watchlists/{alias}'
+    client.http_request('DELETE', url_suffix)
+    return (
+        f'Watchlist {alias} was deleted successfully.',
+        None,
+        None
+    )
+
+
+def delete_watchlist_item_command(client, args):
+    alias = args.get('watchlist_alias')
+    item_id = args.get('watchlist_item_id')
+    url_suffix = f'watchlists/{alias}/watchlistItems/{item_id}'
+    client.http_request('DELETE', url_suffix)
+    return (
+        f'Watchlist item {item_id} was deleted successfully.',
+        None,
+        None
+    )
+
+
+def create_update_watchlist_command(client, args):
+    """ Create or update a watchlist in Azure Sentinel.
+
+    :param client: (AzureSentinelClient) The Azure Sentinel client to work with.
+    :param args:  (dict) arguments for this command.
+    """
+
+    # prepare the request
+    alias = args.get('watchlist_alias')
+    raw_content = ''
+    path = args.get('raw_content')
+    if path:
+        path = demisto.getFilePath(path)
+        with open(path['path'], 'rb') as file:
+            raw_content = file.read().decode()
+    data = {
+        'properties': {
+            'watchlistAlias': alias,
+            'displayName': args.get('watchlist_display_name'),
+            'description': args.get('description', ''),
+            'provider': args.get('provider', 'XSOAR'),
+            'source': args.get('source'),
+            'labels': argToList(args.get('labels', ''), ','),
+            'numberOfLinesToSkip': arg_to_number(args.get('lines_to_skip', '0')),
+            'rawContent': raw_content,
+            'itemsSearchKey': args.get('items_search_key'),
+            'contentType': args.get('content_type', 'Text/Csv'),
+        }
+    }
+
+    # request
+    raw_result = client.http_request('PUT', url_suffix=f'watchlists/{alias}', data=data)
+
+    # prepare result
+    watchlist = watchlist_data_to_xsoar_format(raw_result)
+    outputs = {'AzureSentinel.Watchlist(val.ID === obj.ID)': watchlist}
+
+    readable_output = tableToMarkdown('Create watchlist results', watchlist,
+                                      headers=['Name', 'ID', 'Description'],
+                                      headerTransform=pascalToSpace,
+                                      removeNull=True)
+
+    return (
+        readable_output,
+        outputs,
+        raw_result
+    )
+
+
+def create_update_watchlist_item_command(client, args):
+    """ Create or update a watchlist item in Azure Sentinel.
+
+    :param client: (AzureSentinelClient) The Azure Sentinel client to work with.
+    :param args:  (dict) arguments for this command.
+    """
+
+    # prepare the request
+    alias = args.get('watchlist_alias')
+    watchlist_item_id = args.get('watchlist_item_id', uuid.uuid4())
+    item_key_value_str = args.get('item_key_value', '{}')
+    item_key_value = json.loads(item_key_value_str)
+    item_data = {
+        'properties': {
+            'itemsKeyValue': item_key_value
+        }
+    }
+
+    # request
+    url_suffix = f'watchlists/{alias}/watchlistItems/{watchlist_item_id}'
+    raw_item = client.http_request('PUT', url_suffix=url_suffix, data=item_data)
+
+    # prepare result
+    item = {'WatchlistAlias': alias, **watchlist_item_data_to_xsoar_format(raw_item)}
+
+    outputs = {'AzureSentinel.WatchlistItem(val.ID === obj.ID)': item}
+
+    readable_output = tableToMarkdown('Create watchlist item results', item,
+                                      headers=['ID', 'ItemsKeyValue'],
+                                      headerTransform=pascalToSpace,
+                                      removeNull=True)
+
+    return (
+        readable_output,
+        outputs,
+        raw_item
+    )
+
+
+def list_watchlist_items_command(client, args):
+    """
+    Get specific watchlist item or list of watchlist items.
+
+    :param client: (AzureSentinelClient) The Azure Sentinel client to work with.
+    :param args:  (dict) arguments for this command.
+    """
+
+    # prepare the request
+    alias = args.get('watchlist_alias', '')
+    url_suffix = f'watchlists/{alias}/watchlistItems'
+    item_id = args.get('watchlist_item_id')
+    if item_id:
+        url_suffix += f'/{item_id}'
+
+    # request
+    result = client.http_request('GET', url_suffix)
+
+    # prepare result
+    raw_items = [result] if item_id else result.get('value')
+    items = [{'WatchlistAlias': alias, **watchlist_item_data_to_xsoar_format(item)} for item in raw_items]
+
+    outputs = {'AzureSentinel.WatchlistItem(val.ID === obj.ID)': items}
+
+    readable_output = tableToMarkdown('Watchlist items results', items,
+                                      headers=['ID', 'ItemsKeyValue'],
                                       headerTransform=pascalToSpace,
                                       removeNull=True)
 
@@ -320,7 +579,7 @@ def update_incident_command(client: AzureSentinelClient, args: Dict[str, Any]):
 
     url_suffix = f'incidents/{inc_id}'
     result = client.http_request('PUT', url_suffix, data=inc_data)
-    incident = incident_data_to_demisto_format(result)
+    incident = incident_data_to_xsoar_format(result)
 
     outputs = {'AzureSentinel.Incident(val.ID === obj.ID)': incident}
 
@@ -365,7 +624,7 @@ def list_incident_comments_command(client, args):
 
         result = client.http_request('GET', url_suffix, params=params)
 
-    comments = [comment_data_to_demisto_format(inc, inc_id) for inc in result.get('value')]
+    comments = [comment_data_to_xsoar_format(inc, inc_id) for inc in result.get('value')]
 
     outputs = {f'AzureSentinel.IncidentComment(val.ID === obj.ID && val.IncidentID === {inc_id})': comments}
 
@@ -402,7 +661,7 @@ def incident_add_comment_command(client, args):
     }
 
     result = client.http_request('PUT', url_suffix, data=comment_data)
-    comment = comment_data_to_demisto_format(result, inc_id)
+    comment = comment_data_to_xsoar_format(result, inc_id)
 
     outputs = {
         f'AzureSentinel.IncidentComment(val.ID === obj.ID && val.IncidentID === {inc_id})': comment
@@ -420,9 +679,10 @@ def incident_add_comment_command(client, args):
     )
 
 
+# deprecated
 def get_entity_by_id_command(client, args):
     entity_id = args.get('entity_id')
-    expand_entity_information = str_to_bool(args.get('expand_entity_information'))
+    expand_entity_information = argToBoolean(args.get('expand_entity_information'))
 
     if not expand_entity_information:
         url_suffix = f'entities/{entity_id}'
@@ -502,7 +762,7 @@ def list_entity_relations_command(client, args):
         result = client.http_request('GET', url_suffix, params=params)
 
     relations = [
-        entity_related_resource_data_to_demisto_format(resource, entity_id) for resource in result.get('value')
+        entity_related_resource_data_to_xsoar_format(resource, entity_id) for resource in result.get('value')
     ]
 
     outputs = {f'AzureSentinel.EntityRelatedResource(val.ID === obj.ID && val.EntityID == {entity_id})': relations}
@@ -528,49 +788,39 @@ def list_entity_relations_command(client, args):
 
 
 def list_incident_entities_command(client, args):
-    incident_id = args.get('incident_id')
-    limit = min(50, int(args.get('limit')))
-    next_link = args.get('next_link', '')
+    """
+    Get a list of incident's entities.
 
-    if next_link:
-        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
-        result = client.http_request('GET', full_url=next_link)
-    else:
-        url_suffix = f'incidents/{incident_id}/entities'
-        params = {
-            '$top': limit
-        }
+    :param client: (AzureSentinelClient) The Azure Sentinel client to work with.
+    :param args:  (dict) arguments for this command.
+    """
+    def xsoar_transformer(entity):
+        return dict(
+            ID=entity.get('name'),
+            Kind=entity.get('kind'),
+            Properties=entity.get('properties')
+        )
 
-        result = client.http_request('POST', url_suffix, params=params)
-        raw_entities = result.get('entities', [])
-    entities = [
-       dict(
-           ID=entity.get('name'),
-           Kind=entity.get('kind'),
-           IncidentId=incident_id,
-           Properties=entity.get('properties')) for entity in raw_entities
-    ]
+    return generic_list_incident_items(
+        client=client, incident_id=args.get('incident_id'),
+        items_kind='entities', key_in_raw_result='entities',
+        context_key='AzureSentinel.IncidentEntity',
+        xsoar_transformer=xsoar_transformer
+    )
 
-    outputs = {f'AzureSentinel.IncidentEntity(val.ID === obj.ID && val.IncidentId == {incident_id})': entities}
 
-    # we don't want whitespaces in this value, so it won't be considered as two arguments in the CLI by mistake
-    next_link = result.get('nextLink', '').replace(' ', '%20')
-    if next_link:
-        next_link_item = {
-            'Description': NEXTLINK_DESCRIPTION,
-            'URL': next_link
-        }
-        outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item  # type: ignore
+def list_incident_alerts_command(client, args):
+    """
+    Get a list of incident's alerts.
 
-    readable_output = tableToMarkdown(f'Incident {incident_id} Entities ({len(entities)} results)', entities,
-                                      headers=['ID', 'Kind', 'IncidentId'],
-                                      headerTransform=pascalToSpace,
-                                      removeNull=True)
-
-    return (
-        readable_output,
-        outputs,
-        result
+    :param client: (AzureSentinelClient) The Azure Sentinel client to work with.
+    :param args:  (dict) arguments for this command.
+    """
+    return generic_list_incident_items(
+        client=client, incident_id=args.get('incident_id'),
+        items_kind='alerts', key_in_raw_result='value',
+        context_key='AzureSentinel.IncidentAlert',
+        xsoar_transformer=alert_data_to_xsoar_format
     )
 
 
@@ -601,7 +851,7 @@ def list_incident_relations_command(client, args):
         result = client.http_request('GET', url_suffix, params=params)
 
     relations = [
-        incident_related_resource_data_to_demisto_format(resource, inc_id) for resource in result.get('value')
+        incident_related_resource_data_to_xsoar_format(resource, inc_id) for resource in result.get('value')
     ]
 
     outputs = {f'AzureSentinel.IncidentRelatedResource(val.ID === obj.ID && val.IncidentID == {inc_id})': relations}
@@ -624,6 +874,20 @@ def list_incident_relations_command(client, args):
         outputs,
         result
     )
+
+
+def update_next_link_in_context(result: dict, outputs: dict):
+    """
+    Update the output context with the next link if exist
+    """
+    # we don't want whitespaces in this value, so it won't be considered as two arguments in the CLI by mistake
+    next_link = result.get('nextLink', '').replace(' ', '%20')
+    if next_link:
+        next_link_item = {
+            'Description': NEXTLINK_DESCRIPTION,
+            'URL': next_link
+        }
+        outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item  # type: ignore
 
 
 def fetch_incidents(client, last_run, first_fetch_time, min_severity):
@@ -680,6 +944,7 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = AzureSentinelClient(
+            server_url=params.get('server_url', 'https://management.azure.com'),
             tenant_id=params.get('tenant_id', ''),
             client_id=params.get('client_id', ''),
             client_secret=params.get('client_secret', ''),
@@ -700,7 +965,14 @@ def main():
             'azure-sentinel-list-incident-relations': list_incident_relations_command,
             'azure-sentinel-get-entity-by-id': get_entity_by_id_command,
             'azure-sentinel-list-entity-relations': list_entity_relations_command,
-            'azure-sentinel-list-incident-entities': list_incident_entities_command
+            'azure-sentinel-list-incident-entities': list_incident_entities_command,
+            'azure-sentinel-list-incident-alerts': list_incident_alerts_command,
+            'azure-sentinel-list-watchlists': list_watchlists_command,
+            'azure-sentinel-delete-watchlist': delete_watchlist_command,
+            'azure-sentinel-watchlist-create-update': create_update_watchlist_command,
+            'azure-sentinel-list-watchlist-items': list_watchlist_items_command,
+            'azure-sentinel-delete-watchlist-item': delete_watchlist_item_command,
+            'azure-sentinel-create-update-watchlist-item': create_update_watchlist_item_command
         }
 
         if demisto.command() == 'test-module':
@@ -727,8 +999,8 @@ def main():
             return_outputs(*commands[demisto.command()](client, demisto.args()))  # type: ignore
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
-
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}, trace: {traceback.format_exc()}')
+# todo remove the traceback
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

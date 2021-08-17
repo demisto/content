@@ -3,33 +3,33 @@ commonfields:
   id: Azure Sentinel
   version: -1
 configuration:
+- defaultvalue: https://management.azure.com
+  display: Server URL
+  hidden: false
+  name: server_url
+  required: true
+  type: 0
 - display: Tenant ID
-  description: The tenant (directory) id from Azure Active Directory
   name: tenant_id
   required: true
   type: 4
 - display: Client ID
-  description: The Application ID id from Azure App registrations
   name: client_id
   required: true
   type: 4
 - display: Client Secret
-  description: The secret from the registered application's Client credentials
   name: client_secret
   required: true
   type: 4
 - display: Subscription ID
-  description: The Azure Subscription ID
   name: subscriptionID
   required: true
   type: 0
 - display: Resource Group Name
-  description: The Azure Resource Group Name
   name: resourceGroupName
   required: true
   type: 0
 - display: Workspace Name
-  description: The Azure Workspace Name
   name: workspaceName
   required: true
   type: 0
@@ -66,7 +66,7 @@ configuration:
   type: 8
 description: Use the Azure Sentinel integration to get and manage incidents and get
   related entity information for incidents.
-display: Azure Sentinel (Beta)
+display: Azure Sentinel
 name: Azure Sentinel
 script:
   commands:
@@ -253,6 +253,153 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Alias of specific watchlist to get.
+      isArray: false
+      name: watchlist_alias
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of watchlists from Azure Sentinel.
+    execution: false
+    name: azure-sentinel-list-watchlists
+    outputs:
+    - contextPath: AzureSentinel.Watchlist.ID
+      description: The watchlist ID.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.Description
+      description: A description of the watchlist.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.DisplayName
+      description: The display name of the watchlist.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.Provider
+      description: The provider of the watchlist.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.Source
+      description: The source of the watchlist.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.Created
+      description: The time the watchlist was created.
+      type: Date
+    - contextPath: AzureSentinel.Watchlist.Updated
+      description: The last time the watchlist was updated.
+      type: Date
+    - contextPath: AzureSentinel.Watchlist.CreatedBy
+      description: The name of the user created the Watchlist.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.UpdatedBy
+      description: The name of the user updated the Watchlist.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.Alias
+      description: The alias of the watchlist.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.Label
+      description: Label that will be used to tag and filter on.
+      type: unknown
+    - contextPath: AzureSentinel.Watchlist.ItemsSearchKey
+      description: The search key is used to optimize query performance when using
+        watchlists for joins with other data. For example, enable a column with IP
+        addresses to be the designated SearchKey field, then use this field as the
+        key field when joining to other event data by IP address.
+      type: String
+    - contextPath: AzureSentinel.NextLink.Description
+      description: Description of NextLink.
+      type: String
+    - contextPath: AzureSentinel.NextLink.URL
+      description: Used if an operation returns partial results. If a response contains
+        a NextLink element, its value specifies a starting point to use for subsequent
+        calls.
+      type: String
+  - arguments:
+    - default: false
+      description: Alias of the watchlist to be deleted.
+      isArray: false
+      name: watchlist_alias
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a watchlists from Azure Sentinel.
+    execution: false
+    name: azure-sentinel-delete-watchlist
+  - arguments:
+    - default: false
+      description: The alias of the new watchlist or the watchlist to update.
+      isArray: false
+      name: watchlist_alias
+      required: true
+      secret: false
+    - default: false
+      description: The display name of the watchlist.
+      isArray: false
+      name: watchlist_display_name
+      required: true
+      secret: false
+    - default: false
+      description: The description of the watchlist.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      defaultValue: XSOAR
+      description: The provider of the watchlist.
+      isArray: false
+      name: provider
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The source of the watchlist.
+      isArray: false
+      name: source
+      predefined:
+      - Local file
+      - Remote storage
+      required: true
+      secret: false
+    - default: false
+      description: The labels of the watchlist.
+      isArray: true
+      name: labels
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The number of lines in a csv content to skip before the header.
+      isArray: false
+      name: lines_to_skip
+      required: false
+      secret: false
+    - default: false
+      description: 'A file entry with raw content that represents to watchlist items
+        to create. Example: This line will be skipped header1,header2 value1,value2.'
+      isArray: false
+      name: raw_content
+      required: true
+      secret: false
+    - default: false
+      description: The search key is used to optimize query performance when using
+        watchlists for joins with other data. For example, enable a column with IP
+        addresses to be the designated SearchKey field, then use this field as the
+        key field when joining to other event data by IP address.
+      isArray: false
+      name: items_search_key
+      required: true
+      secret: false
+    - default: false
+      defaultValue: Text/Csv
+      description: The content type of the raw content. For now, only text/csv is
+        valid.
+      isArray: false
+      name: content_type
+      required: false
+      secret: false
+    deprecated: false
+    description: Create or update a watchlists in Azure Sentinel.
+    execution: false
+    name: azure-sentinel-watchlist-create-update
+  - arguments:
+    - default: false
       description: The incident ID.
       isArray: false
       name: incident_id
@@ -295,8 +442,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The reason the incident was closed. Required when updating the status
-        to Closed.
+      description: The reason the incident was closed. Required when updating the
+        status to Closed.
       isArray: false
       name: classification
       predefined:
@@ -304,6 +451,12 @@ script:
       - FalsePositive
       - TruePositive
       - Undetermined
+      required: false
+      secret: false
+    - default: false
+      description: Describes the reason the incident was closed.
+      isArray: false
+      name: classification_comment
       required: false
       secret: false
     - auto: PREDEFINED
@@ -320,7 +473,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The email address of the incident assignee. Note that the updated API field is `owner.email`.
+      description: The email address of the incident assignee. Note that the updated
+        API field is `owner.email`.
       isArray: false
       name: assignee_email
       required: false
@@ -586,7 +740,6 @@ script:
       command, and get an entity ID to apply this command on. In the current Azure
       Sentinel API version the retention period for GetEntityByID is 30 days.
     execution: false
-    hidden: true
     name: azure-sentinel-get-entity-by-id
   - arguments:
     - default: false
@@ -631,7 +784,6 @@ script:
     deprecated: false
     description: Gets a list of an entity's relations from Azure Sentinel.
     execution: false
-    hidden: true
     name: azure-sentinel-list-entity-relations
     outputs:
     - contextPath: AzureSentinel.EntityRelatedResource.ID
@@ -652,45 +804,177 @@ script:
       description: The entity ID.
       type: String
   - arguments:
-      - default: false
-        description: The incident ID.
-        isArray: false
-        name: incident_id
-        required: true
-        secret: false
-      - default: false
-        defaultValue: '50'
-        description: The maximum number of entities to return. The default value is
-          50.
-        isArray: false
-        name: limit
-        required: false
-        secret: false
-      - default: false
-        description: A link that specifies a starting point to use for subsequent calls.
-          Using this argument overrides all of the other command arguments.
-        isArray: false
-        name: next_link
-        required: false
-        secret: false
+    - default: false
+      description: The incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
     deprecated: false
     description: Gets a list of an incident's entities from Azure Sentinel.
     execution: false
     name: azure-sentinel-list-incident-entities
     outputs:
-      - contextPath: AzureSentinel.IncidentEntity.ID
-        description: The ID of the entity.
-        type: String
-      - contextPath: AzureSentinel.IncidentEntity.IncidentId
-        description: The ID of the incident.
-        type: String
-      - contextPath: AzureSentinel.IncidentEntity.Kind
-        description: The kind of the entity.
-        type: String
-      - contextPath: AzureSentinel.IncidentEntity.Properties
-        description: The properties of the entity.
-        type: Unknown
-
+    - contextPath: AzureSentinel.IncidentEntity.ID
+      description: The ID of the entity.
+      type: String
+    - contextPath: AzureSentinel.IncidentEntity.IncidentId
+      description: The ID of the incident.
+      type: String
+    - contextPath: AzureSentinel.IncidentEntity.Kind
+      description: The kind of the entity.
+      type: String
+    - contextPath: AzureSentinel.IncidentEntity.Properties
+      description: The properties of the entity.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a list of an incident's alerts from Azure Sentinel.
+    execution: false
+    name: azure-sentinel-list-incident-alerts
+    outputs:
+    - contextPath: AzureSentinel.IncidentAlert.ID
+      description: The ID of the alert.
+      type: String
+    - contextPath: AzureSentinel.IncidentAlert.IncidentId
+      description: The ID of the incident.
+      type: String
+    - contextPath: AzureSentinel.IncidentAlert.Kind
+      description: The kind of the alert.
+      type: String
+    - contextPath: AzureSentinel.IncidentAlert.Tactic
+      description: The tactics of the alert.
+      type: Unknown
+    - contextPath: AzureSentinel.IncidentAlert.DisplayName
+      description: The display name of the alert.
+      type: String
+    - contextPath: AzureSentinel.IncidentAlert.Description
+      description: The description of the alert.
+      type: String
+    - contextPath: AzureSentinel.IncidentAlert.ConfidenceLevel
+      description: The confidence level of this alert.
+      type: String
+    - contextPath: AzureSentinel.IncidentAlert.Severity
+      description: The severity of the alert.
+      type: String
+    - contextPath: AzureSentinel.IncidentAlert.VendorName
+      description: The name of the vendor that raise the alert.
+      type: String
+    - contextPath: AzureSentinel.IncidentAlert.ProductName
+      description: The name of the product which published this alert.
+      type: String
+    - contextPath: AzureSentinel.IncidentAlert.ProductComponentName
+      description: The name of a component inside the product which generated the
+        alert.
+      type: String
+  - arguments:
+    - default: false
+      description: The alias of the watchlist.
+      isArray: false
+      name: watchlist_alias
+      required: true
+      secret: false
+    - default: false
+      description: The id of the sigle watchlist item.
+      isArray: false
+      name: watchlist_item_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get single watchlist item or list of watchlist items.
+    execution: false
+    name: azure-sentinel-list-watchlist-items
+    outputs:
+    - contextPath: AzureSentinel.WatchlistItem.WatchlistAlias
+      description: The alias of the watchlist
+      type: String
+    - contextPath: AzureSentinel.WatchlistItem.ID
+      description: The id (a Guid) of the watchlist item.
+      type: String
+    - contextPath: AzureSentinel.WatchlistItem.Created
+      description: The time the watchlist item was created.
+      type: Date
+    - contextPath: AzureSentinel.WatchlistItem.Updated
+      description: The last time the watchlist item was updated.
+      type: Date
+    - contextPath: AzureSentinel.WatchlistItem.CreatedBy
+      description: The name of the user.
+      type: String
+    - contextPath: AzureSentinel.WatchlistItem.UpdatedBy
+      description: The of the user update this item.
+      type: String
+    - contextPath: AzureSentinel.WatchlistItem.ItemsKeyValue
+      description: Key-value pairs for a watchlist item.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The watchlist alias.
+      isArray: false
+      name: watchlist_alias
+      required: true
+      secret: false
+    - default: false
+      description: The watchlist item id to be deleted.
+      isArray: false
+      name: watchlist_item_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a watchlist item.
+    execution: false
+    name: azure-sentinel-delete-watchlist-item
+  - arguments:
+    - default: false
+      description: The watchlist alias.
+      isArray: false
+      name: watchlist_alias
+      required: true
+      secret: false
+    - default: false
+      description: The watchlist item id (GUID) to update
+      isArray: false
+      name: watchlist_item_id
+      required: false
+      secret: false
+    - default: false
+      description: The JSON for the itemsKeyValue of the item (the key value is different
+        from watchlist to watchlist)
+      isArray: false
+      name: item_key_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Create or update a watchlist item.
+    execution: false
+    name: azure-sentinel-create-update-watchlist-item
+    outputs:
+    - contextPath: AzureSentinel.WatchlistItem.WatchlistAlias
+      description: The alias of the watchlist
+      type: String
+    - contextPath: AzureSentinel.WatchlistItem.ID
+      description: The id (a Guid) of the watchlist item.
+      type: String
+    - contextPath: AzureSentinel.WatchlistItem.Created
+      description: The time the watchlist item was created.
+      type: Date
+    - contextPath: AzureSentinel.WatchlistItem.Updated
+      description: The last time the watchlist item was updated.
+      type: Date
+    - contextPath: AzureSentinel.WatchlistItem.CreatedBy
+      description: The name of the user.
+      type: String
+    - contextPath: AzureSentinel.WatchlistItem.UpdatedBy
+      description: The of the user update this item.
+      type: String
+    - contextPath: AzureSentinel.WatchlistItem.ItemsKeyValue
+      description: Key-value pairs for a watchlist item.
+      type: Unknown
   dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: true
@@ -704,4 +988,3 @@ tests:
 - No test - manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests
   folder
 fromversion: 5.0.0
-beta: true
