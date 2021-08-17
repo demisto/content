@@ -134,7 +134,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!ios-bgp host="123.123.123.123" config="{{ {'bgp_as': 64496, 'router_id': '192.0.2.1', 'log_neighbor_changes': True, 'neighbors': [{'neighbor': '203.0.113.5', 'remote_as': 64511, 'timers': {'keepalive': 300, 'holdtime': 360, 'min_neighbor_holdtime': 360}}, {'neighbor': '198.51.100.2', 'remote_as': 64498}], 'networks': [{'prefix': '198.51.100.0', 'route_map': 'RMAP_1'}, {'prefix': '192.0.2.0', 'masklen': 23}], 'address_family': [{'afi': 'ipv4', 'safi': 'unicast', 'redistribute': [{'protocol': 'ospf', 'id': 223, 'metric': 10}]}]} }}" operation="merge" ```
+```!ios-bgp host="123.123.123.123" config="{{ {'bgp_as': 64496, 'router_id': '192.0.2.1', 'log_neighbor_changes': True, 'neighbors': [{'neighbor': '1.1.1.1', 'remote_as': 64511, 'timers': {'keepalive': 300, 'holdtime': 360, 'min_neighbor_holdtime': 360}}, {'neighbor': '1.1.1.2', 'remote_as': 64498}], 'networks': [{'prefix': '198.51.100.0', 'route_map': 'RMAP_1'}, {'prefix': '192.0.2.0', 'masklen': 23}], 'address_family': [{'afi': 'ipv4', 'safi': 'unicast', 'redistribute': [{'protocol': 'ospf', 'id': 223, 'metric': 10}]}]} }}" operation="merge" ```
 
 #### Context Example
 ```json
@@ -488,7 +488,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                 "1:11:11:11"
             ],
             "net_api": "cliconf",
-            "net_config": "!\n! Last configuration change at 08:56:26 UTC Sun Jul 11 2021 by admin\n!\nversion 15.7\nservice timestamps debug datetime msec\nservice timestamps log datetime msec\nno service password-encryption\n!\nhostname IOSv01\n!\nboot-start-marker\nboot-end-marker\n!\n!\nenable secret 5 $1$abcdefghijklmnopqrstuvwxyz.\n!\nno aaa new-model\n!\n!\n!\nmmi polling-interval 60\nno mmi auto-configure\nno mmi pvc\nmmi snmp-timeout 180\n!\n!\n!\n!\n!\nno ip icmp rate-limit unreachable\n!\n!\n!\n!\n!\n!\nip domain list ansible.com\nip domain list redhat.com\nip domain list cisco.com\nno ip domain lookup\nip domain name test.example.com\nip cef\nno ipv6 cef\n!\nmultilink bundle-name authenticated\n!\n!\n!\n!\nusername admin password 0 abcdef\nusername ansible nopassword\n!\nredundancy\n!\nlldp timer 10\nlldp holdtime 10\nlldp reinit 3\nlldp run\nno cdp log mismatch duplex\n!\nip tcp synwait-time 5\n! \n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\ninterface GigabitEthernet0/0\n ip address 123.123.123.123 255.255.255.0\n duplex auto\n speed auto\n media-type rj45\n!\ninterface GigabitEthernet0/1\n no ip address\n shutdown\n duplex auto\n speed auto\n media-type rj45\n!\ninterface GigabitEthernet0/2\n description Configured and Merged by Ansible Network\n ip address 192.168.0.2 255.255.255.0\n duplex auto\n speed auto\n media-type rj45\n!\ninterface GigabitEthernet0/3\n description Configured and Merged by Ansible Network\n mtu 2800\n no ip address\n shutdown\n duplex full\n speed 100\n media-type rj45\n ipv6 address 1:11:11:11/64\n!\ninterface GigabitEthernet0/3.100\n!\nrouter bgp 64496\n bgp router-id 192.0.2.1\n bgp log-neighbor-changes\n neighbor 198.51.100.2 remote-as 64498\n neighbor 203.0.113.5 remote-as 64511\n neighbor 203.0.113.5 timers 300 360 360\n !\n address-family ipv4\n  network 192.0.2.0 mask 255.255.254.0\n  network 198.51.100.0 route-map RMAP_1\n  redistribute ospf 223 metric 10\n  neighbor 198.51.100.2 activate\n  neighbor 203.0.113.5 activate\n exit-address-family\n!\nip default-gateway 192.168.1.1\nip forward-protocol nd\n!\n!\nno ip http server\nno ip http secure-server\nip route 192.168.2.0 255.255.255.0 10.0.0.1\nip ssh version 2\nip ssh pubkey-chain\n  username ansible\n   key-hash ssh-rsa B1E29F17C950E2FEAB5BC3AC2A760208 \nip ssh server algorithm mac hmac-sha2-256\n!\nlogging host 172.16.0.1\nipv6 ioam timestamp\n!\n!\n!\ncontrol-plane\n!\nbanner exec ^C\n**************************************************************************\n* IOSv is strictly limited to use for evaluation, demonstration and IOS  *\n* education. IOSv is provided as-is and is not supported by Cisco's      *\n* Technical Advisory Center. Any use or disclosure, in whole or in part, *\n* of the IOSv Software or Documentation to any third party for any       *\n* purposes is expressly prohibited except as otherwise authorized by     *\n* Cisco in writing.                                                      *\n**************************************************************************^C\nbanner incoming ^C\n**************************************************************************\n* IOSv is strictly limited to use for evaluation, demonstration and IOS  *\n* education. IOSv is provided as-is and is not supported by Cisco's      *\n* Technical Advisory Center. Any use or disclosure, in whole or in part, *\n* of the IOSv Software or Documentation to any third party for any       *\n* purposes is expressly prohibited except as otherwise authorized by     *\n* Cisco in writing.                                                      *\n**************************************************************************^C\nbanner login ^C\nthis is my login banner\n^C\n!\nline con 0\n exec-timeout 0 0\n privilege level 15\n logging synchronous\nline aux 0\n exec-timeout 0 0\n privilege level 15\n logging synchronous\nline vty 0 4\n login local\n transport input ssh\n!\nno scheduler allocate\nntp server 10.0.255.10\n!\nend",
+            "net_config": "!\n! Last configuration change at 08:56:26 UTC Sun Jul 11 2021 by admin\n!\nversion 15.7\nservice timestamps debug datetime msec\nservice timestamps log datetime msec\nno service password-encryption\n!\nhostname IOSv01\n!\nboot-start-marker\nboot-end-marker\n!\n!\nenable secret 5 $1$abcdefghijklmnopqrstuvwxyz.\n!\nno aaa new-model\n!\n!\n!\nmmi polling-interval 60\nno mmi auto-configure\nno mmi pvc\nmmi snmp-timeout 180\n!\n!\n!\n!\n!\nno ip icmp rate-limit unreachable\n!\n!\n!\n!\n!\n!\nip domain list ansible.com\nip domain list redhat.com\nip domain list cisco.com\nno ip domain lookup\nip domain name test.example.com\nip cef\nno ipv6 cef\n!\nmultilink bundle-name authenticated\n!\n!\n!\n!\nusername admin password 0 abcdef\nusername ansible nopassword\n!\nredundancy\n!\nlldp timer 10\nlldp holdtime 10\nlldp reinit 3\nlldp run\nno cdp log mismatch duplex\n!\nip tcp synwait-time 5\n! \n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\ninterface GigabitEthernet0/0\n ip address 123.123.123.123 255.255.255.0\n duplex auto\n speed auto\n media-type rj45\n!\ninterface GigabitEthernet0/1\n no ip address\n shutdown\n duplex auto\n speed auto\n media-type rj45\n!\ninterface GigabitEthernet0/2\n description Configured and Merged by Ansible Network\n ip address 192.168.0.2 255.255.255.0\n duplex auto\n speed auto\n media-type rj45\n!\ninterface GigabitEthernet0/3\n description Configured and Merged by Ansible Network\n mtu 2800\n no ip address\n shutdown\n duplex full\n speed 100\n media-type rj45\n ipv6 address 1:11:11:11/64\n!\ninterface GigabitEthernet0/3.100\n!\nrouter bgp 64496\n bgp router-id 192.0.2.1\n bgp log-neighbor-changes\n neighbor 1.1.1.2 remote-as 64498\n neighbor 1.1.1.1 remote-as 64511\n neighbor 1.1.1.1 timers 300 360 360\n !\n address-family ipv4\n  network 192.0.2.0 mask 255.255.254.0\n  network 198.51.100.0 route-map RMAP_1\n  redistribute ospf 223 metric 10\n  neighbor 1.1.1.2 activate\n  neighbor 1.1.1.1 activate\n exit-address-family\n!\nip default-gateway 192.168.1.1\nip forward-protocol nd\n!\n!\nno ip http server\nno ip http secure-server\nip route 192.168.2.0 255.255.255.0 10.0.0.1\nip ssh version 2\nip ssh pubkey-chain\n  username ansible\n   key-hash ssh-rsa B1E29F17C950E2FEAB5BC3AC2A760208 \nip ssh server algorithm mac hmac-sha2-256\n!\nlogging host 172.16.0.1\nipv6 ioam timestamp\n!\n!\n!\ncontrol-plane\n!\nbanner exec ^C\n**************************************************************************\n* IOSv is strictly limited to use for evaluation, demonstration and IOS  *\n* education. IOSv is provided as-is and is not supported by Cisco's      *\n* Technical Advisory Center. Any use or disclosure, in whole or in part, *\n* of the IOSv Software or Documentation to any third party for any       *\n* purposes is expressly prohibited except as otherwise authorized by     *\n* Cisco in writing.                                                      *\n**************************************************************************^C\nbanner incoming ^C\n**************************************************************************\n* IOSv is strictly limited to use for evaluation, demonstration and IOS  *\n* education. IOSv is provided as-is and is not supported by Cisco's      *\n* Technical Advisory Center. Any use or disclosure, in whole or in part, *\n* of the IOSv Software or Documentation to any third party for any       *\n* purposes is expressly prohibited except as otherwise authorized by     *\n* Cisco in writing.                                                      *\n**************************************************************************^C\nbanner login ^C\nthis is my login banner\n^C\n!\nline con 0\n exec-timeout 0 0\n privilege level 15\n logging synchronous\nline aux 0\n exec-timeout 0 0\n privilege level 15\n logging synchronous\nline vty 0 4\n login local\n transport input ssh\n!\nno scheduler allocate\nntp server 1.1.1.3\n!\nend",
             "net_filesystems": [
                 "flash0:"
             ],
@@ -562,7 +562,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
                     "ipv6": [
                         {
                             "address": "1:11:11:11",
-                            "subnet": "FD5D:12C9:2201:1::/64 [TEN]"
+                            "subnet": "11:11:11:11:11:11:11:11/64 [TEN]"
                         }
                     ],
                     "lineprotocol": "down",
@@ -693,16 +693,16 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >router bgp 64496
 > bgp router-id 192.0.2.1
 > bgp log-neighbor-changes
-> neighbor 198.51.100.2 remote-as 64498
-> neighbor 203.0.113.5 remote-as 64511
-> neighbor 203.0.113.5 timers 300 360 360
+> neighbor 1.1.1.2 remote-as 64498
+> neighbor 1.1.1.1 remote-as 64511
+> neighbor 1.1.1.1 timers 300 360 360
 > !
 > address-family ipv4
 >  network 192.0.2.0 mask 255.255.254.0
 >  network 198.51.100.0 route-map RMAP_1
 >  redistribute ospf 223 metric 10
->  neighbor 198.51.100.2 activate
->  neighbor 203.0.113.5 activate
+>  neighbor 1.1.1.2 activate
+>  neighbor 1.1.1.1 activate
 > exit-address-family
 >!
 >ip default-gateway 192.168.1.1
@@ -760,7 +760,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 > transport input ssh
 >!
 >no scheduler allocate
->ntp server 10.0.255.10
+>ntp server 1.1.1.3
 >!
 >end
 >  * net_hostname: IOSv01
@@ -845,7 +845,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >      * #### Ipv6
 >      * #### List
 >        * address: 1:11:11:11
->        * subnet: FD5D:12C9:2201:1::/64 [TEN]
+>        * subnet: 11:11:11:11:11:11:11:11/64 [TEN]
 >    * ### Gigabitethernet0/3.100
 >      * bandwidth: 100000
 >      * description: None
@@ -1573,7 +1573,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!ios-ntp host="123.123.123.123" server="10.0.255.10" source_int="GigabitEthernet0/1" logging="False" state="present" ```
+```!ios-ntp host="123.123.123.123" server="1.1.1.3" source_int="GigabitEthernet0/1" logging="False" state="present" ```
 
 #### Context Example
 ```json
