@@ -2721,7 +2721,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all i
 | MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
 | MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
 | MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
-| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. Possible values are: unknown, white, green, amber, and red. | 
+| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, amber, and red. | 
 | MicrosoftATP.Indicators.url | String | Uniform Resource Locator. This URL complies with RFC 1738. | 
 | MicrosoftATP.Indicators.userAgent | String | User-Agent string from a web request that could indicate compromise. | 
 | MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. | 
