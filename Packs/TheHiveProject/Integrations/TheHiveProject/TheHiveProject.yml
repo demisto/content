@@ -342,6 +342,7 @@ script:
       type: string
     description: Get a case
   - name: thehive-search-cases
+    deprecated: true
     arguments:
     - name: title
       description: Title
@@ -1385,6 +1386,7 @@ script:
     arguments:
     - name: id
       description: Case ID
+      required: true
     description: List observables for a case.
     outputs:
     - contextPath: TheHive.Observables
