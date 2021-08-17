@@ -938,6 +938,13 @@
         },
         {
             "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "playbookID": "palo_alto_panorama_test_pb",
+            "fromversion": "6.1.0",
+            "timeout": 2400
+        },
+        {
+            "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "6.1.0",
@@ -3568,7 +3575,6 @@
         "McAfee ESM Watchlists - Test v10.3.0": "Issue 37130",
         "McAfee ESM Watchlists - Test v10.2.0": "Issue 39389",
         "Microsoft Teams Management - Test": "Issue 33410",
-        "palo_alto_panorama_test_pb": "Issue 34371",
         "RedLockTest": "Issue 24600",
         "MicrosoftGraphMail-Test_prod": "Issue 40125"
     },

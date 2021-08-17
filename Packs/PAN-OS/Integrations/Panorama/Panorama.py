@@ -2475,8 +2475,8 @@ def panorama_create_url_filter(
         override_allow_list: Optional[str] = None,
         override_block_list: Optional[str] = None,
         description: Optional[str] = None):
-    params = create_url_filter_params(url_filter_name, action, description, override_allow_list, override_block_list,
-                                      url_category_list)
+    params = create_url_filter_params(url_filter_name, action, url_category_list, override_allow_list,
+                                      override_block_list, description)
 
     result = http_request(
         URL,
