@@ -3414,12 +3414,12 @@ def convert_to_unicode(s, is_msg_header=True):
                 word_mime_encoded = MIME_ENCODED_WORD.search(encode_decode_phrase)
                 if word_mime_encoded:
                     if '?= =?' in encode_decode_phrase:
-                        encode_decode_phrase = encode_decode_phrase.replace("?= =?", '?==?')
+                        encode_decode_phrase = encode_decode_phrase.replace('?= =?', '?==?')
                     while word_mime_encoded:
                         # encoded-word" is a sequence of printable ASCII characters that begins with "=?",
                         # ends with "?=", and has two "?"s in between.
-                        start_encoding_index = encode_decode_phrase.index("=?")
-                        end_encoding_index = encode_decode_phrase.index("?=") + 2
+                        start_encoding_index = encode_decode_phrase.index('=?')
+                        end_encoding_index = encode_decode_phrase.index('?=') + 2
                         # index return the index where "?=" starts, need to include it on the substring
                         encoded_substring = encode_decode_phrase[start_encoding_index:end_encoding_index]
                         decoded_substring = mime_decode(encoded_substring)
