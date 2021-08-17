@@ -7,11 +7,11 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Endpoint
+- display: "Advanced: API Endpoint"
   hidden: false
   name: api_endpoint
   required: false
-  additionalinfo: Fill only if you have other valid API Endpoint
+  additionalinfo: Change only if you have other API Endpoint.
   defaultvalue: rsaarcher/api
   type: 0
 - display: Instance name
