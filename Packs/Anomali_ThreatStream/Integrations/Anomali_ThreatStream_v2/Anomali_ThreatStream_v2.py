@@ -1,9 +1,6 @@
-import json
-import requests
 from requests.exceptions import MissingSchema, ConnectionError
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 REPUTATION_COMANDS = ['ip', 'domain', 'file', 'url', 'threatstream-email-reputation']
 
@@ -14,22 +11,13 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 THREAT_STREAM = 'ThreatStream'
-
-USERNAME = demisto.params().get('username')
-API_KEY = demisto.params().get('apikey')
-SERVER = demisto.params().get('url', '').strip('/')
-USE_SSL = not demisto.params().get('insecure', False)
-BASE_URL = SERVER + '/api/'
 DEFAULT_MALICIOUS_THRESHOLD = 65
 DEFAULT_SUSPICIOUS_THRESHOLD = 25
 HEADERS = {
     'Content-Type': 'application/json'
 }
 
-CREDENTIALS = {
-    'username': USERNAME,
-    'api_key': API_KEY
-}
+CREDENTIALS: dict = {}
 
 DBOT_SCORE = {
     'low': 2,
@@ -186,37 +174,44 @@ THRESHOLDS_FROM_PARAM = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params=None, data=None, headers=None, files=None, json=None, text_response=None):
-    """
-        A wrapper for requests lib to send our requests and handle requests and responses better.
-    """
-    res = requests.request(
-        method,
-        BASE_URL + url_suffix,
-        verify=USE_SSL,
-        params=params,
-        data=data,
-        headers=headers,
-        files=files,
-        json=json
-    )
-    # Handle error responses gracefully
-    if res.status_code in {401}:
-        return_error("Got unauthorized from the server. Check the credentials.")
-    elif res.status_code in {404}:
-        command = demisto.command()
-        if command in ['threatstream-get-model-description', 'threatstream-get-indicators-by-model',
-                       'threatstream-get-analysis-status', 'threatstream-analysis-report']:
-            # in order to prevent raising en error in case model/indicator/report was not found
-            return {}
-        else:
-            return_error("The resource not found. Check the endpoint.")
-    elif res.status_code not in {200, 201, 202}:
-        return_error(F"Error in API call to ThreatStream {res.status_code} - {res.text}")
+class Client:
+    def __init__(self, base_url, use_ssl, default_threshold, reliability):
+        self.base_url = base_url
+        self.use_ssl = use_ssl
+        self.default_threshold = default_threshold
+        self.reliability = reliability
 
-    if text_response:
-        return res.text
-    return res.json()
+    def http_request(self, method, url_suffix, params=None, data=None, headers=None, files=None, json=None, text_response=None):
+        """
+            A wrapper for requests lib to send our requests and handle requests and responses better.
+        """
+        res = requests.request(
+            method,
+            self.base_url + url_suffix,
+            verify=self.use_ssl,
+            params=params,
+            data=data,
+            headers=headers,
+            files=files,
+            json=json
+        )
+        # Handle error responses gracefully
+        if res.status_code in {401}:
+            raise Exception(f"{THREAT_STREAM} - Got unauthorized from the server. Check the credentials.")
+        elif res.status_code in {404}:
+            command = demisto.command()
+            if command in ['threatstream-get-model-description', 'threatstream-get-indicators-by-model',
+                           'threatstream-get-analysis-status', 'threatstream-analysis-report']:
+                # in order to prevent raising en error in case model/indicator/report was not found
+                return {}
+            else:
+                raise Exception(f"{THREAT_STREAM} - The resource not found. Check the endpoint.")
+        elif res.status_code not in {200, 201, 202}:
+            raise Exception(F"{THREAT_STREAM} - Error in API call to ThreatStream {res.status_code} - {res.text}")
+
+        if text_response:
+            return res.text
+        return res.json()
 
 
 def find_worst_indicator(indicators):
@@ -311,12 +306,12 @@ def mark_as_malicious(indicator, threshold, context):
         }
 
 
-def search_indicator_by_params(params, searchable_value):
+def search_indicator_by_params(client: Client, params, searchable_value):
     """
         Generic function that searches for indicators from ThreatStream by given query string.
         Returns indicator with the highest confidence score.
     """
-    indicators_data = http_request("Get", "v2/intelligence/", params=params, headers=HEADERS)
+    indicators_data = client.http_request("Get", "v2/intelligence/", params=params, headers=HEADERS)
 
     if not indicators_data['objects']:
         demisto.results(F"No intelligence has been found for {searchable_value}")
@@ -459,29 +454,29 @@ def create_relationships(indicator, ioc_type, relation_mapper):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module():
+def test_module(client: Client):
     """
     Performs basic get request to get item samples
     """
     params = build_params(limit=1)
-    http_request('GET', 'v2/intelligence/', params=params)
+    client.http_request('GET', 'v2/intelligence/', params=params)
     demisto.results('ok')
 
 
-def ips_reputation_command(ip, threshold=None, status="active"):
+def ips_reputation_command(client: Client, ip, threshold=None, status="active"):
     ips = argToList(ip, ',')
     for single_ip in ips:
-        get_ip_reputation(single_ip, threshold, status)
+        get_ip_reputation(client, single_ip, threshold, status)
 
 
-def get_ip_reputation(ip, threshold=None, status="active"):
+def get_ip_reputation(client: Client, ip, threshold=None, status="active"):
     """
         Checks the reputation of given ip from ThreatStream and
         returns the indicator with highest confidence score.
     """
     # get the indicator
     params = build_params(value=ip, type="ip", status=status, limit=0)
-    indicator = search_indicator_by_params(params, ip)
+    indicator = search_indicator_by_params(client, params, ip)
     if not indicator:
         return
 
@@ -501,7 +496,9 @@ def get_ip_reputation(ip, threshold=None, status="active"):
     args_to_keys_map: Dict[str, str] = IOC_ARGS_TO_INDICATOR_KEY_MAP.get('ip')  # type: ignore
     kwargs = {arg: demisto.get(indicator, key) for (arg, key) in args_to_keys_map.items()}
     ip_indicator = Common.IP(
-        dbot_score=Common.DBotScore(ip, DBotScoreType.IP, THREAT_STREAM, score=calculate_score(indicator, threshold)),
+        dbot_score=Common.DBotScore(ip, DBotScoreType.IP,
+                                    THREAT_STREAM, score=calculate_score(indicator, threshold),
+                                    reliability=client.reliability),
         tags=get_tags(indicator),
         threat_types=[Common.ThreatTypes(indicator.get('threat_type'))],
         relationships=relationships,
@@ -519,23 +516,23 @@ def get_ip_reputation(ip, threshold=None, status="active"):
     ))
 
 
-def domains_reputation_command(domain, threshold=None, status="active"):
+def domains_reputation_command(client: Client, domain, threshold=None, status="active"):
     """
         Wrapper function for get_domain_reputation.
     """
     domains = argToList(domain, ',')
     for single_domain in domains:
-        get_domain_reputation(single_domain, threshold, status)
+        get_domain_reputation(client, single_domain, threshold, status)
 
 
-def get_domain_reputation(domain, threshold=None, status="active"):
+def get_domain_reputation(client: Client, domain, threshold=None, status="active"):
     """
         Checks the reputation of given domain from ThreatStream and
         returns the indicator with highest confidence score.
     """
     # get the indicator
     params = build_params(value=domain, type='domain', status=status, limit=0)
-    indicator = search_indicator_by_params(params, domain)
+    indicator = search_indicator_by_params(client, params, domain)
     if not indicator:
         return
 
@@ -556,12 +553,9 @@ def get_domain_reputation(domain, threshold=None, status="active"):
     kwargs = {arg: demisto.get(indicator, key) for (arg, key) in args_to_keys_map.items()}
     geo_location = f"{indicator.get('latitude')},{indicator.get('longitude')}" if indicator.get('latitude') else None
     domain_indicator = Common.Domain(
-        dbot_score=Common.DBotScore(
-            domain,
-            DBotScoreType.DOMAIN,
-            THREAT_STREAM,
-            score=calculate_score(indicator, threshold)
-        ),
+        dbot_score=Common.DBotScore(domain, DBotScoreType.DOMAIN,
+                                    THREAT_STREAM, reliability=client.reliability,
+                                    score=calculate_score(indicator, threshold)),
         tags=get_tags(indicator),
         threat_types=[Common.ThreatTypes(indicator.get('threat_type'))],
         geo_location=geo_location,
@@ -580,23 +574,23 @@ def get_domain_reputation(domain, threshold=None, status="active"):
     ))
 
 
-def files_reputation_command(file, threshold=None, status="active"):
+def files_reputation_command(client: Client, file, threshold=None, status="active"):
     """
         Wrapper function for get_file_reputation.
     """
     files = argToList(file, ',')
     for single_file in files:
-        get_file_reputation(single_file, threshold, status)
+        get_file_reputation(client, single_file, threshold, status)
 
 
-def get_file_reputation(file, threshold=None, status="active"):
+def get_file_reputation(client: Client, file, threshold=None, status="active"):
     """
         Checks the reputation of given hash of the file from ThreatStream and
         returns the indicator with highest severity score.
     """
     # get the indicator
     params = build_params(value=file, type="md5", status=status, limit=0)
-    indicator = search_indicator_by_params(params, file)
+    indicator = search_indicator_by_params(client, params, file)
     if not indicator:
         return
 
@@ -623,11 +617,9 @@ def get_file_reputation(file, threshold=None, status="active"):
     if file_type:
         kwargs[file_type.lower()] = threat_context[file_type]
     file_indicator = Common.File(
-        dbot_score=Common.DBotScore(
-            file,
-            DBotScoreType.FILE,
-            THREAT_STREAM,
-            score=calculate_score(indicator, threshold)),
+        dbot_score=Common.DBotScore(file, DBotScoreType.FILE,
+                                    THREAT_STREAM, reliability=client.reliability,
+                                    score=calculate_score(indicator, threshold)),
         tags=get_tags(indicator),
         threat_types=[Common.ThreatTypes(indicator.get('threat_type'))],
         relationships=relationships,
@@ -644,16 +636,16 @@ def get_file_reputation(file, threshold=None, status="active"):
     ))
 
 
-def urls_reputation_command(url, threshold=None, status="active"):
+def urls_reputation_command(client: Client, url, threshold=None, status="active"):
     """
         Wrapper function for get_url_reputation.
     """
     urls = argToList(url, ',')
     for single_url in urls:
-        get_url_reputation(single_url, threshold, status)
+        get_url_reputation(client, single_url, threshold, status)
 
 
-def get_url_reputation(url, threshold=None, status="active"):
+def get_url_reputation(client: Client, url, threshold=None, status="active"):
     """
         Checks the reputation of given url address from ThreatStream and
         returns the indicator with highest confidence score.
@@ -661,7 +653,7 @@ def get_url_reputation(url, threshold=None, status="active"):
 
     # get the indicator
     params = build_params(value=url, type="url", status=status, limit=0)
-    indicator = search_indicator_by_params(params, url)
+    indicator = search_indicator_by_params(client, params, url)
     if not indicator:
         return
 
@@ -681,7 +673,9 @@ def get_url_reputation(url, threshold=None, status="active"):
     args_to_keys_map: Dict[str, str] = IOC_ARGS_TO_INDICATOR_KEY_MAP.get('url')  # type: ignore
     kwargs = {arg: demisto.get(indicator, key_in_indicator) for (arg, key_in_indicator) in args_to_keys_map.items()}
     url_indicator = Common.URL(
-        dbot_score=Common.DBotScore(url, DBotScoreType.URL, THREAT_STREAM, score=calculate_score(indicator, threshold)),
+        dbot_score=Common.DBotScore(url, DBotScoreType.URL,
+                                    THREAT_STREAM, reliability=client.reliability,
+                                    score=calculate_score(indicator, threshold)),
         tags=get_tags(indicator),
         threat_types=[Common.ThreatTypes(indicator.get('threat_type'))],
         relationships=relationships,
@@ -699,15 +693,13 @@ def get_url_reputation(url, threshold=None, status="active"):
     ))
 
 
-def get_email_reputation(email, threshold=None, status="active"):
+def get_email_reputation(client: Client, email, threshold=None, status="active"):
     """
         Checks the reputation of given email address from ThreatStream and
         returns the indicator with highest confidence score.
     """
-
-    # get the indicator
-    params = build_params(value=email, type='email', status=status, limit=0)
-    indicator = search_indicator_by_params(params, email)
+    params = build_params(value=email, type="email", status=status, limit=0)
+    indicator = search_indicator_by_params(client, params, email)
     if not indicator:
         return
 
@@ -728,13 +720,11 @@ def get_email_reputation(email, threshold=None, status="active"):
     # build relationships
     relationships = create_relationships(indicator, FeedIndicatorType.Email, RELATIONSHIPS_MAPPING.get('email'))
 
-    # create the URL instance
+    # create the EMAIL instance
     email_indicator = Common.EMAIL(
-        dbot_score=Common.DBotScore(
-            email,
-            DBotScoreType.EMAIL,
-            THREAT_STREAM,
-            score=calculate_score(indicator, threshold)),
+        dbot_score=Common.DBotScore(email, DBotScoreType.EMAIL,
+                                    THREAT_STREAM, reliability=client.reliability,
+                                    score=calculate_score(indicator, threshold)),
         address=threat_context['Email'],
         relationships=relationships,
     )
@@ -750,12 +740,12 @@ def get_email_reputation(email, threshold=None, status="active"):
     ))
 
 
-def get_passive_dns(value, type="ip", limit=50):
+def get_passive_dns(client: Client, value, type="ip", limit=50):
     """
         Receives value and type of indicator and returns
         enrichment data for domain or ip.
     """
-    dns_results = http_request("GET", F"v1/pdns/{type}/{value}/", params=CREDENTIALS).get('results', None)
+    dns_results = client.http_request("GET", F"v1/pdns/{type}/{value}/", params=CREDENTIALS).get('results', None)
 
     if not dns_results:
         demisto.results(F"No Passive DNS enrichment data found for {value}")
@@ -772,7 +762,7 @@ def get_passive_dns(value, type="ip", limit=50):
     return_outputs(human_readable, ec, dns_results)
 
 
-def import_ioc_with_approval(import_type, import_value, confidence="50", classification="Private",
+def import_ioc_with_approval(client: Client, import_type, import_value, confidence="50", classification="Private",
                              threat_type="exploit", severity="low", ip_mapping=None, domain_mapping=None,
                              url_mapping=None, email_mapping=None, md5_mapping=None):
     """
@@ -810,7 +800,7 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
 
     params = build_params()
     # in case import_type is not file-id, http_requests will receive None as files
-    res = http_request("POST", "v1/intelligence/import/", params=params, data=data, files=files)
+    res = client.http_request("POST", "v1/intelligence/import/", params=params, data=data, files=files)
     # closing the opened file if exist
     if uploaded_file:
         uploaded_file.close()
@@ -823,7 +813,7 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
         return_outputs("The data was not imported. Check if valid arguments were passed", None)
 
 
-def import_ioc_without_approval(file_id, classification, confidence=None, allow_unresolved=None,
+def import_ioc_without_approval(client: Client, file_id, classification, confidence=None, allow_unresolved=None,
                                 source_confidence_weight=None, expiration_ts=None, severity=None,
                                 tags=None, trustedcircles=None):
     """
@@ -857,18 +847,18 @@ def import_ioc_without_approval(file_id, classification, confidence=None, allow_
     )})
 
     params = build_params()
-    res = http_request("PATCH", "v1/intelligence/", params=params, json=ioc_to_import, text_response=True)
+    res = client.http_request("PATCH", "v1/intelligence/", params=params, json=ioc_to_import, text_response=True)
     return_outputs("The data was imported successfully.", {}, res)
 
 
-def get_model_list(model, limit="50"):
+def get_model_list(client: Client, model, limit="50"):
     """
         Returns list of Threat Model that was specified. By default limit is set to 50 results.
         Possible values for model are : actor, campaign, incident, signature, ttp, vulnerability, tipreport
     """
     # if limit=0 don't put to context
     params = build_params(limit=limit, skip_intelligence="true", skip_associations="true")
-    model_list = http_request("GET", F"v1/{model}/", params=params).get('objects', None)
+    model_list = client.http_request("GET", F"v1/{model}/", params=params).get('objects', None)
 
     if not model_list:
         demisto.results(F"No Threat Model {model.title()} found.")
@@ -885,12 +875,12 @@ def get_model_list(model, limit="50"):
     return_outputs(human_readable, ec, model_list)
 
 
-def get_model_description(model, id):
+def get_model_description(client: Client, model, id):
     """
         Returns a description of Threat Model as html file to the war room.
     """
     params = build_params(skip_intelligence="true", skip_associations="true")
-    description = http_request("GET", F"v1/{model}/{id}", params=params)
+    description = client.http_request("GET", F"v1/{model}/{id}", params=params)
 
     if model == 'signature':
         description = description.get('notes', None)
@@ -906,12 +896,12 @@ def get_model_description(model, id):
     demisto.results(fileResult(F"{model}_{id}.html", description.encode(encoding='UTF-8')))
 
 
-def get_iocs_by_model(model, id, limit="20"):
+def get_iocs_by_model(client: Client, model, id, limit="20"):
     """
         Returns list of indicators associated with specific Threat Model by model id.
     """
     params = build_params(limit=limit)
-    iocs_list = http_request("GET", F"v1/{model}/{id}/intelligence/", params=params).get('objects', None)
+    iocs_list = client.http_request("GET", F"v1/{model}/{id}/intelligence/", params=params).get('objects', None)
 
     if not iocs_list:
         demisto.results(F"No indicators found for Threat Model {model.title()} with id {id}")
@@ -929,35 +919,35 @@ def get_iocs_by_model(model, id, limit="20"):
     return_outputs(human_readable, ec, iocs_list)
 
 
-def create_model(model, name, is_public="false", tlp=None, tags=None, intelligence=None, description=None):
+def create_model(client: Client, model, name, is_public="false", tlp=None, tags=None, intelligence=None, description=None):
     """
         Creates Threat Model with basic parameters.
     """
     data = build_model_data(model, name, is_public, tlp, tags, intelligence, description)
-    model_id = http_request("POST", F"v1/{model}/", data=json.dumps(data), params=CREDENTIALS).get('id', None)
+    model_id = client.http_request("POST", F"v1/{model}/", data=json.dumps(data), params=CREDENTIALS).get('id', None)
 
     if model_id:
-        get_iocs_by_model(model, model_id, limit="50")
+        get_iocs_by_model(client, model, model_id, limit="50")
     else:
         demisto.results(F"{model.title()} Threat Model was not created. Check the input parameters")
 
 
-def update_model(model, model_id, name=None, is_public="false", tlp=None, tags=None, intelligence=None,
+def update_model(client: Client, model, model_id, name=None, is_public="false", tlp=None, tags=None, intelligence=None,
                  description=None):
     """
         Updates a ThreatStream model with parameters. In case one or more optional parameters are
         defined, the previous data is overridden.
     """
     data = build_model_data(model, name, is_public, tlp, tags, intelligence, description)
-    http_request("PATCH", F"v1/{model}/{model_id}/", data=json.dumps(data), params=CREDENTIALS)
-    get_iocs_by_model(model, model_id, limit="50")
+    client.http_request("PATCH", F"v1/{model}/{model_id}/", data=json.dumps(data), params=CREDENTIALS)
+    get_iocs_by_model(client, model, model_id, limit="50")
 
 
-def supported_platforms(sandbox_type="default"):
+def supported_platforms(client: Client, sandbox_type="default"):
     """
         Returns list of supported platforms for premium sandbox or default sandbox.
     """
-    platform_data = http_request("GET", "v1/submit/parameters/", params=CREDENTIALS)
+    platform_data = client.http_request("GET", "v1/submit/parameters/", params=CREDENTIALS)
     available_platforms = platform_data.get('platform_choices', []) if sandbox_type == 'default' else platform_data.get(
         'premium_platform_choices',
         [])
@@ -972,13 +962,13 @@ def supported_platforms(sandbox_type="default"):
         demisto.results(F"No supported platforms found for {sandbox_type} sandbox")
 
 
-def get_submission_status(report_id, output=True):
+def get_submission_status(client: Client, report_id, output=True):
     """
         Returns the sandbox submission status. If status is not received in report_info
         then status is set to done. Receives output boolean that prints the result to the war room.
         By default the output boolean is set to True.
     """
-    report_info = http_request("GET", F"v1/submit/{report_id}/", params=CREDENTIALS, headers=HEADERS)
+    report_info = client.http_request("GET", F"v1/submit/{report_id}/", params=CREDENTIALS, headers=HEADERS)
 
     if not report_info:
         demisto.results(F"No report found with id {report_id}")
@@ -1008,7 +998,8 @@ def file_name_to_valid_string(file_name):
     return file_name
 
 
-def submit_report(submission_type, submission_value, submission_classification="private", report_platform="WINDOWS7",
+def submit_report(client: Client, submission_type, submission_value, submission_classification="private",
+                  report_platform="WINDOWS7",
                   premium_sandbox="false", detail=None):
     """
         Detonates URL or file that was uploaded to war room to ThreatStream sandbox.
@@ -1029,7 +1020,7 @@ def submit_report(submission_type, submission_value, submission_classification="
             # submission_value will be entry id of uploaded file to war room
             file_info = demisto.getFilePath(submission_value)
         except Exception:
-            return_error(F"Entry {submission_value} does not contain a file.")
+            raise Exception(F"{THREAT_STREAM} - Entry {submission_value} does not contain a file.")
 
         uploaded_file = open(file_info['path'], 'rb')
         file_name = file_name_to_valid_string(file_info.get('name'))
@@ -1037,7 +1028,7 @@ def submit_report(submission_type, submission_value, submission_classification="
     else:
         data['report_radio-url'] = submission_value
 
-    res = http_request("POST", "v1/submit/new/", params=CREDENTIALS, data=data, files=files)
+    res = client.http_request("POST", "v1/submit/new/", params=CREDENTIALS, data=data, files=files)
     # closing the opened file if exist
     if uploaded_file:
         uploaded_file.close()
@@ -1054,11 +1045,11 @@ def submit_report(submission_type, submission_value, submission_classification="
         demisto.results(F"The submission of {submission_value} failed")
 
 
-def get_report(report_id):
+def get_report(client: Client, report_id):
     """
         Returns the report from ThreatStream sandbox by id.
     """
-    report = http_request("GET", F"v1/submit/{report_id}/report", params=CREDENTIALS, headers=HEADERS)
+    report = client.http_request("GET", F"v1/submit/{report_id}/report", params=CREDENTIALS, headers=HEADERS)
     if not report:
         demisto.results(F"No report found with id {report_id}")
         sys.exit()
@@ -1067,7 +1058,7 @@ def get_report(report_id):
     return_outputs(hm, ec, report)
 
 
-def add_tag_to_model(model_id, tags, model="intelligence"):
+def add_tag_to_model(client: Client, model_id, tags, model="intelligence"):
     """
         Adds tag to specific Threat Model. By default is set to intelligence (indicators).
     """
@@ -1077,7 +1068,7 @@ def add_tag_to_model(model_id, tags, model="intelligence"):
         'tags': [{'name': t, 'tlp': 'red'} for t in tags]
     }
 
-    res = http_request("POST", F"v1/{model}/{model_id}/tag/", params=CREDENTIALS, data=json.dumps(data))
+    res = client.http_request("POST", F"v1/{model}/{model_id}/tag/", params=CREDENTIALS, data=json.dumps(data))
 
     if str(res.get('success', '')).lower() == 'true':
         return_outputs(F"Added successfully tags: {tags} to {model} with {model_id}", None, res)
@@ -1085,7 +1076,7 @@ def add_tag_to_model(model_id, tags, model="intelligence"):
         return_outputs(F"Failed to add {tags} to {model} with {model_id}", None, res)
 
 
-def get_indicators(**kwargs):
+def get_indicators(client: Client, **kwargs):
     """
         Returns filtered indicators by parameters from ThreatStream.
         By default the limit of indicators result is set to 20.
@@ -1096,7 +1087,7 @@ def get_indicators(**kwargs):
         kwargs['q'] = kwargs['query']
         kwargs.pop('query', None)
     params = build_params(**kwargs)
-    iocs_list = http_request("GET", "v2/intelligence/", params=params).get('objects', None)
+    iocs_list = client.http_request("GET", "v2/intelligence/", params=params).get('objects', None)
     if not iocs_list:
         demisto.results('No indicators found from ThreatStream')
         sys.exit()
@@ -1110,7 +1101,7 @@ def get_indicators(**kwargs):
             kwargs['limit'] = limit
             kwargs['offset'] = offset
             params = build_params(**kwargs)
-            iocs_list = http_request("GET", "v2/intelligence/", params=params).get('objects', None)
+            iocs_list = client.http_request("GET", "v2/intelligence/", params=params).get('objects', None)
             if iocs_list:
                 iocs_context.extend(parse_indicators_list(iocs_list))
             else:
@@ -1125,49 +1116,75 @@ def main():
     """
     command = demisto.command()
     LOG(f'Command being called is {command}')
+
+    params = demisto.params()
+
+    user_name = params.get('username')
+    api_key = params.get('apikey')
+    server_url = params.get('url', '').strip('/')
+
+    CREDENTIALS['username'] = user_name
+    CREDENTIALS['api_key'] = api_key
+
+    reliability = params.get('integrationReliability')
+    reliability = reliability if reliability else DBotScoreReliability.B
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        Exception("Please provide a valid value for the Source Reliability parameter.")
+
     try:
+
+        client = Client(
+            base_url=f'{server_url}/api/',
+            use_ssl=not params.get('insecure', False),
+            default_threshold=params.get('default_threshold', 'high'),
+            reliability=reliability
+        )
+
         handle_proxy()
         args = prepare_args(demisto.args())
         if command == 'test-module':
-            test_module()
+            test_module(client)
         elif command == 'ip':
-            ips_reputation_command(**args)
+            ips_reputation_command(client, **args)
         elif command == 'domain':
-            domains_reputation_command(**args)
+            domains_reputation_command(client, **args)
         elif command == 'file':
-            files_reputation_command(**args)
+            files_reputation_command(client, **args)
         elif command == 'url':
-            urls_reputation_command(**args)
+            urls_reputation_command(client, **args)
         elif command == 'threatstream-email-reputation':
-            get_email_reputation(**args)
+            get_email_reputation(client, **args)
         elif command == 'threatstream-get-passive-dns':
-            get_passive_dns(**args)
+            get_passive_dns(client, **args)
         elif command == 'threatstream-import-indicator-with-approval':
-            import_ioc_with_approval(**args)
+            import_ioc_with_approval(client, **args)
         elif command == 'threatstream-import-indicator-without-approval':
-            import_ioc_without_approval(**args)
+            import_ioc_without_approval(client, **args)
         elif command == 'threatstream-get-model-list':
-            get_model_list(**args)
+            get_model_list(client, **args)
         elif command == 'threatstream-get-model-description':
-            get_model_description(**args)
+            get_model_description(client, **args)
         elif command == 'threatstream-get-indicators-by-model':
-            get_iocs_by_model(**args)
+            get_iocs_by_model(client, **args)
         elif command == 'threatstream-create-model':
-            create_model(**args)
+            create_model(client, **args)
         elif command == 'threatstream-update-model':
-            update_model(**args)
+            update_model(client, **args)
         elif command == 'threatstream-submit-to-sandbox':
-            submit_report(**args)
+            submit_report(client, **args)
         elif command == 'threatstream-get-analysis-status':
-            get_submission_status(**args)
+            get_submission_status(client, **args)
         elif command == 'threatstream-analysis-report':
-            get_report(**args)
+            get_report(client, **args)
         elif command == 'threatstream-supported-platforms':
-            supported_platforms(**args)
+            supported_platforms(client, **args)
         elif command == 'threatstream-get-indicators':
-            get_indicators(**args)
+            get_indicators(client, **args)
         elif command == 'threatstream-add-tag-to-model':
-            add_tag_to_model(**args)
+            add_tag_to_model(client, **args)
 
     except Exception as err:
         if isinstance(err, MissingSchema):
