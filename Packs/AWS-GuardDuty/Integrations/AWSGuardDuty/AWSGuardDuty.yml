@@ -32,140 +32,87 @@ configuration:
   required: false
   type: 0
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8
 - display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8
-description: Amazon Web Services Guard Duty Service (gd)
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: |-
+  Amazon Web Services Guard Duty Service (gd)
+  This extension is specifically to add 4 GD enablement commands:
+  aws-gd-create-member
+  aws-gd-invite-member
+  aws-gd-list-invitations
+  aws-gd-accept-invitation
+  the commands are designed to handle one input at a time since AWS does not return anything for some of the commands where they are successfully executed
 display: AWS - GuardDuty
 name: AWS - GuardDuty
 script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: A boolean value that specifies whether the detector is to be enabled.
-      isArray: false
       name: enabled
       predefined:
       - 'True'
       - 'False'
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Create an AWS Guard Duty Detector on the integration instance specified
       aws account.
-    execution: false
     name: aws-gd-create-detector
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.DetectorId
       description: The unique ID of the created detector.
       type: string
   - arguments:
-    - default: false
-      description: The unique ID that specifies the detector that you want to delete.
-      isArray: false
+    - description: The unique ID that specifies the detector that you want to delete.
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes a Amazon GuardDuty detector specified by the detector ID.
-    execution: false
     name: aws-gd-delete-detector
   - arguments:
-    - default: false
-      description: The unique ID of the detector that you want to retrieve.
-      isArray: false
+    - description: The unique ID of the detector that you want to retrieve.
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves an Amazon GuardDuty detector specified by the detectorId.
-    execution: false
     name: aws-gd-get-detector
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.DetectorId
@@ -184,77 +131,44 @@ script:
       description: The time a resource was last updated.
       type: string
   - arguments:
-    - default: false
-      description: The unique ID of the detector that you want to update.
-      isArray: false
+    - description: The unique ID of the detector that you want to update.
       name: detectorId
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: Updated boolean value for the detector that specifies whether the
         detector is enabled.
-      isArray: false
       name: enable
       predefined:
       - 'True'
       - 'False'
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an Amazon GuardDuty detector specified by the detectorId.
-    execution: false
     name: aws-gd-update-detector
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: A boolean value that indicates whether GuardDuty is to start using
         the uploaded IPSet.
-      isArray: false
       name: activate
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: The unique ID of the detector that you want to update.
-      isArray: false
+    - description: The unique ID of the detector that you want to update.
       name: detectorId
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The format of the file that contains the IPSet.
-      isArray: false
       name: format
       predefined:
       - TXT
@@ -264,130 +178,61 @@ script:
       - PROOF_POINT
       - FIRE_EYE
       required: true
-      secret: false
-    - default: false
-      description: The URI of the file that contains the IPSet. For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key)
-      isArray: false
+    - description: The URI of the file that contains the IPSet. For example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key)
       name: location
-      required: false
-      secret: false
-    - default: false
-      description: The user friendly name to identify the IPSet. This name is displayed
+    - description: The user friendly name to identify the IPSet. This name is displayed
         in all findings that are triggered by activity that involves IP addresses
         included in this IPSet.
-      isArray: false
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: A list of trusted IP addresses that have been whitelisted for secure
       communication with AWS infrastructure and applications.
-    execution: false
     name: aws-gd-create-ip-set
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.IPSet.IpSetId
       description: The unique identifier for an IP Set.
       type: Unknown
   - arguments:
-    - default: false
-      description: The detectorID that specifies the GuardDuty service whose IPSet
+    - description: The detectorID that specifies the GuardDuty service whose IPSet
         you want to delete.
-      isArray: false
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: The unique ID that specifies the IPSet that you want to delete.
-      isArray: false
+    - description: The unique ID that specifies the IPSet that you want to delete.
       name: ipSetId
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes the IPSet specified by the IPSet ID.
-    execution: false
     name: aws-gd-delete-ip-set
   - arguments:
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Lists detectorIds of all the existing Amazon GuardDuty detector resources.
-    execution: false
     name: aws-gd-list-detectors
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.DetectorId
@@ -395,115 +240,55 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The updated boolean value that specifies whether the IPSet is active
         or not.
-      isArray: false
       name: activate
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: The detectorID that specifies the GuardDuty service whose IPSet
+    - description: The detectorID that specifies the GuardDuty service whose IPSet
         you want to update.
-      isArray: false
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: The unique ID that specifies the IPSet that you want to update.
-      isArray: false
+    - description: The unique ID that specifies the IPSet that you want to update.
       name: ipSetId
       required: true
-      secret: false
-    - default: false
-      description: The updated URI of the file that contains the IPSet. For example
+    - description: The updated URI of the file that contains the IPSet. For example
         (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
-      isArray: false
       name: location
-      required: false
-      secret: false
-    - default: false
-      description: The user friendly name to identify the IPSet.
-      isArray: false
+    - description: The user friendly name to identify the IPSet.
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Updates the IPSet specified by the IPSet ID.
-    execution: false
     name: aws-gd-update-ip-set
   - arguments:
-    - default: false
-      description: The detectorID that specifies the GuardDuty service whose IPSet
+    - description: The detectorID that specifies the GuardDuty service whose IPSet
         you want to retrieve.
-      isArray: false
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: The unique ID that specifies the IPSet that you want to describe.
-      isArray: false
+    - description: The unique ID that specifies the IPSet that you want to describe.
       name: ipSetId
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the IPSet specified by the IPSet ID.
-    execution: false
     name: aws-gd-get-ip-set
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.IPSet.IpSetId
@@ -522,42 +307,21 @@ script:
       description: The status of ipSet file uploaded.
       type: string
   - arguments:
-    - default: false
-      description: The unique ID of the detector that you want to retrieve.
-      isArray: false
+    - description: The unique ID of the detector that you want to retrieve.
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Lists the IPSets of the GuardDuty service specified by the detector
       ID.
-    execution: false
     name: aws-gd-list-ip-sets
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.IPSet.IpSetId
@@ -565,27 +329,19 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: A boolean value that indicates whether GuardDuty is to start using
         the uploaded ThreatIntelSet.
-      isArray: false
       name: activate
       predefined:
       - 'True'
       - 'False'
       required: true
-      secret: false
-    - default: false
-      description: The unique ID of the detector that you want to update.
-      isArray: false
+    - description: The unique ID of the detector that you want to update.
       name: detectorId
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The format of the file that contains the ThreatIntelSet.
-      isArray: false
       name: format
       predefined:
       - TXT
@@ -595,146 +351,73 @@ script:
       - PROOF_POINT
       - FIRE_EYE
       required: true
-      secret: false
-    - default: false
-      description: The URI of the file that contains the ThreatIntelSet. For example
+    - description: The URI of the file that contains the ThreatIntelSet. For example
         (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
-      isArray: false
       name: location
       required: true
-      secret: false
-    - default: false
-      description: A user-friendly ThreatIntelSet name that is displayed in all finding
+    - description: A user-friendly ThreatIntelSet name that is displayed in all finding
         generated by activity that involves IP addresses included in this ThreatIntelSet.
-      isArray: false
       name: name
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Create a new ThreatIntelSet. ThreatIntelSets consist of known malicious
       IP addresses. GuardDuty generates findings based on ThreatIntelSets.
-    execution: false
     name: aws-gd-create-threatintel-set
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.ThreatIntelSetId
       description: The unique identifier for an threat intel set.
       type: string
   - arguments:
-    - default: false
-      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet
+    - description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet
         you want to delete.
-      isArray: false
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: The unique ID that specifies the ThreatIntelSet that you want to
+    - description: The unique ID that specifies the ThreatIntelSet that you want to
         delete.
-      isArray: false
       name: threatIntelSetId
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes ThreatIntelSet specified by the ThreatIntelSet ID.
-    execution: false
     name: aws-gd-delete-threatintel-set
   - arguments:
-    - default: false
-      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet
+    - description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet
         you want to describe.
-      isArray: false
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: The unique ID that specifies the ThreatIntelSet that you want to
+    - description: The unique ID that specifies the ThreatIntelSet that you want to
         describe.
-      isArray: false
       name: threatIntelSetId
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the ThreatIntelSet that is specified by the ThreatIntelSet
       ID.
-    execution: false
     name: aws-gd-get-threatintel-set
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.ThreatIntelSetId
@@ -753,410 +436,194 @@ script:
       description: The status of threatIntelSet file uploaded.
       type: string
   - arguments:
-    - default: false
-      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSets
+    - description: The detectorID that specifies the GuardDuty service whose ThreatIntelSets
         you want to list.
-      isArray: false
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Lists the ThreatIntelSets of the GuardDuty service specified by the
       detector ID.
-    execution: false
     name: aws-gd-list-threatintel-sets
     outputs:
     - contextPath: AWS.GuardDuty.Detectors.ThreatIntelSet.ThreatIntelSetId
       description: The unique identifier for an threat intel set
       type: string
   - arguments:
-    - default: false
-      description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet
+    - description: The detectorID that specifies the GuardDuty service whose ThreatIntelSet
         you want to update.
-      isArray: false
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: The unique ID that specifies the ThreatIntelSet that you want to
+    - description: The unique ID that specifies the ThreatIntelSet that you want to
         update.
-      isArray: false
       name: threatIntelSetId
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The updated boolean value that specifies whether the ThreatIntelSet
         is active or not.
-      isArray: false
       name: activate
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: The updated URI of the file that contains the ThreatIntelSet. For
+    - description: The updated URI of the file that contains the ThreatIntelSet. For
         example (https://s3.us-west-2.amazonaws.com/my-bucket/my-object-key).
-      isArray: false
       name: location
-      required: false
-      secret: false
-    - default: false
-      description: The user-friendly ThreatIntelSet name.
-      isArray: false
+    - description: The user-friendly ThreatIntelSet name.
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Updates the ThreatIntelSet specified by ThreatIntelSet ID.
-    execution: false
     name: aws-gd-update-threatintel-set
   - arguments:
-    - default: false
-      description: The ID of the detector that specifies the GuardDuty service whose
+    - description: The ID of the detector that specifies the GuardDuty service whose
         findings you want to list.
-      isArray: false
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Lists Amazon GuardDuty findings for the specified detector ID.
-    execution: false
     name: aws-gd-list-findings
     outputs:
     - contextPath: AWS.GuardDuty.Findings.FindingId
       description: The unique identifier for the Finding
       type: string
   - arguments:
-    - default: false
-      description: The ID of the detector that specifies the GuardDuty service whose
+    - description: The ID of the detector that specifies the GuardDuty service whose
         findings you want to retrieve.
-      isArray: false
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: IDs of the findings that you want to retrieve.
-      isArray: false
+    - description: IDs of the findings that you want to retrieve.
       name: findingIds
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Describes Amazon GuardDuty findings specified by finding IDs.
-    execution: false
     name: aws-gd-get-findings
   - arguments:
-    - default: false
-      description: The ID of the detector to create sample findings for.
-      isArray: false
+    - description: The ID of the detector to create sample findings for.
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: Types of sample findings that you want to generate. Separated by
+    - description: Types of sample findings that you want to generate. Separated by
         comma.
-      isArray: false
       name: findingTypes
-      required: false
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Generates example findings of types specified by the list of finding
       types. If 'NULL' is specified for findingTypes, the API generates example findings
       of all supported finding types.
-    execution: false
     name: aws-gd-create-sample-findings
   - arguments:
-    - default: false
-      description: The ID of the detector that specifies the GuardDuty service whose
+    - description: The ID of the detector that specifies the GuardDuty service whose
         findings you want to archive.
-      isArray: false
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: IDs of the findings that you want to archive. Separated by comma.
-      isArray: false
+    - description: IDs of the findings that you want to archive. Separated by comma.
       name: findingIds
-      required: false
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Archives Amazon GuardDuty findings specified by the list of finding
       IDs.
-    execution: false
     name: aws-gd-archive-findings
   - arguments:
-    - default: false
-      description: The ID of the detector that specifies the GuardDuty service whose
+    - description: The ID of the detector that specifies the GuardDuty service whose
         findings you want to unarchive.
-      isArray: false
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: IDs of the findings that you want to unarchive.
-      isArray: false
+    - description: IDs of the findings that you want to unarchive.
       name: findingIds
-      required: false
-      secret: false
-    deprecated: false
     description: Unarchives Amazon GuardDuty findings specified by the list of finding
       IDs.
-    execution: false
     name: aws-gd-unarchive-findings
   - arguments:
-    - default: false
-      description: The ID of the detector that specifies the GuardDuty service whose
+    - description: The ID of the detector that specifies the GuardDuty service whose
         findings you want to mark as useful or not useful.
-      isArray: false
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: IDs of the findings that you want to mark as useful or not useful.
-      isArray: false
+    - description: IDs of the findings that you want to mark as useful or not useful.
       name: findingIds
-      required: false
-      secret: false
-    - default: false
-      description: Additional feedback about the GuardDuty findings.
-      isArray: false
+    - description: Additional feedback about the GuardDuty findings.
       name: comments
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Specify whether the finding was useful or not.
-      isArray: false
       name: feedback
       predefined:
       - USEFUL
       - NOT_USEFUL
-      required: false
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Marks specified Amazon GuardDuty findings as useful or not useful.
-    execution: false
     name: aws-gd-update-findings-feedback
   - arguments:
-    - default: false
-      description: The ID of the detector that specifies the GuardDuty service whose
+    - description: The ID of the detector that specifies the GuardDuty service whose
         members you want to retrieve.
-      isArray: false
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Describes Amazon GuardDuty members for the specified detector ID.
-    execution: false
     name: aws-gd-list-members
     outputs:
     - contextPath: AWS.GuardDuty.Members.AccountId
@@ -1181,50 +648,26 @@ script:
       description: The time a member was last updated.
       type: string
   - arguments:
-    - default: false
-      description: The ID of the detector that specifies the GuardDuty service whose
+    - description: The ID of the detector that specifies the GuardDuty service whose
         members you want to retrieve.
-      isArray: false
       name: detectorId
       required: true
-      secret: false
-    - default: false
-      description: The ID of the account that specifies the GuardDuty service whose
+    - description: The ID of the account that specifies the GuardDuty service whose
         details you want to retrieve.
-      isArray: false
       name: accountIds
       required: true
-      secret: false
-    - default: false
-      description: The AWS Region, if not specified the default region will be used.
-      isArray: false
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The Amazon Resource Name (ARN) of the role to assume.
-      isArray: false
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-      required: false
-      secret: false
-    - default: false
-      description: An identifier for the assumed role session.
-      isArray: false
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-      required: false
-      secret: false
-    - default: false
-      description: The duration, in seconds, of the role session. The value can range
+    - description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-      isArray: false
       name: roleSessionDuration
-      required: false
-      secret: false
-    deprecated: false
     description: Describes Amazon GuardDuty members for the specified detector ID
       & account ID.
-    execution: false
     name: aws-gd-get-members
     outputs:
     - contextPath: AWS.GuardDuty.Members.AccountId
@@ -1248,15 +691,127 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3:2.0.0.21477
-  feed: false
+  - arguments:
+    - description: The unique ID of the detector of the GuardDuty account that you
+        want to associate member accounts with.
+      name: detectorId
+      required: true
+    - description: The member account ID.
+      name: accountId
+      required: true
+    - description: The email address of the member account.
+      name: email
+      required: true
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Create Amazon GuardDuty members for the specified detector ID & account
+      details.
+    name: aws-gd-create-member
+    outputs:
+    - contextPath: AWS.GuardDuty.CreateMember.UnprocessedAccounts.AccountId
+      description: The AWS account ID for the unprocessed member account.
+    - contextPath: AWS.GuardDuty.CreateMember.UnprocessedAccounts.Result
+      description: A reason why the account hasn't been processed.
+  - arguments:
+    - description: The unique ID of the detector of the GuardDuty account that you
+        want to invite members with.
+      name: detectorId
+    - description: The account ID of the accounts that you want to invite to GuardDuty
+        as member.
+      name: accountId
+      required: true
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Invites other AWS accounts (created as members of the current AWS
+      account by CreateMembers) to enable GuardDuty, and allow the current AWS account
+      to view and manage these accounts' findings on their behalf as the GuardDuty
+      administrator account.
+    name: aws-gd-invite-member
+    outputs:
+    - contextPath: AWS.GuardDuty.InviteMember.UnprocessedAccounts.AccountId
+      description: The AWS account ID for the unprocessed member account.
+    - contextPath: AWS.GuardDuty.InviteMember.UnprocessedAccounts.Result
+      description: A reason why the account hasn't been processed.
+  - arguments:
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Lists all GuardDuty membership invitations that were sent to the
+      current AWS account.
+    name: aws-gd-list-invitations
+    outputs:
+    - contextPath: AWS.GuardDuty.Invitations.AccountId
+      description: The ID of the account that the invitation was sent from.
+    - contextPath: AWS.GuardDuty.Invitations.InvitationId
+      description: The ID of the invitation. This value is used to validate the inviter
+        account to the member account.
+    - contextPath: AWS.GuardDuty.Invitations.RelationshipStatus
+      description: The status of the relationship between the inviter and invitee
+        accounts.
+    - contextPath: AWS.GuardDuty.Invitations.InvitedAt
+      description: The timestamp when the invitation was sent.
+  - arguments:
+    - description: The unique ID of the detector of the GuardDuty member account.
+      name: detectorId
+      required: true
+    - description: The account ID of the GuardDuty administrator account whose invitation
+        you're accepting.
+      name: masterId
+      required: true
+    - description: The value that is used to validate the administrator account to
+        the member account.
+      name: invitationId
+      required: true
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Accepts the invitation to be monitored by a GuardDuty administrator
+      account.
+    name: aws-gd-accept-invitation
+    outputs:
+    - contextPath: AWS.GuardDuty.AcceptedInvitation.MasterId
+      description: The account ID of the GuardDuty administrator account whose invitation
+        was accepted..
+    - contextPath: AWS.GuardDuty.AcceptedInvitation.InvitationId
+      description: The invitation id used to accept an invite.
+    - contextPath: AWS.GuardDuty.AcceptedInvitation.Status
+      description: The status of the acceptance of the invite.
+  dockerimage: demisto/python3:3.9.6.22912
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
-  subtype: python2
+  script: ''
+  subtype: python3
   type: python
+fromversion: 5.0.0
 tests:
 - No test
-fromversion: 5.0.0
