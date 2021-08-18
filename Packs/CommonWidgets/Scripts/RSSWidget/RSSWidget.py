@@ -36,8 +36,7 @@ def parse_feed_data(feed_response: requests.Response) -> FeedParserDict:
         FeedParserDict: Parsed RSS feed data.
     """
     try:
-        if feed_response:
-            return feedparser.parse(feed_response.text)
+        return feedparser.parse(feed_response.text)
     except Exception as err:
         raise DemistoException(f"Failed to parse feed.\nError:\n{str(err)}")
 
@@ -53,7 +52,7 @@ def collect_entries_data_from_response(parsed_feed_data: FeedParserDict) -> List
     """
     entries_data: List[Dict[str, Any]] = []
     if not parsed_feed_data:
-        raise DemistoException(f"Could not parse feed data")
+        raise DemistoException(f"Could not parse feed data.")
 
     for entry in reversed(parsed_feed_data.entries):
         if entry:
