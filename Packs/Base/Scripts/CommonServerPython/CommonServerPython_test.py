@@ -1489,7 +1489,8 @@ class TestCommandResults:
 
     @pytest.mark.parametrize('score, expected_readable', [(CommonServerPython.Common.DBotScore.NONE, 'Unknown'),
                                                           (CommonServerPython.Common.DBotScore.GOOD, 'Good'),
-                                                          (CommonServerPython.Common.DBotScore.SUSPICIOUS, 'Suspicious'),
+                                                          (
+                                                          CommonServerPython.Common.DBotScore.SUSPICIOUS, 'Suspicious'),
                                                           (CommonServerPython.Common.DBotScore.BAD, 'Bad')])
     def test_dbot_readable(self, score, expected_readable):
         from CommonServerPython import Common, DBotScoreType
@@ -1500,6 +1501,19 @@ class TestCommandResults:
             score=score
         )
         assert dbot_score.to_readable() == expected_readable
+
+    def test_dbot_readable_invalid(self):
+        from CommonServerPython import Common, DBotScoreType
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Test',
+            indicator_type=DBotScoreType.IP,
+            score=0
+        )
+        dbot_score.score = 7
+        assert dbot_score.to_readable() == 'Undefined'
+        dbot_score.score = None
+        assert dbot_score.to_readable() == 'Undefined'
 
     def test_readable_only_context(self):
         """
