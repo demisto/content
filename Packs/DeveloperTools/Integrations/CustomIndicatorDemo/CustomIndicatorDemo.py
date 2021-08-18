@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
-from typing import Dict, Any
+from typing import Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member

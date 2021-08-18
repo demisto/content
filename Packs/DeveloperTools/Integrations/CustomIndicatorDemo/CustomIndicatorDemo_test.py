@@ -17,4 +17,3 @@ def test_custom_indicator_test():
     assert indicator.data['param2'] == 'value2'
     assert indicator.value == 'custom_value'
     assert res.outputs['dummy'] == 'test'
-
