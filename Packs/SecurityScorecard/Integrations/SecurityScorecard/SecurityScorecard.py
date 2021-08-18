@@ -27,7 +27,7 @@ class SecurityScorecardClient(BaseClient):
         ``max_fetch`` (``int``): Maximum alerts to fetch.
     """
 
-    def __init__(self, base_url, verify, proxy, headers, username, api_key, max_fetch):
+    def __init__(self, base_url, verify, proxy, headers, username, api_key, max_fetch=50):
         """
         Args:
             base_url (str): SecurityScorecard base URL.
@@ -196,13 +196,13 @@ class SecurityScorecardClient(BaseClient):
             url_suffix=f"companies/{domain}/services"
         )
 
-    def fetch_alerts(self, page_size: int):
+    def fetch_alerts(self, page_size: int) -> Dict[str, Any]:
 
         query_params: Dict[str, Any] = assign_params(
             username=self.username,
             page_size=page_size,
-            sort="sort",
-            order="order"
+            sort="date",
+            order="desc"
         )
 
         return self.http_request_wrapper(
@@ -343,6 +343,8 @@ def incidents_to_import(
             alert_timestamp = int(datetime.strptime(alert_created_at, SECURITYSCORECARD_DATE_FORMAT).timestamp())  # type: ignore
 
             alert_id = alert.get("id")
+            company_name: str = alert.get("company_name")  # type: ignore
+            change_type: str = alert.get("change_type")  # type: ignore
 
             debug_msg = f"import alert '{alert_id}'? (last_run < alert_timestamp): {(last_run < alert_timestamp)}"  # type: ignore
 
@@ -350,7 +352,7 @@ def incidents_to_import(
 
             if alert_timestamp > last_run:  # type: ignore
                 incident = {}
-                incident["name"] = f"SecurityScorecard '{alert.get('change_type')}' Incident"
+                incident["name"] = f"{company_name} {change_type.replace('_', ' ').title()}"
                 incident["occurred"] = \
                     datetime.strptime(alert_created_at, SECURITYSCORECARD_DATE_FORMAT).strftime(DATE_FORMAT)  # type: ignore
                 incident["rawJSON"] = json.dumps(alert)
@@ -976,25 +978,25 @@ def fetch_alerts(client: SecurityScorecardClient):
     Returns:
         None: It calls demisto.incidents() to import incidents.
     """
+
     # Set the query size
+    max_incidents = arg_to_number(client.max_fetch)  # type: ignore
 
-    if not client.max_fetch:
-        max_incidents = 50
-    else:
-        max_incidents = arg_to_number(client.max_fetch)  # type: ignore
+    # TODO add paging page=1&page_size=10
 
-    results = client.fetch_alerts(page_size=max_incidents)
+    results = client.fetch_alerts(page_size=max_incidents)  # type: ignore
 
     alerts = results.get("entries")
+    size = results.get("size")
 
-    demisto.debug(f"API returned {len(alerts)} alerts")
+    demisto.debug(f"API returned {size} alerts")
 
     # Check if the API returned any alerts
-    if len(alerts) > 0:
+    if alerts:
         incidents = incidents_to_import(alerts=alerts)
 
         # Check if any incidents should be imported according to last run time timestamp
-        if len(incidents) > 0:
+        if incidents:
             demisto.debug(f"{len(incidents)} Incidents will be imported")
             demisto.debug(f"Incidents: {incidents}")
             demisto.incidents(incidents)
@@ -1056,7 +1058,7 @@ def main() -> None:
         if demisto.command() == 'test-module':
             return_results(test_module(client))
         elif demisto.command() == "fetch-incidents":
-            fetch_alerts(client)
+            fetch_alerts(client=client)
         elif demisto.command() == 'securityscorecard-portfolios-list':
             return_results(portfolios_list_command(client=client, limit=args.get("limit")))
         elif demisto.command() == 'securityscorecard-portfolio-list-companies':
