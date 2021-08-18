@@ -1,32 +1,18 @@
 {
-	"brands": null,
-	"defaultIncidentType": "Azure Active Directory Identity Protection",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "Azure Active Directory Identity Protection",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 0,
-	"mapping": null,
-	"name": "Azure Active Directory Identity Protection Classifier",
-	"nameRaw": "Azure Active Directory Identity Protection Classifier",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": "riskType"
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+    "defaultIncidentType": "Azure Active Directory Identity Protection",
+    "description": "Classifies Azure Active Directory Identity Protection's alerts",
+    "feed": false,
+    "id": "Azure Active Directory Identity Protection",
+    "keyTypeMap": {},
+    "name": "Azure Active Directory Identity Protection Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "riskType"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }
