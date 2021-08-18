@@ -143,6 +143,11 @@ STATUS_TEXT_TO_NUM = {'New': "20",
                       'In Progress': "30",
                       'Closed': "40"}
 
+STATUS_NUM_TO_TEXT = {20: 'New',
+                      25: 'Reopened',
+                      30: 'In Progress',
+                      40: 'Closed'}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -2437,9 +2442,10 @@ def incidents_to_human_readable(incidents):
     for incident in incidents:
         readable_output = assign_params(description=incident.get('description'), state=incident.get('state'),
                                         name=incident.get('name'), tags=incident.get('tags'),
-                                        incident_id=incident.get('incident_id'), created_time=incident.get('created'))
+                                        incident_id=incident.get('incident_id'), created_time=incident.get('created'),
+                                        status=STATUS_NUM_TO_TEXT.get(incident.get('status')))
         incidents_readable_outputs.append(readable_output)
-    headers = ['incident_id', 'created_time', 'name', 'description', 'state', 'tags']
+    headers = ['incident_id', 'created_time', 'name', 'description', 'status', 'state', 'tags']
     human_readable = tableToMarkdown('CrowdStrike Incidents', incidents_readable_outputs, headers, removeNull=True)
     return human_readable
 
@@ -2527,13 +2533,15 @@ def resolve_incident(ids, status):
         ],
         "ids": ids
     }
-    response = http_request(method='POST',
-                            url_suffix='/incidents/entities/incident-actions/v1',
-                            json=data)
-    readables = [f"{id} status changed to {status} successfully" for id in ids] 
-    readable = '\n'.join(readables)
+    http_request(method='POST',
+                 url_suffix='/incidents/entities/incident-actions/v1',
+                 json=data)
+    response = http_request(method='POST', url_suffix='/incidents/entities/incidents/GET/v1',
+                            json={'ids': ids})
+    incidents = response.get('resources')
+    incidents_human_readable = incidents_to_human_readable(incidents)
     return CommandResults(outputs_prefix='CrowdStrike.Incidents',
-                          readable_output=readable)
+                          readable_output=incidents_human_readable)
 
 
 def test_module():
