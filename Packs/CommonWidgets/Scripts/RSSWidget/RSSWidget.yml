@@ -1,7 +1,7 @@
 commonfields:
-  id: RSS Widget
+  id: RSSWidget
   version: -1
-name: RSS Widget
+name: RSSWidget
 script: ''
 type: python
 tags:
