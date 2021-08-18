@@ -107,6 +107,12 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the created user in the application.
         :rtype: ``IAMUserAppData``
         """
+        user_data['schemas'] = ["urn:ietf:params:scim:schemas:core:2.0:User"]
+        user_data['emails'] = [user_data['emails']]
+        user_data['addresses'] = [user_data['addresses']]
+
+        demisto.log(f'This is the ############# {user_data}')
+
         user_app_data = self._http_request(
             method='POST',
             url_suffix='/admin/v1/Users',
@@ -119,31 +125,6 @@ class Client(BaseClient):
 
         return IAMUserAppData(user_id, username, is_active, user_app_data)
 
-    def update_user(self, user_id: str, user_data: Dict[str, Any]) -> 'IAMUserAppData':
-        """ Updates a user in the application using REST API.
-
-        :type user_id: ``str``
-        :param user_id: ID of the user in the application
-
-        :type user_data: ``Dict[str, Any]``
-        :param user_data: User data in the application format
-
-        :return: An IAMUserAppData object that contains the data of the updated user in the application.
-        :rtype: ``IAMUserAppData``
-        """
-        user_app_data = self._http_request(
-            'PATCH',
-            url_suffix=f'/admin/v1/Users/{user_id}',
-            data=user_data
-        )
-
-        if user_app_data:
-            user_name = user_app_data.get('userName')
-            is_active = user_app_data.get('active')
-
-            return IAMUserAppData(user_id, user_name, is_active, user_app_data)
-        return None
-
     def enable_user(self, user_id: str) -> 'IAMUserAppData':
         """ Enables a user in the application using REST API.
 
@@ -154,8 +135,30 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
 
-        user_data = {'active': True}
-        return self.update_user(user_id, user_data)
+        user_data = {
+            'schemas': ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+            'Operations': [
+                {
+                    'op': 'replace',
+                    'value': {
+                        'active': True
+                    }
+                }
+            ]
+        }
+
+        user_app_data = self._http_request(
+            'PATCH',
+            url_suffix=f'/admin/v1/Users/{user_id}',
+            json_data=user_data
+        )
+
+        if user_app_data:
+            user_name = user_app_data.get('userName')
+            is_active = user_app_data.get('active')
+
+            return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+        return None
 
     def disable_user(self, user_id: str) -> 'IAMUserAppData':
         """ Disables a user in the application using REST API.
@@ -167,8 +170,78 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
 
-        user_data = {'active': False}
-        return self.update_user(user_id, user_data)
+        user_data = {
+            'schemas': ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+            'Operations': [
+                {
+                    'op': 'replace',
+                    'value': {
+                        'active': False
+                    }
+                }
+            ]
+        }
+
+        user_app_data = self._http_request(
+            'PATCH',
+            url_suffix=f'/admin/v1/Users/{user_id}',
+            json_data=user_data
+        )
+
+        if user_app_data:
+            user_name = user_app_data.get('userName')
+            is_active = user_app_data.get('active')
+
+            return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+        return None
+
+    def get_group(self, group_id: str):
+        """ Disables a user in the application using REST API.
+
+        :type group_id: ``str``
+        :param group_id: ID of the group in the application
+
+        :return: An IAMUserAppData object that contains the data of the user in the application.
+        :rtype: ``IAMUserAppData``
+        """
+
+        return
+
+    def get_group(self, group_id: str):
+        """ Disables a user in the application using REST API.
+
+        :type group_id: ``str``
+        :param group_id: ID of the group in the application
+
+        :return: An IAMUserAppData object that contains the data of the user in the application.
+        :rtype: ``IAMUserAppData``
+        """
+
+        return
+
+    def get_group(self, group_id: str):
+        """ Disables a user in the application using REST API.
+
+        :type group_id: ``str``
+        :param group_id: ID of the group in the application
+
+        :return: An IAMUserAppData object that contains the data of the user in the application.
+        :rtype: ``IAMUserAppData``
+        """
+
+        return
+
+    def get_group(self, group_id: str):
+        """ Disables a user in the application using REST API.
+
+        :type group_id: ``str``
+        :param group_id: ID of the group in the application
+
+        :return: An IAMUserAppData object that contains the data of the user in the application.
+        :rtype: ``IAMUserAppData``
+        """
+
+        return
 
     def get_app_fields(self) -> Dict[str, Any]:
         """ Gets a dictionary of the user schema fields in the application and their description.
@@ -263,6 +336,22 @@ def test_module(client: Client):
     return_results('ok')
 
 
+def get_group_command(client, args):
+    pass
+
+
+def create_group_command(client, args):
+    pass
+
+
+def update_group_command(client, args):
+    pass
+
+
+def delete_group_command(client, args):
+    pass
+
+
 def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
     """ Creates and returns a GetMappingFieldsResponse object of the user schema in the application
 
@@ -325,10 +414,19 @@ def main():
     elif command == 'iam-create-user':
         user_profile = iam_command.create_user(client, args)
 
-    elif command == 'iam-update-user':
+    elif command == 'iam-disable-user':
+        user_profile = iam_command.disable_user(client, args)
+
+    if command == 'iam-get-group':
+        user_profile = iam_command.get_user(client, args)
+
+    elif command == 'iam-create-group':
+        user_profile = iam_command.create_user(client, args)
+
+    elif command == 'iam-update-group':
         user_profile = iam_command.update_user(client, args)
 
-    elif command == 'iam-disable-user':
+    elif command == 'iam-delete-group':
         user_profile = iam_command.disable_user(client, args)
 
     if user_profile:
