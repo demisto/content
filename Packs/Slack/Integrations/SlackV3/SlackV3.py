@@ -1908,6 +1908,91 @@ def get_user():
     return_outputs(hr, context, slack_user)
 
 
+def slack_edit_message():
+    args = demisto.args()
+    channel = args.get('channel')
+    message_ts = args.get('message_ts')
+    message = args.get('message')
+    blocks = args.get('blocks')
+    ignore_add_url = args.get('ignore_add_url')
+    entry = args.get('entry')
+
+    channel_id = ''
+
+    if not channel:
+        mirror = find_mirror_by_investigation()
+        if mirror:
+            channel_id = mirror['channel_id']
+    else:
+        channel = get_conversation_by_name(channel)
+        channel_id = channel.get('id')
+
+    if not channel_id:
+        return_error('Channel was not found - Either the Slack app is not a member of the channel, '
+                     'or the slack app does not have permission to find the channel.')
+    if not message_ts:
+        return_error('The timestamp of the message to edit is required.')
+
+    if message and not blocks:
+        if ignore_add_url and isinstance(ignore_add_url, str):
+            ignore_add_url = bool(strtobool(ignore_add_url))
+        if not ignore_add_url:
+            investigation = demisto.investigation()
+            server_links = demisto.demistoUrls()
+            if investigation:
+                if investigation.get('type') != PLAYGROUND_INVESTIGATION_TYPE:
+                    link = server_links.get('warRoom')
+                    if link:
+                        if entry:
+                            link += '/' + entry
+                        message += f'\nView it on: {link}'
+                else:
+                    link = server_links.get('server', '')
+                    if link:
+                        message += f'\nView it on: {link}#/home'
+
+    body = {
+        'channel': channel_id,
+        'ts': message_ts
+    }
+    if message:
+        clean_message = handle_tags_in_message_sync(message)
+        body['text'] = clean_message
+    if blocks:
+        block_list = json.loads(blocks, strict=False)
+        body['blocks'] = block_list
+
+    response = send_slack_request_sync(CLIENT, 'chat.update', body=body)
+    demisto.results(f"Response is {response}")
+
+
+def pin_message():
+    channel = demisto.args().get('channel')
+    message_ts = demisto.args().get('message_ts')
+
+    channel_id = ''
+
+    if not channel:
+        mirror = find_mirror_by_investigation()
+        if mirror:
+            channel_id = mirror['channel_id']
+    else:
+        channel = get_conversation_by_name(channel)
+        channel_id = channel.get('id')
+
+    if not channel_id:
+        return_error('Channel was not found - Either the Slack app is not a member of the channel, '
+                     'or the slack app does not have permission to find the channel.')
+    body = {
+        'channel': channel_id,
+        'timestamp': message_ts
+    }
+
+    send_slack_request_sync(CLIENT, 'pins.add', body=body)
+
+    return_results('The message was successfully pinned.')
+
+
 def long_running_main():
     """
     Starts the long running thread.
@@ -2011,6 +2096,8 @@ def main() -> None:
         'slack-rename-channel': rename_channel,
         'slack-get-user-details': get_user,
         'slack-get-integration-context': slack_get_integration_context,
+        'slack-edit-message': slack_edit_message,
+        'slack-pin-message': pin_message
     }
 
     command_name: str = demisto.command()
