@@ -430,7 +430,7 @@ script:
     description: Returns the integration context as a file. Use this command for debug purposes only.
     execution: false
     hidden: true
-  dockerimage: demisto/slackv3:1.0.0.21206
+  dockerimage: demisto/slackv3:1.0.0.23423
   feed: false
   isfetch: false
   longRunning: true
