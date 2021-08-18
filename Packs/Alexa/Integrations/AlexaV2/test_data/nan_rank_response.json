@@ -11,7 +11,7 @@
               "Argument": [
                 {
                   "Name": "url",
-                  "Value": "demisto.com"
+                  "Value": "xsoar.com"
                 },
                 {
                   "Name": "responsegroup",
@@ -21,7 +21,7 @@
             }
           },
           "TrafficData": {
-            "DataUrl": "demisto.com/",
+            "DataUrl": "xsoar.com/",
             "Rank": "amc"
           }
         }
