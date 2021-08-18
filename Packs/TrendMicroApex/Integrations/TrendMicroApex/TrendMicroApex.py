@@ -187,7 +187,7 @@ class Client(BaseClient):
                    'version': version,
                    'checksum': checksum}
 
-        token = jwt.encode(payload, self.api_key, algorithm=algorithm).decode('utf-8')
+        token = jwt.encode(payload, self.api_key, algorithm=algorithm)
         return token
 
     def udso_list(self, list_type="", contentfilter=""):
