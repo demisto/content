@@ -1489,7 +1489,7 @@ class TestCommandResults:
 
     @pytest.mark.parametrize('score, expected_readable', [(CommonServerPython.Common.DBotScore.NONE, 'Unknown'),
                                                           (CommonServerPython.Common.DBotScore.GOOD, 'Good'),
-                                                          (CommonServerPython.Common.DBotScore.SUSPICIOUS, 'Good'),
+                                                          (CommonServerPython.Common.DBotScore.SUSPICIOUS, 'Suspicious'),
                                                           (CommonServerPython.Common.DBotScore.BAD, 'Bad')])
     def test_dbot_readable(self, score, expected_readable):
         from CommonServerPython import Common, DBotScoreType
