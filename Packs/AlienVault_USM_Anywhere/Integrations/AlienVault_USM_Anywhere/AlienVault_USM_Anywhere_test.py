@@ -113,7 +113,11 @@ parsed_regular_alarm = {'ID': 'some_uuid',
                                                              [parsed_regular_alarm]),
                                                             (alarms_data.get("alarm_timestamp_occured_iso86_missing"),
                                                              [parsed_regular_alarm]),
-                                                            (alarms_data.get("regular_alarm"), [parsed_regular_alarm])
+                                                            (alarms_data.get("regular_alarm"), [parsed_regular_alarm]),
+                                                            (alarms_data.get("event_timestamp_received_iso86_missing"),
+                                                             [parsed_regular_alarm]),
+                                                            (alarms_data.get("alarm_timestamp_received_iso86_missing"),
+                                                             [parsed_regular_alarm]),
                                                             ])
 def test_parse_alarms(alarms_raw_data, parsed_alarms):
     """Test Parsing of alarms from AlienVault
