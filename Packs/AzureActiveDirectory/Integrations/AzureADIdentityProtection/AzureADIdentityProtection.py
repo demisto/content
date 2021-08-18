@@ -245,7 +245,8 @@ def create_incidents_from_input(input: List[Dict[str, str]], last_fetch_datetime
     last_fetch = last_fetch_datetime
 
     for current_input in input:
-        activity_date_time: str = current_input.get('activityDateTime', '')  # 'activityDateTime': '2021-07-15T11:02:54Z' / 'activityDateTime': '2021-07-15T11:02:54.12345Z'
+        # 'activityDateTime': '2021-07-15T11:02:54Z' / 'activityDateTime': '2021-07-15T11:02:54.12345Z'
+        activity_date_time: str = current_input.get('activityDateTime', '')
         current_id: str = current_input.get('id', '')
         current_risk_event_type: str = current_input.get('riskEventType', '')
         current_risk_detail: str = current_input.get('riskDetail', '')
@@ -287,7 +288,7 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
     all_incidents: List = []
     do_fetch_call: bool = True
     next_link: str = ''
-    filter_expression=params.get('fetch_filter_expression', f'lastUpdatedDateTime gt {last_fetch}')
+    filter_expression = params.get('fetch_filter_expression', f'lastUpdatedDateTime gt {last_fetch}')
     while do_fetch_call:
         try:
             risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(
