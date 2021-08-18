@@ -22,7 +22,7 @@ Checks for existing errors in a given integration.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | IntegrationHealth.isHealthy | Determines the health status of the integration. | Boolean |
-| IntegrationHealth.fetchDone | Determines whether the fetch-indicators command conpleted. | Boolean |
+| IntegrationHealth.fetchDone | Determines whether the fetch-indicators command completed. | Boolean |
 | IntegrationHealth.integrationName | Requested integration name. | String |
 
 
