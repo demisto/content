@@ -253,8 +253,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2410
+          "x": 60,
+          "y": 2250
         }
       }
     note: false
@@ -414,7 +414,7 @@ tasks:
       brand: TheHive Project
     nexttasks:
       '#none#':
-      - "14"
+      - "13"
     scriptarguments:
       description:
         simple: updated description
@@ -474,47 +474,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 2220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: 1034b514-694f-48c2-8519-9590aba5e810
-    type: condition
-    task:
-      id: 1034b514-694f-48c2-8519-9590aba5e810
-      version: -1
-      name: is-updated
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: TheHive.Cases.title
-            iscontext: true
-          right:
-            value:
-              simple: updated title
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2040
+          "y": 2050
         }
       }
     note: false
@@ -529,7 +489,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2425,
+        "height": 2265,
         "width": 390,
         "x": 50,
         "y": 50
