@@ -1,8 +1,9 @@
 import pytest
 from test_data.test_variables import NO_ARTICLE, NO_ARTICLE_RES, ONE_ARTICLE, ONE_ARTICLE_RES, ONE_ARTICLE_STRING, \
     TWO_ARTICLES, TWO_ARTICLES_RES, TWO_ARTICLES_STRING,\
-    ONE_ARTICLE_NOT_PUBLISHED, ONE_ARTICLE_NOT_PUBLISHED_RES
-from RSSWidget import collect_entries_data_from_response, create_widget_content
+    ONE_ARTICLE_NOT_PUBLISHED, ONE_ARTICLE_NOT_PUBLISHED_RES, TWO_ARTICLES_STRING_REVERSED
+from RSSWidget import collect_entries_data_from_response, create_widget_content, main
+import demistomock as demisto
 
 
 @pytest.mark.parametrize('parsed_response, expected_result', [
@@ -42,3 +43,17 @@ def test_create_widget_content(data, text_output):
     res = create_widget_content(data)
 
     assert res == text_output
+
+
+def test_full_flow(mocker, requests_mock):
+    import RSSWidget as rssw
+    requests_mock.get('https://test.com')
+    mocker.patch.object(rssw, 'parse_feed_data', return_value=TWO_ARTICLES)
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'args', return_value={'url': 'https://test.com'})
+
+    main()
+
+    res = demisto.results.call_args[0][0]
+    assert res['ContentsFormat'] == 'markdown'
+    assert res['Contents'] == TWO_ARTICLES_STRING_REVERSED

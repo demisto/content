@@ -52,7 +52,7 @@ def collect_entries_data_from_response(parsed_feed_data: FeedParserDict) -> List
     """
     entries_data: List[Dict[str, Any]] = []
     if not parsed_feed_data:
-        raise DemistoException(f"Could not parse feed data.")
+        raise DemistoException("Could not parse feed data.")
 
     for entry in reversed(parsed_feed_data.entries):
         if entry:
