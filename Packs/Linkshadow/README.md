@@ -14,6 +14,6 @@ This robust technology alliance equips security teams to:
 
 
 - www.linkshadow.com
-- https://www.linkshadow.com/contact-us
-- https://www.linkshadow.com/downloads/reports/LinkShadow-Cortex-XSOAR-Datasheet-Final.pdf
+- www.linkshadow.com/contact-us
+- www.linkshadow.com/downloads/reports/LinkShadow-Cortex-XSOAR-Datasheet-Final.pdf
 
