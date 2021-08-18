@@ -113,6 +113,7 @@ class AADClient(MicrosoftClient):
 
             params['$filter'] = filter_expression
             remove_nulls_from_dictionary(params)
+            # This could raise {"error": {"code": "TooManyRequests", "message": "Too many requests.", "innerError": {"date": "2021-08-18T05:56:15", "request-id": "some-request-id", "client-request-id": "some-client-request-id"}}}
             return self.http_request(method='GET', url_suffix=url_suffix, params=params)
 
     def azure_ad_identity_protection_risk_detection_list_raw(self,
@@ -275,7 +276,7 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
     last_fetch = last_run.get('last_item_time', '')
     if not last_fetch:
         # handle first time fetch
-        FETCH_TIME = params.get('fetch_time', '1 days')
+        FETCH_TIME = params.get('first_fetch', '1 days')
         default_fetch_datetime, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
         last_fetch = str(default_fetch_datetime.isoformat(timespec='seconds')) + 'Z'
 
@@ -283,20 +284,34 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
 
     demisto.debug(f'last_fetch_datetime: {last_fetch_datetime}')
 
-    risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(
-        limit=int(params.get('fetch_limit', '50')),
-        filter_expression=params.get('fetch_filter_expression', ''),
-        next_link=params.get('', ''),
-        user_id=params.get('fetch_user_id', ''),
-        user_principal_name=params.get('fetch_user_principal_name', ''),
-        country=params.get('', ''),
-    )
-    values: list = risk_detection_list_raw.get('value', [])
-    demisto.debug('len(values): ' + str(len(values)))
+    all_incidents: List = []
+    do_fetch_call: bool = True
+    next_link: str = ''
+    filter_expression=params.get('fetch_filter_expression', f'lastUpdatedDateTime gt {last_fetch}')
+    while do_fetch_call:
+        try:
+            risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(
+                limit=int(params.get('fetch_limit', '50')),
+                filter_expression=filter_expression,
+                next_link=next_link,
+                user_id=params.get('fetch_user_id', ''),
+                user_principal_name=params.get('fetch_user_principal_name', ''),
+                country='',
+            )
+        except Exception as e:
+            demisto.error(traceback.format_exc())
+            risk_detection_list_raw = {}
 
-    incidents, last_item_time = create_incidents_from_input(values, last_fetch_datetime=last_fetch_datetime)
+        next_link = get_next_link_url(risk_detection_list_raw)
+        if not next_link:
+            do_fetch_call = False
+        values: list = risk_detection_list_raw.get('value', [])
+        demisto.debug('len(values): ' + str(len(values)))
 
-    demisto.incidents(incidents)
+        incidents, last_item_time = create_incidents_from_input(values, last_fetch_datetime=last_fetch_datetime)
+        all_incidents.extend(incidents)
+
+    demisto.incidents(all_incidents)
     demisto.setLastRun({
         'last_item_time': last_item_time.strftime(DATE_FORMAT)
     })

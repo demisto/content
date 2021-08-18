@@ -33,9 +33,16 @@ configuration:
   name: proxy
   required: false
   type: 8
+- name: first_fetch
+  display: First Fetch Time Interval
+  required: false
+  defaultvalue: 1 days
+  type: 0
+  additionalinfo: The time range to consider for the initial data fetch in the format
+    <number> <unit> e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours.
 - defaultvalue: '50'
   display: Fetch limit
-  additionalinfo: Maximum number of incidents per fetch (even if a higher number is configured). Default is 50.
+  additionalinfo: Maximum number of incidents per request from Azure Active Directory. Default is 50.
   name: fetch_limit
   required: false
   type: 0
