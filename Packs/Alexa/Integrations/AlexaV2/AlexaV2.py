@@ -22,7 +22,7 @@ class Client(BaseClient):
                  proxy: bool,
                  verify: bool,
                  reliability: str,
-                 top_domain_threshold: int,
+                 top_domain_threshold: Optional[int],
                  suspicious_domain_threshold: int):
         super().__init__(base_url=base_url,
                          verify=verify,
@@ -54,8 +54,8 @@ class Client(BaseClient):
 
 def rank_to_context(domain: str,
                     rank: Optional[int],
-                    suspicious_domain_threshold: int,
                     top_domain_threshold: int,
+                    suspicious_domain_threshold: Optional[int],
                     reliability: DBotScoreReliability):
     if rank is None:
         score = Common.DBotScore.NONE

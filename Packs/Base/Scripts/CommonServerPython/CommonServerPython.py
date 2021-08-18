@@ -2481,7 +2481,7 @@ class Common(object):
                                   1: 'Good',
                                   2: 'Suspicious',
                                   3: 'Bad'}
-            return dbot_score_to_text.get(self.score, None)
+            return dbot_score_to_text[self.score]
 
     class IP(Indicator):
         """
