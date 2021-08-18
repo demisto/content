@@ -442,3 +442,80 @@ Get details about a specified user.
 >|---|---|---|
 >| U0XXXXXXXX | demisto_integration | cortex_xsoar |
 
+
+### slack-edit-message
+***
+Edit an existing slack message.
+
+
+#### Base Command
+
+`slack-edit-message`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel | The channel the message is posted in. | Optional |
+| message_ts | Timestamp of the message. | Required | 
+| message | The updated message. | Optional | 
+| blocks | A JSON string of the block to send. | Optional | 
+| ignore_add_url | Whether to include a URL to the relevant component in Demisto. Can be "true" or "false". Default value is "false". | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Slack.Thread.ID | String | The timestamp identifier for the message. | 
+| Slack.Thread.Channel | String | The channel ID the message was posted in. | 
+| Slack.Thread.Text | String | The text the message was updated with. | 
+
+
+#### Command Example
+```!slack-edit-message channel="random" message_ts="1629281551.001000" message="Eyy"```
+
+#### Context Example
+```json
+{
+    "Slack": {
+        "Thread": {
+            "ID": "1629281551.001000",
+            "Channel": "C0XXXXXXXX",
+            "Text": "Eyy"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>The message was successfully edited.
+
+
+### slack-pin-message
+***
+Pins a selected message to the given channel.
+
+
+#### Base Command
+
+`slack-pin-message`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel | The channel the message is posted in. | Optional |
+| message_ts | Timestamp of the message. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
+#### Command Example
+```!slack-pin-message channel=random message_ts=1629281551.001000```
+
+#### Human Readable Output
+
+>The message was successfully pinned.

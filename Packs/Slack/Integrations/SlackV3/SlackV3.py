@@ -1963,7 +1963,17 @@ def slack_edit_message():
         body['blocks'] = block_list
 
     response = send_slack_request_sync(CLIENT, 'chat.update', body=body)
-    demisto.results(f"Response is {response}")
+
+    hr = "The message was successfully edited."
+    result_edit = {
+        'ID': response.get('ts'),
+        'Channel': response.get('channel'),
+        'Text': response.get('text')
+    }
+    context = {
+        'Slack.Thread(val.ID === obj.ID)': createContext(result_edit, removeNull=True)
+    }
+    return_outputs(hr, context, response)
 
 
 def pin_message():

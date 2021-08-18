@@ -425,11 +425,12 @@ script:
     - contextPath: Slack.User.Email
       description: The email address of the user.
       type: String
-  - arguments: [ ]
-    name: slack-get-integration-context
-    description: Returns the integration context as a file. Use this command for debug purposes only.
+  - deprecated: false
+    description: Returns the integration context as a file. Use this command for debug
+      purposes only.
     execution: false
     hidden: true
+    name: slack-get-integration-context
   - arguments:
     - default: false
       description: The channel containing the message.
@@ -478,11 +479,23 @@ script:
       name: ignore_add_url
       required: false
       secret: false
+      description: Whether to include a URL to the relevant component in Demisto.
+        Can be "true" or "false". Default value is "false".
     deprecated: false
     description: Edit an existing slack message.
     execution: false
     hidden: false
     name: slack-edit-message
+    outputs:
+    - contextPath: Slack.Thread.ID
+      description: The timestamp identifier for the message.
+      type: String
+    - contextPath: Slack.Thread.Channel
+      description: The channel ID the message was posted in.
+      type: String
+    - contextPath: Slack.Thread.Text
+      description: The text the message was updated with.
+      type: String
   dockerimage: demisto/slackv3:1.0.0.23423
   feed: false
   isfetch: false
