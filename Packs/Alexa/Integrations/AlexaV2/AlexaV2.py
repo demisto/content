@@ -60,7 +60,7 @@ def rank_to_context(domain: str,
     if rank is None:
         score = Common.DBotScore.NONE
     elif rank < 0:
-        raise DemistoException(f'Rank {rank} is invalid. Rank should be positive')
+        raise DemistoException(f'AlexaV2 error: {rank} is invalid. Rank should be positive')
     elif 0 < rank <= top_domain_threshold:
         score = Common.DBotScore.GOOD
     elif suspicious_domain_threshold and rank > suspicious_domain_threshold:
