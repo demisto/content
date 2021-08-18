@@ -13,7 +13,7 @@
 		"IAM - Sync User",
 		"IAM - Rehire User",
 		"Carbon Black EDR",
-		"Azure Active Directory Identity Protection"
+		"Azure Active Directory Identity and Access"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
