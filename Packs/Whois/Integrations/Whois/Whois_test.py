@@ -215,6 +215,6 @@ def test_get_whois_ip_proxy_param(mocker):
         - Verify the function doesn't fail due to type errors
     """
     from Whois import get_whois_ip
-    mocker.patch.object(demisto, 'params', return_value={"proxy": "https://test.com"})
+    mocker.patch.object(demisto, 'params', return_value={"proxy": True})
     result = get_whois_ip('1.1.1.1')
     assert result

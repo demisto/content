@@ -8,12 +8,13 @@ configuration:
   required: false
   type: 8
 - display: Proxy URL
-  additionalinfo: "Domain and Whois commands: supports socks4/socks5/http connect\
-    \ proxies (e.g. socks5h://host:1080)."
+  additionalinfo: "Domain and Whois commands: Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080).
+  Will effect all commands except for the `ip` command."
   name: proxy_url
   required: false
   type: 0
 - display: Use system proxy settings
+  additionalinfo: "Effect the `ip` command and the other commands only if the Proxy URL is not set."
   hidden: false
   name: proxy
   required: false
