@@ -65,7 +65,7 @@ def test_multi_domains(mocker):
 
 DOMAINS_BAD_RESULTS = [('xsoar.com', load_json('test_data/negative_rank_response.json')),
                        ('xsoar.com', load_json('test_data/nan_rank_response.json')),
-                        ('xsoar.com', load_json('test_data/404_response.json'))]
+                       ('xsoar.com', load_json('test_data/404_response.json'))]
 
 
 @pytest.mark.parametrize('domain, raw_result', DOMAINS_BAD_RESULTS)

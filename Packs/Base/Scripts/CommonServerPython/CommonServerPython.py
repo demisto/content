@@ -227,8 +227,6 @@ class DBotScoreType(object):
     DBotScoreType.CRYPTOCURRENCY
     DBotScoreType.EMAIL
     DBotScoreType.ATTACKPATTERN
-    DBotScoreType.CUSTOM
-
     :return: None
     :rtype: ``None``
     """
@@ -244,7 +242,6 @@ class DBotScoreType(object):
     CRYPTOCURRENCY = 'cryptocurrency'
     EMAIL = 'email'
     ATTACKPATTERN = 'attackpattern'
-    CUSTOM = 'custom'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -267,7 +264,6 @@ class DBotScoreType(object):
             DBotScoreType.CRYPTOCURRENCY,
             DBotScoreType.EMAIL,
             DBotScoreType.ATTACKPATTERN,
-            DBotScoreType.CUSTOM,
         )
 
 
@@ -393,8 +389,8 @@ class FeedIndicatorType(object):
         :type ip: ``str``
         :param ip: IP address to get it's indicator type.
 
-        :return:: Indicator type from FeedIndicatorType, or None if invalid IP address.
         :rtype: ``str``
+        :return:: Indicator type from FeedIndicatorType, or None if invalid IP address.
         """
         if re.match(ipv4cidrRegex, ip):
             return FeedIndicatorType.CIDR
@@ -419,8 +415,8 @@ class FeedIndicatorType(object):
         :type indicator_type: ``str``
         :param indicator_type: Type of an indicator.
 
-        :return:: Indicator type .
         :rtype: ``str``
+        :return:: Indicator type .
         """
         if is_demisto_version_ge("6.2.0") and indicator_type.startswith(STIX_PREFIX):
             return indicator_type[len(STIX_PREFIX):]
@@ -592,25 +588,6 @@ def auto_detect_indicator_type(indicator_value):
     return None
 
 
-def add_http_prefix_if_missing(address=''):
-    """
-        This function adds `http://` prefix to the proxy address in case it is missing.
-
-        :type address: ``string``
-        :param address: Proxy address.
-
-        :return: proxy address after the 'http://' prefix was added, if needed.
-        :rtype: ``string``
-    """
-    PROXY_PREFIXES = ['http://', 'https://', 'socks5://', 'socks5h://', 'socks4://', 'socks4a://']
-    if not address:
-        return ''
-    for prefix in PROXY_PREFIXES:
-        if address.startswith(prefix):
-            return address
-    return 'http://' + address
-
-
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
                  insecure_param_name=None):
     """
@@ -633,12 +610,11 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
         :type insecure_param_name: ``string``
         :param insecure_param_name: Name of insecure param. If None will search insecure and unsecure
 
-        :return: proxies dict for the 'proxies' parameter of 'requests' functions
         :rtype: ``dict``
+        :return: proxies dict for the 'proxies' parameter of 'requests' functions
     """
     proxies = {}  # type: dict
     if demisto.params().get(proxy_param_name, checkbox_default_value):
-        ensure_proxy_has_http_prefix()
         proxies = {
             'http': os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', ''),
             'https': os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy', '')
@@ -668,20 +644,6 @@ def skip_proxy():
     for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
         if k in os.environ:
             del os.environ[k]
-
-
-def ensure_proxy_has_http_prefix():
-    """
-    The function checks if proxy environment vars are missing http/https prefixes, and adds http if so.
-
-    :return: None
-    :rtype: ``None``
-    """
-    for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
-        if k in os.environ:
-            proxy_env_var = os.getenv(k)
-            if proxy_env_var:
-                os.environ[k] = add_http_prefix_if_missing(os.environ[k])
 
 
 def skip_cert_verification():
@@ -714,8 +676,8 @@ def urljoin(url, suffix=""):
         :type suffix: ``string``
         :param suffix: the second part of the url
 
-        :return: Full joined url
         :rtype: ``string``
+        :return: Full joined url
     """
     if url[-1:] != "/":
         url = url + "/"
@@ -2485,70 +2447,7 @@ class Common(object):
                                   1: 'Good',
                                   2: 'Suspicious',
                                   3: 'Bad'}
-            return dbot_score_to_text[self.score]
-
-
-    class CustomIndicator(Indicator):
-
-        def __init__(self, indicator_type, value, dbot_score, data, context_prefix):
-            """
-            :type indicator_type: ``Str``
-            :param indicator_type: The name of the indicator type.
-
-            :type value: ``Any``
-            :param value: The value of the indicator.
-
-            :type dbot_score: ``DBotScore``
-            :param dbot_score: If custom indicator has a score then create and set a DBotScore object.
-
-            :type data: ``Dict(Str,Any)``
-            :param data: A dictionary containing all the param names and their values.
-
-            :type context_prefix: ``Str``
-            :param context_prefix: Will be used as the context path prefix.
-
-            :return: None
-            :rtype: ``None``
-            """
-            if hasattr(DBotScoreType, indicator_type.upper()):
-                raise ValueError('Creating a custom indicator type with an existing type name is not allowed')
-            if not value:
-                raise ValueError('value is mandatory for creating the indicator')
-            if not context_prefix:
-                raise ValueError('context_prefix is mandatory for creating the indicator')
-
-            self.CONTEXT_PATH = '{context_prefix}(val.value && val.value == obj.value)'.\
-                format(context_prefix=context_prefix)
-
-            self.value = value
-
-            if not isinstance(dbot_score, Common.DBotScore):
-                raise ValueError('dbot_score must be of type DBotScore')
-
-            self.dbot_score = dbot_score
-            self.indicator_type = indicator_type
-            self.data = data
-            INDICATOR_TYPE_TO_CONTEXT_KEY[indicator_type.lower()] = indicator_type.capitalize()
-
-            for key in self.data:
-                setattr(self, key, data[key])
-
-        def to_context(self):
-            custom_context = {
-                'Value': self.value
-            }
-
-            custom_context.update(self.data)
-
-            ret_value = {
-                self.CONTEXT_PATH: custom_context
-            }
-
-            if self.dbot_score:
-                ret_value.update(self.dbot_score.to_context())
-            ret_value[Common.DBotScore.get_context_path()]['Type'] = self.indicator_type
-
-            return ret_value
+            return dbot_score_to_text.get(self.score, 'Undefined')
 
 
     class IP(Indicator):
@@ -6923,9 +6822,7 @@ if 'requests' in sys.modules:
             self._headers = headers
             self._auth = auth
             self._session = requests.Session()
-            if proxy:
-                ensure_proxy_has_http_prefix()
-            else:
+            if not proxy:
                 skip_proxy()
 
             if not verify:
@@ -7155,12 +7052,10 @@ if 'requests' in sys.modules:
                         return res.content
                     if resp_type == 'xml':
                         ET.parse(res.text)
-                    if resp_type == 'response':
-                        return res
                     return res
                 except ValueError as exception:
                     raise DemistoException('Failed to parse json object from response: {}'
-                                           .format(res.content), exception, res)
+                                           .format(res.content), exception)
             except requests.exceptions.ConnectTimeout as exception:
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                           ' is incorrect or that the Server is not accessible from your host.'
@@ -7954,7 +7849,7 @@ class IndicatorsSearcher:
         self._total = None
         self._search_after_param = None
         self._page = self._original_page
-        self._next_limit = self._original_limit
+        self.limit = self._original_limit
         self._search_is_done = False
         return self
 
@@ -7965,17 +7860,17 @@ class IndicatorsSearcher:
     def __next__(self):
         if self._search_is_done:
             raise StopIteration
-        size = min(self._size, self._next_limit or self._size)
+        size = min(self._size, self.limit or self._size)
         res = self.search_indicators_by_version(from_date=self._from_date,
                                                 query=self._query,
                                                 size=size,
                                                 to_date=self._to_date,
                                                 value=self._value)
-        fetched_len = len(res.get('iocs') or [])
+        fetched_len = len(res.get('iocs', []) or [])
         if fetched_len == 0:
             raise StopIteration
-        if self._next_limit:
-            self._next_limit -= fetched_len
+        if self.limit:
+            self.limit -= fetched_len
         self._search_is_done = self._is_search_done()
         return res
 
@@ -7993,7 +7888,7 @@ class IndicatorsSearcher:
 
     @limit.setter
     def limit(self, value):
-        self._next_limit = self._original_limit = value
+        self._next_limit = value
 
     def _is_search_done(self):
         """
@@ -8005,7 +7900,7 @@ class IndicatorsSearcher:
         if self._search_is_done:
             return True
 
-        reached_limit = isinstance(self._next_limit, int) and self._next_limit <= 0
+        reached_limit = isinstance(self.limit, int) and self.limit <= 0
         if reached_limit:
             return True
 
@@ -8053,7 +7948,7 @@ class IndicatorsSearcher:
             page=self.page if use_paging else None
         )
         res = demisto.searchIndicators(**search_iocs_params)
-        if len(res.get('iocs') or []) > 0:
+        if len(res.get('iocs', [])) > 0:
             self._page += 1  # advance pages for search_after, as fallback
         else:
             self._search_is_done = True
