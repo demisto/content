@@ -78,7 +78,7 @@ tasks:
       brand: SlackV3
     nexttasks:
       '#none#':
-      - "21"
+      - "22"
     scriptarguments:
       channel:
         simple: incident-${incident.id}
@@ -672,6 +672,77 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "22":
+    id: "22"
+    taskid: 68ca2054-0c4f-46be-8dcd-c6c23eb7d6b8
+    type: regular
+    task:
+      id: 68ca2054-0c4f-46be-8dcd-c6c23eb7d6b8
+      version: -1
+      name: slack-edit-message
+      description: Edit an existing slack message.
+      script: SlackV3|||slack-edit-message
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      message:
+        simple: Changed Text
+      message_ts:
+        simple: ${Slack.Thread.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 815
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: a4d6c59c-f290-47be-86a2-6ff1bfb7d508
+    type: regular
+    task:
+      id: a4d6c59c-f290-47be-86a2-6ff1bfb7d508
+      version: -1
+      name: slack-pin-message
+      description: Pins a selected message to the given channel.
+      script: SlackV3|||slack-pin-message
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      channel:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+      message_ts:
+        simple: ${Slack.Thread.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 system: true
 fromversion: 5.0.0
 view: |-
@@ -679,8 +750,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3565,
-        "width": 380,
+        "height": 3390,
+        "width": 990,
         "x": 50,
         "y": 50
       }
