@@ -1010,11 +1010,10 @@ async def create_incidents(incidents: list, user_name: str, user_email: str, use
 
 
 async def listen(client: SocketModeClient, req: SocketModeRequest):
-    if req:
-        demisto.info("Handling request")
-        if req.envelope_id:
-            response = SocketModeResponse(envelope_id=req.envelope_id)
-            await client.send_socket_mode_response(response)
+    demisto.info("Handling request")
+    if req.envelope_id:
+        response = SocketModeResponse(envelope_id=req.envelope_id)
+        await client.send_socket_mode_response(response)
     data_type: str = req.type
     payload: dict = req.payload
     if data_type == 'error':
