@@ -2090,9 +2090,12 @@ class TestBaseClient:
 
     def test_http_request_json_negative(self, requests_mock):
         from CommonServerPython import DemistoException
-        requests_mock.get('http://example.com/api/v2/event', text='notjson')
-        with raises(DemistoException, match="Failed to parse json"):
+        text = 'notjson'
+        requests_mock.get('http://example.com/api/v2/event', text=text)
+        with raises(DemistoException, match="Failed to parse json") as exception:
             self.client._http_request('get', 'event')
+        assert exception.value.res
+        assert exception.value.res.text == text
 
     def test_http_request_text(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
@@ -2148,6 +2151,69 @@ class TestBaseClient:
                 'http': 'http://testproxy:8899',
                 'https': 'https://testproxy:8899'
             }
+            assert m.called is True
+
+    def test_http_request_proxy_without_http_prefix(self):
+        """
+            Given
+                - proxy param is set to true
+                - proxy configs are without http/https prefix
+
+            When
+            - run an http get request
+
+            Then
+            -  the request will run and will use proxy configs that will include http:// prefix.
+        """
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['http_proxy'] = 'testproxy:8899'
+        os.environ['https_proxy'] = 'testproxy:8899'
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=True, verify=True)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify == '/test1.pem'
+            assert m.last_request.proxies == {
+                'http': 'http://testproxy:8899',
+                'https': 'http://testproxy:8899'
+            }
+            assert m.called is True
+
+    def test_http_request_proxy_empty_proxy(self):
+        """
+            Given
+                - proxy param is set to true
+                - proxy configs are empty
+
+            When
+            - run an http get request
+
+            Then
+            -  the request will run and will use empty proxy configs and will not add https prefixes
+        """
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['http_proxy'] = ''
+        os.environ['https_proxy'] = ''
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=True, verify=True)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify == '/test1.pem'
+            assert m.last_request.proxies == {}
             assert m.called is True
 
     def test_http_request_verify_false(self):
@@ -2874,6 +2940,60 @@ def test_handle_proxy(mocker):
     mocker.patch.object(demisto, 'params', return_value={'unsecure': True})
     handle_proxy()
     assert os.getenv('REQUESTS_CA_BUNDLE') is None
+
+
+def test_handle_proxy_without_http_prefix():
+    """
+        Given
+            proxy is configured in environment vars without http/https prefixes
+
+        When
+            run handle_proxy()
+
+        Then
+            the function will return proxies with http:// prefix
+    """
+    os.environ['HTTP_PROXY'] = 'testproxy:8899'
+    os.environ['HTTPS_PROXY'] = 'testproxy:8899'
+    proxies = handle_proxy(checkbox_default_value=True)
+    assert proxies['http'] == 'http://testproxy:8899'
+    assert proxies['https'] == 'http://testproxy:8899'
+
+
+def test_handle_proxy_with_http_prefix():
+    """
+        Given
+            proxy is configured in environment vars with http/https prefixes
+
+        When
+            run handle_proxy()
+
+        Then
+            the function will return proxies unchanged
+    """
+    os.environ['HTTP_PROXY'] = 'http://testproxy:8899'
+    os.environ['HTTPS_PROXY'] = 'https://testproxy:8899'
+    proxies = handle_proxy(checkbox_default_value=True)
+    assert proxies['http'] == 'http://testproxy:8899'
+    assert proxies['https'] == 'https://testproxy:8899'
+
+
+def test_handle_proxy_with_socks5_prefix():
+    """
+        Given
+            proxy is configured in environment vars with socks5 (socks proxy) prefixes
+
+        When
+            run handle_proxy()
+
+        Then
+            the function will return proxies unchanged
+    """
+    os.environ['HTTP_PROXY'] = 'socks5://testproxy:8899'
+    os.environ['HTTPS_PROXY'] = 'socks5://testproxy:8899'
+    proxies = handle_proxy(checkbox_default_value=True)
+    assert proxies['http'] == 'socks5://testproxy:8899'
+    assert proxies['https'] == 'socks5://testproxy:8899'
 
 
 @pytest.mark.parametrize(argnames="dict_obj, keys, expected, default_return_value",
@@ -5173,3 +5293,125 @@ def test_smart_get_dict():
     assert s.get('t1', 2) == 2
     assert s.get('t2') == 1
     assert s.get('t3') is None
+
+
+class TestCustomIndicator:
+    def test_custom_indicator_init_success(self):
+        """
+        Given: Data needed for creating a custom indicator
+        When: Data is valid
+        Then: Create a valid custom indicator
+        """
+        from CommonServerPython import Common, DBotScoreType
+        dbot_score = Common.DBotScore(
+            'test',
+            DBotScoreType.CUSTOM,
+            'VirusTotal',
+            score=Common.DBotScore.BAD,
+            malicious_description='malicious!'
+        )
+        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+        assert indicator.CONTEXT_PATH == 'prefix(val.value && val.value == obj.value)'
+        assert indicator.param == 'value'
+        assert indicator.value == 'test_value'
+
+    def test_custom_indicator_init_existing_type(self):
+        """
+        Given: Data needed for creating a custom indicator
+        When: Type already exists
+        Then: raise a Value Error
+        """
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common, DBotScoreType
+            dbot_score = Common.DBotScore(
+                'test',
+                DBotScoreType.CUSTOM,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+            Common.CustomIndicator('ip', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+
+    def test_custom_indicator_init_no_prefix(self):
+        """
+        Given: Data needed for Custom indicator
+        When: Prefix provided is None
+        Then: Raise ValueError
+        """
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common, DBotScoreType
+            dbot_score = Common.DBotScore(
+                'test',
+                DBotScoreType.CUSTOM,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, None)
+
+    def test_custom_indicator_init_no_dbot_score(self):
+        """
+        Given: Data needed for Custom indicator
+        When: Dbotscore is not a DBotScore object
+        Then: Raise ValueError
+        """
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common
+            dbot_score = ''
+            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+
+    def test_custom_indicator_to_context(self):
+        """
+        Given: Data needed for Custom indicator
+        When: there's a call to to_context
+        Then: create a valid context
+        """
+        from CommonServerPython import Common, DBotScoreType
+        dbot_score = Common.DBotScore(
+            'test',
+            DBotScoreType.CUSTOM,
+            'VirusTotal',
+            score=Common.DBotScore.BAD,
+            malicious_description='malicious!'
+        )
+        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+        context = indicator.to_context()
+        assert context['DBotScore(val.Indicator &&'
+                       ' val.Indicator == obj.Indicator &&'
+                       ' val.Vendor == obj.Vendor && val.Type == obj.Type)']['Indicator'] == 'test'
+        assert context['prefix(val.value && val.value == obj.value)']['Value'] == 'test_value'
+        assert context['prefix(val.value && val.value == obj.value)']['param'] == 'value'
+
+    def test_custom_indicator_no_params(self):
+        """
+        Given: Data needed for creating a custom indicator
+        When: params are None
+        Then: Raise an error
+        """
+        with pytest.raises(TypeError):
+            from CommonServerPython import Common, DBotScoreType
+            dbot_score = Common.DBotScore(
+                'test',
+                DBotScoreType.CUSTOM,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+            Common.CustomIndicator('test', 'test_value', dbot_score, None, 'prefix')
+
+    def test_custom_indicator_no_value(self):
+        """
+        Given: Data needed for creating a custom indicator
+        When: value is None
+        Then: Raise an error
+        """
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common, DBotScoreType
+            dbot_score = Common.DBotScore(
+                'test',
+                DBotScoreType.CUSTOM,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+            Common.CustomIndicator('test', None, dbot_score,  {'param': 'value'}, 'prefix')

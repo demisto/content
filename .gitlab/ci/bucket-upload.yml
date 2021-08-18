@@ -66,6 +66,8 @@ create-instances-upload-flow:
 
 
 .install_packs_in_server:
+  tags:
+    - gke
   needs: ["create-instances-upload-flow"]
   stage: run-instances
   artifacts:
@@ -127,6 +129,8 @@ install-packs-in-server-master:
 
 
 upload-packs-to-marketplace:
+  tags:
+    - gke
   needs: ["run-validations-upload-flow", "install-packs-in-server6_2", "install-packs-in-server6_1", "install-packs-in-server6_0", "install-packs-in-server-master", "run-unittests-and-lint-upload-flow"]
   stage: upload-to-marketplace
   artifacts:
@@ -170,6 +174,8 @@ upload-packs-to-marketplace:
 
 
 force-pack-upload:
+  tags:
+    - gke
   stage: upload-to-marketplace
   needs: ["create-instances-upload-flow"]
   rules:
@@ -195,6 +201,8 @@ force-pack-upload:
 
 
 fan-in-bucket-upload:
+  tags:
+    - gke
   stage: fan-in
   extends:
     - .bucket-upload-rule-always

@@ -14,7 +14,8 @@ args:
   secret: false
 - default: false
   defaultValue: closeReason
-  description: The field name with the email tag. Supports a comma-separated list, the first non-empty value will be taken.
+  description: The field name with the email tag. Supports a comma-separated list,
+    the first non-empty value will be taken.
   isArray: false
   name: emailTagKey
   required: false
@@ -42,13 +43,22 @@ args:
   secret: false
 - default: false
   defaultValue: '*'
-  description: 'A comma-separated list of email tags values and mapping. The script considers only the tags specified in this field. You can map label to another value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in email tag: malicious, credentials harvesting, inner communitcation, external legit email, unclassified. While training, we want to ignore "unclassified" tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to merge "inner communitcation" and "external legit email" to one tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious, external legit email:non-malicious'
+  description: 'A comma-separated list of email tags values and mapping. The script
+    considers only the tags specified in this field. You can map label to another
+    value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in email
+    tag: malicious, credentials harvesting, inner communitcation, external legit email,
+    unclassified. While training, we want to ignore "unclassified" tag, and refer
+    to "credentials harvesting" as "malicious" too. Also, we want to merge "inner
+    communitcation" and "external legit email" to one tag called "non-malicious".
+    The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
+    external legit email:non-malicious'
   isArray: false
   name: phishingLabels
   required: false
   secret: false
 - default: false
-  description: A comma-separated list of incident field names to include in the results file.
+  description: A comma-separated list of incident field names to include in the results
+    file.
   isArray: false
   name: additionalFields
   required: false
@@ -60,13 +70,15 @@ enabled: true
 name: EvaluateMLModllAtProduction
 outputs:
 - contextPath: EvaluateMLModllAtProduction.EvaluationScores
-  description: The model evaluation scores (precision, coverage, etc.) for the found threshold.
+  description: The model evaluation scores (precision, coverage, etc.) for the found
+    threshold.
   type: Unknown
 - contextPath: EvaluateMLModllAtProduction.ConfusionMatrix
   description: The model evaluation confusion matrix for the found threshold.
   type: Unknown
 - contextPath: EvaluateMLModllAtProductionNoThresh.EvaluationScores
-  description: The model evaluation scores (precision, coverage, etc.) for threshold = 0.
+  description: The model evaluation scores (precision, coverage, etc.) for threshold
+    = 0.
   type: Unknown
 - contextPath: EvaluateMLModllAtProductionNoThresh.ConfusionMatrix
   description: The model evaluation confusion matrix for threshold = 0.
@@ -75,7 +87,7 @@ script: '-'
 subtype: python3
 system: false
 type: python
-dockerimage: demisto/ml:1.0.0.15569
+dockerimage: demisto/ml:1.0.0.23334
 runas: DBotWeakRole
 runonce: false
 fromversion: 5.0.0
