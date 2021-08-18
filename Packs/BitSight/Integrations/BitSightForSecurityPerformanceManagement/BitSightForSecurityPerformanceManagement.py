@@ -125,12 +125,13 @@ def test_module(client):
     Anything else will fail the test.
     """
     res = client.get_companies_guid()
-    if res.status_code == 200:
+    res_status_code = res.get("status_code", None)
+    if res_status_code == 200:
         return 'ok', None, None
     else:
         res_json = res.json()
         error_response = res_json.get('detail')
-        raise Exception(f"Failed to execute test_module. Error Code: {res.status_code}.Error "
+        raise Exception(f"Failed to execute test_module. Error Code: {res_status_code}.Error "
                         f"Response: {error_response}")
 
 
