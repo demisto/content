@@ -1025,6 +1025,9 @@ tasks:
       source_user: {}
       tags: {}
       target: {}
+      where:
+        simple: top
+      dst: {}
     separatecontext: false
     view: |-
       {
