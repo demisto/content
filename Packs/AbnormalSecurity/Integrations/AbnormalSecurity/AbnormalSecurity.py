@@ -498,7 +498,6 @@ def main():
     mock_data = str(args.get('mock-data', ''))
     if mock_data.lower() == "true":
         headers['Mock-Data'] = "True"
-    headers['Mock-Data'] = "True"
     headers['Authorization'] = f'Bearer {params["api_key"]}'
     headers['Soar-Integration-Origin'] = "Cortex XSOAR"
     command = demisto.command()
