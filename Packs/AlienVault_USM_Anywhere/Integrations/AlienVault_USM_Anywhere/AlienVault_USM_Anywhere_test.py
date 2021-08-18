@@ -130,4 +130,3 @@ def test_parse_alarms(alarms_raw_data, parsed_alarms):
     """
     from AlienVault_USM_Anywhere import parse_alarms
     assert parse_alarms(alarms_raw_data) == parsed_alarms
-
