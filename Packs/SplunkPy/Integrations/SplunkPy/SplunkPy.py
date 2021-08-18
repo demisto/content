@@ -114,8 +114,8 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
 
     kwargs_oneshot = {
         'earliest_time': last_run,
-        'latest_time': now, 
-        'count': FETCH_LIMIT, 
+        'latest_time': now,
+        'count': FETCH_LIMIT,
         'offset': search_offset,
     }
 
