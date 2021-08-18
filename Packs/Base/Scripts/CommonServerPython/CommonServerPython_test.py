@@ -1487,11 +1487,11 @@ class TestCommandResults:
         assert list(results.to_context()['EntryContext'].keys())[0] == \
                'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
 
-    @pytest.mark.parametrize('score, expected_readable', [(CommonServerPython.Common.DBotScore.NONE, 'Unknown'),
-                                                          (CommonServerPython.Common.DBotScore.GOOD, 'Good'),
-                                                          (
-                                                          CommonServerPython.Common.DBotScore.SUSPICIOUS, 'Suspicious'),
-                                                          (CommonServerPython.Common.DBotScore.BAD, 'Bad')])
+    @pytest.mark.parametrize('score, expected_readable',
+                             [(CommonServerPython.Common.DBotScore.NONE, 'Unknown'),
+                              (CommonServerPython.Common.DBotScore.GOOD, 'Good'),
+                              (CommonServerPython.Common.DBotScore.SUSPICIOUS, 'Suspicious'),
+                              (CommonServerPython.Common.DBotScore.BAD, 'Bad')])
     def test_dbot_readable(self, score, expected_readable):
         from CommonServerPython import Common, DBotScoreType
         dbot_score = Common.DBotScore(
