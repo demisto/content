@@ -146,7 +146,7 @@ def alexa_domain(client: Client, domains: List[str]) -> List[CommandResults]:
 
 def main() -> None:
     params = demisto.params()
-    api_key = params.get('credentials').get('password')
+    api_key = demisto.get(params, 'credentials.password')
     base_api = params.get('base_url')
     reliability = params.get('integrationReliability')
     verify_certificate = not params.get('insecure', False)
