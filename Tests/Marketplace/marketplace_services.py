@@ -1280,11 +1280,11 @@ class Pack(object):
             f'current branch version: {latest_release_notes}\n' \
             'Please Merge from master and rebuild'
 
-    def get_rn_files_names(self, modified_files_paths):
+    def get_rn_files_names(self, modified_rn_files_paths):
         """
 
         Args:
-            modified_files_paths: a list containing all modified files in the current pack, generated
+            modified_rn_files_paths: a list containing all modified files in the current pack, generated
             by comparing the old and the new commit hash.
         Returns:
             The names of the modified release notes files out of the given list only,
@@ -1292,14 +1292,14 @@ class Pack(object):
 
         """
         modified_rn_files = []
-        for file_path in modified_files_paths:
+        for file_path in modified_rn_files_paths:
             modified_file_path_parts = os.path.normpath(file_path).split(os.sep)
             if self.RELEASE_NOTES in modified_file_path_parts:
                 modified_rn_files.append(modified_file_path_parts[-1])
         return modified_rn_files
 
     def prepare_release_notes(self, index_folder_path, build_number, pack_was_modified=False,
-                              modified_files_paths=None):
+                              modified_rn_files_paths=None):
         """
         Handles the creation and update of the changelog.json files.
 
@@ -1307,7 +1307,7 @@ class Pack(object):
             index_folder_path (str): Path to the unzipped index json.
             build_number (str): circleCI build number.
             pack_was_modified (bool): whether the pack modified or not.
-            modified_files_paths (list): list of paths of the pack's modified file
+            modified_rn_files_paths (list): list of paths of the pack's modified file
 
         Returns:
             bool: whether the operation succeeded.
@@ -1317,8 +1317,7 @@ class Pack(object):
         not_updated_build = False
         release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
-        if not modified_files_paths:
-            modified_files_paths = []
+        modified_rn_files_paths = modified_rn_files_paths if modified_rn_files_paths else []
 
         try:
             # load changelog from downloaded index
@@ -1336,7 +1335,7 @@ class Pack(object):
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     # Handling modified old release notes files, if there are any
-                    rn_files_names = self.get_rn_files_names(modified_files_paths)
+                    rn_files_names = self.get_rn_files_names(modified_rn_files_paths)
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
                         release_notes_dir, new_release_notes_versions, changelog, rn_files_names)
 
