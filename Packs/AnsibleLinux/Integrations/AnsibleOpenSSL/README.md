@@ -43,6 +43,10 @@ This integration is powered by Ansible 2.9. Further information can be found on 
     | Password |  | True |
     | Default SSH Port | The default port to use if one is not specified in the commands \`host\` argument. | True |
     | Concurrency Factor | If multiple hosts are specified in a command, how many hosts should be interacted with concurrently. | True |
+    | Escalate Privileges | Ansible allows you to ‘become’ another user, different from the user that<br/>logged into the machine \(remote user\).<br/> | True |
+    | Privilege Escalation Method | Which privilege escalation method should be used. | True |
+    | Privilege Escalation User | Set the user you become through privilege escalation | False |
+    | Privilege Escalation Password | Set the privilege escalation password. | False |
 
 ## Testing
 This integration does not support testing from the integration management screen. Instead it is recommended to use the `!openssl-certificate-info` command providing an example `host` and `path` to a certificate as the command argument. This command will connect to the specified host with the configured credentials in the integration, and if successful output information about the certificate at the path.
