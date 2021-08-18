@@ -1,12 +1,14 @@
 import shutil
 
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-from datetime import datetime
-from typing import Dict, List, Any, Optional, Tuple, Union
-import uuid
 import json
+import uuid
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 import requests
 
 # disable insecure warnings
@@ -299,23 +301,23 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         'key': API_KEY,
         'where': where,  # default where will be bottom for BC purposes
         'element': add_argument_open(action, 'action', False)
-                   + add_argument_target(target, 'target')
-                   + add_argument_open(description, 'description', False)
-                   + add_argument_list(source, 'source', True, True)
-                   + add_argument_list(destination, 'destination', True, True)
-                   + add_argument_list(application, 'application', True)
-                   + add_argument_list(category, 'category', True)
-                   + add_argument_open(source_user, 'source-user', True)
-                   + add_argument_list(from_, 'from', True, True)  # default from will always be any
-                   + add_argument_list(to, 'to', True, True)  # default to will always be any
-                   + add_argument_list(service, 'service', True, True)
-                   + add_argument_yes_no(negate_source, 'negate-source')
-                   + add_argument_yes_no(negate_destination, 'negate-destination')
-                   + add_argument_yes_no(disable, 'disabled')
-                   + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
-                   + add_argument(log_forwarding, 'log-setting', False)
-                   + add_argument_list(tags, 'tag', True)
-                   + add_argument_profile_setting(profile_setting, 'profile-setting')
+        + add_argument_target(target, 'target')
+        + add_argument_open(description, 'description', False)
+        + add_argument_list(source, 'source', True, True)
+        + add_argument_list(destination, 'destination', True, True)
+        + add_argument_list(application, 'application', True)
+        + add_argument_list(category, 'category', True)
+        + add_argument_open(source_user, 'source-user', True)
+        + add_argument_list(from_, 'from', True, True)  # default from will always be any
+        + add_argument_list(to, 'to', True, True)  # default to will always be any
+        + add_argument_list(service, 'service', True, True)
+        + add_argument_yes_no(negate_source, 'negate-source')
+        + add_argument_yes_no(negate_destination, 'negate-destination')
+        + add_argument_yes_no(disable, 'disabled')
+        + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
+        + add_argument(log_forwarding, 'log-setting', False)
+        + add_argument_list(tags, 'tag', True)
+        + add_argument_profile_setting(profile_setting, 'profile-setting')
     }
     if dst:
         if where not in ('before', 'after'):
@@ -2444,6 +2446,7 @@ def panorama_get_url_filter_command(name: str):
         }
     })
 
+
 @logger
 def create_url_filter_params(
         url_filter_name: str, action: str,
@@ -2452,9 +2455,9 @@ def create_url_filter_params(
         override_block_list: Optional[str] = None,
         description: Optional[str] = None):
     element = add_argument_list(url_category_list, action, True) + \
-              add_argument_list(override_allow_list, 'allow-list', True) + \
-              add_argument_list(override_block_list, 'block-list', True) + \
-              add_argument(description, 'description', False)
+        add_argument_list(override_allow_list, 'allow-list', True) + \
+        add_argument_list(override_block_list, 'block-list', True) + \
+        add_argument(description, 'description', False)
     major_version = get_pan_os_major_version()
     if major_version <= 8:  # up to version 8.X included, the action xml tag needs to be added
         element += "<action>block</action>"
@@ -3687,10 +3690,16 @@ def panorama_refresh_edl_command(args: dict):
 
 
 @logger
-def panorama_register_ip_tag(tag: str, ips: List, persistent: str):
+def panorama_register_ip_tag(tag: str, ips: List, persistent: str, timeout: str = '0'):
     entry: str = ''
+    ''' Start timeout change code block '''
+    major_version = panorama_show_device_major_version()
     for ip in ips:
-        entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member>{tag}</member></tag></entry>'
+        if major_version >= 9:
+            entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member timeout="{timeout}">{tag}</member></tag></entry>'
+        else:
+            entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member>{tag}</member></tag></entry>'
+    ''' End timeout change code block '''
 
     params = {
         'type': 'user-id',
@@ -3718,7 +3727,23 @@ def panorama_register_ip_tag_command(args: dict):
     persistent = args['persistent'] if 'persistent' in args else 'true'
     persistent = '1' if persistent == 'true' else '0'
 
-    result = panorama_register_ip_tag(tag, ips, str(persistent))
+    """ Start timeout change code block """
+    major_version = panorama_show_device_major_version()
+
+    if major_version >= 9:
+        timeout = demisto.args()['timeout'] if 'timeout' in demisto.args() else '0'
+
+        if not int(timeout):
+            timeout = '0'
+            persistent = '1' if persistent == 'true' else '0'
+        else:
+            timeout = demisto.args()['timeout'] if 'timeout' in demisto.args() else '0'
+            persistent = '0'
+
+        result = panorama_register_ip_tag(tag, ips, str(persistent), int(timeout))
+    else:
+        result = panorama_register_ip_tag(tag, ips, str(persistent))
+    """ End timeout change code block """
 
     registered_ip: Dict[str, str] = {}
     # update context only if IPs are persistent
@@ -4979,6 +5004,12 @@ def panorama_show_device_version(target: str = None):
     )
 
     return result['response']['result']['system']
+
+
+def panorama_show_device_major_version(target: Optional[str] = None):
+    response = panorama_show_device_version(target)
+
+    return response['sw-version'].split('.')[0]
 
 
 def panorama_show_device_version_command(target: Optional[str] = None):
