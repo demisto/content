@@ -16,9 +16,10 @@ ERROR_CODES_TO_SKIP = [
 
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
-    def __init__(self, base_url, api_key, headers, proxy=False, verify=True, ok_codes=None):
+    def __init__(self, base_url, api_key, headers, proxy=False, verify=True, ok_codes=None, manager_email=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.api_key = api_key
+        self.manager_id = self.get_manager_id(manager_email)
 
     def test(self):
         """ Tests connectivity with the application. """
@@ -28,10 +29,10 @@ class Client(BaseClient):
                   'user[login]': 123}
         self._http_request(method='GET', url_suffix=uri, params=params)
 
-    def get_manager_id(self, user_data: dict) -> str:
+    def get_manager_id(self, manager_email: Optional[str]) -> str:
         """ Gets the user's manager ID from manager email.
-        :type user_data: ``dict``
-        :param user_data: user data dictionary
+        :type manager_email: ``str``
+        :param manager_email: user's manager email
 
         :return: The user's manager ID
         :rtype: ``str``
@@ -39,7 +40,6 @@ class Client(BaseClient):
 
         # Get manager ID.
         manager_id = ''
-        manager_email = user_data.get('manager_email')
         if manager_email:
             res = self.get_user(manager_email)
             if res is not None:
@@ -86,11 +86,8 @@ class Client(BaseClient):
         """
         uri = '/api/v2/users.json'
         params = {'api_key': self.api_key}
-        manager_id = self.get_manager_id(user_data)
-        if manager_id:
-            user_data['manager_id'] = manager_id
-            if 'manager_email' in user_data:
-                del user_data['manager_email']
+        if self.manager_id:
+            user_data['manager_id'] = self.manager_id
         user_app_data = self._http_request(
             method='POST',
             url_suffix=uri,
@@ -116,11 +113,8 @@ class Client(BaseClient):
         """
         uri = f'/api/v2/users/{user_id}'
         params = {'api_key': self.api_key}
-        manager_id = self.get_manager_id(user_data)
-        if manager_id:
-            user_data['manager_id'] = manager_id
-            if 'manager_email' in user_data:
-                del user_data['manager_email']
+        if self.manager_id:
+            user_data['manager_id'] = self.manager_id
         self._http_request(
             method='PATCH',
             url_suffix=uri,
@@ -301,6 +295,7 @@ def main():
         headers=headers,
         ok_codes=(200, 201),
         api_key=api_key,
+        manager_email=safe_load_json(args.get('user-profile', {})).get('manageremailaddress'),
     )
 
     demisto.debug(f'Command being called is {command}')

@@ -16,6 +16,10 @@
 				},
 				"Username": {
 					"complex": null,
+					"simple": "login"
+				},
+				"Email": {
+					"complex": null,
 					"simple": "email"
 				}
 			}

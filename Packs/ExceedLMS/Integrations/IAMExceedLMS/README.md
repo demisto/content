@@ -1,4 +1,6 @@
-Note: This integration should be used as part of our **Identity Lifecycle Management** premium pack. For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).This integration was integrated and tested with version v2 of ExceedLMS
+Note: This integration should be used as part of our **Identity Lifecycle Management** premium pack. For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
+
+This integration was integrated and tested with version v2 of ExceedLMS.
 
 ## Configure ExceedLMS IAM on Cortex XSOAR
 
