@@ -42,13 +42,14 @@ script:
   type: python
   commands:
     - name: nw-events-search
+      description: Searches for Netwitness events.
       arguments:
         - name: size
           description: Number of Meta to be read from Netwitness
         - name: time
           required: true
           description: Netwitness Time Range String
-        - name: q
+        - name: query
           description: Netwitness Where Clause to be used as Filter
         - name: ip
           description: Use this in case you want to look up an IP Address in Netwitness.
@@ -69,7 +70,7 @@ script:
         - name: text
           description: Use this parameter if you want to search for Netwitness Events
             which contain this Text in one of the Meta
-        - name: op
+        - name: operation
           auto: PREDEFINED
           predefined:
             - EQUALS
@@ -101,14 +102,31 @@ script:
           description: The JSON Map containing Session Ids to Meta Maps
           type: unknown
     - name: nw-events-info
+      description: Retreives Netwitness event information.
       arguments: []
       outputs: []
     - name: nw-events-values
+      description: Retreives Netwitness top values for any meta under specific criteria and time range.
       arguments:
         - name: time
           required: true
           description: Netwitness Time Range String
-        - name: q
+        - name: time_frame
+          description: 'The time frame by which to filter the results, for example: Last 48 Hours.'
+          predefined:
+          - Today
+          - Yesterday
+          - Last 7 Days
+          - Last 30 Days
+          - Last Hour
+          - Last 24 Hours
+          - Last 48 Hours
+          - Custom
+        - name: start_time
+          description: 'If the value of the time_frame argument is "Custom", specify the start time for the time range, for example: 2017-06-01T12:48:16Z.'
+        - name: end_time
+          description: 'If the value of the time_frame argument is "Custom", specify the end time for the time range, for example: 2017-06-01T12:48:16Z.'
+        - name: query
           description: Netwitness Where Clause to be used as Filter
         - name: size
           description: Number of Meta to be read from Netwitness
@@ -133,7 +151,7 @@ script:
           description: Override Request Parameters to be used while Sending Query to
             Netwitness.         For example you can pass Flags and Id Parameters
             in case of Scheduled Jobs!
-        - name: op
+        - name: operation
           auto: PREDEFINED
           predefined:
             - EQUALS
@@ -149,6 +167,7 @@ script:
             See examples to understand better
       outputs: []
     - name: nw-events-details
+      description: Retreives Netwitness event details.
       arguments:
         - name: sessionIds
           required: true
@@ -178,6 +197,7 @@ script:
             Netwitness.         For example you can pass Flags and Id Parameters
             in case of Scheduled Jobs!
       outputs: []
+  dockerimage: demisto/python3:3.9.6.22912
   runonce: false
   feed: false
   isfetch: false

@@ -6,12 +6,18 @@ import tempfile
 import time
 import zipfile
 from datetime import datetime
+from typing import Tuple
 
 import requests
 from requests.auth import HTTPBasicAuth
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
+def debug(msg: str):
+    demisto.info(f'\n\n{msg}\n\n')
+
 
 # #=====================================================================================================================
 # #  ____   ____      _       _   _ _____ _______        _____ _____ _   _ _____ ____ ____
@@ -77,27 +83,6 @@ class Enum:
 # #--------------------------------------------------------------------------------------------------------------------#
 # # COMMON CLASSES AND UTILITIES                                                                                       #
 # #--------------------------------------------------------------------------------------------------------------------#
-
-
-class NwEndpointType:
-    """
-        Supported Client Type
-    """
-
-    # Netwitness Respond API
-    def __init__(self):
-        pass
-
-    INTEGRATION = 1
-
-    # Netwitness Core API
-    CORE = 2
-
-    # Netwitness Server API
-    SERVER = 3
-
-
-# End of NwEndpointType
 
 
 class NwConstants:
@@ -268,23 +253,15 @@ class NwMeta:
     """
 
     # Meta name
-    def __init__(self):
-        pass
-
-    name = None
-
-    # Meta Format
-    type = None
-
-    # Meta Flags
-    flags = None
-
-    # Meta Description
-    description = None
+    def __init__(self, name, type_, description: str = '', flags: int = 0):
+        self.name = name
+        self.type = type_
+        self.description = description
+        self.flags = flags
 
     # Utility method to get the Index Level out of Flags Value of Meta
     def getIndexLevel(self):
-        level = 0x00F & self.flags
+        level = 0x00F & int(self.flags or 0)
         return NwIndexLevel(level)
 
 
@@ -297,12 +274,6 @@ class NwEvent:
         returning list of instance of this class
     """
 
-    # Netwitness Session Id
-    sessionId = None
-
-    # The  dictionary containing Meta Value for the Event
-    meta = None
-
     # Optional Log for this Event
     rawLog = None
 
@@ -311,7 +282,10 @@ class NwEvent:
 
     # Constructor
     def __init__(self, sessionId):
+        # Netwitness Session Id
         self.sessionId = sessionId
+
+        # The  dictionary containing Meta Value for the Event
         self.meta = dict()
 
 
@@ -322,30 +296,6 @@ class NwQueryField:
     """
         Class for encapsulating Result Line returned by the Core Service
     """
-
-    # Meta Id 1
-    id1 = 0
-
-    # Meta Id 2
-    id2 = 0
-
-    # Count Associated
-    count = 0
-
-    # Integer representing the NwMetaFormat
-    format = 0
-
-    # Value
-    value = None
-
-    # Meta Type / Name
-    type = None
-
-    # Flags if any
-    flags = 0
-
-    # SessionId if any
-    group = 0
 
     # Constructor
     def __init__(self, line=''):
@@ -359,47 +309,57 @@ class NwQueryField:
         try:
             _temp = line
 
-            # read id1
-            v = re.search('\\s*id1=\\d+', _temp).group(0).strip()
-            self.id1 = int(v.split('=')[1])
-            _temp = _temp.replace(v, '')
+            # Meta Id 1
+            full_match, value = self._extract_field(r'\s*id1=(\d+)', _temp, default_value=0)
+            self.id1 = int(value)
+            _temp = _temp.replace(full_match, '')
 
-            # read id2
-            v = re.search('\\s*id2=\\d+', _temp).group(0).strip()
-            self.id2 = int(v.split('=')[1])
-            _temp = _temp.replace(v, '')
+            # Meta Id 2
+            full_match, value = self._extract_field(r'\s*id2=(\d+)', _temp, default_value=0)
+            self.id2 = int(value)
+            _temp = _temp.replace(full_match, '')
 
-            # read count
-            v = re.search('\\s*count=\\d+', _temp).group(0).strip()
-            self.count = int(v.split('=')[1])
-            _temp = _temp.replace(v, '')
+            # Count Associated
+            full_match, value = self._extract_field(r'\s*count=(\d+)', _temp, default_value=0)
+            self.count = int(value)
+            _temp = _temp.replace(full_match, '')
 
-            # read format
-            v = re.search('\\s*format=\\d+', _temp).group(0).strip()
-            self.format = int(v.split('=')[1])
-            _temp = _temp.replace(v, '')
+            # Integer representing the NwMetaFormat
+            full_match, value = self._extract_field(r'\s*format=(\d+)', _temp, default_value=0)
+            self.format = int(value)
+            _temp = _temp.replace(full_match, '')
 
-            # read group
-            v = re.search('\\s*group=\\d+', _temp).group(0).strip()
-            self.group = int(v.split('=')[1])
-            _temp = _temp.replace(v, '')
+            # SessionId if any
+            full_match, value = self._extract_field(r'\s*group=(\d+)', _temp)
+            self.group = int(value)
+            _temp = _temp.replace(full_match, '')
 
-            # read flags_temp
-            v = re.search('\\s*flags=\\d+', _temp).group(0).strip()
-            self.flags = int(v.split('=')[1])
-            _temp = _temp.replace(v, '')
+            # Flags if any
+            full_match, value = self._extract_field(r'\s*flags=(\d+)', _temp, default_value=0)
+            self.flags = int(value)
+            _temp = _temp.replace(full_match, '')
 
-            # read type
-            v = re.search('\\s*type=[a-zA-Z0-9.]+', _temp).group(0).strip().strip()
-            self.type = v.split('=')[1]
-            _temp = _temp.replace(v, '')
+            # Meta Type / Name
+            full_match, value = self._extract_field(r'\s*type=([a-zA-Z0-9.]+)', _temp)
+            self.type = int(value)
+            _temp = _temp.replace(full_match, '')
 
-            # read value
-            v = re.search('\\s*value=.*', _temp).group(0).strip().strip()
-            self.value = v.split('=')[1]
+            # Value
+            full_match, value = self._extract_field(r'\s*value=(.*)', _temp)
+            self.value = int(value)
+            _temp = _temp.replace(full_match, '')
 
-        except:
+        except Exception:
             raise Exception("Error while parsing query response [ " + line + " ]")
+
+    @staticmethod
+    def _extract_field(regex: str, search_string: str, default_value: Any = None):
+        if match := re.search(regex, search_string):
+            full_match = match.group(0).strip()
+            value = match.group(1).strip()
+            return full_match, value
+        else:
+            return '', default_value
 
 
 # End of NwQueryField
@@ -410,18 +370,12 @@ class NwQueryResponse:
         A Class to hold the SDK Response in a parsed manner
     """
 
-    # Starting Meta Id
-    id1 = 0
-
-    # End Meta Id
-    id2 = 0
-
-    # List of @NwQueryField that will be rows for each result!
-    result = None
-
     # Constructor
     def __init__(self):
-        self.result = list()
+        self.id1 = 0
+        self.id2 = 0
+        # List of @NwQueryField that will be rows for each result!
+        self.result: List[NwQueryField] = []
 
     # Wrapper method to read from Plain Text SDK Response
     def parseFromHttpResponse(self, response=''):
@@ -432,28 +386,27 @@ class NwQueryResponse:
         """
         # Split lines on Line Breaks!
         lines = response.splitlines()
+        debug(f'lines:\n{lines}')
 
         # Iterate thru lines!
         _c = len(lines)
         for index in range(0, _c - 1):
 
-            l = lines[index]
-            if l == '[' or l == ']':
+            line = lines[index]
+            if line in ('[', ']'):
                 continue
-            elif l.startswith('['):
+            elif line.startswith('['):
 
                 # If line starts with '[' then its ID Range for response
-                # self.id1 = int(re.search('\\s*id1=\\d+', l).group(0).split('=')[1])
-                self.id2 = int(re.search('\\s*id2=\\d+', l).group(0).split('=')[1])
+                self.id1 = int(NwQueryField._extract_field(r'\s*id1=(\d+)', line, default_value=0))
+                self.id2 = int(NwQueryField._extract_field(r'\s*id2=(\d+)', line, default_value=0))
 
             else:
                 # Else parse it as the Query Response Field
                 try:
-                    self.result.append(NwQueryField(l))
-                except:
-                    # demisto.log('Error in while parsing line [ ' + l + ' ]')
+                    self.result.append(NwQueryField(line))
+                except Exception:
                     pass
-                continue
 
     # End of Function parseFromHttpResponse
 
@@ -463,19 +416,16 @@ class NwQueryResponse:
 
             :return: a dictionary containing a map from Session Ids to NwEvent parsed from Response
         """
-        data = dict()
+        data: Dict[int, Dict] = {}
+        # data is a mapping of session IDs to mapping of NwEvent objects:
+        # {
+        #     <Session ID>: {
+        #         <Query Type>: [<list of values>],
+        #     }
+        # }
         for f in self.result:
+            data.setdefault(f.group, {}).setdefault(f.type, []).append(f.value)
 
-            # Add Entry for Session Id
-            if f.group not in data:
-                data[f.group] = dict()
-
-            # Add Entry for Meta Dictionary
-            if f.type not in data[f.group]:
-                data[f.group][f.type] = list()
-
-            # Add value to the existing list of Meta Value
-            data[f.group][f.type].append(f.value)
         return data
 
     # End of Function asSDKQueryResponse
@@ -501,10 +451,7 @@ class NwQueryResponse:
         """
         _result = []
         for n in self.result:
-            nwm = NwMeta()
-            nwm.name = n.type
-            nwm.type = NwMetaFormat(n.format)
-            nwm.flags = n.flags
+            nwm = NwMeta(n.type, NwMetaFormat(n.format), flags=n.flags)
             _result.append(nwm)
         return _result
     # End of asSDKLanguageResponse
@@ -594,9 +541,9 @@ class NwIoBufferWrapper:
         :return:
         """
         if self.endian == 'little':
-            return int(struct.unpack("<L", str(self.readBytesOfSize(4)))[0])
+            return int(struct.unpack("<L", self.readBytesOfSize(4))[0])
         else:
-            return int(struct.unpack(">L", str(self.readBytesOfSize(4)))[0])
+            return int(struct.unpack(">L", self.readBytesOfSize(4))[0])
 
     # End of function readUnsignedInt
 
@@ -630,10 +577,10 @@ class NwIoBufferWrapper:
         array = bytearray()
         array.extend(self.readBytesOfSize(2))
         if crlf:
-            while not array.endswith('\r\n'):
+            while not array.endswith(br'\r\n'):
                 array.extend(self.readBytesOfSize(1))
         else:
-            while not array.endswith('\n'):
+            while not array.endswith(br'\n'):
                 array.extend(self.readBytesOfSize(1))
         return array.decode("utf-8")
 
@@ -663,9 +610,8 @@ class NwStringParams:
     """
 
     # String Parameters contained in the IoBuffer
-    values = {}
 
-    def __init__(self, ioBuffer):
+    def __init__(self, ioBuffer: NwIoBufferWrapper):
 
         # Read Number of Parameters!
         numberOfParams = ioBuffer.readUnsignedInt()
@@ -674,6 +620,7 @@ class NwStringParams:
             raise Exception(
                 "Number of parameters in the Headers is [ " + str(numberOfParams) + " ] not in range [1,32]")
 
+        self.values = {}
         # Read those number of parameters
         for index in range(numberOfParams):
             # Read Parameter Key
@@ -685,7 +632,7 @@ class NwStringParams:
 
     # End of Init
 
-    def get(self, key):
+    def get(self, key: str) -> str:
         """
         Returns the Value of the Parameter
 
@@ -739,9 +686,9 @@ class NwContentFileResponse:
     filecount = -1
 
     # The NwBaseFiles in the response
-    nwfiles = list()
 
-    def __init__(self, ioBuffer):
+    def __init__(self, ioBuffer: NwIoBufferWrapper):
+        self.nwfiles: List[NwBaseFile] = []
 
         # Check if it is Mime Message!
         if 'This is a message with multiple parts in MIME format.' == ioBuffer.readStringOfSize(53):
@@ -822,79 +769,49 @@ class NwClient:
     """
         Base class to be defined for Netwitness Clients!
     """
-
-    # The type of endpoint
-    def __init__(self):
-        pass
-
-    endpointType = None
-
-    # Server Details
-    server = {}
-
-    # Credentials
-    credentials = {}
-
-    # Proxy
-    proxy = None
-
-    # Token
-    token = ''
-
-    # URL
-    url = None
-
-    # Session
-    session = None
-
-    # Device Summary
-    deviceInfo = {}
-
-    # Meta Information
-    metaInformation = {}
-
-    # set
-    typeToMeta = set()
-
-    # Method to set the initial values!
-    def configure(self, host, port, ssl=True, secure=True, username='admin', password='netwitness',
-                  endpointtype=NwEndpointType.INTEGRATION):
+    def __init__(self, host: str, port: str, username: str, password: str, proxy: dict = None,
+                 ssl: bool = True, secure: bool = True):
         """
-        Method to configure the Client with commonly used paramters.
-
         :param host: The host name or IP Address of the Server where Service is running
         :param port: Port on which Service is listening
-        :param ssl: Use SSL Connection to connect
-        :param secure: Validate the Certificate in case of SSL ENabled
         :param username: Service Username
         :param password: Service Password
-        :param endpointtype: Type of Server
+        :param ssl: Use SSL Connection to connect
+        :param secure: Validate the Certificate in case of SSL ENabled
         :return:
         """
+        # URL
+        if ssl:
+            self.url = f'https://{host}:{port}'
+        else:
+            self.url = f'http://{host}:{port}'
 
-        # Server Details
-        self.server['host'] = host
-        self.server['port'] = port
-        self.server['secure'] = secure
-        self.server['ssl'] = ssl
-
-        # Credentials
-        self.credentials['username'] = username
-        self.credentials['password'] = password
-
-        # Protocols
-        self.endpointType = endpointtype
-
-        # Set URL
-        url = 'https://'
-        if not self.server['ssl']:
-            url = 'http://'
-        self.url = url + self.server['host'] + ":" + str(self.server['port'])
+        # SSL validation
+        self.secure = secure
 
         # Proxy
-        self.proxy = None
+        self.proxy = proxy
 
-    # End of function configure
+        # Credentials
+        self.credentials = {
+            'username': username,
+            'password': password,
+        }
+
+        # Token
+        self.token = ''
+
+        # Session
+        self.session = requests.Session()
+
+        # Device Summary
+        self.deviceInfo = {}
+
+        # Meta Information
+        self.metaInformation = {}
+
+        # set
+        self.typeToMeta = set()
 
     def enableProxy(self):
         """
@@ -911,16 +828,16 @@ class NwClient:
 
     # End of function enableProxy
 
-    def getBaseURL(self, path):
+    def getBaseURL(self, path: str):
         return self.url + path
 
     # End of function getBaseURL
 
     def doLogin(self):
         """
-                    Authenticate to the Server based on the parameters passed into the Configure Method
-                    :return:
-                """
+            Authenticate to the Server based on the object settings.
+            :return:
+        """
         pass
 
     # End of function doLogin
@@ -945,10 +862,6 @@ class NwAlert:
 
 
 class NwIncident:
-    incidentId = None
-    incident = None
-    alerts = None
-
     def __init__(self, incident):
         self.incident = incident
         self.incidentId = incident['id']
@@ -967,202 +880,16 @@ class NwIncident:
         return None
 
 
-class NwIntegrationClient(NwClient):
-    # Last Incident Time
-    lastIncidentTime = None
-
-    def __init__(self, host, port, ssl, secure, uname, pwd):
-        self.configure(host, port, ssl, secure, uname, pwd, NwEndpointType.INTEGRATION)
-
-    def doLogin(self):
-        """
-            Function to esatblish the authenticated session with Integration Server!
-        """
-
-        # Raise exception in case of wrong Endpoint Type
-        if self.endpointType != NwEndpointType.INTEGRATION:
-            raise Exception("Only Integration Server Authentication Is Supported in this Client")
-
-        # default headers for HTTP Request to be sent to the Netwitness Server for getting Auth Token
-        httpHeaders = {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=ISO-8859-1',
-            'Accept': 'application/json; charset=UTF-8',
-            'NetWitness-Version': "11.1.0.0"
-        }
-
-        # format the user info
-        uap = {
-            "username": self.credentials['username'],
-            "password": self.credentials['password']
-        }
-
-        loginURL = self.getBaseURL(NwConstants.INTEGRATION_SERVER_AUTH)
-
-        response = requests.post(loginURL,
-                                 headers=httpHeaders,
-                                 data=uap,
-                                 verify=self.server['secure'],
-                                 proxies=self.proxy
-                                 )
-
-        # successful get_token
-        if response.status_code == 200:
-            self.token = response.json()
-            self.session = requests.session()
-            self.start()
-            return
-
-        # bad request - NetWitness returns a common json structure for errors
-        raise ValueError('Error in Authenticating to Integration Server with Status: {}'.format(response.status_code))
-
-    # End of function doLogin
-
-    def __makeRestCall(self, url, method='get', headers={}, params={}):
-        _headers = {
-            'Netwitness-Token': self.token['accessToken']
-        }
-        _headers.update(headers)
-        _params = {}
-        _params.update(params)
-
-        if method == 'get':
-            response = self.session.get(
-                url,
-                headers=_headers,
-                verify=self.server['secure'],
-                proxies=self.proxy,
-                params=_params
-            )
-        if method == 'post':
-            response = self.session.get(
-                url,
-                headers=_headers,
-                verify=self.server['secure'],
-                proxies=self.proxy,
-                data=_params
-            )
-
-        return response
-
-    def __getAlertsForIncidentId(self, incidentId='', limit=0):
-
-        # URL to fetch alerts!
-        _url = self.getBaseURL('/rest/api/incidents/' + incidentId + '/alerts')
-
-        # Page Number to keep track of!
-        _page_number = 0
-
-        # Result variable
-        result = list()
-
-        while _page_number != -1 and len(result) <= limit:
-            _url_params = {
-                'pageNumber': _page_number,
-                'pageSize': 100
-            }
-            response = self.__makeRestCall(_url, params=_url_params)
-
-            # successful request
-            if response.status_code == 200:
-
-                # Decode JSON
-                _json = response.json()
-
-                # Get Alerts Array!
-                _items = _json['items']
-
-                # Append them to Result
-                for _item in _items:
-                    result.append(_item)
-                # See if we have more results!
-                if _json['hasNext']:
-                    _page_number = _page_number + 1
-                else:
-                    _page_number = -1
-
-            # Else, raise Exception!
-            else:
-                # bad request - NetWitness returns a common json structure for errors
-                error_lst = response.json().get('errors')
-                raise ValueError(
-                    'Request failed with status: {}\n{}'.format(response.status_code, str(error_lst)))
-        # Return the result!
-        return result
-
-    def getAllIncidentsBetween(self, startEpoch=None, endEpoch=None, fetchAlerts=False, limit=1000, alertLimit=0):
-
-        # URL to send REST Request
-        _url = self.getBaseURL('/rest/api/incidents')
-
-        # List to send Result!
-        result = list()
-
-        # Page Number to Track!
-        _page_number = 0
-
-        # Run while more results to fetch
-        while len(result) < limit and _page_number != -1:
-            _url_params = {
-                'since': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(startEpoch)),
-                'until': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(endEpoch)),
-                'pageNumber': _page_number,
-                'pageSize': 100
-            }
-            response = self.__makeRestCall(_url, params=_url_params)
-
-            # successful request
-            if response.status_code == 200:
-                _json = response.json()
-                items = _json['items']
-
-                # Add all the items into the result after casting them to NwIncident
-                for _item in items:
-                    result.append(NwIncident(_item))
-
-                if _json['hasNext']:
-                    _page_number = _page_number + 1
-                else:
-                    _page_number = -1
-
-                if fetchAlerts:
-                    # If we are fetching alerts make sure that we are doing it for all the incidents!
-                    for _inc in result:
-                        _inc.alerts = self.__getAlertsForIncidentId(_inc.incidentId, alertLimit)
-            else:
-                # bad request - NetWitness returns a common json structure for errors
-                error_lst = response.json().get('errors')
-                raise ValueError(
-                    'Request failed with status: {}\n{}'.format(response.status_code, error_lst))
-
-        # Return result
-        return result
-
-    def getNewIncidents(self, fetchAlerts=False):
-        # See if last recorded time is available
-        if not self.lastIncidentTime:
-            self.lastIncidentTime = int(time.time()) - 172800
-        return self.getAllIncidentsBetween(self.lastIncidentTime, int(time.time()), fetchAlerts=True, alertLimit=1)
-
-    def readIncident(self, incidentId):
-        return self.__getAlertsForIncidentId(incidentId)
-
-
 # #--------------------------------------------------------------------------------------------------------------------#
 # # NETWITNESS CORE SERVICE CLIENT                                                                                     #
 # #--------------------------------------------------------------------------------------------------------------------#
 
 class NwCoreClient(NwClient):
-    # Summary Information
-    deviceSummary = None
-
-    # Meta Information
-    metaInformation = None
-
     # Constructor
-    def __init__(self, host, port, ssl, secure, uname, pwd):
-        self.configure(host, port, ssl, secure, uname, pwd, NwEndpointType.CORE)
+    def __init__(self, host, port, uname, pwd, proxy, ssl, secure):
+        super().__init__(host, port, uname, pwd, proxy=proxy, ssl=ssl, secure=secure)
+        # Summary Information
         self.deviceSummary = dict()
-        self.metaInformation = dict()
 
     # End of constructor
 
@@ -1170,11 +897,6 @@ class NwCoreClient(NwClient):
         """
             Creates a session with Netwitness Core Server REST API Server
         """
-
-        # Raise exception in case of wrong type
-        if self.endpointType != NwEndpointType.CORE:
-            raise Exception("Only Netwitness Core Service Authentication Is Supported in this Client")
-
         # default headers for HTTP Request to be sent to the Netwitness Server for getting Auth Token
         httpHeaders = {
             'Content-Type': 'application/x-www-form-urlencoded;charset=ISO-8859-1',
@@ -1187,7 +909,7 @@ class NwCoreClient(NwClient):
 
         response = requests.get(loginURL,
                                 headers=httpHeaders,
-                                verify=self.server['secure'],
+                                verify=self.secure,
                                 proxies=self.proxy,
                                 auth=HTTPBasicAuth(self.credentials['username'], self.credentials['password'])
                                 )
@@ -1195,7 +917,6 @@ class NwCoreClient(NwClient):
         # successful get_token
         if response.status_code == 200:
             self.token = response.json()
-            self.session = requests.session()
             self.session.auth = HTTPBasicAuth(self.credentials['username'], self.credentials['password'])
             self.start()
             return
@@ -1220,7 +941,7 @@ class NwCoreClient(NwClient):
         z = {'msg': msg, 'force-content-type': 'text/plain'}
         z.update(options)
         z.update(params)
-        return self.session.get(_url, verify=self.server['secure'], proxies=self.proxy, params=z)
+        return self.session.get(_url, verify=self.secure, proxies=self.proxy, params=z)
 
     # End of __makeNodeCall
 
@@ -1232,10 +953,9 @@ class NwCoreClient(NwClient):
         if response.status_code == 200:
 
             # Reset Summary
-            self.deviceSummary = None
+            self.deviceSummary = {}
 
             _s = response.content.decode('utf-8')
-            self.deviceSummary = {}
 
             # Parse the values!
             for x in _s.split():
@@ -1269,6 +989,7 @@ class NwCoreClient(NwClient):
 
     # End of function __readMetaLanguages
 
+    @logger
     def __executeSDKQuery(self, nwQuery='', size=1000, params={}):
         """
         Fires the SDK Query on the Core Service and reads the response as NwQueryResponse
@@ -1278,7 +999,6 @@ class NwCoreClient(NwClient):
         :param params: Override Parameters
         :return:
         """
-        demisto.log('Executing SDK Query : ' + nwQuery)
         response = self.__makeNodeCall('sdk', 'query',
                                        {
                                            'size': str(size),
@@ -1293,6 +1013,7 @@ class NwCoreClient(NwClient):
 
     # End of function __executeSDKQuery
 
+    @logger
     def __executeSDKValues(self, fieldName, where='', size=1000, params={}):
         """
         Fires the SDK Values on the Core Service and reads the response as NwQueryResponse
@@ -1303,7 +1024,6 @@ class NwCoreClient(NwClient):
         :param params: Override Parameters
         :return:
         """
-        demisto.log('Executing SDK Values : ' + where)
         response = self.__makeNodeCall('sdk', 'values',
                                        {
                                            'size': str(size),
@@ -1738,8 +1458,6 @@ class NwCoreClient(NwClient):
     # #----------------------------------------------------------------------------------------------------------------#
     def topValuesByNwQueryAndTime(self, pivotMeta=[], where='', size=20, searchAll=False, endTimeEpoch=-1,
                                   startTimeEpoch=-1, params={}, **kwargs):
-        result = {}
-
         # Time clause
         timeclause = self.__generateTimeClause(startTimeEpoch, endTimeEpoch)
 
@@ -1750,7 +1468,7 @@ class NwCoreClient(NwClient):
         else:
             cl = timeclause
 
-        return self.topValuesByNwQuery(pivotMeta, cl, size, searchAll, params)
+        return self.topValuesByNwQuery(pivotMeta, cl, size, searchAll, params, **kwargs)
 
     # #
     # #----------------------------------------------------------------------------------------------------------------#
@@ -1788,7 +1506,7 @@ class NwCoreClient(NwClient):
     def topValuesByMeta(self, pivotMeta=[], meta=[], values=[], op=NwQueryOperator.EQUALS, size=20, must=False,
                         searchAll=False, endTimeEpoch=-1, startTimeEpoch=-1, params={}, **kwargs):
         cl = self.__generateWhereClauseForMultipleMeta(meta, values, op, searchAll, must)
-        return self.topValuesByNwQueryAndTime(pivotMeta, cl, size, searchAll, endTimeEpoch, startTimeEpoch, params)
+        return self.topValuesByNwQueryAndTime(pivotMeta, cl, size, searchAll, endTimeEpoch, startTimeEpoch, params, **kwargs)
 
     # #
     # #----------------------------------------------------------------------------------------------------------------#
@@ -1860,7 +1578,7 @@ class NwCoreClient(NwClient):
         if len(where) > 0:
             cl = '( ' + where + ' ) && ' + cl
         return self.mSearchEventsByNwQuery(searchString, cl, searchMeta, searchIndex, regEx, searchRawData,
-                                           caseInsensitive, size, maxSession, params)
+                                           caseInsensitive, size, maxSession, params, **kwargs)
 
     # #
     # #----------------------------------------------------------------------------------------------------------------#
@@ -1906,11 +1624,12 @@ class NwCoreClient(NwClient):
                             caseInsensitive=True, maxSession=100000, meta=[], values=[], op=NwQueryOperator.EQUALS,
                             size=1000, must=False, searchAll=False, endTimeEpoch=-1, startTimeEpoch=-1, params={},
                             **kwargs):
+        _ = kwargs  # ignoring extra arguments
         # Generate the Query!
         where = self.__generateWhereClauseForMultipleMeta(meta, values, op, searchAll, must)
         return self.mSearchEventsByNwQueryAndTime(searchString, where, searchMeta, searchIndex, regEx, searchRawData,
                                                   caseInsensitive, size, maxSession, endTimeEpoch, startTimeEpoch,
-                                                  params)
+                                                  params, **kwargs)
 
     # #
     # #----------------------------------------------------------------------------------------------------------------#
@@ -1925,6 +1644,7 @@ class NwCoreClient(NwClient):
     # #     params      :   A dictionary containing string parameters to be overridden in the request sent to Core
     # #----------------------------------------------------------------------------------------------------------------#
     def renderSessions(self, sessionIds=[], renderType=0, params={}, **kwargs):
+        _ = kwargs  # ignoring extra arguments
         result = dict()
         for sid in sessionIds:
             try:
@@ -1955,7 +1675,50 @@ class NwCoreClient(NwClient):
 # # UTILITY FUNCTIONS TO BE USED FOR PARSING COMMANDS
 # #=====================================================================================================================
 # Get time range from User Time Input
-def utilParseTimeRange(userInput, endTimeEpoch):
+def get_time_range(time_frame=None, start_time=None, end_time=None):
+    if time_frame is None:
+        return None, None
+
+    if time_frame == 'Custom':
+        if start_time is None and end_time is None:
+            raise ValueError('invalid custom time frame: need to specify one of start_time, end_time')
+
+        if start_time is None:
+            start_time = datetime.now()
+        else:
+            start_time = dateparser.parse(start_time)
+
+        if end_time is None:
+            end_time = datetime.now()
+        else:
+            end_time = dateparser.parse(end_time)
+
+        return date_to_timestamp(start_time), date_to_timestamp(end_time)
+
+    end_time = datetime.now()
+    if time_frame == 'Today':
+        start_time = datetime.now().date()
+
+    elif time_frame == 'Yesterday':
+        start_time = (end_time - timedelta(days=1)).date()
+
+    elif time_frame == 'Last Hour':
+        start_time = end_time - timedelta(hours=1)
+    elif time_frame == 'Last 24 Hours':
+        start_time = end_time - timedelta(hours=24)
+    elif time_frame == 'Last 48 Hours':
+        start_time = end_time - timedelta(hours=48)
+    elif time_frame == 'Last 7 Days':
+        start_time = end_time - timedelta(days=7)
+    elif time_frame == 'Last 30 Days':
+        start_time = end_time - timedelta(days=30)
+    else:
+        raise ValueError('Could not parse time frame: {}'.format(time_frame))
+
+    return date_to_timestamp(start_time), date_to_timestamp(end_time)
+
+
+def utilParseTimeRange(userInput: str, endTimeEpoch: int):
     # Get the input and convert as
     input = userInput.lower()
 
@@ -1967,13 +1730,13 @@ def utilParseTimeRange(userInput, endTimeEpoch):
 
     # RegEx Library
     TR = {
-        'YYYY': '\\d{4}',
+        'YYYY': r'\d{4}',
         'MMM': '(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)',
-        '12': '(0[1-9]|1[0-2]|[1-9])',  # Non Zero Month
-        '31': '(0[1-9]|[1-2][0-9]|30|31|[1-9])',
-        'HYPHEN': '(\\s+-\\s+|\/)',
-        '60': '([0-4][0-9]|5[0-9]|[0-9])',
-        'SEP': '(\\s+)'
+        '12': '(0?[1-9]|1[0-2])',  # Non Zero Month
+        '31': '(0?[1-9]|[1-2][0-9]|30|31)',
+        'HYPHEN': r'(\s+-\s+|/)',
+        '60': '([0-5]?[0-9])',
+        'SEP': r'(\s+)'
     }
 
     # Example Date 2018-Jun-12 23:50:50 - 2018-Jun-12 23:59:50
@@ -2125,21 +1888,9 @@ def utilParseTimeRange(userInput, endTimeEpoch):
             # Invalid Date Format. May be a Bug ?
             return None
     else:
-        demisto.log("Invalid Time Range Given. Please see the Documentation for correct formatting of date ranges")
+        raise DemistoException("Invalid Time Range Given. Please see the Documentation for correct formatting of date ranges.")
         return None
     return result
-
-
-# #
-# #=====================================================================================================================
-# # PING CLIENT AND VERIFY THAT THINGS ARE WORKING AS NEEDED BY ACQUIRING A LOGIN TOKEN
-# #=====================================================================================================================
-def test_module_command(client, _):
-    """
-    PING CLIENT AND VERIFY THAT THINGS ARE WORKING AS NEEDED BY ACQUIRING A LOGIN TOKEN
-    """
-    client.getMetaInformation()
-    return 'ok'
 
 
 # #
@@ -2154,11 +1905,11 @@ class NwParams:
 
     Size = ('size', 1000)
     NwQuery = ('nwQuery', '')
-    Where = ('q', '')
+    Where = ('query', '')
     Time = ('time', '')
     Meta = ('meta', '')
     Values = ('values', '')
-    Op = ('op', 'EQUALS')
+    Op = ('operation', 'EQUALS')
     Must = ('must', 'False')
     SearchAll = ('searchAll', 'False')
     PivotMeta = ('find', '')
@@ -2179,44 +1930,43 @@ class NwParams:
     ExportAsZip = ('exportAsZip', 'False')
 
 
-def hasParam(param):
+def hasParam(args, param):
     return param[0] in demisto.args()
 
 
-def getParam(param):
-    return demisto.args().get(param[0]) or param[1]
+def getParam(args, param: Tuple[str, Any]):
+    return args.get(param[0]) or param[1]
 
 
 # #=====================================================================================================================
 # # Collect all the parameters into a Dictionary
 # #=====================================================================================================================
-def process_args(client, args):
+def process_args(client: NwCoreClient, args):
     p = {
-        'size': int(getParam(NwParams.Size)),
-        'nwQuery': getParam(NwParams.NwQuery),
-        'where': getParam(NwParams.Where),
-        'meta': getParam(NwParams.Meta).split(','),
-        'values': getParam(NwParams.Meta).split(r'(?<!\\),'),
-        'op': getattr(NwQueryOperator(), getParam(NwParams.Op)),
-        'must': (getParam(NwParams.Must) == 'True'),
-        'searchAll': (getParam(NwParams.SearchAll) == 'True'),
-        'pivotMeta': re.split(r'(?<!\\),', getParam(NwParams.PivotMeta)),
-        'searchString': getParam(NwParams.MSearch),
-        'searchRaw': (getParam(NwParams.SearchInPackets) == 'True'),
-        'regEx': (getParam(NwParams.SearchAsRegEx) == 'True'),
-        'caseInsensitive': (getParam(NwParams.CaseInSensitive) == 'True'),
-        'maxSession': int(getParam(NwParams.MaxSessionsToScan)),
-        'params': {},
-        'sessionIds': re.split(r'(?<!\\),', getParam(NwParams.SessionIds)),
-        'renderType': int(getattr(NwSessionRenderType(), getParam(NwParams.DetailType))),
+        'size': int(getParam(args, NwParams.Size)),
+        'nwQuery': getParam(args, NwParams.NwQuery),
+        'where': getParam(args, NwParams.Where),
+        'meta': getParam(args, NwParams.Meta).split(','),
+        'values': getParam(args, NwParams.Meta).split(r'(?<!\\),'),
+        'op': getattr(NwQueryOperator(), getParam(args, NwParams.Op)),
+        'must': (getParam(args, NwParams.Must) == 'True'),
+        'searchAll': (getParam(args, NwParams.SearchAll) == 'True'),
+        'pivotMeta': re.split(r'(?<!\\),', getParam(args, NwParams.PivotMeta)),
+        'searchString': getParam(args, NwParams.MSearch),
+        'searchRaw': (getParam(args, NwParams.SearchInPackets) == 'True'),
+        'regEx': (getParam(args, NwParams.SearchAsRegEx) == 'True'),
+        'caseInsensitive': (getParam(args, NwParams.CaseInSensitive) == 'True'),
+        'maxSession': int(getParam(args, NwParams.MaxSessionsToScan)),
+        'sessionIds': re.split(r'(?<!\\),', getParam(args, NwParams.SessionIds)),
+        'renderType': int(getattr(NwSessionRenderType(), getParam(args, NwParams.DetailType))),
         'startTimeEpoch': -1,
         'endTimeEpoch': -1,
-        'params': json.loads(getParam(NwParams.Params)),
-        'exportType': getParam(NwParams.ExportType).split(r'(?<!\\),'),
+        'params': json.loads(getParam(args, NwParams.Params)),
+        'exportType': getParam(args, NwParams.ExportType).split(r'(?<!\\),'),
     }
 
     # Collect Time Parameter
-    t_param = getParam(NwParams.Time)
+    t_param = getParam(args, NwParams.Time)
     if len(t_param) > 0:
         start_time, end_time = utilParseTimeRange(t_param, client.getTimeRange()[1])
         if start_time and end_time:
@@ -2230,100 +1980,143 @@ def process_args(client, args):
     return p
 
 
+# #
+# #=====================================================================================================================
+# # PING CLIENT AND VERIFY THAT THINGS ARE WORKING AS NEEDED BY ACQUIRING A LOGIN TOKEN
+# #=====================================================================================================================
+def test_module_command(client, _):
+    """
+    PING CLIENT AND VERIFY THAT THINGS ARE WORKING AS NEEDED BY ACQUIRING A LOGIN TOKEN
+    """
+    client.getMetaInformation()
+    return 'ok'
+
+
 # #=====================================================================================================================
 # # EVENT SEARCH API FOR NETWTTNESS.
 # # This API will search for Events in Netwitness and will return the matching sessions for the Query Fired
 # #=====================================================================================================================
-def nw_events_search_command(client, args):
+def nw_events_search_command(client: NwCoreClient, args):
 
-    if hasParam(NwParams.IpSearch):
+    if hasParam(args, NwParams.IpSearch):
         args.update({
             'meta': NwQueryMetaMappingConfig['IP'],
-            'values': re.split(r'(?<!\\),', getParam(NwParams.IpSearch)),
+            'values': re.split(r'(?<!\\),', getParam(args, NwParams.IpSearch)),
         })
         c1_results = client.searchByMeta(**args)
-    elif hasParam(NwParams.UserSearch):
+
+    elif hasParam(args, NwParams.UserSearch):
         args.update({
             'meta': NwQueryMetaMappingConfig['USER'],
-            'values': re.split(r'(?<!\\),', getParam(NwParams.UserSearch)),
+            'values': re.split(r'(?<!\\),', getParam(args, NwParams.UserSearch)),
         })
         c1_results = client.searchByMeta(**args)
-    elif hasParam(NwParams.HostSearch):
+
+    elif hasParam(args, NwParams.HostSearch):
         args.update({
             'meta': NwQueryMetaMappingConfig['HOST'],
-            'values': re.split(r'(?<!\\),', getParam(NwParams.HostSearch)),
+            'values': re.split(r'(?<!\\),', getParam(args, NwParams.HostSearch)),
         })
         c1_results = client.searchByMeta(**args)
-    elif hasParam(NwParams.DomainSearch):
+
+    elif hasParam(args, NwParams.DomainSearch):
         args.update({
             'meta': NwQueryMetaMappingConfig['DOMAIN'],
-            'values': re.split(r'(?<!\\),', getParam(NwParams.DomainSearch)),
+            'values': re.split(r'(?<!\\),', getParam(args, NwParams.DomainSearch)),
         })
         c1_results = client.searchByMeta(**args)
-    elif hasParam(NwParams.Where):
+
+    elif hasParam(args, NwParams.Where):
         c1_results = client.searchByNwQueryAndTime(**args)
-    elif hasParam(NwParams.MSearch):
+
+    elif hasParam(args, NwParams.MSearch):
         c1_results = client.mSearchEventsByNwQueryAndTime(**args)
-    elif hasParam(NwParams.Meta) and hasParam(NwParams.Values):
-        if hasParam(NwParams.MSearch):
+
+    elif hasParam(args, NwParams.Meta) and hasParam(args, NwParams.Values):
+        if hasParam(args, NwParams.MSearch):
             c1_results = client.mSearchEventsByMeta(**args)
         else:
             c1_results = client.searchByMeta(**args)
+
     else:
         c1_results = client.searchByNwQueryAndTime(**args)
 
     # Show results
     if c1_results is not None:
-        _response = c1_results.asSDKQueryResponse()
-        demisto.results([
-            {'ContentsFormat': formats['text'], 'Type': entryTypes['note'],
-                'Contents': "Total Number Of Sessions Fetched : " + str(len(c1_results.asSDKQueryResponse()))},
-            {'ContentsFormat': formats['json'], 'Type': entryTypes['note'],
-                'Contents': _response, 'EntryContext': {'NetwitnessSessions': _response}}
-        ])
-    else:
-        demisto.results("No Data Returned from the Query")
+        response = c1_results.asSDKQueryResponse()
+        results = []
+        for record in response.values():
+            processed_record = {}
+            for key, value in record.items():
+                new_key = key.replace('.', '_')
+                processed_record[new_key] = value
 
-    sys.exit(0)
+            results.append(processed_record)
+
+        return CommandResults(
+            readable_output=tableToMarkdown(
+                f'Sessions\nTotal Number Of Sessions Fetched : {len(c1_results.asSDKQueryResponse())}',
+                results,
+                headers=['sessionid', 'time', 'event_source', 'event_desc'],
+                headerTransform=string_to_table_header,
+            ),
+            outputs=results,
+            outputs_prefix='NetwitnessSessions',
+            outputs_key_field='sessionid',
+            raw_response=response,
+        )
+    else:
+        return "No Data Returned from the Query"
+
 
 # #
 # #=====================================================================================================================
 # # PRINT SUMMARY OF THE CORE SERVICE AS PROVIDED BY THE SDK SUMMARY CALL
 # #=====================================================================================================================
-def nw_events_info_command(client, args):
-    # Rows of Summary Table
-    c2_summary = list()
-
+def nw_events_info_command(client: NwCoreClient, args):
     # Get information
     c2_sid = client.getSessionIdRange()
     c2_mid = client.getMetaIdRange()
     c2_time = client.getTimeRange()
     c2_meta = client.getMetaInformation()
 
-    # Add Session Ids
-    c2_summary.append(["Range of Session Ids", c2_sid[0], c2_sid[1]])
+    c2_summary = [
+        # Add Session Ids
+        {
+            'Range': 'Range of Session Ids',
+            'Start Range': c2_sid[0],
+            'End Range': c2_sid[1],
+        },
+        # Add Meta Ids
+        {
+            'Range': 'Range of Meta Ids',
+            'Start Range': c2_mid[0],
+            'End Range': c2_mid[1],
+        },
+        # Add Time Range in Epoch
+        {
+            'Range': 'Range of Time (Epoch)',
+            'Start Range': c2_time[0],
+            'End Range': c2_time[1],
+        },
+        # Add Time Range Human Readable
+        {
+            'Range': 'Range of Time (GMT)',
+            'Start Range': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(c2_time[0])),
+            'End Range': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(c2_time[1])),
+        },
+    ]
 
-    # Add Meta Ids
-    c2_summary.append(["Range of Meta Ids", c2_mid[0], c2_mid[1]])
-
-    # Add Time Range in Epoch
-    c2_summary.append(["Range of Time (Epoch)", c2_time[0], c2_time[1]])
-
-    # Add Time Range Human Readable
-    c2_summary.append(["Range of Time (GMT)", time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(c2_time[0])),
-                       time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(c2_time[1]))])
-
-    indexed_meta = list()
-    indexed_key_meta = list()
-    unindexed_meta = list()
-    for _m in c2_meta:
-        _meta = c2_meta[_m]
+    indexed_meta = []
+    indexed_key_meta = []
+    unindexed_meta = []
+    for _m, _meta in c2_meta.items():
         if _meta.getIndexLevel() == NwIndexLevel.INDEX_VALUE:
             indexed_meta.append(_m)
         elif _meta.getIndexLevel() == NwIndexLevel.INDEX_KEY or _meta.getIndexLevel() == NwIndexLevel.INDEX_KEY_FILTER:
-            indexed_meta.append(_m)
+            indexed_key_meta.append(_m)
         else:
-            indexed_meta.append(_m)
+            unindexed_meta.append(_m)
 
     # Sort
     indexed_meta.sort()
@@ -2331,23 +2124,38 @@ def nw_events_info_command(client, args):
     unindexed_meta.sort()
 
     # JSON
-    _json = dict()
-    _json['INDEX_NONE'] = unindexed_meta
-    _json['INDEX_VALUE'] = indexed_meta
-    _json['INDEX_KEY'] = indexed_key_meta
+    json_ = {
+        'INDEX_NONE': unindexed_meta,
+        'INDEX_VALUE': indexed_meta,
+        'INDEX_KEY': indexed_key_meta,
+    }
 
     # Add Meta Information
-    c2_summary.append(["Meta Indexed By Values", "These Meta are Fastest to Search", len(indexed_meta)])
-    c2_summary.append(["Meta Indexed By Keys", "These Meta are Faster to Search", len(indexed_key_meta)])
-    c2_summary.append(["Meta Not Indexed", "These Meta are Slow to Search", len(unindexed_meta)])
+    performance_summary = [
+        {
+            'Range type': 'Meta Indexed By Values',
+            'Description': 'These Meta are Fastest to Search',
+            'Count': len(indexed_meta),
+        },
+        {
+            'Range type': 'Meta Indexed By Keys',
+            'Description': 'These Meta are Faster to Search',
+            'Count': len(indexed_key_meta),
+        },
+        {
+            'Range type': 'Meta Not Indexed',
+            'Description': 'These Meta are Slow to Search',
+            'Count': len(unindexed_meta),
+        },
+    ]
 
     # Show results
-    demisto.results([
+    return [
         {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': c2_summary},
-        {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': _json}
-    ])
+        {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': performance_summary},
+        {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': json_},
+    ]
 
-    sys.exit(0)
 
 # #
 # #=====================================================================================================================
@@ -2355,45 +2163,40 @@ def nw_events_info_command(client, args):
 # # This API will look up for the Top Values for any Meta under specific criteria and time range
 # #=====================================================================================================================
 def nw_events_values_command(client, args):
-
-    # Rows of Summary Table
-    c3_summary = list()
-
-    if hasParam(NwParams.IpSearch):
+    if hasParam(args, NwParams.IpSearch):
         args.update({
             'meta': NwQueryMetaMappingConfig['IP'],
-            'values': re.split(r'(?<!\\),', getParam(NwParams.IpSearch)),
+            'values': re.split(r'(?<!\\),', getParam(args, NwParams.IpSearch)),
         })
         c3_results = client.topValuesByMeta(**args)
-    elif hasParam(NwParams.UserSearch):
+    elif hasParam(args, NwParams.UserSearch):
         args.update({
             'meta': NwQueryMetaMappingConfig['USER'],
-            'values': re.split(r'(?<!\\),', getParam(NwParams.UserSearch)),
+            'values': re.split(r'(?<!\\),', getParam(args, NwParams.UserSearch)),
         })
         c3_results = client.topValuesByMeta(**args)
-    elif hasParam(NwParams.HostSearch):
+    elif hasParam(args, NwParams.HostSearch):
         args.update({
             'meta': NwQueryMetaMappingConfig['HOST'],
-            'values': re.split(r'(?<!\\),', getParam(NwParams.HostSearch)),
+            'values': re.split(r'(?<!\\),', getParam(args, NwParams.HostSearch)),
         })
         c3_results = client.topValuesByMeta(**args)
-    elif hasParam(NwParams.DomainSearch):
+    elif hasParam(args, NwParams.DomainSearch):
         args.update({
             'meta': NwQueryMetaMappingConfig['DOMAIN'],
-            'values': re.split(r'(?<!\\),', getParam(NwParams.DomainSearch)),
+            'values': re.split(r'(?<!\\),', getParam(args, NwParams.DomainSearch)),
         })
         c3_results = client.topValuesByMeta(**args)
-    elif hasParam(NwParams.Where):
+    elif hasParam(args, NwParams.Where):
         c3_results = client.topValuesByNwQueryAndTime(**args)
     else:
         c3_results = client.topValuesByNwQueryAndTime(**args)
 
     for p in c3_results:
-        demisto.log("Total Number Of Unique Values Fetched for Key [ " + p + " ] is " + str(len(c3_results[p])))
+        demisto.log(r'Total Number Of Unique Values Fetched for Key [{p}] is {len(c3_results[p])}')
 
     # Show results
-    demisto.results({'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': c3_results})
-    sys.exit(0)
+    return {'ContentsFormat': formats['json'], 'Type': entryTypes['note'], 'Contents': c3_results}
 
 
 # #
@@ -2403,12 +2206,10 @@ def nw_events_values_command(client, args):
 # #=====================================================================================================================
 def nw_events_details_command(client, args):
 
-    if hasParam(NwParams.SessionIds):
+    if hasParam(args, NwParams.SessionIds):
         c4_results = client.renderSessions(**args)
-
     else:
-        demisto.log('Need at least one SessionId to execute this command')
-        sys.exit(0)
+        return 'Need at least one SessionId to execute this command.'
 
     # Create zip file!
     _zip_bytes = io.BytesIO(bytearray())
@@ -2418,29 +2219,29 @@ def nw_events_details_command(client, args):
     _zip_dir = tempfile.mkdtemp()
 
     # Files Written already!
-    _zipInfo = list()
+    _zipInfo = []
 
     for _r in c4_results:
 
         # Get RAW Content
         _b_data = c4_results[_r]
-        putFileOnWarRoom = (getParam(NwParams.ExtractFileToWarRoom) == 'True')
+        # putFileOnWarRoom = (getParam(args, NwParams.ExtractFileToWarRoom) == 'True')
 
         if isinstance(_b_data, Exception):
 
             # See if it is an Exception
-            demisto.log("Error occurred while fetching the content for Session [ " + _r + " ] " + _b_data.message)
+            demisto.log(f'Error occurred while fetching the content for Session [ {_r} ] {_b_data}')
 
         else:
 
             # Check the Render Option Taken
-            if getParam(NwParams.DetailType) in ['RAW', 'CSV', 'XML', 'TXT']:
+            if getParam(args, NwParams.DetailType) in ['RAW', 'CSV', 'XML', 'TXT']:
 
                 demisto.log("Collected RAW Bytes for Session [ " + _r + " ] of length : " + str(len(_b_data)))
-                _fn = 'nw-content-' + _r + '.' + getParam(NwParams.DetailType).lower()
-                demisto.results(fileResult(_fn, _b_data))
+                _fn = 'nw-content-' + _r + '.' + getParam(args, NwParams.DetailType).lower()
+                return_results(fileResult(_fn, _b_data))
 
-            elif ('FILE' == getParam(NwParams.DetailType)):
+            elif ('FILE' == getParam(args, NwParams.DetailType)):
 
                 # Read file information
                 nwiob = NwIoBufferWrapper()
@@ -2496,18 +2297,18 @@ def nw_events_details_command(client, args):
                             # Add to Zip!
                             _zip_file.write(_fn, _filename)
 
-                    demisto.log("Collected Files for Session [ " + _r + " ] with Count " + str(nwcfr.filecount))
-                    demisto.results(file_results)
-                except Exception as _ex:
-                    demisto.log("Error occurred while parsing file data for Session [ " + _r + " ] " + _ex.message)
+                    return [
+                        f'Collected Files for Session [{_r}] with Count {nwcfr.filecount}',
+                        file_results,
+                    ]
+                except Exception as exc:
+                    demisto.log(f'Error occurred while parsing file data for Session [{_r}] {exc}')
 
             else:
-                demisto.log("Render Option Not Supported for Session [ " + _r + " ] " + getParam(NwParams.DetailType))
+                demisto.log("Render Option Not Supported for Session [ " + _r + " ] " + getParam(args, NwParams.DetailType))
 
     if 'ZIP' in args['exportType']:
         demisto.results(fileResult(data=_zip_bytes.getvalue(), filename='data.zip'))
-
-    sys.exit(0)
 
 
 def main():
@@ -2535,27 +2336,29 @@ def main():
 
         # # Create client instances
         client = NwCoreClient(
-            params['hostname'],
+            params.get('hostname'),
             params.get('port'),
-            params.get('ssl'),
-            params.get('secure'),
             params.get('credentials', {}).get('identifier'),
             params.get('credentials', {}).get('password'),
+            handle_proxy(),
+            params.get('ssl'),
+            params.get('secure'),
         )
+        # Attempt Login
+        client.doLogin()
         processed_args = process_args(client, args)
 
         # Enable System Proxy
         # client.enableProxy()
 
-        # Attempt Login
-        client.doLogin()
+        demisto.info(f'\n\ndates:\n{client.getTimeRange()}\n\n')
 
         if command in commands:
             command_func = commands[command]
             return_results(command_func(client, processed_args))
 
-    except Exception as ex:
-        return_error("Test Result Failed with Exception:\n" + str(ex))
+    except Exception as exc:
+        return_error(f'Failed to run the {command} command. Error:\n{exc}', error=traceback.format_exc())
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
