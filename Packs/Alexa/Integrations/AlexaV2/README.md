@@ -1,6 +1,12 @@
 Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence. V2
 This integration was integrated and tested with Alexa Rank Indicator V2
 
+##### New: Alexa Rank Indicator v2
+- Using the Alexa API rank.
+- Domains which are not in Alexa DB, are considered "Unknown" instead of "Suspicious".
+- If the domain doesn't exist there is an error.
+- Default values changed: 1000 for ```Top Domain Threshold``` and unspecified for ```Suspicous Domain Threshold```
+
 ## Configure Alexa Rank Indicator V2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
