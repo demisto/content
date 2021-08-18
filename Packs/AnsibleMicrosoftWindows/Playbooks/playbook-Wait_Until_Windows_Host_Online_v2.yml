@@ -2,14 +2,14 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-id: Wait Until Windows Host Online
+id: Wait Until Windows Host Online v2
 inputs:
 - description: ""
   key: host
   playbookInputQuery:
   required: true
   value: {}
-name: Wait Until Windows Host Online
+name: Wait Until Windows Host Online v2
 outputs: []
 starttaskid: "0"
 tasks:

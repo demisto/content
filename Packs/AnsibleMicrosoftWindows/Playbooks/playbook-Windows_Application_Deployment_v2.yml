@@ -2,9 +2,9 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-id: Windows Application Deployment
+id: Windows Application Deployment v2
 inputs: []
-name: Windows Application Deployment
+name: Windows Application Deployment v2
 outputs: []
 starttaskid: "0"
 tasks:
