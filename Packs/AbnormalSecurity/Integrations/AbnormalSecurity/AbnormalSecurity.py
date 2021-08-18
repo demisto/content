@@ -235,7 +235,7 @@ def get_a_list_of_campaigns_submitted_to_abuse_mailbox_command(client, args):
 
     command_results = CommandResults(
         readable_output=markdown,
-        outputs_prefix='AbnormalSecurity.AbuseCampaigns',
+        outputs_prefix='AbnormalSecurity.AbuseCampaign',
         outputs_key_field='campaignId',
         outputs=response,
         raw_response=response
@@ -328,8 +328,8 @@ def get_details_of_an_abuse_mailbox_campaign_command(client, args):
 
     response = client.get_details_of_an_abuse_mailbox_campaign_request(campaign_id, subtenant)
     command_results = CommandResults(
-        outputs_prefix='AbnormalSecurity.AbuseCampaign',
-        outputs_key_field='',
+        outputs_prefix='AbnormalSecurity.AbuseCampaign.campaigns',
+        outputs_key_field='campaignId',
         outputs=response,
         raw_response=response
     )
@@ -498,6 +498,7 @@ def main():
     mock_data = str(args.get('mock-data', ''))
     if mock_data.lower() == "true":
         headers['Mock-Data'] = "True"
+    headers['Mock-Data'] = "True"
     headers['Authorization'] = f'Bearer {params["api_key"]}'
     headers['Soar-Integration-Origin'] = "Cortex XSOAR"
     command = demisto.command()

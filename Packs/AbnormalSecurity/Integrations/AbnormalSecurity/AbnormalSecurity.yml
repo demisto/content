@@ -138,13 +138,13 @@ script:
     description: Get a list of campaigns submitted to Abuse Mailbox
     name: abnormal-security-list-abuse-mailbox-campaigns
     outputs:
-      - contextPath: AbnormalSecurity.AbuseCampaigns.campaigns.campaignId
+      - contextPath: AbnormalSecurity.AbuseCampaign.campaigns.campaignId
         description: An id which maps to an abuse campaign.
         type: String
-      - contextPath: AbnormalSecurity.AbuseCampaigns.pageNumber
+      - contextPath: AbnormalSecurity.AbuseCampaign.pageNumber
         description: The current page number.
         type: Number
-      - contextPath: AbnormalSecurity.AbuseCampaigns.nextPageNumber
+      - contextPath: AbnormalSecurity.AbuseCampaign.nextPageNumber
         description: The next page number.
         type: Number
   - arguments:

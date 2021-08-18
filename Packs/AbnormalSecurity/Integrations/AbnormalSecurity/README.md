@@ -144,7 +144,7 @@ There is no context output for this command.
 ```json
 {
     "File": {
-        "EntryID": "1996@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
+        "EntryID": "2214@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
         "Extension": "csv",
         "Info": "csv",
         "MD5": "a981545ee72fe115888800725883ca8a",
@@ -158,9 +158,6 @@ There is no context output for this command.
     }
 }
 ```
-
-#### Human Readable Output
-
 
 
 ### abnormal-security-list-abuse-mailbox-campaigns
@@ -186,9 +183,9 @@ Get a list of campaigns submitted to Abuse Mailbox
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.AbuseCampaigns.campaigns.campaignId | String | An id which maps to an abuse campaign. | 
-| AbnormalSecurity.AbuseCampaigns.pageNumber | Number | The current page number. | 
-| AbnormalSecurity.AbuseCampaigns.nextPageNumber | Number | The next page number. | 
+| AbnormalSecurity.AbuseCampaign.campaigns.campaignId | String | An id which maps to an abuse campaign. | 
+| AbnormalSecurity.AbuseCampaign.pageNumber | Number | The current page number. | 
+| AbnormalSecurity.AbuseCampaign.nextPageNumber | Number | The next page number. | 
 
 
 #### Command Example
@@ -198,7 +195,7 @@ Get a list of campaigns submitted to Abuse Mailbox
 ```json
 {
     "AbnormalSecurity": {
-        "AbuseCampaigns": {
+        "AbuseCampaign": {
             "campaigns": [
                 {
                     "campaignId": "fff51768-c446-34e1-97a8-9802c29c3ebd"
@@ -555,18 +552,20 @@ Get details of an Abuse Mailbox campaign
 {
     "AbnormalSecurity": {
         "AbuseCampaign": {
-            "attackType": "Attack Type: Spam",
-            "campaignId": "fff51768-c446-34e1-97a8-9802c29c3ebd",
-            "firstReported": "2020-11-11T13:11:40-08:00",
-            "fromAddress": "example@example.com",
-            "fromName": "Tom Dinkley",
-            "judgementStatus": "Malicious",
-            "lastReported": "2020-11-11T13:11:40-08:00",
-            "messageId": "12345678910",
-            "overallStatus": "Move attempted",
-            "recipientAddress": "example_phisher@example.com",
-            "recipientName": "Booker",
-            "subject": "Fwd: This is spam"
+            "campaigns": {
+                "attackType": "Attack Type: Spam",
+                "campaignId": "fff51768-c446-34e1-97a8-9802c29c3ebd",
+                "firstReported": "2020-11-11T13:11:40-08:00",
+                "fromAddress": "example@example.com",
+                "fromName": "Tom Dinkley",
+                "judgementStatus": "Malicious",
+                "lastReported": "2020-11-11T13:11:40-08:00",
+                "messageId": "12345678910",
+                "overallStatus": "Move attempted",
+                "recipientAddress": "example_phisher@example.com",
+                "recipientName": "Booker",
+                "subject": "Fwd: This is spam"
+            }
         }
     }
 }
@@ -736,7 +735,7 @@ There is no context output for this command.
 ```json
 {
     "File": {
-        "EntryID": "2040@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
+        "EntryID": "2258@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
         "Extension": "csv",
         "Info": "csv",
         "MD5": "11afb4879c5026e25bd868dfcf23e811",
@@ -750,9 +749,6 @@ There is no context output for this command.
     }
 }
 ```
-
-#### Human Readable Output
-
 
 
 ### abnormal-security-get-latest-threat-intel-feed
@@ -781,24 +777,20 @@ There is no context output for this command.
 ```json
 {
     "File": {
-        "EntryID": "2016@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
+        "EntryID": "2234@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
         "Extension": "json",
         "Info": "application/json",
-        "MD5": "5923d3a6038c4964b97e43da01818015",
+        "MD5": "a00e919efc9e28f77b8f7b7523b1ffe8",
         "Name": "threat_intel_feed.json",
-        "SHA1": "12a18bc38e8409ec26394208193c3dc209452f15",
-        "SHA256": "3abce87474cdeadb243cdad24fef4052ac14f47cb245e77440a5ea53f5ffd401",
-        "SHA512": "f34f35bd5f30202931b21d2c9d3fecbc952ee76bc34827b02f6605b8af2502d6d86c8abf9cbee0594d0a36090bc6c89b481349ccb6e044408861c94d152cbb05",
-        "SSDeep": "49152:Whn3qgbXiYjgKDo1dKApGCZ7SE5/9oNGFCwzIiyzE86yjl7kOwuBT9/66HaG:I",
-        "Size": 8023286,
+        "SHA1": "53bf3e6075f407b53c95d5dd2197b9be0dfa5ced",
+        "SHA256": "f842e7f6795fba081f2046617fce662c050b5a3c64cac9501f23fa7576788429",
+        "SHA512": "27af66eefb1ed7227b4f8ec1c663ac8ef47660bb34ffd1d5853a7a58e25caec68615c2e66bfbd66577749faa889894e792f53cab70a826818b4d627ad02bbb04",
+        "SSDeep": "49152:dY0GiMq58ZVhOH+sZwFp+h/s0pH6VRRxIGFe7V3dCLtJ/W7H8nsIdL0E:u",
+        "Size": 8007799,
         "Type": "ASCII text"
     }
 }
 ```
-
-#### Human Readable Output
-
-
 
 ### abnormal-security-manage-threat
 ***
