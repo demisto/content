@@ -22,8 +22,8 @@ class Client(BaseClient):
                  proxy: bool,
                  verify: bool,
                  reliability: str,
-                 top_domain_threshold: Optional[int],
-                 suspicious_domain_threshold: int):
+                 top_domain_threshold: int,
+                 suspicious_domain_threshold: Optional[int]):
         super().__init__(base_url=base_url,
                          verify=verify,
                          proxy=proxy)
