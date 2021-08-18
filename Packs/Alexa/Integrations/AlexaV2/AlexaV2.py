@@ -161,7 +161,7 @@ def main() -> None:
                                              arg_name='top_domain_threshold')
         if (suspicious_domain_threshold and suspicious_domain_threshold < 0)\
                 or top_domain_threshold < 0:  # type: ignore
-            raise DemistoException(f'All threshold values should be greater than 0.'
+            raise DemistoException(f'AlexaV2 error: All threshold values should be greater than 0.'
                                    f'Suspicious domain threshold is {suspicious_domain_threshold}. '
                                    f'Top domain threshold is {top_domain_threshold}.')
         client = Client(
