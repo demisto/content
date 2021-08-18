@@ -30,7 +30,7 @@ name: AnsibleCiscoNXOS
 script:
   commands:
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -80,7 +80,7 @@ script:
       description: command sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -141,7 +141,7 @@ script:
       description: check to see if a change was made on the device
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -297,7 +297,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -334,7 +334,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -368,7 +368,7 @@ script:
       description: The list of configuration mode commands to send to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -419,7 +419,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -451,7 +451,7 @@ script:
       description: The set of commands pushed to the remote device.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -598,7 +598,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -734,7 +734,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -846,7 +846,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1002,7 +1002,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1054,7 +1054,7 @@ script:
       description: The list of conditionals that have failed
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1218,7 +1218,7 @@ script:
       description: The time extracted from the backup file name
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1235,7 +1235,7 @@ script:
       description: The set of commands to be sent to the remote device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1270,7 +1270,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1376,7 +1376,7 @@ script:
       description: The list of VLAN IDs configured on the remote device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1400,7 +1400,7 @@ script:
       description: The set of commands to be sent to the remote device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1465,7 +1465,7 @@ script:
       description: check to see if a change was made on the device
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1507,7 +1507,7 @@ script:
       description: check to see if a change was made on the device
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1563,7 +1563,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1592,7 +1592,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1699,7 +1699,7 @@ script:
       description: check to see if a change was made on the device
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1731,7 +1731,7 @@ script:
       description: command sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1764,7 +1764,7 @@ script:
       description: Boot and install information.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1848,7 +1848,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1880,7 +1880,7 @@ script:
       description: The set of commands pushed to the remote device.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1912,7 +1912,7 @@ script:
       description: The set of commands pushed to the remote device.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1944,7 +1944,7 @@ script:
       description: The set of commands pushed to the remote device.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1975,7 +1975,7 @@ script:
       description: The set of commands pushed to the remote device.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2007,7 +2007,7 @@ script:
       description: The set of commands pushed to the remote device.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2039,7 +2039,7 @@ script:
       description: The set of commands pushed to the remote device.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2061,7 +2061,7 @@ script:
       description: The list of configuration mode commands to send to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2092,7 +2092,7 @@ script:
       description: The set of commands pushed to the remote device.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2180,7 +2180,7 @@ script:
       description: The list of configuration mode commands to send to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2236,7 +2236,7 @@ script:
       description: check to see if a change was made on the device
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2283,7 +2283,7 @@ script:
       description: command sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2310,7 +2310,7 @@ script:
       description: command sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2412,7 +2412,7 @@ script:
         device to satisfy the arguments
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2436,7 +2436,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2510,7 +2510,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2527,7 +2527,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2554,7 +2554,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2631,7 +2631,7 @@ script:
       description: command sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2668,7 +2668,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2711,7 +2711,7 @@ script:
       description: Percentage of packets lost
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2731,7 +2731,7 @@ script:
       description: Whether the device was instructed to reboot.
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2753,7 +2753,7 @@ script:
       description: Which operation took place and whether it was successful.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2784,7 +2784,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2804,7 +2804,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2868,7 +2868,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2902,7 +2902,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2927,7 +2927,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2991,7 +2991,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3015,7 +3015,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3070,7 +3070,7 @@ script:
       description: command sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3113,7 +3113,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3157,7 +3157,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3205,7 +3205,7 @@ script:
       description: The list of configuration mode commands to send to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3236,7 +3236,7 @@ script:
       description: The set of commands pushed to the remote device.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3282,7 +3282,7 @@ script:
       description: check to see if a change was made on the device
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3326,7 +3326,7 @@ script:
       description: check to see if a change was made on the device
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3395,7 +3395,7 @@ script:
       description: The time elapsed to perform all operations
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3427,7 +3427,7 @@ script:
       description: The set of commands pushed to the remote device.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3482,7 +3482,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3511,7 +3511,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3568,7 +3568,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3601,7 +3601,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3628,7 +3628,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3676,7 +3676,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3705,7 +3705,7 @@ script:
       description: check to see if a change was made on the device
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3740,7 +3740,7 @@ script:
       description: check to see if a change was made on the device
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3773,7 +3773,7 @@ script:
       description: check to see if a change was made on the device
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3821,7 +3821,7 @@ script:
       description: commands sent to the device
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true

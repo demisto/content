@@ -62,7 +62,7 @@ name: AnsibleACME
 script:
   commands:
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -181,7 +181,7 @@ script:
       description: ACME account URI, or None if account does not exist.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -280,7 +280,7 @@ script:
         of objects.'
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -492,7 +492,7 @@ script:
         for details.'
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -591,7 +591,7 @@ script:
     name: acme-certificate-revoke
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -639,7 +639,7 @@ script:
         is needed for providing the challenge.'
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true

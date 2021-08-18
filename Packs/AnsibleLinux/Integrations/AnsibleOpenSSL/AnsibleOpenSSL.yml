@@ -63,7 +63,7 @@ name: AnsibleOpenSSL
 script:
   commands:
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -513,7 +513,7 @@ script:
       description: Name of backup file created.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -653,7 +653,7 @@ script:
         `none` if no OCSP responder URI is included.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -914,7 +914,7 @@ script:
       description: Name of backup file created.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1015,7 +1015,7 @@ script:
         extension is not present.'
       type: number
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1117,7 +1117,7 @@ script:
       description: Name of backup file created.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1246,7 +1246,7 @@ script:
       description: Name of backup file created.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1422,7 +1422,7 @@ script:
       description: Name of backup file created.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1489,7 +1489,7 @@ script:
       description: Private key data. Depends on key type.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1621,7 +1621,7 @@ script:
       description: Name of backup file created.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1664,7 +1664,7 @@ script:
         Returned as a list of PEM certificates.'
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true

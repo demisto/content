@@ -30,7 +30,7 @@ name: AnsibleMicrosoftWindows
 script:
   commands:
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -46,7 +46,7 @@ script:
     name: win-gather-facts
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -104,7 +104,7 @@ script:
     name: win-acl
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -135,7 +135,7 @@ script:
     name: win-acl-inheritance
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -168,7 +168,7 @@ script:
       description: details on the policy being targetted
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -242,7 +242,7 @@ script:
         registry.'
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -348,7 +348,7 @@ script:
       description: A list of certificate thumbprints that were touched by the module.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -522,7 +522,7 @@ script:
         messages are affected by Ansible verbosity setting, see notes for more details.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -551,7 +551,7 @@ script:
     name: win-chocolatey-config
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -565,7 +565,7 @@ script:
       description: Detailed information about the Chocolatey installation
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -588,7 +588,7 @@ script:
     name: win-chocolatey-feature
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -649,7 +649,7 @@ script:
     name: win-chocolatey-source
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -745,7 +745,7 @@ script:
       description: Basename of the copied file.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -838,7 +838,7 @@ script:
     name: win-credential
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -896,7 +896,7 @@ script:
       description: Whether or not any changes were made.
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -911,7 +911,7 @@ script:
         of the target.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -941,7 +941,7 @@ script:
       description: A list of filesystem paths mounted from the target image.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -964,7 +964,7 @@ script:
     name: win-dns-client
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1011,7 +1011,7 @@ script:
     name: win-dns-record
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1074,7 +1074,7 @@ script:
       description: True if changes were made that require a reboot.
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1136,7 +1136,7 @@ script:
     name: win-domain-computer
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1191,7 +1191,7 @@ script:
       description: True if changes were made that require a reboot.
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1312,7 +1312,7 @@ script:
       description: Whether a group was created
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1368,7 +1368,7 @@ script:
         if the group contains no members.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1406,7 +1406,7 @@ script:
       description: True if changes were made that require a reboot.
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1605,7 +1605,7 @@ script:
       description: Whether a user was created
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1644,7 +1644,7 @@ script:
         command.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1696,7 +1696,7 @@ script:
       description: The verbose output as a list from executing the DSC Set method.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1740,7 +1740,7 @@ script:
         removed
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1821,7 +1821,7 @@ script:
         this is empty if no sources are changed.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1860,7 +1860,7 @@ script:
     name: win-eventlog-entry
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1914,7 +1914,7 @@ script:
         (no further updates can be installed until after a reboot).
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1942,7 +1942,7 @@ script:
     name: win-file
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -1977,7 +1977,7 @@ script:
       description: file private part number.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2086,7 +2086,7 @@ script:
         by the path value alphabetically.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2122,7 +2122,7 @@ script:
       description: Desired state of the given firewall profile(s).
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2192,7 +2192,7 @@ script:
     name: win-firewall-rule
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2239,7 +2239,7 @@ script:
     name: win-format
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2421,7 +2421,7 @@ script:
       description: HTTP status code
       type: number
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2444,7 +2444,7 @@ script:
     name: win-group
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2491,7 +2491,7 @@ script:
         if the group contains no members.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2511,7 +2511,7 @@ script:
       description: Whether a reboot is required to complete the hostname change.
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2554,7 +2554,7 @@ script:
     name: win-hosts
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2598,7 +2598,7 @@ script:
       description: Whether a reboot is required for the install or uninstall to finalise.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2636,7 +2636,7 @@ script:
     name: win-http-proxy
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2667,7 +2667,7 @@ script:
     name: win-iis-virtualdirectory
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2702,7 +2702,7 @@ script:
       description: The used/implemented physical_path value.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2751,7 +2751,7 @@ script:
         for the full list of return attributes based on your IIS version.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2809,7 +2809,7 @@ script:
       description: Information on the binding being manipulated
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2849,7 +2849,7 @@ script:
     name: win-iis-website
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -2897,7 +2897,7 @@ script:
     name: win-inet-proxy
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3015,7 +3015,7 @@ script:
       description: Name of the backup file that was created.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3059,7 +3059,7 @@ script:
     name: win-mapped-drive
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3105,7 +3105,7 @@ script:
       description: Value of wait module parameter.
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3134,7 +3134,7 @@ script:
       description: Boolean value stating whether a system reboot is required.
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3210,7 +3210,7 @@ script:
     name: win-nssm
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3247,7 +3247,7 @@ script:
       description: True when the target server requires a reboot to complete updates
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3270,7 +3270,7 @@ script:
     name: win-owner
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3375,7 +3375,7 @@ script:
       description: The stderr stream of the package process.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3438,7 +3438,7 @@ script:
         for each pagefile in the system.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3511,7 +3511,7 @@ script:
     name: win-partition
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3554,7 +3554,7 @@ script:
     name: win-path
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3586,7 +3586,7 @@ script:
       description: Results of the Pester tests.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3604,7 +3604,7 @@ script:
       description: Value provided with the data parameter.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3629,7 +3629,7 @@ script:
       description: The name and enabled state of all power plans.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3644,7 +3644,7 @@ script:
         product and license.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3763,7 +3763,7 @@ script:
       description: The error output from the command.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3834,7 +3834,7 @@ script:
       description: True when a custom repository is installed or removed.
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3867,7 +3867,7 @@ script:
     name: win-psrepository
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3903,7 +3903,7 @@ script:
       description: List of plugins disabled during task run.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -3980,7 +3980,7 @@ script:
     name: win-rds-cap
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4030,7 +4030,7 @@ script:
     name: win-rds-rap
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4058,7 +4058,7 @@ script:
     name: win-rds-settings
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4106,7 +4106,7 @@ script:
         rebooted.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4149,7 +4149,7 @@ script:
       description: The value of the property.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4217,7 +4217,7 @@ script:
       description: Whether this invocation changed the datatype of the registry value.
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4254,7 +4254,7 @@ script:
       description: Whether a reboot is required for the change to take effect.
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4285,7 +4285,7 @@ script:
         file
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4349,7 +4349,7 @@ script:
       description: Output interpreted into a concise message.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4380,7 +4380,7 @@ script:
       description: A message describing the task result.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4424,7 +4424,7 @@ script:
       description: The voice used to speak the text.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4595,7 +4595,7 @@ script:
     name: win-scheduled-task
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4642,7 +4642,7 @@ script:
       description: A list of triggers.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4690,7 +4690,7 @@ script:
       description: The value passed to the module to modify to.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4817,7 +4817,7 @@ script:
       description: A list of services that depend on this service.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4884,7 +4884,7 @@ script:
       description: A list of action cmdlets that were run by the module.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4941,7 +4941,7 @@ script:
     name: win-shortcut
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -4976,7 +4976,7 @@ script:
       description: The list of permitted managers for this machine.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5024,7 +5024,7 @@ script:
       description: dictionary containing all the stat data
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5056,7 +5056,7 @@ script:
       description: The absolute path to the created file or directory.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5141,7 +5141,7 @@ script:
       description: Name of the backup file that was created.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5162,7 +5162,7 @@ script:
       description: The current timezone (possibly changed).
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5212,7 +5212,7 @@ script:
       description: Whether the module was able to send a toast notification or not.
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5257,7 +5257,7 @@ script:
       description: The provided source path
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5365,7 +5365,7 @@ script:
       description: The number of updates that failed to install.
       type: number
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5535,7 +5535,7 @@ script:
       description: The json structure returned under content as a dictionary.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5639,7 +5639,7 @@ script:
       description: Whether the user can change their own password.
       type: boolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5688,7 +5688,7 @@ script:
         if `state=absent` and no profile was deleted.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5731,7 +5731,7 @@ script:
         if no accounts were removed.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5790,7 +5790,7 @@ script:
         module. This includes the delay if the option is set.
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5852,7 +5852,7 @@ script:
       description: List of matched processes (either stopped or started).
       type: unknown
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5873,7 +5873,7 @@ script:
     name: win-wakeonlan
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5887,7 +5887,7 @@ script:
     name: win-webpicmd
     outputs: []
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
@@ -5951,7 +5951,7 @@ script:
         token.
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
+    - description: Hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
         will use the configured concurrency factor for high performance.
       isArray: true
