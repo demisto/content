@@ -113,7 +113,18 @@ class AADClient(MicrosoftClient):
 
             params['$filter'] = filter_expression
             remove_nulls_from_dictionary(params)
-            # This could raise {"error": {"code": "TooManyRequests", "message": "Too many requests.", "innerError": {"date": "2021-08-18T05:56:15", "request-id": "some-request-id", "client-request-id": "some-client-request-id"}}}
+            # This could raise:
+            #  {
+            #    "error": {
+            #       "code": "TooManyRequests",
+            #       "message": "Too many requests.",
+            #       "innerError": {
+            #         "date": "2021-08-18T05:56:15",
+            #         "request-id": "some-request-id",
+            #         "client-request-id": "some-client-request-id"
+            #       }
+            #    }
+            #  }
             return self.http_request(method='GET', url_suffix=url_suffix, params=params)
 
     def azure_ad_identity_protection_risk_detection_list_raw(self,
@@ -251,7 +262,8 @@ def create_incidents_from_input(input: List[Dict[str, str]], last_fetch_datetime
         current_risk_event_type: str = current_input.get('riskEventType', '')
         current_risk_detail: str = current_input.get('riskDetail', '')
         incident = {
-            'name': f'Azure Active Directory Identity Protection Incident {current_risk_event_type} {current_risk_detail} {current_id}',
+            'name': f'Azure Active Directory Identity Protection Incident'
+                    f' {current_risk_event_type} {current_risk_detail} {current_id}',
             'occurred': activity_date_time,
             'rawJSON': json.dumps(current_input)
         }
@@ -299,7 +311,7 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
                 user_principal_name=params.get('fetch_user_principal_name', ''),
                 country='',
             )
-        except Exception as e:
+        except Exception:
             demisto.error(traceback.format_exc())
             risk_detection_list_raw = {}
 
