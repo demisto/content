@@ -2538,7 +2538,7 @@ class Pack(object):
         Args:
             predecessor_version (LooseVersion): Predecessor version in numeric version order.
             rn_version (LooseVersion): RN version of current processed changelog entry.
-            breaking_changes_versions (List[str]): List of BC versions, of dotted format `x.x.x`.
+            breaking_changes_versions (List[LooseVersion]): List of BC versions.
             bc_version_to_text (Dict[str, Optional[str]): List of all BC to text in the given RN dir.
 
         Returns:
