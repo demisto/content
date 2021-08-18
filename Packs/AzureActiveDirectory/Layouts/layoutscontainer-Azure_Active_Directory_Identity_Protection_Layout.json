@@ -271,9 +271,9 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "alerttype",
+                                "fieldId": "azureactivedirectoryidentityprotectionalerttype",
                                 "height": 53,
-                                "id": "alert-type-field",
+                                "id": "protection-detection-alert-type-field",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -424,8 +424,8 @@
         ]
     },
     "group": "incident",
-    "id": "Azure Active Directory Identity Protection Layout",
-    "name": "Azure Active Directory Identity Protection Layout",
+    "id": "Azure Active Directory Identity and Access Layout",
+    "name": "Azure Active Directory Identity and Access Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

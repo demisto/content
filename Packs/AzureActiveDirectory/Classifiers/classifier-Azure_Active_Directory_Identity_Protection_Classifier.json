@@ -4,7 +4,7 @@
     "feed": false,
     "id": "Azure Active Directory Identity Protection",
     "keyTypeMap": {},
-    "name": "Azure Active Directory Identity Protection Classifier",
+    "name": "Azure Active Directory Identity and AccessClassifier",
     "propagationLabels": [
         "all"
     ],
