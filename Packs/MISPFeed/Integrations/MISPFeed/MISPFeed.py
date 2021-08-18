@@ -177,7 +177,7 @@ class Client(BaseClient):
                                  full_url=self._base_url,
                                  resp_type='text',
                                  json_data=body,
-                                 headers={'Authorization': demisto.params().get('Authorization'),
+                                 headers={'Authorization': demisto.params().get('apikey'),
                                           "Accept": "application/json",
                                           },
                                  )
@@ -247,10 +247,10 @@ def search_attributes_command(client: Client,
     attribute_type = argToList(args.get('type', ''))
     params_dict = build_params_dict(tags, attribute_type)
     indicators = client.search_query(params_dict)
-    # human_readable = tableToMarkdown('Indicators from HelloWorld Feed:', indicators, headers=['value', 'type'],
-    # headerTransform=string_to_table_header, removeNull=True)
+    human_readable = tableToMarkdown('Indicators from HelloWorld Feed:', indicators, headers=['value', 'type'],
+                                     headerTransform= string_to_table_header, removeNull=True)
     return CommandResults(
-        readable_output="",
+        readable_output=human_readable,
         outputs_prefix='Test',
         outputs_key_field='',
         raw_response=indicators,
@@ -283,10 +283,10 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dic
     Returns:
         Indicators.
     """
-    feed_tags = argToList(params.get('feedTags', ''))
-    tlp_color = params.get('tlp_color')
-    indicators = fetch_indicators(client, tlp_color, feed_tags)
-    return indicators
+    # feed_tags = argToList(params.get('feedTags', ''))
+    # tlp_color = params.get('tlp_color')
+    # indicators = fetch_indicators(client, tlp_color, feed_tags)
+    # return indicators
 
 
 def main():
