@@ -4,7 +4,6 @@ import pytest
 import demistomock as demisto
 import dateparser
 from datetime import datetime, timedelta
-from AlienVault_USM_Anywhere import parse_alarms
 
 server_url = 'https://vigilant.alienvault.cloud/api/2.0/alarms?page=0&size=1' \
              '&sort=timestamp_occured%2Casc&timestamp_occured_gte=1547567249000'
@@ -129,5 +128,6 @@ def test_parse_alarms(alarms_raw_data, parsed_alarms):
     Then: Assert they are parsed correctly
 
     """
+    from AlienVault_USM_Anywhere import parse_alarms
     assert parse_alarms(alarms_raw_data) == parsed_alarms
 
