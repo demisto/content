@@ -67,6 +67,8 @@ class Client(BaseClient):
         """
         uri = userUri
 
+        user_data['emails'] = [user_data['emails']]
+
         res = self._http_request(
             method='POST',
             url_suffix=uri,
@@ -115,8 +117,30 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
 
-        user_data = {'active': True}
-        return self.update_user(user_id, user_data)
+        user_data = {
+            "schemas": [
+                "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+            ],
+            "Operations": [
+                {
+                    "op": "replace",
+                    "path": "active",
+                    "value": "true"
+                }
+            ]
+        }
+
+        res = self._http_request(
+            method='PATCH',
+            url_suffix=userUri + user_id,
+            json_data=user_data
+        )
+
+        user_id = res.get('id')
+        is_active = res.get('active')
+        username = res.get('userName')
+
+        return IAMUserAppData(user_id, username, is_active, res)
 
     def disable_user(self, user_id: str) -> 'IAMUserAppData':
         """ Disables a user in the application using REST API.
@@ -128,8 +152,30 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
 
-        user_data = {'active': False}
-        return self.update_user(user_id, user_data)
+        user_data = {
+            "schemas": [
+                "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+            ],
+            "Operations": [
+                {
+                    "op": "replace",
+                    "path": "active",
+                    "value": "false"
+                }
+            ]
+        }
+
+        res = self._http_request(
+            method='PATCH',
+            url_suffix=userUri + user_id,
+            json_data=user_data
+        )
+
+        user_id = res.get('id')
+        is_active = res.get('active')
+        username = res.get('userName')
+
+        return IAMUserAppData(user_id, username, is_active, res)
 
     def get_app_fields(self) -> Dict[str, Any]:
         """ Gets a dictionary of the user schema fields in the application and their description.
