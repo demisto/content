@@ -170,13 +170,13 @@ upload-packs-to-marketplace:
       else
         STORAGE_BASE_PATH="content/packs"
       fi
-      echo $STORAGE_BASE_PATH
       PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
       ZIP_FOLDER=$(mktemp -d)
-      echo "export ZIP_FOLDER=$ZIP_FOLDER" >> $BASH_ENV
-      echo $PACKS_SRC
-      echo $ZIP_FOLDER
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
+      echo "successfully activated google cloud service account"
       gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
+      echo "successfully downloaded index.zip"
+      gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
     - section_end "Download packs from GCP"
     - section_start "Zip Content Packs From GCS"
     - |
