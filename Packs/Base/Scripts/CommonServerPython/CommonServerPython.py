@@ -2542,7 +2542,7 @@ class Common(object):
 
             return ret_value
 
-        def to_readable(self) -> Optional[str]:
+        def to_readable(self):
             dbot_score_to_text = {0: 'Unknown',
                                   1: 'Good',
                                   2: 'Suspicious',
