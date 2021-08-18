@@ -291,7 +291,7 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
     while do_fetch_call:
         try:
             risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(
-                limit=int(params.get('fetch_limit', '50')),
+                limit=int(params.get('max_fetch', '50')),
                 filter_expression=filter_expression,
                 next_link=next_link,
                 user_id=params.get('fetch_user_id', ''),
