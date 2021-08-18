@@ -1,10 +1,10 @@
 {
-    "id": "Azure Active Directory Identity Protection",
+    "id": "Azure Active Directory Identity and Access",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Azure Active Directory Identity Protection",
-    "prevName": "Azure Active Directory Identity Protection",
+    "name": "Azure Active Directory Identity and Access",
+    "prevName": "Azure Active Directory Identity and Access",
     "color": "#4B897A",
     "hours": 0,
     "days": 0,

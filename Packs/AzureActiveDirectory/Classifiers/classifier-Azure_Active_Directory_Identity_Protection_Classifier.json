@@ -1,10 +1,10 @@
 {
-    "defaultIncidentType": "Azure Active Directory Identity Protection",
+    "defaultIncidentType": "Azure Active Directory Identity and Access",
     "description": "Classifies Azure Active Directory Identity Protection's alerts",
     "feed": false,
-    "id": "Azure Active Directory Identity Protection",
+    "id": "Azure Active Directory Identity and Access",
     "keyTypeMap": {},
-    "name": "Azure Active Directory Identity and AccessClassifier",
+    "name": "Azure Active Directory Identity and Access Classifier",
     "propagationLabels": [
         "all"
     ],

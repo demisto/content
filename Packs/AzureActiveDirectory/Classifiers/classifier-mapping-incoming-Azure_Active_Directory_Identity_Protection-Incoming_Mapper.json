@@ -3,7 +3,7 @@
     "feed": false,
     "id": "Azure Active Directory Identity and Access Incoming Mapper",
     "mapping": {
-        "Azure Active Directory Identity Protection": {
+        "Azure Active Directory Identity and Access": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Azure Active Directory Identity and Access Alert Type": {
