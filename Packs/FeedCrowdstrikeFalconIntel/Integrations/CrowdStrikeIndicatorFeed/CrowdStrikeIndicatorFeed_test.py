@@ -84,7 +84,7 @@ def test_create_indicators_from_response():
 
 
 def test_empty_first_fetch(mocker, requests_mock):
-    mocker.patch.object(demisto, 'params', return_value={'first_fetch': None})
+    mocker.patch.object(demisto, 'params', return_value={'first_fetch': ''})
     mocker.patch.object(demisto, 'command', return_value='')
     requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
     from CrowdStrikeIndicatorFeed import main
