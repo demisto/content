@@ -106,7 +106,7 @@ def test_module(client: Client) -> str:
 
 def alexa_domain(client: Client, domains: List[str]) -> List[CommandResults]:
     if not domains:
-        raise ValueError('AlexaV2: domain doesn\'t exists')
+        raise ValueError('AlexaV2 error: domain doesn\'t exists')
     command_results: List[CommandResults] = []
     for domain in domains:
         result = client.alexa_rank(domain)
