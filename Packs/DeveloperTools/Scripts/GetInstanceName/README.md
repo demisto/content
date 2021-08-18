@@ -14,7 +14,7 @@ Given an integration name, returns the instance name.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| integration_name | Integration name to check its instance name |
+| integration_name | Integration name for which to check its instance name. |
 
 ## Outputs
 ---
