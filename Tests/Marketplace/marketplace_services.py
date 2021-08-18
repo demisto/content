@@ -1411,8 +1411,7 @@ class Pack(object):
                 return task_status, not_updated_build
 
             # Update change log entries with BC flag.
-            release_notes_breaking_changes_calc = rn_bc_calculator.ReleaseNotesBreakingChangesCalc(release_notes_dir)
-            release_notes_breaking_changes_calc.add_bc_entries_if_needed(changelog)
+            self.add_bc_entries_if_needed(release_notes_dir, changelog)
 
             # write back changelog with changes to pack folder
             with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as pack_changelog:
