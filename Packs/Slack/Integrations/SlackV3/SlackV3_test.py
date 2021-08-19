@@ -3730,22 +3730,30 @@ def test_edit_message(mocker):
     import SlackV3
     # Set
 
-    slack_response_mock = {
-        'ok': True,
-        'channel': 'C061EG9T2',
-        'ts': '1629281551.001000',
-        'text': 'Boom\nView it on: <https://www.eizelulz.com:8443/#/WarRoom/727>',
-        'message': {
-            'type': 'message',
-            'subtype': 'bot_message',
+    slack_response_mock = SlackResponse(
+        client=None,
+        http_verb='',
+        api_url='',
+        req_args={},
+        headers={},
+        status_code=200,
+        data={
+            'ok': True,
+            'channel': 'C061EG9T2',
+            'ts': '1629281551.001000',
             'text': 'Boom\nView it on: <https://www.eizelulz.com:8443/#/WarRoom/727>',
-            'username': 'Cortex XSOAR',
-            'icons': {
-                'image_48': 'https://s3-us-west-2.amazonaws.com/slack-files2/bot_icons/2021-06-29/2227534346388_48.png'
-            },
-            'bot_id': 'B01UZHGMQ9G'
+            'message': {
+                'type': 'message',
+                'subtype': 'bot_message',
+                'text': 'Boom\nView it on: <https://www.eizelulz.com:8443/#/WarRoom/727>',
+                'username': 'Cortex XSOAR',
+                'icons': {
+                    'image_48': 'https://s3-us-west-2.amazonaws.com/slack-files2/bot_icons/2021-06-29/2227534346388_48.png'
+                },
+                'bot_id': 'B01UZHGMQ9G'
+            }
         }
-    }
+    )
 
     expected_body = {
         'body': {
