@@ -27,11 +27,7 @@ class Client(BaseClient):
         super().__init__(base_url, verify, proxy)
         self.api_key = api_key,
         self.api_secret = api_secret,
-        self.access_token = get_jwt(api_key, api_secret)
-        # self.headers = {'authorization': f'Bearer {self.access_token}',
-        #                 'Accept': 'application/json',
-        #                 'Content-Type': 'application/json'
-        #                 }
+        self.access_token = get_jwt(api_key, api_secret),
 
     def test(self):
         """ Tests connectivity with the application. """
@@ -56,13 +52,14 @@ class Client(BaseClient):
             url_suffix=uri,
             headers={'authorization': f'Bearer {self.access_token}',
                      'Accept': 'application/json',
-                     'Content-Type': 'application/json'
-                     }
+                     'Content-Type': 'application/json',
+                     },
         )
         if res and (not res.get('users')):
             user_app_data = res
             user_id = user_app_data.get('id')
             is_active = True if user_app_data.get('status') == 'active' else False
+            # the API does not provide user name
             username = ''
 
             return IAMUserAppData(user_id, username, is_active, user_app_data)
@@ -87,9 +84,9 @@ class Client(BaseClient):
             json_data=user_data,
             headers={'authorization': f'Bearer {self.access_token}',
                      'Accept': 'application/json',
-                     'Content-Type': 'application/json'
+                     'Content-Type': 'application/json',
                      },
-            return_empty_response=True
+            return_empty_response=True,
         )
         # res is an empty response
         user_app_data = res
@@ -112,22 +109,6 @@ class Client(BaseClient):
 
         user_data = {"action": "deactivate"}
         return self.update_user(user_id, user_data)
-
-    # def get_app_fields(self) -> Dict[str, Any]:
-    #     """ Gets a dictionary of the user schema fields in the application and their description.
-    #
-    #     :return: The user schema fields dictionary
-    #     :rtype: ``Dict[str, str]``
-    #     """
-    #
-    #     uri = '/schema'
-    #     res = self._http_request(
-    #         method='GET',
-    #         url_suffix=uri
-    #     )
-    #
-    #     fields = res.get('result', [])
-    #     return {field.get('name'): field.get('description') for field in fields}
 
     @staticmethod
     def handle_exception(user_profile: IAMUserProfile,
@@ -188,8 +169,8 @@ def get_jwt(api_key: str, api_secret: str) -> str:
     """
     Encode the JWT token given the api ket and secret
     """
-    tt = time.time()
-    expire_time = int(tt) + 5000
+    now = time.time()
+    expire_time = int(now) + 5000
     payload = {
         'iss': api_key,
         'exp': expire_time
@@ -222,21 +203,6 @@ def test_module(client: Client):
     return_results('ok')
 
 
-# def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
-#     """ Creates and returns a GetMappingFieldsResponse object of the user schema in the application
-#
-#     :param client: (Client) The integration Client object that implements a get_app_fields() method
-#     :return: (GetMappingFieldsResponse) An object that represents the user schema
-#     """
-#     app_fields = client.get_app_fields()
-#     incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
-#
-#     for field, description in app_fields.items():
-#         incident_type_scheme.add_field(field, description)
-#
-#     return GetMappingFieldsResponse([incident_type_scheme])
-
-
 def main():
     user_profile = None
     params = demisto.params()
@@ -249,21 +215,23 @@ def main():
     command = demisto.command()
     args = demisto.args()
 
-    is_create_enabled = params.get("create_user_enabled")
-    is_enable_enabled = params.get("enable_user_enabled")
     is_disable_enabled = params.get("disable_user_enabled")
-    is_update_enabled = params.get("update_user_enabled")
-    create_if_not_exists = params.get("create_if_not_exists")
 
-    iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+    iam_command = IAMCommand(is_create_enabled=False,
+                             is_enable_enabled=False,
+                             is_disable_enabled=is_disable_enabled,
+                             is_update_enabled=False,
+                             create_if_not_exists=False,
+                             mapper_in=mapper_in,
+                             mapper_out=mapper_out,
+                             )
 
     client = Client(
         base_url=BASE_URL,
         verify=verify_certificate,
         proxy=proxy,
         api_key=api_key,
-        api_secret=api_secret
+        api_secret=api_secret,
     )
 
     demisto.debug(f'Command being called is {command}')
