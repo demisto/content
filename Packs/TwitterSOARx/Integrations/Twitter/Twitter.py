@@ -5,17 +5,17 @@ from CommonServerUserPython import *
 import tweepy
 import urllib
 import requests
-class Client(BaseClient):
 
-    
+
+class Client(BaseClient):
     def auth(self):
         auth = tweepy.OAuthHandler(demisto.params().get('apikey'), demisto.params().get('apikey_secret'))
         auth.set_access_token(demisto.params().get('access_token'), demisto.params().get('access_token_secret'))
         api = tweepy.API(auth)
         return api
-    
+
 # Build a search URL using the usernames argument and a preset list of all of the user fields of interest
-# Link to Twitter reference under Apache 2.0: 
+# Link to Twitter reference under Apache 2.0:
 # https://github.com/twitterdev/Twitter-API-v2-sample-code/blob/master/User-Lookup/get_users_with_bearer_token.py
 # Changes made: changed function name to "create_users_info_url", added extra user fields and made user_fields a constant,
 # usernames is no longer a static variable, removed the print statement from connect_to_endpoint
@@ -62,14 +62,19 @@ class Client(BaseClient):
                 float(geocode_check[1])
                 float(geocode_check[2][:-2])
             except ValueError:
-                return_error('Incorrect geocode syntax. Geocode syntax is Lat,Long,RadiusUnits - Where Units = mi or km. \nExample Syntax: 60,324321,-27.98789,400mi')
+                return_error('Incorrect geocode syntax. Geocode syntax is Lat,Long,RadiusUnits\
+                - Where Units = mi or km. \nExample Syntax: 60,324321,-27.98789,400mi')
             if geocode_check[2][-2:] != 'mi' and geocode_check[2][-2:] != 'km':
-                return_error('Incorrect geocode syntax. Geocode syntax is Lat,Long,RadiusUnits - Where Units = mi or km. \nExample Syntax: 60,324321,-27.98789,400mi')
+                return_error('Incorrect geocode syntax. Geocode syntax is Lat,Long,RadiusUnits\
+                - Where Units = mi or km. \nExample Syntax: 60,324321,-27.98789,400mi')
         if demisto.args().get('lang'):
             search_url += "&lang=" + demisto.args().get('lang')
-            SUPPORTED_LANGS = ['en', 'ar', 'bn', 'cs', 'da', 'de', 'el', 'es', 'fa', 'fi', 'fil', 'fr', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'ko', 'msa', 'nl', 'no', 'pl', 'pt', 'ro', 'ru', 'sv', 'th', 'tr', 'uk', 'ur', 'vi', 'zh-cn', 'zh-tw']
+            SUPPORTED_LANGS = ['en', 'ar', 'bn', 'cs', 'da', 'de', 'el', 'es', 'fa', 'fi', 'fil', 'fr',\
+                               'he', 'hi', 'hu', 'id', 'it', 'ja', 'ko', 'msa', 'nl', 'no', 'pl', 'pt',\
+                               'ro', 'ru', 'sv', 'th', 'tr', 'uk', 'ur', 'vi', 'zh-cn', 'zh-tw']
             if demisto.args().get('lang') not in SUPPORTED_LANGS:
-                return_error('Language code is not supported. For a list of supported language codes, visit https://developer.twitter.com/en/docs/twitter-for-websites/supported-languages')
+                return_error('Language code is not supported. For a list of supported language codes, visit\
+                 https://developer.twitter.com/en/docs/twitter-for-websites/supported-languages')
         if demisto.args().get('result_type'):
             search_url += "&result_type=" + (demisto.args().get('result_type')).lower()
             SUPPORTED_RESULT_TYPES = ['popular', 'recent', 'mixed']
