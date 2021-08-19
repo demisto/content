@@ -1,0 +1,34 @@
+args:
+- name: value
+  required: true
+- defaultValue: $[.}
+  name: inc
+  required: true
+comment: |-
+  Convert Splunk CIM Dynamic Fields into their values.
+
+  Example: $src$ in name will be replaced with src which have value e.g. 192.168.100.254
+commonfields:
+  id: 32301b22-315e-4486-83e2-2329484a9e1d
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5555815e-fdc4-4f9b-806c-577759389ae0
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.6.22912
+enabled: true
+name: SplunkDynamicFields
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- string
+type: python

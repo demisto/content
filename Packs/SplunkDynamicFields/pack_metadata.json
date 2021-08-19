@@ -1,0 +1,17 @@
+{
+    "name": "SplunkDynamicFields",
+    "description": "Convert Splunk CIM Dynamic Fields into their values.\n\nExample: $src$ in name will be replaced with src which have value e.g. 192.168.100.254",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Farrukh Ahmed",
+    "url": "",
+    "email": "",
+    "created": "2021-08-19T20:50:50Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "linuxpakistan"
+    ]
+}
