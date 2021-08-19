@@ -7,15 +7,16 @@ import urllib
 import requests
 class Client(BaseClient):
 
+    
     def auth(self):
         auth = tweepy.OAuthHandler(demisto.params().get('apikey'), demisto.params().get('apikey_secret'))
         auth.set_access_token(demisto.params().get('access_token'), demisto.params().get('access_token_secret'))
         api = tweepy.API(auth)
         return api
-
+    
 # Build a search URL using the usernames argument and a preset list of all of the user fields of interest
 # Link to Twitter reference under Apache 2.0: https://github.com/twitterdev/Twitter-API-v2-sample-code/blob/master/User-Lookup/get_users_with_bearer_token.py
-# Changes made: changed function name to "create_users_info_url", added extra user fields and made user_fields a constant, 
+# Changes made: changed function name to "create_users_info_url", added extra user fields and made user_fields a constant,
 # usernames is no longer a static variable, removed the print statement from connect_to_endpoint
     def create_users_info_url(self):
         usernames = "usernames=" + demisto.args().get('usernames')
@@ -63,7 +64,7 @@ class Client(BaseClient):
                 return_error('Incorrect geocode syntax. Geocode syntax is Lat,Long,RadiusUnits - Where Units = mi or km. \nExample Syntax: 60,324321,-27.98789,400mi')
         if demisto.args().get('lang'):
             search_url += "&lang=" + demisto.args().get('lang')
-            SUPPORTED_LANGS = ['en','ar','bn','cs','da','de','el','es','fa','fi','fil','fr','he','hi','hu','id','it','ja','ko','msa','nl','no','pl','pt','ro','ru','sv','th','tr','uk','ur','vi','zh-cn','zh-tw']
+            SUPPORTED_LANGS = ['en', 'ar', 'bn', 'cs', 'da', 'de', 'el', 'es', 'fa', 'fi', 'fil', 'fr', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'ko', 'msa', 'nl', 'no', 'pl', 'pt', 'ro', 'ru', 'sv', 'th', 'tr', 'uk', 'ur', 'vi', 'zh-cn', 'zh-tw']
             if demisto.args().get('lang') not in SUPPORTED_LANGS:
                 return_error('Language code is not supported. For a list of supported language codes, visit https://developer.twitter.com/en/docs/twitter-for-websites/supported-languages')
         if demisto.args().get('result_type'):
@@ -102,7 +103,7 @@ class Client(BaseClient):
                 'User Verified Status': value.get('user').get('verified'),
                 'Post Retweet Count': value.get('retweet_count'),
                 'Post Favorite Count': value.get('favorite_count')
-                    }
+            }
             if demisto.args().get('include_entities') == "True":
                 obj['Hashtags'] = get_entity(value, 'hashtags', 'text')
                 obj['User Mentions'] = get_entity(value, 'user_mentions', 'screen_name')
@@ -116,7 +117,7 @@ class Client(BaseClient):
         name = "TwitterSOARx twitter-get-tweets Search Results"
         results_to_markdown(table, headers, name)
 
-#Documentation for the tweepy search_users api call: https://docs.tweepy.org/en/stable/api.html#API.search_users
+# Documentation for the tweepy search_users api call: https://docs.tweepy.org/en/stable/api.html#API.search_users
 
     def get_users(self):
         table = []
@@ -174,6 +175,7 @@ class Client(BaseClient):
             name = "TwitterSOARx twitter-get-user-info Search Results"
         results_to_markdown(table, headers, name)
 
+        
 def results_to_markdown(table, headers, name):
     markdown = tableToMarkdown(name, table, headers=headers)
     results = CommandResults(
@@ -184,7 +186,23 @@ def results_to_markdown(table, headers, name):
     )
     return_results(results)
 
+    
+def test_module():
+    """
+    Performs basic get request to get item samples
+    """
+    contents = get_bot()
+    if contents['ok']:
+        demisto.results("ok")
+    else:
+        error_code = contents['error_code']
+        description = contents['description']
+        demisto.results(f'{error_code} {description}')    
+    
+    
 def main():
+    if demisto.command() == 'test-module':
+        test_module()
     if demisto.command() == 'twitter-get-users':
         Client.get_users()
     if demisto.command() == 'twitter-get-user-info':
