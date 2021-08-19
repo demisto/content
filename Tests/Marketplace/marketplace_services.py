@@ -1639,7 +1639,8 @@ class Pack(object):
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = content_item_name_mapping[current_directory]
-                    content_items_result[content_item_key] = folder_collected_items
+                    content_items_result[content_item_key] = \
+                        content_items_result.get(content_item_key, []) + folder_collected_items
 
             logging.info(f"Finished collecting content items for {self._pack_name} pack")
             task_status = True
