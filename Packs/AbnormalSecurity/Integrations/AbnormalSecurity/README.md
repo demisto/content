@@ -144,7 +144,7 @@ There is no context output for this command.
 ```json
 {
     "File": {
-        "EntryID": "2214@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
+        "EntryID": "2294@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
         "Extension": "csv",
         "Info": "csv",
         "MD5": "a981545ee72fe115888800725883ca8a",
@@ -158,6 +158,7 @@ There is no context output for this command.
     }
 }
 ```
+
 
 
 ### abnormal-security-list-abuse-mailbox-campaigns
@@ -530,18 +531,18 @@ Get details of an Abuse Mailbox campaign
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AbnormalSecurity.AbuseCampaignDetails.campaignId | String | An id which maps to an abuse campaign. | 
-| AbnormalSecurity.AbuseCampaignDetails.firstReported | String | Date abuse campaign was first reported. | 
-| AbnormalSecurity.AbuseCampaignDetails.lastReported | String | Date abuse campaign was last reported. | 
-| AbnormalSecurity.AbuseCampaignDetails.messageId | String | A unique identifier for the first message in the abuse campaign. | 
-| AbnormalSecurity.AbuseCampaignDetails.subject | String | Subject of the first email in the abuse campaign. | 
-| AbnormalSecurity.AbuseCampaignDetails.fromName | String | The display name of the sender. | 
-| AbnormalSecurity.AbuseCampaignDetails.fromAddress | String | The email address of the sender. | 
-| AbnormalSecurity.AbuseCampaignDetails.recipientName | String | The email address of the recipient. | 
-| AbnormalSecurity.AbuseCampaignDetails.recipientAddress | String | The email address of the recipient. | 
-| AbnormalSecurity.AbuseCampaignDetails.judgementStatus | String | Judgement status of message. | 
-| AbnormalSecurity.AbuseCampaignDetails.overallStatus | String | Overall status of message. | 
-| AbnormalSecurity.AbuseCampaignDetails.attackType | String | The type of threat the message represents. | 
+| AbnormalSecurity.AbuseCampaign.campaignId | String | An id which maps to an abuse campaign. | 
+| AbnormalSecurity.AbuseCampaign.firstReported | String | Date abuse campaign was first reported. | 
+| AbnormalSecurity.AbuseCampaign.lastReported | String | Date abuse campaign was last reported. | 
+| AbnormalSecurity.AbuseCampaign.messageId | String | A unique identifier for the first message in the abuse campaign. | 
+| AbnormalSecurity.AbuseCampaign.subject | String | Subject of the first email in the abuse campaign. | 
+| AbnormalSecurity.AbuseCampaign.fromName | String | The display name of the sender. | 
+| AbnormalSecurity.AbuseCampaign.fromAddress | String | The email address of the sender. | 
+| AbnormalSecurity.AbuseCampaign.recipientName | String | The email address of the recipient. | 
+| AbnormalSecurity.AbuseCampaign.recipientAddress | String | The email address of the recipient. | 
+| AbnormalSecurity.AbuseCampaign.judgementStatus | String | Judgement status of message. | 
+| AbnormalSecurity.AbuseCampaign.overallStatus | String | Overall status of message. | 
+| AbnormalSecurity.AbuseCampaign.attackType | String | The type of threat the message represents. | 
 
 
 #### Command Example
@@ -599,6 +600,7 @@ Get employee identity analysis (Genome) data
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| AbnormalSecurity.Employee.email | String | Employee email | 
 | AbnormalSecurity.Employee.histograms.key | String | Genome key name | 
 | AbnormalSecurity.Employee.histograms.name | String | Genome title | 
 | AbnormalSecurity.Employee.histograms.description | String | Description of genome object | 
@@ -615,6 +617,7 @@ Get employee identity analysis (Genome) data
 {
     "AbnormalSecurity": {
         "Employee": {
+            "email": "test@test.com",
             "histograms": [
                 {
                     "description": "Common IP addresses for user logins",
@@ -735,7 +738,7 @@ There is no context output for this command.
 ```json
 {
     "File": {
-        "EntryID": "2258@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
+        "EntryID": "2338@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
         "Extension": "csv",
         "Info": "csv",
         "MD5": "11afb4879c5026e25bd868dfcf23e811",
@@ -777,7 +780,7 @@ There is no context output for this command.
 ```json
 {
     "File": {
-        "EntryID": "2234@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
+        "EntryID": "2314@2ef16ace-2149-42b9-8b0f-fb7620ba7d44",
         "Extension": "json",
         "Info": "application/json",
         "MD5": "a00e919efc9e28f77b8f7b7523b1ffe8",
@@ -791,6 +794,7 @@ There is no context output for this command.
     }
 }
 ```
+
 
 ### abnormal-security-manage-threat
 ***

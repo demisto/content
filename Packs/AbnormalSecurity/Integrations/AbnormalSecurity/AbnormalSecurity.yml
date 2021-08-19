@@ -377,40 +377,40 @@ script:
     description: Get details of an Abuse Mailbox campaign
     name: abnormal-security-get-abuse-mailbox-campaign
     outputs:
-      - contextPath: AbnormalSecurity.AbuseCampaignDetails.campaignId
+      - contextPath: AbnormalSecurity.AbuseCampaign.campaignId
         description: An id which maps to an abuse campaign.
         type: String
-      - contextPath: AbnormalSecurity.AbuseCampaignDetails.firstReported
+      - contextPath: AbnormalSecurity.AbuseCampaign.firstReported
         description: Date abuse campaign was first reported.
         type: String
-      - contextPath: AbnormalSecurity.AbuseCampaignDetails.lastReported
+      - contextPath: AbnormalSecurity.AbuseCampaign.lastReported
         description: Date abuse campaign was last reported.
         type: String
-      - contextPath: AbnormalSecurity.AbuseCampaignDetails.messageId
+      - contextPath: AbnormalSecurity.AbuseCampaign.messageId
         description: A unique identifier for the first message in the abuse campaign.
         type: String
-      - contextPath: AbnormalSecurity.AbuseCampaignDetails.subject
+      - contextPath: AbnormalSecurity.AbuseCampaign.subject
         description: Subject of the first email in the abuse campaign.
         type: String
-      - contextPath: AbnormalSecurity.AbuseCampaignDetails.fromName
+      - contextPath: AbnormalSecurity.AbuseCampaign.fromName
         description: The display name of the sender.
         type: String
-      - contextPath: AbnormalSecurity.AbuseCampaignDetails.fromAddress
+      - contextPath: AbnormalSecurity.AbuseCampaign.fromAddress
         description: The email address of the sender.
         type: String
-      - contextPath: AbnormalSecurity.AbuseCampaignDetails.recipientName
+      - contextPath: AbnormalSecurity.AbuseCampaign.recipientName
         description: The email address of the recipient.
         type: String
-      - contextPath: AbnormalSecurity.AbuseCampaignDetails.recipientAddress
+      - contextPath: AbnormalSecurity.AbuseCampaign.recipientAddress
         description: The email address of the recipient.
         type: String
-      - contextPath: AbnormalSecurity.AbuseCampaignDetails.judgementStatus
+      - contextPath: AbnormalSecurity.AbuseCampaign.judgementStatus
         description: Judgement status of message.
         type: String
-      - contextPath: AbnormalSecurity.AbuseCampaignDetails.overallStatus
+      - contextPath: AbnormalSecurity.AbuseCampaign.overallStatus
         description: Overall status of message.
         type: String
-      - contextPath: AbnormalSecurity.AbuseCampaignDetails.attackType
+      - contextPath: AbnormalSecurity.AbuseCampaign.attackType
         description: The type of threat the message represents.
         type: String
   - arguments:
@@ -425,6 +425,9 @@ script:
     description: Get employee identity analysis (Genome) data
     name: abnormal-security-get-employee-identity-analysis
     outputs:
+      - contextPath: AbnormalSecurity.Employee.email
+        description: Employee email
+        type: String
       - contextPath: AbnormalSecurity.Employee.histograms.key
         description: Genome key name
         type: String

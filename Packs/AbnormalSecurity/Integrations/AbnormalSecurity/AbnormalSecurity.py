@@ -347,6 +347,7 @@ def get_employee_identity_analysis_genome_data_command(client, args):
     markdown = tableToMarkdown(
         f"Analysis of {email_address}", response.get('histograms', []), headers=headers, removeNull=True)
 
+    response["email"] = email_address
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix='AbnormalSecurity.Employee',
@@ -364,7 +365,7 @@ def get_employee_information_command(client, args):
     response = client.get_employee_information_request(email_address)
     command_results = CommandResults(
         outputs_prefix='AbnormalSecurity.Employee',
-        outputs_key_field='',
+        outputs_key_field='email',
         outputs=response,
         raw_response=response
     )
@@ -502,6 +503,7 @@ def main():
     headers['Soar-Integration-Origin'] = "Cortex XSOAR"
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
+    headers['Mock-Data'] = "True"
 
     try:
         client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
