@@ -76,6 +76,7 @@ def find_needed_test_playbook_paths(test_playbooks: List[dict], tests_to_run: Li
     #  TODO: Remove this when we have migrated test content out of this pack.
     developer_pack_items = glob.glob(path_to_content + "/Packs/DeveloperTools/*/*.yml")
     for dev_pack_item in developer_pack_items:
+        print(dev_pack_item)
         tests_file_paths.add(dev_pack_item)
     return tests_file_paths
 
