@@ -45,7 +45,6 @@ def test_module():
 @logger
 def get_user_command():
     user_context = []
-    email = demisto.args().get('email')
     userType = demisto.args().get('user_type')
     userItems = get_user_request(userType)
 
@@ -62,7 +61,8 @@ def get_user_command():
         })
 
         markdown = 'FortiAuthenticator\n'
-        markdown += tableToMarkdown('FortiAuthenticator User Info', user_context, headers=['id', 'username', 'email', 'active','token_auth','token_type','token_serial'])
+        markdown += tableToMarkdown('FortiAuthenticator User Info', user_context, 
+                                    headers=['id', 'username', 'email', 'active', 'token_auth', 'token_type', 'token_serial'])
         results = CommandResults(
             readable_output=markdown,
             outputs_prefix='FortiAuthenticator.user',
@@ -72,11 +72,10 @@ def get_user_command():
         return_results(results)
     else:
         markdown = 'No such user.\n'
-        results = CommandResults(
-            readable_output=markdown
-        )
-        return_results(results)        
-        
+        results = CommandResults(readable_output=markdown)
+        return_results(results)
+
+
 @logger
 def get_user_request(userType):
     email = demisto.args().get('email')
@@ -112,7 +111,6 @@ def get_user_request(userType):
 @logger
 def update_user_command():
     user_context = []
-    email = demisto.args().get('email')
     active = demisto.args().get('active')
     userType = demisto.args().get('user_type')
     userItems = get_user_request(userType)
@@ -140,8 +138,8 @@ def update_user_command():
             })
 
             markdown = 'FortiAuthenticator\n'
-            markdown += tableToMarkdown('Updated FortiAuthenticator User Info', user_context,
-                                        headers=['id', 'username', 'email', 'active','token_auth','token_type','token_serial'])
+            markdown += tableToMarkdown('Updated FortiAuthenticator User Info', user_context, 
+                                        headers=['id', 'username', 'email', 'active', 'token_auth', 'token_type', 'token_serial'])
             results = CommandResults(
                 readable_output=markdown,
                 outputs_prefix='FortiAuthenticator.user',
@@ -149,13 +147,9 @@ def update_user_command():
                 outputs=user_context
             )
         else:
-            results = CommandResults(
-                readable_output='Fail to update user.\n'
-            )
+            results = CommandResults(readable_output='Fail to update user.\n')
     else:
-        results = CommandResults(
-            readable_output='No such user for update.\n'
-        )
+        results = CommandResults(readable_output='No such user for update.\n')
     return_results(results)
 
 
