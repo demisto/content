@@ -1866,7 +1866,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Timeout value to automatically unregister IP
+    - description: Timeout value to automatically unregister the IPs. Only applicable to PAN-OS 9.x and higher. Can not be used with persistent as true.
       name: timeout
     description: Registers IP addresses to a tag.
     name: panorama-register-ip-tag

@@ -3690,21 +3690,19 @@ def panorama_refresh_edl_command(args: dict):
 
 
 @logger
-def panorama_register_ip_tag(tag: str, ips: List, persistent: str, timeout: str = '0'):
+def panorama_register_ip_tag(tag: str, ips: List, persistent: str, timeout: int):
     entry: str = ''
-    ''' Start timeout change code block '''
-    major_version = panorama_show_device_major_version()
     for ip in ips:
-        if major_version >= 9:
-            entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member timeout="{timeout}">{tag}</member></tag></entry>'
+        if timeout:
+            entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member timeout="{timeout}">{tag}' \
+                     f'</member></tag></entry>'
         else:
             entry += f'<entry ip=\"{ip}\" persistent=\"{persistent}\"><tag><member>{tag}</member></tag></entry>'
-    ''' End timeout change code block '''
 
     params = {
         'type': 'user-id',
-        'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register>' + entry
-               + '</register></payload></uid-message>',
+        'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register>{entry}'
+               f'</register></payload></uid-message>',
         'key': API_KEY
     }
 
@@ -3721,29 +3719,19 @@ def panorama_register_ip_tag_command(args: dict):
     """
     Register IPs to a Tag
     """
-    tag = args['tag']
-    ips = argToList(args['IPs'])
+    tag = args.get('tag')
+    ips = argToList(args.get('IPs'))
+    persistent = '1' if argToBoolean(args.get('persistent', 'true')) else '0'
+    timeout = arg_to_number(args.get('timeout', '0'))  # if not given, timeout is 0 and persistent will be used
 
-    persistent = args['persistent'] if 'persistent' in args else 'true'
-    persistent = '1' if persistent == 'true' else '0'
+    major_version = get_pan_os_major_version()
 
-    """ Start timeout change code block """
-    major_version = panorama_show_device_major_version()
+    if timeout and persistent == '1':
+        raise DemistoException('When the persistent argument is true, you can not use the timeout argument.')
+    if major_version <= 8 and timeout:
+        raise DemistoException('The timeout argument is only applicable in 9.x pan-os versions or higher.')
 
-    if major_version >= 9:
-        timeout = demisto.args()['timeout'] if 'timeout' in demisto.args() else '0'
-
-        if not int(timeout):
-            timeout = '0'
-            persistent = '1' if persistent == 'true' else '0'
-        else:
-            timeout = demisto.args()['timeout'] if 'timeout' in demisto.args() else '0'
-            persistent = '0'
-
-        result = panorama_register_ip_tag(tag, ips, str(persistent), int(timeout))
-    else:
-        result = panorama_register_ip_tag(tag, ips, str(persistent))
-    """ End timeout change code block """
+    result = panorama_register_ip_tag(tag, ips, persistent, timeout)
 
     registered_ip: Dict[str, str] = {}
     # update context only if IPs are persistent
