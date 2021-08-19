@@ -20,12 +20,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 226c7850-e130-4d5a-8d6e-10b89162af5e
+      id: 226c7850-e130-4d5a-8d6e-10b89162af5d
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 226c7850-e130-4d5a-8d6e-10b89162af5e
+    taskid: 226c7850-e130-4d5a-8d6e-10b89162af5d
     timertriggers: []
     type: start
     view: |-
@@ -105,13 +105,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 4179bf64-26dd-449d-8deb-dbb5af4255ed
+      id: 4179bf64-26dd-449d-8deb-dbb5af4255ee
       iscommand: false
       name: 'Prompt: Which package(s) and host?'
       type: collection
       version: -1
       description: "Prompt for which packages to deploy"
-    taskid: 4179bf64-26dd-449d-8deb-dbb5af4255ed
+    taskid: 4179bf64-26dd-449d-8deb-dbb5af4255ee
     timertriggers: []
     type: collection
     view: |-
@@ -127,7 +127,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: ${Microsoftwindows.WinPing.[].ping}
+              simple: ${MicrosoftWindows.WinPing.[].ping}
           operator: isEqualString
           right:
             value:
@@ -146,13 +146,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 60c9f3eb-c5b2-4263-8cc5-97e8bf974bc5
+      id: 60c9f3eb-c5b2-4263-8cc5-97e8bf974bc6
       iscommand: false
       name: Is Workstation currently Online?
       type: condition
       version: -1
       description: "Check if workstation is online"
-    taskid: 60c9f3eb-c5b2-4263-8cc5-97e8bf974bc5
+    taskid: 60c9f3eb-c5b2-4263-8cc5-97e8bf974bc6
     timertriggers: []
     type: condition
     view: |-
@@ -180,13 +180,13 @@ tasks:
     task:
       brand: AnsibleMicrosoftWindows
       description: A windows version of the classic ping module
-      id: acf4dadd-6ba0-4389-81dc-75f5b0b5582d
+      id: acf4dadd-6ba0-4389-81dc-75f5b0b5582e
       iscommand: true
       name: Test connectivity to endpoint
       script: AnsibleMicrosoftWindows|||win-ping
       type: regular
       version: -1
-    taskid: acf4dadd-6ba0-4389-81dc-75f5b0b5582d
+    taskid: acf4dadd-6ba0-4389-81dc-75f5b0b5582e
     timertriggers: []
     type: regular
     view: |-
@@ -241,15 +241,15 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: AnsibleMicrosoftWindows
       description: Manage packages using chocolatey
-      id: 54a33cbd-932b-4398-8716-85931b4b2cce
+      id: 54a33cbd-932b-4398-8716-85931b4b2ccd
       iscommand: true
       name: Choco Install
-      script: '|||win-chocolatey'
+      script: AnsibleMicrosoftWindows|||win-chocolatey
       type: regular
       version: -1
-    taskid: 54a33cbd-932b-4398-8716-85931b4b2cce
+    taskid: 54a33cbd-932b-4398-8716-85931b4b2ccd
     timertriggers: []
     type: regular
     view: |-
@@ -270,7 +270,7 @@ tasks:
       host:
         complex:
           accessor: host
-          root: Microsoftwindows.WinChocolatey(val.rc==0)
+          root: MicrosoftWindows.WinChocolatey(val.rc==0)
       msg:
         complex:
           accessor: "0"
@@ -298,13 +298,13 @@ tasks:
     task:
       brand: AnsibleMicrosoftWindows
       description: Sends a message to logged in users on Windows hosts
-      id: 9912c17e-6d81-4271-8f60-217ef5a2a4a6
+      id: 9912c17e-6d81-4271-8f60-217ef5a2a4a5
       iscommand: true
       name: Notify end user of Success via popup
       script: AnsibleMicrosoftWindows|||win-msg
       type: regular
       version: -1
-    taskid: 9912c17e-6d81-4271-8f60-217ef5a2a4a6
+    taskid: 9912c17e-6d81-4271-8f60-217ef5a2a4a5
     timertriggers: []
     type: regular
     view: |-
@@ -321,20 +321,20 @@ tasks:
     quietmode: 0
     scriptarguments:
       host:
-        simple: Microsoftwindows.WinChocolatey(val.rc!=0).host
+        simple: MicrosoftWindows.WinChocolatey(val.rc!=0).host
       parallel: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: AnsibleMicrosoftWindows
       description: Gathers facts about remote hosts
-      id: 9ff3fdfb-ea92-4b24-89d1-1dfde4e632a3
+      id: 9ff3fdfb-ea92-4b24-89d1-1dfde4e632a4
       iscommand: true
       name: Gather System Facts for troubleshooting
       script: AnsibleMicrosoftWindows|||win-gather-facts
       type: regular
       version: -1
-    taskid: 9ff3fdfb-ea92-4b24-89d1-1dfde4e632a3
+    taskid: 9ff3fdfb-ea92-4b24-89d1-1dfde4e632a4
     timertriggers: []
     type: regular
     view: |-
@@ -356,13 +356,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7d174af3-e03f-4e70-8ebb-1beb2d389e6d
+      id: 7d174af3-e03f-4e70-8ebb-1beb2d389e6e
       iscommand: false
       name: Post Install Review
       type: title
       version: -1
       description: ''
-    taskid: 7d174af3-e03f-4e70-8ebb-1beb2d389e6d
+    taskid: 7d174af3-e03f-4e70-8ebb-1beb2d389e6e
     timertriggers: []
     type: title
     view: |-
@@ -378,14 +378,14 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: Microsoftwindows.WinChocolatey(val.rc==0).host
+              simple: MicrosoftWindows.WinChocolatey(val.rc==0).host
           operator: isNotEmpty
       label: "yes"
     - condition:
       - - left:
             iscontext: true
             value:
-              simple: Microsoftwindows.WinChocolatey(val.rc!=0).host
+              simple: MicrosoftWindows.WinChocolatey(val.rc!=0).host
           operator: isNotEmpty
       label: "No"
     id: "14"
@@ -402,13 +402,13 @@ tasks:
     task:
       description: "Check if the software was installed successfully"
       brand: ""
-      id: 54e890e8-a06a-4efa-8fd8-899b79266ea1
+      id: 54e890e8-a06a-4efa-8fd8-899b79266ea2
       iscommand: false
       name: |
         Software installed successfully?
       type: condition
       version: -1
-    taskid: 54e890e8-a06a-4efa-8fd8-899b79266ea1
+    taskid: 54e890e8-a06a-4efa-8fd8-899b79266ea2
     timertriggers: []
     type: condition
     view: |-
@@ -444,14 +444,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9176e849-755c-4912-89de-5bc41fbfa43c
+      id: 9176e849-755c-4912-89de-5bc41fbfa43d
       iscommand: false
       name: Wait Until Windows Host Online
       playbookName: Wait Until Windows Host Online
       type: playbook
       version: -1
       description: ''
-    taskid: 9176e849-755c-4912-89de-5bc41fbfa43c
+    taskid: 9176e849-755c-4912-89de-5bc41fbfa43d
     timertriggers: []
     type: playbook
     view: |-
@@ -476,12 +476,12 @@ tasks:
     task:
       description: "Prompt for retry behaviour"
       brand: ""
-      id: a55e24ba-39eb-44c1-8f1e-104524f05b57
+      id: a55e24ba-39eb-44c1-8f1e-104524f05b56
       iscommand: false
       name: Keep retrying or allow user to trigger install?
       type: condition
       version: -1
-    taskid: a55e24ba-39eb-44c1-8f1e-104524f05b57
+    taskid: a55e24ba-39eb-44c1-8f1e-104524f05b56
     timertriggers: []
     type: condition
     view: |-
@@ -564,13 +564,13 @@ tasks:
       brand: ""
       description: Ask a user a question via email and process the reply directly
         into the investigation.
-      id: 65cab3ec-0cfe-44c3-89b5-64d19adcf697
+      id: 65cab3ec-0cfe-44c3-89b5-64d19adcf696
       iscommand: false
       name: Ask user by email
       script: EmailAskUser
       type: regular
       version: -1
-    taskid: 65cab3ec-0cfe-44c3-89b5-64d19adcf697
+    taskid: 65cab3ec-0cfe-44c3-89b5-64d19adcf696
     timertriggers: []
     type: regular
     view: |-
@@ -626,12 +626,12 @@ tasks:
     task:
       description: "Prompt for end users email"
       brand: ""
-      id: 89e146c7-144d-4824-8e81-f8658a5ad789
+      id: 89e146c7-144d-4824-8e81-f8658a5ad788
       iscommand: false
       name: What is the users email?
       type: collection
       version: -1
-    taskid: 89e146c7-144d-4824-8e81-f8658a5ad789
+    taskid: 89e146c7-144d-4824-8e81-f8658a5ad788
     timertriggers: []
     type: collection
     view: |-
@@ -654,14 +654,14 @@ tasks:
     task:
       description: "Wait for ready email"
       brand: ""
-      id: e4e6ef51-6204-4abf-8e49-9aee3f4b23bd
+      id: e4e6ef51-6204-4abf-8e49-9aee3f4b23be
       iscommand: false
       name: Waiting for User to say they are ready
       tags:
       - UserFeedback
       type: condition
       version: -1
-    taskid: e4e6ef51-6204-4abf-8e49-9aee3f4b23bd
+    taskid: e4e6ef51-6204-4abf-8e49-9aee3f4b23be
     timertriggers: []
     type: condition
     view: |-
