@@ -200,22 +200,28 @@ def results_to_markdown(table, headers, name):
     return_results(results)
 
 
-def test_module():
+def test_module(client):
+"""
+    Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
+
+    Args:
+        client: HelloWorld client
+
+    Returns:
+        'ok' if test passed, anything else will fail the test
     """
-    Performs basic get request to get item samples
-    """
-    contents = get_bot()
-    if contents['ok']:
-        demisto.results("ok")
+
+    result = client.say_hello('DBot')
+    if 'Hello DBot' == result:
+        return 'ok'
     else:
-        error_code = contents['error_code']
-        description = contents['description']
-        demisto.results(f'{error_code} {description}')
+        return 'Test failed because ......'
 
 
 def main():
     if demisto.command() == 'test-module':
-        test_module()
+        result = test_module(client)
+        return_results(result)
     if demisto.command() == 'twitter-get-users':
         Client.get_users()
     if demisto.command() == 'twitter-get-user-info':
@@ -223,6 +229,6 @@ def main():
     if demisto.command() == 'twitter-get-tweets':
         Client.get_tweets()
 
+        
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
