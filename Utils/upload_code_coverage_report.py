@@ -47,7 +47,7 @@ def upload_file_to_google_cloud_storage(service_account: str,
     bucket = storage_client.bucket(bucket_name)
 
     for file_to_upload in upload_list:
-        upload_file_to_bucket(bucket, file_to_upload, minimal_file_name, public=True)
+        upload_file_to_bucket(bucket, file_to_upload, minimal_file_name)
 
     print(
         "File {} uploaded to {}.".format(
@@ -56,11 +56,9 @@ def upload_file_to_google_cloud_storage(service_account: str,
     )
 
 
-def upload_file_to_bucket(bucket_obj, path_in_bucket, local_path, public=False):
+def upload_file_to_bucket(bucket_obj, path_in_bucket, local_path):
     blob = bucket_obj.blob(path_in_bucket)
     blob.upload_from_filename(local_path)
-    if public:
-        blob.make_public()
 
 
 def options_handler():
