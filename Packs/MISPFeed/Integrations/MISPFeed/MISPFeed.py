@@ -172,7 +172,8 @@ class Client(BaseClient):
     For this HelloWorld Feed implementation, no special attributes defined
     """
     def search_query(self, body: Dict[str, Any]) -> List:
-        res = self._http_request('POST',
+        result = []
+        attributes = self._http_request('POST',
                                  url_suffix='/attributes/restSearch',
                                  full_url=self._base_url,
                                  resp_type='text',
@@ -182,30 +183,18 @@ class Client(BaseClient):
                                           },
                                  )
         try:
-            return json.loads(res)
+            attributes = json.loads(attributes)
+            for attribute in attributes:
+                if auto_detect_indicator_type(attribute):
+                    result.append({
+                        'value': attribute,
+                        'type': auto_detect_indicator_type(attribute),
+                        'FeedURL': self._base_url,
+                    })
         except ValueError as err:
             demisto.debug(str(err))
             raise ValueError(f'Could not parse returned data as indicator. \n\nError massage: {err}')
-
-    def build_iterator(self) -> List:
-        """Retrieves all entries from the feed.
-        Returns:
-            A list of objects, containing the indicators.
-        """
-        res = self._http_request('POST',
-                                 url_suffix='/attributes/restSearch',
-                                 full_url=self._base_url,
-                                 resp_type='text',
-                                 )
-
-        # In this case the feed output is in text format, so extracting the indicators from the response requires
-        # iterating over it's lines solely. Other feeds could be in other kinds of formats (CSV, MISP, etc.), or might
-        # require additional processing as well.
-        try:
-            return json.loads(res)
-        except ValueError as err:
-            demisto.debug(str(err))
-            raise ValueError(f'Could not parse returned data as indicator. \n\nError massage: {err}')
+        return result
 
 
 def test_module(client: Client) -> str:
@@ -247,7 +236,7 @@ def search_attributes_command(client: Client,
     attribute_type = argToList(args.get('type', ''))
     params_dict = build_params_dict(tags, attribute_type)
     indicators = client.search_query(params_dict)
-    human_readable = "Reterived " + str(len(indicators)) + " indicators."
+    human_readable = "Retrieved " + str(len(indicators)) + " indicators."
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='Indicators',
