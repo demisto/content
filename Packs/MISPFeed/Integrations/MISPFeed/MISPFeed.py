@@ -247,11 +247,10 @@ def search_attributes_command(client: Client,
     attribute_type = argToList(args.get('type', ''))
     params_dict = build_params_dict(tags, attribute_type)
     indicators = client.search_query(params_dict)
-    human_readable = tableToMarkdown('Indicators from HelloWorld Feed:', indicators, headers=['value', 'type'],
-                                     headerTransform= string_to_table_header, removeNull=True)
+    human_readable = "Reterived " + str(len(indicators)) + " indicators."
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='Test',
+        outputs_prefix='Indicators',
         outputs_key_field='',
         raw_response=indicators,
         outputs=indicators,
