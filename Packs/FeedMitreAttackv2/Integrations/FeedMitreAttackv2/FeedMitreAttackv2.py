@@ -546,7 +546,7 @@ def get_mitre_value_from_id(client, args):
         for collection in client.collections:
             collection_id = f"stix/collections/{collection.id}/"
             collection_url = urljoin(client.base_url, collection_id)
-            collection_data = Collection(collection_url, verify=False)
+            collection_data = Collection(collection_url)
 
             tc_source = TAXIICollectionSource(collection_data)
             attack_pattern_name = tc_source.query([

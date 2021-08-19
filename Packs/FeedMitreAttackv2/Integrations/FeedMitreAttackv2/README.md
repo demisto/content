@@ -118,3 +118,35 @@ There is no context output
 | Enterprise ATT&CK | 95ecc380-afe9-11e4-9b6c-751b66dd541e |
 | PRE-ATT&CK | 062767bd-02d2-4b72-84ba-56caef0f8658 |
 | Mobile ATT&CK | 2f669986-b40b-4423-b720-4396ca6a462b |
+
+
+### MITRE Show Feeds
+***
+Gets the Attack Pattern value from the Attack Pattern ID.
+
+##### Base Command
+
+`mitre-get-indicator-name`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| attack_ids | The Attack Pattern IDs list | True | 
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MITREATTACK.id | String | MITRE ATTACK Attack Pattern ID. | 
+| MITREATTACK.value | String | MITRE ATTACK Attack Pattern value. | 
+
+
+##### Command Example
+```!mitre-get-indicator-name attack_id=T1111```
+
+
+##### Human Readable Output
+### MITRE ATT&CK Feeds:
+| Attack ID | Attack Value |
+| ---- | --- |
+| T1111 | Some Attack Value |
