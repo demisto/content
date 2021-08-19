@@ -71,7 +71,7 @@ def get_cache_path():
 
 
 def getTicketWorkflow_command(client, args):
-    ticketId = args.get('ticketId')
+    ticketId = args.get('ticketId', None)
 
     response = client.service.getTicketWorkflow(ticketId)
     command_results = CommandResults(
@@ -84,8 +84,8 @@ def getTicketWorkflow_command(client, args):
 
 
 def getOriginalChangeRequestRouteInfoV1_command(client, args):
-    ticketId = args.get('ticketId')
-    changeRequestId = args.get('changeRequestId')
+    ticketId = args.get('ticketId', None)
+    changeRequestId = args.get('changeRequestId', None)
 
     response = client.service.getOriginalChangeRequestRouteInfoV1(ticketId, changeRequestId)
     command_results = CommandResults(
@@ -98,7 +98,7 @@ def getOriginalChangeRequestRouteInfoV1_command(client, args):
 
 
 def getTicketTypePhasesByTicketType_command(client, args):
-    ticketType = args.get('ticketType')
+    ticketType = args.get('ticketType', None)
 
     response = client.service.getTicketTypePhasesByTicketType(ticketType)
     command_results = CommandResults(
@@ -112,7 +112,7 @@ def getTicketTypePhasesByTicketType_command(client, args):
 
 
 def getOriginalChangeRequestV7_command(client, args):
-    ticketId = args.get('ticketId')
+    ticketId = args.get('ticketId', None)
 
     response = client.service.getOriginalChangeRequestV7(ticketId)
     command_results = CommandResults(
@@ -127,10 +127,10 @@ def getOriginalChangeRequestV7_command(client, args):
 
 
 def setTicketFields_command(client, args):
-    ticketId = args.get('ticketId')
-    ticketIdType = args.get('ticketIdType')
-    ticketFields_typeCode = args.get('ticketFields_typeCode')
-    ticketFields_value = args.get('ticketFields_value')
+    ticketId = args.get('ticketId', None)
+    ticketIdType = args.get('ticketIdType', None)
+    ticketFields_typeCode = args.get('ticketFields_typeCode', None)
+    ticketFields_value = args.get('ticketFields_value', None)
 
     ticketFields_type = client.get_type('ns0:ticketField')
     ticketFields = ticketFields_type(
@@ -150,58 +150,58 @@ def setTicketFields_command(client, args):
 
 
 def createAccessChangeTicket_command(client, args):
-    accessChangeTicket_id = args.get('accessChangeTicket_id')
-    accessChangeTicket_comment = args.get('accessChangeTicket_comment')
-    accessChangeTicket_description = args.get('accessChangeTicket_description')
-    accessChangeTicket_createdBy = args.get('accessChangeTicket_createdBy')
-    accessChangeTicket_creationTime = args.get('accessChangeTicket_creationTime')
-    accessChangeTicket_lastModifiedBy = args.get('accessChangeTicket_lastModifiedBy')
-    accessChangeTicket_lastModificationTime = args.get('accessChangeTicket_lastModificationTime')
-    accessChangeTicket_externalTicketId = args.get('accessChangeTicket_externalTicketId')
-    accessChangeTicket_externalTicketStatus = args.get('accessChangeTicket_externalTicketStatus')
-    accessChangeTicket_status = args.get('accessChangeTicket_status')
-    accessChangeTicket_title = args.get('accessChangeTicket_title')
-    accessChangeTicket_changeDetails = args.get('accessChangeTicket_changeDetails')
-    accessChangeTicket_priority = args.get('accessChangeTicket_priority')
-    accessChangeTicket_owner = args.get('accessChangeTicket_owner')
-    accessChangeTicket_dueDate = args.get('accessChangeTicket_dueDate')
-    accessChangeTicket_doneDate = args.get('accessChangeTicket_doneDate')
-    accessChangeTicket_likelihood = args.get('accessChangeTicket_likelihood')
-    accessChangeTicket_ccList_email = args.get('accessChangeTicket_ccList_email')
-    accessChangeTicket_ccList_userName = args.get('accessChangeTicket_ccList_userName')
-    accessChangeTicket_customFields_comment = args.get('accessChangeTicket_customFields_comment')
-    accessChangeTicket_customFields_createdBy = args.get('accessChangeTicket_customFields_createdBy')
-    accessChangeTicket_customFields_creationTime = args.get('accessChangeTicket_customFields_creationTime')
-    accessChangeTicket_customFields_description = args.get('accessChangeTicket_customFields_description')
-    accessChangeTicket_customFields_id = args.get('accessChangeTicket_customFields_id')
+    accessChangeTicket_id = args.get('accessChangeTicket_id', None)
+    accessChangeTicket_comment = args.get('accessChangeTicket_comment', None)
+    accessChangeTicket_description = args.get('accessChangeTicket_description', None)
+    accessChangeTicket_createdBy = args.get('accessChangeTicket_createdBy', None)
+    accessChangeTicket_creationTime = args.get('accessChangeTicket_creationTime', None)
+    accessChangeTicket_lastModifiedBy = args.get('accessChangeTicket_lastModifiedBy', None)
+    accessChangeTicket_lastModificationTime = args.get('accessChangeTicket_lastModificationTime', None)
+    accessChangeTicket_externalTicketId = args.get('accessChangeTicket_externalTicketId', None)
+    accessChangeTicket_externalTicketStatus = args.get('accessChangeTicket_externalTicketStatus', None)
+    accessChangeTicket_status = args.get('accessChangeTicket_status', None)
+    accessChangeTicket_title = args.get('accessChangeTicket_title', None)
+    accessChangeTicket_changeDetails = args.get('accessChangeTicket_changeDetails', None)
+    accessChangeTicket_priority = args.get('accessChangeTicket_priority', None)
+    accessChangeTicket_owner = args.get('accessChangeTicket_owner', None)
+    accessChangeTicket_dueDate = args.get('accessChangeTicket_dueDate', None)
+    accessChangeTicket_doneDate = args.get('accessChangeTicket_doneDate', None)
+    accessChangeTicket_likelihood = args.get('accessChangeTicket_likelihood', None)
+    accessChangeTicket_ccList_email = args.get('accessChangeTicket_ccList_email', None)
+    accessChangeTicket_ccList_userName = args.get('accessChangeTicket_ccList_userName', None)
+    accessChangeTicket_customFields_comment = args.get('accessChangeTicket_customFields_comment', None)
+    accessChangeTicket_customFields_createdBy = args.get('accessChangeTicket_customFields_createdBy', None)
+    accessChangeTicket_customFields_creationTime = args.get('accessChangeTicket_customFields_creationTime', None)
+    accessChangeTicket_customFields_description = args.get('accessChangeTicket_customFields_description', None)
+    accessChangeTicket_customFields_id = args.get('accessChangeTicket_customFields_id', None)
     accessChangeTicket_customFields_lastModificationTime = args.get(
-        'accessChangeTicket_customFields_lastModificationTime')
-    accessChangeTicket_customFields_lastModifiedBy = args.get('accessChangeTicket_customFields_lastModifiedBy')
-    accessChangeTicket_customFields_name = args.get('accessChangeTicket_customFields_name')
-    accessChangeTicket_customFields_typeCode = args.get('accessChangeTicket_customFields_typeCode')
-    accessChangeTicket_customFields_value = args.get('accessChangeTicket_customFields_value')
-    accessChangeTicket_currentPhaseName = args.get('accessChangeTicket_currentPhaseName')
+        'accessChangeTicket_customFields_lastModificationTime', None)
+    accessChangeTicket_customFields_lastModifiedBy = args.get('accessChangeTicket_customFields_lastModifiedBy', None)
+    accessChangeTicket_customFields_name = args.get('accessChangeTicket_customFields_name', None)
+    accessChangeTicket_customFields_typeCode = args.get('accessChangeTicket_customFields_typeCode', None)
+    accessChangeTicket_customFields_value = args.get('accessChangeTicket_customFields_value', None)
+    accessChangeTicket_currentPhaseName = args.get('accessChangeTicket_currentPhaseName', None)
 
-    phases_comment = args.get('phases_comment')
-    phases_createdBy = args.get('phases_createdBy')
-    phases_creationTime = args.get('phases_creationTime')
-    phases_current = args.get('phases_current')
-    phases_demotionsCount = args.get('phases_demotionsCount')
-    phases_description = args.get('phases_description')
-    phases_dueDate = args.get('phases_dueDate')
-    phases_endDate = args.get('phases_endDate')
-    phases_id = args.get('phases_id')
-    phases_lastModificationTime = args.get('phases_lastModificationTime')
-    phases_lastModifiedBy = args.get('phases_lastModifiedBy')
-    phases_owner = args.get('phases_owner')
-    phases_revisedDueDate = args.get('phases_revisedDueDate')
-    phases_startDate = args.get('phases_startDate')
-    phases_ticketTypePhase_defaultOwner = args.get('phases_ticketTypePhase_defaultOwner')
-    phases_ticketTypePhase_id = args.get('phases_ticketTypePhase_id')
-    phases_ticketTypePhase_name = args.get('phases_ticketTypePhase_name')
-    phases_ticketTypePhase_order = args.get('phases_ticketTypePhase_order')
-    phases_ticketTypePhase_ticketType = args.get('phases_ticketTypePhase_ticketType')
-    phases_ticketTypePhase_waitingForClosure = args.get('phases_ticketTypePhase_waitingForClosure')
+    phases_comment = args.get('phases_comment', None)
+    phases_createdBy = args.get('phases_createdBy', None)
+    phases_creationTime = args.get('phases_creationTime', None)
+    phases_current = args.get('phases_current', None)
+    phases_demotionsCount = args.get('phases_demotionsCount', None)
+    phases_description = args.get('phases_description', None)
+    phases_dueDate = args.get('phases_dueDate', None)
+    phases_endDate = args.get('phases_endDate', None)
+    phases_id = args.get('phases_id', None)
+    phases_lastModificationTime = args.get('phases_lastModificationTime', None)
+    phases_lastModifiedBy = args.get('phases_lastModifiedBy', None)
+    phases_owner = args.get('phases_owner', None)
+    phases_revisedDueDate = args.get('phases_revisedDueDate', None)
+    phases_startDate = args.get('phases_startDate', None)
+    phases_ticketTypePhase_defaultOwner = args.get('phases_ticketTypePhase_defaultOwner', None)
+    phases_ticketTypePhase_id = args.get('phases_ticketTypePhase_id', None)
+    phases_ticketTypePhase_name = args.get('phases_ticketTypePhase_name', None)
+    phases_ticketTypePhase_order = args.get('phases_ticketTypePhase_order', None)
+    phases_ticketTypePhase_ticketType = args.get('phases_ticketTypePhase_ticketType', None)
+    phases_ticketTypePhase_waitingForClosure = args.get('phases_ticketTypePhase_waitingForClosure', None)
 
     ticketTypePhase_type = client.get_type('ns0:ticketTypePhase')
     ticketTypePhase = ticketTypePhase_type(
@@ -231,6 +231,9 @@ def createAccessChangeTicket_command(client, args):
         startDate=phases_startDate,
         ticketTypePhase=ticketTypePhase
     )
+
+    if phases_id is None:
+        phases = None
 
     customField_type = client.get_type('ns0:customField')
     customField = customField_type(
@@ -295,8 +298,8 @@ def createAccessChangeTicket_command(client, args):
 
 
 def getAttachmentFile_command(client, args):
-    attachmentId = args.get('attachmentId')
-    output_filename = args.get('output_filename')
+    attachmentId = args.get('attachmentId', None)
+    output_filename = args.get('output_filename', None)
 
     response = client.service.getAttachmentFile(attachmentId)
     file = fileResult(filename=output_filename, data=response, file_type=EntryType.ENTRY_INFO_FILE)
@@ -305,60 +308,60 @@ def getAttachmentFile_command(client, args):
 
 
 def createRecertifyTicketV2_command(client, args):
-    accessChangeTicket_id = args.get('accessChangeTicket_id')
-    accessChangeTicket_comment = args.get('accessChangeTicket_comment')
-    accessChangeTicket_description = args.get('accessChangeTicket_description')
-    accessChangeTicket_createdBy = args.get('accessChangeTicket_createdBy')
-    accessChangeTicket_creationTime = args.get('accessChangeTicket_creationTime')
-    accessChangeTicket_lastModifiedBy = args.get('accessChangeTicket_lastModifiedBy')
-    accessChangeTicket_lastModificationTime = args.get('accessChangeTicket_lastModificationTime')
-    accessChangeTicket_externalTicketId = args.get('accessChangeTicket_externalTicketId')
-    accessChangeTicket_externalTicketStatus = args.get('accessChangeTicket_externalTicketStatus')
-    accessChangeTicket_status = args.get('accessChangeTicket_status')
-    accessChangeTicket_title = args.get('accessChangeTicket_title')
-    accessChangeTicket_changeDetails = args.get('accessChangeTicket_changeDetails')
-    accessChangeTicket_priority = args.get('accessChangeTicket_priority')
-    accessChangeTicket_owner = args.get('accessChangeTicket_owner')
-    accessChangeTicket_dueDate = args.get('accessChangeTicket_dueDate')
-    accessChangeTicket_doneDate = args.get('accessChangeTicket_doneDate')
-    accessChangeTicket_likelihood = args.get('accessChangeTicket_likelihood')
-    accessChangeTicket_ccList_email = args.get('accessChangeTicket_ccList_email')
-    accessChangeTicket_ccList_userName = args.get('accessChangeTicket_ccList_userName')
-    accessChangeTicket_customFields_comment = args.get('accessChangeTicket_customFields_comment')
-    accessChangeTicket_customFields_createdBy = args.get('accessChangeTicket_customFields_createdBy')
-    accessChangeTicket_customFields_creationTime = args.get('accessChangeTicket_customFields_creationTime')
-    accessChangeTicket_customFields_description = args.get('accessChangeTicket_customFields_description')
-    accessChangeTicket_customFields_id = args.get('accessChangeTicket_customFields_id')
+    accessChangeTicket_id = args.get('accessChangeTicket_id', None)
+    accessChangeTicket_comment = args.get('accessChangeTicket_comment', None)
+    accessChangeTicket_description = args.get('accessChangeTicket_description', None)
+    accessChangeTicket_createdBy = args.get('accessChangeTicket_createdBy', None)
+    accessChangeTicket_creationTime = args.get('accessChangeTicket_creationTime', None)
+    accessChangeTicket_lastModifiedBy = args.get('accessChangeTicket_lastModifiedBy', None)
+    accessChangeTicket_lastModificationTime = args.get('accessChangeTicket_lastModificationTime', None)
+    accessChangeTicket_externalTicketId = args.get('accessChangeTicket_externalTicketId', None)
+    accessChangeTicket_externalTicketStatus = args.get('accessChangeTicket_externalTicketStatus', None)
+    accessChangeTicket_status = args.get('accessChangeTicket_status', None)
+    accessChangeTicket_title = args.get('accessChangeTicket_title', None)
+    accessChangeTicket_changeDetails = args.get('accessChangeTicket_changeDetails', None)
+    accessChangeTicket_priority = args.get('accessChangeTicket_priority', None)
+    accessChangeTicket_owner = args.get('accessChangeTicket_owner', None)
+    accessChangeTicket_dueDate = args.get('accessChangeTicket_dueDate', None)
+    accessChangeTicket_doneDate = args.get('accessChangeTicket_doneDate', None)
+    accessChangeTicket_likelihood = args.get('accessChangeTicket_likelihood', None)
+    accessChangeTicket_ccList_email = args.get('accessChangeTicket_ccList_email', None)
+    accessChangeTicket_ccList_userName = args.get('accessChangeTicket_ccList_userName', None)
+    accessChangeTicket_customFields_comment = args.get('accessChangeTicket_customFields_comment', None)
+    accessChangeTicket_customFields_createdBy = args.get('accessChangeTicket_customFields_createdBy', None)
+    accessChangeTicket_customFields_creationTime = args.get('accessChangeTicket_customFields_creationTime', None)
+    accessChangeTicket_customFields_description = args.get('accessChangeTicket_customFields_description', None)
+    accessChangeTicket_customFields_id = args.get('accessChangeTicket_customFields_id', None)
     accessChangeTicket_customFields_lastModificationTime = args.get(
-        'accessChangeTicket_customFields_lastModificationTime')
-    accessChangeTicket_customFields_lastModifiedBy = args.get('accessChangeTicket_customFields_lastModifiedBy')
-    accessChangeTicket_customFields_name = args.get('accessChangeTicket_customFields_name')
-    accessChangeTicket_customFields_typeCode = args.get('accessChangeTicket_customFields_typeCode')
-    accessChangeTicket_customFields_value = args.get('accessChangeTicket_customFields_value')
-    accessChangeTicket_currentPhaseName = args.get('accessChangeTicket_currentPhaseName')
-    accessRuleElements_action = args.get('accessRuleElements_action')
-    accessRuleElements_comment = args.get('accessRuleElements_comment')
-    accessRuleElements_description = args.get('accessRuleElements_description')
-    accessRuleElements_destinationAddresses = args.get('accessRuleElements_destinationAddresses')
-    accessRuleElements_direction = args.get('accessRuleElements_direction')
-    accessRuleElements_disabled = args.get('accessRuleElements_disabled')
-    accessRuleElements_globalUniqueId = args.get('accessRuleElements_globalUniqueId')
-    accessRuleElements_id = args.get('accessRuleElements_id')
-    accessRuleElements_implied = args.get('accessRuleElements_implied')
-    accessRuleElements_isAuthenticated = args.get('accessRuleElements_isAuthenticated')
-    accessRuleElements_netInterfaces = args.get('accessRuleElements_netInterfaces')
-    accessRuleElements_orgDestinationText = args.get('accessRuleElements_orgDestinationText')
-    accessRuleElements_orgPortsText = args.get('accessRuleElements_orgPortsText')
-    accessRuleElements_orgRuleNumber = args.get('accessRuleElements_orgRuleNumber')
-    accessRuleElements_orgRuleText = args.get('accessRuleElements_orgRuleText')
-    accessRuleElements_orgSourceText = args.get('accessRuleElements_orgSourceText')
-    accessRuleElements_ports = args.get('accessRuleElements_ports')
-    accessRuleElements_ruleChain = args.get('accessRuleElements_ruleChain')
-    accessRuleElements_sbOrder = args.get('accessRuleElements_sbOrder')
-    accessRuleElements_services = args.get('accessRuleElements_services')
-    accessRuleElements_sourceAddresses = args.get('accessRuleElements_sourceAddresses')
-    accessRuleElements_sourceNetInterfaces = args.get('accessRuleElements_sourceNetInterfaces')
-    workflowId = args.get('workflowId')
+        'accessChangeTicket_customFields_lastModificationTime', None)
+    accessChangeTicket_customFields_lastModifiedBy = args.get('accessChangeTicket_customFields_lastModifiedBy', None)
+    accessChangeTicket_customFields_name = args.get('accessChangeTicket_customFields_name', None)
+    accessChangeTicket_customFields_typeCode = args.get('accessChangeTicket_customFields_typeCode', None)
+    accessChangeTicket_customFields_value = args.get('accessChangeTicket_customFields_value', None)
+    accessChangeTicket_currentPhaseName = args.get('accessChangeTicket_currentPhaseName', None)
+    accessRuleElements_action = args.get('accessRuleElements_action', None)
+    accessRuleElements_comment = args.get('accessRuleElements_comment', None)
+    accessRuleElements_description = args.get('accessRuleElements_description', None)
+    accessRuleElements_direction = args.get('accessRuleElements_direction', None)
+    accessRuleElements_disabled = args.get('accessRuleElements_disabled', None)
+    accessRuleElements_globalUniqueId = args.get('accessRuleElements_globalUniqueId', None)
+    accessRuleElements_id = args.get('accessRuleElements_id', None)
+    accessRuleElements_implied = args.get('accessRuleElements_implied', None)
+    accessRuleElements_isAuthenticated = args.get('accessRuleElements_isAuthenticated', None)
+    accessRuleElements_netInterfaces = args.get('accessRuleElements_netInterfaces', None)
+    accessRuleElements_orgDestinationText = args.get('accessRuleElements_orgDestinationText', None)
+    accessRuleElements_orgPortsText = args.get('accessRuleElements_orgPortsText', None)
+    accessRuleElements_orgRuleNumber = args.get('accessRuleElements_orgRuleNumber', None)
+    accessRuleElements_orgRuleText = args.get('accessRuleElements_orgRuleText', None)
+    accessRuleElements_orgSourceText = args.get('accessRuleElements_orgSourceText', None)
+    accessRuleElements_ports = args.get('accessRuleElements_ports', None)
+    accessRuleElements_ruleChain = args.get('accessRuleElements_ruleChain', None)
+    accessRuleElements_sbOrder = args.get('accessRuleElements_sbOrder', None)
+    accessRuleElements_services = args.get('accessRuleElements_services', None)
+    accessRuleElements_sourceAddresses = args.get('accessRuleElements_sourceAddresses', None)
+    accessRuleElements_destinationAddresses = args.get('accessRuleElements_destinationAddresses', None)
+    accessRuleElements_sourceNetInterfaces = args.get('accessRuleElements_sourceNetInterfaces', None)
+    workflowId = args.get('workflowId', 0)
 
     customField_type = client.get_type('ns0:customField')
     customField = customField_type(
@@ -447,7 +450,7 @@ def createRecertifyTicketV2_command(client, args):
 
 
 def getAccessChangeTicket_command(client, args):
-    ticketId = args.get('ticketId')
+    ticketId = args.get('ticketId', None)
 
     response = client.service.getAccessChangeTicket(ticketId)
     command_results = CommandResults(
@@ -461,7 +464,7 @@ def getAccessChangeTicket_command(client, args):
 
 
 def getAccessRequests_command(client, args):
-    accessRequestIds = args.get('accessRequestIds')
+    accessRequestIds = args.get('accessRequestIds', None)
 
     response = client.service.getAccessRequests(accessRequestIds)
     command_results = CommandResults(
@@ -475,8 +478,8 @@ def getAccessRequests_command(client, args):
 
 
 def getPotentialVulnerabilitiesV2_command(client, args):
-    ticketId = args.get('ticketId')
-    changeRequestId = args.get('changeRequestId')
+    ticketId = args.get('ticketId', None)
+    changeRequestId = args.get('changeRequestId', None)
 
     response = client.service.getPotentialVulnerabilitiesV2(ticketId, changeRequestId)
     command_results = CommandResults(
@@ -490,8 +493,8 @@ def getPotentialVulnerabilitiesV2_command(client, args):
 
 
 def deleteChangeRequests_command(client, args):
-    ticketId = args.get('ticketId')
-    changeRequestIds = args.get('changeRequestIds')
+    ticketId = args.get('ticketId', None)
+    changeRequestIds = args.get('changeRequestIds', None)
 
     response = client.service.deleteChangeRequests(ticketId, changeRequestIds)
     command_results = CommandResults(
@@ -505,7 +508,7 @@ def deleteChangeRequests_command(client, args):
 
 
 def deleteAccessChangeTicket_command(client, args):
-    ticketId = args.get('ticketId')
+    ticketId = args.get('ticketId', None)
 
     response = client.service.deleteAccessChangeTicket(ticketId)
     command_results = CommandResults(
@@ -532,7 +535,7 @@ def getNotImplementedChangeRequestsV2_command(client, args):
 
 
 def getTicketEvents_command(client, args):
-    ticketId = args.get('ticketId')
+    ticketId = args.get('ticketId', None)
 
     response = client.service.getTicketEvents(ticketId)
     command_results = CommandResults(
@@ -546,7 +549,7 @@ def getTicketEvents_command(client, args):
 
 
 def getChangeRequestReviewers_command(client, args):
-    ticketId = args.get('ticketId')
+    ticketId = args.get('ticketId', None)
     changeRequestId = args.get('changeRequestId')
 
     response = client.service.getChangeRequestReviewers(ticketId, changeRequestId)
@@ -561,7 +564,7 @@ def getChangeRequestReviewers_command(client, args):
 
 
 def getChangeRequestRuleAttributes_command(client, args):
-    ticketId = args.get('ticketId')
+    ticketId = args.get('ticketId', None)
     changeRequestId = args.get('changeRequestId')
 
     response = client.service.getChangeRequestRuleAttributes(ticketId, changeRequestId)
@@ -576,7 +579,7 @@ def getChangeRequestRuleAttributes_command(client, args):
 
 
 def getGeneratedCommands_command(client, args):
-    ticketId = args.get('ticketId')
+    ticketId = args.get('ticketId', None)
     changeRequestId = args.get('changeRequestId')
 
     response = client.service.getGeneratedCommands(ticketId, changeRequestId)
@@ -604,11 +607,11 @@ def getImplementedChangeRequests_command(client, args):
 
 
 def operateOnVulnerabilityDefinitionTicket_command(client, args):
-    ticketId = args.get('ticketId')
-    phaseOperation_phaseId = args.get('phaseOperation_phaseId')
-    phaseOperation_phaseOwner = args.get('phaseOperation_phaseOwner')
-    phaseOperation_reject = args.get('phaseOperation_reject')
-    phaseOperation_type_var = args.get('phaseOperation_type')
+    ticketId = args.get('ticketId', None)
+    phaseOperation_phaseId = args.get('phaseOperation_phaseId', None)
+    phaseOperation_phaseOwner = args.get('phaseOperation_phaseOwner', None)
+    phaseOperation_reject = args.get('phaseOperation_reject', None)
+    phaseOperation_type_var = args.get('phaseOperation_type', None)
 
     phaseOperation_type = client.get_type('ns0:phaseOperation')
     phaseOperation = phaseOperation_type(
@@ -632,56 +635,56 @@ def operateOnVulnerabilityDefinitionTicket_command(client, args):
 
 def createChangeManagerTicket_command(client, args):
     accessChangeTicket_id = args.get('accessChangeTicket_id', -1)
-    accessChangeTicket_comment = args.get('accessChangeTicket_comment')
-    accessChangeTicket_description = args.get('accessChangeTicket_description')
-    accessChangeTicket_createdBy = args.get('accessChangeTicket_createdBy')
-    accessChangeTicket_creationTime = args.get('accessChangeTicket_creationTime')
-    accessChangeTicket_lastModifiedBy = args.get('accessChangeTicket_lastModifiedBy')
-    accessChangeTicket_lastModificationTime = args.get('accessChangeTicket_lastModificationTime')
-    accessChangeTicket_externalTicketId = args.get('accessChangeTicket_externalTicketId')
+    accessChangeTicket_comment = args.get('accessChangeTicket_comment', None)
+    accessChangeTicket_description = args.get('accessChangeTicket_description', None)
+    accessChangeTicket_createdBy = args.get('accessChangeTicket_createdBy', None)
+    accessChangeTicket_creationTime = args.get('accessChangeTicket_creationTime', None)
+    accessChangeTicket_lastModifiedBy = args.get('accessChangeTicket_lastModifiedBy', None)
+    accessChangeTicket_lastModificationTime = args.get('accessChangeTicket_lastModificationTime', None)
+    accessChangeTicket_externalTicketId = args.get('accessChangeTicket_externalTicketId', None)
     accessChangeTicket_externalTicketStatus = args.get('accessChangeTicket_externalTicketStatus', 'Pending')
     accessChangeTicket_status = args.get('accessChangeTicket_status', 'New')
-    accessChangeTicket_title = args.get('accessChangeTicket_title')
-    accessChangeTicket_changeDetails = args.get('accessChangeTicket_changeDetails')
+    accessChangeTicket_title = args.get('accessChangeTicket_title', None)
+    accessChangeTicket_changeDetails = args.get('accessChangeTicket_changeDetails', None)
     accessChangeTicket_priority = args.get('accessChangeTicket_priority', 'P5')
-    accessChangeTicket_owner = args.get('accessChangeTicket_owner')
-    accessChangeTicket_dueDate = args.get('accessChangeTicket_dueDate')
-    accessChangeTicket_doneDate = args.get('accessChangeTicket_doneDate')
+    accessChangeTicket_owner = args.get('accessChangeTicket_owner', None)
+    accessChangeTicket_dueDate = args.get('accessChangeTicket_dueDate', None)
+    accessChangeTicket_doneDate = args.get('accessChangeTicket_doneDate', None)
     accessChangeTicket_likelihood = args.get('accessChangeTicket_likelihood', 'Unknown')
-    accessChangeTicket_ccList_email = args.get('accessChangeTicket_ccList_email')
+    accessChangeTicket_ccList_email = args.get('accessChangeTicket_ccList_email', None)
     accessChangeTicket_ccList_userName = args.get('accessChangeTicket_ccList_userName')
-    accessChangeTicket_customFields_comment = args.get('accessChangeTicket_customFields_comment')
-    accessChangeTicket_customFields_createdBy = args.get('accessChangeTicket_customFields_createdBy')
-    accessChangeTicket_customFields_creationTime = args.get('accessChangeTicket_customFields_creationTime')
-    accessChangeTicket_customFields_description = args.get('accessChangeTicket_customFields_description')
+    accessChangeTicket_customFields_comment = args.get('accessChangeTicket_customFields_comment', None)
+    accessChangeTicket_customFields_createdBy = args.get('accessChangeTicket_customFields_createdBy', None)
+    accessChangeTicket_customFields_creationTime = args.get('accessChangeTicket_customFields_creationTime', None)
+    accessChangeTicket_customFields_description = args.get('accessChangeTicket_customFields_description', None)
     accessChangeTicket_customFields_id = args.get('accessChangeTicket_customFields_id', 0)
     accessChangeTicket_customFields_lastModificationTime = args.get(
-        'accessChangeTicket_customFields_lastModificationTime')
-    accessChangeTicket_customFields_lastModifiedBy = args.get('accessChangeTicket_customFields_lastModifiedBy')
-    accessChangeTicket_customFields_name = args.get('accessChangeTicket_customFields_name')
-    accessChangeTicket_customFields_typeCode = args.get('accessChangeTicket_customFields_typeCode')
-    accessChangeTicket_customFields_value = args.get('accessChangeTicket_customFields_value')
-    accessChangeTicket_currentPhaseName = args.get('accessChangeTicket_currentPhaseName')
-    phases_comment = args.get('phases_comment')
-    phases_createdBy = args.get('phases_createdBy')
-    phases_creationTime = args.get('phases_creationTime')
-    phases_current = args.get('phases_current')
-    phases_demotionsCount = args.get('phases_demotionsCount')
-    phases_description = args.get('phases_description')
-    phases_dueDate = args.get('phases_dueDate')
-    phases_endDate = args.get('phases_endDate')
-    phases_id = args.get('phases_id')
-    phases_lastModificationTime = args.get('phases_lastModificationTime')
-    phases_lastModifiedBy = args.get('phases_lastModifiedBy')
-    phases_owner = args.get('phases_owner')
-    phases_revisedDueDate = args.get('phases_revisedDueDate')
-    phases_startDate = args.get('phases_startDate')
-    phases_ticketTypePhase_defaultOwner = args.get('phases_ticketTypePhase_defaultOwner')
-    phases_ticketTypePhase_id = args.get('phases_ticketTypePhase_id')
-    phases_ticketTypePhase_name = args.get('phases_ticketTypePhase_name')
-    phases_ticketTypePhase_order = args.get('phases_ticketTypePhase_order')
-    phases_ticketTypePhase_ticketType = args.get('phases_ticketTypePhase_ticketType')
-    phases_ticketTypePhase_waitingForClosure = args.get('phases_ticketTypePhase_waitingForClosure')
+        'accessChangeTicket_customFields_lastModificationTime', None)
+    accessChangeTicket_customFields_lastModifiedBy = args.get('accessChangeTicket_customFields_lastModifiedBy', None)
+    accessChangeTicket_customFields_name = args.get('accessChangeTicket_customFields_name', None)
+    accessChangeTicket_customFields_typeCode = args.get('accessChangeTicket_customFields_typeCode', None)
+    accessChangeTicket_customFields_value = args.get('accessChangeTicket_customFields_value', None)
+    accessChangeTicket_currentPhaseName = args.get('accessChangeTicket_currentPhaseName', None)
+    phases_comment = args.get('phases_comment', None)
+    phases_createdBy = args.get('phases_createdBy', None)
+    phases_creationTime = args.get('phases_creationTime', None)
+    phases_current = args.get('phases_current', None)
+    phases_demotionsCount = args.get('phases_demotionsCount', None)
+    phases_description = args.get('phases_description', None)
+    phases_dueDate = args.get('phases_dueDate', None)
+    phases_endDate = args.get('phases_endDate', None)
+    phases_id = args.get('phases_id', None)
+    phases_lastModificationTime = args.get('phases_lastModificationTime', None)
+    phases_lastModifiedBy = args.get('phases_lastModifiedBy', None)
+    phases_owner = args.get('phases_owner', None)
+    phases_revisedDueDate = args.get('phases_revisedDueDate', None)
+    phases_startDate = args.get('phases_startDate', None)
+    phases_ticketTypePhase_defaultOwner = args.get('phases_ticketTypePhase_defaultOwner', None)
+    phases_ticketTypePhase_id = args.get('phases_ticketTypePhase_id', None)
+    phases_ticketTypePhase_name = args.get('phases_ticketTypePhase_name', None)
+    phases_ticketTypePhase_order = args.get('phases_ticketTypePhase_order', None)
+    phases_ticketTypePhase_ticketType = args.get('phases_ticketTypePhase_ticketType', None)
+    phases_ticketTypePhase_waitingForClosure = args.get('phases_ticketTypePhase_waitingForClosure', None)
     workflowId = args.get('workflowId', 1)
 
     ticketTypePhase_type = client.get_type('ns0:ticketTypePhase')
@@ -713,6 +716,9 @@ def createChangeManagerTicket_command(client, args):
         ticketTypePhase=ticketTypePhase
     )
 
+    if phases_id is None:
+        phases = None
+
     customField_type = client.get_type('ns0:customField')
     customField = customField_type(
         comment=accessChangeTicket_customFields_comment,
@@ -726,6 +732,9 @@ def createChangeManagerTicket_command(client, args):
         typeCode=accessChangeTicket_customFields_typeCode,
         value=accessChangeTicket_customFields_value
     )
+
+    if accessChangeTicket_customFields_typeCode is None or accessChangeTicket_customFields_id is None:
+        customField = None
 
     emailRecipient_type = client.get_type('ns0:emailRecipient')
     emailRecipient = emailRecipient_type(
@@ -775,7 +784,7 @@ def createChangeManagerTicket_command(client, args):
 
 
 def getTicketsNotImplementedChangeRequestsV2_command(client, args):
-    ticketIds = args.get('ticketIds')
+    ticketIds = args.get('ticketIds', None)
 
     response = client.service.getTicketsNotImplementedChangeRequestsV2(ticketIds)
     command_results = CommandResults(
@@ -789,9 +798,9 @@ def getTicketsNotImplementedChangeRequestsV2_command(client, args):
 
 
 def findAccessRequests_command(client, args):
-    hostId = args.get('hostId')
-    dateRange_endDate = args.get('dateRange_endDate')
-    dateRange_startDate = args.get('dateRange_startDate')
+    hostId = args.get('hostId', None)
+    dateRange_endDate = args.get('dateRange_endDate', None)
+    dateRange_startDate = args.get('dateRange_startDate', None)
 
     dateRange_type = client.get_type('ns0:dateRange')
     dateRange = dateRange_type(
@@ -811,9 +820,9 @@ def findAccessRequests_command(client, args):
 
 
 def expandFirewallsForAccessChangeTicket_command(client, args):
-    ticketId = args.get('ticketId')
-    accessRequestIds = args.get('accessRequestIds')
-    recalculate = args.get('recalculate')
+    ticketId = args.get('ticketId', None)
+    accessRequestIds = args.get('accessRequestIds', None)
+    recalculate = args.get('recalculate', None)
 
     response = client.service.expandFirewallsForAccessChangeTicket(ticketId, accessRequestIds, recalculate)
     command_results = CommandResults(
@@ -827,11 +836,11 @@ def expandFirewallsForAccessChangeTicket_command(client, args):
 
 
 def addAttachmentFile_command(client, args):
-    entry_id = args.get('EntryID')
-    attachmentDesc = args.get('attachmentDesc')
-    sourceFileName = args.get('sourceFileName')
-    ticketId = args.get('ticketId')
-    phaseName = args.get('phaseName')
+    entry_id = args.get('EntryID', None)
+    attachmentDesc = args.get('attachmentDesc', None)
+    sourceFileName = args.get('sourceFileName', None)
+    ticketId = args.get('ticketId', None)
+    phaseName = args.get('phaseName', None)
 
     file_path = demisto.getFilePath(entry_id).get('path')
 
@@ -857,14 +866,14 @@ def addAttachmentFile_command(client, args):
 
 
 def countAccessChangeTickets_command(client, args):
-    filter_createdBy = args.get('filter_createdBy')
-    filter_freeTextFilter = args.get('filter_freeTextFilter')
-    filter_modifiedBy = args.get('filter_modifiedBy')
-    filter_myGroups = args.get('filter_myGroups')
-    filter_owner = args.get('filter_owner')
-    filter_phaseName = args.get('filter_phaseName')
-    filter_statusFilter = args.get('filter_statusFilter')
-    filter_ticketIdsFilter = args.get('filter_ticketIdsFilter')
+    filter_createdBy = args.get('filter_createdBy', None)
+    filter_freeTextFilter = args.get('filter_freeTextFilter', None)
+    filter_modifiedBy = args.get('filter_modifiedBy', None)
+    filter_myGroups = args.get('filter_myGroups', None)
+    filter_owner = args.get('filter_owner', None)
+    filter_phaseName = args.get('filter_phaseName', None)
+    filter_statusFilter = args.get('filter_statusFilter', None)
+    filter_ticketIdsFilter = args.get('filter_ticketIdsFilter', None)
 
     filter_type = client.get_type('ns0:ticketsSearchFilter')
     filter = filter_type(
@@ -890,8 +899,8 @@ def countAccessChangeTickets_command(client, args):
 
 
 def getDerivedChangeRequestsV7_command(client, args):
-    ticketId = args.get('ticketId')
-    changeRequestId = args.get('changeRequestId')
+    ticketId = args.get('ticketId', None)
+    changeRequestId = args.get('changeRequestId', None)
 
     response = client.service.getDerivedChangeRequestsV7(ticketId, changeRequestId)
     command_results = CommandResults(
@@ -905,51 +914,51 @@ def getDerivedChangeRequestsV7_command(client, args):
 
 
 def setTicketAccessRequests_command(client, args):
-    ticketId = args.get('ticketId')
-    accessRequests_accessQuery_destinationAddresses = args.get('accessRequests_accessQuery_destinationAddresses')
+    ticketId = args.get('ticketId', None)
+    accessRequests_accessQuery_destinationAddresses = args.get('accessRequests_accessQuery_destinationAddresses', None)
     accessRequests_accessQuery_destinationElements_IPAddress = args.get(
-        'accessRequests_accessQuery_destinationElements_IPAddress')
-    accessRequests_accessQuery_destinationElements_id = args.get('accessRequests_accessQuery_destinationElements_id')
-    accessRequests_accessQuery_destinationElements_name = args.get('accessRequests_accessQuery_destinationElements_name')
-    accessRequests_accessQuery_destinationElements_netMask = args.get('accessRequests_accessQuery_destinationElements_netMask')
-    accessRequests_accessQuery_destinationElements_path = args.get('accessRequests_accessQuery_destinationElements_path')
-    accessRequests_accessQuery_destinationElements_type = args.get('accessRequests_accessQuery_destinationElements_type')
-    accessRequests_accessQuery_firewall_id = args.get('accessRequests_accessQuery_firewall_id')
-    accessRequests_accessQuery_firewall_name = args.get('accessRequests_accessQuery_firewall_name')
-    accessRequests_accessQuery_firewall_path = args.get('accessRequests_accessQuery_firewall_path')
-    accessRequests_accessQuery_mode = args.get('accessRequests_accessQuery_mode')
-    accessRequests_accessQuery_ports = args.get('accessRequests_accessQuery_ports')
-    accessRequests_accessQuery_sourceAddresses = args.get('accessRequests_accessQuery_sourceAddresses')
-    accessRequests_accessQuery_sourceElements_IPAddress = args.get('accessRequests_accessQuery_sourceElements_IPAddress')
-    accessRequests_accessQuery_sourceElements_id = args.get('accessRequests_accessQuery_sourceElements_id')
-    accessRequests_accessQuery_sourceElements_name = args.get('accessRequests_accessQuery_sourceElements_name')
-    accessRequests_accessQuery_sourceElements_netMask = args.get('accessRequests_accessQuery_sourceElements_netMask')
-    accessRequests_accessQuery_sourceElements_path = args.get('accessRequests_accessQuery_sourceElements_path')
-    accessRequests_accessQuery_sourceElements_type = args.get('accessRequests_accessQuery_sourceElements_type')
-    accessRequests_accessStatus = args.get('accessRequests_accessStatus')
-    accessRequests_accessType = args.get('accessRequests_accessType')
-    accessRequests_comment = args.get('accessRequests_comment')
-    accessRequests_complianceStatus = args.get('accessRequests_complianceStatus')
-    accessRequests_complianceViolations_aprName = args.get('accessRequests_complianceViolations_aprName')
-    accessRequests_complianceViolations_aprPath = args.get('accessRequests_complianceViolations_aprPath')
-    accessRequests_complianceViolations_importance = args.get('accessRequests_complianceViolations_importance')
-    accessRequests_complianceViolations_portsViolating = args.get('accessRequests_complianceViolations_portsViolating')
-    accessRequests_createdBy = args.get('accessRequests_createdBy')
-    accessRequests_creationTime = args.get('accessRequests_creationTime')
-    accessRequests_description = args.get('accessRequests_description')
-    accessRequests_destinationZones = args.get('accessRequests_destinationZones')
-    accessRequests_disabled = args.get('accessRequests_disabled')
-    accessRequests_id = args.get('accessRequests_id')
-    accessRequests_lastModificationTime = args.get('accessRequests_lastModificationTime')
-    accessRequests_lastModifiedBy = args.get('accessRequests_lastModifiedBy')
-    accessRequests_potentialVulnerabilities_catalogId = args.get('accessRequests_potentialVulnerabilities_catalogId')
-    accessRequests_potentialVulnerabilities_cveId = args.get('accessRequests_potentialVulnerabilities_cveId')
-    accessRequests_potentialVulnerabilities_hostIp = args.get('accessRequests_potentialVulnerabilities_hostIp')
-    accessRequests_potentialVulnerabilities_hostName = args.get('accessRequests_potentialVulnerabilities_hostName')
-    accessRequests_potentialVulnerabilities_id = args.get('accessRequests_potentialVulnerabilities_id')
-    accessRequests_potentialVulnerabilities_severity = args.get('accessRequests_potentialVulnerabilities_severity')
-    accessRequests_potentialVulnerabilities_title = args.get('accessRequests_potentialVulnerabilities_title')
-    accessRequests_sourceZones = args.get('accessRequests_sourceZones')
+        'accessRequests_accessQuery_destinationElements_IPAddress', None)
+    accessRequests_accessQuery_destinationElements_id = args.get('accessRequests_accessQuery_destinationElements_id', None)
+    accessRequests_accessQuery_destinationElements_name = args.get('accessRequests_accessQuery_destinationElements_name', None)
+    accessRequests_accessQuery_destinationElements_netMask = args.get('accessRequests_accessQuery_destinationElements_netMask', None)
+    accessRequests_accessQuery_destinationElements_path = args.get('accessRequests_accessQuery_destinationElements_path', None)
+    accessRequests_accessQuery_destinationElements_type = args.get('accessRequests_accessQuery_destinationElements_type', None)
+    accessRequests_accessQuery_firewall_id = args.get('accessRequests_accessQuery_firewall_id', None)
+    accessRequests_accessQuery_firewall_name = args.get('accessRequests_accessQuery_firewall_name', None)
+    accessRequests_accessQuery_firewall_path = args.get('accessRequests_accessQuery_firewall_path', None)
+    accessRequests_accessQuery_mode = args.get('accessRequests_accessQuery_mode', None)
+    accessRequests_accessQuery_ports = args.get('accessRequests_accessQuery_ports', None)
+    accessRequests_accessQuery_sourceAddresses = args.get('accessRequests_accessQuery_sourceAddresses', None)
+    accessRequests_accessQuery_sourceElements_IPAddress = args.get('accessRequests_accessQuery_sourceElements_IPAddress', None)
+    accessRequests_accessQuery_sourceElements_id = args.get('accessRequests_accessQuery_sourceElements_id', None)
+    accessRequests_accessQuery_sourceElements_name = args.get('accessRequests_accessQuery_sourceElements_name', None)
+    accessRequests_accessQuery_sourceElements_netMask = args.get('accessRequests_accessQuery_sourceElements_netMask', None)
+    accessRequests_accessQuery_sourceElements_path = args.get('accessRequests_accessQuery_sourceElements_path', None)
+    accessRequests_accessQuery_sourceElements_type = args.get('accessRequests_accessQuery_sourceElements_type', None)
+    accessRequests_accessStatus = args.get('accessRequests_accessStatus', None)
+    accessRequests_accessType = args.get('accessRequests_accessType', None)
+    accessRequests_comment = args.get('accessRequests_comment', None)
+    accessRequests_complianceStatus = args.get('accessRequests_complianceStatus', None)
+    accessRequests_complianceViolations_aprName = args.get('accessRequests_complianceViolations_aprName', None)
+    accessRequests_complianceViolations_aprPath = args.get('accessRequests_complianceViolations_aprPath', None)
+    accessRequests_complianceViolations_importance = args.get('accessRequests_complianceViolations_importance', None)
+    accessRequests_complianceViolations_portsViolating = args.get('accessRequests_complianceViolations_portsViolating', None)
+    accessRequests_createdBy = args.get('accessRequests_createdBy', None)
+    accessRequests_creationTime = args.get('accessRequests_creationTime', None)
+    accessRequests_description = args.get('accessRequests_description', None)
+    accessRequests_destinationZones = args.get('accessRequests_destinationZones', None)
+    accessRequests_disabled = args.get('accessRequests_disabled', None)
+    accessRequests_id = args.get('accessRequests_id', None)
+    accessRequests_lastModificationTime = args.get('accessRequests_lastModificationTime', None)
+    accessRequests_lastModifiedBy = args.get('accessRequests_lastModifiedBy', None)
+    accessRequests_potentialVulnerabilities_catalogId = args.get('accessRequests_potentialVulnerabilities_catalogId', None)
+    accessRequests_potentialVulnerabilities_cveId = args.get('accessRequests_potentialVulnerabilities_cveId', None)
+    accessRequests_potentialVulnerabilities_hostIp = args.get('accessRequests_potentialVulnerabilities_hostIp', None)
+    accessRequests_potentialVulnerabilities_hostName = args.get('accessRequests_potentialVulnerabilities_hostName', None)
+    accessRequests_potentialVulnerabilities_id = args.get('accessRequests_potentialVulnerabilities_id', None)
+    accessRequests_potentialVulnerabilities_severity = args.get('accessRequests_potentialVulnerabilities_severity', None)
+    accessRequests_potentialVulnerabilities_title = args.get('accessRequests_potentialVulnerabilities_title', None)
+    accessRequests_sourceZones = args.get('accessRequests_sourceZones', None)
 
     destinationElements_type = client.get_type('ns0:networkElement')
     destinationElements = destinationElements_type(
@@ -1044,37 +1053,37 @@ def setTicketAccessRequests_command(client, args):
 
 
 def updateAccessChangeTicket_command(client, args):
-    accessChangeTicket_id = args.get('accessChangeTicket_id')
-    accessChangeTicket_comment = args.get('accessChangeTicket_comment')
-    accessChangeTicket_description = args.get('accessChangeTicket_description')
-    accessChangeTicket_createdBy = args.get('accessChangeTicket_createdBy')
-    accessChangeTicket_creationTime = args.get('accessChangeTicket_creationTime')
-    accessChangeTicket_lastModifiedBy = args.get('accessChangeTicket_lastModifiedBy')
-    accessChangeTicket_lastModificationTime = args.get('accessChangeTicket_lastModificationTime')
-    accessChangeTicket_externalTicketId = args.get('accessChangeTicket_externalTicketId')
-    accessChangeTicket_externalTicketStatus = args.get('accessChangeTicket_externalTicketStatus')
-    accessChangeTicket_status = args.get('accessChangeTicket_status')
-    accessChangeTicket_title = args.get('accessChangeTicket_title')
-    accessChangeTicket_changeDetails = args.get('accessChangeTicket_changeDetails')
-    accessChangeTicket_priority = args.get('accessChangeTicket_priority')
-    accessChangeTicket_owner = args.get('accessChangeTicket_owner')
-    accessChangeTicket_dueDate = args.get('accessChangeTicket_dueDate')
-    accessChangeTicket_doneDate = args.get('accessChangeTicket_doneDate')
-    accessChangeTicket_likelihood = args.get('accessChangeTicket_likelihood')
-    accessChangeTicket_ccList_email = args.get('accessChangeTicket_ccList_email')
-    accessChangeTicket_ccList_userName = args.get('accessChangeTicket_ccList_userName')
-    accessChangeTicket_customFields_comment = args.get('accessChangeTicket_customFields_comment')
-    accessChangeTicket_customFields_createdBy = args.get('accessChangeTicket_customFields_createdBy')
-    accessChangeTicket_customFields_creationTime = args.get('accessChangeTicket_customFields_creationTime')
-    accessChangeTicket_customFields_description = args.get('accessChangeTicket_customFields_description')
-    accessChangeTicket_customFields_id = args.get('accessChangeTicket_customFields_id')
+    accessChangeTicket_id = args.get('accessChangeTicket_id', None)
+    accessChangeTicket_comment = args.get('accessChangeTicket_comment', None)
+    accessChangeTicket_description = args.get('accessChangeTicket_description', None)
+    accessChangeTicket_createdBy = args.get('accessChangeTicket_createdBy', None)
+    accessChangeTicket_creationTime = args.get('accessChangeTicket_creationTime', None)
+    accessChangeTicket_lastModifiedBy = args.get('accessChangeTicket_lastModifiedBy', None)
+    accessChangeTicket_lastModificationTime = args.get('accessChangeTicket_lastModificationTime', None)
+    accessChangeTicket_externalTicketId = args.get('accessChangeTicket_externalTicketId', None)
+    accessChangeTicket_externalTicketStatus = args.get('accessChangeTicket_externalTicketStatus', None)
+    accessChangeTicket_status = args.get('accessChangeTicket_status', None)
+    accessChangeTicket_title = args.get('accessChangeTicket_title', None)
+    accessChangeTicket_changeDetails = args.get('accessChangeTicket_changeDetails', None)
+    accessChangeTicket_priority = args.get('accessChangeTicket_priority', None)
+    accessChangeTicket_owner = args.get('accessChangeTicket_owner', None)
+    accessChangeTicket_dueDate = args.get('accessChangeTicket_dueDate', None)
+    accessChangeTicket_doneDate = args.get('accessChangeTicket_doneDate', None)
+    accessChangeTicket_likelihood = args.get('accessChangeTicket_likelihood', None)
+    accessChangeTicket_ccList_email = args.get('accessChangeTicket_ccList_email', None)
+    accessChangeTicket_ccList_userName = args.get('accessChangeTicket_ccList_userName', None)
+    accessChangeTicket_customFields_comment = args.get('accessChangeTicket_customFields_comment', None)
+    accessChangeTicket_customFields_createdBy = args.get('accessChangeTicket_customFields_createdBy', None)
+    accessChangeTicket_customFields_creationTime = args.get('accessChangeTicket_customFields_creationTime', None)
+    accessChangeTicket_customFields_description = args.get('accessChangeTicket_customFields_description', None)
+    accessChangeTicket_customFields_id = args.get('accessChangeTicket_customFields_id', None)
     accessChangeTicket_customFields_lastModificationTime = args.get(
-        'accessChangeTicket_customFields_lastModificationTime')
-    accessChangeTicket_customFields_lastModifiedBy = args.get('accessChangeTicket_customFields_lastModifiedBy')
-    accessChangeTicket_customFields_name = args.get('accessChangeTicket_customFields_name')
-    accessChangeTicket_customFields_typeCode = args.get('accessChangeTicket_customFields_typeCode')
-    accessChangeTicket_customFields_value = args.get('accessChangeTicket_customFields_value')
-    accessChangeTicket_currentPhaseName = args.get('accessChangeTicket_currentPhaseName')
+        'accessChangeTicket_customFields_lastModificationTime', None)
+    accessChangeTicket_customFields_lastModifiedBy = args.get('accessChangeTicket_customFields_lastModifiedBy', None)
+    accessChangeTicket_customFields_name = args.get('accessChangeTicket_customFields_name', None)
+    accessChangeTicket_customFields_typeCode = args.get('accessChangeTicket_customFields_typeCode', None)
+    accessChangeTicket_customFields_value = args.get('accessChangeTicket_customFields_value', None)
+    accessChangeTicket_currentPhaseName = args.get('accessChangeTicket_currentPhaseName', None)
 
     customField_type = client.get_type('ns0:customField')
     customField = customField_type(
@@ -1089,6 +1098,9 @@ def updateAccessChangeTicket_command(client, args):
         typeCode=accessChangeTicket_customFields_typeCode,
         value=accessChangeTicket_customFields_value
     )
+
+    if accessChangeTicket_customFields_typeCode is None or accessChangeTicket_customFields_id is None:
+        customField = None
 
     emailRecipient_type = client.get_type('ns0:emailRecipient')
     emailRecipient = emailRecipient_type(
@@ -1135,28 +1147,28 @@ def updateAccessChangeTicket_command(client, args):
 
 
 def addDerivedChangeRequests_command(client, args):
-    ticketId = args.get('ticketId')
-    changeRequestId = args.get('changeRequestId')
-    firewalls_accessRules = args.get('firewalls_accessRules')
-    firewalls_id = args.get('firewalls_id')
-    firewalls_interfaces = args.get('firewalls_interfaces')
-    firewalls_name = args.get('firewalls_name')
-    firewalls_netInterface_description = args.get('firewalls_netInterface_description')
-    firewalls_netInterface_id = args.get('firewalls_netInterface_id')
-    firewalls_netInterface_ipAddress = args.get('firewalls_netInterface_ipAddress')
-    firewalls_netInterface_name = args.get('firewalls_netInterface_name')
-    firewalls_netInterface_type = args.get('firewalls_netInterface_type')
-    firewalls_netInterface_zoneName = args.get('firewalls_netInterface_zoneName')
-    firewalls_netInterface_zoneType = args.get('firewalls_netInterface_zoneType')
-    firewalls_os = args.get('firewalls_os')
-    firewalls_osVendor = args.get('firewalls_osVendor')
-    firewalls_osVersion = args.get('firewalls_osVersion')
-    firewalls_primaryIp = args.get('firewalls_primaryIp')
-    firewalls_routingRules = args.get('firewalls_routingRules')
-    firewalls_services = args.get('firewalls_services')
-    firewalls_status = args.get('firewalls_status')
-    firewalls_type_var = args.get('firewalls_type')
-    firewalls_vulnerabilities = args.get('firewalls_vulnerabilities')
+    ticketId = args.get('ticketId', None)
+    changeRequestId = args.get('changeRequestId', None)
+    firewalls_accessRules = args.get('firewalls_accessRules', None)
+    firewalls_id = args.get('firewalls_id', None)
+    firewalls_interfaces = args.get('firewalls_interfaces', None)
+    firewalls_name = args.get('firewalls_name', None)
+    firewalls_netInterface_description = args.get('firewalls_netInterface_description', None)
+    firewalls_netInterface_id = args.get('firewalls_netInterface_id', None)
+    firewalls_netInterface_ipAddress = args.get('firewalls_netInterface_ipAddress', None)
+    firewalls_netInterface_name = args.get('firewalls_netInterface_name', None)
+    firewalls_netInterface_type = args.get('firewalls_netInterface_type', None)
+    firewalls_netInterface_zoneName = args.get('firewalls_netInterface_zoneName', None)
+    firewalls_netInterface_zoneType = args.get('firewalls_netInterface_zoneType', None)
+    firewalls_os = args.get('firewalls_os', None)
+    firewalls_osVendor = args.get('firewalls_osVendor', None)
+    firewalls_osVersion = args.get('firewalls_osVersion', None)
+    firewalls_primaryIp = args.get('firewalls_primaryIp', None)
+    firewalls_routingRules = args.get('firewalls_routingRules', None)
+    firewalls_services = args.get('firewalls_services', None)
+    firewalls_status = args.get('firewalls_status', None)
+    firewalls_type_var = args.get('firewalls_type', None)
+    firewalls_vulnerabilities = args.get('firewalls_vulnerabilities', None)
 
     netInterface_type = client.get_type('ns0:netInterfaceElement')
     netInterface = netInterface_type(
@@ -1204,8 +1216,8 @@ def addDerivedChangeRequests_command(client, args):
 
 
 def getPolicyViolations_command(client, args):
-    ticketId = args.get('ticketId')
-    changeRequestId = args.get('changeRequestId')
+    ticketId = args.get('ticketId', None)
+    changeRequestId = args.get('changeRequestId', None)
 
     response = client.service.getPolicyViolations(ticketId, changeRequestId)
     command_results = CommandResults(
@@ -1219,7 +1231,7 @@ def getPolicyViolations_command(client, args):
 
 
 def removeAttachmentFile_command(client, args):
-    attachmentId = args.get('attachmentId')
+    attachmentId = args.get('attachmentId', None)
 
     response = client.service.removeAttachmentFile(attachmentId)
     command_results = CommandResults(
@@ -1246,7 +1258,7 @@ def getTicketWorkflows_command(client, args):
 
 
 def recalculateTicketChangeRequests_command(client, args):
-    ticketId = args.get('ticketId')
+    ticketId = args.get('ticketId', None)
 
     response = client.service.recalculateTicketChangeRequests(ticketId)
     command_results = CommandResults(
@@ -1260,16 +1272,16 @@ def recalculateTicketChangeRequests_command(client, args):
 
 
 def findConfigurationItems_command(client, args):
-    filter_ancestorOf = args.get('filter_ancestorOf')
-    filter_childrenOf = args.get('filter_childrenOf')
-    filter_configurationItemTypes = args.get('filter_configurationItemTypes')
-    filter_freeTextFilter = args.get('filter_freeTextFilter')
-    filter_ids = args.get('filter_ids')
-    filter_ignoreEmptyGroups = args.get('filter_ignoreEmptyGroups')
-    filter_isEnabled = args.get('filter_isEnabled')
-    filter_nameFilter = args.get('filter_nameFilter')
-    subRange_size = args.get('subRange_size')
-    subRange_start = args.get('subRange_start')
+    filter_ancestorOf = args.get('filter_ancestorOf', None)
+    filter_childrenOf = args.get('filter_childrenOf', None)
+    filter_configurationItemTypes = args.get('filter_configurationItemTypes', None)
+    filter_freeTextFilter = args.get('filter_freeTextFilter', None)
+    filter_ids = args.get('filter_ids', None)
+    filter_ignoreEmptyGroups = args.get('filter_ignoreEmptyGroups', None)
+    filter_isEnabled = args.get('filter_isEnabled', None)
+    filter_nameFilter = args.get('filter_nameFilter', None)
+    subRange_size = args.get('subRange_size', None)
+    subRange_start = args.get('subRange_start', None)
 
     filter_type = client.get_type('ns0:configurationItemFilter')
     filter = filter_type(
@@ -1302,7 +1314,7 @@ def findConfigurationItems_command(client, args):
 
 
 def getSponsoringApplication_command(client, args):
-    ticketId = args.get('ticketId')
+    ticketId = args.get('ticketId', None)
 
     response = client.service.getSponsoringApplication(ticketId)
     command_results = CommandResults(
@@ -1317,21 +1329,31 @@ def getSponsoringApplication_command(client, args):
 
 def addOriginalChangeRequestsV7_command(client, args):
     ticketId = args.get('ticketId')
-    changeRequests_comment = args.get('changeRequests_comment')
-    changeRequests_complianceStatus = args.get('changeRequests_complianceStatus')
-    changeRequests_createdBy = args.get('changeRequests_createdBy')
-    changeRequests_creationTime = args.get('changeRequests_creationTime')
-    changeRequests_description = args.get('changeRequests_description')
-    changeRequests_id = args.get('changeRequests_id')
-    changeRequests_isRequiredStatus = args.get('changeRequests_isRequiredStatus')
-    changeRequests_lastModificationTime = args.get('changeRequests_lastModificationTime')
-    changeRequests_lastModifiedBy = args.get('changeRequests_lastModifiedBy')
-    changeRequests_messages_args = args.get('changeRequests_messages_args')
-    changeRequests_messages_formatedMessage = args.get('changeRequests_messages_formatedMessage')
-    changeRequests_messages_key = args.get('changeRequests_messages_key')
-    changeRequests_messages_level = args.get('changeRequests_messages_level')
-    changeRequests_originalChangeRequestId = args.get('changeRequests_originalChangeRequestId')
-    changeRequests_verificationStatus = args.get('changeRequests_verificationStatus')
+    changeRequests_comment = args.get('changeRequests_comment', None)
+    changeRequests_complianceStatus = args.get('changeRequests_complianceStatus', None)
+    changeRequests_createdBy = args.get('changeRequests_createdBy', None)
+    changeRequests_creationTime = args.get('changeRequests_creationTime', None)
+    changeRequests_description = args.get('changeRequests_description', None)
+    changeRequests_id = args.get('changeRequests_id', None)
+    changeRequests_isRequiredStatus = args.get('changeRequests_isRequiredStatus', None)
+    changeRequests_lastModificationTime = args.get('changeRequests_lastModificationTime', None)
+    changeRequests_lastModifiedBy = args.get('changeRequests_lastModifiedBy', None)
+    changeRequests_messages_args = args.get('changeRequests_messages_args', None)
+    changeRequests_messages_formatedMessage = args.get('changeRequests_messages_formatedMessage', None)
+    changeRequests_messages_key = args.get('changeRequests_messages_key', None)
+    changeRequests_messages_level = args.get('changeRequests_messages_level', None)
+    changeRequests_originalChangeRequestId = args.get('changeRequests_originalChangeRequestId', None)
+    changeRequests_verificationStatus = args.get('changeRequests_verificationStatus', None)
+    changeRequests_sourceAddresses = args.get('changeRequests_sourceAddresses', None)
+    changeRequests_destinationAddresses = args.get('changeRequests_destinationAddresses', None)
+    changeRequests_ports = args.get('changeRequests_ports', None)
+    changeRequests_hideSourceBehindGW = args.get('changeRequests_hideSourceBehindGW', None)
+    changeRequests_isGlobal = args.get('changeRequests_isGlobal', None)
+    changeRequests_isInstallOnAny = args.get('changeRequests_isInstallOnAny', None)
+    changeRequests_isSharedObject = args.get('changeRequests_isSharedObject', None)
+    changeRequests_useApplicationDefaultPorts = args.get('changeRequests_useApplicationDefaultPorts', None)
+    changeRequest_type = args.get('changeRequest_type', 'addRuleChangeRequestV7')
+
 
     messages_type = client.get_type('ns0:changeRequestMessage')
     messages = messages_type(
@@ -1341,7 +1363,7 @@ def addOriginalChangeRequestsV7_command(client, args):
         level=changeRequests_messages_level,
     )
 
-    changeRequests_type = client.get_type('ns0:changeRequestV3')
+    changeRequests_type = client.get_type('ns0:'+changeRequest_type)
     changeRequests = changeRequests_type(
         comment=changeRequests_comment,
         complianceStatus=changeRequests_complianceStatus,
@@ -1354,7 +1376,15 @@ def addOriginalChangeRequestsV7_command(client, args):
         lastModifiedBy=changeRequests_lastModifiedBy,
         originalChangeRequestId=changeRequests_originalChangeRequestId,
         verificationStatus=changeRequests_verificationStatus,
-        messages=messages
+        messages=messages,
+        sourceAddresses=changeRequests_sourceAddresses,
+        destinationAddresses=changeRequests_destinationAddresses,
+        ports=changeRequests_ports,
+        #hideSourceBehindGW=changeRequests_hideSourceBehindGW,
+        #isGlobal=changeRequests_isGlobal,
+        #isInstallOnAny=changeRequests_isInstallOnAny,
+        #isSharedObject=changeRequests_isSharedObject,
+        #useApplicationDefaultPorts=changeRequests_useApplicationDefaultPorts
     )
 
     response = client.service.addOriginalChangeRequestsV7(ticketId, [changeRequests])
@@ -1362,23 +1392,23 @@ def addOriginalChangeRequestsV7_command(client, args):
     command_results = CommandResults(
         outputs_prefix='Skybox.addOriginalChangeRequestsV7',
         outputs_key_field='',
-        outputs=helpers.serialize_object(response),
-        raw_response=helpers.serialize_object(response)
+        outputs=serialize_object_list(response),
+        raw_response=serialize_object_list(response)
     )
 
     return command_results
 
 
 def createTicketAccessRequestsForObjectChange_command(client, args):
-    ticketId = args.get('ticketId')
-    hostId = args.get('hostId')
-    objectName = args.get('objectName')
-    changeType = args.get('changeType')
-    addressChange = args.get('addressChange')
-    portChange = args.get('portChange')
-    maxAccessRequestsToCreate = args.get('maxAccessRequestsToCreate')
-    chainFilterMode = args.get('chainFilterMode')
-    chainNames = args.get('chainNames')
+    ticketId = args.get('ticketId', None)
+    hostId = args.get('hostId', None)
+    objectName = args.get('objectName', None)
+    changeType = args.get('changeType', None)
+    addressChange = args.get('addressChange', None)
+    portChange = args.get('portChange', None)
+    maxAccessRequestsToCreate = args.get('maxAccessRequestsToCreate', None)
+    chainFilterMode = args.get('chainFilterMode', None)
+    chainNames = args.get('chainNames', None)
 
     response = client.service.createTicketAccessRequestsForObjectChange(
         ticketId, hostId, objectName, changeType, addressChange, portChange,
@@ -1395,8 +1425,8 @@ def createTicketAccessRequestsForObjectChange_command(client, args):
 
 
 def getDerivedChangeRequestRouteInfoV1_command(client, args):
-    ticketId = args.get('ticketId')
-    changeRequestId = args.get('changeRequestId')
+    ticketId = args.get('ticketId', None)
+    changeRequestId = args.get('changeRequestId', None)
 
     response = client.service.getDerivedChangeRequestRouteInfoV1(ticketId, changeRequestId)
     command_results = CommandResults(
@@ -1410,24 +1440,24 @@ def getDerivedChangeRequestRouteInfoV1_command(client, args):
 
 
 def implementChangeRequests_command(client, args):
-    changeRequests_id = args.get('changeRequests_id')
-    changeRequests_ticketId = args.get('changeRequests_ticketId')
-    changeRequests_dueDate = args.get('changeRequests_dueDate')
-    changeRequests_ticketPriority = args.get('changeRequests_ticketPriority')
-    changeRequests_changeType = args.get('changeRequests_changeType')
-    changeRequests_firewallName = args.get('changeRequests_firewallName')
-    changeRequests_firewallManagementName = args.get('changeRequests_firewallManagementName')
-    changeRequests_globalUniqueId = args.get('changeRequests_globalUniqueId')
-    changeRequests_changeDetails = args.get('changeRequests_changeDetails')
-    changeRequests_additionalDetails = args.get('changeRequests_additionalDetails')
-    changeRequests_isRequiredStatus = args.get('changeRequests_isRequiredStatus')
-    changeRequests_owner = args.get('changeRequests_owner')
-    changeRequests_completeStatus = args.get('changeRequests_completeStatus')
-    changeRequests_completeDate = args.get('changeRequests_completeDate')
-    changeRequests_workflowName = args.get('changeRequests_workflowName')
-    changeRequests_comment = args.get('changeRequests_comment')
-    changeRequests_lastModificationTime = args.get('changeRequests_lastModificationTime')
-    changeRequests_implementationStatus = args.get('changeRequests_implementationStatus')
+    changeRequests_id = args.get('changeRequests_id', None)
+    changeRequests_ticketId = args.get('changeRequests_ticketId', None)
+    changeRequests_dueDate = args.get('changeRequests_dueDate', None)
+    changeRequests_ticketPriority = args.get('changeRequests_ticketPriority', None)
+    changeRequests_changeType = args.get('changeRequests_changeType', None)
+    changeRequests_firewallName = args.get('changeRequests_firewallName', None)
+    changeRequests_firewallManagementName = args.get('changeRequests_firewallManagementName', None)
+    changeRequests_globalUniqueId = args.get('changeRequests_globalUniqueId', None)
+    changeRequests_changeDetails = args.get('changeRequests_changeDetails', None)
+    changeRequests_additionalDetails = args.get('changeRequests_additionalDetails', None)
+    changeRequests_isRequiredStatus = args.get('changeRequests_isRequiredStatus', None)
+    changeRequests_owner = args.get('changeRequests_owner', None)
+    changeRequests_completeStatus = args.get('changeRequests_completeStatus', None)
+    changeRequests_completeDate = args.get('changeRequests_completeDate', None)
+    changeRequests_workflowName = args.get('changeRequests_workflowName', None)
+    changeRequests_comment = args.get('changeRequests_comment', None)
+    changeRequests_lastModificationTime = args.get('changeRequests_lastModificationTime', None)
+    changeRequests_implementationStatus = args.get('changeRequests_implementationStatus', None)
     comment = args.get('comment')
 
     changeRequests_type = client.get_type('ns0:changeRequestImplementation')
@@ -1479,11 +1509,11 @@ def getAnalysisTree_command(client, args):
 
 
 def operateOnAccessChangeTicket_command(client, args):
-    ticketId = args.get('ticketId')
-    phaseOperation_phaseId = args.get('phaseOperation_phaseId')
-    phaseOperation_phaseOwner = args.get('phaseOperation_phaseOwner')
-    phaseOperation_reject = args.get('phaseOperation_reject')
-    phaseOperation_type_var = args.get('phaseOperation_type')
+    ticketId = args.get('ticketId', None)
+    phaseOperation_phaseId = args.get('phaseOperation_phaseId', None)
+    phaseOperation_phaseOwner = args.get('phaseOperation_phaseOwner', None)
+    phaseOperation_reject = args.get('phaseOperation_reject', None)
+    phaseOperation_type_var = args.get('phaseOperation_type', None)
 
     phaseOperation_type = client.get_type('ns0:phaseOperation')
     phaseOperation = phaseOperation_type(
@@ -1506,9 +1536,9 @@ def operateOnAccessChangeTicket_command(client, args):
 
 
 def analyzeAccessChangeTicket_command(client, args):
-    ticketId = args.get('ticketId')
-    accessRequests = args.get('accessRequests')
-    mode = args.get('mode')
+    ticketId = args.get('ticketId', None)
+    accessRequests = args.get('accessRequests', None)
+    mode = args.get('mode', None)
 
     response = client.service.analyzeAccessChangeTicket(ticketId, accessRequests, mode)
     command_results = CommandResults(
@@ -1522,8 +1552,8 @@ def analyzeAccessChangeTicket_command(client, args):
 
 
 def getVerificationDetails_command(client, args):
-    ticketId = args.get('ticketId')
-    changeRequestId = args.get('changeRequestId')
+    ticketId = args.get('ticketId', None)
+    changeRequestId = args.get('changeRequestId', None)
 
     response = client.service.getVerificationDetails(ticketId, changeRequestId)
     command_results = CommandResults(
@@ -1537,7 +1567,7 @@ def getVerificationDetails_command(client, args):
 
 
 def getTicketPhases_command(client, args):
-    ticketId = args.get('ticketId')
+    ticketId = args.get('ticketId', None)
 
     response = client.service.getTicketPhases(ticketId)
     command_results = CommandResults(
@@ -1551,12 +1581,12 @@ def getTicketPhases_command(client, args):
 
 
 def findTickets_command(client, args):
-    analysis_id = args.get('analysis_id')
-    analysis_name = args.get('analysis_name')
-    analysis_path = args.get('analysis_path')
-    analysis_type_var = args.get('analysis_type')
-    subRange_size = args.get('subRange_size')
-    subRange_start = args.get('subRange_start')
+    analysis_id = args.get('analysis_id', None)
+    analysis_name = args.get('analysis_name', None)
+    analysis_path = args.get('analysis_path', None)
+    analysis_type_var = args.get('analysis_type', None)
+    subRange_size = args.get('subRange_size', None)
+    subRange_start = args.get('subRange_start', None)
 
     analysis_type = client.get_type('ns0:analysis')
     analysis = analysis_type(
@@ -1585,20 +1615,20 @@ def findTickets_command(client, args):
 
 
 def setChangeRequestRuleAttributes_command(client, args):
-    ticketId = args.get('ticketId')
-    changeRequestId = args.get('changeRequestId')
-    ruleAttributes_businessFunction = args.get('ruleAttributes_businessFunction')
-    ruleAttributes_comment = args.get('ruleAttributes_comment')
-    ruleAttributes_customFields_defId = args.get('ruleAttributes_customFields_defId')
-    ruleAttributes_customFields_entityType = args.get('ruleAttributes_customFields_entityType')
-    ruleAttributes_customFields_id = args.get('ruleAttributes_customFields_id')
-    ruleAttributes_customFields_name = args.get('ruleAttributes_customFields_name')
-    ruleAttributes_customFields_value = args.get('ruleAttributes_customFields_value')
-    ruleAttributes_email = args.get('ruleAttributes_email')
-    ruleAttributes_nextReviewDate = args.get('ruleAttributes_nextReviewDate')
-    ruleAttributes_owner = args.get('ruleAttributes_owner')
-    ruleAttributes_status = args.get('ruleAttributes_status')
-    ruleAttributes_ticketId = args.get('ruleAttributes_ticketId')
+    ticketId = args.get('ticketId', None)
+    changeRequestId = args.get('changeRequestId', None)
+    ruleAttributes_businessFunction = args.get('ruleAttributes_businessFunction', None)
+    ruleAttributes_comment = args.get('ruleAttributes_comment', None)
+    ruleAttributes_customFields_defId = args.get('ruleAttributes_customFields_defId', None)
+    ruleAttributes_customFields_entityType = args.get('ruleAttributes_customFields_entityType', None)
+    ruleAttributes_customFields_id = args.get('ruleAttributes_customFields_id', None)
+    ruleAttributes_customFields_name = args.get('ruleAttributes_customFields_name', None)
+    ruleAttributes_customFields_value = args.get('ruleAttributes_customFields_value', None)
+    ruleAttributes_email = args.get('ruleAttributes_email', None)
+    ruleAttributes_nextReviewDate = args.get('ruleAttributes_nextReviewDate', None)
+    ruleAttributes_owner = args.get('ruleAttributes_owner', None)
+    ruleAttributes_status = args.get('ruleAttributes_status', None)
+    ruleAttributes_ticketId = args.get('ruleAttributes_ticketId', None)
 
     customFields_type = client.get_type('ns0:entityField')
     customFields = customFields_type(
@@ -1608,6 +1638,9 @@ def setChangeRequestRuleAttributes_command(client, args):
         name=ruleAttributes_customFields_name,
         value=ruleAttributes_customFields_value,
     )
+
+    if ruleAttributes_customFields_typeCode is None or ruleAttributes_customFields_id is None:
+        customFields = None
 
     ruleAttributes_type = client.get_type('ns0:ruleAttributes')
     ruleAttributes = ruleAttributes_type(
@@ -1649,9 +1682,9 @@ def getAttachmentList_command(client, args):
 
 
 def setAddRuleChangeRequestFields_command(client, args):
-    ticketId = args.get('ticketId')
-    changeRequestId = args.get('changeRequestId')
-    fields = json.loads(args.get('fields'))
+    ticketId = args.get('ticketId', None)
+    changeRequestId = args.get('changeRequestId', None)
+    fields = json.loads(args.get('fields', None))
 
     response = client.service.setAddRuleChangeRequestFields(ticketId, changeRequestId, fields)
 
@@ -1666,31 +1699,31 @@ def setAddRuleChangeRequestFields_command(client, args):
 
 
 def setTicketPhases_command(client, args):
-    ticketId = args.get('ticketId')
-    phases_comment = args.get('phases_comment')
-    phases_createdBy = args.get('phases_createdBy')
-    phases_creationTime = args.get('phases_creationTime')
-    phases_current = args.get('phases_current')
-    phases_demotionsCount = args.get('phases_demotionsCount')
-    phases_description = args.get('phases_description')
-    phases_dueDate = args.get('phases_dueDate')
-    phases_endDate = args.get('phases_endDate')
-    phases_id = args.get('phases_id')
-    phases_lastModificationTime = args.get('phases_lastModificationTime')
-    phases_lastModifiedBy = args.get('phases_lastModifiedBy')
-    phases_owner = args.get('phases_owner')
-    phases_revisedDueDate = args.get('phases_revisedDueDate')
-    phases_startDate = args.get('phases_startDate')
-    phases_ticketTypePhase_defaultOwner = args.get('phases_ticketTypePhase_defaultOwner')
-    phases_ticketTypePhase_id = args.get('phases_ticketTypePhase_id')
-    phases_ticketTypePhase_name = args.get('phases_ticketTypePhase_name')
-    phases_ticketTypePhase_order = args.get('phases_ticketTypePhase_order')
-    phases_ticketTypePhase_ticketType = args.get('phases_ticketTypePhase_ticketType')
-    phases_ticketTypePhase_waitingForClosure = args.get('phases_ticketTypePhase_waitingForClosure')
-    phaseOperation_phaseId = args.get('phaseOperation_phaseId')
-    phaseOperation_phaseOwner = args.get('phaseOperation_phaseOwner')
-    phaseOperation_reject = args.get('phaseOperation_reject')
-    phaseOperation_type_var = args.get('phaseOperation_type')
+    ticketId = args.get('ticketId', None)
+    phases_comment = args.get('phases_comment', None)
+    phases_createdBy = args.get('phases_createdBy', None)
+    phases_creationTime = args.get('phases_creationTime', None)
+    phases_current = args.get('phases_current', None)
+    phases_demotionsCount = args.get('phases_demotionsCount', None)
+    phases_description = args.get('phases_description', None)
+    phases_dueDate = args.get('phases_dueDate', None)
+    phases_endDate = args.get('phases_endDate', None)
+    phases_id = args.get('phases_id', None)
+    phases_lastModificationTime = args.get('phases_lastModificationTime', None)
+    phases_lastModifiedBy = args.get('phases_lastModifiedBy', None)
+    phases_owner = args.get('phases_owner', None)
+    phases_revisedDueDate = args.get('phases_revisedDueDate', None)
+    phases_startDate = args.get('phases_startDate', None)
+    phases_ticketTypePhase_defaultOwner = args.get('phases_ticketTypePhase_defaultOwner', None)
+    phases_ticketTypePhase_id = args.get('phases_ticketTypePhase_id', None)
+    phases_ticketTypePhase_name = args.get('phases_ticketTypePhase_name', None)
+    phases_ticketTypePhase_order = args.get('phases_ticketTypePhase_order', None)
+    phases_ticketTypePhase_ticketType = args.get('phases_ticketTypePhase_ticketType', None)
+    phases_ticketTypePhase_waitingForClosure = args.get('phases_ticketTypePhase_waitingForClosure', None)
+    phaseOperation_phaseId = args.get('phaseOperation_phaseId', None)
+    phaseOperation_phaseOwner = args.get('phaseOperation_phaseOwner', None)
+    phaseOperation_reject = args.get('phaseOperation_reject', None)
+    phaseOperation_type_var = args.get('phaseOperation_type', None)
 
     ticketTypePhase_type = client.get_type('ns0:ticketTypePhase')
     ticketTypePhase = ticketTypePhase_type(
@@ -1720,6 +1753,9 @@ def setTicketPhases_command(client, args):
         startDate=phases_startDate,
         ticketTypePhase=ticketTypePhase
     )
+
+    if phases_id is None:
+        phases = None
 
     phaseOperation_type = client.get_type('ns0:phaseOperation')
     phaseOperation = phaseOperation_type(
@@ -1772,21 +1808,21 @@ def testService_command(client, args):
 
 
 def setRecertificationStatus_command(client, args):
-    ticketId = args.get('ticketId')
-    changeRequestIds = args.get('changeRequestIds')
-    ruleAttributes_businessFunction = args.get('ruleAttributes_businessFunction')
-    ruleAttributes_comment = args.get('ruleAttributes_comment')
-    ruleAttributes_customFields_dataType = args.get('ruleAttributes_customFields_dataType')
-    ruleAttributes_customFields_defId = args.get('ruleAttributes_customFields_defId')
-    ruleAttributes_customFields_entityType = args.get('ruleAttributes_customFields_entityType')
-    ruleAttributes_customFields_id = args.get('ruleAttributes_customFields_id')
-    ruleAttributes_customFields_name = args.get('ruleAttributes_customFields_name')
-    ruleAttributes_customFields_value = args.get('ruleAttributes_customFields_value')
-    ruleAttributes_email = args.get('ruleAttributes_email')
-    ruleAttributes_nextReviewDate = args.get('ruleAttributes_nextReviewDate')
-    ruleAttributes_owner = args.get('ruleAttributes_owner')
-    ruleAttributes_status = args.get('ruleAttributes_status')
-    ruleAttributes_ticketId = args.get('ruleAttributes_ticketId')
+    ticketId = args.get('ticketId', None)
+    changeRequestIds = args.get('changeRequestIds', None)
+    ruleAttributes_businessFunction = args.get('ruleAttributes_businessFunction', None)
+    ruleAttributes_comment = args.get('ruleAttributes_comment', None)
+    ruleAttributes_customFields_dataType = args.get('ruleAttributes_customFields_dataType', None)
+    ruleAttributes_customFields_defId = args.get('ruleAttributes_customFields_defId', None)
+    ruleAttributes_customFields_entityType = args.get('ruleAttributes_customFields_entityType', None)
+    ruleAttributes_customFields_id = args.get('ruleAttributes_customFields_id', None)
+    ruleAttributes_customFields_name = args.get('ruleAttributes_customFields_name', None)
+    ruleAttributes_customFields_value = args.get('ruleAttributes_customFields_value', None)
+    ruleAttributes_email = args.get('ruleAttributes_email', None)
+    ruleAttributes_nextReviewDate = args.get('ruleAttributes_nextReviewDate', None)
+    ruleAttributes_owner = args.get('ruleAttributes_owner', None)
+    ruleAttributes_status = args.get('ruleAttributes_status', None)
+    ruleAttributes_ticketId = args.get('ruleAttributes_ticketId', None)
 
     customFields_type = client.get_type('ns0:entityField')
     customFields = customFields_type(
@@ -1823,8 +1859,8 @@ def setRecertificationStatus_command(client, args):
 
 
 def setTicketDeferChangeRequestsCalculationStatus_command(client, args):
-    ticketId = args.get('ticketId')
-    deferChangeRequestsCalculation = args.get('deferChangeRequestsCalculation')
+    ticketId = args.get('ticketId', None)
+    deferChangeRequestsCalculation = args.get('deferChangeRequestsCalculation', None)
 
     response = client.service.setTicketDeferChangeRequestsCalculationStatus(ticketId, deferChangeRequestsCalculation)
     command_results = CommandResults(
@@ -1838,8 +1874,8 @@ def setTicketDeferChangeRequestsCalculationStatus_command(client, args):
 
 
 def setSponsoringApplication_command(client, args):
-    ticketId = args.get('ticketId')
-    sponsoringApplicationId = args.get('sponsoringApplicationId')
+    ticketId = args.get('ticketId', None)
+    sponsoringApplicationId = args.get('sponsoringApplicationId', None)
 
     response = client.service.setSponsoringApplication(ticketId, sponsoringApplicationId)
     command_results = CommandResults(
@@ -1853,16 +1889,16 @@ def setSponsoringApplication_command(client, args):
 
 
 def findAccessChangeTickets_command(client, args):
-    filter_createdBy = args.get('filter_createdBy')
-    filter_freeTextFilter = args.get('filter_freeTextFilter')
-    filter_modifiedBy = args.get('filter_modifiedBy')
-    filter_myGroups = args.get('filter_myGroups')
-    filter_owner = args.get('filter_owner')
-    filter_phaseName = args.get('filter_phaseName')
-    filter_statusFilter = args.get('filter_statusFilter')
-    filter_ticketIdsFilter = args.get('filter_ticketIdsFilter')
-    subRange_size = args.get('subRange_size')
-    subRange_start = args.get('subRange_start')
+    filter_createdBy = args.get('filter_createdBy', None)
+    filter_freeTextFilter = args.get('filter_freeTextFilter', None)
+    filter_modifiedBy = args.get('filter_modifiedBy', None)
+    filter_myGroups = args.get('filter_myGroups', None)
+    filter_owner = args.get('filter_owner', None)
+    filter_phaseName = args.get('filter_phaseName', None)
+    filter_statusFilter = args.get('filter_statusFilter', None)
+    filter_ticketIdsFilter = args.get('filter_ticketIdsFilter', None)
+    subRange_size = args.get('subRange_size', None)
+    subRange_start = args.get('subRange_start', None)
 
     filter_type = client.get_type('ns0:ticketsSearchFilter')
     filter = filter_type(
@@ -1895,8 +1931,8 @@ def findAccessChangeTickets_command(client, args):
 
 
 def getTicketFields_command(client, args):
-    ticketId = args.get('ticketId')
-    ticketIdType = args.get('ticketIdType')
+    ticketId = args.get('ticketId', None)
+    ticketIdType = args.get('ticketIdType', None)
 
     response = client.service.getTicketFields(ticketId, ticketIdType)
     command_results = CommandResults(
@@ -1910,7 +1946,7 @@ def getTicketFields_command(client, args):
 
 
 def getTicketsImplementedChangeRequests_command(client, args):
-    ticketIds = args.get('ticketIds')
+    ticketIds = args.get('ticketIds', None)
 
     response = client.service.getTicketsImplementedChangeRequests(ticketIds)
     command_results = CommandResults(
@@ -1924,7 +1960,7 @@ def getTicketsImplementedChangeRequests_command(client, args):
 
 
 def getTicketDeferChangeRequestsCalculationStatus_command(client, args):
-    ticketId = args.get('ticketId')
+    ticketId = args.get('ticketId', None)
     status = {}
 
     response = client.service.getTicketDeferChangeRequestsCalculationStatus(ticketId)
@@ -1951,7 +1987,7 @@ def main():
     handle_proxy()
     params = demisto.params()
     args = demisto.args()
-    url = params.get('url')
+    url = params.get('url', None)
     verify_certificate = not params.get('insecure', False)
 
     wsdl = url + "/skybox/webservice/jaxws/tickets?wsdl"

@@ -2674,140 +2674,151 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the ticke
+      description: |-
+        The ID of the ticket to which the change requests are
+        attached
       isArray: false
       name: ticketId
       required: true
       secret: false
     - default: false
-      description: The change request comment
       isArray: false
       name: changeRequests_comment
       required: false
       secret: false
     - default: false
-      description: |-
-        Possible values:
-        l UNCOMPUTED
-        l YES
-        l NO
-        l ERROR
       isArray: false
       name: changeRequests_complianceStatus
       required: false
       secret: false
     - default: false
-      description: The change request author
       isArray: false
       name: changeRequests_createdBy
       required: false
       secret: false
     - default: false
-      description: The change request creation time
       isArray: false
       name: changeRequests_creationTime
       required: false
       secret: false
     - default: false
-      description: The change request description
       isArray: false
       name: changeRequests_description
       required: false
       secret: false
     - default: false
-      description: The change request ID
       isArray: false
       name: changeRequests_id
       required: false
       secret: false
     - default: false
-      description: |-
-        Possible values:
-        l UNCOMPUTED
-        l YES (change required)
-        l NO (already permitted)
-        l Computing
-        l ERROR
       isArray: false
       name: changeRequests_isRequiredStatus
       required: false
       secret: false
     - default: false
-      description: The change request last modification time
       isArray: false
       name: changeRequests_lastModificationTime
       required: false
       secret: false
     - default: false
-      description: The change request last modification author
       isArray: false
       name: changeRequests_lastModifiedBy
       required: false
       secret: false
     - default: false
-      description: The messages arguments
       isArray: false
       name: changeRequests_messages_args
       required: false
       secret: false
     - default: false
-      description: |-
-        Messages for the user about the change
-        request that was calculated by the Skybox
-        Server.
-        For example, the change request cannot be
-        calculated because the source and
-        destination are behind the same interface;
-        there is no firewall matching the request; or
-        the request is a duplicate of another request
-        in the ticket.
       isArray: false
       name: changeRequests_messages_formatedMessage
       required: false
       secret: false
     - default: false
-      description: The messages key
       isArray: false
       name: changeRequests_messages_key
       required: false
       secret: false
     - default: false
-      description: |-
-        Possible values:
-        l INFO
-        l WARN
-        l ERROR
       isArray: false
       name: changeRequests_messages_level
       required: false
       secret: false
     - default: false
-      description: |-
-        The ID number of the original change
-        request, when relevant.
       isArray: false
       name: changeRequests_originalChangeRequestId
       required: false
       secret: false
     - default: false
-      description: |-
-        Possible values:
-        l Verified
-        l Not Verified
-        l Error
-        l Computing
-        l Unknown
       isArray: false
       name: changeRequests_verificationStatus
       required: false
       secret: false
+    - default: false
+      isArray: false
+      name: changeRequests_sourceAddresses
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: changeRequests_destinationAddresses
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: changeRequests_ports
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: changeRequests_hideSourceBehindGW
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: addRuleChangeRequestV7
+      isArray: false
+      name: changeRequest_type
+      predefined:
+      - changeRequestV3
+      - addRuleChangeRequestV7
+      - blockAccessChangeRequestV7
+      - deactivateRuleChangeRequestV7
+      - deleteObjectChangeRequestV7
+      - modifyObjectChangeRequestV7
+      - reactivateRuleChangeRequestV7
+      - recertifyChangeRequestV7
+      - requireAccessChangeRequestV7
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: changeRequests_isGlobal
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: changeRequests_isInstallOnAny
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: changeRequests_isSharedObject
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: changeRequests_useApplicationDefaultPorts
+      required: false
+      secret: false
     deprecated: false
     description: |-
-      Adds original change requests to a ticket and then
-      calculates the derived change requests, checks
-      whether a change is required, and checks for
-      policy compliance violations and potential
-      vulnerabilities.
+      Adds change requests to a ticket. The method
+      finds the access rules in which the specified
+      object occurs and creates a change request for
+      each access rule.
     execution: false
     name: skybox-addOriginalChangeRequestsV7
     outputs:
