@@ -373,7 +373,7 @@ def test_ioc_from_url_command_invalid_url(mocker, args, response_file_name):
     """
     client = create_client()
     mocker.patch.object(client, 'ioc_from_url', side_effect=DemistoException("some error message"))
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DemistoException) as e:
         ioc_from_url_command(client, args)
         if not e:
             assert False
@@ -393,7 +393,7 @@ def test_ioc_from_url_command_empty_response(mocker, args):
     response = Response()
     response.status_code = 204
     mocker.patch.object(client, 'ioc_from_url', return_value=response)
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DemistoException) as e:
         ioc_from_url_command(client, args)
         if not e:
             assert False
@@ -429,7 +429,7 @@ def test_ioc_from_json_text_command_invalid_json_format(mocker, args):
         - Verify that an ValueError is raised
     """
     client = create_client()
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DemistoException) as e:
         ioc_from_json_text_command(client, args)
         if not e:
             assert False
@@ -449,7 +449,7 @@ def test_ioc_from_json_text_command_empty_response(mocker, args):
     response = Response()
     response.status_code = 204
     mocker.patch.object(client, 'ioc_from_json_text', return_value=response)
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DemistoException) as e:
         ioc_from_json_text_command(client, args)
         if not e:
             assert False
@@ -487,7 +487,7 @@ def test_ioc_from_raw_text_command_invalid_entry_id(mocker, args):
     """
     client = create_client()
     mocker.patch.object(demisto, 'getFilePath', return_value=None)
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DemistoException) as e:
         ioc_from_raw_text_command(client, args)
         if not e:
             assert False
@@ -504,7 +504,7 @@ def test_ioc_from_raw_text_command_invalid_command_arguments(mocker, args):
         - Verify that ValueError is raised
     """
     client = create_client()
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DemistoException) as e:
         ioc_from_raw_text_command(client, args)
         if not e:
             assert False
@@ -522,7 +522,7 @@ def test_ioc_from_raw_text_command_invalid_file_format(mocker, args):
     """
     client = create_client()
     mocker.patch.object(demisto, 'getFilePath', return_value={'id': 'id', 'path': 'test/test.pdf', 'name': 'test.pdf'})
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DemistoException) as e:
         ioc_from_raw_text_command(client, args)
         if not e:
             assert False
@@ -542,7 +542,7 @@ def test_ioc_from_raw_text_command_empty_response(mocker, args):
     response = Response()
     response.status_code = 204
     mocker.patch.object(client, 'ioc_from_raw_text', return_value=response)
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DemistoException) as e:
         ioc_from_raw_text_command(client, args)
         if not e:
             assert False
@@ -579,7 +579,7 @@ def test_ioc_from_twitter_command_invalid_username(mocker, args):
     """
     client = create_client()
     mocker.patch.object(client, 'ioc_from_twitter', side_effect=DemistoException("some error message"))
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DemistoException) as e:
         ioc_from_twitter_command(client, args)
         if not e:
             assert False
@@ -599,7 +599,7 @@ def test_ioc_from_twitter_command_empty_response(mocker, args):
     response = Response()
     response.status_code = 204
     mocker.patch.object(client, 'ioc_from_twitter', return_value=response)
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DemistoException) as e:
         ioc_from_twitter_command(client, args)
         if not e:
             assert False

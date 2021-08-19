@@ -26,8 +26,8 @@ class Client(BaseClient):
 
     @logger
     def __init__(self, verify=False, proxy=False):
-        url = URL
-        super().__init__(url, verify=verify, proxy=proxy)
+
+        super().__init__(URL, verify=verify, proxy=proxy)
 
     def ioc_from_url(self, url: Optional[str]) -> Dict[str, Any]:
         """
@@ -36,7 +36,7 @@ class Client(BaseClient):
             url: The URL from which the IOCs will be extracted
 
         Returns:
-            The HTTP response returned by the API
+            Dict[str, Any]. The HTTP response returned by the API
         """
 
         data = {'url': url, 'public': False}
@@ -56,7 +56,7 @@ class Client(BaseClient):
             text: The JSON from which the IOCs will be extracted
 
         Returns:
-            The HTTP response returned by the API
+            Dict[str, Any]. The HTTP response returned by the API
         """
 
         data = {'data': text}
@@ -76,7 +76,7 @@ class Client(BaseClient):
             raw_text: The raw text from which the IOCs will be extracted
 
         Returns:
-            The HTTP response returned by the API
+            Dict[str, Any]. The HTTP response returned by the API
         """
 
         return self._http_request(
@@ -95,7 +95,7 @@ class Client(BaseClient):
             user_name: The twitter account from which the IOCs will be extracted
 
         Returns:
-            The HTTP response returned by the API
+            Dict[str, Any]. The HTTP response returned by the API
         """
 
         data = {'data': user_name}
@@ -171,6 +171,7 @@ def is_empty_response(response: Any) -> bool:
     Returns:
         true if the response is empty and false otherwise.
     """
+
     try:
         status_code = response.status_code
         if status_code == 204:
@@ -195,7 +196,7 @@ def remove_unwanted_data_from_response(response: dict, keys: List[str], limit: O
     """
 
     if is_empty_response(response):
-        raise ValueError('The response from the API is empty.')
+        raise DemistoException('The response from the API is empty.')
     response_data = response.get('data')
     remove_unwanted_keys(response_data, keys)
     if limit is not None:
@@ -212,8 +213,8 @@ def unite_all_tweets_into_dict(twitter_response: Dict[str, Any]) -> None:
     """
 
     if is_empty_response(twitter_response):
-        raise ValueError('The response from the API is empty.')
-    response_data = twitter_response.setdefault('data', [])
+        raise DemistoException('The response from the API is empty.')
+    response_data = twitter_response.get('data', [])
     united_data: Dict[str, List[str]] = {}
     for tweet in response_data:
         for ioc_type, iocs in tweet.get('data').items():
@@ -259,14 +260,16 @@ def ioc_from_url_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
     url = args.get('url')
     keys = list_to_upper_case(argToList(args.get('keys'))) or KEYS
     limit = arg_to_number(args.get('limit'))
-    try:
-        response = client.ioc_from_url(url)
-    except DemistoException as e:
-        raise ValueError(str(e))
+
+    response = client.ioc_from_url(url)
+    # try:
+    #     response = client.ioc_from_url(url)
+    # except DemistoException as e:
+    #     raise ValueError(str(e))
 
     response_data = remove_unwanted_data_from_response(response, keys, limit)
     if not response_data:
-        raise ValueError('There is no information about the requested keys')
+        raise DemistoException('There is no information about the requested keys')
     command_results = []
     outputs: Dict[str, Any] = {'url': url, 'Results': []}
     for ioc_type, iocs in response_data.items():
@@ -301,17 +304,19 @@ def ioc_from_json_text_command(client: Client, args: Dict[str, Any]) -> List[Com
     try:
         json.loads(str(data))
     except ValueError as e:
-        raise ValueError(f'Data should be in JSON format. Error: {str(e)}')
+        raise DemistoException(f'Data should be in JSON format. Error: {str(e)}')
     keys = list_to_upper_case(argToList(args.get('keys'))) or KEYS
     limit = arg_to_number(args.get('limit'))
 
-    try:
-        response = client.ioc_from_json_text(data)
-    except DemistoException as e:
-        raise ValueError(str(e))
+    response = client.ioc_from_json_text(data)
+
+    # try:
+    #     response = client.ioc_from_json_text(data)
+    # except DemistoException as e:
+    #     raise ValueError(str(e))
     response_data = remove_unwanted_data_from_response(response, keys, limit)
     if not response_data:
-        raise ValueError('There is no information about the requested keys')
+        raise DemistoException('There is no information about the requested keys')
     command_results = []
     outputs: Dict[str, Any] = {'data': data, 'Results': []}
     for ioc_type, iocs in response_data.items():
@@ -346,32 +351,34 @@ def ioc_from_raw_text_command(client: Client, args: Dict[str, Any]) -> List[Comm
     file = args.get('entry_id')
     if raw_text:
         if file:
-            raise ValueError('Both data and entry id were inserted - please insert only one.')
+            raise DemistoException('Both data and entry id were inserted - please insert only one.')
         data = raw_text
 
     elif file:
-        demisto.debug('getting the path of the file from its entry id')
+        demisto.debug('Getting the path of the file from its entry id')
         result = demisto.getFilePath(args.get('entry_id'))
         if not result:
-            raise ValueError('No file was found for given entry id')
+            raise DemistoException('No file was found for given entry id')
         file_path, file_name = result['path'], result['name']
         if not file_name.endswith('.txt'):
-            raise ValueError('File should be in txt format.')
+            raise DemistoException('File should be in txt format.')
         with open(file_path, 'r') as f:
             data = f.read()
         f.close()
 
     else:
-        raise ValueError('Neither data nor entry id specified.')
+        raise DemistoException('Neither data nor entry id specified.')
     keys = list_to_upper_case(argToList(args.get('keys'))) or KEYS
     limit = arg_to_number(args.get('limit'))
-    try:
-        response = client.ioc_from_raw_text(data)
-    except DemistoException as e:
-        raise ValueError(str(e))
+
+    response = client.ioc_from_raw_text(data)
+    # try:
+    #     response = client.ioc_from_raw_text(data)
+    # except DemistoException as e:
+    #     raise ValueError(str(e))
     response_data = remove_unwanted_data_from_response(response, keys, limit)
     if not response_data:
-        raise ValueError('There is no information about the requested keys')
+        raise DemistoException('There is no information about the requested keys')
     command_results = []
     outputs = {'data': data, 'Results': []}
     for ioc_type, iocs in response_data.items():
@@ -405,14 +412,16 @@ def ioc_from_twitter_command(client: Client, args: Dict[str, Any]) -> List[Comma
     twitter_account = args.get('data')
     keys = list_to_upper_case(argToList(args.get('keys'))) or KEYS
     limit = arg_to_number(args.get('limit'))
-    try:
-        twitter_response = client.ioc_from_twitter(twitter_account)
-    except DemistoException as e:
-        raise ValueError('Could not find this twitter account') from e
+    twitter_response = client.ioc_from_twitter(twitter_account)
+
+    # try:
+    #     twitter_response = client.ioc_from_twitter(twitter_account)
+    # except DemistoException as e:
+    #     raise ValueError('Could not find this twitter account') from e
     unite_all_tweets_into_dict(twitter_response)
     response_data = remove_unwanted_data_from_response(twitter_response, keys, limit)
     if not response_data:
-        raise ValueError('There is no information about the requested keys')
+        raise DemistoException('There is no information about the requested keys')
     command_results: List[CommandResults] = []
     outputs: Dict[str, Any] = {'data': twitter_account, 'Results': []}
     for ioc_type, iocs in response_data.items():
