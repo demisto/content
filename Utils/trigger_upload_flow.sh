@@ -528,26 +528,26 @@ if [ -n "$sdk_branch_name" ]; then
 fi
 
 # New Pack
-array=("Hello_World" "Hello World" "helloworld" "Sanity_Test")
+array=("Hello_World" "Hello World" "helloworld" "Sanity_Test") # todo
 create_new_pack "${base_pack_name}" "${new_suffix}" "${array[@]}"
 add_dependency "Viper" "${new_pack_name}"
 add_author_image "${new_pack_name}"
 add_1_0_0_release_note "${new_pack_name}"
 
 ## Existing pack
-enhancement_release_notes "Viper"
-change_integration_image "PaloAltoNetworks_IoT" "Viper"
-updating_old_release_notes "Base"
+enhancement_release_notes "ZeroFox"
+change_integration_image "PaloAltoNetworks_IoT" "Viper" #todo change pack
+updating_old_release_notes "Base" #todo update not the latest
 enhancement_release_notes "Base"
-updating_old_release_notes "Viper"
-add_1_0_0_release_note "Viper"
+updating_old_release_notes "Viper" # todo Base agre
+add_1_0_0_release_note "Viper" # todo
 set_pack_hidden "Microsoft365Defender"
-updating_old_release_notes "${new_pack_name}" # Update release notes in content that are not in the bucket
-update_integration_readme "Microsoft365Defender"
-update_pack_ignore "Microsoft365Defender"
+#updating_old_release_notes "${new_pack_name}" # Update release notes in content that are not in the bucket
+update_integration_readme "Microsoft365Defender" # todo
+update_pack_ignore "Microsoft365Defender" # todo
 
 # External changes
-add_pack_to_landing_page "${new_pack_name}"
+add_pack_to_landing_page "${new_pack_name}" # todo
 
 git push --set-upstream origin "${new_content_branch}"
 
