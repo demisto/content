@@ -149,9 +149,9 @@ def convert_timestamp_to_iso86(timestamp: str, timezone_letter: str = 'Z') -> st
     """
     if not timestamp:
         return ''
-    corrected_timestamp = timestamp[:-3] + "." + timestamp[-3:]
-    time_in_iso86 = datetime.fromtimestamp(float(corrected_timestamp),
-                                           tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")
+    datetime_from_timestamp = dateparser.parse(timestamp, settings={"TO_TIMEZONE": timezone_letter,
+                                                                    "RETURN_AS_TIMEZONE_AWARE": True})
+    time_in_iso86 = datetime_from_timestamp.strftime("%Y-%m-%dT%H:%M:%S.%f")
     return time_in_iso86[:-3] + timezone_letter
 
 
