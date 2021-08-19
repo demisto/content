@@ -188,7 +188,7 @@ class BitcoinAbuseClient(BaseClient):
 
         params['encoding'] = 'utf-8'
 
-        params['insecure'] = True
+        params['insecure'] = self.insecure
 
         params['feedTags'] = self.feed_tags
         params['tlp_color'] = self.tlp_color
