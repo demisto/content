@@ -201,7 +201,9 @@ def results_to_markdown(table, headers, name):
 
 
 def test_module(client):
-"""
+
+
+    """
     Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
 
     Args:
