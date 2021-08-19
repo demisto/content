@@ -1,8 +1,8 @@
 Use the Azure Active Directory Identity And Access integration to manage roles and members.
-## Configure MicrosoftGraphIdentityandAccess on Cortex XSOAR
+## Configure Azure Active Directory Identity and Access on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for MicrosoftGraphIdentityandAccess.
+2. Search for Azure Active Directory Identity and Access.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |

@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
-<p>Use the Microsoft Graph integration to connect to and interact with user objects on Microsoft Platforms. This integration was integrated and tested with Microsoft Graph v1.0.</p>
+<p>Use the Azure Active Directory Users integration to connect to and interact with user objects on Microsoft Platforms. This integration was integrated and tested with Microsoft Graph v1.0.</p>
 </div>
 
 <h2>Authentication</h2>
