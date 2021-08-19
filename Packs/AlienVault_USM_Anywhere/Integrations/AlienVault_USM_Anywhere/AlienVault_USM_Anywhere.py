@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 import json
 import requests
 import dateparser
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Dict
 
 # Disable insecure warnings
