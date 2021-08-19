@@ -2,6 +2,7 @@ id: Detonate File - WildFire - Test
 version: -1
 name: Detonate File - WildFire - Test
 fromversion: 5.0.0
+toversion: 6.1.0
 description: |-
   test pb of:
   WildFire - Detonate file
