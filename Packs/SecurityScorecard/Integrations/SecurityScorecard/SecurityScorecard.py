@@ -202,7 +202,7 @@ class SecurityScorecardClient(BaseClient):
             username=self.username,
             page_size=page_size,
             sort="date",
-            order="desc"
+            order="asc"
         )
 
         return self.http_request_wrapper(
@@ -982,7 +982,7 @@ def fetch_alerts(client: SecurityScorecardClient):
     # Set the query size
     max_incidents = arg_to_number(client.max_fetch)  # type: ignore
 
-    # TODO add paging page=1&page_size=10
+    # TODO add paging logic (`page=1&page_size=10`)
 
     results = client.fetch_alerts(page_size=max_incidents)  # type: ignore
 
