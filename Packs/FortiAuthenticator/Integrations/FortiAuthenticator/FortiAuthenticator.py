@@ -61,7 +61,7 @@ def get_user_command():
         })
 
         markdown = 'FortiAuthenticator\n'
-        markdown += tableToMarkdown('FortiAuthenticator User Info', user_context, 
+        markdown += tableToMarkdown('FortiAuthenticator User Info', user_context,
                                     headers=['id', 'username', 'email', 'active', 'token_auth', 'token_type', 'token_serial'])
         results = CommandResults(
             readable_output=markdown,
@@ -116,7 +116,6 @@ def update_user_command():
     userItems = get_user_request(userType)
 
     if userItems:
-        userID = str(userItems["objects"][0]["id"])
         userURI = str(userItems["objects"][0]["resource_uri"])
 
         userDict = {
@@ -138,7 +137,7 @@ def update_user_command():
             })
 
             markdown = 'FortiAuthenticator\n'
-            markdown += tableToMarkdown('Updated FortiAuthenticator User Info', user_context, 
+            markdown += tableToMarkdown('Updated FortiAuthenticator User Info', user_context,
                                         headers=['id', 'username', 'email', 'active', 'token_auth', 'token_type', 'token_serial'])
             results = CommandResults(
                 readable_output=markdown,
