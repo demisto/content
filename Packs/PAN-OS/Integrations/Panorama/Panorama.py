@@ -3719,10 +3719,11 @@ def panorama_register_ip_tag_command(args: dict):
     """
     Register IPs to a Tag
     """
-    tag = args.get('tag')
-    ips = argToList(args.get('IPs'))
-    persistent = '1' if argToBoolean(args.get('persistent', 'true')) else '0'
-    timeout = arg_to_number(args.get('timeout', '0'))  # if not given, timeout is 0 and persistent will be used
+    tag: str = args.get('tag', '')
+    ips: list = argToList(args.get('IPs'))
+    persistent: str = '1' if argToBoolean(args.get('persistent', 'true')) else '0'
+    # if not given, timeout will be 0 and persistent will be used
+    timeout: int = arg_to_number(args.get('timeout', '0'))
 
     major_version = get_pan_os_major_version()
 
