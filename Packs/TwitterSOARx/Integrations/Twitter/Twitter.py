@@ -201,8 +201,6 @@ def results_to_markdown(table, headers, name):
 
 
 def test_module(client):
-
-
     """
     Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
 
@@ -231,6 +229,6 @@ def main():
     if demisto.command() == 'twitter-get-tweets':
         Client.get_tweets()
 
-        
+  
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
