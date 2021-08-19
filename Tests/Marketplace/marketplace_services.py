@@ -2400,23 +2400,18 @@ class Pack(object):
         """
         if not os.path.exists(release_notes_dir):
             return
-        logging.info(f'Checking BC version. RN dir: {release_notes_dir}. RN dir files: {os.listdir(release_notes_dir)}')
         bc_version_to_text: Dict[str, Optional[str]] = self._breaking_changes_versions_to_text(release_notes_dir)
-        logging.info(f'bc version to text: {bc_version_to_text}')
         loose_versions: List[LooseVersion] = [LooseVersion(bc_ver) for bc_ver in bc_version_to_text.keys()]
         predecessor_version: LooseVersion = LooseVersion('0.0.0')
         for changelog_entry in sorted(changelog.keys(), key=LooseVersion):
-            logging.info(f'BC: iterating version {changelog_entry}')
             rn_loose_version: LooseVersion = LooseVersion(changelog_entry)
             if bc_versions := self._changelog_entry_bc_versions(predecessor_version, rn_loose_version, loose_versions,
                                                                 bc_version_to_text):
-                logging.info('Version contains BC version!')
+                logging.info(f'Changelog entry {changelog_entry} contains BC versions')
                 changelog[changelog_entry]['breakingChanges'] = True
                 if bc_text := self._calculate_bc_text(release_notes_dir, bc_versions):
-                    logging.info(f'Version contains BC text!: {bc_text}')
                     changelog[changelog_entry]['breakingChangesNotes'] = bc_text
                 else:
-                    logging.info('version BC, no text!')
                     changelog[changelog_entry].pop('breakingChangesNotes', None)
             else:
                 logging.info('Version no BC!')
