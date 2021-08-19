@@ -1,0 +1,33 @@
+args:
+- description: Input string from incident.
+  name: value
+  required: true
+- defaultValue: $[.}
+  description: Incident field values from incident.
+  name: inc
+  required: true
+comment: Convert Splunk CIM Fields Dynamic Into Fields Value
+commonfields:
+  id: 32301b22-315e-4486-83e2-2329484a9e1d
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 870e6c76-6cf5-4cb1-8527-247e0f47dd82
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.6.22912
+enabled: true
+name: SplunkCIMFields
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- string
+type: python
