@@ -3,7 +3,7 @@ import secrets
 from enum import Enum
 from ipaddress import ip_address
 from threading import Lock
-from typing import Tuple
+from typing import Tuple, Set, Dict
 
 import pytz
 import urllib3
@@ -1364,7 +1364,8 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
             time.sleep(EVENTS_INTERVAL_SECS)
         except Exception as e:
             print_debug_msg(
-                f'Error while fetching offense {offense_id} events, search_id: {search_id}. Error details: {str(e)}')
+                f'Error while fetching offense {offense_id} events, search_id: {search_id}. Error details: {str(e)} \n'
+                f'{traceback.format_exc()}')
             num_of_failures += 1
             if num_of_failures < max_retries:
                 time.sleep(FAILURE_SLEEP)
@@ -1482,16 +1483,12 @@ def exclude_lists(original: List[dict], exclude: List[dict], key: str):
 
     Returns: A list with the original nodes that were not excluded.
     """
-    new_list = original.copy()
     exclude_keys = [excluded_node.get(key) for excluded_node in exclude]
-    for element in original:
-        if element.get(key) in exclude_keys:
-            new_list.remove(element)
-
-    return new_list
+    return [element.copy() for element in original if element.get(key) not in exclude_keys]
 
 
 def update_mirrored_events(client: Client,
+                           fetch_mode: str,
                            events_columns: str,
                            events_limit: int,
                            context_data: dict) -> Tuple[list, list]:
@@ -1499,6 +1496,7 @@ def update_mirrored_events(client: Client,
 
     Args:
         client: Client to perform the API calls.
+        fetch_mode: Bring correlated / not correlated events.
         events_columns: Events columns to extract by search query for each offense.
         events_limit: Number of events to be fetched for each offense.
         context_data: The integration's current context data. Extract the relevant offenses to update from it.
@@ -1516,7 +1514,7 @@ def update_mirrored_events(client: Client,
                     enrich_offense_with_events,
                     client=client,
                     offense=offense,
-                    fetch_mode=FetchMode.correlations_events_only.value,
+                    fetch_mode=fetch_mode,
                     events_columns=events_columns,
                     events_limit=events_limit,
                 ))
@@ -1525,7 +1523,7 @@ def update_mirrored_events(client: Client,
         return updated_offenses, exclude_lists(original=offenses, exclude=updated_offenses, key="id")
 
     except Exception as e:
-        print_debug_msg(f"Error while enriching mirrored offenses with events: {str(e)}")
+        print_debug_msg(f"Error while enriching mirrored offenses with events: {str(e)} \n {traceback.format_exc()}")
         return updated_offenses, exclude_lists(original=offenses, exclude=updated_offenses, key="id")
 
 
@@ -1548,7 +1546,7 @@ def create_incidents_from_offenses(offenses: List[Dict], incident_type: Optional
     } for offense in offenses]
 
 
-def print_mirror_events_stats(context_data: dict, stage: str) -> List[str]:
+def print_mirror_events_stats(context_data: dict, stage: str) -> Set[str]:
     """Print debug message with information about mirroring events.
 
     Args:
@@ -1566,7 +1564,7 @@ def print_mirror_events_stats(context_data: dict, stage: str) -> List[str]:
                     f"\n Offenses ids waiting for update: {not_updated_ids}"
                     f"\n Resubmitted offenses: {resubmitted_ids}")
     updated_ids = [offense_id for offense_id, events_num in stats]
-    return list(set(not_updated_ids + updated_ids + resubmitted_ids))
+    return set(not_updated_ids + updated_ids + resubmitted_ids)
 
 
 def long_running_execution_command(client: Client, params: Dict):
@@ -1592,7 +1590,16 @@ def long_running_execution_command(client: Client, params: Dict):
     incident_type = params.get('incident_type')
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
     mirror_direction = MIRROR_DIRECTION.get(mirror_options)
-    reset_mirroring_events_variables(mirror_options)
+    reset_mirroring_vars = False
+
+    while not reset_mirroring_vars:
+        try:
+            reset_mirroring_events_variables(mirror_options)
+            reset_mirroring_vars = True
+        except Exception as e:
+            print_debug_msg(
+                f'Error while reseting mirroring variables, retring. Error details: {str(e)} \n'
+                f'{traceback.format_exc()}')
 
     while True:
         try:
@@ -1612,14 +1619,13 @@ def long_running_execution_command(client: Client, params: Dict):
                 incident_type=incident_type,
                 mirror_direction=mirror_direction
             )
-            incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
+
             context_data = ctx.copy()
-            context_data.update({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
-                                 'last_mirror_update': ctx.get('last_mirror_update')})
 
             if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
                 print_mirror_events_stats(ctx, "Long Running Command - Before Update")
                 updated_mirrored_offenses, not_updated_offenses = update_mirrored_events(client=client,
+                                                                                         fetch_mode=fetch_mode,
                                                                                          events_columns=events_columns,
                                                                                          events_limit=events_limit,
                                                                                          context_data=ctx)
@@ -1633,6 +1639,10 @@ def long_running_execution_command(client: Client, params: Dict):
             # Reset was called during execution, skip creating incidents.
             if not incidents and not new_highest_id:
                 continue
+
+            incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
+            context_data.update({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
+                                 'last_mirror_update': ctx.get('last_mirror_update')})
 
             set_integration_context(context_data)
 
@@ -2855,6 +2865,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     Returns:
         GetRemoteDataResponse.
     """
+    print_debug_msg("Started GetRemoteData")
     remote_args = GetRemoteDataArgs(args)
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
     offense_id = remote_args.remote_incident_id
@@ -2910,8 +2921,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         while ((not evented_offense) or is_waiting_to_be_updated) and retries < max_retries:
             if retries != 0:
                 time.sleep(FAILURE_SLEEP)
-            ctx = get_integration_context()
-            context_data = ctx.copy()
+            context_data = get_integration_context().copy()
             print_mirror_events_stats(context_data, f"Get Remote Data Loop for id {offense.get('id')}, retry {retries}")
             retries += 1
             offenses_with_updated_events = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])

@@ -14,7 +14,7 @@ import QRadar_v3  # import module separately for mocker
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
     GetModifiedRemoteDataResponse, GetRemoteDataResponse
 from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
-    Client, RESET_KEY, ASSET_PROPERTIES_NAME_MAP, \
+    Client, RESET_KEY, ASSET_PROPERTIES_NAME_MAP, FetchMode, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, LAST_FETCH_KEY, \
     MIRRORED_OFFENSES_CTX_KEY, UPDATED_MIRRORED_OFFENSES_CTX_KEY, RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
@@ -1209,6 +1209,7 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
     # Transfer that list to the long running docker and update the events.
     mocker.patch.object(concurrent.futures.ThreadPoolExecutor, 'submit', side_effect=offenses.get('as_results'))
     updated_mirrored_offenses = update_mirrored_events(client=client,
+                                                       fetch_mode=FetchMode.correlations_events_only.value,
                                                        events_columns='',
                                                        events_limit=5,
                                                        context_data=context_data.get('with_offenses_ids'))
