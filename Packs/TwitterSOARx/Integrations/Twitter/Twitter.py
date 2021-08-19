@@ -119,10 +119,10 @@ class Client(BaseClient):
                 obj['Media'] = get_entity(value, 'media', 'media_url_https') if 'media' in value.get('entities').keys() else None
             table.append(obj)
         if demisto.args().get('include_entities') == "True":
-            headers = ['Tweet Text', 'Post ID', 'User Full Name', 'Username', 'Date of Creation', 
-                       'User Verified Status', 'Post Retweet Count', 'Post Favorite Count', 'Hashtags', 'User Mentions', 'Expanded URL', 'Media']
+            headers = ['Tweet Text', 'Post ID', 'User Full Name', 'Username', 'Date of Creation', 'User Verified Status',
+                       'Post Retweet Count', 'Post Favorite Count', 'Hashtags', 'User Mentions', 'Expanded URL', 'Media']
         else:
-            headers = ['Tweet Text', 'Post ID', 'User Full Name', 'Username', 
+            headers = ['Tweet Text', 'Post ID', 'User Full Name', 'Username',
                        'Date of Creation', 'User Verified Status', 'Post Retweet Count', 'Post Favorite Count']
         name = "TwitterSOARx twitter-get-tweets Search Results"
         results_to_markdown(table, headers, name)
@@ -139,7 +139,7 @@ class Client(BaseClient):
             int(demisto.args().get('page'))
         except ValueError:
             return_error("Page must be an integer.")
-        for user in ((Client.auth().search_users(q=demisto.args().get('name'), page=int(demisto.args().get('page')), \
+        for user in ((Client.auth().search_users(q=demisto.args().get('name'), page=int(demisto.args().get('page')),
                                                  count=int(demisto.args().get('count')), include_entities=True))):
             if 'url' in user.entities.keys():
                 user_url = user.entities.get('url').get('urls')[0].get('expanded_url')
@@ -180,10 +180,10 @@ class Client(BaseClient):
                 'Protected': value.get('protected'),
                 'URL': value.get('url'),
                 'Profile Image URL': value.get('profile_image_url')
-                   }
+            }
             table.append(obj)
-            headers = ['Name', 'Username', 'ID', 'Description', 'Verified', 'Date of Creation', 
-                       'Follower Count', 'Following Count', 'Listed Count', 'Tweet Count', 
+            headers = ['Name', 'Username', 'ID', 'Description', 'Verified', 'Date of Creation',
+                       'Follower Count', 'Following Count', 'Listed Count', 'Tweet Count',
                        'Location', 'Protected', 'URL', 'Profile Image URL']
             name = "TwitterSOARx twitter-get-user-info Search Results"
         results_to_markdown(table, headers, name)
@@ -226,4 +226,3 @@ def main():
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
 
-    
