@@ -409,7 +409,8 @@ inputs:
       root: URL
       accessor: Data
   required: false
-  description: URL of the webpage or file url to detonate. The URL is taken from the context.
+  description: URL of the webpage or file url to detonate. The URL is taken from the
+    context.
 - key: Interval
   value:
     simple: "1"
@@ -419,7 +420,8 @@ inputs:
   value:
     simple: "15"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook (in minutes)
+  description: The duration after which to stop pooling and to resume the playbook
+    (in minutes)
 - key: ReportFileType
   value: {}
   required: false

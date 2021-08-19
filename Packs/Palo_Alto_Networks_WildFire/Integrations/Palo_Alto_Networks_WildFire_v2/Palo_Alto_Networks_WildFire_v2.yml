@@ -48,7 +48,7 @@ script:
       description: File hash to check.
       isArray: true
       name: file
-      required: false
+      required: true
       secret: false
     - default: false
       description: MD5 hash to check.
@@ -172,7 +172,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: Request a structured report. Possible values are "XML" and "PDF". Only relevant when polling=true.
+      description: Request a structured report. Possible values are "XML" and "PDF".
+        Only relevant when polling=true.
       isArray: false
       name: format
       predefined:
