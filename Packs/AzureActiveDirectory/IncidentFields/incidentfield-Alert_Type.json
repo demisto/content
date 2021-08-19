@@ -1,10 +1,10 @@
 {
-    "id": "incident_azureactivedirectoryidentityprotectionalerttype",
+    "id": "incident_azureactivedirectoryidentityandaccessalerttype",
     "version": -1,
     "name": "Azure Active Directory Identity and Access Alert Type",
     "ownerOnly": false,
     "description": "",
-    "cliName": "azureactivedirectoryidentityprotectionalerttype",
+    "cliName": "azureactivedirectoryidentityandaccessalerttype",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

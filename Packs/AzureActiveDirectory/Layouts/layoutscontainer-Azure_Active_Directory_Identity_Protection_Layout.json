@@ -191,7 +191,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "azureactivedirectoryidentityprotectiondetecteddatetime",
+                                "fieldId": "azureactivedirectoryidentityandaccessdetecteddatetime",
                                 "height": 22,
                                 "id": "333322b0-fb65-11eb-9a44-1f2c7ba8ceab",
                                 "index": 3,
@@ -271,7 +271,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "azureactivedirectoryidentityprotectionalerttype",
+                                "fieldId": "azureactivedirectoryidentityandaccessalerttype",
                                 "height": 53,
                                 "id": "protection-detection-alert-type-field",
                                 "index": 0,
@@ -307,7 +307,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "azureactivedirectoryidentityprotectiondetectiontimingtype",
+                                "fieldId": "azureactivedirectoryidentityandaccessdetectiontimingtype",
                                 "height": 53,
                                 "id": "protection-detection-timing-type-field",
                                 "index": 4,
@@ -316,7 +316,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "azureactivedirectoryidentityprotectionactivity",
+                                "fieldId": "azureactivedirectoryidentityandaccessactivity",
                                 "height": 53,
                                 "id": "302e6e30-fb65-11eb-9a44-1f2c7ba8ceab",
                                 "index": 5,
@@ -325,7 +325,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "azureactivedirectoryidentityprotectiontokenissuertype",
+                                "fieldId": "azureactivedirectoryidentityandaccesstokenissuertype",
                                 "height": 53,
                                 "id": "3a90d110-fb65-11eb-9a44-1f2c7ba8ceab",
                                 "index": 6,
@@ -361,7 +361,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "azureactivedirectoryidentityprotectiondetecteddatetime",
+                                "fieldId": "azureactivedirectoryidentityandaccessdetecteddatetime",
                                 "height": 53,
                                 "id": "37814720-fb65-11eb-9a44-1f2c7ba8ceab",
                                 "index": 10,

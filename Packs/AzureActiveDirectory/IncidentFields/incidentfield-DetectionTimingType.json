@@ -1,10 +1,10 @@
 {
-    "id": "incident_azureactivedirectoryidentityprotectiondetectiontimingtype",
+    "id": "incident_azureactivedirectoryidentityandaccessdetectiontimingtype",
     "version": -1,
     "modified": "2021-08-10T10:47:05.734048Z",
     "name": "Azure Active Directory Identity and Access Detection Timing Type",
     "ownerOnly": false,
-    "cliName": "azureactivedirectoryidentityprotectiondetectiontimingtype",
+    "cliName": "azureactivedirectoryidentityandaccessdetectiontimingtype",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
