@@ -1476,12 +1476,18 @@ class Pack(object):
                 PackFolders.GENERIC_DEFINITIONS.value: "GenericDefinitions",
                 PackFolders.GENERIC_FIELDS.value: "GenericFields",
                 PackFolders.GENERIC_MODULES.value: "GenericModules",
-                PackFolders.GENERIC_TYPES.value: "GenericType"
+                PackFolders.GENERIC_TYPES.value: "GenericTypes"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
                 current_directory = root.split(os.path.sep)[-1]
                 parent_directory = root.split(os.path.sep)[-2]
+
+                if parent_directory in [PackFolders.GENERIC_TYPES.value, PackFolders.GENERIC_FIELDS.value]:
+                    current_directory = parent_directory
+                elif current_directory in [PackFolders.GENERIC_TYPES.value, PackFolders.GENERIC_FIELDS.value]:
+                    continue
+
                 folder_collected_items = []
                 for pack_file_name in pack_files_names:
                     if not pack_file_name.endswith(('.json', '.yml')):
@@ -1635,7 +1641,7 @@ class Pack(object):
                     content_item_key = content_item_name_mapping[current_directory]
                     content_items_result[content_item_key] = folder_collected_items
 
-            logging.success(f"Finished collecting content items for {self._pack_name} pack")
+            logging.info(f"Finished collecting content items for {self._pack_name} pack")
             task_status = True
         except Exception:
             logging.exception(f"Failed collecting content items in {self._pack_name} pack")

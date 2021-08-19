@@ -107,7 +107,7 @@ class PackFolders(enum.Enum):
     GENERIC_DEFINITIONS = "GenericDefinitions"
     GENERIC_FIELDS = "GenericFields"
     GENERIC_MODULES = "GenericModules"
-    GENERIC_TYPES = "GenericType"
+    GENERIC_TYPES = "GenericTypes"
 
     @classmethod
     def pack_displayed_items(cls):
