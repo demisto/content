@@ -57,7 +57,7 @@ def test_module() -> str:
     return message
 
 
-def test_custom_indicator(client: Client) -> CommandResults:
+def custom_indicator_creation(client: Client) -> CommandResults:
     # Command using a custom indicator example
 
     result = client.baseintegration_dummy("test")
@@ -119,7 +119,7 @@ def main() -> None:
             result = test_module()
             return_results(result)
         elif demisto.command() == 'test-custom-indicator':
-            return_results(test_custom_indicator(client))
+            return_results(custom_indicator_creation(client))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

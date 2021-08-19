@@ -1,4 +1,4 @@
-from CustomIndicatorDemo import Client, test_custom_indicator
+from CustomIndicatorDemo import Client, custom_indicator_creation
 
 
 def test_custom_indicator_test():
@@ -11,7 +11,7 @@ def test_custom_indicator_test():
         - return enriched indicator and result
     """
     client = Client(base_url='some_mock_url', verify=False)
-    res = test_custom_indicator(client)
+    res = custom_indicator_creation(client)
     indicator = res.indicator
     assert indicator.data['param1'] == 'value1'
     assert indicator.data['param2'] == 'value2'
