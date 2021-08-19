@@ -1045,6 +1045,9 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             if len(actions) == 0:
                 demisto.debug("Received bot_message event type. Ignoring.")
                 return
+        if event.get('subtype') == 'message_changed':
+            demisto.debug("Received message_changed event type. Ignoring.")
+            return
 
         if len(actions) > 0:
             channel = data.get('channel', {}).get('id', '')
@@ -1966,14 +1969,17 @@ def slack_edit_message():
 
     hr = "The message was successfully edited."
     result_edit = {
-        'ID': response.get('ts'),
-        'Channel': response.get('channel'),
-        'Text': response.get('text')
+        'ID': response.get('ts', None),
+        'Channel': response.get('channel', None),
+        'Text': response.get('text', None)
     }
     context = {
-        'Slack.Thread(val.ID === obj.ID)': createContext(result_edit, removeNull=True)
+        'Slack.Thread(val.ID === obj.ID)': result_edit
     }
-    return_outputs(hr, context, response)
+    return_results(CommandResults(
+        readable_output=hr,
+        outputs=context,
+        raw_response=json.dumps(response.data)))
 
 
 def pin_message():
