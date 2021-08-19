@@ -69,8 +69,8 @@ class Client(BaseClient):
                 - Where Units = mi or km. \nExample Syntax: 60,324321,-27.98789,400mi')
         if demisto.args().get('lang'):
             search_url += "&lang=" + demisto.args().get('lang')
-            SUPPORTED_LANGS = ['en', 'ar', 'bn', 'cs', 'da', 'de', 'el', 'es', 'fa', 'fi', 'fil', 'fr',\
-                               'he', 'hi', 'hu', 'id', 'it', 'ja', 'ko', 'msa', 'nl', 'no', 'pl', 'pt',\
+            SUPPORTED_LANGS = ['en', 'ar', 'bn', 'cs', 'da', 'de', 'el', 'es', 'fa', 'fi', 'fil', 'fr',
+                               'he', 'hi', 'hu', 'id', 'it', 'ja', 'ko', 'msa', 'nl', 'no', 'pl', 'pt',
                                'ro', 'ru', 'sv', 'th', 'tr', 'uk', 'ur', 'vi', 'zh-cn', 'zh-tw']
             if demisto.args().get('lang') not in SUPPORTED_LANGS:
                 return_error('Language code is not supported. For a list of supported language codes, visit\
@@ -115,13 +115,15 @@ class Client(BaseClient):
             if demisto.args().get('include_entities') == "True":
                 obj['Hashtags'] = get_entity(value, 'hashtags', 'text')
                 obj['User Mentions'] = get_entity(value, 'user_mentions', 'screen_name')
-                obj['Expanded URL'] =  get_entity(value, 'urls', 'expanded_url')
+                obj['Expanded URL'] = get_entity(value, 'urls', 'expanded_url')
                 obj['Media'] = get_entity(value, 'media', 'media_url_https') if 'media' in value.get('entities').keys() else None
             table.append(obj)
         if demisto.args().get('include_entities') == "True":
-            headers = ['Tweet Text', 'Post ID', 'User Full Name', 'Username', 'Date of Creation', 'User Verified Status', 'Post Retweet Count', 'Post Favorite Count', 'Hashtags', 'User Mentions', 'Expanded URL', 'Media']
+            headers = ['Tweet Text', 'Post ID', 'User Full Name', 'Username', 'Date of Creation', 
+                       'User Verified Status', 'Post Retweet Count', 'Post Favorite Count', 'Hashtags', 'User Mentions', 'Expanded URL', 'Media']
         else:
-            headers = ['Tweet Text', 'Post ID', 'User Full Name', 'Username', 'Date of Creation', 'User Verified Status', 'Post Retweet Count', 'Post Favorite Count']
+            headers = ['Tweet Text', 'Post ID', 'User Full Name', 'Username', 
+                       'Date of Creation', 'User Verified Status', 'Post Retweet Count', 'Post Favorite Count']
         name = "TwitterSOARx twitter-get-tweets Search Results"
         results_to_markdown(table, headers, name)
 
@@ -137,7 +139,8 @@ class Client(BaseClient):
             int(demisto.args().get('page'))
         except ValueError:
             return_error("Page must be an integer.")
-        for user in ((Client.auth().search_users(q=demisto.args().get('name'), page=int(demisto.args().get('page')), count=int(demisto.args().get('count')), include_entities=True))):
+        for user in ((Client.auth().search_users(q=demisto.args().get('name'), page=int(demisto.args().get('page')), \
+                                                 count=int(demisto.args().get('count')), include_entities=True))):
             if 'url' in user.entities.keys():
                 user_url = user.entities.get('url').get('urls')[0].get('expanded_url')
             else:
@@ -177,13 +180,15 @@ class Client(BaseClient):
                 'Protected': value.get('protected'),
                 'URL': value.get('url'),
                 'Profile Image URL': value.get('profile_image_url')
-               }
+                   }
             table.append(obj)
-            headers = ['Name', 'Username', 'ID', 'Description', 'Verified', 'Date of Creation', 'Follower Count', 'Following Count', 'Listed Count', 'Tweet Count', 'Location', 'Protected', 'URL', 'Profile Image URL']
+            headers = ['Name', 'Username', 'ID', 'Description', 'Verified', 'Date of Creation', 
+                       'Follower Count', 'Following Count', 'Listed Count', 'Tweet Count', 
+                       'Location', 'Protected', 'URL', 'Profile Image URL']
             name = "TwitterSOARx twitter-get-user-info Search Results"
         results_to_markdown(table, headers, name)
 
-        
+
 def results_to_markdown(table, headers, name):
     markdown = tableToMarkdown(name, table, headers=headers)
     results = CommandResults(
@@ -194,7 +199,7 @@ def results_to_markdown(table, headers, name):
     )
     return_results(results)
 
-    
+
 def test_module():
     """
     Performs basic get request to get item samples
@@ -205,9 +210,9 @@ def test_module():
     else:
         error_code = contents['error_code']
         description = contents['description']
-        demisto.results(f'{error_code} {description}')    
-    
-    
+        demisto.results(f'{error_code} {description}')
+
+
 def main():
     if demisto.command() == 'test-module':
         test_module()
@@ -220,3 +225,5 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
+    
