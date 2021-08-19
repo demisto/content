@@ -76,6 +76,7 @@ def remove_test_playbooks_if_exist(zips_path, packs):
     for zip_pack in packs:
         for name, path in zip_pack.items():
             remove = False
+            print("current file is " + path)
             with ZipFile(path, mode='r') as pack_zip:
                 zip_contents = pack_zip.namelist()
                 dir_names = [os.path.basename(os.path.dirname(content)) for content in zip_contents]
@@ -215,7 +216,7 @@ def main():
     service_account = option.service_account
     circle_build = option.circle_build
     branch_name = option.branch_name
-    gcp_path = option.gcp_path
+    gcp_path = 'content/packs'
     remove_test_playbooks = option.remove_test_playbooks
     private_build = option.private
     if private_build:
@@ -231,7 +232,7 @@ def main():
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
-    storage_bucket = storage_client.bucket(storage_bucket_name)
+    storage_bucket = storage_client.bucket('marketplace-dist-dev')
 
     if not circle_build or not branch_name:
         # Ignore build properties
