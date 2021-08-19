@@ -31,3 +31,8 @@ microsoft-atp-get-ip-alerts
 microsoft-atp-get-user-alerts username=demisto
 microsoft-atp-get-user-machines username=demisto
 microsoft-atp-add-remove-machine-tag action=Add machine_id=f70f9fe6b29cd9511652434919c6530618f06606 tag="test add tag"
+microsoft-atp-sc-indicator-list limit=2
+microsoft-atp-sc-indicator-create action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Informational
+microsoft-atp-sc-indicator-update action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Low
+microsoft-atp-sc-indicator-get-by-id indicator_id=5142
+microsoft-atp-sc-indicator-delete indicator_id=5142
