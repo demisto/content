@@ -1291,6 +1291,39 @@ def timestamp_length_equalization(timestamp1, timestamp2):
     return int(timestamp1), int(timestamp2)
 
 
+def change_host_group(method, host_group_id=None, name=None, group_type=None, description=None,
+                      assignment_rule=None):
+    data = {'resources': [{
+        'id': host_group_id,
+        "name": name,
+        "description": description,
+        "group_type": group_type,
+        "assignment_rule": assignment_rule
+    }]}
+    response = http_request(method=method,
+                            url_suffix='/devices/entities/host-groups/v1',
+                            json=data,
+                            )
+    resources = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=resources)
+
+
+def change_host_group_members(action_name, host_group_id: str, host_ids: List[str]):
+    data = {'action_parameters': [{'name': 'filter',
+                                   'value': f"(device_id:{str(host_ids)})"}],
+            'ids': [host_group_id]}
+    response = http_request(method='POST',
+                            url_suffix='/devices/entities/host-group-actions/v1',
+                            params={'action_name': action_name},
+                            json=data)
+    resources = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=resources)
+
+
 ''' COMMANDS FUNCTIONS '''
 
 
@@ -2473,28 +2506,33 @@ def list_incident_summaries_command():
     )
 
 
-def create_host_group(method, host_group_id=None, name=None, group_type=None, description=None,
-                      assignment_rule=None):
-    data = {'resources': [{
-        'id': host_group_id,
-        "name": name,
-        "description": description,
-        "group_type": group_type,
-        "assignment_rule": assignment_rule
-    }]}
-    response = http_request(method=method,
-                            url_suffix='/devices/entities/host-groups/v1',
-                            json=data,
-                            )
-    resources = response.get('resources')
-    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
-                          outputs_key_field='id',
-                          outputs=resources)
+def create_host_group_command(name,
+                              group_type=None,
+                              description=None,
+                              assignment_rule=None):
+    return change_host_group(method='POST',
+                             name=name,
+                             group_type=group_type,
+                             description=description,
+                             assignment_rule=assignment_rule)
 
 
-def list_host_group_members(host_group_id=None, filter=None, offset=None, limit=None):
+def update_host_group_command(host_group_id,
+                              name=None,
+                              group_type=None,
+                              description=None,
+                              assignment_rule=None):
+    return change_host_group(method='PATCH',
+                             host_group_id=host_group_id,
+                             name=name,
+                             group_type=group_type,
+                             description=description,
+                             assignment_rule=assignment_rule)
+
+
+def list_host_group_members_command(host_group_id=None, filter=None, offset=None, limit=None):
     params = {'id': host_group_id,
-              'filter': filter,  # todo check filter command, undocumented
+              'filter': filter,
               'offset': offset,
               'limit': limit}
     response = http_request(method='GET',
@@ -2506,20 +2544,16 @@ def list_host_group_members(host_group_id=None, filter=None, offset=None, limit=
                           outputs=output)
 
 
-def host_group_members(action_name, host_group_id, host_ids):
-    host_ids = argToList(host_ids)
-    data = {'action_parameters': [{'name': 'filter',
-                                   'value': f"(device_id:{str(host_ids)})"}],
-            'ids': [host_group_id]}
-    demisto.debug(data)
-    response = http_request(method='POST',
-                            url_suffix='/devices/entities/host-group-actions/v1',
-                            params={'action_name': action_name},
-                            json=data)
-    resources = response.get('resources')
-    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
-                          outputs_key_field='id',
-                          outputs=resources)
+def add_host_group_members_command(host_group_id: str, host_ids: List[str]):
+    return change_host_group_members(action_name='add-hosts',
+                                     host_group_id=host_group_id,
+                                     host_ids=host_ids)
+
+
+def remove_host_group_members_command(host_group_id: str, host_ids: List[str]):
+    return change_host_group_members(action_name='remove=hosts',
+                                     host_group_id=host_group_id,
+                                     host_ids=host_ids)
 
 
 def resolve_incident(ids, status):
@@ -2648,15 +2682,17 @@ def main():
         elif command == 'endpoint':
             return_results(get_endpoint_command())
         elif command == 'cs-falcon-create-host-group':
-            return_results(create_host_group(method='POST', **args))
+            return_results(create_host_group_command(**args))
         elif command == 'cs-falcon-update-host-group':
-            return_results(create_host_group(method='PATCH', **args))
+            return_results(update_host_group_command(**args))
         elif command == 'cs-falcon-list-host-group-members':
-            return_results(list_host_group_members(**args))
+            return_results(list_host_group_members_command(**args))
         elif command == 'cs-falcon-add-host-group-members':
-            return_results(host_group_members(action_name='add-hosts', **args))
+            return_results(add_host_group_members_command(host_group_id=args.get('host_group_id'),
+                                                          host_ids=argToList(args.get('host_ids'))))
         elif command == 'cs-falcon-remove-host-group-members':
-            return_results(host_group_members(action_name='remove-hosts', **args))
+            return_results(remove_host_group_members_command(host_group_id=args.get('host_group_id'),
+                                                             host_ids=argToList(args.get('host_ids'))))
         elif command == 'cs-falcon-resolve-incident':
             return_results(resolve_incident(**args))
 

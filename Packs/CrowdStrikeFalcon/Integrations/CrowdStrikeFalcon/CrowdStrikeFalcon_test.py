@@ -2793,7 +2793,7 @@ def test_get_endpint_command(requests_mock, mocker):
 
 
 def test_create_hostgroup(requests_mock):
-    from CrowdStrikeFalcon import create_host_group
+    from CrowdStrikeFalcon import change_host_group
     name = 'test name'
     description = 'test description'
     group_type = 'static'
@@ -2821,14 +2821,14 @@ def test_create_hostgroup(requests_mock):
         json=response,
         status_code=200
     )
-    command_res = create_host_group('POST', name='test name', description='test description', group_type='static')
+    command_res = change_host_group('POST', name='test name', description='test description', group_type='static')
     assert name == command_res.outputs.get('name')
     assert description == command_res.outputs.get('description')
     assert group_type == command_res.outputs.get('group_type')
 
 
 def test_update_hostgroup(requests_mock):
-    from CrowdStrikeFalcon import create_host_group
+    from CrowdStrikeFalcon import change_host_group
     name = 'test name'
     description = 'test description'
     group_type = 'static'
@@ -2856,7 +2856,7 @@ def test_update_hostgroup(requests_mock):
         json=response,
         status_code=200
     )
-    command_res = create_host_group('PATCH', host_group_id='b1a0cd73ecab411581cbe467fc3319f5',
+    command_res = change_host_group('PATCH', host_group_id='b1a0cd73ecab411581cbe467fc3319f5',
                                     name='test name', description='test description', group_type='static')
     assert name == command_res.outputs.get('name')
     assert description == command_res.outputs.get('description')

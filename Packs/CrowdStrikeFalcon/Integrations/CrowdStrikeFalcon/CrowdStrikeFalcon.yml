@@ -2149,11 +2149,15 @@ script:
       name: name
       required: true
       secret: false
-    - default: true
-      description: Can be 'static' or 'dynamic'
+    - auto: PREDEFINED
+      default: false
+      description: The group type of the group. Can be 'static' or 'dynamic'
       isArray: false
       name: group_type
-      required: true
+      predefined:
+        - static
+        - dynamic
+      required: false
       secret: false
     - default: false
       description: Description of the host
@@ -2209,10 +2213,14 @@ script:
         name: name
         required: false
         secret: false
-      - default: true
-        description: Can be 'static' or 'dynamic'
+      - auto: PREDEFINED
+        default: false
+        description: The group type of the group. Can be 'static' or 'dynamic'
         isArray: false
         name: group_type
+        predefined:
+          - static
+          - dynamic
         required: false
         secret: false
       - default: false
@@ -2639,10 +2647,16 @@ script:
         name: ids
         required: true
         secret: false
-      - default: false
-        description: The new status of the incident
-        isArray: true
+      - auto: PREDEFINED
+        default: false
+        description: The new status of the incident. Can be "New", "In Progress", "Reopened", "Closed"
+        isArray: false
         name: status
+        predefined:
+          - New
+          - In Progress
+          - Reopened
+          - Closed
         required: true
         secret: false
     deprecated: false
