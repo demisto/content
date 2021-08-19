@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -31,8 +32,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 0d05f9c8-84ff-4081-8e09-ea3cd7f49461
@@ -44,6 +43,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -62,8 +62,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: ebfb7519-fff6-40ab-83b8-46d8ae3799a8
@@ -75,6 +73,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -88,8 +87,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 5a067997-8a9f-4c4a-845f-eb48152b9fc7
@@ -132,8 +129,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 3f7d58d6-57e5-4c0d-8f44-036406d90bbe
@@ -176,8 +171,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: 31b51ec3-c7ce-4455-8b3c-766497378935
@@ -220,8 +213,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: f73def74-6b82-4447-8e94-9a1128fe3fc3
@@ -257,8 +248,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "21":
     id: "21"
     taskid: 827666c6-7052-47ab-8735-b4ebfc904fe7
@@ -294,8 +283,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: 1383ed5d-5ef0-45a4-8e7d-a28ae8dec1ae
@@ -331,8 +318,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "26":
     id: "26"
     taskid: 46498933-0736-4bd4-826e-44ace83c7794
@@ -370,8 +355,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -395,7 +378,7 @@ inputs:
       accessor: MD5
   required: false
   description: File MD5 to enrich
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SHA256
   value:
     complex:
@@ -403,7 +386,7 @@ inputs:
       accessor: SHA256
   required: false
   description: File SHA256 to enrich
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SHA1
   value:
     complex:
@@ -411,7 +394,7 @@ inputs:
       accessor: SHA1
   required: false
   description: File SHA1 to enrich
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 # Indicator outputs
 - contextPath: File.Name
