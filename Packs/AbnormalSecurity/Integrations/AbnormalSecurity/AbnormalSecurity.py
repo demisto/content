@@ -503,7 +503,6 @@ def main():
     headers['Soar-Integration-Origin'] = "Cortex XSOAR"
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
-    headers['Mock-Data'] = "True"
 
     try:
         client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
