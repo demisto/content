@@ -17,8 +17,10 @@ def create_minimal_report(source_file: str, destination_file: str):
     # TODO Check that we were able to read the json report corretly
 
     minimal_coverage_contents_files: Dict[str, float] = {}
-    for current_file_name in data['files'].keys():
-        minimal_coverage_contents_files[current_file_name] = data['files'][current_file_name]['summary']['percent_covered']
+    files = data['files']
+    for current_file_name, current_file_data in files.items():
+        minimal_coverage_contents_files[current_file_name] = round(current_file_data['summary']['percent_covered'], 2)
+
     minimal_coverage_contents = {
         'files': minimal_coverage_contents_files,
         'last_updated': datetime.utcnow().strftime(TIME_FORMAT),
@@ -37,21 +39,28 @@ def upload_file_to_google_cloud_storage(service_account: str,
     json_dest = '{}/coverage-min.json'.format(destination_blob_dir)
     with open(minimal_file_name, 'r') as data_file:
         updated = datetime.strptime(json.load(data_file)['last_updated'], TIME_FORMAT)
-    historic_data_dest = '{}/history/updated_{}.json'.format(destination_blob_dir, updated.strftime('%Y_%m_%d'))
+    historic_data_dest = '{}/history/coverage-min-{}.json'.format(destination_blob_dir, updated.strftime('%Y-%m-%d'))
+
+    upload_list = [json_dest, historic_data_dest]
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(json_dest)
-    blob.upload_from_filename(minimal_file_name)
-    blob = bucket.blob(historic_data_dest)
-    blob.upload_from_filename(minimal_file_name)
 
-    destination_blob_name = ', '.join([json_dest, historic_data_dest])
+    for file_to_upload in upload_list:
+        upload_file_to_bucket(bucket, file_to_upload, minimal_file_name, public=True)
+
     print(
         "File {} uploaded to {}.".format(
-            minimal_file_name, destination_blob_name
+            minimal_file_name, ', '.join(upload_list)
         )
     )
+
+
+def upload_file_to_bucket(bucket_obj, path_in_bucket, local_path, public=False):
+    blob = bucket_obj.blob(path_in_bucket)
+    blob.upload_from_filename(local_path)
+    if public:
+        blob.make_public()
 
 
 def options_handler():
