@@ -68,7 +68,7 @@ class Enum:
     def __init__(self, v):
         self._value_ = v
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any):
         """Overrides the default implementation"""
         if isinstance(other, Enum):
             return self._value_ == other._value_
@@ -298,7 +298,7 @@ class NwQueryField:
     """
 
     # Constructor
-    def __init__(self, line=''):
+    def __init__(self, line: str = ''):
         """
             This constructor will read the line from the Netwitness Query Response and will try to parse information
             There are cases where Broker sends additional lines that describes the Source information about downstream
@@ -378,7 +378,7 @@ class NwQueryResponse:
         self.result: List[NwQueryField] = []
 
     # Wrapper method to read from Plain Text SDK Response
-    def parseFromHttpResponse(self, response=''):
+    def parseFromHttpResponse(self, response: str = ''):
         """
             Reads the SDK Response obtained by firing a SDK Request via Netwitness Core Service Rest Interface
 
@@ -484,7 +484,7 @@ class NwIoBufferWrapper:
     endian = 'little'
 
     # Load from File Path from Disk!
-    def loadFromFile(self, filepath):
+    def loadFromFile(self, filepath: str):
         """
         Reads the file as Byte Array!
 
@@ -495,7 +495,7 @@ class NwIoBufferWrapper:
 
     # End of function loadFromFile
 
-    def loadFromByteArray(self, byte_array):
+    def loadFromByteArray(self, byte_array: bytearray):
         """
         Loads Buffer with the Byte Array
 
@@ -507,7 +507,7 @@ class NwIoBufferWrapper:
 
     # End of function loadFromByteArray
 
-    def readBytesOfSize(self, size):
+    def readBytesOfSize(self, size: int):
         """
         Reads the fixed number of bytes from buffer and increments the Current Position
         :param size:
@@ -547,7 +547,7 @@ class NwIoBufferWrapper:
 
     # End of function readUnsignedInt
 
-    def readStringOfSize(self, size):
+    def readStringOfSize(self, size: int):
         """
         Reads the fixed number of bytes as String!
         :param size:
@@ -569,7 +569,7 @@ class NwIoBufferWrapper:
 
     # End of function readString
 
-    def readLine(self, crlf=False):
+    def readLine(self, crlf: bool = False):
         """
         Reads the byte array as Integer and then string of that length
         :return:
@@ -804,11 +804,8 @@ class NwClient:
         # Session
         self.session = requests.Session()
 
-        # Device Summary
-        self.deviceInfo = {}
-
         # Meta Information
-        self.metaInformation = {}
+        self.metaInformation: dict[str, NwMeta] = {}
 
         # set
         self.typeToMeta = set()
@@ -927,7 +924,7 @@ class NwCoreClient(NwClient):
     # End of function doLogin
 
     # REST Call Method
-    def __makeNodeCall(self, node, msg, options={}, params={}):
+    def __makeNodeCall(self, node: str, msg: str, options: dict = None, params: dict = None):
         """
         Do a REST Get call for a particular node
 
@@ -937,6 +934,8 @@ class NwCoreClient(NwClient):
         :param params: Override Params to be used given by user
         :return:
         """
+        options = options or {}
+        params = params or {}
         _url = self.getBaseURL('/' + node)
         z = {'msg': msg, 'force-content-type': 'text/plain'}
         z.update(options)
@@ -953,14 +952,14 @@ class NwCoreClient(NwClient):
         if response.status_code == 200:
 
             # Reset Summary
-            self.deviceSummary = {}
+            self.device_summary = {}
 
             _s = response.content.decode('utf-8')
 
             # Parse the values!
             for x in _s.split():
                 _kv = x.split('=', 1)
-                self.deviceSummary[_kv[0]] = _kv[1]
+                self.device_summary[_kv[0]] = _kv[1]
 
     # End of function __readSummary
 
@@ -2204,7 +2203,7 @@ def nw_events_values_command(client, args):
 # # SESSION API FOR NETWITNESS.
 # # These APIs will act on specific sessions to get details about the session
 # #=====================================================================================================================
-def nw_events_details_command(client, args):
+def nw_events_details_command(client: NwCoreClient, args):
 
     if hasParam(args, NwParams.SessionIds):
         c4_results = client.renderSessions(**args)
