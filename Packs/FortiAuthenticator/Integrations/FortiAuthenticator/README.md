@@ -44,17 +44,24 @@ After you successfully execute a command, a DBot message appears in the War Room
 #### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | The user's email that defined in the User Information on FortiAuthenticator | Required | 
 | user_type | The user type:  localusers (Local Users), ldapuser (Remote Users) | Required | 
+| email | The user's email that defined in the User Information on FortiAuthenticator | Optional | 
+| username | The username that defined in the User Information on FortiAuthenticator | Optional | 
+| token_serial | The serial no. of assigned Token on FortiAuthenticator | Optional | 
+- Note: You need either email, username or token_serial input in order to get it works.
 
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiAuthenticator.user | Unknown | The user information | 
-| FortiAuthenticator.user.active | Unknown | The user's active status (true = enabled, false = disabled) | 
-| FortiAuthenticator.user.email | Unknown | The user's email address | 
 | FortiAuthenticator.user.id | Unknown | The user's id on FortiAuthenticator | 
 | FortiAuthenticator.user.username | Unknown | The user's username | 
+| FortiAuthenticator.user.email | Unknown | The user's email address | 
+| FortiAuthenticator.user.active | Unknown | The user's active status (true = enabled, false = disabled) | 
+| FortiAuthenticator.user.token_auth | Unknown | The token auth status | 
+| FortiAuthenticator.user.token_type | Unknown | The token type | 
+| FortiAuthenticator.user.token_serial | Unknown | The token serial number | 
+
 
 #### Command Example
 ```!fortiauthenticator-get-user user_type=localusers email=test_user@example.com```
@@ -67,7 +74,10 @@ After you successfully execute a command, a DBot message appears in the War Room
             "active": "true",
             "email": "test_user@example.com",
             "id": "7",
-            "username: "test_user"
+            "username": "test_user",
+            "token_auth": "true",
+            "token_type": "ftm",
+            "token_auth": "FTKMOB123456789A"
         }
     }
 }
@@ -76,26 +86,31 @@ After you successfully execute a command, a DBot message appears in the War Room
 #### Human Readable Output
 
 ### FortiAuthenticator User Info
-|id|username|email|active|
-|---|---|---|---|
-| 7 | test_user | test_user@example.com | true |
+|id|username|email|active|token_auth|token_type|token_serial|
+|---|---|---|---|---|---|---|
+| 7 | test_user | test_user@example.com | true | true | ftm | FTKMOB123456789A |
 
 ### fortiauthenticator-update-user
 #### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | The user's email that defined in the User Information on FortiAuthenticator | Required | 
 | user_type | The user type:  localusers (Local Users), ldapuser (Remote Users) | Required | 
+| email | The user's email that defined in the User Information on FortiAuthenticator | Optional | 
+| username | The username that defined in the User Information on FortiAuthenticator | Optional | 
 | active | Define user's active status:  false = Disabled, true = enabled | Required | 
+- Note: You need either email or username input in order to get it works.
 
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiAuthenticator.user | Unknown | The user information | 
-| FortiAuthenticator.user.active | Unknown | The user's active status (true = enabled, false = disabled) | 
-| FortiAuthenticator.user.email | Unknown | The user's email address | 
 | FortiAuthenticator.user.id | Unknown | The user's id on FortiAuthenticator | 
 | FortiAuthenticator.user.username | Unknown | The user's username | 
+| FortiAuthenticator.user.email | Unknown | The user's email address | 
+| FortiAuthenticator.user.active | Unknown | The user's active status (true = enabled, false = disabled) | 
+| FortiAuthenticator.user.token_auth | Unknown | The token auth status | 
+| FortiAuthenticator.user.token_type | Unknown | The token type | 
+| FortiAuthenticator.user.token_serial | Unknown | The token serial number | 
 
 #### Command Example
 ```!fortiauthenticator-update-user active=false user_type=localusers email=test_user@example.com```
@@ -108,7 +123,10 @@ After you successfully execute a command, a DBot message appears in the War Room
             "active": "false",
             "email": "test_user@example.com",
             "id": "7",
-            "username: "test_user"
+            "username": "test_user",
+            "token_auth": "true",
+            "token_type": "ftm",
+            "token_auth": "FTKMOB123456789A"
         }
     }
 }
@@ -116,10 +134,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 #### Human Readable Output
 
-### FortiAuthenticator User Info
-|id|username|email|active|
-|---|---|---|---|
-| 7 | test_user | test_user@example.com | false |
+### Updated FortiAuthenticator User Info
+|id|username|email|active|token_auth|token_type|token_serial|
+|---|---|---|---|---|---|---|
+| 7 | test_user | test_user@example.com | false | true | ftm | FTKMOB123456789A |
 
 
 
