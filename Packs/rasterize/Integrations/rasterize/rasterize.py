@@ -32,7 +32,7 @@ EMPTY_RESPONSE_ERROR_MSG = "There is nothing to render. This can occur when ther
                            " Please check your URL."
 DEFAULT_W, DEFAULT_H = '600', '800'
 DEFAULT_W_WIDE = '1024'
-CHROME_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'  # noqa
+CHROME_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36'  # noqa
 DRIVER_LOG = f'{tempfile.gettempdir()}/chromedriver.log'
 DEFAULT_CHROME_OPTIONS = [
     '--no-sandbox',
