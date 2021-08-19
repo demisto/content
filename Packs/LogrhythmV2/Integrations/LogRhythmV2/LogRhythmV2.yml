@@ -39,6 +39,25 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- defaultvalue: '100'
+  display: Alarms max fetch
+  name: alarmsMaxFetch
+  required: false
+  type: 0
+- defaultvalue: '100'
+  display: Cases max fetch
+  name: casesMaxFetch
+  required: false
+  type: 0
+- display: fetch incidents from type
+  name: fetchType
+  defaultvalue: Both
+  type: 15
+  required: true
+  options:
+  - Alarms
+  - Cases
+  - Both
 script:
   script: ''
   type: python

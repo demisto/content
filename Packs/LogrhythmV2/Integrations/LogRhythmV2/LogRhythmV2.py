@@ -1,5 +1,6 @@
 import re
 import mimetypes
+import dateparser
 from CommonServerPython import *  # noqa: F401
 
 import demistomock as demisto  # noqa: F401
@@ -981,9 +982,10 @@ class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
-    def alarms_list_request(self, alarm_id, alarm_status, offset, count, alarm_rule_name, entity_name, case_association):
+    def alarms_list_request(self, alarm_id=None, alarm_status=None, offset=None, count=None, alarm_rule_name=None,
+                            entity_name=None, case_association=None, created_after=None):
         params = assign_params(alarmStatus=alarm_status, offset=offset, count=count, caseAssociation=case_association,
-                               alarmRuleName=alarm_rule_name, entityName=entity_name)
+                               alarmRuleName=alarm_rule_name, entityName=entity_name, orderby='DateInserted')
         headers = self._headers
 
         response = self._http_request('GET', 'lr-alarm-api/alarms/', params=params, headers=headers)
@@ -991,6 +993,19 @@ class Client(BaseClient):
         alarms = response.get('alarmsSearchDetails')
         if alarm_id:
             alarms = next((alarm for alarm in alarms if alarm.get('alarmId') == int(alarm_id)), None)
+
+        if created_after:
+            filtered_alarms = []
+            created_after = dateparser.parse(created_after)
+
+            for alarm in alarms:
+                date_inserted = dateparser.parse(alarm.get('dateInserted'))
+                if date_inserted > created_after:
+                    filtered_alarms.append(alarm)
+                else:
+                    break
+
+            alarms = filtered_alarms
         return alarms, response
 
     def alarm_update_request(self, alarm_id, alarm_status, rbp):
@@ -1055,7 +1070,7 @@ class Client(BaseClient):
         if offset:
             headers['offset'] = offset
         if count:
-            headers['count'] = count
+            headers['count'] = str(count)
 
         cases = self._http_request('GET', 'lr-case-api/cases', params=params, headers=headers)
 
@@ -2243,38 +2258,74 @@ def test_module(client: Client) -> None:
     return_results('ok')
 
 
-def fetch_incidents_command(client: Client):
+def fetch_incidents_command(client: Client, fetch_type: str, cases_max_fetch: int, alarms_max_fetch: int):
+    if fetch_type == 'Both':
+        case_incidents = fetch_cases(client, cases_max_fetch)
+        alarm_incidents = fetch_alarms(client, alarms_max_fetch)
+        return case_incidents + alarm_incidents
+    elif fetch_type == 'Alarms':
+        return fetch_alarms(client, alarms_max_fetch)
+    elif fetch_type == 'Cases':
+        return fetch_cases(client, cases_max_fetch)
+
+
+def fetch_alarms(client, limit):
+    alarm_incidents = []
     last_run = demisto.getLastRun()
-    if last_run:
-        demisto.info(last_run.get('start_time'))
-        cases = client.cases_list_request(timestamp_filter_type='createdAfter', timestamp=last_run.get('start_time'))
+    alarm_last_run = last_run.get('AlarmLastRun')
+
+    if alarm_last_run:
+        alarms, _ = client.alarms_list_request(created_after=alarm_last_run, count=limit)
     else:
-        cases = client.cases_list_request()
+        alarms, _ = client.alarms_list_request(count=limit)
 
-    if cases:
-        demisto.setLastRun({
-            'start_time': cases[-1].get('dateCreated')
-        })
+    for alarm in alarms:
+        incident = {
+            'name': f'Alarm #{str(alarm.get("alarmId"))} {alarm.get("alarmRuleName")}',
+            'occurred': f'{alarm.get("dateInserted")}Z',
+            'rawJSON': json.dumps(alarm)
+        }
+        alarm_incidents.append(incident)
 
-    incidents = []
+    if alarms:
+        last_run['AlarmLastRun'] = alarms[0].get('dateInserted')
+        demisto.setLastRun(last_run)
+    return alarm_incidents
+
+
+def fetch_cases(client, limit):
+    case_incidents = []
+    last_run = demisto.getLastRun()
+    case_last_run = last_run.get('CaseLastRun')
+
+    if case_last_run:
+        cases = client.cases_list_request(timestamp_filter_type='createdAfter', timestamp=case_last_run, count=limit)
+    else:
+        cases = client.cases_list_request(count=limit)
+
     for case in cases:
         incident = {
-            'name': 'Case #' + str(case['number']) + ' ' + str(case['name']),
-            'occurred': str(case['dateCreated']),
+            'name': f'Case #{str(case.get("number"))} {case.get("name")}',
+            'occurred': case.get('dateCreated'),
             'rawJSON': json.dumps(case)
         }
-        incidents.append(incident)
+        case_incidents.append(incident)
 
-    demisto.incidents(incidents)
+    if cases:
+        last_run['CaseLastRun'] = cases[-1].get('dateCreated')
+        demisto.setLastRun(last_run)
+    return case_incidents
 
 
 def main() -> None:
-
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
     url = params.get('url')
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    incidents_type = params.get('fetchType', 'Both')
+    alarms_max_fetch = params.get('alarmsMaxFetch', 100)
+    cases_max_fetch = params.get('casesMaxFetch', 100)
 
     headers = {}
     headers['Authorization'] = f'Bearer {params["token"]}'
@@ -2326,7 +2377,7 @@ def main() -> None:
         if command == 'test-module':
             test_module(client)
         elif command == 'fetch-incidents':
-            fetch_incidents_command(client)
+            demisto.incidents(fetch_incidents_command(client, incidents_type, cases_max_fetch, alarms_max_fetch))
         elif command in commands:
             return_results(commands[command](client, args))
         else:
