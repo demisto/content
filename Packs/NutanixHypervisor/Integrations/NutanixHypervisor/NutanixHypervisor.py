@@ -950,7 +950,7 @@ def main() -> None:
     args = demisto.args()
 
     credentials = params.get('credentials')
-    username = credentials.get('identifier', '')
+    username = credentials.get('identifier')
     password = credentials.get('password')
 
     base_url = params.get('base_url') + BASE_URL_SUFFIX

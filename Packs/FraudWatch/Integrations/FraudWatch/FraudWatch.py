@@ -848,7 +848,7 @@ def main() -> None:
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
-    credentials = params.get('credentials')
+    credentials = demisto.params().get('credentials')
     api_key = credentials.get('password')
     if not api_key:
         raise DemistoException(
