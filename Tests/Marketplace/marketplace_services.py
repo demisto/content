@@ -1642,7 +1642,7 @@ class Pack(object):
                     content_items_result[content_item_key] = \
                         content_items_result.get(content_item_key, []) + folder_collected_items
 
-            logging.info(f"Finished collecting content items for {self._pack_name} pack")
+            logging.success(f"Finished collecting content items for {self._pack_name} pack")
             task_status = True
         except Exception:
             logging.exception(f"Failed collecting content items in {self._pack_name} pack")
