@@ -371,7 +371,7 @@ script:
           description: The virtual machine's full name for the affected assets for the Incident.
           type: String
         - contextPath: Guardicore.Incident.affected_assets.is_inner
-          description: ??? meital
+          description: The incident's affected asset is inner flag.
           type: String
         - contextPath: Guardicore.Incident.enriched
           description: Wether the incident was enriched or not.
@@ -413,7 +413,7 @@ script:
           description: The tags arguments process path for the Incident.
           type: String
         - contextPath: Guardicore.Incident.tags.tag_args.side
-          description: ??? meital
+          description: The incident's tags argument side.
           type: Number
         - contextPath: Guardicore.Incident.tags.tag_args.reason
           description: The tags arguments reason for the Incident.
@@ -554,7 +554,7 @@ script:
           description: The incident type.
           type: String
         - contextPath: Guardicore.Incident.has_export
-          description: Whether the Incident has exports ??? meital
+          description: Whether the Incident has exports.
           type: String
         - contextPath: Guardicore.Incident.concatenated_tags.display_name
           description: The incident's concatenated tags display name.
@@ -590,7 +590,7 @@ script:
           description: The virtual machine's full name for the source asset for the Incident.
           type: String
         - contextPath: Guardicore.Incident.source_asset.is_inner
-          description: ??? meital
+          description: The incident's source asset is inner flag.
           type: String
         - contextPath: Guardicore.Incident.destination_asset.labels
           description: The destination asset labels for the Incident.
@@ -614,7 +614,7 @@ script:
           description: The virtual machine''s full name for the destination asset for the Incident.
           type: String
         - contextPath: Guardicore.Incident.destination_asset.is_inner
-          description: ??? meital
+          description: The incident's destination asset is inner flag.
           type: String
         - contextPath: Guardicore.Incident.has_policy_violations
           description: Whether the Incident has policy violations.
@@ -725,7 +725,7 @@ script:
           description: The connection type for the Incident's events.
           type: String
         - contextPath: Guardicore.Incident.events.side
-          description: ??? meital
+          description: The incident's events side.
           type: Number
         - contextPath: Guardicore.Incident.events.date
           description: The date of the Incident's events.
@@ -926,7 +926,7 @@ script:
           description: The incident event's reputation tags process path.
           type: String
         - contextPath: Guardicore.Incident.events.reputation_tags.tag_args.side
-          description: ??? meital
+          description: The incident event's reputation tags arguments side.
           type: Number
         - contextPath: Guardicore.Incident.events.reputation_tags.tag_args.reason
           description: The incident event's reputation tags reason.
@@ -980,7 +980,7 @@ script:
           description: The incident event's destination virtual machine name.
           type: String
         - contextPath: Guardicore.Incident.is_bc_format_incident
-          description: ??? meital
+          description: Whether the incident is in backwards compatability format.
           type: String
     - arguments:
         - default: false
@@ -1076,7 +1076,7 @@ script:
           description: The incident's affected assets IP address.
           type: String
         - contextPath: Guardicore.Incident.affected_assets.is_inner
-          description: ??? meital
+          description: The incident's affected asset is inner flag.
           type: String
         - contextPath: Guardicore.Incident.affected_assets.vm_id
           description: The incident's affected assets virtual machine identifier.
@@ -1139,7 +1139,7 @@ script:
           description: The incident's labels identifier.
           type: String
         - contextPath: Guardicore.Incident.labels.key
-          description: ??? meital
+          description: The incident's labels key.
           type: String
         - contextPath: Guardicore.Incident.labels.value
           description: The incident's labels value.
@@ -1178,7 +1178,7 @@ script:
           description: The incident's concatenated tags events.
           type: String
         - contextPath: Guardicore.Incident.direction
-          description: ??? meital
+          description: The incident's direction.
           type: String
         - contextPath: Guardicore.Incident.source_asset.labels
           description: The incident's source assets labels.
@@ -1187,7 +1187,7 @@ script:
           description: The incident's source asset IP address.
           type: String
         - contextPath: Guardicore.Incident.source_asset.is_inner
-          description: ??? meital
+          description: The incident's source asset is inner flag.
           type: String
         - contextPath: Guardicore.Incident.destination_asset.labels
           description: The incident's destination asset labels.
@@ -1211,7 +1211,7 @@ script:
           description: The incident's destination asset's full name.
           type: String
         - contextPath: Guardicore.Incident.destination_asset.is_inner
-          description: ??? meital
+          description: The incident's destination asset is inner flag.
           type: String
     - arguments:
         - default: false
