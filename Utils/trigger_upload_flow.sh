@@ -233,7 +233,7 @@ function change_integration_image {
 }
 
 # updating_old_release_notes
-# adding text to the latest release note in pack
+# adding text to the second latest release note in pack
 # :param $1: pack name
 function updating_old_release_notes {
   echo " Running - updating_old_release_notes"
@@ -247,7 +247,7 @@ function updating_old_release_notes {
   local path="${CONTENT_PATH}/Packs/${pack_name}/ReleaseNotes/"
 
   cd "${path}" || fail
-  local current_latest_note=$(ls -t | head -1)
+  local current_latest_note=$(ls -t | head -2)
   printf "\n#### Upload flow\n - Test\n" >>"${current_latest_note}"
   cd "${CONTENT_PATH}" || return
 
@@ -501,7 +501,7 @@ if [ -n "$production" ]; then
 fi
 
 
-new_content_branch="${sdk_branch_name}_${content_branch_name}_UploadFlow_test"
+new_content_branch="${sdk_branch_name}_${content_branch_name}_UploadFlow_test" # todo commit hash
 new_suffix="New"
 new_pack_name="${base_pack_name}${new_suffix}"
 
@@ -522,32 +522,38 @@ fi
 
 git checkout -b "${new_content_branch}" || fail "" "skip"
 
-# Changes
+##############################################################
+##                   Branch Changes - start                 ##
+##############################################################
+
 if [ -n "$sdk_branch_name" ]; then
   change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
 fi
 
 # New Pack
-array=("Hello_World" "Hello World" "helloworld" "Sanity_Test") # todo
-create_new_pack "${base_pack_name}" "${new_suffix}" "${array[@]}"
-add_dependency "Viper" "${new_pack_name}"
+pack_ids=("Hello_World" "Hello World" "helloworld" "Sanity_Test") # All the possible ids inside Hello World pack
+create_new_pack "${base_pack_name}" "${new_suffix}" "${pack_ids[@]}"
+add_dependency "Viper" "${new_pack_name}" # Viper is now dependent on pack that not in upload
 add_author_image "${new_pack_name}"
 add_1_0_0_release_note "${new_pack_name}"
 
 ## Existing pack
-enhancement_release_notes "ZeroFox"
-change_integration_image "PaloAltoNetworks_IoT" "Viper" #todo change pack
-updating_old_release_notes "Base" #todo update not the latest
-enhancement_release_notes "Base"
+enhancement_release_notes "ZeroFox" # add new release note to
+change_integration_image "PaloAltoNetworks_IoT" "Armis" # Armis have the paloalto image for integration
+updating_old_release_notes "Box" #todo update not the latest
+enhancement_release_notes "Box"
 updating_old_release_notes "Viper" # todo Base agre
-add_1_0_0_release_note "Viper" # todo
+add_1_0_0_release_note "BPA"
 set_pack_hidden "Microsoft365Defender"
-#updating_old_release_notes "${new_pack_name}" # Update release notes in content that are not in the bucket
-update_integration_readme "Microsoft365Defender" # todo
-update_pack_ignore "Microsoft365Defender" # todo
+update_integration_readme "Malware"
+update_pack_ignore "MISP"
 
 # External changes
-add_pack_to_landing_page "${new_pack_name}" # todo
+add_pack_to_landing_page "Trello"
+
+##############################################################
+##                   Branch Changes - End                   ##
+##############################################################
 
 git push --set-upstream origin "${new_content_branch}"
 
