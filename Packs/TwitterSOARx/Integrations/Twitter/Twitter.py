@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import tweepy
-import urllib
+from urllib import parse
 import requests
 
 
@@ -229,6 +229,6 @@ def main():
     if demisto.command() == 'twitter-get-tweets':
         Client.get_tweets()
 
-  
+
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
