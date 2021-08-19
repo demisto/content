@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import tweepy
-from urllib import parse
+import urllib
 import requests
 
 
