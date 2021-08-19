@@ -113,6 +113,9 @@ class Client(BaseClient):
         if user_data.get('emails'):
             user_data['emails'] = [user_data['emails']]
 
+        # Default is false
+        user_data['active'] = True if old_user_data['active'] else False
+
         res = self._http_request(
             method='PUT',
             url_suffix=userUri + user_id,
@@ -656,7 +659,7 @@ def main():
     create_if_not_exists = params.get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out, 'user_name')
 
     headers = {
         'Content-Type': 'application/json',
