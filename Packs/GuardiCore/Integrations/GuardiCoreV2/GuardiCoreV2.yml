@@ -144,7 +144,7 @@ script:
           description: Whether the Endpoint is on or off.
           type: String
         - contextPath: Guardicore.Endpoint.bios_uuid
-          description: ' The Endpoint''s BIOS Universal unique identifier (UUID)'
+          description: The Endpoint''s BIOS Universal unique identifier (UUID)
           type: String
         - contextPath: Guardicore.Endpoint.first_seen
           description: The first time the Endpoint was seen.
@@ -180,8 +180,7 @@ script:
           description: The Endpoint's name.
           type: String
         - contextPath: Guardicore.Endpoint.nics.vif_id
-          description: The network interface controller virtual interface identifier of
-            the Endpoint.
+          description: The network interface controller virtual interface identifier of the Endpoint.
           type: String
         - contextPath: Guardicore.Endpoint.nics.mac_address
           description: The network interface controller mac address of the Endpoint.
@@ -270,19 +269,16 @@ script:
           description: The Endpoint's virtual machine's identifier.
           type: String
         - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_id
-          description: The Orchestration object identifier for the Endpoint's virtual
-            machine.
+          description: The Orchestration object identifier for the Endpoint's virtual machine.
           type: String
         - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_type
           description: The Orchestration type of the Endpoint's virtual machine.
           type: String
         - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_obj_id
-          description: The Orchestration object identifier for the Endpoint's virtual
-            machine.
+          description: The Orchestration object identifier for the Endpoint's virtual machine.
           type: String
         - contextPath: Guardicore.Endpoint.vm.orchestration_details.revision_id
-          description: The Orchestration revision identifier of the Endpoint's virtual
-            machine.
+          description: The Orchestration revision identifier of the Endpoint's virtual machine.
           type: Date
         - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_name
           description: The Orchestration name of the Endpoint's virtual machine.
@@ -1131,13 +1127,13 @@ script:
           description: The incident's first asset type.
           type: Number
         - contextPath: Guardicore.Incident.first_asset.asset_id
-          description: The first asset's ID.
+          description: The first asset's ID for the incident.
           type: String
         - contextPath: Guardicore.Incident.second_asset.asset_type
           description: The incident's second asset type.
           type: Number
         - contextPath: Guardicore.Incident.second_asset.asset_id
-          description: The second asset's ID.
+          description: The second asset's ID for the incident.
           type: String
         - contextPath: Guardicore.Incident.labels.id
           description: The incident's labels identifier.
