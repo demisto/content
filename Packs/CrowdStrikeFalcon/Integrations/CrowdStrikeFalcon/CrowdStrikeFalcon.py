@@ -2557,7 +2557,6 @@ def remove_host_group_members_command(host_group_id: str, host_ids: List[str]):
 
 
 def resolve_incident(ids, status):
-    ids = argToList(ids)
     data = {
         "action_parameters": [
             {
@@ -2570,12 +2569,13 @@ def resolve_incident(ids, status):
     http_request(method='POST',
                  url_suffix='/incidents/entities/incident-actions/v1',
                  json=data)
-    response = http_request(method='POST', url_suffix='/incidents/entities/incidents/GET/v1',
-                            json={'ids': ids})
-    incidents = response.get('resources')
-    incidents_human_readable = incidents_to_human_readable(incidents)
+    # response = http_request(method='POST', url_suffix='/incidents/entities/incidents/GET/v1',
+    #                         json={'ids': ids})
+    # incidents = response.get('resources')
+    # incidents_human_readable = incidents_to_human_readable(incidents)
+    readable = '\n'.join([f'{incident_id} changed successfully to {status}' for incident_id in ids])
     return CommandResults(outputs_prefix='CrowdStrike.Incidents',
-                          readable_output=incidents_human_readable)
+                          readable_output=readable)
 
 
 def test_module():
@@ -2694,7 +2694,8 @@ def main():
             return_results(remove_host_group_members_command(host_group_id=args.get('host_group_id'),
                                                              host_ids=argToList(args.get('host_ids'))))
         elif command == 'cs-falcon-resolve-incident':
-            return_results(resolve_incident(**args))
+            return_results(resolve_incident(status=args.get('status'),
+                                            ids=argToList(args.get('ids'))))
 
 
 
