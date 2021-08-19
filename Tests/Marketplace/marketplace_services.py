@@ -1481,7 +1481,7 @@ class Pack(object):
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
                 current_directory = root.split(os.path.sep)[-1]
-
+                parent_directory = root.split(os.path.sep)[-2]
                 folder_collected_items = []
                 for pack_file_name in pack_files_names:
                     if not pack_file_name.endswith(('.json', '.yml')):
@@ -1615,7 +1615,7 @@ class Pack(object):
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', ""),
                         })
-                    elif current_directory == PackFolders.GENERIC_FIELDS.value:
+                    elif parent_directory == PackFolders.GENERIC_FIELDS.value:
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', ""),
@@ -1625,7 +1625,7 @@ class Pack(object):
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', ""),
                         })
-                    elif current_directory == PackFolders.GENERIC_TYPES.value:
+                    elif parent_directory == PackFolders.GENERIC_TYPES.value:
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', ""),
