@@ -479,10 +479,10 @@ script:
       name: ignore_add_url
       required: false
       secret: false
-      description: Whether to include a URL to the relevant component in Demisto.
+      description: Whether to include a URL to the relevant component in XSOAR.
         Can be "true" or "false". Default value is "false".
     deprecated: false
-    description: Edit an existing slack message.
+    description: Edit an existing Slack message.
     execution: false
     hidden: false
     name: slack-edit-message

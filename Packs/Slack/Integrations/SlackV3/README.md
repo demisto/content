@@ -445,7 +445,7 @@ Get details about a specified user.
 
 ### slack-edit-message
 ***
-Edit an existing slack message.
+Edit an existing Slack message.
 
 
 #### Base Command
@@ -459,7 +459,7 @@ Edit an existing slack message.
 | message_ts | Timestamp of the message. | Required | 
 | message | The updated message. | Optional | 
 | blocks | A JSON string of the block to send. | Optional | 
-| ignore_add_url | Whether to include a URL to the relevant component in Demisto. Can be "true" or "false". Default value is "false". | Optional | 
+| ignore_add_url | Whether to include a URL to the relevant component in XSOAR. Can be "true" or "false". Default value is "false". | Optional | 
 
 
 #### Context Output
