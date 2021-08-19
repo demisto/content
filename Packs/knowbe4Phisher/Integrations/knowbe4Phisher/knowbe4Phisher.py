@@ -1,12 +1,9 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+from CommonServerPython import *
 # noqa: F401
 # noqa: F401
 import json
 import urllib3
-import dateparser
 import traceback
-import pytz
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -16,7 +13,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ALL_EVENTS_PAYLOAD = """query {{
-  phisherMessages(all: false, page: 1, per: {}, query: ) {{
+  phisherMessages(all: false, page: 1, per: {}, query: {}) {{
     nodes {{
       actionStatus
       attachments(status: UNKNOWN) {{
@@ -164,7 +161,7 @@ ALL_EVENTS_PAYLOAD = """query {{
 }}"""
 
 CREATE_COMMENT_PAYLOAD = """mutation {{
-  phisherCommentCreate(comment: \\"{}\\", id: \\"{}\\") {{
+  phisherCommentCreate(comment: \"{}\", id: \"{}\") {{
     errors {{
       field
       placeholders
@@ -178,7 +175,7 @@ CREATE_COMMENT_PAYLOAD = """mutation {{
 }}"""
 
 UPDATE_STATUS_PAYLOAD = """mutation {{
-  phisherMessageUpdate(id: \\"{}\\", payload: {}) {{
+  phisherMessageUpdate(id: \"{}\", payload: {}) {{
     errors {{
       field
       placeholders
@@ -189,7 +186,7 @@ UPDATE_STATUS_PAYLOAD = """mutation {{
 """
 
 CREATE_TAGS_PAYLOAD = """mutation {{
-  phisherTagsCreate(id: \\"{}\\", tags: [{}]) {{
+  phisherTagsCreate(id: \"{}\", tags: [{}]) {{
     errors {{
       field
       placeholders
@@ -200,7 +197,7 @@ CREATE_TAGS_PAYLOAD = """mutation {{
 """
 
 DELETE_TAGS_PAYLOAD = """mutation {{
-   phisherTagsDelete(id: \\"{}\\", tags: [{}]) {{
+   phisherTagsDelete(id: \"{}\", tags: [{}]) {{
     errors {{
       field
       placeholders
@@ -210,20 +207,20 @@ DELETE_TAGS_PAYLOAD = """mutation {{
 }}
 """
 
-NUMBER_OF_MESSAGES = """query {
-  phisherMessages(all: false, page: 1, per: 25, query: ) {
-    pagination {
+NUMBER_OF_MESSAGES = """query {{
+  phisherMessages(all: false, page: 1, per: 25, query: {}) {{
+    pagination {{
       page
       pages
       per
       totalCount
-    }
-  }
-}
+    }}
+  }}
+}}
 """
 
 FETCH_WITHOUT_EVENTS = """query {{
-  phisherMessages(all: false, page: 1, per: {}, query: ) {{
+  phisherMessages(all: false, page: 1, per: {}, query: {}) {{
     nodes {{
       actionStatus
       attachments(status: UNKNOWN) {{
@@ -317,43 +314,13 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def phisher_message_list_request(self, payload: str):
-        return self._http_request(
-            method='POST',
-            data=payload
-        )
+    def __init__(self, base_url, verify, proxy, first_fetch_time, headers=None, max_fetch=None):
+        self.first_fetch_time = first_fetch_time
+        self.max_fetch = max_fetch
 
-    def phisher_get_number_of_messages_request(self, payload: str):
-        return self._http_request(
-            method='POST',
-            data=payload
-        )
+        super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
-    def phisher_message_list_all_events_request(self, payload: str):
-        return self._http_request(
-            method='POST',
-            data=payload
-        )
-
-    def phisher_create_comment_request(self, payload: str):
-        return self._http_request(
-            method='POST',
-            data=payload
-        )
-
-    def phisher_update_message_status_request(self, payload: str):
-        return self._http_request(
-            method='POST',
-            data=payload
-        )
-
-    def phisher_create_tags_request(self, payload: str):
-        return self._http_request(
-            method='POST',
-            data=payload
-        )
-
-    def phisher_delete_tags_request(self, payload: str):
+    def phisher_gql_request(self, payload: str):
         return self._http_request(
             method='POST',
             data=payload
@@ -366,9 +333,11 @@ class Client(BaseClient):
 def create_request(st: str):
     """ Function that creates a valid request to use in http_request.
 
-    argument: a multiline string with a request in a human readable format
+    args:
+        st: A multiline string with a request in a human readable format
 
-    return: a final string that is formatted to suit the http_request function
+    Returns:
+        A string that is formatted to suit the http_request function
     """
     format_desc = st.splitlines()
     final = ""
@@ -378,75 +347,54 @@ def create_request(st: str):
     return final
 
 
-def create_gql_query(payload: str, query: str):
-    """
-    for gql query - the query argument inside the request should be with double quotes.
-    this function is inserting the query parameter to the request body and adds the needed parameters,
-    for gql query - wrapping the query in a dictionary representation
-
-    arguments: payload, the body part of a request. query, the query parameter from phisherMessages arguments
-
-    output: a string with dict representation of gql query.
-    """
-    st = "query:"
-    j = len(st)
-    i = payload.find(st)
-    temp = payload[:i + j] + query + payload[i + j:]
-    return "{\"query\": \"" + temp + "\",\"variables\": {}}"
-
-
-def get_last_fetch_time(last_run: dict, first_fetch_time: str):
-    """
-    this helper function will get the demisto.getLastRun() and first_fetch_time parameter
-    and will return:
-    last_time - timestamp of last message fetched
-    query - the query parameter with the timestamp to match the Phisher filter
-    """
-    # Get the last fetch time, if exists
-    utc = pytz.UTC
-    last_fetch = last_run.get('last_fetch')
-    # Handle first time fetch
-    if last_fetch is None:
-        last_fetch = dateparser.parse(first_fetch_time)
-        time_param = last_fetch.strftime(DATE_FORMAT)
-        query = "\\\" reported_at:[" + time_param + " TO *]\\\""
-    else:
-        last_fetch = dateparser.parse(last_fetch)
-        time_param = last_fetch.strftime(DATE_FORMAT)
-        query = "\\\" reported_at:[" + time_param + " TO *]\\\""
-    last_time = last_fetch.replace(tzinfo=utc)
-    return last_time, query
-
-
 def calculate_number_of_events(client: Client, query: str):
     """
-    function gets the formatted query with the relevant timestamp
-    and returns number of events to fetch
+    function that calculates number of events that fulfilling the query parameter
+
+    args:
+        client: Phisher client
+        query: query with the timestamp in a lucene query format
+
+    returns:
+        number of events to fetch
     """
     # get number of new events
-    payload = create_gql_query(NUMBER_OF_MESSAGES, query)
+    payload_init = NUMBER_OF_MESSAGES.format(query)
+    payload = json.dumps({'query': payload_init, 'variables': {}})
     req = create_request(payload)
-    limit_req = client.phisher_get_number_of_messages_request(req)
+    limit_req = client.phisher_gql_request(req)
     return str(limit_req.get('data', {}).get('phisherMessages', {}).get('pagination', {}).get('totalCount'))
+
+
+def get_created_time(events: list):
+    creation_time = ""
+    for event in events:
+        if (event['eventType']) == 'CREATED':
+            creation_time = (event['createdAt'])
+            break
+    return creation_time
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, params: dict) -> str:
+def test_module(client: Client) -> str:
     """Tests API connectivity, authentication and parameters for fetch incidents
 
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
 
-    param Client: client to use
+    args:
+        Client: Phisher client
+        params: integration parameters
 
-    return: 'ok' if test passed, specific error if with a suggestion of how to fix.
+    returns:
+        'ok' if test passed, specific error if with a suggestion of how to fix.
     """
-    first_fetch_time = params.get('first_fetch')
+    first_fetch_time = client.first_fetch_time
     try:
-        fetch_limit = int(params.get('max_fetch'))  # type: ignore
+        fetch_limit = client.max_fetch  # type: ignore
     except ValueError:
         return 'Fetch Limit should be set as an integer'
 
@@ -454,7 +402,7 @@ def test_module(client: Client, params: dict) -> str:
         _, incidents = fetch_incidents(
             client=client,
             last_run=demisto.getLastRun(),
-            first_fetch_time=first_fetch_time,  # type: ignore
+            first_fetch_time=first_fetch_time,
             max_fetch=fetch_limit)
 
         if incidents:
@@ -475,17 +423,16 @@ def test_module(client: Client, params: dict) -> str:
 def phisher_message_list_command(client: Client, args: dict) -> CommandResults:
     """
     this function implements the message-list-command.
-    arguments of command:
-    limit - maximum number of messages to retrieve. default - 200
-    query - a lucene query for entered by a user to filter results. default - empty
-    message_id - id of specific message to retrieve, once it's entered the query parameter is ignored.
-    all_events - if set to false message will be retrieved without associated events. on true all events will be
-    retrieved to the XSOAR context. default is false.
 
-    arguments of function:
-    client and arguments
+    arguments:
+        limit: maximum number of messages to retrieve. default - 200
+        query: a lucene query entered by a user to filter results. default - empty
+        message_id: id of specific message to retrieve, once it's entered the query parameter is ignored.
+        all_events: if set to false message will be retrieved without associated events. on true all events will be
+        retrieved to the XSOAR context. default is false.
 
-    return: all relevant messages returned in the commandResults structure to war room and context of XSOAR
+    return:
+        all relevant messages returned in the commandResults structure to war room and context of XSOAR
 
     """
     # get parameters
@@ -495,40 +442,40 @@ def phisher_message_list_command(client: Client, args: dict) -> CommandResults:
     all_events = args.get('include_events')
     # handle query
     if not query:
-        query = "\\\"\\\""
+        q = '\"\"'
+        query = f'{q}'
     else:
-        query = "\\\"" + str(args.get('query')) + "\\\""  # type: ignore
+        query = f'\"{query}\"'
     # handle in case ID is given
     if message_id:
-        query = "\\\"id:" + message_id + "\\\""
+        query = f'\"id:{message_id}\"'
     # create request body
     query = query.lower()
-    payload_init = ALL_EVENTS_PAYLOAD.format(limit)
-    payload = create_gql_query(payload_init, query)
+    payload_init = ALL_EVENTS_PAYLOAD.format(limit, query)
+    payload = json.dumps({'query': payload_init, 'variables': {}})
     req = create_request(payload)
     # call the API
-    result = client.phisher_message_list_all_events_request(req)
+    result = client.phisher_gql_request(req)
     messages = result.get('data', {}).get('phisherMessages', {}).get('nodes', [])
     readable = []
     # creata data for XSOAR
-    for item in messages:
+    for message in messages:
         # find creation time and create a key with this value
-        events = item.get('events', {})
-        for event in events:
-            if (event['eventType']) == 'CREATED':
-                creation_time = (event['createdAt'])
-                break
-        incident_created_time = dateparser.parse(creation_time)
+        events = message.get('events', {})
+        creation_time = get_created_time(events)
+        message["created at"] = arg_to_datetime(creation_time).isoformat()  # type: ignore
         if all_events == "False":
-            item.pop("events")
-        item["created at"] = incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+            message.pop("events")
 
         # prepare printout to war room
-        readable.append({"ID": item.get('id', ""), "Status": item.get('actionStatus', ""), "Category": item.get(
-            'category', ""), "From": item.get('from', ""), "Severity": item.get('severity', "")})
+        readable.append(
+            {"ID": message.get('id', ""), "Status": message.get('actionStatus', ""), "Category": message.get(
+                'category', ""), "From": message.get('from', ""), "Severity": message.get('severity', ""),
+             "Created At": message.get('created at', "")})
 
-    markdown = '### The requested information:\n'
-    markdown += tableToMarkdown('Messages', readable, headers=['ID', 'Status', 'Category', 'From', 'Severity'])
+    markdown = tableToMarkdown('Messages', readable, headers=['ID', 'Status', 'Category', 'From', 'Severity', 'Created At'])
+    # markdown = tableToMarkdown('Messages', camelize(messages), headerTransform=pascalToSpace,
+    #                            headers=['ID', 'Status', 'Category', 'From', 'Severity'])
     res = CommandResults(
         outputs_prefix='Phisher.Message',
         outputs_key_field='id',
@@ -541,80 +488,71 @@ def phisher_message_list_command(client: Client, args: dict) -> CommandResults:
 def phisher_create_comment_command(client: Client, args: dict) -> str:
     """
     this function implements the create-comment command
-    command used in XSOAR to create a comment for a specific gived ID of a message.
-    arguments of command:
-    id - message id, required.
-    comment - comment to be added, required.
+    command used in XSOAR to create a comment for a specific giveN ID of a message.
 
-    arguments of function:
-    client - Base client
-    args - dict with command arguments
+    Args:
+        client - Phisher client
+        args - dict with command arguments
 
-    output - indication to war room if the operation was successful or not
-
+    Returns:
+        indication to war room if the operation was successful or not
     """
-    id = args.get('id')
+    message_id = args.get('id')
     comment = args.get('comment')
 
     # create the request body
-    payload = CREATE_COMMENT_PAYLOAD.format(comment, id)
-    final = "{\"query\": \"" + payload + "\",\"variables\": {}}"
-    final_req = create_request(final)
+    payload = CREATE_COMMENT_PAYLOAD.format(comment, message_id)
+    final = json.dumps({'query': payload, 'variables': {}})
+    final_str = create_request(final)
     # call request
-    result = client.phisher_create_comment_request(final_req)
-    res = result.get('data', {}).get('phisherCommentCreate', {}).get('errors', "")
+    result = client.phisher_gql_request(final_str)
+    errors = result.get('data', {}).get('phisherCommentCreate', {}).get('errors', "")
 
-    if not res:
+    if not errors:
         return "The comment was added successfully"
     else:
         return "The comment wasn't added - Verify ID is correct"
 
 
-def phisher_update_message_status_command(client: Client, args: dict) -> str:
+def phisher_update_message_command(client: Client, args: dict) -> str:
     """
-    this function implements the update-message-status command
-    this function will receive the veluas to be updated and ID of a specific message and will update
+    this function implements the update-message command
+    this function will receive the values to be updated and ID of a specific message and will update
     the status of this message
 
-    command arguments:
-    id - message id, required.
-    category - category of message, possible values: Unknown, Clean, Spam, Threat
-    severity - severity of message, possible values: Unknown, Low, Medium, High, Critical
-    status - status of message, possible values: Received, In_Review, Resolved
+    Args:
+        client: Phisher client
+        args: command arguments with the below arguments
+            id: message id, required.
+            category: category of message, possible values: Unknown, Clean, Spam, Threat
+            severity: severity of message, possible values: Unknown, Low, Medium, High, Critical
+            status: status of message, possible values: Received, In_Review, Resolved
+            at least one of the arguments should be given in order for the function to work.
 
-    function arguments:
-    client and command arguments.
-
-    function returns indication if the update was successful.
-    at least one of the arguments should be given in order for the function to work.
+    Returns:
+        returns indication if the update was successful.
     """
     # get arguments
-    id = args.get('id')
+    message_id = args.get('id')
     category = args.get('category')
     status = args.get('status')
     severity = args.get('severity')
     # create the attributes dict for arguments to update
-    attributes = {}
-    if category:
-        attributes["category"] = category
-    if status:
-        attributes["status"] = status
-    if severity:
-        attributes["severity"] = severity
-    if not (category or status or severity):
-        return "None of the parameters was set - Please specify at least one of the parameters"
+    attributes = assign_params(category=category, status=status, severity=severity)
+    if not attributes:
+        return "No message argument was given. Specify at least one of the following: category, status, severity"
     attr_str = json.dumps(attributes)
     attr_str = attr_str.replace('\"', '')
     attr_str = attr_str.replace(' ', '')
     # create the request body
-    payload = UPDATE_STATUS_PAYLOAD.format(id, attr_str)
-    final = "{\"query\":\"" + payload + "\",\"variables\": {}}"
+    payload = UPDATE_STATUS_PAYLOAD.format(message_id, attr_str)
+    final = json.dumps({'query': payload, 'variables': {}})
     final_req = create_request(final)
     # call request
-    result = client.phisher_update_message_status_request(final_req)
-    res = result.get('data', {}).get('phisherCommentCreate', {}).get('errors', "")
+    result = client.phisher_gql_request(final_req)
+    errors = result.get('data', {}).get('phisherCommentCreate', {}).get('errors', "")
 
-    if not res:
+    if not errors:
         return "The message was updated successfully"
     else:
         return "The message wasn't updated - check if ID is correct and the parameters are without syntax errors"
@@ -625,35 +563,37 @@ def phisher_create_tags_command(client: Client, args: dict) -> str:
     this function implements the create-tags-command
     adding the specified tags to the given message ID
 
-    command arguments:
-    id - message ID, required.
-    tags - message tags, required. should be given in double quotes seperated by comma
+    args:
+        client: Phisher Client
+        args: command arguments with the below arguments
+            id: message ID, required.
+            tags: message tags, required. should be given in double quotes separated by comma
 
-    function arguments:
-    client and arguments
-
-    function returns and indication if the tag was added successfully or not.
+    returns:
+        returns an indication if the tag was added successfully or not.
+        aparsed = f'\"{tag}\"'
+    else:
+        aparsed = f'{aparsed}, \"{tag}\"'
     """
     # get arguments
-    id = args.get('id')
-    tags = args.get('tags')
+    message_id = args.get('id')
     # create the format for tags that expected by Phisher
-    arg_tags = argToList(tags)
+    tags = argToList(args.get('tags'))
     parsed_tags = ""
-    for tag in arg_tags:
+    for tag in tags:
         if not parsed_tags:
-            parsed_tags = "\\\"" + tag + "\\\""
+            parsed_tags = f'\"{tag}\"'
         else:
-            parsed_tags = parsed_tags + ", \\\"" + tag + "\\\""
+            parsed_tags = f'{parsed_tags}, \"{tag}\"'
     # create the request body
-    payload = CREATE_TAGS_PAYLOAD.format(id, parsed_tags)
-    final = "{\"query\":\"" + payload + "\",\"variables\": {}}"
+    payload = CREATE_TAGS_PAYLOAD.format(message_id, parsed_tags)
+    final = json.dumps({'query': payload, 'variables': {}})
     final_req = create_request(final)
     # call request
-    result = client.phisher_create_tags_request(final_req)
-    res = result.get('data', {}).get('phisherTagsCreate', {}).get('errors', "")
+    result = client.phisher_gql_request(final_req)
+    errors = result.get('data', {}).get('phisherTagsCreate', {}).get('errors', "")
 
-    if not res:
+    if not errors:
         return "The tags were updated successfully"
     else:
         return "The tags weren't added - check the ID"
@@ -664,37 +604,36 @@ def phisher_delete_tags_command(client: Client, args: dict) -> str:
     this function implements the delete-tags-command
     deleting the specified tags to the given message ID
 
-    command arguments:
-    id - message ID, required.
-    tags - message tags, required. should be given in double quotes seperated by comma
+    args:
+        client: Phisher Client
+        args: command arguments with the below arguments:
+            id: message ID, required.
+            tags: message tags, required. should be given in double quotes separated by comma
 
-    function arguments:
-    client and arguments
-
-    function returns and indication if the tag was added successfully or not.
-    the indication is only checking if the provided ID exist in the system.
-    the API gives same response if user tries to delete an existing or not existing tags
-    so there is no way to differentiate between deleting existing tag or not existing tag.
+    returns:
+        an indication if the tag was added successfully or not.
+        the indication is only checking if the provided ID exist in the system.
+        the API gives same response if user tries to delete an existing or not existing tags
+        so there is no way to differentiate between deleting existing tag or not existing tag.
     """
     # get arguments
-    id = args.get('id')
-    tags = args.get('tags')
+    message_id = args.get('id')
     # create the format for tags that expected by Phisher
-    arg_tags = argToList(tags)
+    tags = argToList(args.get('tags'))
     parsed_tags = ""
-    for tag in arg_tags:
+    for tag in tags:
         if not parsed_tags:
-            parsed_tags = "\\\"" + tag + "\\\""
+            parsed_tags = f'\"{tag}\"'
         else:
-            parsed_tags = parsed_tags + ", \\\"" + tag + "\\\""
+            parsed_tags = f'{parsed_tags}, \"{tag}\"'
     # create the request body
-    payload = DELETE_TAGS_PAYLOAD.format(id, parsed_tags)
-    final = "{\"query\":\"" + payload + "\",\"variables\": {}}"
+    payload = DELETE_TAGS_PAYLOAD.format(message_id, parsed_tags)
+    final = json.dumps({'query': payload, 'variables': {}})
     final_req = create_request(final)
-    result = client.phisher_delete_tags_request(final_req)
-    res = result.get('data', {}).get('phisherTagsCreate', {}).get('errors', "")
+    result = client.phisher_gql_request(final_req)
+    errors = result.get('data', {}).get('phisherTagsCreate', {}).get('errors', "")
 
-    if not res:
+    if not errors:
         return "The tags were deleted successfully"
     else:
         return "The tags weren't deleted - check the ID"
@@ -704,62 +643,76 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
     """
     fetch_incidents is being called from the fetch_incidents_command function.
     it checks the last message fetch, checking number of new events, and getting all messages
-    going through all messages to and saving them to incidents list.
+    that are newer than then the last message fetched or the first fetch time entered by user,
+    afterwards the function is going through all messages to and saving them to incidents list.
 
     returning incidents list and the time the las message was retrieved - so that next run will
     automatically continue from the same place.
+
+    args:
+        client: Phisher client
+        last_run: dict containing the time of the last fetched message
+        first_fetch_time: the first fetch parameter from integration instance for the first fetch
+        max_fetch: maximum number for each fetch
+
+    returns:
+        next_run: timestamp of the last message fetched so next fetch will know from where to start
+        incidents: list of incidents to be written to XSOAR
     """
-    last_time, query = get_last_fetch_time(last_run, first_fetch_time)
+    last_time = last_run.get('last_fetch', first_fetch_time)
+    query = f'\" reported_at:[{last_time} TO *]\"'
     limit = calculate_number_of_events(client, query)
     incidents = []
     # create request
-    payload_init = FETCH_WITHOUT_EVENTS.format(limit)
-    payload = create_gql_query(payload_init, query)
+    payload_init = FETCH_WITHOUT_EVENTS.format(limit, query)
+    payload = json.dumps({'query': payload_init, 'variables': {}})
     req = create_request(payload)
     # get all messages
-    messages = client.phisher_message_list_request(req)
-    items = messages.get('data', {}).get('phisherMessages', {}).get('nodes', [])
+    items = client.phisher_gql_request(req)
+    messages = items.get('data', {}).get('phisherMessages', {}).get('nodes', [])
     # check if they need to be fetched
     message_index = 0
-    for item in reversed(items):
-        events = item.get('events', {})
-        for event in events:
-            if (event['eventType']) == 'CREATED':
-                creation_time = (event['createdAt'])
-                break
-        incident_created_time = dateparser.parse(creation_time)
-        item["created at"] = incident_created_time.strftime(DATE_FORMAT)
-        item.pop("events")
+    for message in reversed(messages):
+        events = message.get('events', {})
+        creation_time = get_created_time(events)
+        message["created at"] = arg_to_datetime(creation_time).isoformat()  # type: ignore
+        message.pop("events")
         incident = {
-            'name': item['subject'],
-            'occurred': incident_created_time.strftime(DATE_FORMAT),
-            'rawJSON': json.dumps(item)
+            'name': message.get('subject'),
+            'occurred': message.get('created at'),
+            'rawJSON': json.dumps(message)
         }
 
         # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > last_time:
-            last_time = incident_created_time
-            incidents.append(incident)
+        # if incident_created_time > last_time:
+        last_time = message["created at"]
+        incidents.append(incident)
         message_index += 1
         if message_index == max_fetch:
             break
 
-    next_run = {'last_fetch': last_time.strftime('%Y-%m-%dT%H:%M:%SZ')}
+    next_run = last_time
     return next_run, incidents
 
 
-def fetch_incidents_command(client: Client, params: dict):
+def fetch_incidents_command(client: Client):
     """
-    calling the fetch incidents and writing all incidents to demisto.incidents.
+    Function that calls the fetch incidents and writing all incidents to demisto.incidents
+
+    args:
+        client: Phisher client
+        params: integration parameters.
+
+
     """
-    first_fetch_time = params.get('first_fetch')
-    fetch_limit = int(params.get('max_fetch'))  # type: ignore
+    first_fetch_time = client.first_fetch_time
+    fetch_limit = arg_to_number(client.max_fetch)
     next_run, incidents = fetch_incidents(
         client=client,
         last_run=demisto.getLastRun(),
-        first_fetch_time=first_fetch_time,  # type: ignore
-        max_fetch=fetch_limit)
-    demisto.setLastRun(next_run)
+        first_fetch_time=first_fetch_time,
+        max_fetch=fetch_limit)  # type: ignore
+    demisto.setLastRun({'last_fetch': next_run})
     demisto.incidents(incidents)
 
 
@@ -769,35 +722,40 @@ def fetch_incidents_command(client: Client, params: dict):
 def main(params: dict, args: dict, command: str) -> None:
     # get the service API url
     url = params.get('url')
-    key = params.get('apikey', {}).get('password')
+    if not params.get('apikey') or not (key := params.get('apikey', {}).get('password')):
+        raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
     insecure = not params.get('insecure', False)
-
+    proxy = params.get('proxy', False)
+    first_fetch_time = arg_to_datetime(params.get('first_fetch')).isoformat()  # type: ignore
+    fetch_limit = arg_to_number(params.get('max_fetch'))  # type: ignore
     headers = {
         'Authorization': 'Bearer ' + key,
         'Content-Type': 'application/json'
     }
-
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
+            proxy=proxy,
             base_url=url,
             verify=insecure,
             headers=headers,
+            first_fetch_time=first_fetch_time,
+            max_fetch=fetch_limit
         )
 
         if command == 'test-module':
-            return_results(test_module(client, params))
+            return_results(test_module(client))
         elif command == 'fetch-incidents':
-            fetch_incidents_command(client, params)
+            fetch_incidents_command(client)
         elif command == 'phisher-message-list':
             return_results(phisher_message_list_command(client, args))
         elif command == 'phisher-create-comment':
             return_results(phisher_create_comment_command(client, args))
-        elif command == 'phisher-update-message-status':
-            return_results(phisher_update_message_status_command(client, args))
-        elif command == 'phisher-create-tags':
+        elif command == 'phisher-update-message':
+            return_results(phisher_update_message_command(client, args))
+        elif command == 'phisher-tags-create':
             return_results(phisher_create_tags_command(client, args))
-        elif command == 'phisher-delete-tags':
+        elif command == 'phisher-tags-delete':
             return_results(phisher_delete_tags_command(client, args))
 
     # Log exceptions and return errors

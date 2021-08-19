@@ -3,11 +3,11 @@
     "description": "A pack for KnowBE4 Phisher integration",
     "support": "partner",
     "currentVersion": "1.0.0",
-    "author": "Edi K",
-    "url": "",
-    "email": "ekatsenelson@paloaltonetworks.com",
+    "author": "KnowBE4",
+    "url": "https://www.knowbe4.com/products/phisher",
+    "email": "brandons@knowbe4.com",
     "categories": [
-        "Messaging"
+        "Email Gateway"
     ],
     "tags": [
         "Alerts",

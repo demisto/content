@@ -1,4 +1,4 @@
-category: Messaging
+category: Email Gateway
 commonfields:
   id: Phisher
   version: -1
@@ -12,10 +12,6 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   type: 9
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
 - additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days,
     3 months, 1 year)
   defaultvalue: 7 days
@@ -27,11 +23,6 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
 - additionalinfo: Maximum number of alerts per fetch. Default is 50, maximum is 100.
   defaultvalue: '50'
   display: Fetch Limit
@@ -43,6 +34,14 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: KnowBE4 PhishER integration allows to pull events from PhishER system
   and do mutations
 display: PhishER
@@ -51,8 +50,8 @@ script:
   commands:
   - arguments:
     - default: false
-      defaultValue: '200'
-      description: number of maximum events to fetch, default value 200
+      defaultValue: '50'
+      description: The maximum number of messages to fetch
       isArray: false
       name: limit
       required: false
@@ -64,8 +63,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: id of specific event to get only specific event. if ID is entered
-        it overides the value given to query
+      description: ID of specific message to retrieve. If ID is given
+        query will be ignored
       isArray: false
       name: id
       required: false
@@ -79,8 +78,7 @@ script:
       - 'False'
       - 'True'
       required: false
-      description: false - will not write all event information to context. true -
-        will write all events to context.
+      description: Whether to include all message events in the result.
       secret: false
     deprecated: false
     description: Command to get messages from PhishER
@@ -91,7 +89,7 @@ script:
       description: Action Status
       type: String
     - contextPath: Phisher.Message.attachments
-      description: a collection of attachments associated with this message
+      description: A collection of attachments associated with this message
       type: String
     - contextPath: Phisher.Message.category
       description: The message's category
@@ -137,13 +135,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of message
+      description: Message ID
       isArray: false
       name: id
       required: true
       secret: false
     - default: false
-      description: the comment to be added
+      description: The comment to add.
       isArray: false
       name: comment
       required: true
@@ -196,10 +194,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates a PhishER message status, user must provide at least one
-      of the parameters
+    description: Updates a PhishER message status. User must provide at least one argument.
     execution: false
-    name: phisher-update-message-status
+    name: phisher-update-message
   - arguments:
     - default: false
       description: Message ID
@@ -208,16 +205,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: Message Tags to assign for given ID. Tags should be seperated by
-        a comma
+      description: Comma separated list of tags to add.
       isArray: false
       name: tags
       required: true
       secret: false
     deprecated: false
-    description: command that creates tags for specific message
+    description: Add tags to a given message
     execution: false
-    name: phisher-create-tags
+    name: phisher-tags-create
   - arguments:
     - default: false
       description: Message ID
@@ -226,16 +222,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: Message Tags to delete for given ID. Tags should be seperated by
-        a comma
+      description: Comma separated list of tags to remove.
       isArray: false
       name: tags
       required: true
       secret: false
     deprecated: false
-    description: command that deletes tags to a specified message
+    description: Removes tags from a given message.
     execution: false
-    name: phisher-delete-tags
+    name: phisher-tags-delete
   dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: true

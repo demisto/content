@@ -1,13 +1,81 @@
 {
-    "defaultIncidentType": "",
     "description": "",
     "feed": false,
-    "id": "phisher-mapper",
+    "id": "PhishER-mapper",
     "mapping": {
-        "Phisher": {
+        "PhishER": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Event ID": {
+                "PhishER Action Status": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "actionStatus",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "PhishER Attachments": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "title": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "PhishER Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "PhishER Comments": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "comments",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "PhishER Created": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "created at",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "PhishER Email From": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "from",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "PhishER ID": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -16,11 +84,108 @@
                     },
                     "simple": ""
                 },
-                "Phisher  severity": {
+                "PhishER Links": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "links",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "title": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "PhishER ML Report": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "phishmlReport",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "title": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "PhishER Pipeline Status": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "pipelineStatus",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "PhishER Raw URL": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "rawUrl",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "PhishER Reported By": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "reportedBy",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "PhishER Severity": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
                         "root": "severity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "PhishER Subject": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "subject",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "PhishER Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "Phisher": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Event ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
                         "transformers": []
                     },
                     "simple": ""
@@ -204,6 +369,15 @@
                     },
                     "simple": ""
                 },
+                "Phisher severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "Phisher sha1 hash": {
                     "complex": {
                         "accessor": "sha1",
@@ -252,8 +426,8 @@
             "internalMapping": {}
         }
     },
-    "name": "phisher-mapper",
+    "name": "PhishER-mapper",
     "type": "mapping-incoming",
-    "fromVersion": "6.0.0",
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.0.0"
 }
