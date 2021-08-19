@@ -1,0 +1,31 @@
+args:
+- default: false
+  isArray: false
+  name: url
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  isArray: false
+  name: forceModel
+  predefined:
+  - 'True'
+  - Fals
+  required: false
+  secret: false
+commonfields:
+  id: e6cca0d5-317e-4a4a-8f5f-0ffc6ee20b3f
+  version: -1
+enabled: true
+name: DBotPredictURLPhishing
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: devdemisto/mlurlphishing:1.0.0.23983
+runas: DBotWeakRole
+runonce: false
+pswd: ''
+vcShouldKeepItemLegacyProdMachine: false
