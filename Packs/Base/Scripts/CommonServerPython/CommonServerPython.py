@@ -2527,7 +2527,7 @@ class Common(object):
 
         def to_context(self):
             custom_context = {
-                'Value': self.value
+                'value': self.value
             }
 
             custom_context.update(self.data)
