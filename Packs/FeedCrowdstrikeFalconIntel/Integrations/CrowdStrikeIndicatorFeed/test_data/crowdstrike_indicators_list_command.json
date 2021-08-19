@@ -98,6 +98,48 @@
                 "Banking"
             ],
             "vulnerabilities": []
+        },
+        {
+            "id": "file_abc1",
+            "indicator": "abc1",
+            "type": "hash_md5",
+            "deleted": false,
+            "published_date": 1573579421,
+            "last_updated": 1612070569,
+            "reports": [],
+            "actors": [],
+            "malware_families": [
+                "Gootkit"
+            ],
+            "kill_chains": [
+                "C2"
+            ],
+            "ip_address_types": [],
+            "domain_types": [],
+            "malicious_confidence": "high",
+            "_marker": "1234",
+            "labels": [
+                {
+                    "name": "Malware/Gootkit",
+                    "created_on": 1588309967,
+                    "last_valid_on": 1588309967
+                }
+            ],
+            "relations": [
+                {
+                    "id": "hash_sha256_1234567890",
+                    "indicator": "1234567890",
+                    "type": "hash_sha256",
+                    "created_date": 1609238446,
+                    "last_valid_date": 1609238446
+                }
+            ],
+            "targets": [],
+            "threat_types": [
+                "Criminal",
+                "Banking"
+            ],
+            "vulnerabilities": []
         }
     ],
     "errors": []

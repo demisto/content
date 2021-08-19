@@ -248,7 +248,7 @@ def build_grid(context_path: str, keys: List[str], columns: List[str], unpack_ne
 
 @logger
 def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns: List[str], overwrite: bool,
-                       sort_by: str, unpack_nested_elements: bool) \
+                       sort_by: List[str], unpack_nested_elements: bool) \
         -> List[Dict[Any, Any]]:
     """ Build Grid in one of the 3 options:
             1. Context_path contains list of dicts where values are of primitive types (str, int, float, bool),
@@ -266,7 +266,7 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
             keys: Keys to be included in the table, If specified "*" will retrieve all availble keys.
             columns: Name of the columns in the must be equal.
             overwrite: True if to overwrite existing data else False.
-            sort_by: Name of the column to sort by.
+            sort_by: Name(s) of the columns to sort by.
             unpack_nested_elements: True for unpacking nested elements, False otherwise.
 
         Returns:
@@ -289,9 +289,9 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
     if not overwrite:
         new_table = pd.concat([new_table, old_table])
 
-    # Sort by column name if specified
-    if sort_by and sort_by in new_table.columns:
-        new_table.sort_values(by=sort_by)
+    # Sort by column name if specified, support multi columns sort
+    if sort_by and set(sort_by) <= set(new_table.columns):
+        new_table.sort_values(by=sort_by, inplace=True)
 
     # filter empty values in the generated table
     filtered_table = []
@@ -313,7 +313,7 @@ def main():
                                    keys=argToList(args.get('keys')),
                                    overwrite=argToBoolean(args.get('overwrite')),
                                    columns=argToList(args.get('columns')),
-                                   sort_by=args.get('sort_by'),
+                                   sort_by=argToList(args.get('sort_by')),
                                    unpack_nested_elements=argToBoolean(args.get('unpack_nested_elements')),
                                    )
         # Execute automation 'setIncident` which change the Context data in the incident
