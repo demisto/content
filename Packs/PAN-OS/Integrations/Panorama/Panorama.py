@@ -3723,7 +3723,7 @@ def panorama_register_ip_tag_command(args: dict):
     ips: list = argToList(args.get('IPs'))
     persistent: str = '1' if argToBoolean(args.get('persistent', 'true')) else '0'
     # if not given, timeout will be 0 and persistent will be used
-    timeout: int = arg_to_number(args.get('timeout', '0'))
+    timeout = int(args.get('timeout', '0'))
 
     major_version = get_pan_os_major_version()
 

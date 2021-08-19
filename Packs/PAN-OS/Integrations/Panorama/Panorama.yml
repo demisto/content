@@ -925,8 +925,9 @@ script:
       description: URL to check.
       isArray: true
       name: url
-      required: true
+      required: false
     description: Gets a URL category from URL filtering.
+    execution: false
     name: url
     outputs:
     - contextPath: Panorama.URLFilter.URL
