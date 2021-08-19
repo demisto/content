@@ -3,7 +3,6 @@
     "version": -1,
     "name": "Azure Active Directory Identity and Access Alert Type",
     "ownerOnly": false,
-    "description": "",
     "cliName": "azureactivedirectoryidentityandaccessalerttype",
     "type": "shortText",
     "closeForm": false,
@@ -17,7 +16,10 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "Azure Active Directory Identity and Access"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
