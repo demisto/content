@@ -438,7 +438,7 @@ def test_panorama_register_ip_tag_command_wrongful_args(mocker):
     args['persistent'] = 'false'
     mocker.patch('Panorama.get_pan_os_major_version', return_value=8)
     with pytest.raises(DemistoException,
-                       match='The timeout argument is only applicable in 9.x pan-os versions or higher.'):
+                       match='The timeout argument is only applicable on 9.x PAN-OS versions or higher.'):
         panorama_register_ip_tag_command(args)
 
 

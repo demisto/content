@@ -3730,7 +3730,7 @@ def panorama_register_ip_tag_command(args: dict):
     if timeout and persistent == '1':
         raise DemistoException('When the persistent argument is true, you can not use the timeout argument.')
     if major_version <= 8 and timeout:
-        raise DemistoException('The timeout argument is only applicable in 9.x pan-os versions or higher.')
+        raise DemistoException('The timeout argument is only applicable on 9.x PAN-OS versions or higher.')
 
     result = panorama_register_ip_tag(tag, ips, persistent, timeout)
 
@@ -4993,12 +4993,6 @@ def panorama_show_device_version(target: str = None):
     )
 
     return result['response']['result']['system']
-
-
-def panorama_show_device_major_version(target: Optional[str] = None):
-    response = panorama_show_device_version(target)
-
-    return response['sw-version'].split('.')[0]
 
 
 def panorama_show_device_version_command(target: Optional[str] = None):
