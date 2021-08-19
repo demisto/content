@@ -15,12 +15,14 @@ class Client(BaseClient):
         return api
     
 # Build a search URL using the usernames argument and a preset list of all of the user fields of interest
-# Link to Twitter reference under Apache 2.0: https://github.com/twitterdev/Twitter-API-v2-sample-code/blob/master/User-Lookup/get_users_with_bearer_token.py
+# Link to Twitter reference under Apache 2.0: 
+# https://github.com/twitterdev/Twitter-API-v2-sample-code/blob/master/User-Lookup/get_users_with_bearer_token.py
 # Changes made: changed function name to "create_users_info_url", added extra user fields and made user_fields a constant,
 # usernames is no longer a static variable, removed the print statement from connect_to_endpoint
     def create_users_info_url(self):
         usernames = "usernames=" + demisto.args().get('usernames')
-        USER_FIELDS = "&user.fields=description,pinned_tweet_id,protected,created_at,id,location,name,url,public_metrics,profile_image_url,username,verified,withheld"
+        USER_FIELDS = "&user.fields=description,pinned_tweet_id,protected,\
+        created_at,id,location,name,url,public_metrics,profile_image_url,username,verified,withheld"
         TWITTER_APIV2_URL = "https://api.twitter.com/2/users/by?{}&{}"
         url = TWITTER_APIV2_URL.format(usernames, USER_FIELDS)
         return url
@@ -46,7 +48,8 @@ class Client(BaseClient):
         else:
             q = demisto.args().get('q')
         search_url = TWITTER_APIV1_TWEETS_URL + q
-#Query arguments are set to have no default value. If the user does not input a value, the integration will check for if a value for the argument exists, and append it to the HTTP request if so.
+# Query arguments are set to have no default value. If the user does not input a value, the integration will check for if
+# a value for the argument exists and append it to the HTTP request if so.
         if demisto.args().get('from_user'):
             search_url += urllib.parse.quote(f" from:{demisto.args().get('from_user')}")
         if demisto.args().get('to_user'):
