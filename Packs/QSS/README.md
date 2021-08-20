@@ -13,5 +13,8 @@ Q-SCMP pack fetches most recent Cases with their supporting info such as:
 https://www.qss.com.sa/products/q-scmp
 
 
-#### If you need more support about this integration pack, please reach us at:
+#### Q-SCMP datasheet can be found here:
+https://www.qss.com.sa/products/q-scmp
+
+#### If you need more support about this integration pack, please contact us at:
 support@qss.com.sa
