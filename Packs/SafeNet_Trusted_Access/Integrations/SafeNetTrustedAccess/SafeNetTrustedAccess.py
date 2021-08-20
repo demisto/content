@@ -13,6 +13,11 @@ import urllib3
 urllib3.disable_warnings()
 requests.packages.urllib3.disable_warnings()
 
+''' CONSTANTS '''
+
+
+NO_RESULT_MSG = 'No results found for the command.'
+
 ''' CLIENT CLASS '''
 
 
@@ -526,9 +531,8 @@ def get_userlist_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     response = client.get_userlist_sta(limit=args.get('limit'))
     if not response:
-        msg = 'No results found for the command.'
         return CommandResults(
-            readable_output=msg,
+            readable_output=NO_RESULT_MSG,
         )
     header_sequence = ["id", "schemaVersionNumber", "userName", "firstName", "lastName", "email", "mobileNumber",
                        "alias1", "alias2", "alias3", "alias4", "address", "city", "state", "country", "postalCode",
@@ -547,9 +551,8 @@ def get_user_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     response = client.get_user_info_sta(userName=args.get('userName'))
     if not response:
-        msg = 'No results found for the command.'
         return CommandResults(
-            readable_output=msg,
+            readable_output=NO_RESULT_MSG,
         )
     header_sequence = ["id", "schemaVersionNumber", "userName", "firstName", "lastName", "email", "mobileNumber",
                        "alias1", "alias2", "alias3", "alias4", "custom1", "custom2", "custom3", "address", "city",
@@ -570,9 +573,8 @@ def create_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     response = client.create_user_sta(args=args)
     if not response:
-        msg = 'No results found for the command.'
         return CommandResults(
-            readable_output=msg,
+            readable_output=NO_RESULT_MSG,
         )
     header_sequence = ["id", "schemaVersionNumber", "userName", "firstName", "lastName", "email", "mobileNumber",
                        "alias1", "alias2", "custom1", "custom2", "custom3", "address", "city", "state", "country",
@@ -592,9 +594,8 @@ def update_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     response = client.update_user_sta(args=args)
     if not response:
-        msg = 'No results found for the command.'
         return CommandResults(
-            readable_output=msg,
+            readable_output=NO_RESULT_MSG,
         )
     header_sequence = ["id", "schemaVersionNumber", "userName", "firstName", "lastName", "email", "mobileNumber",
                        "alias1", "alias2", "custom1", "custom2", "custom3", "address", "city", "state", "country",
@@ -614,9 +615,8 @@ def delete_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     response = client.delete_user_sta(userName=args.get('userName'))
     if not response:
-        msg = 'No results found for the command.'
         return CommandResults(
-            readable_output=msg,
+            readable_output=NO_RESULT_MSG,
         )
     return CommandResults(
         readable_output=f"## STA user - {args.get('userName')} successfully deleted.",
@@ -630,9 +630,8 @@ def get_user_groups_sta_command(client: Client, args: Dict[str, Any]) -> Command
 
     response = client.get_user_groups_sta(userName=args.get('userName'), limit=args.get('limit'))
     if not response:
-        msg = 'No results found for the command.'
         return CommandResults(
-            readable_output=msg,
+            readable_output=NO_RESULT_MSG,
         )
     header_sequence = ['id', 'schemaVersionNumber', 'name', 'description', 'isSynchronized']
     return CommandResults(
@@ -650,9 +649,8 @@ def get_group_list_sta_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     response = client.get_group_list_sta(limit=args.get('limit'))
     if not response:
-        msg = 'No results found for the command.'
         return CommandResults(
-            readable_output=msg,
+            readable_output=NO_RESULT_MSG,
         )
     header_sequence = ['id', 'schemaVersionNumber', 'name', 'description', 'isSynchronized']
     return CommandResults(
@@ -669,9 +667,8 @@ def get_group_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     response = client.get_group_info_sta(groupName=args.get('groupName'))
     if not response:
-        msg = 'No results found for the command.'
         return CommandResults(
-            readable_output=msg,
+            readable_output=NO_RESULT_MSG,
         )
     header_sequence = ['id', 'schemaVersionNumber', 'name', 'description', 'isSynchronized']
     return CommandResults(
@@ -688,9 +685,8 @@ def get_group_members_sta_command(client: Client, args: Dict[str, Any]) -> Comma
 
     response = client.get_group_members_sta(groupName=args.get('groupName'), limit=args.get('limit'))
     if not response:
-        msg = 'No results found for the command.'
         return CommandResults(
-            readable_output=msg,
+            readable_output=NO_RESULT_MSG,
         )
     header_sequence = ['id', 'name', 'type']
 
@@ -708,9 +704,8 @@ def create_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     response = client.create_group_sta(args=args)
     if not response:
-        msg = 'No results found for the command.'
         return CommandResults(
-            readable_output=msg,
+            readable_output=NO_RESULT_MSG,
         )
     header_sequence = ['id', 'schemaVersionNumber', 'name', 'description', 'isSynchronized']
     return CommandResults(
@@ -728,9 +723,8 @@ def delete_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     response = client.delete_group_sta(groupName=args.get('groupName'))
     if not response:
-        msg = 'No results found for the command.'
         return CommandResults(
-            readable_output=msg,
+            readable_output=NO_RESULT_MSG,
         )
     return CommandResults(
         readable_output=f"## STA group - {args.get('groupName')} successfully deleted.",
@@ -744,9 +738,8 @@ def update_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     response = client.update_group_sta(args=args)
     if not response:
-        msg = 'No results found for the command.'
         return CommandResults(
-            readable_output=msg,
+            readable_output=NO_RESULT_MSG,
         )
     header_sequence = ['id', 'schemaVersionNumber', 'name', 'description', 'isSynchronized']
     return CommandResults(
@@ -781,9 +774,8 @@ def add_user_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     response = client.add_user_group_sta(userName=args.get('userName'), groupName=args.get('groupName'))
     if not response:
-        msg = 'No results found for the command.'
         return CommandResults(
-            readable_output=msg,
+            readable_output=NO_RESULT_MSG,
         )
     return CommandResults(
         readable_output=f"## User - {args.get('userName')} successfully added to the group - {args.get('groupName')}.",
@@ -797,9 +789,8 @@ def remove_user_group_sta_command(client: Client, args: Dict[str, Any]) -> Comma
 
     response = client.remove_user_group_sta(userName=args.get('userName'), groupName=args.get('groupName'))
     if not response:
-        msg = 'No results found for the command.'
         return CommandResults(
-            readable_output=msg,
+            readable_output=NO_RESULT_MSG,
         )
     return CommandResults(
         readable_output=f"## User - {args.get('userName')} successfully removed from the group - {args.get('groupName')}.",
@@ -814,9 +805,8 @@ def get_access_logs_sta_command(client: Client, args: Dict[str, Any]) -> Command
     response = client.get_access_logs_sta(userName=args.get('userName'), since=args.get('since'),
                                           until=args.get('until'), limit=args.get('limit'))
     if not response:
-        msg = 'No results found for the command.'
         return CommandResults(
-            readable_output=msg,
+            readable_output=NO_RESULT_MSG,
         )
     header_sequence = ['timeStamp', 'userName', 'actionText', 'resultText', 'credentialType', 'message', 'serial', 'ip']
 

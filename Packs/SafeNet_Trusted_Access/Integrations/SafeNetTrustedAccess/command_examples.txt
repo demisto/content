@@ -9,7 +9,7 @@
 !sta-get-group-members groupName="TestGroup0"
 !sta-create-group groupName="TestGroup2" description="Group description." synchronized=False
 !sta-delete-group groupName="TestGroup2"
-!sta-update-group-info groupName="TestGroup1" description="Description has been updated from XSOAR end."
+!sta-update-group-info groupName="TestGroup1" description="Description has been updated."
 !sta-add-user-group groupName="TestGroup1" userName="hellouser"
 !sta-user-exist-group groupName="TestGroup1" userName="hellouser"
 !sta-remove-user-group groupName="TestGroup1" userName="hellouser"
