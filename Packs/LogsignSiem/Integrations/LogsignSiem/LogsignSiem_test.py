@@ -151,7 +151,7 @@ def test_fetch_inc_cmd(mocker):
     import LogsignSiem
 
     mocker.patch.object(demisto, 'args', return_value=ARGS_Q)
-    mocker.patch.object(demisto, 'command', return_value='logsign-fetch-incidents')
+    mocker.patch.object(demisto, 'command', return_value='logsign-get-incidents')
     mocker.patch.object(LogsignSiem, 'fetch_incidents', return_value=MOCK_INC)
 
     LogsignSiem.main()
