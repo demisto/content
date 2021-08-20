@@ -555,7 +555,7 @@ def parse_incident_from_finding(finding):
     incident['details'] = finding['Description']
     incident['occurred'] = finding['CreatedAt']
     incident['severity'] = severity_mapping(finding['Severity'])
-    incident['rawJSON'] = json.dumps(finding)
+    incident['rawJSON'] = json.dumps(finding, default=str)
     return incident
 
 
