@@ -151,7 +151,6 @@ def main():
                   f'Elapsed time: {time.time() - start_time}')
 
     for incident in total_incidents:
-
         task_outputs, incident_error_entries_num = get_incident_data(
             incident,
             tenant_name,
