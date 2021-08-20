@@ -283,6 +283,7 @@ def get_query_command(client: Client, url_suffix: str, args: Dict[str, Any]) -> 
 
     response = client.get_query('GET', query, url_suffix, grouped_column, criteria, time_frame)
 
+    result = CommandResults()
     if url_suffix == URL_SUFFIX['GET_COUNT']:
         result = get_generic_data(response, 'count', 'LogsignSiem.Count')
     elif url_suffix == URL_SUFFIX['GET_COLUMN']:
@@ -320,7 +321,7 @@ def main() -> None:
 
         args = demisto.args()
 
-        if command == 'logsign-fetch-incidents' or command == 'fetch-incidents':
+        if command == 'logsign-get-incidents' or command == 'fetch-incidents':
             last_run, incidents = fetch_incidents(client, first_fetch_time, max_fetch, query)
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)
