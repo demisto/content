@@ -2685,7 +2685,8 @@ def get_update_args(delta, inc_status):
     update_args = delta
     handle_outgoing_incident_owner_sync(update_args)
     handle_user_unassignment(update_args)
-    handle_outgoing_issue_closure(update_args, inc_status)
+    if update_args.get('closingUserId'):
+        handle_outgoing_issue_closure(update_args, inc_status)
     return update_args
 
 
