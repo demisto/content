@@ -519,7 +519,7 @@ def test_update_observable_command(requests_mock):
     }
     response = update_observable_command(client, args)
 
-    assert response.outputs is True
-    assert "The observable was updated successfully" in response.readable_output
+    assert response.outputs['message'] == "update message for test"
+    assert "Updated Observable" in response.readable_output
     assert response.outputs_prefix == 'TheHive.Observables'
     assert response.outputs_key_field == 'id'

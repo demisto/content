@@ -12,6 +12,10 @@ configuration:
   type: 0
   required: true
   additionalinfo: Ensure to include the port number with the URL (e.g. http://IP_OF_VM:9000)
+- display: API Key
+  name: apiKey
+  type: 4
+  required: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -20,18 +24,21 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: API Key
-  name: apiKey
-  type: 4
-  required: true
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
   required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
   required: false
+  type: 0
+  defaultvalue: 7 days
+- defaultvalue: '50'
+  display: The maximum amount of incidents to fetch at once
+  name: max_fetch
+  required: false
+  type: 0
 - display: Case mirroring
   name: mirror
   type: 15
@@ -43,21 +50,14 @@ configuration:
   - Both
   additionalinfo: Select whether you would like cases to mirror in, out, in both directions
     or disabled.
-- display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  defaultvalue: "1"
-  type: 19
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
   required: false
-- defaultvalue: 7 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: first_fetch
+- display: Use system proxy settings
+  name: proxy
+  type: 8
   required: false
-  type: 0
-- defaultvalue: '50'
-  display: The maximum amount of incidents to fetch at once
-  name: max_fetch
-  required: false
-  type: 0
 script:
   script: ''
   type: python
@@ -940,9 +940,6 @@ script:
     - contextPath: TheHive.TasKs.title
       description: Title
       type: string
-    - contextPath: TheHive.Tasks._id
-      description: _id
-      type: string
     - contextPath: TheHive.Tasks.id
       description: ID
       type: string
@@ -979,6 +976,7 @@ script:
       defaultValue: "false"
     description: Removes a case
   - name: thehive-get-linked-cases
+    deprecated: true
     arguments:
     - name: id
       required: true
@@ -1390,7 +1388,7 @@ script:
     description: List observables for a case.
     outputs:
     - contextPath: TheHive.Observables
-      description: _observable
+      description: list of observables for a case
       type: string
   - name: thehive-create-observable
     arguments:

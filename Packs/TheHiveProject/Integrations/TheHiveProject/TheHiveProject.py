@@ -37,7 +37,7 @@ class Client(BaseClient):
             cases.append(case)
         return cases
 
-    def get_case(self, case_id=''):
+    def get_case(self, case_id):
         res = self._http_request('GET', f'case/{case_id}', ok_codes=[200, 201, 404], resp_type='response')
         if res.status_code == 404:
             return None
@@ -77,7 +77,7 @@ class Client(BaseClient):
             case = res.json()
             return case
 
-    def remove_case(self, case_id=None, permanent=''):
+    def remove_case(self, case_id, permanent=''):
         url = f'case/{case_id}/force' if permanent == 'true' else f'case/{case_id}'
         res = self._http_request('DELETE', url, ok_codes=[200, 201, 204, 404], resp_type='response', timeout=360)
         if res.status_code not in [200, 201, 204]:
@@ -101,7 +101,7 @@ class Client(BaseClient):
         else:
             return res.json()
 
-    def get_tasks(self, case_id=''):
+    def get_tasks(self, case_id):
         if self.version[0] == "4":
             query = {
                 "query": [
@@ -162,7 +162,6 @@ class Client(BaseClient):
             if res.status_code != 200:
                 return None
             tasks = [x for x in res.json()]
-            # if x['_parent'] and x['_parent'] == case_id
         if tasks:
             for task in tasks:
                 if "id" in task:
@@ -205,12 +204,12 @@ class Client(BaseClient):
             return None
         if res.json():
             task = res.json()
-            res.json()['logs'] = self.get_task_logs(task_id)
+            task['logs'] = self.get_task_logs(task_id)
         else:
             task = None
         return task
 
-    def create_task(self, case_id: str = None, data: dict = None):  # not used
+    def create_task(self, case_id: str = None, data: dict = None):
         res = self._http_request(
             'POST',
             f'case/{case_id}/task',
@@ -373,10 +372,9 @@ class Client(BaseClient):
                     }]
                 }
             }
-            res = self._http_request('POST', 'case/artifact/_search?range=all', ok_codes=[200], json_data=query)
+            res = self._http_request('POST', 'case/artifact/_search', params={'range': 'all'}, ok_codes=[200],
+                                     json_data=query)
 
-            #  res = self._http_request('POST', 'case/artifact/_search', ok_codes=[200])
-            #  res[:] = [x for x in res] if case_id else res
         return res
 
     def create_observable(self, case_id: str = None, data: dict = None):
@@ -390,7 +388,7 @@ class Client(BaseClient):
             ok_codes=[200, 204, 404],
             data=data,
             resp_type="response")
-        return True if res.status_code != 404 else False
+        return res.json() if res.status_code != 404 else None
 
 
 ''' HELPER FUNCTIONS '''
@@ -488,7 +486,7 @@ def update_case_command(client: Client, args: dict):
     # Get the case first
     original_case = client.get_case(case_id)
     if not original_case:
-        return_error(f'Could not find case ID {case_id}.')
+        raise Exception(f'Could not find case ID {case_id}.')
     del args['id']
     for k, v in args.items():
         v = v.split(",") if k in ['tags'] and "," in v else v
@@ -542,12 +540,9 @@ def remove_case_command(client: Client, args: dict):
     return f'Case ID {case_id} permanently removed successfully' if permanent == 'true' \
         else f'Case ID {case_id} removed successfully'
 
-    # demisto.results(message)
-
 
 def create_task_command(client: Client, args: dict):
-    case_id = args.get('id')
-    args.pop('id')
+    case_id = args.pop('id')
     task = client.create_task(case_id, args)
     if task:
         task_date_dt = dateparser.parse(str(task['createdAt']))
@@ -591,7 +586,7 @@ def merge_cases_command(client: Client, args: dict):
     first_case = args.get('firstCaseID')
     second_case = args.get('secondCaseID')
     case = client.merge_cases(first_case, second_case)
-    if type(case) == tuple:
+    if isinstance(case, tuple):
         return_error(f'Error getting linked cases ({case[0]}) - {case[1]}')
 
     case_date_dt = dateparser.parse(str(case['createdAt']))
@@ -773,11 +768,10 @@ def list_observables_command(client: Client, args: dict):
     case_id = args.get('id')
     case = client.get_case(case_id)
     if not case:
-        read = f"No case found with id: {case_id}."
-        observables = None
-    elif case['observables']:
-        observables = case['observables']
-        read = tableToMarkdown(f"Observables for Case {case_id}:", case['observables'],
+        return_error(f"No case found with id: {case_id}.")
+    observables = case['observables']
+    if observables:
+        read = tableToMarkdown(f"Observables for Case {case_id}:", observables,
                                ['data', 'dataType', 'message'])
     else:
         read = f"No observables found for case with id: {case_id}."
@@ -794,8 +788,7 @@ def create_observable_command(client: Client, args: dict):
     case_id = args.get('id')
     case = client.get_case(case_id)
     if not case:
-        read = f"No case found with id: {case_id}."
-        res = None
+        return_error(f"No case found with id: {case_id}.")
     else:
         data = {
             "data": args.get('data'),
@@ -832,7 +825,9 @@ def update_observable_command(client: Client, args: dict):
     }
     data = {k: v for k, v in data.items() if v}
     res = client.update_observable(artifact_id=artifact_id, data=data)
-    read = "The observable was updated successfully." if res else f"No observable found with id: {artifact_id}."
+
+    read = tableToMarkdown('Updated Observable:', res, ['id', 'data', 'dataType', 'message'])if res\
+        else f"No observable found with id: {artifact_id}."
 
     return CommandResults(
         outputs_prefix='TheHive.Observables',
@@ -962,7 +957,7 @@ def main() -> None:
     base_url = urljoin(params['url'], '/api')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    mirroring = params.get('mirror').title()
+    mirroring = params.get('mirror', 'Disabled').title()
     mirroring = None if mirroring == 'Disabled' else mirroring
 
     headers = {'Authorization': f'Bearer {api_key}'}
@@ -972,7 +967,7 @@ def main() -> None:
         verify=verify_certificate,
         headers=headers,
         proxy=proxy,
-        mirroring=mirroring
+        mirroring=mirroring,
     )
 
     command = demisto.command()
@@ -1002,7 +997,7 @@ def main() -> None:
         'thehive-create-task': create_task_command,
         'thehive-remove-case': remove_case_command,
         'thehive-block-user': block_user_command,
-        'thehive-get-version': get_version_command
+        'thehive-get-version': get_version_command,
     }
     demisto.debug(f'Command being called is {command}')
     try:
