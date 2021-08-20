@@ -1,5 +1,8 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SafeNet Trusted Access Alert"
+    ],
     "caseInsensitive": true,
     "cliName": "safenettrustedaccessusername",
     "closeForm": false,

@@ -525,10 +525,14 @@ def get_userlist_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """ Function for sta-get-user-list command. Get list of all the users in the tenant. """
 
     response = client.get_userlist_sta(limit=args.get('limit'))
+    if not response:
+        msg = 'No results found for the command.'
+        return CommandResults(
+            readable_output=msg,
+        )
     header_sequence = ["id", "schemaVersionNumber", "userName", "firstName", "lastName", "email", "mobileNumber",
                        "alias1", "alias2", "alias3", "alias4", "address", "city", "state", "country", "postalCode",
                        "isSynchronized"]
-
     return CommandResults(
         readable_output=tableToMarkdown("List of users in the tenant :", response, headers=header_sequence,
                                         headerTransform=pascalToSpace, removeNull=True),
@@ -542,6 +546,11 @@ def get_user_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandRe
     """ Function for sta-get-user-info command. Get profile information of a specific user."""
 
     response = client.get_user_info_sta(userName=args.get('userName'))
+    if not response:
+        msg = 'No results found for the command.'
+        return CommandResults(
+            readable_output=msg,
+        )
     header_sequence = ["id", "schemaVersionNumber", "userName", "firstName", "lastName", "email", "mobileNumber",
                        "alias1", "alias2", "alias3", "alias4", "custom1", "custom2", "custom3", "address", "city",
                        "state", "country", "postalCode", "isSynchronized"]
@@ -560,6 +569,11 @@ def create_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
     """ Function for sta-create-user command. Create new user in the tenant. """
 
     response = client.create_user_sta(args=args)
+    if not response:
+        msg = 'No results found for the command.'
+        return CommandResults(
+            readable_output=msg,
+        )
     header_sequence = ["id", "schemaVersionNumber", "userName", "firstName", "lastName", "email", "mobileNumber",
                        "alias1", "alias2", "custom1", "custom2", "custom3", "address", "city", "state", "country",
                        "postalCode", "isSynchronized"]
@@ -577,6 +591,11 @@ def update_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
     """ Function for sta-update-user-info command. Update profile of a specific user. """
 
     response = client.update_user_sta(args=args)
+    if not response:
+        msg = 'No results found for the command.'
+        return CommandResults(
+            readable_output=msg,
+        )
     header_sequence = ["id", "schemaVersionNumber", "userName", "firstName", "lastName", "email", "mobileNumber",
                        "alias1", "alias2", "custom1", "custom2", "custom3", "address", "city", "state", "country",
                        "postalCode", "isSynchronized"]
@@ -594,6 +613,11 @@ def delete_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResu
     """ Function for sta-delete-user command. Delete user from the tenant. """
 
     response = client.delete_user_sta(userName=args.get('userName'))
+    if not response:
+        msg = 'No results found for the command.'
+        return CommandResults(
+            readable_output=msg,
+        )
     return CommandResults(
         readable_output=f"## STA user - {args.get('userName')} successfully deleted.",
         outputs_prefix='STA.USER.DELETE',
@@ -605,6 +629,11 @@ def get_user_groups_sta_command(client: Client, args: Dict[str, Any]) -> Command
     """ Function for sta-get-user-groups command. Get all the groups associated with a specific user. """
 
     response = client.get_user_groups_sta(userName=args.get('userName'), limit=args.get('limit'))
+    if not response:
+        msg = 'No results found for the command.'
+        return CommandResults(
+            readable_output=msg,
+        )
     header_sequence = ['id', 'schemaVersionNumber', 'name', 'description', 'isSynchronized']
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -620,6 +649,11 @@ def get_group_list_sta_command(client: Client, args: Dict[str, Any]) -> CommandR
     """ Function for sta-get-group-list command. Get list of all the groups in the tenant. """
 
     response = client.get_group_list_sta(limit=args.get('limit'))
+    if not response:
+        msg = 'No results found for the command.'
+        return CommandResults(
+            readable_output=msg,
+        )
     header_sequence = ['id', 'schemaVersionNumber', 'name', 'description', 'isSynchronized']
     return CommandResults(
         readable_output=tableToMarkdown("STA groups in the tenant : ", response,
@@ -634,6 +668,11 @@ def get_group_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandR
     """ Function for sta-get-group-info command. Get information of a specific group. """
 
     response = client.get_group_info_sta(groupName=args.get('groupName'))
+    if not response:
+        msg = 'No results found for the command.'
+        return CommandResults(
+            readable_output=msg,
+        )
     header_sequence = ['id', 'schemaVersionNumber', 'name', 'description', 'isSynchronized']
     return CommandResults(
         readable_output=tableToMarkdown(f"Group - {args.get('groupName')} :", response,
@@ -648,6 +687,11 @@ def get_group_members_sta_command(client: Client, args: Dict[str, Any]) -> Comma
     """ Function for sta-get-group-members command. Get list of users in a specific group. """
 
     response = client.get_group_members_sta(groupName=args.get('groupName'), limit=args.get('limit'))
+    if not response:
+        msg = 'No results found for the command.'
+        return CommandResults(
+            readable_output=msg,
+        )
     header_sequence = ['id', 'name', 'type']
 
     return CommandResults(
@@ -663,6 +707,11 @@ def create_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """ Function for sta-create-group command. Create new group in the tenant. """
 
     response = client.create_group_sta(args=args)
+    if not response:
+        msg = 'No results found for the command.'
+        return CommandResults(
+            readable_output=msg,
+        )
     header_sequence = ['id', 'schemaVersionNumber', 'name', 'description', 'isSynchronized']
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -678,6 +727,11 @@ def delete_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """ Function for sta-delete-group command. Delete group from the tenant. """
 
     response = client.delete_group_sta(groupName=args.get('groupName'))
+    if not response:
+        msg = 'No results found for the command.'
+        return CommandResults(
+            readable_output=msg,
+        )
     return CommandResults(
         readable_output=f"## STA group - {args.get('groupName')} successfully deleted.",
         outputs_prefix='STA.DELETE.GROUP',
@@ -689,6 +743,11 @@ def update_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """ Function for sta-update-group-info command. Update information of a specific group. """
 
     response = client.update_group_sta(args=args)
+    if not response:
+        msg = 'No results found for the command.'
+        return CommandResults(
+            readable_output=msg,
+        )
     header_sequence = ['id', 'schemaVersionNumber', 'name', 'description', 'isSynchronized']
     return CommandResults(
         readable_output=tableToMarkdown("STA user successfully updated :", response, headers=header_sequence,
@@ -721,6 +780,11 @@ def add_user_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandR
     """ Function for sta-add-user-group command. Add user to a specific group. """
 
     response = client.add_user_group_sta(userName=args.get('userName'), groupName=args.get('groupName'))
+    if not response:
+        msg = 'No results found for the command.'
+        return CommandResults(
+            readable_output=msg,
+        )
     return CommandResults(
         readable_output=f"## User - {args.get('userName')} successfully added to the group - {args.get('groupName')}.",
         outputs_prefix='STA.ADD.USER.GROUP',
@@ -732,6 +796,11 @@ def remove_user_group_sta_command(client: Client, args: Dict[str, Any]) -> Comma
     """ Function for sta-remove-user-group command. Remove user from a specific group. """
 
     response = client.remove_user_group_sta(userName=args.get('userName'), groupName=args.get('groupName'))
+    if not response:
+        msg = 'No results found for the command.'
+        return CommandResults(
+            readable_output=msg,
+        )
     return CommandResults(
         readable_output=f"## User - {args.get('userName')} successfully removed from the group - {args.get('groupName')}.",
         outputs_prefix='STA.REMOVE.USER.GROUP',
@@ -744,6 +813,11 @@ def get_access_logs_sta_command(client: Client, args: Dict[str, Any]) -> Command
 
     response = client.get_access_logs_sta(userName=args.get('userName'), since=args.get('since'),
                                           until=args.get('until'), limit=args.get('limit'))
+    if not response:
+        msg = 'No results found for the command.'
+        return CommandResults(
+            readable_output=msg,
+        )
     header_sequence = ['timeStamp', 'userName', 'actionText', 'resultText', 'credentialType', 'message', 'serial', 'ip']
 
     return CommandResults(

@@ -11,11 +11,11 @@ def get_incident_sta():
 
 
 # Check if user is a member of High risk group.
-def check_user_exist_group_sta(args: Dict[str, Any]):
+def check_user_exist_group_sta(field: Dict[str, Any]):
     return demisto.executeCommand('sta-user-exist-group', {
-        "userName": args.get('safenettrustedaccessusername'),
-        "groupName": args.get('safenettrustedaccesshighriskgroup'),
-        "using": args.get('safenettrustedaccessinstancename'),
+        "userName": field.get('safenettrustedaccessusername'),
+        "groupName": field.get('safenettrustedaccesshighriskgroup'),
+        "using": field.get('safenettrustedaccessinstancename'),
     })[0]['EntryContext'].get('STA.USER.EXIST.GROUP')
 
 
