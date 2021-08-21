@@ -1694,8 +1694,7 @@ def delete_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[
 
     records_raw_data = client.list_context_table_records_request(context_table_name, 10000, 1)
     all_records = records_raw_data.get('records', [])
-    filtered = list(filter(lambda record: (record['key'] in records), all_records))
-    ids = [record['id'] for record in filtered]
+    ids = [record['id'] for record in all_records if record['key'] in records]
 
     record_updates_raw_data = client.delete_context_table_records_request(context_table_name, ids, session_id)
     human_readable, entry_context = create_context_table_updates_outputs(context_table_name, record_updates_raw_data)
