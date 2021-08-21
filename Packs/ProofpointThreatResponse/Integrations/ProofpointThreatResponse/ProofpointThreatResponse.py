@@ -245,7 +245,10 @@ def get_emails_context(event):
                 'body': email.get('body'),
                 'body_type': email.get('bodyType'),
                 'headers': email.get('headers'),
-                'urls': email.get('urls')
+                'urls': email.get('urls'),
+                'sender_vap': email.get('sender', {}).get('vap'),
+                'recipient_vap': email.get('recipient', {}).get('vap'),
+                'attachments': email.get('attachments'),
             }))
 
     return emails_context
