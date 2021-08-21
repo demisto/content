@@ -120,7 +120,7 @@ There is no context output
 | Mobile ATT&CK | 2f669986-b40b-4423-b720-4396ca6a462b |
 
 
-### MITRE Show Feeds
+### MITRE Get Indicator Name
 ***
 Gets the Attack Pattern value from the Attack Pattern ID.
 
