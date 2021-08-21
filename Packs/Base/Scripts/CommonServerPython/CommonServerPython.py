@@ -1814,6 +1814,11 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         mdResult += '**No entries.**\n'
         return mdResult
 
+    if not headers and isinstance(t, dict) and len(t.keys()) == 1:
+        # in case of a single key, create a column table where each element is in a different row.
+        headers = list(t.keys())
+        t = list(t.values())[0]
+
     if not isinstance(t, list):
         t = [t]
 
