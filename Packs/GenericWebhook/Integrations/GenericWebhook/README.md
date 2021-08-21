@@ -14,7 +14,7 @@ The Generic Webhook integration is used to create incidents on event triggers. T
 | certificate | Certificate (Required for HTTPS, in case not using the server rerouting) | False |
 | key | Private Key (Required for HTTPS, in case not using the server rerouting) | False |
 | incidentType | Incident type | False |
-| store_samples | Store sample events for mapping (Because this is a push-based integration, it cannot fetch sample events in the mapping wizard). | False |
+| store_samples | Store sample events for mapping (Because this is a push-based integration, it cannot fetch sample events in the mapping wizard). After you finish mapping, it is recommended to turn off the sample events storage to reduce performance overhead. | False |
 
 4. Click **Done**.
 5. Navigate to  **Settings > About > Troubleshooting**.
