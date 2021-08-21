@@ -146,7 +146,7 @@ Gets the Attack Pattern value from the Attack Pattern ID.
 
 
 ##### Human Readable Output
-### MITRE ATT&CK Feeds:
+### MITRE ATTACK Attack Patterns values:
 | Attack ID | Attack Value |
 | ---- | --- |
 | T1111 | Some Attack Value |
