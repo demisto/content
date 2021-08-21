@@ -1830,7 +1830,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         # should be only one header
         if headers and len(headers) > 0:
             header = headers[0]
-            t = map(lambda item: dict((h, item) for h in [header]), t)
+            t = [{header: item} for item in t]
         else:
             raise Exception("Missing headers param for tableToMarkdown. Example: headers=['Some Header']")
 
