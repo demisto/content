@@ -87,12 +87,16 @@ async def handle_post(
 
     if demisto.params().get('store_samples'):
         try:
-            sample_events_to_store.append(incident)
-            integration_context = get_integration_context()
-            sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
-            sample_events += sample_events_to_store
-            integration_context['sample_events'] = list(sample_events)
-            set_to_integration_context_with_retries(integration_context)
+            incident_obj_size = sys.getsizeof(incident)
+            if incident_obj_size <= 1000000:  # storing events of size up to 1MB
+                sample_events_to_store.append(incident)
+                integration_context = get_integration_context()
+                sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
+                sample_events += sample_events_to_store
+                integration_context['sample_events'] = list(sample_events)
+                set_to_integration_context_with_retries(integration_context)
+            else:
+                demisto.debug(f'Skipping event {incident["name"]} storage due to size {incident_obj_size}')
         except Exception as e:
             demisto.error(f'Failed storing sample events - {e}')
 

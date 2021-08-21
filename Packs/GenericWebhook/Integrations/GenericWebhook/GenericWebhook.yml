@@ -57,6 +57,7 @@ script:
   subtype: python3
   type: python
   isFetchSamples: true
+  resetContext: true
 fromversion: 5.5.0
 tests:
   - Generic Webhook - Test
