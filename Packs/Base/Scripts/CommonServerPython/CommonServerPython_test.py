@@ -275,13 +275,14 @@ class TestTableToMarkdown:
         # header transform
         table = tableToMarkdown('tableToMarkdown test with headerTransform', DATA,
                                 headerTransform=underscoreToCamelCase)
-        expected_table = '''### tableToMarkdown test with headerTransform
-|Header1|Header2|Header3|
-|---|---|---|
-| a1 | b1 | c1 |
-| a2 | b2 | c2 |
-| a3 | b3 | c3 |
-'''
+        expected_table = (
+            '### tableToMarkdown test with headerTransform\n'
+            '|Header1|Header2|Header3|\n'
+            '|---|---|---|\n'
+            '| a1 | b1 | c1 |\n'
+            '| a2 | b2 | c2 |\n'
+            '| a3 | b3 | c3 |\n'
+        )
         assert table == expected_table
 
     @staticmethod
@@ -301,13 +302,14 @@ class TestTableToMarkdown:
             d['header_3'] = 'c%d|1' % (i + 1,)
 
         table = tableToMarkdown('tableToMarkdown test with multiline', data)
-        expected_table = '''### tableToMarkdown test with multiline
-|header_1|header_2|header_3|
-|---|---|---|
-| a1 | b1.1<br>b1.2 | c1\\|1 |
-| a2 | b2.1<br>b2.2 | c2\\|1 |
-| a3 | b3.1<br>b3.2 | c3\\|1 |
-'''
+        expected_table = (
+            '### tableToMarkdown test with multiline\n'
+            '|header_1|header_2|header_3|\n'
+            '|---|---|---|\n'
+            '| a1 | b1.1<br>b1.2 | c1\|1 |\n'
+            '| a2 | b2.1<br>b2.2 | c2\|1 |\n'
+            '| a3 | b3.1<br>b3.2 | c3\|1 |\n'
+        )
         assert table == expected_table
 
     @staticmethod
@@ -327,13 +329,14 @@ class TestTableToMarkdown:
             d['header_2'] = None
             d['header_3'] = '[url](https:\\demisto.com)'
         table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data)
-        expected_table_url_missing_info = '''### tableToMarkdown test with url and missing info
-|header_1|header_2|header_3|
-|---|---|---|
-| a1 |  | [url](https:\\demisto.com) |
-| a2 |  | [url](https:\\demisto.com) |
-| a3 |  | [url](https:\\demisto.com) |
-'''
+        expected_table_url_missing_info = (
+            '### tableToMarkdown test with url and missing info\n'
+            '|header_1|header_2|header_3|\n'
+            '|---|---|---|\n'
+            '| a1 |  | [url](https:\demisto.com) |\n'
+            '| a2 |  | [url](https:\demisto.com) |\n'
+            '| a3 |  | [url](https:\demisto.com) |\n'
+        )
         assert table_url_missing_info == expected_table_url_missing_info
 
     @staticmethod
@@ -349,13 +352,14 @@ class TestTableToMarkdown:
         """
         # single column table
         table_single_column = tableToMarkdown('tableToMarkdown test with single column', DATA, ['header_1'])
-        expected_table_single_column = '''### tableToMarkdown test with single column
-|header_1|
-|---|
-| a1 |
-| a2 |
-| a3 |
-'''
+        expected_table_single_column = (
+            '### tableToMarkdown test with single column\n'
+            '|header_1|\n'
+            '|---|\n'
+            '| a1 |\n'
+            '| a2 |\n'
+            '| a3 |\n'
+        )
         assert table_single_column == expected_table_single_column
 
     @staticmethod
@@ -376,13 +380,14 @@ class TestTableToMarkdown:
             d['header_2'] = 'hi'
 
         table_list_field = tableToMarkdown('tableToMarkdown test with list field', data)
-        expected_table_list_field = '''### tableToMarkdown test with list field
-|header_1|header_2|header_3|
-|---|---|---|
-| a1 | hi | 1,<br>second item |
-| a2 | hi | 2,<br>second item |
-| a3 | hi | 3,<br>second item |
-'''
+        expected_table_list_field = (
+            '### tableToMarkdown test with list field\n'
+            '|header_1|header_2|header_3|\n'
+            '|---|---|---|\n'
+            '| a1 | hi | 1,<br>second item |\n'
+            '| a2 | hi | 2,<br>second item |\n'
+            '| a3 | hi | 3,<br>second item |\n'
+        )
         assert table_list_field == expected_table_list_field
 
     @staticmethod
@@ -406,13 +411,14 @@ class TestTableToMarkdown:
             } for _ in range(3)
         ]
         table_all_none = tableToMarkdown('tableToMarkdown test with all none fields', data)
-        expected_table_all_none = '''### tableToMarkdown test with all none fields
-|a|b|c|
-|---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-'''
+        expected_table_all_none = (
+            '### tableToMarkdown test with all none fields\n'
+            '|a|b|c|\n'
+            '|---|---|---|\n'
+            '|  |  |  |\n'
+            '|  |  |  |\n'
+            '|  |  |  |\n'
+        )
         assert table_all_none == expected_table_all_none
 
         # all fields are empty - removed
@@ -438,13 +444,14 @@ class TestTableToMarkdown:
         data[1]['extra_header'] = 'sample'
         table_extra_header = tableToMarkdown('tableToMarkdown test with extra header', data,
                                             headers=['header_1', 'header_2', 'extra_header'])
-        expected_table_extra_header = '''### tableToMarkdown test with extra header
-|header_1|header_2|extra_header|
-|---|---|---|
-| a1 | b1 |  |
-| a2 | b2 | sample |
-| a3 | b3 |  |
-'''
+        expected_table_extra_header = (
+            '### tableToMarkdown test with extra header\n'
+            '|header_1|header_2|extra_header|\n'
+            '|---|---|---|\n'
+            '| a1 | b1 |  |\n'
+            '| a2 | b2 | sample |\n'
+            '| a3 | b3 |  |\n'
+        )
         assert table_extra_header == expected_table_extra_header
 
     @staticmethod
@@ -461,9 +468,10 @@ class TestTableToMarkdown:
         # no header
         table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', DATA,
                                         headers=['no', 'header', 'found'], removeNull=True)
-        expected_table_no_headers = '''### tableToMarkdown test with no headers
-**No entries.**
-'''
+        expected_table_no_headers = (
+            '### tableToMarkdown test with no headers\n'
+            '**No entries.**\n'
+        )
         assert table_no_headers == expected_table_no_headers
 
     @staticmethod
@@ -482,13 +490,14 @@ class TestTableToMarkdown:
         data[1]['extra_header'] = {'sample': 'qwerty', 'sample2': 'asdf'}
         table_dict_record = tableToMarkdown('tableToMarkdown test with dict record', data,
                                             headers=['header_1', 'header_2', 'extra_header'])
-        expected_dict_record = '''### tableToMarkdown test with dict record
-|header_1|header_2|extra_header|
-|---|---|---|
-| a1 | b1 |  |
-| a2 | b2 | sample: qwerty<br>sample2: asdf |
-| a3 | b3 |  |
-'''
+        expected_dict_record = (
+            '### tableToMarkdown test with dict record\n'
+            '|header_1|header_2|extra_header|\n'
+            '|---|---|---|\n'
+            '| a1 | b1 |  |\n'
+            '| a2 | b2 | sample: qwerty<br>sample2: asdf |\n'
+            '| a3 | b3 |  |\n'
+        )
         assert table_dict_record == expected_dict_record
 
     @staticmethod
@@ -504,13 +513,14 @@ class TestTableToMarkdown:
         """
         # string header (instead of list)
         table_string_header = tableToMarkdown('tableToMarkdown string header', DATA, 'header_1')
-        expected_string_header_tbl = '''### tableToMarkdown string header
-|header_1|
-|---|
-| a1 |
-| a2 |
-| a3 |
-'''
+        expected_string_header_tbl = (
+            '### tableToMarkdown string header\n'
+            '|header_1|\n'
+            '|---|\n'
+            '| a1 |\n'
+            '| a2 |\n'
+            '| a3 |\n'
+        )
         assert table_string_header == expected_string_header_tbl
 
     @staticmethod
@@ -526,13 +536,14 @@ class TestTableToMarkdown:
         """
         # list of string values instead of list of dict objects
         table_string_array = tableToMarkdown('tableToMarkdown test with string array', ['foo', 'bar', 'katz'], ['header_1'])
-        expected_string_array_tbl = '''### tableToMarkdown test with string array
-|header_1|
-|---|
-| foo |
-| bar |
-| katz |
-'''
+        expected_string_array_tbl = (
+            '### tableToMarkdown test with string array\n'
+            '|header_1|\n'
+            '|---|\n'
+            '| foo |\n'
+            '| bar |\n'
+            '| katz |\n'
+        )
         assert table_string_array == expected_string_array_tbl
 
     @staticmethod
@@ -550,15 +561,32 @@ class TestTableToMarkdown:
         table_string_array_string_header = tableToMarkdown('tableToMarkdown test with string array and string header',
                                                            ['foo', 'bar', 'katz'], 'header_1')
 
-        expected_string_array_string_header_tbl = '''### tableToMarkdown test with string array and string header
-|header_1|
-|---|
-| foo |
-| bar |
-| katz |
-'''
+        expected_string_array_string_header_tbl = (
+            '### tableToMarkdown test with string array and string header\n'
+            '|header_1|\n'
+            '|---|\n'
+            '| foo |\n'
+            '| bar |\n'
+            '| katz |\n'
+        )
 
         assert table_string_array_string_header == expected_string_array_string_header_tbl
+
+    @staticmethod
+    def test_single_key_dict():
+        # combination: string header + string values list
+        table_single_key_dict = tableToMarkdown('tableToMarkdown test with single key dict',
+                                                        {'single': ['Arthur', 'Blob', 'Cactus']})
+        expected_single_key_dict_tbl = (
+            '### tableToMarkdown test with single key dict\n'
+            '|single|\n'
+            '|---|\n'
+            '| Arthur |\n'
+            '| Blob |\n'
+            '| Cactus |\n'
+        )
+        assert table_single_key_dict == expected_single_key_dict_tbl
+
 
     @staticmethod
     def test_dict_with_special_character():
@@ -597,11 +625,12 @@ class TestTableToMarkdown:
             'header_1': u'foo'
         }
         table_with_character = tableToMarkdown('tableToMarkdown test with special character Ù', data)
-        expected_string_with_special_character = '''### tableToMarkdown test with special character Ù
-|header_1|
-|---|
-| foo |
-'''
+        expected_string_with_special_character = (
+            '### tableToMarkdown test with special character Ù\n'
+            '|header_1|\n'
+            '|---|\n'
+            '| foo |\n'
+        )
         assert table_with_character == expected_string_with_special_character
 
 
