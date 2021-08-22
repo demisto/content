@@ -568,42 +568,42 @@ class Pack(object):
 
         """
         pack_metadata = {
-            'name': self._display_name or self._pack_name,
-            'id': self._pack_name,
-            'description': self._description or self._pack_name,
-            'created': self._create_date,
-            'updated': self._update_date,
-            'legacy': self._legacy,
-            'support': self._support_type,
-            'supportDetails': self._support_details,
-            'eulaLink': self.eula_link,
-            'author': self._author,
-            'authorImage': self._author_image,
-            'certification': self._certification,
-            'price': self._price,
+            Metadata.NAME: self._display_name or self._pack_name,
+            Metadata.ID: self._pack_name,
+            Metadata.DESCRIPTION: self._description or self._pack_name,
+            Metadata.CREATED: self._create_date,
+            Metadata.UPDATED: self._update_date,
+            Metadata.LEGACY: self._legacy,
+            Metadata.SUPPORT: self._support_type,
+            Metadata.SUPPORT_DETAILS: self._support_details,
+            Metadata.EULALINK: self.eula_link,
+            Metadata.AUTHOR: self._author,
+            Metadata.AUTHORIMAGE: self._author_image,
+            Metadata.CERTIFICATION: self._certification,
+            Metadata.PRICE: self._price,
             Metadata.SERVER_MIN_VERSION: self.user_metadata.get(Metadata.SERVER_MIN_VERSION) or self.server_min_version,
             Metadata.CURRENT_VERSION: self.user_metadata.get(Metadata.CURRENT_VERSION, ''),
-            'versionInfo': build_number,
-            'commit': commit_hash,
-            'downloads': self._downloads_count,
-            'tags': list(self._tags),
-            'categories': self._categories,
-            'contentItems': self._content_items,
-            'searchRank': self._search_rank,
-            'integrations': self._related_integration_images,
-            'useCases': self._use_cases,
-            'keywords': self._keywords,
-            'dependencies': self._dependencies
+            Metadata.VERSIONINFO: build_number,
+            Metadata.COMMIT: commit_hash,
+            Metadata.DOWNLOADS: self._downloads_count,
+            Metadata.TAGS: list(self._tags),
+            Metadata.CATEGORIES: self._categories,
+            Metadata.CONTENTITEMS: self._content_items,
+            Metadata.SEARCHRANK: self._search_rank,
+            Metadata.INTEGRATIONS: self._related_integration_images,
+            Metadata.USECASES: self._use_cases,
+            Metadata.KEYWORDS: self._keywords,
+            Metadata.DEPENDENCIES: self._dependencies
         }
 
         if self._is_private_pack:
             pack_metadata.update({
-                'premium': self._is_premium,
-                'vendorId': self._vendor_id,
-                'partnerId': self._partner_id,
-                'partnerName': self._partner_name,
-                'contentCommitHash': self._content_commit_hash,
-                'previewOnly': self._preview_only
+                Metadata.PREMIUM: self._is_premium,
+                Metadata.VENDOR_ID: self._vendor_id,
+                Metadata.PARTNER_ID: self._partner_id,
+                Metadata.PARTNER_NAME: self._partner_name,
+                Metadata.CONTENT_COMMIT_HASH: self._content_commit_hash,
+                Metadata.PREVIEW_ONLY: self._preview_only
             })
 
         return pack_metadata
@@ -1476,7 +1476,8 @@ class Pack(object):
                 PackFolders.GENERIC_DEFINITIONS.value: "GenericDefinitions",
                 PackFolders.GENERIC_FIELDS.value: "GenericFields",
                 PackFolders.GENERIC_MODULES.value: "GenericModules",
-                PackFolders.GENERIC_TYPES.value: "GenericTypes"
+                PackFolders.GENERIC_TYPES.value: "GenericTypes",
+                PackFolders.LISTS.value: "list"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -1615,6 +1616,10 @@ class Pack(object):
                             'name': content_item.get('name', ""),
                             'dataType': content_item.get('dataType', ""),
                             'widgetType': content_item.get('widgetType', "")
+                        })
+                    elif current_directory == PackFolders.LISTS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', "")
                         })
                     elif current_directory == PackFolders.GENERIC_DEFINITIONS.value:
                         folder_collected_items.append({
