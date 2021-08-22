@@ -83,13 +83,38 @@ def perform_unlink_and_reopen(ids, action):
     return COMMAND_SUCCESS.format(action='unlinked & reopen', ids=','.join(ids))
 
 
+def set_incident_owners(incident_ids, user_name):
+
+    incident_ids.append(demisto.incident()["id"])
+
+    for incident_id in incident_ids:
+        res = demisto.executeCommand("setIncident", {"id": incident_id, "owner": user_name})
+
+        if is_error(res):
+            return_error('Failed to take ownership on incident id {}. Error details:\n{}'.format(incident_id,
+                                                                                                 get_error(res)))
+
+
+def perform_take_ownership(ids, action):
+
+    current_user_name = demisto.callingContext.get("context", {}).get("ParentEntry", {}).get("user")
+
+    if not current_user_name:
+        return_error("Could nor found The current user name.")
+
+    set_incident_owners(ids, current_user_name)
+
+    return COMMAND_SUCCESS.format(action=action, ids=','.join(ids))
+
+
 ACTIONS_MAPPER = {
     'link': perform_link_unlink,
     'unlink': perform_link_unlink,
     'close': perform_close,
     'reopen': perform_reopen,
     'link & close': perform_link_and_close,
-    'unlink & reopen': perform_unlink_and_reopen
+    'unlink & reopen': perform_unlink_and_reopen,
+    'take ownership': perform_take_ownership
 }
 
 
