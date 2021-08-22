@@ -434,7 +434,7 @@ def wildfire_upload_url_with_polling_command(args):
                                wildfire_get_report_command, 'URL')
 
 
-def get_results_function_args(upload, uploaded_item, args):
+def get_results_function_args(outputs, uploaded_item, args):
     """
     This function is used for the polling flow. After calling a upload command on a url\file, in order to check the
     status of the call, we need to retrieve the suitable identifier to call the results command on. for uploading a url,
@@ -452,9 +452,9 @@ def get_results_function_args(upload, uploaded_item, args):
     """
     results_function_args = {}
     if uploaded_item == 'FILE':
-        identifier = get_hash_type_and_value_dict(upload, False)
+        identifier = {'md5': outputs.get('MD5')}
     else:
-        identifier = {'url': upload}
+        identifier = {'url': outputs.get('URL')}
     results_function_args.update(identifier)
 
     results_function_args.update({key: value for key, value in args.items() if key in ['verbose', 'format']})
@@ -491,7 +491,7 @@ def run_polling_command(args: dict, cmd: str, upload_function: Callable, results
             # create new search
             command_results = upload_function(args)[0]
             outputs = command_results.outputs
-            results_function_args = get_results_function_args(upload, uploaded_item, args)
+            results_function_args = get_results_function_args(outputs, uploaded_item, args)
             # schedule next poll
             polling_args = {
                 'interval_in_seconds': interval_in_secs,
@@ -833,6 +833,14 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
     return human_readable, outputs, file
 
 
+def get_sha256_of_file_from_report(report):
+    if maec_packages := report.get('maec_packages'):
+        for item in maec_packages:
+            if hashes := item.get('hashes'):
+                return hashes.get('SHA256')
+    return None
+
+
 @logger
 def wildfire_get_url_report(url: str) -> Tuple:
     """
@@ -861,7 +869,7 @@ def wildfire_get_url_report(url: str) -> Tuple:
             entry_context['Status'] = 'Success'
             report = json.loads(report) if type(report) is not dict else report
             report.update(entry_context)
-            sha256_of_file_in_url = report.get('maec_packages:', [])[1].get('hashes', {}).get('SHA256')
+            sha256_of_file_in_url = get_sha256_of_file_from_report(report)
             human_readable_dict = {'SHA256': sha256_of_file_in_url, 'URL': url, 'Status': 'Success'}
             human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=human_readable_dict, removeNull=True)
 
@@ -881,19 +889,15 @@ def wildfire_get_url_report(url: str) -> Tuple:
         return command_results, entry_context['Status']
 
 
-def get_hash_type_and_value_dict(file_hash, upper_case=True):
-    md5_header = 'MD5' if upper_case else 'md5'
-    sha256_header = 'SHA256' if upper_case else 'sha256'
-    sha256 = file_hash if sha256Regex.match(file_hash) else None
-    md5 = file_hash if md5Regex.match(file_hash) else None
-    return {key: value for key, value in ([md5_header, md5], [sha256_header, sha256]) if value}
-
-
 @logger
 def wildfire_get_file_report(file_hash: str, args: dict):
     get_report_uri = URL + URL_DICT["report"]
     params = {'apikey': TOKEN, 'format': 'xml', 'hash': file_hash}
-    entry_context = get_hash_type_and_value_dict(file_hash)
+
+    # necessarily one of them as passed the hash_args_handler
+    sha256 = file_hash if sha256Regex.match(file_hash) else None
+    md5 = file_hash if md5Regex.match(file_hash) else None
+    entry_context = {key: value for key, value in (['MD5', md5], ['SHA256', sha256]) if value}
 
     try:
         json_res = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
