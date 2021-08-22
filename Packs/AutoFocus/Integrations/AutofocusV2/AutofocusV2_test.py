@@ -398,3 +398,16 @@ def test_create_relationships_list():
         assert relation.get('entityA') == 'Test'
         assert relation.get('entityB') == expected_name_entity_b[i]
         assert relation.get('entityBType') == expected_entity_b_types[i]
+
+
+URLS_LIST = [
+    ("www.München.com", "www.Mxn--tdanchen.com"),
+    ("www.example.com", "www.example.com")
+]
+
+
+@pytest.mark.parametrize("url, result", URLS_LIST)
+def test_convert_url_to_ascii_character(url, result):
+    from AutofocusV2 import convert_url_to_ascii_character
+    converted = convert_url_to_ascii_character(url)
+    assert converted == result

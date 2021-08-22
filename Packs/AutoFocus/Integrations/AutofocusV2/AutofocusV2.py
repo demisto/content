@@ -1118,6 +1118,17 @@ def resolve_ip_address(ip):
     return None
 
 
+def convert_url_to_ascii_character(url_name):
+    regex_groups = re.search('([a-zA-Z\W]*)([^a-zA-Z\W]*)([a-zA-Z\W]*)', url_name)
+
+    if regex_groups.group(2) != '':
+        decoded_value = str(regex_groups.group(1)) + str(regex_groups.group(2)).encode('idna').decode(
+            "utf-8") + regex_groups.group(3)
+        return decoded_value
+    else:
+        return url_name
+
+
 ''' COMMANDS'''
 
 
@@ -1502,6 +1513,7 @@ def search_url_command(url, reliability, create_relationships):
     relationships = []
 
     for url_name in url_list:
+        url_name = convert_url_to_ascii_character(url_name)
 
         raw_res = search_indicator('url', url_name)
         if not raw_res.get('indicator'):
