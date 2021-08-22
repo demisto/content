@@ -19,7 +19,6 @@ REHIRED_EMPLOYEE_FIELD = 'rehiredemployee'
 HIRE_DATE_FIELD = 'hiredate'
 AD_ACCOUNT_STATUS_FIELD = 'adaccountstatus'
 OLD_USER_DATA_FIELD = 'olduserdata'
-OLD_USER_EMAIL_FIELD = 'oldemail'
 SOURCE_PRIORITY_FIELD = 'sourcepriority'
 SOURCE_OF_TRUTH_FIELD = 'sourceoftruth'
 USER_PROFILE_INC_FIELD = 'UserProfile'
@@ -269,16 +268,6 @@ def is_update_event(workday_user, changed_fields):
     return False
 
 
-def get_old_user_data_if_email_changed(workday_user, email_to_user_profile, employee_id_to_user_profile):
-    email_address = workday_user.get(EMAIL_ADDRESS_FIELD)
-    employee_id = workday_user.get(EMPLOYEE_ID_FIELD)
-
-    if email_to_user_profile.get(email_address) is None \
-            and employee_id_to_user_profile.get(employee_id) is not None:
-        return employee_id_to_user_profile.get(employee_id)
-    return None
-
-
 def get_all_user_profiles():
     query = f'type:\"{USER_PROFILE_INDICATOR}\"'
     display_name_to_user_profile: Dict[str, List[Dict]] = {}
@@ -421,12 +410,7 @@ def get_event_details(entry, workday_user, demisto_user, days_before_hire_to_syn
     elif is_update_event(workday_user, changed_fields):
         event_type = UPDATE_USER_EVENT_TYPE
         event_details = f'The user has been updated:\n{changed_fields}'
-
-        old_user_data = get_old_user_data_if_email_changed(workday_user, email_to_user_profile,
-                                                           employee_id_to_user_profile)
-        if old_user_data:
-            workday_user[OLD_USER_DATA_FIELD] = old_user_data
-            workday_user[OLD_USER_EMAIL_FIELD] = old_user_data.get(EMAIL_ADDRESS_FIELD)
+        workday_user[OLD_USER_DATA_FIELD] = demisto_user
 
     else:
         demisto.debug(f'Could not detect changes in report for user with email address {user_email} - skipping.')

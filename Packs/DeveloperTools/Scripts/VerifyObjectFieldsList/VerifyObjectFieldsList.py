@@ -71,7 +71,7 @@ def main():
         return_results(check_fields_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute CheckIfFieldsExists. Error: {str(ex)}')
+        return_error(f'Failed to execute VerifyObjectFieldsList. Error: {str(ex)}')
 
 
 ''' ENTRY POINT '''

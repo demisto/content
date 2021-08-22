@@ -16,7 +16,7 @@ outputs:
   description: 'Determines the health status of the integration.'
   type: Boolean
 - contextPath: IntegrationHealth.fetchDone
-  description: 'Determines whether the fetch-indicators command was ended.'
+  description: 'Determines whether the fetch-indicators command completed.'
   type: Boolean
 - contextPath: IntegrationHealth.integrationName
   description: 'Requested integration name.'

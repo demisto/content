@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: 'Integration name to check its instance name'
+  description: 'Integration name for which to check its instance name.'
   isArray: false
   name: integration_name
   required: true

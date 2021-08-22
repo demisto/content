@@ -38,7 +38,6 @@ def health_check_command(args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='integrationName',
         outputs={
             'isHealthy': is_healthy,
-            'healthDict': health_dict,
             'fetchDone': fetch_done,
             'integrationName': integration_name
         },
