@@ -17,7 +17,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict
+    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, actualsize
 import CommonServerPython
 
 try:
@@ -5415,3 +5415,15 @@ class TestCustomIndicator:
                 malicious_description='malicious!'
             )
             Common.CustomIndicator('test', None, dbot_score,  {'param': 'value'}, 'prefix')
+
+
+@pytest.mark.parametrize('object, expected_size', [
+    ({}, 64),
+    ({'key': 'value'}, 286),
+    ({'nested1': {'key': 'value'}}, 518),
+    ([], 56),
+    (['1', '2', '3'], 270),
+    (['1', '2', ['3']], 294),
+])
+def test_actualsize(object, expected_size):
+    assert actualsize(object) == expected_size

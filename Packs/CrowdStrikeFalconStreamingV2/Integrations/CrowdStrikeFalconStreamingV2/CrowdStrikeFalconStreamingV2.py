@@ -483,7 +483,7 @@ async def long_running_loop(
                 integration_context['offset'] = offset_to_store
                 if store_samples:
                     try:
-                        event_obj_size = sys.getsizeof(event)
+                        event_obj_size = actualsize(event)
                         if event_obj_size <= 1000000:  # storing events of size up to 1MB
                             sample_events_to_store.append(event)
                             demisto.debug(f'Storing new {len(sample_events_to_store)} sample events')

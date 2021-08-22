@@ -87,7 +87,7 @@ async def handle_post(
 
     if demisto.params().get('store_samples'):
         try:
-            incident_obj_size = sys.getsizeof(incident)
+            incident_obj_size = actualsize(incident)
             if incident_obj_size <= 1000000:  # storing events of size up to 1MB
                 sample_events_to_store.append(incident)
                 integration_context = get_integration_context()

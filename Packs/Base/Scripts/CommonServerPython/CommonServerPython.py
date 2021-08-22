@@ -6,6 +6,7 @@ Note that adding code to CommonServerUserPython can override functions in Common
 from __future__ import print_function
 
 import base64
+import gc
 import json
 import logging
 import os
@@ -8144,3 +8145,28 @@ def support_multithreading():
             demisto.lock.release()  # type: ignore[attr-defined]
 
     demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
+
+
+# taken from https://towardsdatascience.com/the-strange-size-of-python-objects-in-memory-ce87bdfbb97f
+def actualsize(input_obj):
+    """
+    Calculates the object size recursively.
+
+    :type input_obj: ``int``
+    :param input_obj: The object to check size of.
+
+    :rtype: ``int``
+    :return: The object size.
+    """
+    memory_size = 0
+    ids = set()
+    objects = [input_obj]
+    while objects:
+        new = []
+        for obj in objects:
+            if id(obj) not in ids:
+                ids.add(id(obj))
+                memory_size += sys.getsizeof(obj)
+                new.append(obj)
+        objects = gc.get_referents(*new)
+    return memory_size
