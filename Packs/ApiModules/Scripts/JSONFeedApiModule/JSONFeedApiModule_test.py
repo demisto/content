@@ -174,13 +174,14 @@ def test_get_no_update_value_empty_context():
     - Running get_no_update_value method with empty integration context.
 
     Then
-    - Ensure that the response is True.
+    - Ensure that the response is False.
     """
     class MockResponse:
         headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
                    'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
+        status_code = 200
     no_update = get_no_update_value(MockResponse())
-    assert no_update
+    assert not no_update
 
 
 def test_get_no_update_value(mocker):
@@ -201,5 +202,19 @@ def test_get_no_update_value(mocker):
     class MockResponse:
         headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
                    'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
+        status_code = 200
     no_update = get_no_update_value(MockResponse())
     assert not no_update
+
+
+def test():
+    with requests_mock.Mocker() as m:
+        m.get('https://api.github.com/meta', status_code=304)
+
+        client = Client(
+            url='https://api.github.com/meta'
+        )
+        result, no_update = client.build_iterator(feed={'url': 'https://api.github.com/meta'})
+        assert result == []
+        assert no_update
+

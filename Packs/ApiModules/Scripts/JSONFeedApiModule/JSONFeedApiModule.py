@@ -108,6 +108,12 @@ class Client:
 
     def build_iterator(self, feed: dict, **kwargs) -> Tuple[List, bool]:
         url = feed.get('url', self.url)
+
+        etag = get_integration_context().get('etag')
+        if etag:
+            self.headers['If-None-Match'] = etag
+
+        result = []
         if not self.post_data:
             r = requests.get(
                 url=url,
@@ -129,14 +135,16 @@ class Client:
             )
 
         try:
-            r.raise_for_status()
-            data = r.json()
-            result = jmespath.search(expression=feed.get('extractor'), data=data)
+            no_update = get_no_update_value(r)
+            if not no_update:
+                r.raise_for_status()
+                data = r.json()
+                result = jmespath.search(expression=feed.get('extractor'), data=data)
 
         except ValueError as VE:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
 
-        return result, get_no_update_value(r)
+        return result, no_update
 
 
 def get_no_update_value(response: requests.Response) -> bool:
@@ -152,21 +160,23 @@ def get_no_update_value(response: requests.Response) -> bool:
         The value should be False if the response was modified.
     """
 
-    context = get_integration_context()
-    old_etag = context.get('etag')
-    old_last_modified = context.get('last_modified')
+    old_last_modified = get_integration_context().get('last_modified')
 
     etag = response.headers.get('ETag')
     last_modified = response.headers.get('Last-Modified')
 
     set_integration_context({'last_modified': last_modified, 'etag': etag})
 
-    if old_etag and old_etag != etag:
+    if response.status_code == 304:
         demisto.debug('New indicators fetched - the ETag value has been updated,'
                       ' createIndicators will be executed with noUpdate=False.')
+        return True
+
+    if not old_last_modified:
+        demisto.debug('New indicators fetched - createIndicators will be executed with noUpdate=False.')
         return False
 
-    if old_last_modified and old_last_modified != last_modified:
+    if old_last_modified != last_modified:
         demisto.debug('New indicators fetched - the Last-Modified value has been updated,'
                       ' createIndicators will be executed with noUpdate=False.')
         return False
