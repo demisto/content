@@ -168,8 +168,7 @@ def get_no_update_value(response: requests.Response) -> bool:
     set_integration_context({'last_modified': last_modified, 'etag': etag})
 
     if response.status_code == 304:
-        demisto.debug('New indicators fetched - the ETag value has been updated,'
-                      ' createIndicators will be executed with noUpdate=False.')
+        demisto.debug('No new indicators fetched, createIndicators will be executed with noUpdate=True.')
         return True
 
     if not old_last_modified:
