@@ -38,7 +38,7 @@ def parse_feed_data(feed_response: requests.Response) -> FeedParserDict:
     try:
         return feedparser.parse(feed_response.text)
     except Exception as err:
-        raise DemistoException(f"Failed to parse feed.\nError:\n{str(err)}")
+        raise DemistoException(f"Failed to parse feed.\nError:\n{str(err)}", exception=err)
 
 
 def collect_entries_data_from_response(parsed_feed_data: FeedParserDict) -> List[Dict[str, Any]]:
@@ -68,7 +68,7 @@ def collect_entries_data_from_response(parsed_feed_data: FeedParserDict) -> List
                     'timestamp': published_formatted,
                     'link': entry.get('link'),
                     'title': entry.get('title'),
-                    'summary': entry.get('summary')
+                    'summary': entry.get('summary'),
                 }
             )
 
@@ -120,5 +120,5 @@ def main():
     })
 
 
-if __name__ in ('__builtin__', 'builtins', '__main__'):
+if __name__ in ('__builtin__', 'builtins', '__main__'):  # pragma: no cover
     main()
