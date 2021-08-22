@@ -3170,7 +3170,8 @@
         {
             "integrations": "RSA Archer v2",
             "playbookID": "Archer v2 - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 600
         },
         {
             "integrations": "WootCloud",
@@ -3798,7 +3799,8 @@
         "Azure Network Security Groups": "Has a command that sends parameters in the path",
         "GitHub": "Cannot use proxy",
         "LogRhythm": "Cannot use proxy",
-        "Create-Mock-Feed-Relationships": "recording is redundant for this integration"
+        "Create-Mock-Feed-Relationships": "recording is redundant for this integration",
+        "RSA Archer v2": "cannot connect to proxy"
     },
     "parallel_integrations": [
         "AWS - EC2",
