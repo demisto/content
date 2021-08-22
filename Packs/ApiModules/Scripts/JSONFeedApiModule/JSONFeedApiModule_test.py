@@ -208,6 +208,16 @@ def test_get_no_update_value(mocker):
 
 
 def test():
+    """
+    Given
+    - response with status code 304(Not Modified)
+
+    When
+    - Running build_iterator method.
+
+    Then
+    - Ensure that the no_update value is True
+    """
     with requests_mock.Mocker() as m:
         m.get('https://api.github.com/meta', status_code=304)
 
