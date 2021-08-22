@@ -12,9 +12,9 @@
 ---
 | **Argument Name** | **Description** |
 | --- | --- |
-| url | The URL of the RSS feed |
-| insecure | Trust any certificate (not secure) |
-| proxy | Use system proxy settings |
+| url | The URL of the RSS feed. |
+| insecure | Trust any certificate (not secure). |
+| proxy | Use system proxy settings. |
 
 ### Outputs
 
