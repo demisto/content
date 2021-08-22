@@ -448,6 +448,7 @@ def computer_dn(compuer_name, search_base):
 
 
 def group_dn(group_name, search_base):
+    group_name = escape_filter_chars(group_name)
     search_filter = '(&(objectClass=group)(cn={}))'.format(group_name)
     entries = search(
         search_filter,
@@ -1393,7 +1394,7 @@ def add_member_to_group(default_base_dn):
         # none of the arguments passed
         raise Exception(args_err)
 
-    grp_dn = group_dn(escape_filter_chars(args.get('group-cn')), search_base)
+    grp_dn = group_dn(args.get('group-cn'), search_base)
 
     success = microsoft.addMembersToGroups.ad_add_members_to_groups(conn, [member_dn], [grp_dn])
     if not success:
@@ -1431,7 +1432,7 @@ def remove_member_from_group(default_base_dn):
         # none of the arguments passed
         raise Exception(args_err)
 
-    grp_dn = group_dn(escape_filter_chars(args.get('group-cn')), search_base)
+    grp_dn = group_dn(args.get('group-cn'), search_base)
 
     success = microsoft.removeMembersFromGroups.ad_remove_members_from_groups(conn, [member_dn], [grp_dn], True)
     if not success:
