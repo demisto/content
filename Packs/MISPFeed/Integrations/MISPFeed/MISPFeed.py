@@ -174,14 +174,15 @@ class Client(BaseClient):
     def search_query(self, body: Dict[str, Any]) -> List:
         result = []
         attributes = self._http_request('POST',
-                                 url_suffix='/attributes/restSearch',
-                                 full_url=self._base_url,
-                                 resp_type='text',
-                                 json_data=body,
-                                 headers={'Authorization': demisto.params().get('apikey'),
-                                          "Accept": "application/json",
-                                          },
-                                 )
+                                        url_suffix='/attributes/restSearch',
+                                        full_url=self._base_url,
+                                        resp_type='text',
+                                        data=json.dumps(body),
+                                        headers={'Authorization': demisto.params().get('apikey'),
+                                                  "Accept": "application/json",
+                                                  "Content-Type": "application/json",
+                                                 },
+                                        )
         try:
             attributes = json.loads(attributes)
             for attribute in attributes:
@@ -249,7 +250,7 @@ def search_attributes_command(client: Client,
     )
 
 
-def build_params_dict(tags: List[str], attribute_type: List[str]) -> str:
+def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[Any,str]:
     params = {
         'returnFormat': 'json',
         'type': {
@@ -263,7 +264,7 @@ def build_params_dict(tags: List[str], attribute_type: List[str]) -> str:
         params["type"]["OR"] = attribute_type
     if tags:
         params["tags"]["OR"] = tags
-    return json.dumps(params)
+    return params
 
 
 def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
