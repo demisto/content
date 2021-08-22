@@ -1,6 +1,6 @@
-id: Wildfire Test - New
+id: Wildfire Test With Polling
 version: -1
-name: Wildfire Test - New
+name: Wildfire Test With Polling
 description: |-
   A test playbook for Wild Fire.
   Does not test the deprecated detonate commands.

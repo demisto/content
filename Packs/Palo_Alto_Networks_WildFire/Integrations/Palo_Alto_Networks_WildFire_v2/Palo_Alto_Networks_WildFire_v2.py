@@ -818,8 +818,7 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
 
         file_name = 'wildfire_report_' + file_hash + '.pdf'
         file_type = entryTypes['entryInfoFile']
-        result = fileResult(file_name, res_pdf.content,
-                            file_type)  # will be saved under 'InfoFile' in the context.
+        result = fileResult(file_name, res_pdf.content, file_type)  # will be saved under 'InfoFile' in the context.
         demisto.results(result)
         human_readable = tableToMarkdown('WildFire File Report - PDF format', prettify_report_entry(file_info))
 
@@ -931,10 +930,13 @@ def wildfire_get_file_report(file_hash: str, args: dict):
         demisto.error(f'Report not found. Error: {exc}')
 
     finally:
-        command_results = CommandResults(outputs_prefix=WILDFIRE_REPORT_DT_FILE,
-                                         outputs=remove_empty_elements(entry_context),
-                                         readable_output=human_readable, indicator=indicator, raw_response=json_res)
-        return command_results, entry_context['Status']
+        try:
+            command_results = CommandResults(outputs_prefix=WILDFIRE_REPORT_DT_FILE,
+                                             outputs=remove_empty_elements(entry_context),
+                                             readable_output=human_readable, indicator=indicator, raw_response=json_res)
+            return command_results, entry_context['Status']
+        except Exception:
+            raise DemistoException(f'Error while trying to get the report from the API.')
 
 
 def wildfire_get_report_command(args):
