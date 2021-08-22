@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import urllib3
 import requests
-from typing import Optional, Pattern, List
+from typing import Optional, Pattern, List, Iterable
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -257,7 +257,7 @@ class Client(BaseClient):
         results = []
         for url_to_response in url_to_response_list:
             for url, res_data in url_to_response.items():
-                result = []
+                result: Iterable = iter([])
                 if not res_data.get('no_update'):
                     lines = res_data.get('response')
                     result = lines.iter_lines()
@@ -519,9 +519,9 @@ def feed_main(feed_name, params=None, prefix=''):
     try:
         if command == 'fetch-indicators':
             indicators = fetch_indicators_command(client, feed_tags, tlp_color,
-                                                             params.get('indicator_type'),
-                                                             params.get('auto_detect_type'),
-                                                             params.get('create_relationships'))
+                                                  params.get('indicator_type'),
+                                                  params.get('auto_detect_type'),
+                                                  params.get('create_relationships'))
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)

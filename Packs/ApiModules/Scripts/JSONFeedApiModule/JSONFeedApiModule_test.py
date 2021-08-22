@@ -227,4 +227,3 @@ def test_build_iterator_not_modified_header():
         result, no_update = client.build_iterator(feed={'url': 'https://api.github.com/meta'})
         assert not result
         assert no_update
-

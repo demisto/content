@@ -373,7 +373,7 @@ def test_get_indicators_with_relations():
             indicator_type='ASN'
         )
         indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
-                                                 create_relationships=True)
+                                              create_relationships=True)
 
         assert indicators == expected_res
 
@@ -438,7 +438,7 @@ def test_get_indicators_without_relations():
             indicator_type='ASN'
         )
         indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
-                                                 create_relationships=False)
+                                              create_relationships=False)
 
         assert indicators == expected_res
 
@@ -504,4 +504,6 @@ def test_build_iterator_not_modified_header():
             url='https://api.github.com/meta'
         )
         result = client.build_iterator()
-        assert result == [{'https://api.github.com/meta': []}]
+        assert result
+        assert result[0]['https://api.github.com/meta']
+        assert list(result[0]['https://api.github.com/meta']) == []
