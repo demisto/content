@@ -36,7 +36,7 @@ This playbook does not use any integrations.
 | Account | User accounts to check against the critical lists. | Account.None | Optional |
 | Endpoint | Endpoints to check against the CriticalEndpoints list. | Endpoint.None | Optional |
 | EmailAuthenticityCheck | Indicates the email authenticity resulting from the EmailAuthenticityCheck script. Possible values are: Pass, Fail, Suspicious, and Undetermined. | Email.AuthenticityCheck | Optional |
-| MicrosoftHeadersSeverityCheck | This value is being set by the "Process Microsoft's Anti-Spam Headers" Playbook. It will represent the calculated severity after processing PCL, BCL and PCL values inside Microsoft's headers. |  | Optional |
+| MicrosoftHeadersSeverityCheck | The value is set by the "Process Microsoft's Anti-Spam Headers" Playbook, which calculates the severity after processing the PCL, BCL and PCL values inside Microsoft's headers. |  | Optional |
 
 ## Playbook Outputs
 ---
