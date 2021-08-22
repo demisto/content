@@ -51,16 +51,18 @@ function check_arguments {
 # :param $1: pack name
 # :param $2: new pack name
 # :param $3: possible names for renaming array
+# :return: New pack's name.
 function create_new_pack {
   echo " Running - create_new_pack"
 
   local pack_name=$1
-  local new_pack_name=$2
+  local new_pack_suffix=$2
   shift
   shift
   local names_array=("$@")
 
   local original_path=$(pwd)
+  local new_pack_name="${pack_name}${new_pack_suffix}"
   local pack_path="${CONTENT_PATH}/Packs/${pack_name}"
   local new_pack_path="${CONTENT_PATH}/Packs/${new_pack_name}"
 
@@ -71,7 +73,6 @@ function create_new_pack {
 
   for original_name in "${names_array[@]}"; do
     new_name="${original_name}${new_pack_suffix}"
-    echo "${original_name} -> ${new_name}"
     rename_files_and_folders "$original_name" "$new_name"
   done
 
@@ -79,6 +80,8 @@ function create_new_pack {
   git add "$new_pack_path"
 
   git commit --untracked-files=no -am  "Created new pack - $new_pack_name"
+
+  return "${new_pack_name}"
 }
 
 # rename_files_and_folders
@@ -419,7 +422,7 @@ bucket="marketplace-dist-dev"
 bucket_upload="true"
 slack_channel="dmst-bucket-upload"
 base_pack_name="HelloWorld"
-new_pack_name="${base_pack_name}New"
+new_pack_suffix="New"
 pack_names_and_ids=("Hello_World" "Hello World" "helloworld" "Sanity_Test") # All the possible ids inside Hello World pack.
 
 # parse inputs
@@ -542,7 +545,7 @@ if [ -n "$sdk_branch_name" ]; then
 fi
 
 # New Pack
-create_new_pack "${base_pack_name}" "${new_pack_name}" "${pack_names_and_ids[@]}" # Creates new pack HelloWorldNew
+new_pack_name=$(create_new_pack "${base_pack_name}" "${new_pack_suffix}" "${pack_names_and_ids[@]}") # Creates new pack HelloWorldNew
 add_dependency "Viper" "${new_pack_name}" # Viper is now dependent on a new pack that is not in the bucket.
 add_author_image "${new_pack_name}"
 add_1_0_0_release_note "${new_pack_name}"
