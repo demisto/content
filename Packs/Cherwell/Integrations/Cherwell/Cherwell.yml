@@ -535,37 +535,37 @@ script:
     name: cherwell-get-business-object-summary
     outputs:
     - contextPath: Cherwell.BusinessObjectSummary.supporting
-      description: ''
+      description: Whether the business object is supporting or not.
       type: Boolean
     - contextPath: Cherwell.BusinessObjectSummary.major
-      description: ''
+      description: Whether the business object is major or not.
       type: Boolean
     - contextPath: Cherwell.BusinessObjectSummary.group
-      description: ''
+      description: Whether the business object is group or not.
       type: Boolean
     - contextPath: Cherwell.BusinessObjectSummary.name
-      description: ''
+      description: Business object name.
       type: String
     - contextPath: Cherwell.BusinessObjectSummary.stateFieldId
-      description: ''
+      description: The ID of the business object state field.
       type: String
     - contextPath: Cherwell.BusinessObjectSummary.busObId
-      description: ''
+      description: Business object ID.
       type: String
     - contextPath: Cherwell.BusinessObjectSummary.states
-      description: ''
+      description: The business object valid states.
       type: String
     - contextPath: Cherwell.BusinessObjectSummary.lookup
-      description: ''
+      description: Whether the object is lookup object or not.
       type: Boolean
     - contextPath: Cherwell.BusinessObjectSummary.displayName
-      description: ''
+      description: Business object display name.
       type: String
     - contextPath: Cherwell.BusinessObjectSummary.firstRecIdField
-      description: ''
+      description: The ID value of the first business object RecID field.
       type: String
     - contextPath: Cherwell.BusinessObjectSummary.recIdFields
-      description: ''
+      description: The IDs of business object RecID fields.
       type: String
   - arguments:
     - default: false
