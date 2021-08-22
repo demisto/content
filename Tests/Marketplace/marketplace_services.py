@@ -1619,7 +1619,7 @@ class Pack(object):
                         })
                     elif current_directory == PackFolders.LISTS.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', "")  # TODO: confirm
+                            'name': content_item.get('name', "")
                         })
                     elif current_directory == PackFolders.GENERIC_DEFINITIONS.value:
                         folder_collected_items.append({
