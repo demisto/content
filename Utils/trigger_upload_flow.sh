@@ -571,7 +571,7 @@ add_pack_to_landing_page "Trello"
 git push --set-upstream origin "${new_content_branch}"
 
 if [ -n "$circle_token" ]; then
-#  trigger_circle_ci "${new_content_branch}"
+  trigger_circle_ci "${new_content_branch}"
 fi
 
 if [ -n "$gitlab_token" ]; then
