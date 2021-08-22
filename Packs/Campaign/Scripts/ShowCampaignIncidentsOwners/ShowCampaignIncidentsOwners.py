@@ -3,13 +3,27 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-def get_incident_ids():
+def get_incident_ids() -> list:
+    """
+    Gets all the campaign incident ids.
 
+    Returns:
+        List of all the ids.
+    """
     incidents = demisto.get(demisto.context(), "EmailCampaign.incidents")
-    return [incident['id'] for incident in incidents]
+    return [incident["id"] for incident in incidents]
 
 
-def get_incident_owners(incident_ids):
+def get_incident_owners(incident_ids) -> list:
+    """
+    Gets the campaign incident owners by their ids.
+
+    Args:
+        incident_ids: All the campaign incident ids.
+
+    Returns:
+        List of the incident owners.
+    """
 
     incident_owners = set([demisto.executeCommand("getIncidents", {'id': incident_id})
                            [0]['Contents']['data'][0]['owner'] for incident_id in incident_ids])
