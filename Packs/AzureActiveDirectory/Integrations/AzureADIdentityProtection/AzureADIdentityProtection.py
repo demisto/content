@@ -257,24 +257,34 @@ def create_incidents_from_input(input: List[Dict[str, str]], last_fetch_datetime
 
     for current_input in input:
         # 'activityDateTime': '2021-07-15T11:02:54Z' / 'activityDateTime': '2021-07-15T11:02:54.12345Z'
-        activity_date_time: str = current_input.get('activityDateTime', '')
+        activity_date_time_str: str = current_input.get('activityDateTime', '')
+
+        activity_datetime = dateparser.parse(activity_date_time_str)
+        # to prevent duplicates, adding incidents with creation_time > last fetched incident
+        if last_fetch:
+            if activity_datetime <= last_fetch:
+                demisto.debug(f'{INTEGRATION_NAME} - alert {str(current_input)} created at {activity_date_time_str}.'
+                              f' Skipping.')
+                continue
+
         current_id: str = current_input.get('id', '')
         current_risk_event_type: str = current_input.get('riskEventType', '')
         current_risk_detail: str = current_input.get('riskDetail', '')
         incident = {
             'name': f'Azure Active Directory Identity and Access Incident'
                     f' {current_risk_event_type} {current_risk_detail} {current_id}',
-            'occurred': activity_date_time,
+            'occurred': activity_date_time_str,
             'rawJSON': json.dumps(current_input)
         }
         incidents.append(incident)
 
-        activity_date_time = activity_date_time.split(".")[0]
-        if not activity_date_time.endswith("Z"):
+        activity_date_time_str = activity_date_time_str.split(".")[0]
+        if not activity_date_time_str.endswith("Z"):
             # microseconds, 'activityDateTime': '2021-07-15T11:02:54.12345Z'
-            activity_date_time += "Z"
+            activity_date_time_str += "Z"
 
-        timestamp = datetime.strptime(activity_date_time, DATE_FORMAT)
+        # timestamp = datetime.strptime(activity_date_time_str, DATE_FORMAT)
+        timestamp = activity_datetime
         if timestamp > last_fetch:
             last_fetch = timestamp
 
@@ -294,7 +304,6 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
         last_fetch = str(default_fetch_datetime.isoformat(timespec='seconds')) + 'Z'
 
     last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT)
-
     demisto.debug(f'last_fetch_datetime: {last_fetch_datetime}')
 
     all_incidents: List = []
