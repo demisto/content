@@ -1477,7 +1477,6 @@ class Pack(object):
                 PackFolders.GENERIC_FIELDS.value: "GenericFields",
                 PackFolders.GENERIC_MODULES.value: "GenericModules",
                 PackFolders.GENERIC_TYPES.value: "GenericTypes",
-                PackFolders.LISTS.value: "list"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -1616,10 +1615,6 @@ class Pack(object):
                             'name': content_item.get('name', ""),
                             'dataType': content_item.get('dataType', ""),
                             'widgetType': content_item.get('widgetType', "")
-                        })
-                    elif current_directory == PackFolders.LISTS.value:
-                        folder_collected_items.append({
-                            'name': content_item.get('name', "")
                         })
                     elif current_directory == PackFolders.GENERIC_DEFINITIONS.value:
                         folder_collected_items.append({
