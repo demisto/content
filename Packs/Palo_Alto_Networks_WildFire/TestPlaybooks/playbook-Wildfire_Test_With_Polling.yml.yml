@@ -1,5 +1,5 @@
 id: Wildfire Test With Polling
-version: 28
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Wildfire Test - New
 description: |-
@@ -1776,10 +1776,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 661c116d-8e4e-421c-8e9c-8800c97f3805
+    taskid: bb2ed83a-862f-47ea-85fd-ab8eacdb9cd5
     type: condition
     task:
-      id: 661c116d-8e4e-421c-8e9c-8800c97f3805
+      id: bb2ed83a-862f-47ea-85fd-ab8eacdb9cd5
       version: -1
       name: test wildfire-upload-file-url with polling
       type: condition
@@ -1797,14 +1797,6 @@ tasks:
             value:
               simple: WildFire.Report.Status
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.Score
-            iscontext: true
-          right:
-            value:
-              simple: "1"
       - - operator: isExists
           left:
             value:
