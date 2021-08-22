@@ -122,7 +122,7 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
 
 
 @logger
-def validate_entry_context(context_path, entry_context: Any, keys: List[str], unpack_nested_elements: bool):
+def validate_entry_context(context_path: str, entry_context: Any, keys: List[str], unpack_nested_elements: bool):
     """ Validate entry context structure is valid, should be:
         - For unpack_nested_elements==False:
             1. List[Dict[str, str/bool/int/float]]
@@ -277,8 +277,8 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
         raise DemistoException(f'The number of keys: {len(keys)} should match the number of columns: {len(columns)}.')
     # Get old Data
     old_table = get_current_table(grid_id=grid_id)
-    # Normalize columns to match connected words.
-    columns = [normalized_string(phrase) for phrase in columns]
+    # Change columns to all lower case. Not using `normalize()` as underscores are allowed in columns names.
+    columns = [phrase.lower() for phrase in columns]
     # Create new Table from the given context path.
     new_table: pd.DataFrame = build_grid(context_path=context_path,
                                          keys=keys,
