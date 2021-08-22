@@ -692,6 +692,8 @@ def run_one_step_action(payload):
     return parse_response(response, "Could not run one step action")
 
 ########################################################################################################################
+
+
 '''
 Commands
 '''
@@ -1005,7 +1007,7 @@ def cherwell_get_one_step_actions_command():
     business_object_id = args.get('busobjectid')
     result = get_one_step_actions(business_object_id)
 
-    actions = {}
+    actions: dict = {}
     ec = {}
     md = ''
 
@@ -1014,7 +1016,7 @@ def cherwell_get_one_step_actions_command():
     if actions:
         for key in actions.keys():
             md += tableToMarkdown(f'{key} one-step actions:', actions[key],
-                                 headerTransform=pascalToSpace, headers=ONE_STEP_ACTION_HEADERS)
+                                  headerTransform=pascalToSpace, headers=ONE_STEP_ACTION_HEADERS)
         ec = {'BusinessObjectId': business_object_id, 'Actions': actions}
     else:
         md = f'No one-step actions found for business object ID {business_object_id}'
@@ -1034,7 +1036,7 @@ def cherwell_run_one_step_action_command():
     if prompt_values_arg:
         prompt_values = json.loads(prompt_values_arg)
 
-    payload = {'acquireLicense': True,'busObId': business_object_id, 'busObRecId': rec_id,
+    payload = {'acquireLicense': True, 'busObId': business_object_id, 'busObRecId': rec_id,
                'oneStepActionStandInKey': stand_in_key, 'promptValues': prompt_values}
 
     result = run_one_step_action(payload)
