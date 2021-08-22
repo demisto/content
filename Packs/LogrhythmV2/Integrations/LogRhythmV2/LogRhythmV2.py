@@ -11,6 +11,17 @@ ALARM_HEADERS = ['alarmId', 'alarmStatus', 'associatedCases', 'alarmRuleName', '
 
 ALARM_EVENTS_HEADERS = ['serviceName', 'logMessage', 'entityName']
 
+ALARM_STATUS = {0: 'New',
+                1: 'Opened',
+                2: 'Working',
+                3: 'Escalated',
+                4: 'Closed',
+                5: 'Closed_FalseAlarm',
+                6: 'Closed_Resolved',
+                7: 'Closed_Unresolved',
+                8: 'Closed_Reported',
+                9: 'Closed_Monitor'}
+
 CASE_STATUS = {'Created': 1,
                'Completed': 2,
                'Incident': 3,
@@ -984,9 +995,13 @@ class Client(BaseClient):
 
     def alarms_list_request(self, alarm_id=None, alarm_status=None, offset=None, count=None, alarm_rule_name=None,
                             entity_name=None, case_association=None, created_after=None):
+        headers = self._headers
+
+        if alarm_status:
+            alarm_status = next((id for id, status in ALARM_STATUS.items() if status == alarm_status))
+
         params = assign_params(alarmStatus=alarm_status, offset=offset, count=count, caseAssociation=case_association,
                                alarmRuleName=alarm_rule_name, entityName=entity_name, orderby='DateInserted')
-        headers = self._headers
 
         response = self._http_request('GET', 'lr-alarm-api/alarms/', params=params, headers=headers)
 
@@ -1006,6 +1021,11 @@ class Client(BaseClient):
                     break
 
             alarms = filtered_alarms
+
+        if alarms:
+            for alarm in alarms:
+                alarm['alarmStatus'] = ALARM_STATUS[alarm['alarmStatus']]
+
         return alarms, response
 
     def alarm_update_request(self, alarm_id, alarm_status, rbp):
@@ -1497,7 +1517,8 @@ def alarms_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     offset = args.get('offset')
     count = args.get('count')
 
-    alarms, raw_response = client.alarms_list_request(alarm_id, alarm_status, offset, count, alarm_rule_name, entity_name, case_association)
+    alarms, raw_response = client.alarms_list_request(alarm_id, alarm_status, offset, count, alarm_rule_name,
+                                                      entity_name, case_association)
 
     if alarms:
         hr = tableToMarkdown('Alarms', alarms, headerTransform=pascalToSpace, headers=ALARM_HEADERS)
@@ -1508,7 +1529,7 @@ def alarms_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output=hr,
         outputs_prefix='LogRhythm.Alarm',
         outputs_key_field='',
-        outputs=response,
+        outputs=alarms,
         raw_response=raw_response
     )
 

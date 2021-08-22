@@ -72,6 +72,18 @@ script:
       description: ''
       required: false
       isArray: false
+      auto: PREDEFINED
+      predefined:
+        - New
+        - Opened
+        - Working
+        - Escalated
+        - Closed
+        - Closed_FalseAlarm
+        - Closed_Resolved
+        - Closed_Unresolved
+        - Closed_Reported
+        - Closed_Monitor
     - name: offset
       defaultValue: "0"
       description: ''
