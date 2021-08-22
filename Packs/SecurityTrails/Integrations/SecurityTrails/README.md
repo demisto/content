@@ -427,51 +427,6 @@ Find all domains that are related to a hostname you input. Limited to 10000 resu
 | SecurityTrails.Domain.associated_domains.whois.registrar | string | Registrar | 
 | SecurityTrails.Domain.associated_domain_count | number | Associated Domain Count | 
 
-
-### securitytrails-get-ssl-certitficates
-***
-Fetch current and historical certificate information for any hostname. Limited to 10000 results. For all certificates use 'securitytrails-get-ssl-certitficates-stream' command.
-
-
-#### Base Command
-
-`securitytrails-get-ssl-certitficates`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| hostname | Hostname. | Required | 
-| include_subdomains | Include sub-domains. Possible values are: false, true. Default is false. | Optional | 
-| status | Query statuses. Possible values are: valid, all, expired. Default is valid. | Optional | 
-| page | The page of the returned results, starting at 1. A page returns 100 results. Default is 1. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-
-### securitytrails-get-ssl-certitficates-stream
-***
-Fetch current and historical certificate information for any hostname. Returns all results.
-
-
-#### Base Command
-
-`securitytrails-get-ssl-certitficates-stream`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| hostname | Hostname. | Required | 
-| include_subdomains | Include sub-domains. Possible values are: false, true. Default is false. | Optional | 
-| status | status. Possible values are: valid, all, expired. Default is valid. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
 ### securitytrails-search-ip
 ***
 Search for IP addresses. A maximum of 10000 results can be retrieved.

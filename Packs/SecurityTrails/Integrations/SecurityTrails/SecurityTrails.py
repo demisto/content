@@ -48,21 +48,25 @@ class Client(BaseClient):
         return res
 
     def get_ssl_certificates(self, query_type: str = "stream", hostname: str = None, params: dict = None):
+        # There's a bug in the API where the result is malformed.
         if query_type == "paged":
-            return self._http_request(
+            res = self._http_request(
                 'GET',
                 f'domain/{hostname}/ssl',
                 params=params or {},
                 ok_codes=(200, 403),
-                resp_type="response"
+                resp_type='response'
             )
         elif query_type == "stream":
-            return self._http_request(
+            res = self._http_request(
                 'GET',
                 f'domain/{hostname}/ssl_stream',
                 params=params,
-                ok_codes=(200, 403)
+                ok_codes=(200, 403),
+                resp_type='response'
             )
+
+        return res
 
     def get_company(self, domain: str = None):
         res = self._http_request(
@@ -200,7 +204,7 @@ def domain_command(client, args):
     for domain in domains:
         try:
             domain_details = client.domain_details(hostname=domain)
-        except:
+        except Exception:
             demisto.info(f'No information found for domain: {domain}')
             return_results(f'No information found for domain: {domain}')
             continue
@@ -213,12 +217,6 @@ def domain_command(client, args):
             "Phone": x.get('telephone'),
             "Country": x.get('country')
         } for x in domain_whois.get('contacts', []) if "admin" in x.get('type', '').lower()]
-        tech_contact = [{
-            "Name": x.get('name', None),
-            "Email": x.get('email', None),
-            "Phone": x.get('telephone', None),
-            "Country": x.get('country', None)
-        } for x in domain_whois.get('contacts', []) if "tech" in x.get('type', '').lower()]
         registrant_contact = [{
             "Name": x.get('name', None),
             "Email": x.get('email', None),
@@ -587,7 +585,7 @@ def get_ssl_certificates(client, args):
     query_type = "paged" if page else "stream"
     res = client.get_ssl_certificates(query_type=query_type, hostname=hostname, params=params)
     records = res.get('records', [])
-    record_count = res.get('record_count', 0)
+    # record_count = res.get('record_count', 0)
     table_data = [{
         "Subject Key ID": x.get('subject_key_id'),
         "Subject Common Name": x.get('subject', {}).get('common_name'),
@@ -606,6 +604,7 @@ def get_ssl_certificates(client, args):
         "Fingerprints": x.get('fingerprints'),
         "DNS Names": ",".join(x.get('dns_names'))
     } for x in records]
+
     md = tableToMarkdown(f"SSL Certificates for {hostname}", table_data, [
         "ID",
         "Subject Key ID",
@@ -689,7 +688,7 @@ def get_dns_history_command(client, args):
     latest_record = res.get('records', [])[0]
     values = latest_record.get('values', [])
     values = [values] if type(values) == dict else values
-    hosts = [x['host'] for x in values if "host" in x]
+    # hosts = [x['host'] for x in values if "host" in x]
     ipv4 = [x['ip'] for x in values if "ip" in x]
     ipv6 = [x['ip'] for x in values if "ipv6" in x]
     nameservers = [x['nameserver'] for x in values if "nameserver" in x]
@@ -757,13 +756,13 @@ def get_whois_history_command(client, args):
                 "Phone": admin_contact.get('telephone')
             }
         if registrant_contact:
-            whois_object['Registrant'] = {
+            whois_object['Registrant'] = {  # type: ignore
                 "Name": registrant_contact.get('name'),
                 "Email": registrant_contact.get('email'),
                 "Phone": registrant_contact.get('telephone')
             }
         if registrar_contact:
-            whois_object['Registrar'] = {
+            whois_object['Registrar'] = {   # type: ignore
                 "Name": registrar_contact.get('name'),
                 "Email": registrar_contact.get('email'),
                 "Phone": registrar_contact.get('telephone')
@@ -966,8 +965,9 @@ def main() -> None:
         'securitytrails-search-domain': domain_search_command,
         'securitytrails-statistics-domain': domain_statistics_command,
         'securitytrails-get-associated-domains': associated_domains_command,
-        'securitytrails-get-ssl-certitficates': get_ssl_certificates,
-        'securitytrails-get-ssl-certitficates-stream': get_ssl_certificates,
+        # These 2 commands have issues with the response object - error when trying to parse to JSON
+        # 'securitytrails-get-ssl-certitficates': get_ssl_certificates,
+        # 'securitytrails-get-ssl-certitficates-stream': get_ssl_certificates,
         'securitytrails-search-ip': ip_search_command,
         'securitytrails-statistics-ip': ip_statistics_command,
         'securitytrails-get-ip-whois': get_whois_command,
