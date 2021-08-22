@@ -87,10 +87,6 @@ Command to get messages from PhishER
                     "createdAt": "2021-08-17T14:20:32Z"
                 },
                 {
-                    "body": "Emile Smith Rowe",
-                    "createdAt": "2021-08-17T14:19:31Z"
-                },
-                {
                     "body": "Chupi & Toto",
                     "createdAt": "2021-08-16T12:39:15Z"
                 }
