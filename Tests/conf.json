@@ -3596,6 +3596,7 @@
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Ipstack": "Usage limit reached (Issue 38063)",
         "SolarWinds": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
         "SOCRadarThreatFusion": "No instance - developed by partner",
