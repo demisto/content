@@ -499,7 +499,7 @@ tasks:
       version: -1
       name: Calculate Severity - Critical Assets v2
       description: |-
-        Determines if a critical assest is associated with the invesigation. The playbook returns a severity level of "Critical" if at least one critical asset is associated with the investigation.
+        Determines if a critical asset is associated with the investigation. The playbook returns a severity level of "Critical" if at least one critical asset is associated with the investigation.
         Critical assets refer to: users, user groups, endpoints and endpoint groups.
       playbookName: Calculate Severity - Critical Assets v2
       type: playbook
@@ -671,8 +671,8 @@ tasks:
       id: a671ba08-708f-4ff2-8df0-05b48d074bad
       version: -1
       name: Set Microsoft Headers Severity Check
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+      description: Calculates the severity after processing the PCL, BCL and PCL values inside Microsoft headers. If no value is
+        entered, nothing is returned.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -776,8 +776,8 @@ inputs:
   value:
     simple: ${MicrosoftHeadersSeverityCheck}
   required: false
-  description: This value is being set by the "Process Microsoft's Anti-Spam Headers" Playbook.
-    It will represent the calculated severity after processing the PCL, BCL and PCL values inside Microsoft's headers.
+  description: The value is set by the "Process Microsoft's Anti-Spam Headers" Playbook, which calculates
+    the severity after processing the PCL, BCL and PCL values inside Microsoft's headers.
   playbookInputQuery:
 outputs:
 - contextPath: CriticalAssets
