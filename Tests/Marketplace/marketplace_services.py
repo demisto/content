@@ -1472,11 +1472,21 @@ class Pack(object):
                 PackFolders.INDICATOR_TYPES.value: "reputation",
                 PackFolders.LAYOUTS.value: "layoutscontainer",
                 PackFolders.CLASSIFIERS.value: "classifier",
-                PackFolders.WIDGETS.value: "widget"
+                PackFolders.WIDGETS.value: "widget",
+                PackFolders.GENERIC_DEFINITIONS.value: "GenericDefinitions",
+                PackFolders.GENERIC_FIELDS.value: "GenericFields",
+                PackFolders.GENERIC_MODULES.value: "GenericModules",
+                PackFolders.GENERIC_TYPES.value: "GenericTypes"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
                 current_directory = root.split(os.path.sep)[-1]
+                parent_directory = root.split(os.path.sep)[-2]
+
+                if parent_directory in [PackFolders.GENERIC_TYPES.value, PackFolders.GENERIC_FIELDS.value]:
+                    current_directory = parent_directory
+                elif current_directory in [PackFolders.GENERIC_TYPES.value, PackFolders.GENERIC_FIELDS.value]:
+                    continue
 
                 folder_collected_items = []
                 for pack_file_name in pack_files_names:
@@ -1606,10 +1616,31 @@ class Pack(object):
                             'dataType': content_item.get('dataType', ""),
                             'widgetType': content_item.get('widgetType', "")
                         })
+                    elif current_directory == PackFolders.GENERIC_DEFINITIONS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),
+                        })
+                    elif parent_directory == PackFolders.GENERIC_FIELDS.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),
+                        })
+                    elif current_directory == PackFolders.GENERIC_MODULES.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),
+                        })
+                    elif parent_directory == PackFolders.GENERIC_TYPES.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', ""),
+                            'description': content_item.get('description', ""),
+                        })
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = content_item_name_mapping[current_directory]
-                    content_items_result[content_item_key] = folder_collected_items
+                    content_items_result[content_item_key] = \
+                        content_items_result.get(content_item_key, []) + folder_collected_items
 
             logging.success(f"Finished collecting content items for {self._pack_name} pack")
             task_status = True
