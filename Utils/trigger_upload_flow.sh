@@ -517,7 +517,7 @@ fi
 new_content_branch="${sdk_hash}_${content_hash}_UploadFlow_test"
 
 git checkout "$content_branch_name" || fail
-git pull || fail
+git pull
 
 existed_in_remote=$(git ls-remote --heads origin "${new_content_branch}")
 existed_in_local=$(git branch --list "${new_content_branch}")
