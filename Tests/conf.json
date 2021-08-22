@@ -3499,6 +3499,7 @@
         }
     ],
     "skipped_tests": {
+        "Impossible Traveler - Test": "Usage limit reached (Issue 38063)",
         "Zscaler Test": "We won't get license (Issues 40157,17784)",
         "Github IAM - Test Playbook": "Issue 32383",
         "Calculate Severity - Standard - Test": "Issue 32715",
@@ -3594,7 +3595,6 @@
         "MicrosoftGraphMail-Test_prod": "Issue 40125"
     },
     "skipped_integrations": {
-        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "SolarWinds": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
