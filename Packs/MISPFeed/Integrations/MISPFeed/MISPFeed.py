@@ -197,6 +197,9 @@ class Client(BaseClient):
         return result
 
 
+def get_attribute_indicator_type(attribute: Dict[str,Any]):
+    print("test")
+
 def test_module(client: Client) -> str:
     """Builds the iterator to check that the feed is accessible.
     Args:
