@@ -28,7 +28,7 @@ def test_no_entries_collect_entries_data_from_response(parsed_response, expected
 
 
 @pytest.mark.parametrize('data, text_output', [
-    (NO_ARTICLE_RES, ''),
+    (NO_ARTICLE_RES, '## No entries were found'),
     (ONE_ARTICLE_RES, ONE_ARTICLE_STRING),
     (TWO_ARTICLES_RES, TWO_ARTICLES_STRING)
 ])

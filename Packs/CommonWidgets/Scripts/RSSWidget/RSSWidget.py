@@ -92,6 +92,9 @@ def create_widget_content(entries_data: List[Dict[str, Any]]) -> str:
         content += f'#### {entry_data["summary"]}\n'
         content += '---\n'
 
+    if not content:
+        content = '## No entries were found'
+
     return content
 
 
