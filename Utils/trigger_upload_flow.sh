@@ -508,8 +508,8 @@ if [ -n "$production" ]; then
   exit 0
 fi
 
-content_hash=$(git rev-parse origin/content_branch_name)
-sdk_hash=$(git rev-parse origin/sdk_branch_name)
+content_hash=$(git rev-parse origin/${content_branch_name})
+sdk_hash=$(git rev-parse origin/${sdk_branch_name})
 new_content_branch="${sdk_hash}_${content_hash}_UploadFlow_test"
 
 git checkout "$content_branch_name" || fail
