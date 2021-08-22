@@ -372,7 +372,7 @@ def test_get_indicators_with_relations():
             feed_url_to_config=feed_url_to_config,
             indicator_type='ASN'
         )
-        indicators, _ = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
+        indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
                                                  create_relationships=True)
 
         assert indicators == expected_res
@@ -437,7 +437,7 @@ def test_get_indicators_without_relations():
             feed_url_to_config=feed_url_to_config,
             indicator_type='ASN'
         )
-        indicators, _ = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
+        indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
                                                  create_relationships=False)
 
         assert indicators == expected_res
@@ -455,10 +455,11 @@ def test_get_no_update_value_empty_context():
     - Ensure that the response is True.
     """
     class MockResponse:
-        headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
-                   'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
-    no_update = get_no_update_value(MockResponse())
-    assert no_update
+        headers = {'Last-Modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                   'ETag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
+        status_code = 200
+    no_update = get_no_update_value(MockResponse(), 'https://www.spamhaus.org/drop/asndrop.txt')
+    assert not no_update
 
 
 def test_get_no_update_value(mocker):
@@ -473,11 +474,34 @@ def test_get_no_update_value(mocker):
     - Ensure that the response is False
     """
     mocker.patch.object(demisto, 'getIntegrationContext',
-                        return_value={'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
-                                      'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'})  # guardrails-disable-line
+                        return_value={'https://www.spamhaus.org/drop/asndrop.txt':
+                                      {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                                       'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}})  # guardrails-disable-line
 
     class MockResponse:
-        headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
-                   'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
-    no_update = get_no_update_value(MockResponse())
-    assert not no_update
+        headers = {'Last-Modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                   'ETag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
+        status_code = 200
+    no_update = get_no_update_value(MockResponse(), 'https://www.spamhaus.org/drop/asndrop.txt')
+    assert no_update
+
+
+def test_build_iterator_not_modified_header():
+    """
+    Given
+    - response with status code 304(Not Modified)
+
+    When
+    - Running build_iterator method.
+
+    Then
+    - Ensure that the results are empty.
+    """
+    with requests_mock.Mocker() as m:
+        m.get('https://api.github.com/meta', status_code=304)
+
+        client = Client(
+            url='https://api.github.com/meta'
+        )
+        result = client.build_iterator()
+        assert result == [{'https://api.github.com/meta': []}]

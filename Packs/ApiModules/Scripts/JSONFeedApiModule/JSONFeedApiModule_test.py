@@ -177,8 +177,8 @@ def test_get_no_update_value_empty_context():
     - Ensure that the response is False.
     """
     class MockResponse:
-        headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
-                   'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
+        headers = {'Last-Modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                   'ETag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
         status_code = 200
     no_update = get_no_update_value(MockResponse())
     assert not no_update
@@ -200,14 +200,14 @@ def test_get_no_update_value(mocker):
                                       'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'})  # guardrails-disable-line
 
     class MockResponse:
-        headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
-                   'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
+        headers = {'Last-Modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                   'ETag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
         status_code = 200
     no_update = get_no_update_value(MockResponse())
-    assert not no_update
+    assert no_update
 
 
-def test():
+def test_build_iterator_not_modified_header():
     """
     Given
     - response with status code 304(Not Modified)
@@ -225,6 +225,6 @@ def test():
             url='https://api.github.com/meta'
         )
         result, no_update = client.build_iterator(feed={'url': 'https://api.github.com/meta'})
-        assert result == []
+        assert not result
         assert no_update
 
