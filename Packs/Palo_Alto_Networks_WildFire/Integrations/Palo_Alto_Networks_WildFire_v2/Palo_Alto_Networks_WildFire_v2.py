@@ -936,7 +936,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
                                              readable_output=human_readable, indicator=indicator, raw_response=json_res)
             return command_results, entry_context['Status']
         except Exception:
-            raise DemistoException(f'Error while trying to get the report from the API.')
+            raise DemistoException('Error while trying to get the report from the API.')
 
 
 def wildfire_get_report_command(args):
