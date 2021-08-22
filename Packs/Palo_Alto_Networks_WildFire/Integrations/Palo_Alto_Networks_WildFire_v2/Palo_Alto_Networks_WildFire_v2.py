@@ -797,8 +797,6 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
 
     outputs, feed_related_indicators, behavior = parse_file_report(reports, file_info)
 
-    # before - the data about the file would go to context only if this
-    # condition is happening. make sure its fine to create the file object even if its not! #######################
     dbot_score = 3 if file_info["malware"] == 'yes' else 1
 
     dbot_score_object = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
@@ -863,8 +861,9 @@ def wildfire_get_url_report(url: str) -> Tuple:
             entry_context['Status'] = 'Success'
             report = json.loads(report) if type(report) is not dict else report
             report.update(entry_context)
-            human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=report,
-                                             headers=['sha256', 'type', 'verdict', 'iocs'], removeNull=True)
+            sha256_of_file_in_url = report.get('maec_packages:', [])[1].get('hashes', {}).get('SHA256')
+            human_readable_dict = {'SHA256': sha256_of_file_in_url, 'URL': url, 'Status': 'Success'}
+            human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=human_readable_dict, removeNull=True)
 
     except NotFoundError:
         entry_context['Status'] = 'NotFound'

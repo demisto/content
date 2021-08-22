@@ -777,7 +777,7 @@ script:
       description: MD5 of the submission.
       type: string
     - contextPath: WildFire.Report.SHA256
-      description: SHA256 of the submission.
+      description: SHA256 of the report.
       type: string
     - contextPath: WildFire.Report.Status
       description: The status of the submission.
