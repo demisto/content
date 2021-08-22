@@ -290,6 +290,7 @@ def filter_tests_with_incompatible_version(tests, server_version):
 
     filtered_tests = [test for test in tests if
                       check_test_version_compatible_with_server(test, server_version)]
+    logging.info(f'Filtered tests: {filtered_tests}')
     return filtered_tests
 
 

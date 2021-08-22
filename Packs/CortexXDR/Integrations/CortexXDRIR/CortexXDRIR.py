@@ -130,7 +130,7 @@ class Client(BaseClient):
             if 'API request Unauthorized' in str(err):
                 # this error is received from the XDR server when the client clock is not in sync to the server
                 raise DemistoException(f'{str(err)} please validate that your both '
-                                       f'XSOAR and XDR server clocks are in sync')
+                                       f'XSOAR and XDR server clocks are in sync.')
             else:
                 raise
 
