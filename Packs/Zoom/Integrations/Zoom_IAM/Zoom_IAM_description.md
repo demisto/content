@@ -1,2 +1,3 @@
 ## Zoom IAM Integration
-- This section explains how to configure the instance of Hello IAM World in Cortex XSOAR.
+- In order to use this integration, you need to enter your Zoom API key and API secret in the relevant integration instance parameters.
+
