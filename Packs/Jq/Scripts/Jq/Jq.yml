@@ -1,0 +1,34 @@
+args:
+- description: JSON object
+  name: value
+- description: jq query
+  name: query
+comment: use jq to query a JSON object
+commonfields:
+  id: c1127bfa-77b1-422c-8c34-4cd8639d0e0f
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 7f39e74f-f0e0-406e-8113-96b7d891e6b8
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: jq:1.0.0
+enabled: true
+engineinfo: {}
+name: jq
+outputs:
+- contextPath: JQ
+  description: Extracted data from JQ
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- filter
+type: python
