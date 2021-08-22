@@ -953,8 +953,8 @@ def fetch_incidents(client: Client):
 def main() -> None:
     params = demisto.params()
     args = demisto.args()
-    api_key = params['apiKey']
-    base_url = urljoin(params['url'], '/api')
+    api_key = params.get('apiKey')
+    base_url = urljoin(params.get('url'), '/api')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     mirroring = params.get('mirror', 'Disabled').title()
