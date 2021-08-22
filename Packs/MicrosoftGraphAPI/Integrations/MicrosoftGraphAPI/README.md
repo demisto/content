@@ -73,7 +73,7 @@ Run this command to start the authorization process and follow the instructions 
 ### msgraph-api-auth-complete
 ***
 Run this command to complete the authorization process.
-Should be used after running the msgraph-api-auth-start command.
+Should be used after running the ***msgraph-api-auth-start*** command.
 
 ### msgraph-api-test
 ***
