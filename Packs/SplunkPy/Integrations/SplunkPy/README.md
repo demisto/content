@@ -33,8 +33,6 @@ This integration was integrated and tested with Splunk v7.2.
 | extractFields | The CSV fields that will be parsed out of _raw notable events. | False |
 | useSplunkTime | Uses the Splunk clock time for the fetch. | False |
 | unsecure | When selected, certificates are not checked (not secure). | False |
-| earliest_fetch_time_fieldname | The earliest time to fetch (the name of the Splunk field whose value defines the query's earliest time to fetch). | False |
-| latest_fetch_time_fieldname | The latest time to fetch (the name of the Splunk field whose value defines the query's latest time to fetch). | False |
 | app | The context of the application's namespace. | False |
 | hec_token | The HEC token (HTTP Event Collector). | False |
 | hec_url | The HEC URL. For example, https://localhost:8088. | False |
