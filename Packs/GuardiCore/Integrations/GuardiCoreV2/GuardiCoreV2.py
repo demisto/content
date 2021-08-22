@@ -63,7 +63,7 @@ class Client(BaseClient):
         self._headers = {
             "Authorization": f'bearer {access_token}'}
 
-    def _is_access_token_valid(self, integration_context: dict):
+    def _is_access_token_valid(self, integration_context: dict) -> bool:
         access_token_expiration = integration_context.get('expires_in')
         access_token = integration_context.get('access_token')
         demisto.debug(
