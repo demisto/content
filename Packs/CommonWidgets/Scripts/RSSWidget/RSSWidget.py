@@ -20,23 +20,23 @@ class Client(BaseClient):
     def __init__(self, server_url, use_ssl, proxy):
         super().__init__(base_url=server_url, proxy=proxy, verify=use_ssl)
 
-    def get_feed_data(self):
+    def get_feed_data(self) -> str:
         """Retrieves the data from the RSS feed.
         """
-        return self._http_request(method='GET', resp_type='response')
+        return self._http_request(method='GET', resp_type='text')
 
 
-def parse_feed_data(feed_response: requests.Response) -> FeedParserDict:
+def parse_feed_data(feed_response: str) -> FeedParserDict:
     """Parses the data from the RSS feed.
 
     Args:
-        feed_response (requests.Response): The raw data from the RSS feed.
+        feed_response (str): The raw data from the RSS feed.
 
     Returns:
         FeedParserDict: Parsed RSS feed data.
     """
     try:
-        return feedparser.parse(feed_response.text)
+        return feedparser.parse(feed_response)
     except Exception as err:
         raise DemistoException(f"Failed to parse feed.\nError:\n{str(err)}", exception=err)
 
@@ -113,7 +113,7 @@ def main():
         demisto.error(traceback.format_exc())
         return_error(str(e))
 
-    demisto.results({
+    return_results({
         'Type': EntryType.NOTE,
         'ContentsFormat': EntryFormat.MARKDOWN,
         'Contents': content,
