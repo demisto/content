@@ -1,12 +1,7 @@
 id: Calculate Severity - Generic v2
-version: 5
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: CommonPlaybooks
-    itemVersion: 2.0.2
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Calculate Severity - Generic v2
 description: |-
   Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
@@ -28,6 +23,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -48,8 +44,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: cf430274-2565-4433-8dfe-a25a621b0a7c
@@ -83,8 +77,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 4def42ba-2984-40f3-83c0-ec484edc3b97
@@ -118,8 +110,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 132c16ae-fb69-4752-8f79-77923b14ca8c
@@ -153,8 +143,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 8ee3e05c-0da8-405d-8bb8-a2d7bbf7789f
@@ -166,6 +154,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -179,8 +168,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: c7b36df3-1ae7-4b18-819f-9b85d96c4858
@@ -214,8 +201,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: be9c8f44-63bb-4ba0-873b-2168cdb2ab06
@@ -466,8 +451,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 740266f8-5732-4285-81a1-d19dbea15988
@@ -507,8 +490,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: 29bad58f-8797-49ff-8681-68363fc8e9a5
@@ -571,8 +552,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: b20ff842-f44e-4314-8d7a-ce51e1d69c16
@@ -612,8 +591,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: 1a13e3e0-18fb-4c0f-8866-9d56b0df1017
@@ -653,8 +630,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "25":
     id: "25"
     taskid: e042ddb9-d13d-492a-8ac4-95edfbf9a927
@@ -688,8 +663,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "26":
     id: "26"
     taskid: ec346f9c-5097-4f41-81f7-2fa0243a7a2c
@@ -725,8 +698,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: a69eaf95-968e-4032-8bfd-206412ffc322
@@ -766,8 +737,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -795,25 +764,25 @@ inputs:
       root: DBotScore
   required: false
   description: 'Array of all indicators associated with the incident. '
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: CriticalUsers
   value:
     simple: admin,administrator
   required: false
   description: CSV of usernames of critical users.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: CriticalEndpoints
   value:
     simple: admin
   required: false
   description: CSV of hostnames of critical endpoints.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: CriticalGroups
   value:
     simple: admins,administrators
   required: false
   description: CSV of DN names of critical AD groups.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Account
   value:
     complex:
@@ -822,7 +791,7 @@ inputs:
       - operator: uniq
   required: false
   description: User accounts to check against the critical lists.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Endpoint
   value:
     complex:
@@ -831,7 +800,7 @@ inputs:
       - operator: uniq
   required: false
   description: Endpoints to check against the CriticalEndpoints list.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: EmailAuthenticityCheck
   value:
     complex:
@@ -842,7 +811,7 @@ inputs:
   required: false
   description: 'Indicates the email authenticity resulting from the EmailAuthenticityCheck
     script. Possible values are: Pass, Fail, Suspicious, and Undetermined.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: MicrosoftHeadersSeverityCheck
   value:
     simple: ${MicrosoftHeadersSeverityCheck}
@@ -850,7 +819,7 @@ inputs:
   description: The value is set by the "Process Microsoft's Anti-Spam Headers" Playbook,
     which calculates the severity after processing the PCL, BCL and PCL values inside
     Microsoft's headers.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: CriticalAssets
   description: All critical assets involved in the incident.
