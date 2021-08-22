@@ -478,7 +478,7 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -pr|--production) production="$2"
+  -pr|--production) production=true
     shift
     shift;;
 
