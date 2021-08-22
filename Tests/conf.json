@@ -2318,7 +2318,6 @@
         {
             "playbookID": "Impossible Traveler - Test",
             "integrations": [
-                "Ipstack",
                 "ipinfo",
                 "Rasterize",
                 "Active Directory Query v2",
@@ -3499,6 +3498,7 @@
         }
     ],
     "skipped_tests": {
+        "Ipstack": "Usage limit reached (Issue 38063)",
         "Zscaler Test": "We won't get license (Issues 40157,17784)",
         "Github IAM - Test Playbook": "Issue 32383",
         "Calculate Severity - Standard - Test": "Issue 32715",
@@ -3596,6 +3596,7 @@
     "skipped_integrations": {
         
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Ipstack_Test": "Usage limit reached (Issue 38063)",
         "SolarWinds": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
         "SOCRadarThreatFusion": "No instance - developed by partner",
