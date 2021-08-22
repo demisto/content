@@ -114,6 +114,11 @@ class Metadata(object):
     PARTNER_NAME = 'partnerName'
     CONTENT_COMMIT_HASH = 'contentCommitHash'
     PREVIEW_ONLY = 'previewOnly'
+    MANDATORY = 'mandatory'
+
+    DISPLAYED_IMAGES = 'displayedImages'
+    EMAIL = 'email'
+    URL = 'url'
 
 
 class PackFolders(enum.Enum):
