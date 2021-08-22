@@ -3170,7 +3170,8 @@
         {
             "integrations": "RSA Archer v2",
             "playbookID": "Archer v2 - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 600
         },
         {
             "integrations": "WootCloud",
@@ -3489,6 +3490,13 @@
             "integrations": "AzureWAF"
         },
         {
+            "integrations": ["AutoFocus Daily Feed", "Demisto REST API"],
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "timeout": 2400
+        },
+        {
             "integrations": "SOCRadarIncidents",
             "playbookID": "SOCRadarIncidents-Test"
         },
@@ -3498,6 +3506,7 @@
         }
     ],
     "skipped_tests": {
+        "Impossible Traveler - Test": "Usage limit reached (Issue 38063)",
         "Zscaler Test": "We won't get license (Issues 40157,17784)",
         "Github IAM - Test Playbook": "Issue 32383",
         "Calculate Severity - Standard - Test": "Issue 32715",
@@ -3510,7 +3519,6 @@
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance - Issue 27112",
         "Prisma_Access-Test": "unskip after we will get Prisma Access instance - Issue 27112",
-        "Test-Shodan_v2": "Issue 23370",
         "Symantec Deepsight Test": "Issue 22971",
         "TestProofpointFeed": "Issue 22229",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
@@ -3594,7 +3602,6 @@
         "MicrosoftGraphMail-Test_prod": "Issue 40125"
     },
     "skipped_integrations": {
-        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "SolarWinds": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
@@ -3678,7 +3685,7 @@
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
@@ -3799,7 +3806,8 @@
         "Azure Network Security Groups": "Has a command that sends parameters in the path",
         "GitHub": "Cannot use proxy",
         "LogRhythm": "Cannot use proxy",
-        "Create-Mock-Feed-Relationships": "recording is redundant for this integration"
+        "Create-Mock-Feed-Relationships": "recording is redundant for this integration",
+        "RSA Archer v2": "cannot connect to proxy"
     },
     "parallel_integrations": [
         "AWS - EC2",

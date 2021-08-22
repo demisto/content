@@ -1,8 +1,14 @@
 import pytest
+
 from CommonServerPython import *
-from ProofpointThreatResponse import create_incident_field_context, get_emails_context, pass_sources_list_filter, \
-    pass_abuse_disposition_filter, filter_incidents, prepare_ingest_alert_request_body, \
-    get_incidents_batch_by_time_request, get_new_incidents, get_time_delta
+from ProofpointThreatResponse import (create_incident_field_context,
+                                      filter_incidents, get_emails_context,
+                                      get_incident_command,
+                                      get_incidents_batch_by_time_request,
+                                      get_new_incidents, get_time_delta,
+                                      pass_abuse_disposition_filter,
+                                      pass_sources_list_filter,
+                                      prepare_ingest_alert_request_body)
 
 MOCK_INCIDENT = {
     "id": 1,
@@ -330,3 +336,57 @@ def test_get_time_delta():
         get_time_delta('2 days')
     except Exception as ex:
         assert 'The unit of fetch_delta is invalid. Possible values are "minutes" or "hours' in str(ex)
+
+
+def test_get_incident_command(mocker, requests_mock):
+    """
+    Given:
+    - Incident ID 3064 to retrieve
+
+    When:
+    - Running get-incident command
+
+    Then:
+    - Ensure expected fields ('attachments', 'sender_vap', 'recipient_vap') are populated to the context data
+    """
+    base_url = 'https://server_url/'
+    requests_mock.get(f'{base_url}api/incidents/3064.json', json=FETCH_RESPONSE[0])
+    mocker.patch.object(demisto, 'results')
+    mocker.patch('ProofpointThreatResponse.BASE_URL', base_url)
+    mocker.patch.object(demisto, 'args', return_value={
+        'incident_id': '3064'
+    })
+    get_incident_command()
+    results = demisto.results.call_args[0][0]
+    emails = results['EntryContext']['ProofPointTRAP.Incident(val.id === obj.id)'][0]['events'][0]['emails'][0].keys()
+    assert {'attachments', 'sender_vap', 'recipient_vap'}.issubset(set(emails))
+
+
+def test_get_incident_command_expand_events_false(mocker, requests_mock):
+    """
+    Given:
+    - Incident ID 3064 to retrieve
+    - The expand_events argument set to false
+
+    When:
+    - Running get-incident command
+
+    Then:
+    - Ensure events field is not returned
+    - Ensure event_ids field is populated as expected
+    """
+    base_url = 'https://server_url/'
+    with open('./test_data/incident_expand_events_false.json', 'r') as f:
+        incident = json.loads(f.read())
+    requests_mock.get(f'{base_url}api/incidents/3064.json?expand_events=false', json=incident)
+    mocker.patch.object(demisto, 'results')
+    mocker.patch('ProofpointThreatResponse.BASE_URL', base_url)
+    mocker.patch.object(demisto, 'args', return_value={
+        'incident_id': '3064',
+        'expand_events': 'false',
+    })
+    get_incident_command()
+    results = demisto.results.call_args[0][0]
+    incident_result = results['EntryContext']['ProofPointTRAP.Incident(val.id === obj.id)'][0]
+    assert not incident_result['events']
+    assert incident_result['event_ids']
