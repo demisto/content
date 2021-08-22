@@ -351,7 +351,7 @@ def get_employee_identity_analysis_genome_data_command(client, args):
     command_results = CommandResults(
         readable_output=markdown,
         outputs_prefix='AbnormalSecurity.Employee',
-        outputs_key_field='',
+        outputs_key_field='email',
         outputs=response,
         raw_response=response
     )
