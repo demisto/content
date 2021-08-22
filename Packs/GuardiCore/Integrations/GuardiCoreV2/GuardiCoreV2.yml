@@ -1033,6 +1033,12 @@ script:
           secret: false
         - defaultValue: false
           description: Type (Incident, Deception, Network Scan, Reveal, Experimental).
+          predefined:
+            - 'Incident'
+            - 'Deception'
+            - 'Network Scan'
+            - 'Reveal'
+            - 'Experimental'
           isArray: true
           name: incident_type
           required: false

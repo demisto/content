@@ -57,6 +57,10 @@
           "complex": null,
           "simple": "source_asset.vm.name"
         },
+        "GuardiCore Incident Type": {
+          "complex": null,
+          "simple": "incident_type"
+        },
         "Source IP": {
           "complex": null,
           "simple": "source_asset.ip"

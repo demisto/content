@@ -307,114 +307,123 @@
             "hideName": false,
             "i": "caseinfoid-fe428ef0-ed55-11eb-b6cc-d9d8af995038",
             "items": [
-              {
-                "endCol": 2,
-                "fieldId": "starttime",
-                "height": 22,
-                "id": "0ae87930-ed56-11eb-b6cc-d9d8af995038",
-                "index": 0,
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
-                "endCol": 2,
-                "fieldId": "lastupdatetime",
-                "height": 22,
-                "id": "1631e0b0-ed56-11eb-b6cc-d9d8af995038",
-                "index": 1,
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
-                "endCol": 2,
-                "fieldId": "guardicoreendtime",
-                "height": 22,
-                "id": "109b5dc0-ed56-11eb-b6cc-d9d8af995038",
-                "index": 2,
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
-                "endCol": 2,
-                "fieldId": "closetime",
-                "height": 22,
-                "id": "201c4b90-f5f5-11eb-9621-a79ea81203c7",
-                "index": 2,
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
-                "dropEffect": "move",
-                "endCol": 2,
-                "fieldId": "endtime",
-                "height": 22,
-                "id": "76d59dd0-ed5b-11eb-b35c-1df8b6e26358",
-                "index": 3,
-                "listId": "caseinfoid-fe428ef0-ed55-11eb-b6cc-d9d8af995038",
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
-                "endCol": 2,
-                "fieldId": "sourceip",
-                "height": 22,
-                "id": "2a5388a0-ed56-11eb-b6cc-d9d8af995038",
-                "index": 4,
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
-                "dropEffect": "move",
-                "endCol": 2,
-                "fieldId": "sourcehostname",
-                "height": 22,
-                "id": "cfd96810-f9c4-11eb-acfd-4543cef9e100",
-                "index": 5,
-                "listId": "caseinfoid-field-changed-caseinfoid-fe428ef0-ed55-11eb-b6cc-d9d8af995038",
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
-                "endCol": 2,
-                "fieldId": "destinationip",
-                "height": 22,
-                "id": "e2cc29c0-f9c0-11eb-acfd-4543cef9e100",
-                "index": 6,
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
-                "dropEffect": "move",
-                "endCol": 2,
-                "fieldId": "destinationhostname",
-                "height": 22,
-                "id": "cd8d5530-f9c4-11eb-acfd-4543cef9e100",
-                "index": 7,
-                "listId": "caseinfoid-field-changed-caseinfoid-fe428ef0-ed55-11eb-b6cc-d9d8af995038",
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
-                "dropEffect": "move",
-                "endCol": 2,
-                "fieldId": "guardicoreassociatedincidentgroups",
-                "height": 22,
-                "id": "cdc41fc0-fa8c-11eb-a472-f10ae10bf706",
-                "index": 8,
-                "listId": "caseinfoid-fe428ef0-ed55-11eb-b6cc-d9d8af995038",
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
-                "endCol": 2,
-                "fieldId": "tags",
-                "height": 22,
-                "id": "f465a030-f9c0-11eb-acfd-4543cef9e100",
-                "index": 9,
-                "sectionItemType": "field",
-                "startCol": 0
-              }
-            ],
+							{
+								"endCol": 2,
+								"fieldId": "guardicoreincidenttype",
+								"height": 22,
+								"id": "b33067d0-0325-11ec-88b2-cff1bcd06320",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "starttime",
+								"height": 22,
+								"id": "0ae87930-ed56-11eb-b6cc-d9d8af995038",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "lastupdatetime",
+								"height": 22,
+								"id": "1631e0b0-ed56-11eb-b6cc-d9d8af995038",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "guardicoreendtime",
+								"height": 22,
+								"id": "109b5dc0-ed56-11eb-b6cc-d9d8af995038",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closetime",
+								"height": 22,
+								"id": "201c4b90-f5f5-11eb-9621-a79ea81203c7",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "endtime",
+								"height": 22,
+								"id": "76d59dd0-ed5b-11eb-b35c-1df8b6e26358",
+								"index": 4,
+								"listId": "caseinfoid-fe428ef0-ed55-11eb-b6cc-d9d8af995038",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceip",
+								"height": 22,
+								"id": "2a5388a0-ed56-11eb-b6cc-d9d8af995038",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sourcehostname",
+								"height": 22,
+								"id": "cfd96810-f9c4-11eb-acfd-4543cef9e100",
+								"index": 6,
+								"listId": "caseinfoid-field-changed-caseinfoid-fe428ef0-ed55-11eb-b6cc-d9d8af995038",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "destinationip",
+								"height": 22,
+								"id": "e2cc29c0-f9c0-11eb-acfd-4543cef9e100",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "destinationhostname",
+								"height": 22,
+								"id": "cd8d5530-f9c4-11eb-acfd-4543cef9e100",
+								"index": 8,
+								"listId": "caseinfoid-field-changed-caseinfoid-fe428ef0-ed55-11eb-b6cc-d9d8af995038",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "guardicoreassociatedincidentgroups",
+								"height": 22,
+								"id": "cdc41fc0-fa8c-11eb-a472-f10ae10bf706",
+								"index": 9,
+								"listId": "caseinfoid-fe428ef0-ed55-11eb-b6cc-d9d8af995038",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "tags",
+								"height": 22,
+								"id": "f465a030-f9c0-11eb-acfd-4543cef9e100",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
             "maxW": 3,
             "minH": 1,
             "minW": 1,
