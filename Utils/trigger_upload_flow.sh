@@ -81,7 +81,6 @@ function create_new_pack {
 
   git commit --untracked-files=no -am  "Created new pack - $new_pack_name"
 
-  echo "${new_pack_name}"
 }
 
 # rename_files_and_folders
@@ -423,6 +422,7 @@ bucket_upload="true"
 slack_channel="dmst-bucket-upload"
 base_pack_name="HelloWorld"
 new_pack_suffix="New"
+new_pack_name="${base_pack_name}${new_pack_suffix}"
 pack_names_and_ids=("Hello_World" "Hello World" "helloworld" "Sanity_Test") # All the possible ids inside Hello World pack.
 
 # parse inputs
@@ -545,7 +545,7 @@ if [ -n "$sdk_branch_name" ]; then
 fi
 
 # New Pack
-new_pack_name=$(create_new_pack "${base_pack_name}" "${new_pack_suffix}" "${pack_names_and_ids[@]}") # Creates new pack HelloWorldNew
+create_new_pack "${base_pack_name}" "${new_pack_suffix}" "${pack_names_and_ids[@]}" # Creates new pack HelloWorldNew
 add_dependency "Viper" "${new_pack_name}" # Viper is now dependent on a new pack that is not in the bucket.
 add_author_image "${new_pack_name}"
 add_1_0_0_release_note "${new_pack_name}"
