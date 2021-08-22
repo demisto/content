@@ -671,6 +671,7 @@ script:
     - auto: PREDEFINED
       defaultValue: valid
       name: status
+      description: status
       predefined:
       - valid
       - all
@@ -742,6 +743,7 @@ script:
       name: ipaddress
       required: true
     name: securitytrails-get-ip-whois
+    description: Returns IPs information based on whois information.
     outputs:
     - contextPath: SecurityTrails.IP.contact_email
       description: Email
@@ -830,11 +832,13 @@ script:
       type: string
   - arguments:
     - name: domain
+      description: The domain name to enrich.
       required: true
       default: true
       isArray: true
     name: domain
-  dockerimage: demisto/python3:3.9.5.20070
+    description: Provides data enrichment for domains.
+  dockerimage: demisto/python3:3.9.6.22912
   runonce: false
   script: ''
   subtype: python3

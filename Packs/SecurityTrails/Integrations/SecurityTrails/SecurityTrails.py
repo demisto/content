@@ -5,38 +5,25 @@ from CommonServerPython import *  # noqa: F401
 
 removed_keys = ['endpoint', 'domain', 'hostname']
 
-
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
 
-    def handle_error(self, message: dict = {}):
-        return_error(message['message'])
-
     def domain_tags(self, hostname: str = None):
         res = self._http_request(
             'GET',
             f'domain/{hostname}/tags',
-            ok_codes=[200, 403],
-            resp_type="response"
+            ok_codes=(200, 403)
         )
-        if res.status_code != 200:
-            self.handle_error(res.json())
-        else:
-            return res.json().get('tags', [])
+        return res.get('tags', [])
 
     def domain_details(self, hostname: str = None):
-        res = self._http_request(
+        return self._http_request(
             'GET',
             f'domain/{hostname}',
-            ok_codes=[200, 403],
-            resp_type="response"
+            ok_codes=(200, 403)
         )
-        if res.status_code != 200:
-            self.handle_error(res.json())
-        else:
-            return res.json()
 
     def domain_subdomains(self, hostname: str = None, children_only: str = 'true'):
         query_string = {"children_only": children_only}
@@ -44,13 +31,9 @@ class Client(BaseClient):
             'GET',
             f'domain/{hostname}/subdomains',
             params=query_string,
-            ok_codes=[200, 403],
-            resp_type="response"
+            ok_codes=(200, 403),
         )
-        if res.status_code != 200:
-            self.handle_error(res.json())
-        else:
-            return res.json()
+        return res
 
     def associated_domains(self, hostname: str = None, page: int = 1):
         params = {
@@ -60,111 +43,74 @@ class Client(BaseClient):
             'GET',
             f'domain/{hostname}/associated',
             params=params,
-            ok_codes=[200, 403],
-            resp_type="response"
+            ok_codes=(200, 403),
         )
-        if res.status_code != 200:
-            self.handle_error(res.json())
-        else:
-            return res.json()
+        return res
 
-    def get_ssl_certificates(self, query_type: str = "stream", hostname: str = None, params: dict = {}):
+    def get_ssl_certificates(self, query_type: str = "stream", hostname: str = None, params: dict = None):
         if query_type == "paged":
-            res = self._http_request(
+            return self._http_request(
                 'GET',
                 f'domain/{hostname}/ssl',
-                params=params,
-                ok_codes=[200, 403],
+                params=params or {},
+                ok_codes=(200, 403),
                 resp_type="response"
             )
         elif query_type == "stream":
-            res = self._http_request(
+            return self._http_request(
                 'GET',
                 f'domain/{hostname}/ssl_stream',
                 params=params,
-                ok_codes=[200, 403],
-                resp_type="response"
+                ok_codes=(200, 403)
             )
-        if res.status_code != 200:
-            self.handle_error(res.json())
-        else:
-            text = res.text
-            text = f"[{text}]"
-            text = text.replace("}{", "},{")
-            return res.json()
 
     def get_company(self, domain: str = None):
         res = self._http_request(
             'GET',
             f'company/{domain}',
-            ok_codes=[200, 403],
-            resp_type="response"
+            ok_codes=(200, 403)
         )
-        if res.status_code != 200:
-            self.handle_error(res.json())
-        else:
-            return res.json().get('record', {})
+        return res.get('record', {})
 
-    def get_useragents(self, ip_address: str = None, params: dict = {}):
-        res = self._http_request(
+    def get_useragents(self, ip_address: str = None, params: dict = None):
+        return self._http_request(
             'GET',
             f'ips/{ip_address}/useragents',
-            params=params,
-            ok_codes=[200, 403],
-            resp_type="response"
-        )
-        if res.status_code != 200:
-            self.handle_error(res.json())
-        else:
-            return res.json()
+            params=params or {},
+            ok_codes=(200, 403))
 
     def get_company_associated_ips(self, domain: str = None):
         res = self._http_request(
             'GET',
             f'company/{domain}/associated-ips',
-            ok_codes=[200, 403],
-            resp_type="response"
+            ok_codes=(200, 403)
         )
-        if res.status_code != 200:
-            self.handle_error(res.json())
-        else:
-            return res.json().get('records', {})
+        return res.get('record', {})
 
     def get_whois(self, query_type: str = "domain", hostname: str = None):
         if query_type == "domain":
-            res = self._http_request(
+            return self._http_request(
                 'GET',
                 f'domain/{hostname}/whois',
-                ok_codes=[200, 403],
-                resp_type="response"
+                ok_codes=(200, 403)
             )
         elif query_type == "ip":
-            res = self._http_request(
+            return self._http_request(
                 'GET',
                 f'ips/{hostname}/whois',
-                ok_codes=[200, 403],
-                resp_type="response"
+                ok_codes=(200, 403)
             )
-        if res.status_code != 200:
-            self.handle_error(res.json())
-        else:
-            return res.json()
 
     def get_dns_history(self, hostname: str = None, record_type: str = None, page: int = 1):
         params = {
             "page": page
         }
-        res = self._http_request(
+        return self._http_request(
             'GET',
             f'history/{hostname}/dns/{record_type}',
             params=params,
-            ok_codes=[200, 403],
-            resp_type="response"
+            ok_codes=(200, 403)
         )
-        if res.status_code != 200:
-            self.handle_error(res.json())
-        else:
-            return res.json()
 
     def get_whois_history(self, hostname: str = None, page: int = 1):
         params = {
@@ -174,67 +120,50 @@ class Client(BaseClient):
             'GET',
             f'history/{hostname}/whois',
             params=params,
-            ok_codes=[200, 403],
-            resp_type="response"
+            ok_codes=(200, 403)
         )
-        if res.status_code != 200:
-            self.handle_error(res.json())
-        else:
-            return res.json().get('result')
+        return res.get('result')
 
     def get_ip_neighbors(self, ipaddress: str = None):
         res = self._http_request(
             'GET',
             f'ips/nearby/{ipaddress}',
-            ok_codes=[200, 403],
-            resp_type="response"
+            ok_codes=(200, 403)
         )
-        if res.status_code != 200:
-            self.handle_error(res.json())
-        else:
-            return res.json().get('blocks')
+        return res.get('blocks')
 
     def query(self, query_type: str = "domain_search", body: dict = None, params: dict = None):
         if query_type == "domain_search":
-            res = self._http_request(
+            return self._http_request(
                 'POST',
                 'domains/list',
                 params=params,
                 json_data=body,
-                ok_codes=[200, 403],
-                resp_type="response"
+                ok_codes=(200, 403)
             )
         elif query_type == "domain_stats":
-            res = self._http_request(
+            return self._http_request(
                 'POST',
                 'domains/stats',
                 json_data=body,
-                ok_codes=[200, 403],
-                resp_type="response"
+                ok_codes=(200, 403)
             )
         elif query_type == "ip_search":
-            res = self._http_request(
+            return self._http_request(
                 'POST',
                 'ips/list',
                 params=params,
                 json_data=body,
-                ok_codes=[200, 403],
-                resp_type="response"
+                ok_codes=(200, 403)
             )
         elif query_type == "ip_stats":
-            res = self._http_request(
+            return self._http_request(
                 'POST',
                 'ips/stats',
                 params=params,
                 json_data=body,
-                ok_codes=[200, 403],
-                resp_type="response"
+                ok_codes=(200, 403)
             )
-
-        if res.status_code != 200:
-            self.handle_error(res.json())
-        else:
-            return res.json()
 
 
 ''' HELPER FUNCTIONS '''
@@ -266,84 +195,95 @@ def create_standard_ip_context(ip_data):
 
 
 def domain_command(client, args):
-    domain = args.get('domain')
-    domain_details = client.domain_details(hostname=domain)
-    domain_subdomains = client.domain_subdomains(hostname=domain)
-    domain_whois = client.get_whois(query_type="domain", hostname=domain)
-    domain_tags = client.domain_tags(hostname=domain)
-    admin_contact = [{
-        "Name": x.get('name'),
-        "Email": x.get('email'),
-        "Phone": x.get('telephone'),
-        "Country": x.get('country')
-    } for x in domain_whois.get('contacts', []) if "admin" in x.get('type', '').lower()]
-    tech_contact = [{
-        "Name": x.get('name', None),
-        "Email": x.get('email', None),
-        "Phone": x.get('telephone', None),
-        "Country": x.get('country', None)
-    } for x in domain_whois.get('contacts', []) if "tech" in x.get('type', '').lower()]
-    registrant_contact = [{
-        "Name": x.get('name', None),
-        "Email": x.get('email', None),
-        "Phone": x.get('telephone', None),
-        "Country": x.get('country', None)
-    } for x in domain_whois.get('contacts', []) if "registrant" in x.get('type', '').lower()]
-    registrar_contact = [{
-        "Name": x.get('name', None),
-        "Email": x.get('email', None),
-        "Phone": x.get('telephone', None),
-        "Country": x.get('country', None)
-    } for x in domain_whois.get('contacts', []) if "registrar" in x.get('type', '').lower()]
-    domain_data = {
-        "Name": domain,
-        "DNS": ",".join([x.get('ip', '') for x in domain_details.get('current_dns', {}).get('a', {}).get('values', [])]),
-        "NameServers": ",".join([x.get('nameserver', '') for x in domain_details.get('current_dns', {}).get('ns', {}).get('values', [])]),
-        "Organization": domain_details.get('name', None),
-        "Subdomains": ",".join(domain_subdomains.get('subdomains', [])),
-        "WHOIS": {
-            "DomainStatus": domain_whois.get('status'),
-            "NameServers": ",".join(domain_whois.get('nameServers', [])) or None,
-            "CreationDate": domain_whois.get('createdDate'),
-            "UpdatedDate": domain_whois.get('updatedDate'),
-            "ExpirationDate": domain_whois.get('expiresData'),
-            "Registrant": {
-                "Name": registrant_contact[0].get('Name', None) if registrant_contact else None,
-                "Email": registrant_contact[0].get('Email', None) if registrant_contact else None,
-                "Phone": registrant_contact[0].get('Phone', None) if registrant_contact else None
+    domains = argToList(args.get('domain'))
+    command_results: List[CommandResults] = []
+    for domain in domains:
+        try:
+            domain_details = client.domain_details(hostname=domain)
+        except:
+            demisto.info(f'No information found for domain: {domain}')
+            return_results(f'No information found for domain: {domain}')
+            continue
+        domain_subdomains = client.domain_subdomains(hostname=domain)
+        domain_whois = client.get_whois(query_type="domain", hostname=domain)
+        domain_tags = client.domain_tags(hostname=domain)
+        admin_contact = [{
+            "Name": x.get('name'),
+            "Email": x.get('email'),
+            "Phone": x.get('telephone'),
+            "Country": x.get('country')
+        } for x in domain_whois.get('contacts', []) if "admin" in x.get('type', '').lower()]
+        tech_contact = [{
+            "Name": x.get('name', None),
+            "Email": x.get('email', None),
+            "Phone": x.get('telephone', None),
+            "Country": x.get('country', None)
+        } for x in domain_whois.get('contacts', []) if "tech" in x.get('type', '').lower()]
+        registrant_contact = [{
+            "Name": x.get('name', None),
+            "Email": x.get('email', None),
+            "Phone": x.get('telephone', None),
+            "Country": x.get('country', None)
+        } for x in domain_whois.get('contacts', []) if "registrant" in x.get('type', '').lower()]
+        registrar_contact = [{
+            "Name": x.get('name', None),
+            "Email": x.get('email', None),
+            "Phone": x.get('telephone', None),
+            "Country": x.get('country', None)
+        } for x in domain_whois.get('contacts', []) if "registrar" in x.get('type', '').lower()]
+        domain_data = {
+            "Name": domain,
+            "DNS": ",".join(
+                [x.get('ip', '') for x in domain_details.get('current_dns', {}).get('a', {}).get('values', [])]),
+            "NameServers": ",".join(
+                [x.get('nameserver', '') for x in
+                 domain_details.get('current_dns', {}).get('ns', {}).get('values', [])]),
+            "Organization": domain_details.get('name', None),
+            "Subdomains": ",".join(domain_subdomains.get('subdomains', [])),
+            "WHOIS": {
+                "DomainStatus": domain_whois.get('status'),
+                "NameServers": ",".join(domain_whois.get('nameServers')) if domain_whois.get('nameServers') else None,
+                "CreationDate": domain_whois.get('createdDate'),
+                "UpdatedDate": domain_whois.get('updatedDate'),
+                "ExpirationDate": domain_whois.get('expiresData'),
+                "Registrant": {
+                    "Name": registrant_contact[0].get('Name', None) if registrant_contact else None,
+                    "Email": registrant_contact[0].get('Email', None) if registrant_contact else None,
+                    "Phone": registrant_contact[0].get('Phone', None) if registrant_contact else None
+                },
+                "Registrar": {
+                    "Name": registrar_contact[0].get('Name', None) if registrar_contact else None,
+                    "Email": registrar_contact[0].get('Email', None) if registrar_contact else None,
+                    "Phone": registrar_contact[0].get('Phone', None) if registrar_contact else None
+                },
+                "Admin": {
+                    "Name": admin_contact[0].get('Name', None) if admin_contact else None,
+                    "Email": admin_contact[0].get('Email', None) if admin_contact else None,
+                    "Phone": admin_contact[0].get('Phone', None) if admin_contact else None
+                }
             },
-            "Registrar": {
-                "Name": registrar_contact[0].get('Name', None) if registrar_contact else None,
-                "Email": registrar_contact[0].get('Email', None) if registrar_contact else None,
-                "Phone": registrar_contact[0].get('Phone', None) if registrar_contact else None
-            },
+            "Tags": ",".join(domain_tags),
             "Admin": {
+                "Country": admin_contact[0].get('Country', None) if admin_contact else None,
                 "Name": admin_contact[0].get('Name', None) if admin_contact else None,
                 "Email": admin_contact[0].get('Email', None) if admin_contact else None,
                 "Phone": admin_contact[0].get('Phone', None) if admin_contact else None
+            },
+            "Registrant": {
+                "Country": registrant_contact[0].get('Country', None) if registrant_contact else None,
+                "Name": registrant_contact[0].get('Name', None) if registrant_contact else None,
+                "Email": registrant_contact[0].get('Email', None) if registrant_contact else None,
+                "Phone": registrant_contact[0].get('Phone', None) if registrant_contact else None
             }
-        },
-        "Tags": ",".join(domain_tags),
-        "Admin": {
-            "Country": admin_contact[0].get('Country', None) if admin_contact else None,
-            "Name": admin_contact[0].get('Name', None) if admin_contact else None,
-            "Email": admin_contact[0].get('Email', None) if admin_contact else None,
-            "Phone": admin_contact[0].get('Phone', None) if admin_contact else None
-        },
-        "Registrant": {
-            "Country": registrant_contact[0].get('Country', None) if registrant_contact else None,
-            "Name": registrant_contact[0].get('Name', None) if registrant_contact else None,
-            "Email": registrant_contact[0].get('Email', None) if registrant_contact else None,
-            "Phone": registrant_contact[0].get('Phone', None) if registrant_contact else None
         }
-    }
-    md = tableToMarkdown(f"Domain {domain}:", domain_data)
-    command_results = CommandResults(
-        outputs_prefix="Domain",
-        outputs_key_field="Name",
-        outputs=domain_data,
-        readable_output=md
-    )
+        md = tableToMarkdown(f"Domain {domain}:", domain_data)
+        result = CommandResults(
+            outputs_prefix="Domain",
+            outputs_key_field="Name",
+            outputs=domain_data,
+            readable_output=md
+        )
+        command_results.append(result)
 
     return_results(command_results)
 
@@ -422,7 +362,8 @@ def domain_details_command(client, args):
     create_standard_domain_context(
         domain_data={
             "Name": hostname,
-            "NameServers": ", ".join([x.get('nameserver', None) for x in res.get('current_dns', {}).get('ns', {}).get('values', [])])
+            "NameServers": ", ".join(
+                [x.get('nameserver', None) for x in res.get('current_dns', {}).get('ns', {}).get('values', [])])
         })
 
 
@@ -615,7 +556,8 @@ def associated_domains_command(client, args):
         "Current Page": page,
         "Total Pages": res.get('meta', {}).get('total_pages', 1)
     }
-    md = tableToMarkdown(f"{hostname} Associated Domains:", table_data, ['Count', 'Current Page', 'Total Pages', 'Domains'])
+    md = tableToMarkdown(f"{hostname} Associated Domains:", table_data,
+                         ['Count', 'Current Page', 'Total Pages', 'Domains'])
     output_data = {
         "name": hostname,
         "associated_domains": records,
@@ -801,9 +743,12 @@ def get_whois_history_command(client, args):
         whois_object = {
             "DomainStatus": ", ".join(x.get('status', [])),
             "NameServers": ", ".join(x.get('nameServers', [])),
-            "CreationDate": datetime.fromtimestamp((x.get('createdDate') / 1000)).strftime("%Y-%m-%dT%H:%M:%SZ") if x.get('createdDate', None) else None,
-            "UpdatedDate": datetime.fromtimestamp((x.get('updatedDate') / 1000)).strftime("%Y-%m-%dT%H:%M:%SZ") if x.get('updatedDate', None) else None,
-            "ExpirationDate": datetime.fromtimestamp((x.get('expiresDate') / 1000)).strftime("%Y-%m-%dT%H:%M:%SZ") if x.get('expiresDate', None) else None
+            "CreationDate": datetime.fromtimestamp((x.get('createdDate') / 1000)).strftime(
+                "%Y-%m-%dT%H:%M:%SZ") if x.get('createdDate', None) else None,
+            "UpdatedDate": datetime.fromtimestamp((x.get('updatedDate') / 1000)).strftime(
+                "%Y-%m-%dT%H:%M:%SZ") if x.get('updatedDate', None) else None,
+            "ExpirationDate": datetime.fromtimestamp((x.get('expiresDate') / 1000)).strftime(
+                "%Y-%m-%dT%H:%M:%SZ") if x.get('expiresDate', None) else None
         }
         if admin_contact:
             whois_object['Admin'] = {
@@ -865,7 +810,7 @@ def get_ip_neighbors_command(client, args):
 
 
 def ip_search_command(client, args):
-    page = int(args.get('page', 1))
+    page = arg_to_number(args.get('page', 1))
     query = args.get('query', None)
     params = {
         "page": page
@@ -920,7 +865,7 @@ def ip_statistics_command(client, args):
 
 def get_useragents_command(client, args):
     ip_address = args.get('ipaddress')
-    page = int(args.get('page', 1))
+    page = arg_to_number(args.get('page', 1))
     params = {
         "page": page
     }
@@ -999,7 +944,6 @@ def test_module(client):
 
 
 def main() -> None:
-
     params = demisto.params()
     args = demisto.args()
 
@@ -1033,30 +977,30 @@ def main() -> None:
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
-    # try:
-    headers = {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        'APIKEY': api_key
-    }
-    client = Client(
-        base_url=base_url,
-        verify=verify_certificate,
-        headers=headers,
-        proxy=proxy)
+    try:
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            'APIKEY': api_key
+        }
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            headers=headers,
+            proxy=proxy)
 
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration Test button.
-        result = test_module(client)
-        return_results(result)
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration Test button.
+            result = test_module(client)
+            return_results(result)
 
-    elif command in commands:
-        commands[command](client, args)
+        elif command in commands:
+            commands[command](client, args)
 
     # Log exceptions and return errors
-    # except Exception as e:
-    #    demisto.error(traceback.format_exc())  # print the traceback
-    #    return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+    except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
