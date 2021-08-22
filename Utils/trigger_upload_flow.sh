@@ -321,7 +321,7 @@ function update_pack_ignore {
 
   local pack_ignore_file="${CONTENT_PATH}/Packs/${pack_name}/.pack-ignore"
 
-  printf "\n[file:README.md]\nignore=RM104\n" >>"${pack_ignore_file}"
+  printf "\n[file:1_0_1.md]\nignore=RM104\n" >>"${pack_ignore_file}"
 
   git commit --untracked-files=no -am "Updated to pack ignore - $pack_name"
 
