@@ -531,11 +531,10 @@ if [ -n "${existed_in_local}" ]; then
   git branch -D "${new_content_branch}" # delete local branch
 fi
 
-git checkout -b "${new_content_branch}" || fail "" "skip"
-
 ##############################################################
 ##                   Branch Changes - start                 ##
 ##############################################################
+git checkout -b "${new_content_branch}" || fail "" "skip"
 
 if [ -n "$sdk_branch_name" ]; then
   change_sdk_requirements "${sdk_branch_name}" "dev-requirements-py3.txt"
