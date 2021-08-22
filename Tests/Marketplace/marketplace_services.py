@@ -2511,6 +2511,10 @@ class Pack(object):
     def _breaking_changes_versions_to_text(release_notes_dir: str) -> Dict[str, Optional[str]]:
         """
         Calculates every BC version in given RN dir and maps it to text if exists.
+        Currently, text from a BC version is calculated in the following way:
+        - If RN has `breakingChangesNotes` entry in its corresponding config file, then use the value of that field
+          as the text of the BC to be represented.
+        - Else, use the whole RN text as BC text.
         Args:
             release_notes_dir (str): RN dir path.
 
@@ -2524,7 +2528,7 @@ class Pack(object):
         for file_name in rn_config_file_names:
             file_data: Dict = load_json(os.path.join(release_notes_dir, file_name))
             # Check if version is BC
-            if file_data.get('breakingChanges', False):
+            if file_data.get('breakingChanges'):
                 # Processing name for easier calculations later on
                 processed_name: str = underscore_file_name_to_dotted_version(file_name)
                 bc_version_to_text[processed_name] = file_data.get('breakingChangesNotes')
