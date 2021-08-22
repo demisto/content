@@ -1,1 +1,7 @@
-{"rule":"2"}
+{
+  "scriptName": "rule2",
+  "existingEventsFilters" : "",
+  "readyExistingEventsFilters": "'",
+  "newEventFilters": "",
+  "readyNewEventFilters": ""
+}
