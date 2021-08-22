@@ -1,7 +1,7 @@
 {
 	"defaultIncidentType": "",
 	"description": "Maps a User Profile data to the PrismaCloudIAM user data.",
-	"id": "User Profile - PrismaCloudIAM (Outgoing)",
+	"id": "User Profile - PrismaCloud (Outgoing)",
 	"mapping": {
 		"User Profile - Create": {
 			"dontMapEventToLabels": true,
@@ -46,7 +46,7 @@
 			}
 		}
 	},
-	"name": "User Profile - PrismaCloudIAM (Outgoing)",
+	"name": "User Profile - PrismaCloud (Outgoing)",
 	"type": "mapping-outgoing",
 	"version": -1,
 	"fromVersion": "6.0.0"

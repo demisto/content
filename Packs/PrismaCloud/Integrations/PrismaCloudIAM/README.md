@@ -1,6 +1,8 @@
+Note: This integration should be used as part of our **Identity Lifecycle Management** premium pack. For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
+
 The Prisma Cloud IAM API consists of a set of API endpoints that allow customers to perform CRUD operation on their user profiles.
 
-## Configure PrismaCloudIAM on Cortex XSOAR
+## Configure PrismaCloud IAM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for PrismaCloudIAM.
@@ -335,25 +337,5 @@ Disable an active user.
 >| PrismaCloudIAM | PrismaCloudIAM_instance_1 | true | false | john.doe@example.com |
 
 
-### get-mapping-fields
-***
-Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
-
-
-#### Base Command
-
-`get-mapping-fields`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 

@@ -1,6 +1,6 @@
 category: Identity and Access Management
 commonfields:
-  id: PrismaCloudIAM
+  id: PrismaCloud IAM
   version: -1
 configuration:
 - display: Base URL
@@ -48,20 +48,20 @@ configuration:
   name: create_if_not_exists
   required: false
   type: 8
-- defaultvalue: User Profile - PrismaCloudIAM (Incoming)
+- defaultvalue: User Profile - PrismaCloud (Incoming)
   display: Incoming Mapper
   name: mapper_in
   required: true
   type: 0
-- defaultvalue: User Profile - PrismaCloudIAM (Outgoing)
+- defaultvalue: User Profile - PrismaCloud (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
   required: true
   type: 0
 description: 'The Prisma Cloud IAM API consists of a set of API endpoints that allow
   customers to perform CRUD operation on their user profiles.'
-display: PrismaCloudIAM
-name: PrismaCloudIAM
+display: PrismaCloud IAM
+name: PrismaCloud IAM
 script:
   commands:
   - arguments:
