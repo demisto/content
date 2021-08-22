@@ -2,15 +2,15 @@ id: Process Microsoft's Anti-Spam Headers
 version: -1
 name: Process Microsoft's Anti-Spam Headers
 description: |-
-  This playbook will store SCL, BCL and PCL scores (if exist) to the associated incident fields (Phishing SCL Score, Phishing PCL Score, Phishing BCL Score).
-  It will also do the following:
-  1) Set the email classification to "spam" if the "SCL" score is equal or higher than 5.
-  2) Set the incident severity according to the playbook inputs (default is: PCL/BCL - Medium, SCL - Low). The severity of the incident will be set only when one (or more) of these cases occurred:
-  - PCL (Phishing Confidence Level) score is between 4-8: The message content is likely to be phishing.
-  - BCL (Bulk complaint level) score is above 4 -  4-7: The message is from a bulk sender that generates a mixed number of complaints. 8-9: The message is from a bulk sender that generates a high number of complaints.
-  - SCL (Spam confidence level) score is above 5 - 5-6: Spam filtering marked the message as Spam. 9: Spam filtering marked the message as High confidence spam)
+  This playbook stores the SCL, BCL and PCL scores (if exists) to the associated incident fields (Phishing SCL Score, Phishing PCL Score, Phishing BCL Score).
+  It also does the following:
+  1) Sets the email classification to "spam" if the "SCL" score is equal or higher than 5.
+  2) Sets the incident severity according to the playbook inputs (default is: PCL/BCL - Medium, SCL - Low). The severity of the incident is set only when one (or more) of the following occurs:
+  - PCL (Phishing Confidence Level) score is between and including 4-8: The message content is likely to be phishing.
+  - BCL (Bulk complaint level) score is between and including 4-7: The message is from a bulk sender that generates a mixed number of complaints. Between and including 8-9: The message is from a bulk sender that generates a high number of complaints.
+  - SCL (Spam confidence level) score is between and including 5-6: Spam filtering marked the message as Spam. 9: Spam filtering marked the message as High confidence spam)
 
-  For further information on SCL/BCL/PCL, please review these documentations from Microsoft:
+  For further information on SCL/BCL/PCL, see the following Microsoft documentation:
 
   https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/spam-confidence-levels?view=o365-worldwide
 
@@ -176,7 +176,7 @@ tasks:
       id: e3df5fa2-ce9b-4e7f-8200-1f2c8b41e7a1
       version: -1
       name: Set MicrosoftHeadersSeverityCheck (Medium)
-      description: Set a value in context under the key you entered.
+      description: Sets the Microsoft Headers BCL-PC severity in context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -513,7 +513,7 @@ tasks:
       id: a18f7a54-ee16-4951-8376-5b9494b542d0
       version: -1
       name: Set SCL-Exchange score
-      description: Set a value in context under the key you entered.
+      description: Sets the spam confidence level (SCL) value in the context after extraction.
       scriptName: Set
       type: regular
       iscommand: false
@@ -558,7 +558,7 @@ tasks:
       id: 81a87f1b-7d8e-489e-88a0-e77ca32c0a6d
       version: -1
       name: Set SCL-Forefront score
-      description: Set a value in context under the key you entered.
+      description: Set the SCL (spam) value in context after extraction.
       scriptName: Set
       type: regular
       iscommand: false
@@ -795,7 +795,7 @@ tasks:
       id: 0dd57700-406c-4c19-8de4-1cfad2c8d3e3
       description: ''
       version: -1
-      name: Determine final Sevirity
+      name: Determine final Severity
       type: condition
       iscommand: false
       brand: ""
@@ -864,7 +864,7 @@ tasks:
       id: 3e77e94f-592e-4295-8ad8-eec74dfcdbfe
       version: -1
       name: Set MicrosoftHeadersSeverityCheck (Low)
-      description: Set a value in context under the key you entered.
+      description: Sets the Microsoft Headers SCL severity in context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -973,7 +973,7 @@ tasks:
       id: be2701ca-09a6-4c67-84a3-f463fa5507ea
       version: -1
       name: Set PCL Severity
-      description: Set a value in context under the key you entered.
+      description: Sets the PCL (phishing) severity in context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1007,7 +1007,7 @@ tasks:
       id: 930c7725-5436-4f12-8eb2-aeb4ad5a9a19
       version: -1
       name: Set BCL Severity
-      description: Set a value in context under the key you entered.
+      description: Sets the BCL (bulk) severity in context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1343,7 +1343,7 @@ inputs:
     simple: "2"
   required: true
   description: |-
-    What would be the minimum severity of an incident with a BCL (bulk sender) score equal or higher than 4.
+    Set the minimum severity of an incident with a BCL (bulk sender) that has a score equal to or higher than 4.
 
     Available values: 0 (Unknown), 1 (Low), 2 (Medium), 3 (High), 4 (Critical).
   playbookInputQuery:
@@ -1352,7 +1352,7 @@ inputs:
     simple: "2"
   required: true
   description: |-
-    What would be the minimum severity of an incident with a PCL (phishing) score equal or higher than 4.
+    Set the minimum severity of an incident with a PCL (phishing) that has a score equal to or higher than 4.
 
     Available values: 0 (Unknown), 1 (Low), 2 (Medium), 3 (High), 4 (Critical).
   playbookInputQuery:
@@ -1361,7 +1361,7 @@ inputs:
     simple: "1"
   required: true
   description: |-
-    What would be the minimum severity of an incident with a SCL (spam) score equal or higher than 5.
+    Set the minimum severity of an incident with a SCL (spam) that has a score equal to or higher than 5.
 
     Available values: 0 (Unknown), 1 (Low), 2 (Medium), 3 (High), 4 (Critical).
   playbookInputQuery:
@@ -1370,10 +1370,10 @@ outputs:
   description: |
     Possible Values:
 
-    Medium: PCL or BCL scores are equal or higher than 4.
+    Medium: PCL or BCL scores are equal to or higher than 4.
 
-    High: BCL score is equal or higher than 8.
+    High: BCL score is equal to or higher than 8.
   type: unknown
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 5.0.0
