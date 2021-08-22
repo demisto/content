@@ -47,33 +47,3 @@ Using the Logsign SIEM integration, you can fetch Logsign incidents colums.This 
 Logsign integration enables you to run drill down searches to retrieve additional data from Logsign such as:
 1. Get information about event columns(Ip Adress,Ports, GeoLocation, Behaviors,Event Category, etc.
 2. Get event based counts about incident
-
-### Available Actions
-
-`logsign-get-incidents`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| last_run | Last Run Fomat: '%Y-%m-%dT%H:%M:%SZ'. Possible values are: . | Required | 
-| query | Lucene query support | Optional | 
-
-`logsign-get-columns-query`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| query | Query Description. | Required | 
-| grouped_column | Group Column . | Required | 
-| criteria | Criteria Value. Possible values are: unique,  value. | Required | 
-| time_frame | Time Frame (e.g 1 hour). | Required | 
-
-`logsign-get-count-query`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| query | Query. | Required | 
-| grouped_column | Grouped Column. | Required | 
-| criteria | Criteria Value. Possible values are: unique,  value. | Required | 
-| time_frame | Time Frame. | Required | 
