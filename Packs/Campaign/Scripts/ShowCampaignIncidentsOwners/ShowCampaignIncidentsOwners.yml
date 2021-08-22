@@ -1,9 +1,9 @@
 comment: Displays all the campaign incident owners and their quantity.
 commonfields:
-  id: GetCampaignIncidentsOwners
+  id: ShowCampaignIncidentsOwners
   version: -1
 enabled: false
-name: GetCampaignIncidentsOwners
+name: ShowCampaignIncidentsOwners
 script: '-'
 system: false
 tags:
