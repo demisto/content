@@ -81,7 +81,7 @@ function create_new_pack {
 
   git commit --untracked-files=no -am  "Created new pack - $new_pack_name"
 
-  return "${new_pack_name}"
+  echo "${new_pack_name}"
 }
 
 # rename_files_and_folders
