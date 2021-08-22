@@ -509,7 +509,11 @@ if [ -n "$production" ]; then
 fi
 
 content_hash=$(git rev-parse origin/${content_branch_name})
-sdk_hash=$(git rev-parse origin/${sdk_branch_name})
+if [ -n "$sdk_branch_name" ]; then
+  sdk_hash=$(git rev-parse origin/${sdk_branch_name})
+else
+  sdk_hash="sdk_release"
+fi
 new_content_branch="${sdk_hash}_${content_hash}_UploadFlow_test"
 
 git checkout "$content_branch_name" || fail
