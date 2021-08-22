@@ -1476,7 +1476,7 @@ class Pack(object):
                 PackFolders.GENERIC_DEFINITIONS.value: "GenericDefinitions",
                 PackFolders.GENERIC_FIELDS.value: "GenericFields",
                 PackFolders.GENERIC_MODULES.value: "GenericModules",
-                PackFolders.GENERIC_TYPES.value: "GenericTypes",
+                PackFolders.GENERIC_TYPES.value: "GenericTypes"
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
