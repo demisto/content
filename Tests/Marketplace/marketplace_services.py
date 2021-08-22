@@ -567,7 +567,7 @@ class Pack(object):
             dict: parsed pack metadata.
 
         """
-        pack_metadata = {  #T ODO: transfer to constants
+        pack_metadata = {
             'name': self._display_name or self._pack_name,
             'id': self._pack_name,
             'description': self._description or self._pack_name,
