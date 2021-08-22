@@ -2,10 +2,9 @@ import knowbe4Phisher as ph
 import pytest
 import pytz
 
-
 utc = pytz.UTC
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-client = ph.Client(base_url='https://eu.knowbe4.com/graphql', verify=False,
+client = ph.Client(base_url='https://eu.test.com/graphql', verify=False,
                    headers={'Authorization': 'Bearer  + key', 'Content-Type': 'application/json'},
                    proxy=False, first_fetch_time="100 days")
 
@@ -169,18 +168,25 @@ def test_caclulate_event(mocker, query, expected, return_value):
 
 
 resp = [({}),
-        ({"data": {
-            "phisherMessages": {"nodes": [{"actionStatus": "RECEIVED", "category": "UNKNOWN", "comments": [], "events":
-                [{"causer": 'null', "createdAt": "2021-08-08T14:06:11Z", "eventType": "CREATED",
-                  "id": "da4b66b2-adef-438d-83d0-e8d0067cd822", "triggerer": 'null'},
-                 {"causer": "KB4:URGENCY", "createdAt": "2021-08-08T14:06:31Z", "eventType": "OTHER", "id":
-                     "40e32f01-44ce-498a-9731-0ef8aeb07fbc", "triggerer": 'null'},
-                 {"causer": "Edi Katsenelson", "createdAt": "2021-08-08T14:06:54Z", "eventType": "OTHER", "id":
-                     "82b81815-eebb-4ac5-b86d-0e70a72d518e", "triggerer": 'null'}],
-            "from": "ekatsenelson@paloaltonetworks.com", "id": "bac9cf67-fa8e-46d1-ad67-69513fc44b5b", "phishmlReport": 'null',
-            "pipelineStatus": "PROCESSED", "severity": "UNKNOWN_SEVERITY", "subject": "Fwd: We have received your IT request",
-            "tags": [{"name": "KB4:SECURITY", "type": "STANDARD"}, {"name": "KB4:URGENCY", "type": "STANDARD"}]}],
-            "pagination": {"page": 1, "pages": 1, "per": 100, "totalCount": 31}}}})]
+        ({"data":
+            {"phisherMessages":
+                {
+                    "nodes":
+                        [
+                            {"actionStatus": "RECEIVED", "category": "UNKNOWN", "comments": [], "events":
+                                [
+                                    {"causer": 'null', "createdAt": "2021-08-08T14:06:11Z", "eventType": "CREATED",
+                                     "id": "da4b66b2-adef-438d-83d0-e8d0067cd822", "triggerer": 'null'},
+                                    {"causer": "KB4:URGENCY", "createdAt": "2021-08-08T14:06:31Z", "eventType": "OTHER", "id":
+                                     "40e32f01-44ce-498a-9731-0ef8aeb07fbc", "triggerer": 'null'},
+                                    {"causer": "Edi Katsenelson", "createdAt": "2021-08-08T14:06:54Z", "eventType": "OTHER",
+                                     "id": "82b81815-eebb-4ac5-b86d-0e70a72d518e", "triggerer": 'null'}],
+                             "from": "ekatsenelson@paloaltonetworks.com", "id": "bac9cf67-fa8e-46d1-ad67-69513fc44b5b",
+                             "phishmlReport": 'null', "pipelineStatus": "PROCESSED", "severity": "UNKNOWN_SEVERITY", "subject":
+                             "Fwd: We have received your IT request", "tags": [{"name": "KB4:SECURITY", "type": "STANDARD"},
+                                                                               {"name": "KB4:URGENCY", "type": "STANDARD"}]}
+                        ],
+                    "pagination": {"page": 1, "pages": 1, "per": 100, "totalCount": 31}}}})]
 exp = [([]),
        ([{'name': 'Fwd: We have received your IT request', 'occurred': '2021-08-08T14:06:11+00:00', 'rawJSON':
            '{"actionStatus": "RECEIVED", "category": "UNKNOWN", "comments": [], "from": "ekatsenelson@paloaltonetworks.com", \
