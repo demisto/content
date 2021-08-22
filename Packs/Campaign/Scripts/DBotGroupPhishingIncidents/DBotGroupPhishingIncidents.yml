@@ -2,7 +2,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: scatter
-  description: The type of the widget to return.
+  description: 'The type of the widget to return. Possible values: "scatter", "summary", "incidents".'
   isArray: false
   name: returnWidgetType
   predefined:
@@ -14,28 +14,28 @@ args:
 - default: false
   defaultValue: 2 months ago
   description: 'The start date by which to filter incidents. Date format will be the
-    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
-    +0200").'
+    same as in the incidents query page, for example: "3 days ago", "2019-01-01T00:00:00
+    +0200".'
   isArray: false
   name: fromDate
   required: false
   secret: false
 - default: false
   defaultValue: '500'
-  description: The maximum number of incidents to fetch
+  description: The maximum number of incidents to fetch.
   isArray: false
   name: limit
   required: false
   secret: false
 - default: false
   defaultValue: Phishing
-  description: The Phishing incident type
+  description: The Phishing incident type.
   isArray: false
   name: incidentType
   required: false
   secret: false
 - default: false
-  description: Input search query from the dashboard
+  description: Input search query from the dashboard.
   isArray: false
   name: searchQuery
   required: false
@@ -52,7 +52,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Determines whether to force the model to re-train. Default is "False".
+  description: 'Determines whether to force the model to re-train. Possible values: "True" and "False".'
   isArray: false
   name: forceRetrain
   predefined:
