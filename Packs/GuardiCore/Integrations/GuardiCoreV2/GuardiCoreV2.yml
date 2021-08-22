@@ -1031,7 +1031,7 @@ script:
           name: tag
           required: false
           secret: false
-        - defaultValue: false
+        - defaultValue: ""
           description: Type (Incident, Deception, Network Scan, Reveal, Experimental).
           predefined:
             - 'Incident'
