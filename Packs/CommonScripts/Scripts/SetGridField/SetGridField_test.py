@@ -89,9 +89,13 @@ def test_build_grid(datadir, mocker, keys: list, columns: list, dt_response_json
     ).to_dict()
 
 
+should_be_removed_by_normalize_col = ' \n &$#%?!*;׳()🦦ץ'
+
+
 @pytest.mark.parametrize(argnames="keys, columns, unpack_nested_elements, dt_response_path, expected_results_path",
                          argvalues=[
-                             (["name", "value"], ["col_1", "Col2"], False, 'context_entry_list_missing_key.json',
+                             (["name", "value"], [f"col_{should_be_removed_by_normalize_col}1", "COL2"], False,
+                              'context_entry_list_missing_key.json',
                               'expected_list_grid_none_value.json')
                          ])
 def test_build_grid_command(datadir, mocker, keys: List[str], columns: List[str], unpack_nested_elements: bool,
