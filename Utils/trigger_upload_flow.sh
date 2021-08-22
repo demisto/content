@@ -71,6 +71,7 @@ function create_new_pack {
 
   for original_name in "${names_array[@]}"; do
     new_name="${original_name}${new_pack_suffix}"
+    echo "${original_name} -> ${new_name}"
     rename_files_and_folders "$original_name" "$new_name"
   done
 
@@ -567,7 +568,7 @@ add_pack_to_landing_page "Trello"
 git push --set-upstream origin "${new_content_branch}"
 
 if [ -n "$circle_token" ]; then
-  trigger_circle_ci "${new_content_branch}"
+#  trigger_circle_ci "${new_content_branch}"
 fi
 
 if [ -n "$gitlab_token" ]; then
