@@ -179,7 +179,7 @@ def create_standard_domain_context(domain_data):
         outputs_prefix="Domain",
         outputs_key_field="Name",
         outputs=domain_data,
-        readable_output=tableToMarkdown(f"Domain(s):", domain_data)
+        readable_output=tableToMarkdown("Domain(s):", domain_data)
     )
     return_results(command_results)
 
@@ -189,7 +189,7 @@ def create_standard_ip_context(ip_data):
         outputs_prefix="IP",
         outputs_key_field="Address",
         outputs=ip_data,
-        readable_output=tableToMarkdown(f"IP Address(es):", ip_data)
+        readable_output=tableToMarkdown("IP Address(es):", ip_data)
     )
     return_results(command_results)
 
@@ -298,7 +298,7 @@ def get_company_details_command(client, args):
     res = client.get_company(domain=domain)
     readable_output = f"### Company for {domain}: {res.get('name', None)}"
     command_results = CommandResults(
-        outputs_prefix=f"SecurityTrails.Domain",
+        outputs_prefix="SecurityTrails.Domain",
         outputs_key_field="name",
         outputs={"name": domain, "company": res.get('name', None)},
         readable_output=readable_output
@@ -322,7 +322,7 @@ def get_company_details_command(client, args):
 def get_company_associated_ips_command(client, args):
     domain = args.get('domain')
     res = client.get_company_associated_ips(domain=domain)
-    readable_output = tableToMarkdown(f"Associated IPs for {domain}", res)
+    readable_output = tableToMarkdown("Associated IPs for {domain}", res)
     output_data = {
         "name": domain,
         "associatedips": res,
@@ -330,7 +330,7 @@ def get_company_associated_ips_command(client, args):
     }
 
     command_results = CommandResults(
-        outputs_prefix=f"SecurityTrails.Domain",
+        outputs_prefix="SecurityTrails.Domain",
         outputs_key_field="name",
         outputs=output_data,
         readable_output=readable_output
@@ -352,7 +352,7 @@ def domain_details_command(client, args):
                           for k, v in res.get('current_dns', {}).items()], key=lambda x: x['Type'])
     readable_output = tableToMarkdown(f"Domain details for {hostname}:", output_data, ['Type', 'Record Count'])
     command_results = CommandResults(
-        outputs_prefix=f"SecurityTrails.Domain",
+        outputs_prefix="SecurityTrails.Domain",
         outputs_key_field="name",
         outputs=res,
         readable_output=readable_output
@@ -393,7 +393,7 @@ def get_domain_tags_command(client, args):
     tags = ', '.join(res)
     readable_output = f"### Tags for {hostname}:\n\n{tags}"
     command_results = CommandResults(
-        outputs_prefix=f"SecurityTrails.Domain",
+        outputs_prefix="SecurityTrails.Domain",
         outputs_key_field="name",
         outputs={"name": hostname, "tags": res},
         readable_output=readable_output
@@ -415,7 +415,7 @@ def get_whois_command(client, args):
         res["name"] = hostname
         readable_output = tableToMarkdown(f"WHOIS data for {hostname}", res)
         command_results = CommandResults(
-            outputs_prefix=f"SecurityTrails.Domain",
+            outputs_prefix="SecurityTrails.Domain",
             outputs_key_field="name",
             outputs=res,
             readable_output=readable_output
@@ -464,7 +464,7 @@ def get_whois_command(client, args):
         res["ip"] = ip_address
         readable_output = tableToMarkdown(f"WHOIS data for {ip_address}", res)
         command_results = CommandResults(
-            outputs_prefix=f"SecurityTrails.IP",
+            outputs_prefix="SecurityTrails.IP",
             outputs_key_field="ip",
             outputs=res,
             readable_output=readable_output
@@ -501,7 +501,7 @@ def domain_search_command(client, args):
     record_count = res.get('record_count')
     md = tableToMarkdown(f"Domain DSL Search Results ({record_count} record(s)):", records)
     command_results = CommandResults(
-        outputs_prefix=f"SecurityTrails.Domain.Search",
+        outputs_prefix="SecurityTrails.Domain.Search",
         outputs_key_field="hostname",
         outputs=records,
         readable_output=md
@@ -533,9 +533,9 @@ def domain_statistics_command(client, args):
         "Hostname Count": hostname_count,
         "Domain Count": domain_count
     }
-    md = tableToMarkdown(f"Domain Statistics:", table_data)
+    md = tableToMarkdown("Domain Statistics:", table_data)
     command_results = CommandResults(
-        outputs_prefix=f"SecurityTrails.Domain.Search.DomainStats",
+        outputs_prefix="SecurityTrails.Domain.Search.DomainStats",
         outputs_key_field="hostname",
         outputs=res,
         readable_output=md
@@ -564,7 +564,7 @@ def associated_domains_command(client, args):
         "associated_domain_count": record_count
     }
     command_results = CommandResults(
-        outputs_prefix=f"SecurityTrails.Domain",
+        outputs_prefix="SecurityTrails.Domain",
         outputs_key_field="name",
         outputs=output_data,
         readable_output=md
@@ -629,7 +629,7 @@ def get_ssl_certificates(client, args):
         "ssl_certiticates": records
     }
     command_results = CommandResults(
-        outputs_prefix=f"SecurityTrails.Domain",
+        outputs_prefix="SecurityTrails.Domain",
         outputs_key_field="name",
         outputs=output_data,
         readable_output=md
@@ -662,7 +662,7 @@ def get_dns_history_command(client, args):
         pull_field = "email"
     elif record_type == "txt":
         pull_field = "value"
-    records = res.get('records')
+    records = res.get('records', {})
     for record in records:
         for value in record.get('values'):
             if pull_field in value:
@@ -751,7 +751,7 @@ def get_whois_history_command(client, args):
                 "%Y-%m-%dT%H:%M:%SZ") if x.get('expiresDate', None) else None
         }
         if admin_contact:
-            whois_object['Admin'] = {
+            whois_object['Admin'] = {   # type: ignore
                 "Name": admin_contact.get('name'),
                 "Email": admin_contact.get('email'),
                 "Phone": admin_contact.get('telephone')
@@ -854,7 +854,7 @@ def ip_statistics_command(client, args):
         "Ports": len(ports),
         "Total": total
     }
-    md = tableToMarkdown(f"IP Statistics:", table_data)
+    md = tableToMarkdown("IP Statistics:", table_data)
     command_results = CommandResults(
         outputs_prefix="SecurityTrails.IP.Search.IPStats",
         outputs=res,
