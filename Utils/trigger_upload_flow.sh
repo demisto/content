@@ -3,6 +3,10 @@
 # This script creates new branch with changes that will test the upload flow with given sdk and content branches.
 # Note: This script creates new remote branch, please delete the branch once the pipeline finished.
 
+##############################################################
+##                   Functions - start                      ##
+##############################################################
+
 # fail
 # show fail message and quit
 # :param $1: message
@@ -45,18 +49,17 @@ function check_arguments {
 # copy_pack
 # Copies a pack and changing the name in the files to the new name.
 # :param $1: pack name
-# :param $2: suffix for new pack name
+# :param $2: new pack name
 # :param $3: possible names for renaming array
 function create_new_pack {
   echo " Running - create_new_pack"
 
   local pack_name=$1
-  local new_pack_suffix=$2
+  local new_pack_name=$2
   shift
   shift
   local names_array=("$@")
 
-  local new_pack_name="${pack_name}${new_pack_suffix}"
   local original_path=$(pwd)
   local pack_path="${CONTENT_PATH}/Packs/${pack_name}"
   local new_pack_path="${CONTENT_PATH}/Packs/${new_pack_name}"
@@ -235,10 +238,11 @@ function change_integration_image {
 # updating_old_release_notes
 # adding text to the second latest release note in pack
 # :param $1: pack name
+# :param $2: release note number
 function updating_old_release_notes {
   echo " Running - updating_old_release_notes"
 
-  if [ "$#" -ne 1 ]; then
+  if [ "$#" -ne 2 ]; then
     fail " Illegal number of parameters "
   fi
 
@@ -247,8 +251,7 @@ function updating_old_release_notes {
   local path="${CONTENT_PATH}/Packs/${pack_name}/ReleaseNotes/"
 
   cd "${path}" || fail
-  local current_latest_note=$(ls -t | head -2)
-  printf "\n#### Upload flow\n - Test\n" >>"${current_latest_note}"
+  printf "\n#### Upload flow\n - Test\n" >>"${2}.md"
   cd "${CONTENT_PATH}" || return
 
   git commit --untracked-files=no -am "Updated release note - $current_latest_note"
@@ -405,13 +408,18 @@ function trigger_gitlab_ci {
 
 }
 
+##############################################################
+##                   Functions - end                        ##
+##############################################################
 
 # Define default arguments
 CONTENT_PATH="$HOME/dev/demisto/content"
-base_pack_name="HelloWorld"
 bucket="marketplace-dist-dev"
 bucket_upload="true"
 slack_channel="dmst-bucket-upload"
+base_pack_name="HelloWorld"
+new_pack_name="${base_pack_name}New"
+pack_names_and_ids=("Hello_World" "Hello World" "helloworld" "Sanity_Test") # All the possible ids inside Hello World pack.
 
 # parse inputs
 if [ "$#" -lt "1" ]; then
@@ -500,10 +508,9 @@ if [ -n "$production" ]; then
   exit 0
 fi
 
-
-new_content_branch="${sdk_branch_name}_${content_branch_name}_UploadFlow_test" # todo commit hash
-new_suffix="New"
-new_pack_name="${base_pack_name}${new_suffix}"
+content_hash=$(git rev-parse origin/content_branch_name)
+sdk_hash=$(git rev-parse origin/sdk_branch_name)
+new_content_branch="${sdk_hash}_${content_hash}_UploadFlow_test"
 
 git checkout "$content_branch_name" || fail
 git pull || fail
@@ -531,18 +538,17 @@ if [ -n "$sdk_branch_name" ]; then
 fi
 
 # New Pack
-pack_ids=("Hello_World" "Hello World" "helloworld" "Sanity_Test") # All the possible ids inside Hello World pack
-create_new_pack "${base_pack_name}" "${new_suffix}" "${pack_ids[@]}"
-add_dependency "Viper" "${new_pack_name}" # Viper is now dependent on pack that not in upload
+create_new_pack "${base_pack_name}" "${new_pack_name}" "${pack_names_and_ids[@]}" # Creates new pack HelloWorldNew
+add_dependency "Viper" "${new_pack_name}" # Viper is now dependent on a new pack that is not in the bucket.
 add_author_image "${new_pack_name}"
 add_1_0_0_release_note "${new_pack_name}"
 
 ## Existing pack
-enhancement_release_notes "ZeroFox" # add new release note to
-change_integration_image "PaloAltoNetworks_IoT" "Armis" # Armis have the paloalto image for integration
-updating_old_release_notes "Box" #todo update not the latest
-enhancement_release_notes "Box"
-updating_old_release_notes "Viper" # todo Base agre
+enhancement_release_notes "ZeroFox" # Add new release note to ZeroFox.
+change_integration_image "PaloAltoNetworks_IoT" "Armis" # New integration image to Armis.
+updating_old_release_notes "Box" "2_1_2" # Changing existing release note.
+enhancement_release_notes "Box" # Adding new release note.
+updating_old_release_notes "Base" "1_13_13" # Updating aggregated release note.
 add_1_0_0_release_note "BPA"
 set_pack_hidden "Microsoft365Defender"
 update_integration_readme "Malware"
