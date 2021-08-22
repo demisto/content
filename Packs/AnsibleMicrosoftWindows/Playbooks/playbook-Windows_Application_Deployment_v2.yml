@@ -1,6 +1,5 @@
 id: Windows Application Deployment V2
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Windows Application Deployment V2
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -57,13 +57,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -234,6 +234,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -291,13 +292,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -364,10 +365,10 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: "Your IT department attempted to install new software packages
-                    on your workstation but the machine was not accessible at the
-                    time. \n\nThe software package(s) they are attempting to install
-                    are:\n* "
+                  simple: "Your IT department attempted to install new software packages\
+                    \ on your workstation but the machine was not accessible at the\
+                    \ time. \n\nThe software package(s) they are attempting to install\
+                    \ are:\n* "
               suffix: {}
           - operator: concat
             args:
@@ -444,7 +445,7 @@ tasks:
   "9":
     id: "9"
     taskid: ddf5de77-1202-4c9c-88c7-45bd59f3ab9e
-      type: regular
+    type: regular
     task:
       id: ddf5de77-1202-4c9c-88c7-45bd59f3ab9e
       version: -1
@@ -453,7 +454,7 @@ tasks:
         Manage packages using chocolatey
          Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_module.html
       script: '|||win-chocolatey'
-    type: regular
+      type: regular
       iscommand: true
       brand: ""
     nexttasks:
@@ -517,6 +518,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"

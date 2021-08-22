@@ -16,11 +16,5 @@
         "IT Services",
         "Asset Management"
     ],
-    "keywords": [],
-    "dependencies": {
-        "Ansible_Powered_Integrations": {
-            "mandatory": false,
-            "display_name": "Ansible Powered Integrations"
-        }
-    }
+    "keywords": []
 }
