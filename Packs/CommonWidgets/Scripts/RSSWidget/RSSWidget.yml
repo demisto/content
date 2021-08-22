@@ -12,20 +12,20 @@ args:
 - name: url
   required: true
   default: true
-  description: The URL of the RSS feed
+  description: The URL of the RSS feed.
 - name: insecure
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: Trust any certificate (not secure)
+  description: 'Trust any certificate (not secure). Possible values: "true" and "false".'
   defaultValue: "false"
 - name: proxy
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: Use system proxy settings
+  description: 'Use system proxy settings. Possible values: "true" and "false".'
   defaultValue: "false"
 scripttarget: 0
 subtype: python3
