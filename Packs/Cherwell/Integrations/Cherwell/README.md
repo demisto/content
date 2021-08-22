@@ -1591,17 +1591,17 @@ Get business object summary by name or ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cherwell.BusinessObjectSummary.supporting | Boolean |  | 
-| Cherwell.BusinessObjectSummary.major | Boolean |  | 
-| Cherwell.BusinessObjectSummary.group | Boolean |  | 
-| Cherwell.BusinessObjectSummary.name | String |  | 
-| Cherwell.BusinessObjectSummary.stateFieldId | String |  | 
-| Cherwell.BusinessObjectSummary.busObId | String |  | 
-| Cherwell.BusinessObjectSummary.states | String |  | 
-| Cherwell.BusinessObjectSummary.lookup | Boolean |  | 
-| Cherwell.BusinessObjectSummary.displayName | String |  | 
-| Cherwell.BusinessObjectSummary.firstRecIdField | String |  | 
-| Cherwell.BusinessObjectSummary.recIdFields | String |  | 
+| Cherwell.BusinessObjectSummary.supporting | Boolean | Whether the business object is supporting or not. | 
+| Cherwell.BusinessObjectSummary.major | Boolean | Whether the business object is major or not. | 
+| Cherwell.BusinessObjectSummary.group | Boolean | Whether the business object is group or not. | 
+| Cherwell.BusinessObjectSummary.name | String | Business object name. | 
+| Cherwell.BusinessObjectSummary.stateFieldId | String | The ID of the business object state field. | 
+| Cherwell.BusinessObjectSummary.busObId | String | Business object ID. | 
+| Cherwell.BusinessObjectSummary.states | String | The business object valid states. | 
+| Cherwell.BusinessObjectSummary.lookup | Boolean | Whether the object is lookup object or not. | 
+| Cherwell.BusinessObjectSummary.displayName | String | Business object display name. | 
+| Cherwell.BusinessObjectSummary.firstRecIdField | String | The ID value of the first business object RecID field. | 
+| Cherwell.BusinessObjectSummary.recIdFields | String | The IDs of business object RecID fields. | 
 
 
 #### Command Example
@@ -1672,7 +1672,7 @@ Get One-Step Actions by business object ID
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Cherwell.OneStepActions.BusinessObjectId | String | Business object ID. | 
-| Cherwell.OneStepActions.Actions | Unknown |  | 
+| Cherwell.OneStepActions.Actions | Unknown | The business object actions. | 
 
 
 #### Command Example

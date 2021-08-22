@@ -583,7 +583,7 @@ script:
       description: Business object ID.
       type: String
     - contextPath: Cherwell.OneStepActions.Actions
-      description: ''
+      description: The business object actions.
       type: Unknown
   - arguments:
     - default: false
