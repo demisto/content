@@ -108,6 +108,7 @@ class PackFolders(enum.Enum):
     GENERIC_FIELDS = "GenericFields"
     GENERIC_MODULES = "GenericModules"
     GENERIC_TYPES = "GenericTypes"
+    PREPROCESS_RULES = "PreProcessRules"
 
     @classmethod
     def pack_displayed_items(cls):
@@ -132,7 +133,7 @@ class PackFolders(enum.Enum):
             PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
             PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
             PackFolders.WIDGETS.value, PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value,
-            PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value
+            PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.PREPROCESS_RULES.value
         }
 
 

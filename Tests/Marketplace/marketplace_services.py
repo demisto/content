@@ -1476,7 +1476,8 @@ class Pack(object):
                 PackFolders.GENERIC_DEFINITIONS.value: "GenericDefinitions",
                 PackFolders.GENERIC_FIELDS.value: "GenericFields",
                 PackFolders.GENERIC_MODULES.value: "GenericModules",
-                PackFolders.GENERIC_TYPES.value: "GenericTypes"
+                PackFolders.GENERIC_TYPES.value: "GenericTypes",
+                PackFolders.PREPROCESSING_RULE.value: "PreProcessRules",
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -1635,6 +1636,10 @@ class Pack(object):
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', ""),
+                        })
+                    elif current_directory == PackFolders.PREPROCESS_RULES.value:
+                        folder_collected_items.append({
+                            'name': content_item.get('name', "") #TODO: verify, couldnt find in scheme
                         })
 
                 if current_directory in PackFolders.pack_displayed_items():
