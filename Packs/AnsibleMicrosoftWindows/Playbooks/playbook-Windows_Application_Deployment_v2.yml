@@ -1,6 +1,6 @@
-id: Windows Application Deployment V2
+id: Windows Application Deployment v2
 version: -1
-name: Windows Application Deployment V2
+name: Windows Application Deployment v2
 starttaskid: "0"
 tasks:
   "0":
@@ -229,8 +229,8 @@ tasks:
     task:
       id: 55d578b4-606f-4d73-8080-e380a84bfc1a
       version: -1
-      name: Wait Until Windows Host Online V2
-      playbookName: Wait Until Windows Host Online V2
+      name: Wait Until Windows Host Online v2
+      playbookName: Wait Until Windows Host Online v2
       type: playbook
       iscommand: false
       brand: ""
