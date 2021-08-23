@@ -43,7 +43,7 @@ def normalized_column_name(phrase: str) -> str:
         >>> normalized_string("hello🦦_world@")
         "hello_world"
     """
-    return re.sub(r'[^a-zA-Z\d_]', '', phrase[:255]).lower()
+    return re.sub(r'[^a-zA-Z\d_]', '', phrase).lower()
 
 
 def filter_dict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[int] = None) -> Dict[Any, Any]:
