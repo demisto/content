@@ -576,7 +576,7 @@ class Pack(object):
             Metadata.LEGACY: self._legacy,
             Metadata.SUPPORT: self._support_type,
             Metadata.SUPPORT_DETAILS: self._support_details,
-            Metadata.EULALINK: self.eula_link,
+            Metadata.EULA_LINK: self.eula_link,
             Metadata.AUTHOR: self._author,
             Metadata.AUTHORIMAGE: self._author_image,
             Metadata.CERTIFICATION: self._certification,
