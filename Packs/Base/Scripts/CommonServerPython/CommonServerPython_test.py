@@ -5418,12 +5418,13 @@ class TestCustomIndicator:
 
 
 @pytest.mark.parametrize('object, expected_size', [
-    ({}, 64),
-    ({'key': 'value'}, 286),
-    ({'nested1': {'key': 'value'}}, 518),
-    ([], 56),
-    (['1', '2', '3'], 270),
-    (['1', '2', ['3']], 294),
+    ({}, {'2.7': 280, '3.7': 240, '3.8': 64}),
+    ({'key': 'value'}, {'2.7': 362, '3.7': 394, '3.8': 286}),
+    ({'nested1': {'key': 'value'}}, {'2.7': 362, '3.7': 394, '3.8': 518}),
+    ([], {'2.7': 72, '3.7': 64, '3.8': 56}),
+    (['1', '2', '3'], {'2.7': 210, '3.7': 238, '3.8': 230}),
+    (['1', '2', ['3']], {'2.7': 290, '3.7': 310, '3.8': 294}),
 ])
 def test_actualsize(object, expected_size):
-    assert actualsize(object) == expected_size
+    py_version = '{}.{}'.format(sys.version_info.major, sys.version_info.minor)
+    assert actualsize(object) == expected_size[py_version]
