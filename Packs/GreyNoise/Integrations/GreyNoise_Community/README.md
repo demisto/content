@@ -59,6 +59,7 @@ Queries IPs in the GreyNoise Community API.
 | GreyNoise.IP.riot | boolean | Is the IP part of a known benign service |
 | GreyNoise.IP.name | string | The overt actor the device has been associated with. |
 | GreyNoise.IP.message | string | Additional Information from API. |
+| IP.Address | string | IP address. |
 
 
 #### Command Example
