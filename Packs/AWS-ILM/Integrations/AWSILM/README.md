@@ -1,5 +1,4 @@
 An Identity and Access Management integration template.
-This integration was integrated and tested with version xx of AWS-ILM
 
 ## Configure AWS-ILM on Cortex XSOAR
 
@@ -405,7 +404,7 @@ Disable an active user.
 
 ### iam-get-group
 ***
- 
+Retrieves a group
 
 
 #### Base Command
@@ -432,7 +431,7 @@ Disable an active user.
 
 
 #### Command Example
-```!iam-get-group scim=`{"id": "121212"}````
+```!iam-get-group scim={"id": "121212"}```
 
 #### Context Example
 ```json
@@ -501,7 +500,7 @@ Creates an empty group
 
 
 #### Command Example
-```!iam-create-group scim=`{"displayName": "The group"}````
+```!iam-create-group scim={"displayName": "The group"}```
 
 #### Context Example
 ```json
@@ -629,7 +628,7 @@ Permanently removes a group.
 
 
 #### Command Example
-```!iam-delete-group scim=`{"id": "121212"}````
+```!iam-delete-group scim={"id": "121212"}```
 
 #### Context Example
 ```json

@@ -266,6 +266,8 @@ script:
     execution: false
     name: get-mapping-fields
   - name: iam-get-group
+    description: Retrieves a group
+    execution: true
     arguments:
     - name: scim
       required: true
