@@ -385,7 +385,7 @@
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "swtuqptgvs-57f33cc0-97ee-11e9-b8bd-0b00be54d2d3",
+                        "i": "1vduzkpmlh-swtuqptgvs-57f33cc0-97ee-11e9-b8bd-0b00be54d2d3",
                         "isVisible": true,
                         "items": [
                             {
@@ -412,7 +412,7 @@
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "swtuqptgvs-5a552190-97ee-11e9-b8bd-0b00be54d2d3",
+                        "i": "1vduzkpmlh-swtuqptgvs-5a552190-97ee-11e9-b8bd-0b00be54d2d3",
                         "isVisible": true,
                         "items": [
                             {
@@ -438,7 +438,7 @@
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
-                        "i": "swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
+                        "i": "1vduzkpmlh-swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
                         "isVisible": true,
                         "items": [
                             {
@@ -573,7 +573,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "swtuqptgvs-49052550-97f0-11e9-b8bd-0b00be54d2d3",
+                        "i": "1vduzkpmlh-swtuqptgvs-49052550-97f0-11e9-b8bd-0b00be54d2d3",
                         "isVisible": true,
                         "items": [
                             {
@@ -641,7 +641,7 @@
                         "displayType": "ROW",
                         "h": 4,
                         "hideName": false,
-                        "i": "swtuqptgvs-067d4900-98b4-11e9-97d7-ed26ef9e46c8",
+                        "i": "1vduzkpmlh-swtuqptgvs-067d4900-98b4-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [],
                         "maxW": 3,
@@ -672,7 +672,7 @@
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
-                        "i": "swtuqptgvs-cc557320-98b7-11e9-b34a-852d068f44fe",
+                        "i": "1vduzkpmlh-swtuqptgvs-cc557320-98b7-11e9-b34a-852d068f44fe",
                         "isVisible": true,
                         "items": [],
                         "maxW": 3,
@@ -692,9 +692,9 @@
                     {
                         "description": "",
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 1,
                         "hideName": false,
-                        "i": "swtuqptgvs-3205ebf0-98cc-11e9-a519-93a53c759fe0",
+                        "i": "1vduzkpmlh-swtuqptgvs-3205ebf0-98cc-11e9-a519-93a53c759fe0",
                         "isVisible": true,
                         "items": [],
                         "maxW": 3,
@@ -715,7 +715,7 @@
                         "displayType": "ROW",
                         "h": 4,
                         "hideName": false,
-                        "i": "swtuqptgvs-0e149ea0-9d8e-11e9-a715-f7bbe72c84a2",
+                        "i": "1vduzkpmlh-swtuqptgvs-0e149ea0-9d8e-11e9-a715-f7bbe72c84a2",
                         "isVisible": true,
                         "items": [],
                         "maxW": 3,
@@ -739,9 +739,9 @@
                     {
                         "description": "The category of the email. In case of a phishing email, also shows the phishing sub-type.",
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 2,
                         "hideName": false,
-                        "i": "swtuqptgvs-ac6702e0-df84-11e9-9d3d-b355b2831118",
+                        "i": "1vduzkpmlh-swtuqptgvs-ac6702e0-df84-11e9-9d3d-b355b2831118",
                         "items": [
                             {
                                 "endCol": 2,
@@ -768,12 +768,12 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 11
+                        "y": 10
                     },
                     {
                         "h": 3,
                         "hideName": false,
-                        "i": "swtuqptgvs-b5924880-df88-11e9-9d3d-b355b2831118",
+                        "i": "1vduzkpmlh-swtuqptgvs-b5924880-df88-11e9-9d3d-b355b2831118",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -798,7 +798,7 @@
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "swtuqptgvs-a12ae3c0-e032-11e9-9c9e-41d82f09b6f1",
+                        "i": "1vduzkpmlh-swtuqptgvs-a12ae3c0-e032-11e9-9c9e-41d82f09b6f1",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -824,10 +824,10 @@
                     {
                         "description": "Critical Assets that were found, at the investigation stage, to be involved in the incident.",
                         "displayType": "ROW",
-                        "h": 4,
+                        "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "swtuqptgvs-8fd72e00-e837-11e9-9c9e-41d82f09b6f1",
+                        "i": "1vduzkpmlh-swtuqptgvs-8fd72e00-e837-11e9-9c9e-41d82f09b6f1",
                         "items": [
                             {
                                 "endCol": 2,
@@ -845,15 +845,15 @@
                         "name": "Critical Assets",
                         "static": false,
                         "w": 1,
-                        "x": 2,
-                        "y": 10
+                        "x": 0,
+                        "y": 12
                     },
                     {
                         "description": "",
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "swtuqptgvs-7852ea30-2c7f-11ea-a369-15269a1bf356",
+                        "i": "1vduzkpmlh-swtuqptgvs-7852ea30-2c7f-11ea-a369-15269a1bf356",
                         "items": [
                             {
                                 "endCol": 2,
@@ -896,7 +896,7 @@
                         "h": 6,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "swtuqptgvs-a142dfe0-b078-11ea-b16f-0d66a9047a0e",
+                        "i": "1vduzkpmlh-swtuqptgvs-a142dfe0-b078-11ea-b16f-0d66a9047a0e",
                         "items": [
                             {
                                 "endCol": 6,
@@ -921,7 +921,7 @@
                     {
                         "h": 1,
                         "hideName": true,
-                        "i": "swtuqptgvs-044bccb0-befa-11eb-b351-7bcfe92e5e24",
+                        "i": "1vduzkpmlh-swtuqptgvs-044bccb0-befa-11eb-b351-7bcfe92e5e24",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -935,6 +935,51 @@
                         "w": 1,
                         "x": 0,
                         "y": 3
+                    },
+                    {
+                        "description": "PCL - Phishing Confidence Level (4-8: The message content is likely to be phishing.)\nBCL - Bulk complaint level (4-7: The message is from a bulk sender that generates a mixed number of complaints. 8-9: The message is from a bulk sender that generates a high number of complaints.)\nSCL - Spam confidence level (5-6: Spam filtering marked the message as Spam. 9: Spam filtering marked the message as High confidence spam)",
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-ef7fd3b0-fdb2-11eb-8fad-971332201675",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "phishingsclscore",
+                                "height": 22,
+                                "id": "7edbcf00-fdb3-11eb-8fad-971332201675",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "phishingbclscore",
+                                "height": 22,
+                                "id": "822fdc00-fdb3-11eb-8fad-971332201675",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "phishingpclscore",
+                                "height": 22,
+                                "id": "85fdd3f0-fdb3-11eb-8fad-971332201675",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Microsoft Anti-Spam Headers",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 10
                     }
                 ],
                 "type": "custom"
@@ -1450,7 +1495,7 @@
             }
         ]
     },
-    "system": false,
+    "system": true,
     "version": -1,
     "fromVersion": "6.0.0",
     "description": ""

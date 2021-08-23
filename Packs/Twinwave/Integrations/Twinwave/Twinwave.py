@@ -9,7 +9,7 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 API_HOST = "https://api.twinwave.io"
 API_VERSION = "v1"
 EXPIRE_SECONDS = 86400
