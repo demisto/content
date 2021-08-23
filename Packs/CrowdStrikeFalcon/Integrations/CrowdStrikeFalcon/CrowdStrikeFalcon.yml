@@ -2285,34 +2285,34 @@ script:
     execution: false
     name: cs-falcon-list-host-group-members
     outputs:
-    - contextPath: CrowdStrike.HostGroupMember.ID
+    - contextPath: CrowdStrike.Device.ID
       description: The ID of the device.
       type: String
-    - contextPath: CrowdStrike.HostGroupMember.LocalIP
+    - contextPath: CrowdStrike.Device.LocalIP
       description: The local IP address of the device.
       type: String
-    - contextPath: CrowdStrike.HostGroupMember.ExternalIP
+    - contextPath: CrowdStrike.Device.ExternalIP
       description: The external IP address of the device.
       type: String
-    - contextPath: CrowdStrike.HostGroupMember.Hostname
+    - contextPath: CrowdStrike.Device.Hostname
       description: The host name of the device.
       type: String
-    - contextPath: CrowdStrike.HostGroupMember.OS
+    - contextPath: CrowdStrike.Device.OS
       description: The operating system of the device.
       type: String
-    - contextPath: CrowdStrike.HostGroupMember.MacAddress
+    - contextPath: CrowdStrike.Device.MacAddress
       description: The MAC address of the device.
       type: String
-    - contextPath: CrowdStrike.HostGroupMember.FirstSeen
+    - contextPath: CrowdStrike.Device.FirstSeen
       description: The first time the device was seen.
       type: String
-    - contextPath: CrowdStrike.HostGroupMember.LastSeen
+    - contextPath: CrowdStrike.Device.LastSeen
       description: The last time the device was seen.
       type: String
-    - contextPath: CrowdStrike.HostGroupMember.PolicyType
+    - contextPath: CrowdStrike.Device.PolicyType
       description: The policy type of the device.
       type: String
-    - contextPath: CrowdStrike.HostGroupMember.Status
+    - contextPath: CrowdStrike.Device.Status
       description: The device status.
       type: String
   - arguments:

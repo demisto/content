@@ -2519,10 +2519,10 @@ def list_incident_summaries_command():
     )
 
 
-def create_host_group_command(name,
-                              group_type=None,
-                              description=None,
-                              assignment_rule=None):
+def create_host_group_command(name :str,
+                              group_type:str=None,
+                              description:str=None,
+                              assignment_rule:str=None):
     return change_host_group(method='POST',
                              name=name,
                              group_type=group_type,
@@ -2530,10 +2530,10 @@ def create_host_group_command(name,
                              assignment_rule=assignment_rule)
 
 
-def update_host_group_command(host_group_id,
-                              name=None,
-                              description=None,
-                              assignment_rule=None):
+def update_host_group_command(host_group_id:str,
+                              name:str=None,
+                              description:str=None,
+                              assignment_rule:str=None):
     return change_host_group(method='PATCH',
                              host_group_id=host_group_id,
                              name=name,
@@ -2541,7 +2541,7 @@ def update_host_group_command(host_group_id,
                              assignment_rule=assignment_rule)
 
 
-def list_host_group_members_command(host_group_id=None, filter=None, offset=None, limit=None) -> List[CommandResults]:
+def list_host_group_members_command(host_group_id:str=None, filter:str=None, offset:str=None, limit:str=None) -> List[CommandResults]:
     params = {'id': host_group_id,
               'filter': filter,
               'offset': offset,
@@ -2555,7 +2555,6 @@ def list_host_group_members_command(host_group_id=None, filter=None, offset=None
         return command_results
     for single_device in devices:
         entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
-        # headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
         headers = list(SEARCH_DEVICE_KEY_MAP.values())
         command_results.append(CommandResults(
             outputs_prefix='CrowdStrike.HostGroupMember',
@@ -2579,7 +2578,7 @@ def remove_host_group_members_command(host_group_id: str, host_ids: List[str]):
                                      host_ids=host_ids)
 
 
-def resolve_incident_command(ids, status):
+def resolve_incident_command(ids:List[str], status:str):
     if status not in STATUS_TEXT_TO_NUM:
         raise DemistoException(f'CrowdStrike Falcon Error:'
                                f'Status given is not in in {STATUS_TEXT_TO_NUM.keys()}')
