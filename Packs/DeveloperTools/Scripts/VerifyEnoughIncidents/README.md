@@ -14,17 +14,17 @@ Check whether a given query returns enough incidents.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| query | Query used to check if there're are enough incidents in XSOAR. |
-| size | Target amount of incidents to check for. |
+| query | Query used to check whether there are sufficient incidents in Cortex XSOAR. |
+| size | The amount of incidents in which to check. |
 
 ## Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| IncidentsCheck.Size | Number of incidents in XSOAR that're expected to match the query. | number |
-| IncidentsCheck.ConditionMet | Are there enough incidents in XSOAR that match the query. | boolean |
-| IncidentsCheck.Query | Incidents query used to check if the condition is met. | boolean |
+| IncidentsCheck.Size | The number of incidents in Cortex XSOAR that is expected to match the query. | number |
+| IncidentsCheck.ConditionMet | Whether there are sufficient incidents in Cortex XSOAR that match the query. | boolean |
+| IncidentsCheck.Query | The incidents query which was used to check if the condition was met. | boolean |
 
 
 ## Script Example
