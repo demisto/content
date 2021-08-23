@@ -1,6 +1,15 @@
 import json
 import io
 from ReversingLabsA1000v2 import a1000_report_output, list_extracted_files_output, get_classification_output
+import demistomock as demisto
+import pytest
+
+INTEGRATION_NAME = 'ReversingLabs A1000'
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
 
 
 def test_a1000_report_output():

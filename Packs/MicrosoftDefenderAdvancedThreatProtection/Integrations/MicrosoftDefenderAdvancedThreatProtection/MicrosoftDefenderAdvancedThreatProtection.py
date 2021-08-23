@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Tuple, List, Union
+from typing import Tuple
 from CommonServerPython import *
 import urllib3
 from dateutil.parser import parse
@@ -28,6 +28,27 @@ NUMBER_TO_SEVERITY = {
     4: 'High',
     5: 'Informational'
 }
+SC_INDICATORS_HEADERS = (
+    'id',
+    'action',
+    'indicatorValue',
+    'indicatorType',
+    'severity',
+    'title',
+    'description',
+)
+
+INDICATOR_TYPE_TO_DBOT_TYPE = {
+    'FileSha256': DBotScoreType.FILE,
+    'FileSha1': DBotScoreType.FILE,
+    'Url': DBotScoreType.URL,
+    'DomainName': DBotScoreType.DOMAIN,
+    'IpAddress': DBotScoreType.IP,
+}
+
+SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
+SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
+GRAPH_INDICATOR_ENDPOINT = 'https://graph.microsoft.com/beta/security/tiIndicators'
 
 
 def file_standard(observable: Dict) -> Common.File:
@@ -166,17 +187,21 @@ class MsClient:
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
-            scope='https://securitycenter.onmicrosoft.com/windowsatpservice/.default')
+            scope=Scopes.security_center_apt_service)
         self.alert_severities_to_fetch = alert_severities_to_fetch,
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
-        # TODO: Replace with v1 endpoint when out.
-        self.indicators_endpoint = 'https://graph.microsoft.com/beta/security/tiIndicators'
 
     def indicators_http_request(self, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
+            should_use_security_center (bool): whether to use the security center's scope and resource
         """
-        kwargs['scope'] = "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else Scopes.graph
+        if kwargs['should_use_security_center']:
+            kwargs['scope'] = Scopes.security_center_apt_service
+            kwargs['resource'] = SECURITY_CENTER_RESOURCE
+        else:
+            kwargs['scope'] = "graph" if self.ms_client.auth_type == OPROXY_AUTH_TYPE else Scopes.graph
+        kwargs.pop('should_use_security_center')
         return self.ms_client.http_request(*args, **kwargs)
 
     def isolate_machine(self, machine_id, comment, isolation_type):
@@ -698,27 +723,53 @@ class MsClient:
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def list_indicators(self, indicator_id: Optional[str] = None, page_size: str = '50', limit: int = 50) -> List:
+    def sc_list_indicators(self, indicator_id: Optional[str] = None, limit: Optional[int] = 50) -> List:
+        """Lists indicators. if indicator_id supplied, will get only that indicator.
+
+                Args:
+                    indicator_id: if provided, will get only this specific id.
+                    limit: Limit the returned results.
+
+                Returns:
+                    List of responses.
+                """
+        cmd_url = urljoin(SECURITY_CENTER_INDICATOR_ENDPOINT,
+                          indicator_id) if indicator_id else SECURITY_CENTER_INDICATOR_ENDPOINT
+        params = {'$top': limit}
+        resp = self.indicators_http_request(
+            'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
+            ok_codes=(200, 204, 206, 404), resp_type='response', should_use_security_center=True)
+        # 404 - No indicators found, an empty list.
+        if resp.status_code == 404:
+            return []
+
+        resp = resp.json()
+        values_list = resp.get('value', [])  # value list appears only when requesting indicators list
+        return [assign_params(**item) for item in values_list] if values_list else [resp]
+
+    def list_indicators(self,
+                        indicator_id: Optional[str] = None, page_size: str = '50', limit: int = 50,
+                        should_use_security_center: bool = False) -> List:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
         Args:
             indicator_id: if provided, will get only this specific id.
             page_size: specify the page size of the result set.
             limit: Limit the returned results.
+            should_use_security_center: whether to use the security center's scope and resource.
 
         Returns:
             List of responses.
         """
         results = {}
-        cmd_url = urljoin(self.indicators_endpoint, indicator_id) if indicator_id else self.indicators_endpoint
+        cmd_url = urljoin(GRAPH_INDICATOR_ENDPOINT, indicator_id) if indicator_id else GRAPH_INDICATOR_ENDPOINT
         # For getting one indicator
         # TODO: check in the future if the filter is working. Then remove the filter function.
         # params = {'$filter': 'targetProduct=\'Microsoft Defender ATP\''}
         params = {'$top': page_size}
         resp = self.indicators_http_request(
             'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
-            ok_codes=(200, 204, 206, 404), resp_type='response'
-        )
+            ok_codes=(200, 204, 206, 404), resp_type='response', should_use_security_center=should_use_security_center)
         # 404 - No indicators found, an empty list.
         if resp.status_code == 404:
             return []
@@ -726,7 +777,8 @@ class MsClient:
         results.update(resp)
 
         while next_link := resp.get('@odata.nextLink'):
-            resp = self.indicators_http_request('GET', full_url=next_link, url_suffix=None, timeout=1000)
+            resp = self.indicators_http_request('GET', full_url=next_link, url_suffix=None,
+                                                timeout=1000, should_use_security_center=should_use_security_center)
             results['value'].extend(resp.get('value'))
             if len(results['value']) >= limit:
                 break
@@ -753,11 +805,56 @@ class MsClient:
         Returns:
             A response from the API.
         """
-        resp = self.indicators_http_request(
-            'POST', full_url=self.indicators_endpoint, json_data=body, url_suffix=None
-        )
+        resp = self.indicators_http_request('POST', full_url=GRAPH_INDICATOR_ENDPOINT, json_data=body,
+                                            url_suffix=None, should_use_security_center=False)
         # A single object - should remove the '@odata.context' key.
         resp.pop('@odata.context')
+        return assign_params(values_to_ignore=[None], **resp)
+
+    def create_update_indicator_security_center_api(self, indicator_value: str,
+                                                    indicator_type: str,
+                                                    action: str,
+                                                    indicator_title: str,
+                                                    description: str,
+                                                    expiration_date_time: Optional[str] = None,
+                                                    severity: Optional[str] = None,
+                                                    indicator_application: Optional[str] = None,
+                                                    recommended_actions: Optional[str] = None,
+                                                    rbac_group_names: Optional[list] = None
+                                                    ) -> Dict:
+        """creates or updates (if already exists) a given indicator
+
+        Args:
+            indicator_value: Value of the indicator to update.
+            expiration_date_time: Expiration time of the indicator.
+            description: A Brief description of the indicator.
+            severity: The severity of the indicator.
+            indicator_type: The type of the indicator.
+            action: The action that will be taken if the indicator will be discovered.
+            indicator_title: Indicator alert title.
+            indicator_application: The application associated with the indicator.
+            recommended_actions: TI indicator alert recommended actions.
+            rbac_group_names: Comma-separated list of RBAC group names the indicator would be.
+
+        Returns:
+            A response from the API.
+        """
+        body = {  # required params
+            'indicatorValue': indicator_value,
+            'indicatorType': indicator_type,
+            'action': action,
+            'title': indicator_title,
+            'description': description,
+        }
+        body.update(assign_params(  # optional params
+            severity=severity,
+            application=indicator_application,
+            expirationTime=expiration_date_time,
+            recommendedActions=recommended_actions,
+            rbacGroupNames=rbac_group_names
+        ))
+        resp = self.indicators_http_request('POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT, json_data=body,
+                                            url_suffix=None, should_use_security_center=True)
         return assign_params(values_to_ignore=[None], **resp)
 
     def update_indicator(
@@ -767,15 +864,15 @@ class MsClient:
         """Updates a given indicator
 
         Args:
-            indicator_id: ID of the indicator to update
-            expiration_date_time: Expiration time of the indicator
-            description: A Brief description of the indicator
-            severity: The severity of the indicator
+            indicator_id: ID of the indicator to update.
+            expiration_date_time: Expiration time of the indicator.
+            description: A Brief description of the indicator.
+            severity: The severity of the indicator.
 
         Returns:
             A response from the API.
         """
-        cmd_url = urljoin(self.indicators_endpoint, indicator_id)
+        cmd_url = urljoin(GRAPH_INDICATOR_ENDPOINT, indicator_id)
         header = {'Prefer': 'return=representation'}
         body = {
             'targetProduct': 'Microsoft Defender ATP',
@@ -785,26 +882,28 @@ class MsClient:
             description=description,
             severity=severity
         ))
-        resp = self.indicators_http_request(
-            'PATCH', full_url=cmd_url, json_data=body, url_suffix=None, headers=header
-        )
+        resp = self.indicators_http_request('PATCH', full_url=cmd_url,
+                                            json_data=body, url_suffix=None, headers=header,
+                                            should_use_security_center=False)
         # A single object - should remove the '@odata.context' key.
         resp.pop('@odata.context')
         return assign_params(values_to_ignore=[None], **resp)
 
-    def delete_indicator(self, indicator_id: str) -> Response:
+    def delete_indicator(self, indicator_id: str, indicators_endpoint: str,
+                         use_security_center: bool = False) -> Response:
         """Deletes a given indicator
 
         Args:
-            indicator_id: ID of the indicator to delete
+            indicator_id: ID of the indicator to delete.
+            indicators_endpoint: The indicator endpoint to use.
+            use_security_center: whether to use the security center's scope and resource.
 
         Returns:
             A response from the API.
         """
-        cmd_url = urljoin(self.indicators_endpoint, indicator_id)
-        return self.indicators_http_request(
-            'DELETE', None, full_url=cmd_url, ok_codes=(204, ), resp_type='response'
-        )
+        cmd_url = urljoin(indicators_endpoint, indicator_id)
+        return self.indicators_http_request('DELETE', None, full_url=cmd_url, ok_codes=(204,),
+                                            resp_type='response', should_use_security_center=use_security_center)
 
 
 ''' Commands '''
@@ -2259,9 +2358,7 @@ def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, Dict, D
             description) <= 100, 'The description argument must contain at least 1 character and not more than 100'
 
     raw_response = client.update_indicator(
-        indicator_id=indicator_id, expiration_date_time=expiration_time,
-        description=description, severity=severity
-    )
+        indicator_id=indicator_id, expiration_date_time=expiration_time, description=description, severity=severity)
     indicator = raw_response.copy()
     indicator['severity'] = NUMBER_TO_SEVERITY.get(indicator['severity'])
     human_readable = tableToMarkdown(
@@ -2286,13 +2383,119 @@ def delete_indicator_command(client: MsClient, args: dict) -> str:
         human readable
     """
     indicator_id = args.get('indicator_id', '')
-    client.delete_indicator(indicator_id)
+    client.delete_indicator(indicator_id, GRAPH_INDICATOR_ENDPOINT)
     return f'Indicator ID: {indicator_id} was successfully deleted'
+
+
+def sc_delete_indicator_command(client: MsClient, args: Dict[str, str]) -> CommandResults:
+    """Deletes an indicator
+    https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/delete-ti-indicator-by-id?view=o365-worldwide
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR.
+            Must contains 'indicator_id'
+    Returns:
+          An indication of whether the indicator was deleted successfully.
+    """
+    indicator_id = args['indicator_id']
+    client.delete_indicator(indicator_id, SECURITY_CENTER_INDICATOR_ENDPOINT, use_security_center=True)
+    return CommandResults(readable_output=f'Indicator ID: {indicator_id} was successfully deleted')
+
+
+def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -> CommandResults:
+    """Updates an indicator if exists, if does not exist, create new one
+    Note: CIDR notation for IPs is not supported.
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR.
+           Must contains 'indicator_value', 'indicator_type','indicator_description', 'indicator_title', and 'action'.
+
+    """
+    indicator_value = args['indicator_value']
+    indicator_type = args['indicator_type']
+    action = args['action']
+    severity = args.get('severity')
+    expiration_time = get_future_time(args.get('expiration_time', '1 day'))
+    indicator_description = args['indicator_description']
+    indicator_title = args['indicator_title']
+    indicator_application = args.get('indicator_application', '')
+    recommended_actions = args.get('recommended_actions', '')
+    rbac_group_names = argToList(args.get('rbac_group_names', []))
+
+    indicator = client.create_update_indicator_security_center_api(
+        indicator_value=indicator_value, expiration_date_time=expiration_time,
+        description=indicator_description, severity=severity, indicator_type=indicator_type, action=action,
+        indicator_title=indicator_title, indicator_application=indicator_application,
+        recommended_actions=recommended_actions, rbac_group_names=rbac_group_names
+    )
+    if indicator:
+        indicator_value = indicator.get('indicatorValue')  # type:ignore
+        dbot_indicator = get_indicator_dbot_object(indicator)
+        human_readable = tableToMarkdown(f'Indicator {indicator_value} was updated successfully.',
+                                         indicator, headers=list(SC_INDICATORS_HEADERS), removeNull=True)
+        return CommandResults(outputs=indicator, indicator=dbot_indicator,
+                              readable_output=human_readable, outputs_key_field='id',
+                              outputs_prefix='MicrosoftATP.Indicators')
+    else:
+        return CommandResults(readable_output=f'Indicator {indicator_value} was NOT updated.')
+
+
+def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Union[CommandResults, List[CommandResults]]:
+    """
+    https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-ti-indicators-collection?view=o365-worldwide
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR. May include 'indicator_id' and 'page_size'
+
+    Returns:
+        human_readable, outputs.
+    """
+    limit = arg_to_number(args.get('limit', 50))
+    raw_response = client.sc_list_indicators(args.get('indicator_id'), limit)
+    if raw_response:
+        command_results = []
+        for indicator in raw_response:
+            indicator_value = indicator.get('indicatorValue')
+            dbot_indicator = get_indicator_dbot_object(indicator)
+            human_readable = tableToMarkdown(f'Results found in Microsoft Defender ATP SC for value: {indicator_value}',
+                                             indicator, headers=list(SC_INDICATORS_HEADERS), removeNull=True)
+            command_results.append(CommandResults(outputs=indicator, indicator=dbot_indicator,
+                                                  readable_output=human_readable, outputs_key_field='id',
+                                                  outputs_prefix='MicrosoftATP.Indicators'))
+        return command_results
+    else:
+        return CommandResults(readable_output='No indicators found')
 
 
 def test_module(client: MsClient):
     client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
     demisto.results('ok')
+
+
+def get_dbot_indicator(dbot_type, dbot_score, value):
+    if dbot_type == DBotScoreType.FILE:
+        hash_type = get_hash_type(value)
+        if hash_type == 'md5':
+            return Common.File(dbot_score=dbot_score, md5=value)
+        if hash_type == 'sha1':
+            return Common.File(dbot_score=dbot_score, sha1=value)
+        if hash_type == 'sha256':
+            return Common.File(dbot_score=dbot_score, sha256=value)
+    if dbot_type == DBotScoreType.IP:
+        return Common.IP(ip=value, dbot_score=dbot_score)
+    if dbot_type == DBotScoreType.DOMAIN:
+        return Common.Domain(domain=value, dbot_score=dbot_score)
+    if dbot_type == DBotScoreType.URL:
+        return Common.URL(url=value, dbot_score=dbot_score)
+
+
+def get_indicator_dbot_object(indicator):
+    indicator_type = INDICATOR_TYPE_TO_DBOT_TYPE[indicator.get('indicatorType')]
+    indicator_value = indicator.get('indicatorValue')
+    dbot = Common.DBotScore(indicator=indicator_value, indicator_type=indicator_type,
+                            score=Common.DBotScore.NONE)  # type:ignore
+    return get_dbot_indicator(indicator_type, dbot, indicator_value)
 
 
 ''' EXECUTION CODE '''
@@ -2432,6 +2635,13 @@ def main():
             return_outputs(*update_indicator_command(client, args))
         elif command == 'microsoft-atp-indicator-delete':
             return_outputs(delete_indicator_command(client, args))
+        # using security-center api for indicators
+        elif command in ('microsoft-atp-sc-indicator-list', 'microsoft-atp-sc-indicator-get-by-id'):
+            return_results(sc_list_indicators_command(client, args))
+        elif command in ('microsoft-atp-sc-indicator-update', 'microsoft-atp-sc-indicator-create'):
+            return_results(sc_create_update_indicator_command(client, args))
+        elif command == 'microsoft-atp-sc-indicator-delete':
+            return_results(sc_delete_indicator_command(client, args))
     except Exception as err:
         return_error(str(err))
 

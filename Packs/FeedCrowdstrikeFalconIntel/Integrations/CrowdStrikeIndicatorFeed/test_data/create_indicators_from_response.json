@@ -152,5 +152,79 @@
     },
     "type": "Domain",
     "value": "abc1"
+  },
+  {
+    "fields": {
+      "actor": [],
+      "confidence": "high",
+      "creationdate": 1573579421,
+      "domainname": [],
+      "ipaddress": [],
+      "malwarefamily": [
+        "Gootkit"
+      ],
+      "reports": [],
+      "stixkillchainphases": [
+        "C2"
+      ],
+      "tags": [
+        "Malware/Gootkit"
+      ],
+      "targets": [],
+      "threattypes": [
+        {
+          "threatcategory": "Criminal"
+        },
+        {
+          "threatcategory": "Banking"
+        }
+      ],
+      "updateddate": 1612070569,
+      "vulnerabilities": []
+    },
+    "rawJSON": {
+      "_marker": "1234",
+      "actors": [],
+      "deleted": false,
+      "domain_types": [],
+      "id": "file_abc1",
+      "indicator": "abc1",
+      "ip_address_types": [],
+      "kill_chains": [
+        "C2"
+      ],
+      "labels": [
+        {
+          "created_on": 1588309967,
+          "last_valid_on": 1588309967,
+          "name": "Malware/Gootkit"
+        }
+      ],
+      "last_updated": 1612070569,
+      "malicious_confidence": "high",
+      "malware_families": [
+        "Gootkit"
+      ],
+      "published_date": 1573579421,
+      "relations": [
+        {
+          "created_date": 1609238446,
+          "id": "hash_sha256_1234567890",
+          "indicator": "1234567890",
+          "last_valid_date": 1609238446,
+          "type": "hash_sha256"
+        }
+      ],
+      "reports": [],
+      "targets": [],
+      "threat_types": [
+        "Criminal",
+        "Banking"
+      ],
+      "type": "hash_md5",
+      "vulnerabilities": []
+    },
+    "type": "File",
+    "value": "abc1"
   }
 ]
