@@ -1,8 +1,18 @@
-## BaseIntegration Help
+## Palo Alto Networks Cortex XDR - XQL query engine
+Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+### Generate an API Key and API Key ID
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+1. In your Cortex XDR platform, go to **Settings**.
 
+2. Click the **+New Key** button in the top right corner.
+
+3. Generate a key of type **Advanced**.
+
+4. Copy and paste the key.
+
+5. From the ID column, copy the Key ID.
+
+### URL
+1. In your Cortex XDR platform, go to **Settings**.
+2. Click the **Copy URL** button in the top right corner.
