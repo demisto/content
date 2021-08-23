@@ -11,7 +11,7 @@ args:
   name: forceModel
   predefined:
   - 'True'
-  - Fals
+  - 'False'
   required: false
   secret: false
 commonfields:
