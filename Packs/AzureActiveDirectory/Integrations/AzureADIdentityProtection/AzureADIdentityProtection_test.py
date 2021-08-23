@@ -174,7 +174,7 @@ def test_fetch_all_incidents(mocker):
     assert len(incidents) == 3
     # TODO Implement
     # assert incidents[0].get('name') == 'Carbon Black EDR: 1 svchost.exe'
-    assert len(last_item_time) == dateparser.parse('2021-07-15T11:02:54Z')
+    assert last_item_time == dateparser.parse('2021-07-15T11:02:54Z')
 
 
 def test_fetch_new_incidents(mocker):
@@ -194,4 +194,4 @@ def test_fetch_new_incidents(mocker):
     assert len(incidents) == 1
     # TODO Implement
     # assert incidents[0].get('name') == 'Carbon Black EDR: 1 svchost.exe'
-    assert len(last_item_time) == dateparser.parse('2021-07-25T11:02:54Z')
+    assert last_item_time == dateparser.parse('2021-07-25T11:02:54Z')
