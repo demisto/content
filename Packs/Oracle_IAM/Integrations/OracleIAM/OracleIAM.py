@@ -15,8 +15,6 @@ ERROR_CODES_TO_SKIP = [
 
 
 def build_body_request_for_update_user(old_user_data, new_user_data):
-    data = {"schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"]}
-
     operations = []
     for key, value in new_user_data.items():
         operation = {
@@ -25,7 +23,11 @@ def build_body_request_for_update_user(old_user_data, new_user_data):
             "value": [value] if key in ("emails", "phoneNumbers", "address") else value
         }
         operations.append(operation)
-    data.update({"Operations": operations})
+
+    data = {
+        "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+        "Operations": operations
+    }
 
     return data
 
@@ -68,7 +70,7 @@ class Client(BaseClient):
 
         return self.get_access_token()
 
-    def get_user_by_id(self, user_id) -> 'IAMUserAppData':
+    def get_user_by_id(self, user_id):
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
@@ -157,7 +159,7 @@ class Client(BaseClient):
 
         return IAMUserAppData(user_id, username, is_active, user_app_data)
 
-    def enable_user(self, user_id: str) -> 'IAMUserAppData':
+    def enable_user(self, user_id: str):
         """ Enables a user in the application using REST API.
 
         :type user_id: ``str``
@@ -191,7 +193,7 @@ class Client(BaseClient):
             return IAMUserAppData(user_id, user_name, is_active, user_app_data)
         return None
 
-    def disable_user(self, user_id: str) -> 'IAMUserAppData':
+    def disable_user(self, user_id: str):
         """ Disables a user in the application using REST API.
 
         :type user_id: ``str``
@@ -433,7 +435,7 @@ def get_error_details(res: Dict[str, Any]) -> str:
     :return: The parsed error details.
     :rtype: ``str``
     """
-    details = res.get('detail')
+    details = str(res.get('detail'))
     return details
 
 
@@ -480,7 +482,7 @@ def get_group_command(client, args):
                                             errorCode=res_json.get('code'), errorMessage=res_json.get('message'),
                                             details=res_json)
 
-    readable_output = tableToMarkdown(f'Oracle Cloud Get Group:', generic_iam_context.data, removeNull=True)
+    readable_output = tableToMarkdown('Oracle Cloud Get Group:', generic_iam_context.data, removeNull=True)
 
     return CommandResults(
         raw_response=generic_iam_context.data,
@@ -510,7 +512,7 @@ def create_group_command(client, args):
         generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=res_json.get('code'),
                                             errorMessage=res_json.get('message'), details=res_json)
 
-    readable_output = tableToMarkdown(f'Oracle Cloud Create Group:', generic_iam_context.data, removeNull=True)
+    readable_output = tableToMarkdown('Oracle Cloud Create Group:', generic_iam_context.data, removeNull=True)
 
     return CommandResults(
         raw_response=generic_iam_context.data,
@@ -579,7 +581,7 @@ def update_group_command(client, args):
                                             errorCode=res_json.get('code'),
                                             errorMessage=res_json.get('message'), details=res_json)
 
-    readable_output = tableToMarkdown(f'Oracle Cloud Update Group:', generic_iam_context.data, removeNull=True)
+    readable_output = tableToMarkdown('Oracle Cloud Update Group:', generic_iam_context.data, removeNull=True)
 
     return CommandResults(
         raw_response=generic_iam_context.data,
@@ -611,7 +613,7 @@ def delete_group_command(client, args):
                                             errorCode=res_json.get('code'), errorMessage=res_json.get('message'),
                                             details=res_json)
 
-    readable_output = tableToMarkdown(f'Oracle Cloud Delete Group:', generic_iam_context.data, removeNull=True)
+    readable_output = tableToMarkdown('Oracle Cloud Delete Group:', generic_iam_context.data, removeNull=True)
 
     return CommandResults(
         raw_response=generic_iam_context.data,

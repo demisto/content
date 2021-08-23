@@ -1,5 +1,5 @@
 import requests_mock
-from OracleIAM import Client, get_mapping_fields, main
+from OracleIAM import Client, main
 from IAMApiModule import *
 
 APP_USER_OUTPUT = {
@@ -102,7 +102,7 @@ class TestOracleIAM:
         assert outputs.get('errorCode') == IAMErrors.USER_DOES_NOT_EXIST[0]
         assert outputs.get('errorMessage') == IAMErrors.USER_DOES_NOT_EXIST[1]
 
-    def test_get_user_command__bad_response(self):
+    def test_get_user_command__bad_response(self, mocker):
         """
         Given:
             - An app client object
@@ -306,7 +306,7 @@ class TestOracleIAM:
             user_profile = IAMCommand(attr='username').disable_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
-    
+
         assert outputs.get('action') == IAMActions.DISABLE_USER
         assert outputs.get('success') is True
         assert outputs.get('skipped') is True
@@ -336,7 +336,7 @@ class TestOracleIAM:
 
         with requests_mock.Mocker() as m:
             m.post('https://test.com/oauth2/v1/token', json={})
-            m.get(f'https://test.com/admin/v1/Schemas/urn:ietf:params:scim:schemas:core:2.0:User', json=schema)
+            m.get('https://test.com/admin/v1/Schemas/urn:ietf:params:scim:schemas:core:2.0:User', json=schema)
 
             main()
 
