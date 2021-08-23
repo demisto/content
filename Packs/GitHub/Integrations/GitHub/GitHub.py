@@ -1886,6 +1886,11 @@ def get_path_data():
 
 
 def github_releases_list_command():
+    """
+    Gets releases data of given repository in given organization.
+    Returns:
+        CommandResults data.
+    """
     args: Dict[str, Any] = demisto.args()
 
     repo: str = args.get('repository') or REPOSITORY
