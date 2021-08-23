@@ -76,6 +76,10 @@
                     },
                     "simple": ""
                 },
+                "Email Body Format": {
+                    "complex": null,
+                    "simple": "BodyType"
+                },
                 "Email CC": {
                     "complex": {
                         "accessor": "",
@@ -105,6 +109,10 @@
                 "Email HTML": {
                     "complex": null,
                     "simple": "Body"
+                },
+                "Email Headers": {
+                    "complex": null,
+                    "simple": "Headers"
                 },
                 "Email Message ID": {
                     "complex": {
