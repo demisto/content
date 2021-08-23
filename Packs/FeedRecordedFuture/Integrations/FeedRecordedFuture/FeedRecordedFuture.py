@@ -159,6 +159,8 @@ class Client(BaseClient):
     def get_batches_from_file(self, limit):
 
         file_stream = open("response.txt", 'rt')
+        columns = file_stream.readline()  # get the headers from the csv file.
+        columns = columns.replace("\"", "").strip().split(",")  # '"a","b"\n' -> ["a", "b"]
 
         batch_size = limit if limit else BATCH_SIZE
         while True:
@@ -170,7 +172,7 @@ class Client(BaseClient):
                 os.remove("response.txt")
                 return
 
-            yield csv.DictReader(feed_batch)
+            yield csv.DictReader(feed_batch, fieldnames=columns)
 
     def calculate_indicator_score(self, risk_from_feed):
         """Calculates the Dbot score of an indicator based on its Risk value from the feed.
@@ -420,6 +422,29 @@ def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
     return hr, {'RecordedFutureFeed.RiskRule(val.Name == obj.Name)': entry_result}, result
 
 
+def remove_duplicate_indicators(indicators: List[Dict]):
+    """Removes duplicates in the indicators batch (including case letters duplicates)
+     due to performance issue - https://github.com/demisto/etc/issues/25033
+     The issue is resolved in server 6.0.1 but we still support earlier versions.
+
+        Args:
+            indicators: A list of indicators to remove duplicates from
+        Returns:
+            list. A list containing only unique indicators
+        """
+
+    non_duplicates_dict: Dict[str, Dict] = {}
+    for indicator in indicators:
+        indicator_value = indicator.get("value")
+        if indicator_value:
+            # each value is added to the dict only ones
+            if not non_duplicates_dict.get(str(indicator_value).lower()):
+                non_duplicates_dict[str(indicator_value.lower())] = indicator
+
+    unique_indicators_list = list(non_duplicates_dict.values())
+    return unique_indicators_list
+
+
 def main():
     params = demisto.params()
     client = Client(params.get('indicator_type'), params.get('api_token'), params.get('services'),
@@ -438,17 +463,8 @@ def main():
     try:
         if demisto.command() == 'fetch-indicators':
             indicators_batch = fetch_indicators_command(client, client.indicator_type)
-            non_duplicates_dict: Dict[str, Dict] = dict()
             for indicators in indicators_batch:
-                for indicator in indicators:
-                    # remove duplicates due to performance issue -
-                    # https://github.com/demisto/etc/issues/25033
-                    indicator_value = indicator.get("value")
-                    if indicator_value:
-                        # each value is added to the dict only ones
-                        if not non_duplicates_dict.get(str(indicator_value).lower()):
-                            non_duplicates_dict[str(indicator_value.lower())] = indicator
-                unique_indicators_list = list(non_duplicates_dict.values())
+                unique_indicators_list = remove_duplicate_indicators(indicators)
                 demisto.createIndicators(unique_indicators_list)
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type:ignore
@@ -458,5 +474,5 @@ def main():
         return_error(err_msg)
 
 
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

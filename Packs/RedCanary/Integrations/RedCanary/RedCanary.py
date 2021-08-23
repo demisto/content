@@ -1,3 +1,5 @@
+from typing import Generator
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -18,7 +20,7 @@ TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 def get_time_obj(t, time_format=None):
-    '''
+    """
     convert a time string to datetime object
 
     :type t: ``string`` or ``int``
@@ -29,7 +31,7 @@ def get_time_obj(t, time_format=None):
 
     :return: datetime object
     :rtype: ``datetime``
-    '''
+    """
     if time_format is not None:
         return datetime.strptime(t, time_format)
     if isinstance(t, int):
@@ -44,22 +46,22 @@ def get_time_obj(t, time_format=None):
 
 
 def get_time_str(time_obj, time_format=None):
-    '''
+    """
     convert a datetime object to time format string
 
-    :type t: ``datetime``
-    :param t: time object (required)
+    :type time_obj: ``datetime``
+    :param time_obj: time object (required)
 
     :type time_format: ``string``
     :param time_format: time format string (optional)
 
     :return: time format string
     :rtype: ``string``
-    '''
+    """
     if time_format is None:
         return time_obj.isoformat().split('.')[0] + 'Z'
     else:
-        return datetime.strftime(t, time_format)  # type:ignore  # pylint: disable=E0602
+        return datetime.strftime(time_obj, time_format)  # type:ignore  # pylint: disable=E0602
 
 
 def http_request(requests_func, url_suffix, **kwargs):
@@ -177,10 +179,9 @@ def get_full_timeline(detection_id, per_page=100):
     last_data = {}  # type:ignore
 
     while not done:
-        res = http_get('/detections/{}/timeline'.format(detection_id),
-                       params={
-                           'page': page,
-                           'per_page': per_page,
+        res = http_get('/detections/{}/timeline'.format(detection_id), params={
+            'page': page,
+            'per_page': per_page,
         })
         current_data = res.get('data')
 
@@ -328,8 +329,7 @@ def detections_to_entry(detections, show_timeline=False):
     }
 
 
-def get_unacknowledged_detections(t, per_page=50):
-    # type: (datetime, int) -> Generator[dict, None, None]
+def get_unacknowledged_detections(t: datetime, per_page: int = 50) -> Generator[dict, None, None]:
     """ iterate over all unacknowledged detections later then time t
 
     Args:
@@ -432,10 +432,9 @@ def remediate_detection_command():
 
 @logger
 def remediate_detection(_id, remediation_state, comment):
-    res = http_patch('/detections/{}/update_remediation_state'.format(_id),
-                     data={
-                         'remediation_state': remediation_state,
-                         'comment': comment,
+    res = http_patch('/detections/{}/update_remediation_state'.format(_id), data={
+        'remediation_state': remediation_state,
+        'comment': comment,
     })
     return res
 
@@ -535,10 +534,9 @@ def execute_playbook_command():
 
 
 def execute_playbook(playbook_id, detection_id):
-    res = http_post('/exec/playbooks/{}/execute'.format(playbook_id),
-                    params={
-                        'resource_type': 'Detection',
-                        'resource_id': detection_id,
+    res = http_post('/exec/playbooks/{}/execute'.format(playbook_id), params={
+        'resource_type': 'Detection',
+        'resource_id': detection_id,
     })
 
     return res
@@ -555,11 +553,11 @@ def fetch_incidents(last_run):
         # first time fetching
         last_fetch = parse_date_range(demisto.params().get('fetch_time', '3 days'), TIME_FORMAT)[0]
 
-    LOG('iterating on detections, looking for more recent than {}'.format(last_fetch))
+    demisto.debug('iterating on detections, looking for more recent than {}'.format(last_fetch))
     incidents = []
     new_incidents_ids = []
     for raw_detection in get_unacknowledged_detections(last_fetch, per_page=2):
-        LOG('found a new detection in RedCanary #{}'.format(raw_detection['id']))
+        demisto.debug('found a new detection in RedCanary #{}'.format(raw_detection['id']))
         incident = detection_to_incident(raw_detection)
         # the rawJson is a string of dictionary e.g. - ('{"ID":2,"Type":5}')
         incident_id = json.loads(incident.get('rawJSON')).get("ID")
@@ -614,10 +612,10 @@ def main():
                 demisto.results(command_func())
 
     except Exception as e:
-        LOG(e.message)
+        LOG(str(e))
         if demisto.command() != 'test-module':
             LOG.print_log()
-        return_error('error has occurred: {}'.format(e.message, ))
+        return_error('error has occurred: {}'.format(str(e)))
 
 
 if __name__ in ('__builtin__', 'builtins'):

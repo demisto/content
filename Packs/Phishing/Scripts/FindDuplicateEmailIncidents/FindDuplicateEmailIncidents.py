@@ -54,7 +54,7 @@ def get_existing_incidents(input_args, current_incident_type):
         get_incidents_args['fromDate'] = DEFAULT_ARGS['existingIncidentsLookback']
     status_scope = input_args.get('statusScope', 'All')
     query_components = []
-    if 'query' in input_args:
+    if 'query' in input_args and input_args['query']:
         query_components.append(input_args['query'])
     if status_scope == 'ClosedOnly':
         query_components.append('status:closed')

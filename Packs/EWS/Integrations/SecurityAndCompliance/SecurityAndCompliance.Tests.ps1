@@ -58,8 +58,8 @@ Describe 'StringRegexParse' {
             $parsed_object = ParseResults $string
             $parsed_object | Should -Be $null
         }
-
-        It "Single Results" {
+        # for preview result
+        It "Single Results Preview" {
             $string = "{Location: user@onmicrosoft.com; Sender: user; Subject: xxx xxx; Type: Email; Size: 1; Received Time: 5/14/2020 6:45:31 PM; Data Link: data}"
             $expected_object = @{
                 "Location" = "user@onmicrosoft.com"
@@ -71,12 +71,12 @@ Describe 'StringRegexParse' {
                 "DataLink" = "data"
             }
 
-            $parsed_object = ParseResults $string 1
+            $parsed_object = ParseResults $string 1 "Preview"
 
             Compare-Object $expected_object $parsed_object -Property Location, Sender, Subject, Type, ReceivedTime ,Size, DataLink, Count | Should -Be $null
         }
 
-        It "Multiple Results" {
+        It "Multiple Results Preview" {
             $string = "{Location: user1@onmicrosoft.com; Sender: user one; Subject: xxx xxx; Type: Email; Size: 1; Received Time: 5/14/2020 6:45:31 PM; Data Link: data1,
                 Location: user2@onmicrosoft.com; Sender: user two; Subject: yyy yyy; Type: Email; Size: 2; Received Time: 5/14/2020 6:45:32 PM; Data Link: data2,
                 Location: user3@onmicrosoft.com; Sender: user three; Subject: zzz zzz; Type: Email; Size: 3; Received Time: 5/14/2020 6:45:33 PM; Data Link: data3/data}"
@@ -109,10 +109,56 @@ Describe 'StringRegexParse' {
             }
             )
 
-            $parsed_objects = ParseResults $string 3
+            $parsed_objects = ParseResults $string 3 "Preview"
 
             for ($i = 0; $i -lt $expected_objects.Count; $i++) {
                 Compare-Object $expected_objects[$i] $parsed_objects[$i] -Property Location, Sender, Subject, Type, ReceivedTime ,Size, DataLink, Count | Should -Be $null
+            }
+        }
+        # for Purge result
+        It "Single Results Purge" {
+            $string = "{Location: testp@demistodev.onmicrosoft.com; Item count: 10; Total size: 2890210; Failed count: 0; }"
+            $expected_object = @{
+                "Location" = "testp@demistodev.onmicrosoft.com"
+                "ItemCount" = 10
+                "TotalSize" = 2890210
+                "FailedCount" = 0
+            }
+
+            $parsed_object = ParseResults $string 1 "Purge"
+
+            Compare-Object $expected_object $parsed_object -Property Location
+        }
+
+        It "Multiple Results Purge" {
+            $string = "Details:{Location: testp@demistodev.onmicrosoft.com; Item count: 10; Total size: 2890210; Failed count: 0; ,
+                        Location: aaaaa@demistodev.onmicrosoft.com; Item count: 10; Total size: 2814884; Failed count: 0; ,
+                        Location: FileTestTeam@demistodev.onmicrosoft.com; Item count: 10; Total size: 2791289; Failed count: 0; }"
+                        ""
+            $expected_objects = @(@{
+                "Location" = "testp@demistodev.onmicrosoft.com"
+                "ItemCount" = 10
+                "TotalSize" = 2890210
+                "FailedCount" = 0
+            },
+            @{
+                "Location" = "aaaaa@demistodev.onmicrosoft.com"
+                "ItemCount" = 10
+                "TotalSize" = 2814884
+                "FailedCount" = 0
+            },
+            @{
+                "Location" = "FileTestTeam@demistodev.onmicrosoft.com"
+                "ItemCount" = 10
+                "TotalSize" = 2791289
+                "FailedCount" = 0
+            }
+            )
+
+            $parsed_objects = ParseResults $string 3 "Purge"
+
+            for ($i = 0; $i -lt $expected_objects.Count; $i++) {
+                Compare-Object $expected_objects[$i] $parsed_objects[$i] -Property Location
             }
         }
     }

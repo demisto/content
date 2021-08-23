@@ -19,7 +19,7 @@ This integration was integrated and tested with version 2020.1.0.20200313 of Iva
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ivanti-heat-objects-list
 ***
@@ -371,7 +371,7 @@ Upload attachments to business objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry-id | The entry ID of the file in Demisto's context | Required | 
+| entry-id | The entry ID of the file in XSOAR's context | Required | 
 | rec-id | Buisiness object ID | Required | 
 | object-type | Type of object record | Required | 
 

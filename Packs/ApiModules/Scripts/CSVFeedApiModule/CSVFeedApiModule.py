@@ -6,13 +6,13 @@ from CommonServerUserPython import *
 import csv
 import gzip
 import urllib3
-from dateutil.parser import parse
 from typing import Optional, Pattern, Dict, Any, Tuple, Union, List
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
 # Globals
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class Client(BaseClient):
@@ -240,17 +240,13 @@ def module_test_command(client: Client, args):
 
 
 def date_format_parsing(date_string):
-    formatted_date = parse(date_string).isoformat()
-    if "+" in formatted_date:
-        formatted_date = formatted_date.split('+')[0]
-
-    if "." in formatted_date:
-        formatted_date = formatted_date.split('.')[0]
-
-    if not formatted_date.endswith('Z'):
-        formatted_date = formatted_date + 'Z'
-
-    return formatted_date
+    """
+    formats a datestring to the ISO-8601 format which the server expects to recieve
+    :param date_string: Date represented as a tring
+    :return: ISO-8601 date string
+    """
+    formatted_date = dateparser.parse(date_string, settings={'TIMEZONE': 'UTC'})
+    return formatted_date.strftime(DATE_FORMAT)
 
 
 def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tuple, str]]):
@@ -290,8 +286,10 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
     return fields_mapping
 
 
-def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, limit: int = 0, **kwargs):
+def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, limit: int = 0,
+                             create_relationships: bool = False, **kwargs):
     iterator = client.build_iterator(**kwargs)
+    relationships_of_indicator = []
     indicators = []
     config = client.feed_url_to_config or {}
     for url_to_reader in iterator:
@@ -309,11 +307,25 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                     indicator_type = determine_indicator_type(conf_indicator_type, default_indicator_type, auto_detect,
                                                               value)
                     raw_json['type'] = indicator_type
+                    # if relationships param is True and also the url returns relationships
+                    if create_relationships and config.get(url, {}).get('relationship_name'):
+                        if fields_mapping.get('relationship_entity_b'):
+                            relationships_lst = EntityRelationship(
+                                name=config.get(url, {}).get('relationship_name'),
+                                entity_a=value,
+                                entity_a_type=indicator_type,
+                                entity_b=fields_mapping.get('relationship_entity_b'),
+                                entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                    config.get(url, {}).get('relationship_entity_b_type')),
+                            )
+                            relationships_of_indicator = [relationships_lst.to_indicator()]
+
                     indicator = {
                         'value': value,
                         'type': indicator_type,
                         'rawJSON': raw_json,
-                        'fields': fields_mapping
+                        'fields': fields_mapping,
+                        'relationships': relationships_of_indicator,
                     }
                     indicator['fields']['tags'] = client.tags
 
@@ -337,7 +349,8 @@ def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None)
     except ValueError:
         raise ValueError('The limit argument must be a number.')
     auto_detect = demisto.params().get('auto_detect_type')
-    indicators_list = fetch_indicators_command(client, itype, auto_detect, limit)
+    relationships = demisto.params().get('create_relationships', False)
+    indicators_list = fetch_indicators_command(client, itype, auto_detect, limit, relationships)
     entry_result = indicators_list[:limit]
     hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'fields'])
     return hr, {}, indicators_list
@@ -365,6 +378,7 @@ def feed_main(feed_name, params=None, prefix=''):
                 params.get('indicator_type'),
                 params.get('auto_detect_type'),
                 params.get('limit'),
+                params.get('create_relationships')
             )
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):

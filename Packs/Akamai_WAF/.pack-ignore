@@ -1,2 +1,5 @@
 [file:README.md]
-ignore=RM102
+ignore=RM102,RM104
+
+[file:Akamai_WAF.yml]
+ignore=BA108,BA109

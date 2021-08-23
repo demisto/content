@@ -6,16 +6,20 @@
         "Rubrik Radar": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Rubrik CDM Cluster ID": {
+                    "complex": null,
+                    "simple": "cluster.id"
+                },
+                "Rubrik CDM Cluster Name": {
+                    "complex": null,
+                    "simple": "cluster.name"
+                },
                 "Rubrik Polaris Activity Series ID": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "activitySeriesId",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
@@ -42,26 +46,18 @@
                 "Rubrik Polaris Last Activity Status": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "lastActivityStatus",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Rubrik Polaris Last Updated": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "lastUpdated",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
@@ -69,55 +65,43 @@
                     "complex": null,
                     "simple": "message"
                 },
+                "Rubrik Polaris Analysis Pipeline": {
+                    "complex": null,
+                    "simple": "message"
+                },
                 "Rubrik Polaris Object ID": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "objectId",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Rubrik Polaris Object Name": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "objectName",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "Rubrik Polaris Object Type": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "objectType",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "severity": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "severity",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 }
@@ -126,7 +110,10 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-
+                "Hostnames": {
+                    "complex": null,
+                    "simple": "objectName"
+                }
             }
         }
     },

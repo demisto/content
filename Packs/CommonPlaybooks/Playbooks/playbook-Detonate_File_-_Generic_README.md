@@ -190,7 +190,3 @@ This playbook does not use any commands.
 | File.Malicious.Vendor | For malicious files, the vendor that made the decision. | String |
 | File.Malicious.Description | For malicious files, the reason that the vendor made the decision. | String |
 | ANYRUN.Task.Status | Task analysis status. | String |
-
-## Playbook Image
----
-![Detonate File - Generic](Insert the link to your image here)

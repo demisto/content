@@ -1,4 +1,5 @@
 from CommonServerPython import *
+
 import jwt
 import uuid
 import requests
@@ -19,6 +20,7 @@ URI_POLICIES = 'policies/v2'
 URI_ZONES = 'zones/v2'
 URI_THREATS = 'threats/v2'
 URI_LISTS = 'globallists/v2'
+URI_HOSTNAME = 'devices/v2/hostname'
 
 SCOPE_DEVICE_LIST = 'device:list'
 SCOPE_DEVICE_READ = 'device:read'
@@ -310,6 +312,84 @@ def get_device_request(device_id):
     return res
 
 
+def get_device_by_hostname():
+    hostname_id = demisto.args()['hostname']
+    device = get_hostname_request(hostname_id)
+    title = 'Cylance Protect Device ' + hostname_id
+    if device:
+        device_context = {
+            'AgentVersion': device['agent_version'],
+            'IPAddress': device['ip_addresses'],
+            'MACAdress': device['mac_addresses'],
+            'Hostname': device['host_name'],
+            'OSVersion': device['os_version'],
+            'UpdateAvailable': device['update_available'],
+            'BackgroundDetection': device['background_detection'],
+            'DateFirstRegistered': device['date_first_registered'],
+            'DateLastModified': device['date_last_modified'],
+            'DateOffline': device['date_offline'],
+            'IsSafe': device['is_safe'],
+            'LastLoggedInUser': device['last_logged_in_user'],
+            'State': device['state'],
+            'ID': device['id'],
+            'Name': device['name']
+        }
+        if device['update_type']:
+            device_context['UpdateType'] = device['update_type']
+        if device['policy']:
+            policy = {}
+            if device['policy']['id']:
+                policy['ID'] = device['policy']['id']
+            if device['policy']['name']:
+                policy['Name'] = device['policy']['name']
+            if policy:
+                device_context['Policy'] = policy
+        endpoint_context = {
+            'IPAddress': device['ip_addresses'],
+            'MACAdress': device['mac_addresses'],
+            'Hostname': device['host_name'],
+            'OSVersion': device['os_version']
+        }
+        ec = {
+            'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': endpoint_context,
+            'CylanceProtect.Device(val.ID && val.ID === obj.ID)': device_context
+        }
+
+        current_device = dict(device)
+        current_device['ip_addresses'] = ', '.join(current_device['ip_addresses'])
+        current_device['mac_addresses'] = ', '.join(current_device['mac_addresses'])
+        current_device['policy'] = current_device['policy']['name']
+        hr = tableToMarkdown(title, [current_device], headerTransform=underscoreToCamelCase, removeNull=True)
+
+    else:
+        ec = {}
+        hr = '### Device For Hostname ' + hostname_id + ' Was Not Found'
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': device,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': hr,
+        'EntryContext': ec
+    }
+
+    demisto.results(entry)
+
+
+def get_hostname_request(hostname):
+    access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + access_token
+    }
+    uri = '%s/%s' % (URI_HOSTNAME, hostname)
+    res = api_call(uri=uri, method='get', headers=headers)
+    if not res:
+        return None
+    return res[0]
+
+
 def update_device():
     device_id = demisto.args()['id']
 
@@ -388,13 +468,14 @@ def get_device_threats():
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
         dbot_score_array.append({
-            'Indicator': threat['name'],
+            'Indicator': threat.get('sha256'),
             'Type': 'file',
             'Vendor': 'Cylance Protect',
             'Score': dbot_score
         })
     if device_threats:
         threats_context = createContext(data=device_threats, keyTransform=underscoreToCamelCase)
+        threats_context = add_capitalized_hash_to_context(threats_context)
         ec = {
             'File': threats_context,
             'DBotScore': dbot_score_array
@@ -627,7 +708,7 @@ def update_zone_request(zone_id, name, policy_id, criticality):
 
 
 def get_threat():
-    sha256 = demisto.args()['sha256']
+    sha256 = demisto.args().get('sha256')
     threat = get_threat_request(sha256)
     if threat:
         dbot_score = 0
@@ -637,10 +718,11 @@ def get_threat():
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
         context_threat = createContext(data=threat, keyTransform=underscoreToCamelCase, removeNull=True)
+        context_threat = add_capitalized_hash_to_context(context_threat)
         ec = {
             'File': context_threat,
             'DBotScore': {
-                'Indicator': threat['name'],
+                'Indicator': sha256,
                 'Type': 'file',
                 'Vendor': 'Cylance Protect',
                 'Score': dbot_score
@@ -685,12 +767,13 @@ def get_threats():
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
         dbot_score_array.append({
-            'Indicator': threat['name'],
+            'Indicator': threat.get('sha256'),
             'Type': 'file',
             'Vendor': 'Cylance Protect',
             'Score': dbot_score
         })
     context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
+    context_threat = add_capitalized_hash_to_context(context_threat)
     ec = {
         'File': context_threat,
         'DBotScore': dbot_score_array
@@ -825,13 +908,14 @@ def get_list():
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
         dbot_score_array.append({
-            'Indicator': threat['name'],
+            'Indicator': threat['sha256'],
             'Type': 'file',
             'Vendor': 'Cylance Protect',
             'Score': dbot_score
         })
     if lst:
         context_list = createContext(data=lst, keyTransform=underscoreToCamelCase, removeNull=True)
+        context_list = add_capitalized_hash_to_context((context_list))
         ec = {
             'File': context_list,
             'DBotScore': dbot_score_array
@@ -1000,7 +1084,7 @@ def download_threat():
             }
 
         context[outputPaths['dbotscore']] = {
-            'Indicator': threat.get('name'),
+            'Indicator': threat.get('sha256'),
             'Type': 'file',
             'Vendor': 'Cylance Protect',
             'Score': dbot_score
@@ -1347,6 +1431,30 @@ def fetch_incidents():
     demisto.setLastRun({'time': current_run.isoformat().split('.')[0]})
 
 
+def add_capitalized_hash_to_context(threats_context):
+    """Add capitalized hash keys to the context such as SHA256 and MD5,
+    the keys are redundant since they are used for avoiding BC issues.
+
+    Args:
+        threats_context(list): list of dicts of context outputs for the threats of interest, each containing
+        the key 'Sha256' (and possibly (Md5)).
+
+    Returns:
+        threats_context(list): list of dicts of context outputs for the threats of interest, each containing
+        the key and value 'Sha256' (and possibly Md5) as well as the key and value 'SHA256' (and possible MD5).
+    """
+    if not isinstance(threats_context, list):
+        threats_context = [threats_context]
+
+    for context_item in threats_context:
+        if context_item.get('Sha256'):
+            context_item['SHA256'] = context_item.get('Sha256')
+        if context_item.get('Md5'):
+            context_item['MD5'] = context_item.get('Md5')
+
+    return threats_context
+
+
 # EXECUTION
 LOG('command is %s' % (demisto.command(),))
 try:
@@ -1362,6 +1470,9 @@ try:
 
     elif demisto.command() == 'cylance-protect-get-device':
         get_device()
+
+    elif demisto.command() == 'cylance-protect-get-device-by-hostname':
+        get_device_by_hostname()
 
     elif demisto.command() == 'cylance-protect-update-device':
         update_device()

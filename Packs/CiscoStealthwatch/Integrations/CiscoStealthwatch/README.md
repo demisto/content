@@ -1,9 +1,9 @@
 Scalable visibility and security analytics.
-This integration was integrated and tested with version 1.0.0 of Cisco Stealthwatch
+This integration was integrated and tested with version 1.0.0 of Cisco Secure Network Analytics (Stealthwatch)
 ## Configure Cisco Stealthwatch on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco Stealthwatch.
+2. Search for Cisco Secure Network Analytics (Stealthwatch).
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -1777,7 +1777,7 @@ Initializes the list of security events for a domain (called tenant on the API).
 | --- | --- | --- |
 | CiscoStealthwatch.SecurityEventStatus.id | str | The ID of the security event. | 
 | CiscoStealthwatch.SecurityEventStatus.searchJobStatus | str | The status of the search job for the security event. | 
-| CiscoStealthwatch.SecurityEventStatus.percentComplete  | str | The percent of the security event that is completed. | 
+| CiscoStealthwatch.SecurityEventStatus.percentComplete | str | The percent of the security event that is completed. | 
 
 
 #### Command Example

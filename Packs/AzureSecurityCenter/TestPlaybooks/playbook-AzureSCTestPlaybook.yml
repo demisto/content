@@ -111,12 +111,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      asc_location: {}
-      expand: {}
-      filter: {}
-      resource_group_name: {}
-      select: {}
-      subscription_id: {}
+      asc_location:
+        simple: centralus
     separatecontext: false
     view: |-
       {
@@ -310,8 +306,7 @@ tasks:
           transformers:
           - operator: FirstArrayElement
       asc_location:
-        simple: westeurope
-      resource_group_name: {}
+        simple: centralus
     separatecontext: false
     view: |-
       {

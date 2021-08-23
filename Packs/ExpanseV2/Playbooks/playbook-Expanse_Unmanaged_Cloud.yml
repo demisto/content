@@ -1,0 +1,952 @@
+id: Expanse Unmanaged Cloud
+version: -1
+name: Expanse Unmanaged Cloud
+description: |
+  Subplaybook for bringing rogue cloud accounts under management.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2ec43d18-a2c3-4a9f-801f-7d58c2f13052
+    type: start
+    task:
+      id: 2ec43d18-a2c3-4a9f-801f-7d58c2f13052
+      version: -1
+      name: ""
+      iscommand: false
+      description: ''
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 966cfc74-e977-42b5-8c0d-324a24149d09
+    type: title
+    task:
+      id: 966cfc74-e977-42b5-8c0d-324a24149d09
+      version: -1
+      name: Find Related Assets from Expanse
+      type: title
+      iscommand: false
+      description: ''
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9e2b6d27-d02a-4f38-8a6a-eed143a47722
+    type: regular
+    task:
+      id: 9e2b6d27-d02a-4f38-8a6a-eed143a47722
+      version: -1
+      name: expanse-get-services
+      description: Retrieve all Expanse services matching the supplied parameters.
+      script: ExpanseV2|||expanse-get-services
+      type: regular
+      iscommand: true
+      brand: ExpanseV2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      activity_status: {}
+      business_unit: {}
+      cloud_management_status: {}
+      content_search: {}
+      country_code: {}
+      discovery_type: {}
+      domain_search: {}
+      inet_search:
+        simple: ${inputs.ExpanseCloudManagedIPv4}
+      limit: {}
+      port_number: {}
+      provider: {}
+      service_type: {}
+      sort: {}
+      tag: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: e9c90fa5-0954-4431-8ec7-88b53ca53fec
+    type: condition
+    task:
+      id: e9c90fa5-0954-4431-8ec7-88b53ca53fec
+      version: -1
+      name: Was associated domain found?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "6"
+    scriptarguments:
+      value:
+        complex:
+          root: Expanse.Service
+          accessor: domains
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1030,
+          "y": 1705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 5a57b39e-8dfc-4811-8b70-c4b93f9b0536
+    type: condition
+    task:
+      id: 5a57b39e-8dfc-4811-8b70-c4b93f9b0536
+      version: -1
+      name: Was associated certificate found?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "5"
+      - "14"
+    scriptarguments:
+      value:
+        complex:
+          root: Expanse.Service.certificates.certificate
+          accessor: md5Fingerprint
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 1705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 614f810f-10d8-457c-89fc-772eda0b8457
+    type: regular
+    task:
+      id: 614f810f-10d8-457c-89fc-772eda0b8457
+      version: -1
+      name: Fetch Certificate
+      description: Provides data enrichment for an X509 Certificate from Expanse.
+      script: ExpanseV2|||certificate
+      type: regular
+      iscommand: true
+      brand: ExpanseV2
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      certificate:
+        complex:
+          root: Expanse.Service.certificates.certificate
+          accessor: md5Fingerprint
+      set_expanse_fields: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 2020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 0271cea7-5da9-4572-834f-4c169c970cab
+    type: regular
+    task:
+      id: 0271cea7-5da9-4572-834f-4c169c970cab
+      version: -1
+      name: Fetch Domain
+      description: Provides data enrichment for domains.
+      script: ExpanseV2|||domain
+      type: regular
+      iscommand: true
+      brand: ExpanseV2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      domain:
+        complex:
+          root: Expanse.Service.domains
+          accessor: domain
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1030,
+          "y": 2020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 3de4838c-0e07-4bb8-8cf1-0982de9c844b
+    type: condition
+    task:
+      id: 3de4838c-0e07-4bb8-8cf1-0982de9c844b
+      version: -1
+      name: Do Services Exist?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "3"
+      - "4"
+    scriptarguments:
+      value:
+        simple: ${Expanse.Service}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 6d99090b-9a10-4ffc-8408-10eabdd01fb9
+    type: title
+    task:
+      id: 6d99090b-9a10-4ffc-8408-10eabdd01fb9
+      version: -1
+      name: Is Asset Unmanaged?
+      type: title
+      description: ''
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: e994a279-bdf6-422a-8f1e-8b4197590f3c
+    type: condition
+    task:
+      id: e994a279-bdf6-422a-8f1e-8b4197590f3c
+      version: -1
+      description: ''
+      name: Is Incident Asset Unmanaged?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Expanse.Issue.cloudManagementStatus
+                accessor: id
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: UnmanagedCloud
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: aad784b8-2fdc-4cbc-8ef3-872fdff3e6db
+    type: regular
+    task:
+      id: aad784b8-2fdc-4cbc-8ef3-872fdff3e6db
+      version: -1
+      name: Fetch Issue From Expanse
+      description: Retrieve Expanse issue by issue ID.
+      script: ExpanseV2|||expanse-get-issue
+      type: regular
+      iscommand: true
+      brand: ExpanseV2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      issue_id:
+        simple: ${inputs.ExpanseCloudManagedIssueId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 2b878eb8-725b-41cf-8591-03d1b7c7eab8
+    type: title
+    task:
+      id: 2b878eb8-725b-41cf-8591-03d1b7c7eab8
+      version: -1
+      name: Enrichment
+      type: title
+      description: ''
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: d725a3ff-dd03-471e-8bcf-60aa729185a0
+    type: title
+    task:
+      id: d725a3ff-dd03-471e-8bcf-60aa729185a0
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 50be9179-755c-4633-811f-767407b702de
+    type: regular
+    task:
+      id: 50be9179-755c-4633-811f-767407b702de
+      version: -1
+      name: Print Related Certificates
+      description: Convert an array to a nice table display. Usually, from the context.
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      columns:
+        simple: subjectName,subjectAlternativeNames,subjectEmail,subjectOrg
+      data:
+        complex:
+          root: Expanse.Service.certificates
+          accessor: certificate
+      title:
+        simple: Related Certificates Subject Details
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 2390
+        }
+      }
+    note: false
+    evidencedata:
+      description: {}
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: ed47d70f-bede-4a5d-8194-b0e2798625aa
+    type: condition
+    task:
+      id: ed47d70f-bede-4a5d-8194-b0e2798625aa
+      version: -1
+      name: Do Related Emails Exist?
+      type: condition
+      description: ''
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      certificatePoC:
+      - "21"
+      domainPoC:
+      - "22"
+      subjectEmail:
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: subjectEmail
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Expanse.Service.certificates.certificate
+                accessor: subjectEmail
+            iscontext: true
+    - label: certificatePoC
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Expanse.Certificate.annotations.pointOfContact
+                accessor: email
+            iscontext: true
+    - label: domainPoC
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Expanse.Domain.annotations.pointOfContact
+                accessor: email
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 2770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 24039c66-2cee-4f0e-868a-8f2705a2662a
+    type: regular
+    task:
+      id: 24039c66-2cee-4f0e-868a-8f2705a2662a
+      version: -1
+      name: Print Found Certificates
+      description: Convert an array to a nice table display. Usually, from the context.
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      columns:
+        simple: commonName,annotations.contact.email,providers.name
+      data:
+        simple: ${Expanse.Certificate}
+      title:
+        simple: Related Certificate Details
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 394df8b0-188b-4c81-8b8b-0498c064125d
+    type: regular
+    task:
+      id: 394df8b0-188b-4c81-8b8b-0498c064125d
+      version: -1
+      name: Print Found Domains
+      description: Convert an array to a nice table display. Usually, from the context.
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      columns:
+        simple: domain, annotations.contact.email,providers.name
+      data:
+        simple: ${Expanse.Domain}
+      title:
+        simple: Related Domain Details
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1030,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 8133aacc-644b-473e-82ef-80c5e39e9281
+    type: condition
+    task:
+      id: 8133aacc-644b-473e-82ef-80c5e39e9281
+      version: -1
+      name: Domain Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "17"
+    scriptarguments:
+      value:
+        simple: ${Expanse.Domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1030,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 85f5f08c-6fed-4162-8f3d-479d857ff2d0
+    type: condition
+    task:
+      id: 85f5f08c-6fed-4162-8f3d-479d857ff2d0
+      version: -1
+      name: Certificate Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "16"
+    scriptarguments:
+      value:
+        simple: ${Expanse.Certificate}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 2849ab02-f465-4024-8444-a45d144ff34d
+    type: regular
+    task:
+      id: 2849ab02-f465-4024-8444-a45d144ff34d
+      version: -1
+      name: Send email to certificate Subject email
+      description: Send an email
+      script: "|||send-mail"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: ${inputs.ExpanseCloudManagedEmailBody}
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: Security Issue on cloud asset - ${Expanse.Certificate}
+      templateParams: {}
+      to:
+        complex:
+          root: Expanse.Service.certificates.certificate
+          accessor: subjectEmail
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 8fbeb774-464c-4fde-81d0-0ff44f384047
+    type: regular
+    task:
+      id: 8fbeb774-464c-4fde-81d0-0ff44f384047
+      version: -1
+      name: Send email to certificate owner
+      description: Send an email
+      script: "|||send-mail"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: ${inputs.ExpanseCloudManagedEmailBody}
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: Security Issue on cloud asset - ${Expanse.Certificate}
+      templateParams: {}
+      to:
+        complex:
+          root: Expanse.Certificate.annotations.pointOfContact
+          accessor: email
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 3ea1e331-fdb3-4845-8954-8406800df5be
+    type: regular
+    task:
+      id: 3ea1e331-fdb3-4845-8954-8406800df5be
+      version: -1
+      name: Send Email to domain owner
+      description: Send an email
+      script: "|||send-mail"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: ${inputs.ExpanseCloudManagedEmailBody}
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        complex:
+          root: Security Issue on cloud asset - ${Expanse.Domain
+          accessor: domain}
+      templateParams: {}
+      to:
+        complex:
+          root: Expanse.Domain.annotations.pointOfContact
+          accessor: email
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1020,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 23b26c04-a623-45a0-8b88-6a15b3e3bc52
+    type: regular
+    task:
+      id: 23b26c04-a623-45a0-8b88-6a15b3e3bc52
+      version: -1
+      name: Add Account to Prisma Cloud
+      type: regular
+      description: ''
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    sla:
+      hours: 0
+      days: 1
+      weeks: 0
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 3240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: dbd8c2b7-380f-400f-8fe0-c66e8fe848a1
+    type: title
+    task:
+      id: dbd8c2b7-380f-400f-8fe0-c66e8fe848a1
+      version: -1
+      name: Notify Potential Owner
+      description: ''
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3565,
+        "width": 1860,
+        "x": -1030,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ExpanseCloudManagedIssueId
+  value:
+    complex:
+      root: ${incident
+      accessor: expanseissueid}
+  required: false
+  description: The Expanse Issue ID associated with the incident
+  playbookInputQuery:
+- key: ExpanseCloudManagedIPv4
+  value:
+    complex:
+      root: ${incident.labels
+      accessor: ip}
+  required: false
+  description: The IP associated with an Expanse Issue
+  playbookInputQuery:
+- key: ExpanseCloudManagedEmailBody
+  value:
+    simple: "Infosec has identified a security issue on a cloud service we believe\
+      \ may belong to you or your team. This asset or service does not appear to be\
+      \ behind proper compliance controls. \n\nPlease get in touch with your Infosec\
+      \ team to define proper remediation access."
+  required: false
+  description: Email body to send to potential owner
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests
+fromversion: 6.0.0

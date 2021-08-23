@@ -246,7 +246,7 @@ class Client(BaseClient):
         """
         params = {
             'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-            'assertion': self._create_jwt_assertion().decode("utf-8"),
+            'assertion': self._create_jwt_assertion(),
             'client_id': self.client_id,
             'client_secret': self.client_secret
         }
@@ -487,7 +487,7 @@ class Client(BaseClient):
         )
 
     def folder_create(self, name: str, parent_id: str, as_user: str):
-        """
+        r"""
         Creates a folder with the given name. For files residing under the root of the users
         directory, please use '0'.
 

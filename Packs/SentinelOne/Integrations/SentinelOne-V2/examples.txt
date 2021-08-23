@@ -1,0 +1,17 @@
+sentinelone-get-activities
+sentinelone-get-threats resolved=true
+sentinelone-threat-summary group_ids="475482421375116388,764073410272419896"
+sentinelone-get-hash hash=3395856ce81f2b7382dee72602f798b642f14140
+sentinelone-get-sites
+sentinelone-get-site site_id=475482421366727779
+sentinelone-list-agents
+sentinelone-get-agent agent_id=657613730168123595
+sentinelone-get-groups
+sentinelone-agent-processes agents_ids=657613730168123595
+sentinelone-disconnect-agent agent_id=657613730168123595
+sentinelone-connect-agent agent_id=657613730168123595
+sentinelone-broadcast-message message="Hey There, just checking" agent_id=657613730168123595
+sentinelone-get-events query_id=q034ae362a30eba5a187cbe601d19abaa
+sentinelone-get-processes query_id=q034ae362a30eba5a187cbe601d19abaa
+sentinelone-create-query query="AgentName Is Not Empty" from_date="2020-10-13T15:24:09.257Z" to_date="2021-01-10T04:49:26.257525Z"
+sentinelone-get-white-list os_types=windows exclusion_type=path

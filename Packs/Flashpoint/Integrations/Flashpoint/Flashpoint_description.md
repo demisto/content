@@ -7,7 +7,7 @@ Configure an API account on Flashpoint
  - Click on GENERATE button once all required data are entered.
 
 
-Configure Flashpoint instance on Demisto
+Configure Flashpoint instance on Cortex XSOAR
 -------------------------------
 
 1.  Navigate to **Settings** \> **Integrations**  \> **Servers &

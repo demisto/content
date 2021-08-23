@@ -7,7 +7,7 @@ This automation script is used as part of the content validation that runs as pa
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
 ---

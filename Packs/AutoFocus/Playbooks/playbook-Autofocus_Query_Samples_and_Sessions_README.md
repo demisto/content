@@ -1,4 +1,4 @@
-Queryies the PANW Threat Intelligence Autofocus System. The playbook accepts indicators such as IP addresses, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries it is recommended to use the [Autofocus UI](https://autofocus.paloaltonetworks.com/#/dashboard/organization) to create a query and then use the export search button. The result can be used as a playbook input.
+Queries the PANW Threat Intelligence Autofocus System. The playbook accepts indicators such as IP addresses, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries it is recommended to use the [Autofocus UI](https://autofocus.paloaltonetworks.com/#/dashboard/organization) to create a query and then use the export search button. The result can be used as a playbook input.
 
 The playbook supports searching both the Samples API and the sessions API.
 
@@ -6,7 +6,7 @@ The playbook supports searching both the Samples API and the sessions API.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Sub-playbooks
-* AutoFocusPolling
+AutoFocusPolling
 
 ## Integrations
 This playbook does not use any integrations.

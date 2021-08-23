@@ -10,6 +10,20 @@ import sys
 
 from CommonServerPython import DBotScoreReliability
 
+import json
+
+INTEGRATION_NAME = 'Whois'
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
+
+
+def load_test_data(json_path):
+    with open(json_path) as f:
+        return json.load(f)
+
 
 def assert_results_ok():
     assert demisto.results.call_count == 1
@@ -152,3 +166,55 @@ def test_query_result(whois_result, domain, reliability, expected):
     assert standard_ec['Whois']['QueryResult'] == expected
     assert dbot_score.get('DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && '
                           'val.Type == obj.Type)').get('Reliability') == 'B - Usually reliable'
+
+
+def test_ip_command(mocker):
+    """
+    Given:
+        - IP addresses
+
+    When:
+        - running the IP command
+
+    Then:
+        - Verify the result is as expected
+        - Verify support list of IPs
+    """
+    from Whois import ip_command
+    response = load_test_data('./test_data/ip_output.json')
+    mocker.patch.object(Whois, 'get_whois_ip', return_value=response)
+    result = ip_command(['4.4.4.4', '4.4.4.4'], DBotScoreReliability.B)
+    assert len(result) == 2
+    assert result[0].outputs_prefix == 'Whois.IP'
+    assert result[0].outputs.get('query') == '4.4.4.4'
+    assert result[0].indicator.to_context() == {
+        'IP(val.Address && val.Address == obj.Address)': {
+            'Organization': {'Name': u'LEVEL3, US'},
+            'FeedRelatedIndicators': [{'type': 'CIDR', 'description': None, 'value': u'4.4.0.0/16'}],
+            'Geo': {'Country': u'US'},
+            'ASN': u'3356',
+            'Address': '4.4.4.4'},
+        'DBotScore('
+        'val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)':
+            {'Reliability': 'B - Usually reliable',
+             'Vendor': 'Whois',
+             'Indicator': '4.4.4.4',
+             'Score': 0,
+             'Type': 'ip'}}
+
+
+def test_get_whois_ip_proxy_param(mocker):
+    """
+    Given:
+        - proxy address
+
+    When:
+        - running the get_whois_ip function
+
+    Then:
+        - Verify the function doesn't fail due to type errors
+    """
+    from Whois import get_whois_ip
+    mocker.patch.object(demisto, 'params', return_value={"proxy": True})
+    result = get_whois_ip('1.1.1.1')
+    assert result

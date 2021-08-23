@@ -4,7 +4,7 @@
 <h2>Use Cases</h2>
 <p>FireEye HX integration can be used for the following use cases:</p>
 <h3>Monitor FireEye HX alerts</h3>
-<p>Simply use the ‘fetch-incidents’ option in the integration settings (as explained in ‘Fetched incidents data’ section above) for a continues pull of alerts to the Demisto platform.</p>
+<p>Simply use the ‘fetch-incidents’ option in the integration settings (as explained in ‘Fetched incidents data’ section above) for a continues pull of alerts to the Cortex XSOAR platform.</p>
 <h3>Search Hosts</h3>
 <p>Search all hosts or a subset of hosts for a specific file or indicator.<br>The produces a list of hosts with a list of results for each host.</p>
 <p>Find more information on ‘Additional Information’ section below.</p>
@@ -25,7 +25,7 @@
 <p>Make sure you have a valid <strong>user account</strong> on the FireEye HX Series appliance associated with the <em>api_admin</em> or <em>api_analyst</em> role.</p>
 <p>For more information about setting up user accounts on the FireEye HX Series appliance, see the FireEye HX Series System Administration Guide.</p>
 <p> </p>
-<h2>Configure FireEye HX on Demisto</h2>
+<h2>Configure FireEye HX on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for FireEye HX.</li>
@@ -42,14 +42,14 @@
 <li>
 <strong>Version</strong>: The API version. Default is 3.</li>
 <li>
-<strong>Fetched incidents data</strong>: The integration imports FireEye HX alerts as Demisto incidents<strong>. </strong>The first pull of incidents will fetch the last 100 alerts on FireEye HX.</li>
+<strong>Fetched incidents data</strong>: The integration imports FireEye HX alerts as Cortex XSOAR incidents<strong>. </strong>The first pull of incidents will fetch the last 100 alerts on FireEye HX.</li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs and token.</li>
 </ol>
 <p> </p>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_4940381161531225583805">Contain a host: fireeye-hx-host-containment</a></li>
 <li><a href="#h_753562077941531225590399">Release host from containment: fireeye-hx-cancel-containment</a></li>

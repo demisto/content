@@ -25,14 +25,14 @@ args:
       - ''
     required: false
     secret: false
-comment: Deprecated. Suggests a classifier mapping based on an advanced name matching algorithm.
+comment: Deprecated. No available replacement. Suggests a classifier mapping based on an advanced name matching algorithm.
 commonfields:
   id: DBotSuggestClassifierMapping
   version: -1
 enabled: false
 name: DBotSuggestClassifierMapping
 script: '-'
-subtype: python3
+subtype: python2
 system: false
 tags:
   - ml
@@ -42,3 +42,5 @@ deprecated: true
 tests:
   - No tests (auto formatted)
 fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958
+

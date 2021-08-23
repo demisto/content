@@ -7,3 +7,10 @@
 !lp-close-incidents incident_obj_ids="600157c44a2018070b627f6a,6001583c4a2018070b627f6b"
 !lp-reopen-incidents incident_obj_ids="600157c44a2018070b627f6a,6001583c4a2018070b627f6b"
 !lp-get-users
+!lp-get-users-preference
+!lp-get-logpoints
+!lp-get-repos
+!lp-get-devices
+!lp-get-livesearches
+!lp-get-searchid query="| chart count() by col_type" limit=5 time_range="Last 30 minutes"
+!lp-search-logs search_id=29023c62-12f4-4771-b988-067284a0e0c5

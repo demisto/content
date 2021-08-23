@@ -1,4 +1,5 @@
 Parses a list by header and value.
+
 ## Script Data
 ---
 
@@ -6,7 +7,7 @@ Parses a list by header and value.
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---
@@ -17,6 +18,7 @@ Parses a list by header and value.
 | header | Header to filter lines by. If you supply a header, you need to supply the "value" argument. |
 | list_name | The list name in which to search. |
 | parse_all | If "True", parses the entire list into the context. Can be "True" or "False". Default is "False". |
+| list_separator | Separator to split the list by. |
 
 ## Outputs
 ---

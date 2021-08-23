@@ -10,11 +10,11 @@
 <li>Credentials</li>
 </ul>
 <hr>
-<h2>Configure the BMC Remedy AR Integration on Demisto</h2>
+<h2>Configure the BMC Remedy AR Integration on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for the BMC Remedy AR integration.</li>
-<li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>You should configure the following settings:<br><strong>Name</strong>: a textual name for the integration instance.<br><strong>Server URL:</strong> URL or IP address of the server<br><strong>Instance name:</strong> Name of the instance you are connecting to. <br><strong>Credentials</strong>: Username and password for accessing the integration. <br><strong>Do not validate server certificate</strong>: Select to bypass validating the server certification. You might want to do this in case Demisto cannot validate the integration server certificate (due to missing CA certificate).<br><strong>Use system proxy settings:</strong> Specify whether to communicate with the integration using the system proxy server.<br><strong>Demisto engine</strong>: If relevant, select the engine that acts as a proxy to the IMAP server.  <br>Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Demisto server from accessing the remote networks.</li>
+<li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>You should configure the following settings:<br><strong>Name</strong>: a textual name for the integration instance.<br><strong>Server URL:</strong> URL or IP address of the server<br><strong>Instance name:</strong> Name of the instance you are connecting to. <br><strong>Credentials</strong>: Username and password for accessing the integration. <br><strong>Do not validate server certificate</strong>: Select to bypass validating the server certification. You might want to do this in case Cortex XSOAR cannot validate the integration server certificate (due to missing CA certificate).<br><strong>Use system proxy settings:</strong> Specify whether to communicate with the integration using the system proxy server.<br><strong>Cortex XSOAR engine</strong>: If relevant, select the engine that acts as a proxy to the IMAP server.  <br>Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks.</li>
 <li>Click the <strong>Test</strong> button to validate the URLs, instance name, and credentials.</li>
 </ol>
 <hr>
@@ -24,7 +24,7 @@
 </ul>
 <hr>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ul>
 <li><a href="#h_58134278761527707461309">Get server details: remedy-get-server-details</a></li>
 </ul>

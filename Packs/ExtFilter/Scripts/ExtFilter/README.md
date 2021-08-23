@@ -221,8 +221,11 @@ You can make filters with comlex and combination conditions for the context data
 | ctx_incident | From Previous Tasks | incident | Enable to access the incident context and use `${incident.}` |
 
    *NOTE:* `${list.}` doesn't work in XSOAR 6.0 in transformer. 
-   
-  Also, `local` prefix (`${local.}`) can be available for referring to the root value of the target. No parameters set is required for using `${local.}`.
+  
+  `local` prefix (`${local.}`) and `.` prefix  (`${..}`) can be available for additional DT references.<br>
+  `${local}` refers the root value of the target, and `${local.<name>}` refers the value property located at the relateve path to the root.<br>
+  `${..}` refers the current value of the target, and `${.<name>}` refers the value property located at the relateve path to the current value.<br>
+  No parameters set is required for using `${local.}` and `${..}`.
 
 
 #### Example 1
@@ -311,6 +314,10 @@ Available operators
 * `regex: matches caseless`
 * `regex: doesn't match`
 * `regex: doesn't match caseless`
+* `in`
+* `in caseless`
+* `not in`
+* `not in caseless`
 * `in list`
 * `in caseless list`
 * `not in list`
@@ -379,12 +386,16 @@ Available operators
 * `flattens with values`
 * `flattens with keys`
 * `abort`
+* `email-header: decode`
+* `regex: replace`
+* `is individually transformed with`
+* `is collectively transformed with`
 
 
 ----
 ### Operator: `is transformed with`
 <details><summary>
-Transform each element with `transformers` given in a filter.
+Transforms elements with `transformers` given in a filter.
 See `Filter Syntax` for the details of `transformers`.
 </summary><p/>
 
@@ -456,7 +467,8 @@ See `Filter Syntax` for the details of `transformers`.
     {
       "is filtered with": {
         "Name": {
-        "ends with": ".exe"
+          "ends with": ".exe"
+        }
       },
       "json: encode": {},
       "base64: encode": {}
@@ -472,6 +484,40 @@ See `Filter Syntax` for the details of `transformers`.
         "2.2.2.2"
       ]
     }
+
+
+#### Example 3
+##### Input
+    [
+      {
+        "Name": "a.dat",
+        "Size": 100
+      },
+      {
+        "Name": "b.exe",
+        "Size": 200
+      }
+    ]
+
+##### Filter
+> **Operator**: is transformed with
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "is replaced with": {
+        "User": "JDOE"
+      }
+    }
+
+##### Output
+    [
+      {
+        "User": "JDOE"
+      }
+    ]
 
 
 </details>
@@ -524,6 +570,7 @@ See `Filter Syntax` for the details of `conditions`.
         "Size": 200
       }
     ]
+
 </details>
 
 ----
@@ -1937,42 +1984,6 @@ Returns a set of elements which doesn't start with a string given in a filter. I
 
 
 ----
-### Operator: `ends with`
-<details><summary>
-Returns a set of elements which ends with a string given in a filter.
-</summary><p/>
-
-> **Filter Format**: `string`
-
-#### Example 1
-##### Input
-    [
-      10,
-      "xxx.exe",
-      "yyy.pdf",
-      {
-        "xxx": "x"
-      }
-    ]
-
-##### Filter
-> **Operator**: ends with
-
-> **Path**: 
-
-> **Filter**:
-
-    .exe
-
-##### Output
-    [
-      "xxx.exe"
-    ]
-
-</details>
-
-
-----
 ### Operator: `ends with caseless`
 <details><summary>
 Returns a set of elements which ends with a string given in a filter. It performs case-insensitive matching.
@@ -3286,6 +3297,238 @@ The matching is peformed case-insensitively and between `string` data types. It 
         "Host": "www.paloaltonetworks.com"
       }
     ]
+
+</details>
+
+
+----
+### Operator: `in`
+<details><summary>
+Returns a set of a element which matches a element of the values given.
+</summary><p/>
+
+> **Filter Format**: `list`
+
+#### Example 1
+##### Input
+    banana
+
+##### Filter
+> **Operator**: in
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    banana
+
+
+#### Example 2
+##### Input
+    [
+      "apple",
+      "orange",
+      "banana"
+    ]
+
+##### Filter
+> **Operator**: in
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    [
+      "apple",
+      "banana"
+    ]
+
+</details>
+
+
+----
+### Operator: `in caseless`
+<details><summary>
+Returns a set of a element which matches a element of the values given.
+The matching is peformed case-insensitively for `string` elements.
+</summary><p/>
+
+> **Filter Format**: `list`
+
+#### Example 1
+##### Input
+    Banana
+
+##### Filter
+> **Operator**: in caseless
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    Banana
+
+
+#### Example 2
+##### Input
+    [
+      "Apple",
+      "Orange",
+      "Banana"
+    ]
+
+##### Filter
+> **Operator**: in caseless
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    [
+      "Apple",
+      "Banana"
+    ]
+
+</details>
+
+
+----
+### Operator: `not in`
+<details><summary>
+Returns a set of a element which doesn't match any element of the values given.
+</summary><p/>
+
+> **Filter Format**: `list`
+
+#### Example 1
+##### Input
+    banana
+
+##### Filter
+> **Operator**: not in
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    null
+
+
+#### Example 2
+##### Input
+    [
+      "apple",
+      "orange",
+      "banana"
+    ]
+
+##### Filter
+> **Operator**: not in
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    orange
+
+</details>
+
+
+----
+### Operator: `not in caseless`
+<details><summary>
+Returns a set of a element which doesn't match any element of the values given.
+The matching is peformed case-insensitively for `string` elements.
+</summary><p/>
+
+> **Filter Format**: `list`
+
+#### Example 1
+##### Input
+    Banana
+
+##### Filter
+> **Operator**: not in caseless
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    null
+
+
+#### Example 2
+##### Input
+    [
+      "Apple",
+      "Orange",
+      "Banana"
+    ]
+
+##### Filter
+> **Operator**: not in caseless
+
+> **Path**: 
+
+> **Filter**:
+
+    [
+      "apple",
+      "melon",
+      "banana"
+    ]
+
+##### Output
+    Orange
 
 </details>
 
@@ -8372,5 +8615,372 @@ Raises an exception and exit with the value filtered at the operator. This opera
 
     {
     }
+
+</details>
+
+
+----
+### Operator: `email-header: decode`
+<details><summary>
+Returns an string which is decoded with the email header encoding manner.
+</summary><p/>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+(parameter is currently not required)
+
+#### Example 1
+##### Input
+    =?ISO-2022-JP?B?GyRCJCIkJCQmJCgkKhsoQg==?=
+
+##### Filter
+> **Operator**: email-header: decode
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+    }
+
+##### Output
+    あいうえお
+
+
+#### Example 2
+##### Input
+    ABC =?ISO-2022-JP?B?GyRCJCIkJCQmJCgkKhsoQg==?= XYZ
+
+##### Filter
+> **Operator**: email-header: decode
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+    }
+
+##### Output
+    ABC あいうえお XYZ
+
+
+</details>
+
+
+----
+### Operator: `regex: replace`
+<details><summary>
+Evaluates the pattern matching, and returns the data given in "matched" or "unmatched" according to the result.
+Returns the data given in "matched" if matched, "unmatch" otherwise.
+</summary><p/>
+
+> **Filter Format**: `dict[str,Any]`
+
+| *Parameter* | *Data Type* | *Description* |
+| - | - | - |
+| pattern | str | A pattern text in regex. |
+| matched | Any | The data to return when matched. capture groups such as \1 are supported. |
+| unmatched | Any | (Optional) The data to return when unmatched. If not specified, the value given will return. |
+| caseless | bool | (Optional) true if the matching performs in case-insensitive, false means case-sensitive. The default value is false. |
+| dotall | bool | (Optional) . (single dot) matches any of charactors excluding new line charactors by default. true if it matches any of the charactors including them. The default value is false. See re.DOTALL |
+| multiline | bool | (Optional) true if the matching performs in multi-line mode, false otherwise. The default value is false. See re.MULTILINE |
+
+#### Example 1
+##### Input
+    Re: Re: Fw: Hello!
+
+##### Filter
+> **Operator**: regex: replace
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "pattern": "( *(Re: *|Fw: *)*)(.*)",
+      "matched": "\\3"
+    }
+
+##### Output
+    Hello!
+
+#### Example 2
+##### Input
+    XYZ
+
+##### Filter
+> **Operator**: regex: replace
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "pattern": ".*(abc).*",
+      "matched": "\\1",
+      "unmatched": "unmatched"
+    }
+
+##### Output
+    unmatched
+
+#### Example 3
+##### Input
+    XYZ
+
+##### Filter
+> **Operator**: regex: replace
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "pattern": ".*(abc).*",
+      "matched": "\\1"
+    }
+
+##### Output
+    XYZ
+
+
+</details>
+
+
+----
+### Operator: `is individually transformed with`
+<details><summary>
+Transform each element with `transformers` given in a filter.
+See `Filter Syntax` for the details of `transformers`.
+</summary><p/>
+
+> **Filter Format**: `transformers`
+
+#### Example 1
+##### Input
+    [
+      {
+        "Name": "a.dat",
+        "Size": 100
+      },
+      {
+        "Name": "b.exe",
+        "Size": 200
+      },
+      {
+        "Name": "c.txt",
+        "Size": 300
+      }
+    ]
+
+##### Filter
+> **Operator**: is individually transformed with
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "json: encode": {},
+      "base64: encode": {}
+    }
+
+##### Output
+    [
+      "eyJOYW1lIjogImEuZGF0IiwgIlNpemUiOiAxMDB9",
+      "eyJOYW1lIjogImIuZXhlIiwgIlNpemUiOiAyMDB9",
+      "eyJOYW1lIjogImMudHh0IiwgIlNpemUiOiAzMDB9"
+    ]
+
+
+#### Example 2
+##### Input
+    {
+      "File": [
+        {
+          "Name": "a.dat",
+          "Size": 100
+        },
+        {
+          "Name": "b.exe",
+          "Size": 200
+        }
+      ],
+      "IP": [
+        "1.1.1.1",
+        "2.2.2.2"
+      ]
+    }
+
+##### Filter
+> **Operator**: is individually transformed with
+
+> **Path**: File
+
+> **Filter**:
+
+    {
+      "is filtered with": {
+        "Name": {
+          "ends with": ".exe"
+        }
+      },
+      "json: encode": {},
+      "base64: encode": {}
+    }
+
+##### Output
+    {
+      "File": [
+        "eyJOYW1lIjogImIuZXhlIiwgIlNpemUiOiAyMDB9"
+      ],
+      "IP": [
+        "1.1.1.1",
+        "2.2.2.2"
+      ]
+    }
+
+#### Example 3
+##### Input
+    [
+      {
+        "Name": "a.dat",
+        "Size": 100
+      },
+      {
+        "Name": "b.exe",
+        "Size": 200
+      }
+    ]
+
+##### Filter
+> **Operator**: is individually transformed with
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "is replaced with": {
+        "User": "JDOE"
+      }
+    }
+
+##### Output
+    [
+      {
+        "User": "JDOE"
+      },
+      {
+        "User": "JDOE"
+      }
+    ]
+
+
+#### Example 4
+##### Input
+    [
+      {
+        "Name": "a.dat",
+        "Size": 100
+      },
+      {
+        "Name": "b.exe",
+        "Size": 200
+      }
+    ]
+
+##### Filter
+> **Operator**: is individually transformed with
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "is updated with": {
+        "Size": "${..Size=val+1}"
+      }
+    }
+
+##### Output
+    [
+      {
+        "Name": "a.dat",
+        "Size": 101
+      },
+      {
+        "Name": "b.exe",
+        "Size": 201
+      }
+    ]
+
+</details>
+
+
+----
+### Operator: `is collectively transformed with`
+<details><summary>
+Transform elements with `transformers` given in a filter. The elements are handled and transformed as one value at the first level if the type of it is array.
+See `Filter Syntax` for the details of `transformers`.
+</summary><p/>
+
+> **Filter Format**: `transformers`
+
+#### Example 1
+##### Input
+    [
+      {
+        "Name": "a.dat",
+        "Trusted": true
+      },
+      {
+        "Name": "b.exe",
+        "Trusted": false
+      },
+      {
+        "Name": "c.txt",
+        "Trusted": true
+      }
+    ]
+
+##### Filter
+> **Operator**: is collectively transformed with
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "switch-case": {
+        "switch": {
+          "#has_untrusted": {
+            "is filtered with": {
+              "Trusted": {
+                "===": false
+              }
+            }
+          }
+        },
+        "#has_untrusted": {
+          "is replaced with": [
+            "Untrusted"
+          ]
+        },
+        "default": {
+          "is replaced with": [
+            "Trusted"
+          ]
+        }
+      }
+    }
+
+##### Output
+    [
+      "Untrusted"
+    ]
 
 </details>

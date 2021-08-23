@@ -1,0 +1,407 @@
+commonfields:
+  id: AWS - Route53
+  version: -1
+name: AWS - Route53
+display: AWS - Route53
+category: IT Services
+description: Amazon Web Services Managed Cloud DNS Service.
+configuration:
+- display: Role Arn
+  name: roleArn
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Role Session Name
+  name: roleSessionName
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Role Session Duration
+  name: sessionDuration
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python2
+  commands:
+  - name: aws-route53-create-record
+    arguments:
+    - name: source
+      required: true
+      description: The name of the domain you want to Create. i.e. www.example.com
+    - name: target
+      required: true
+      description: The DNS record value
+    - name: ttl
+      required: true
+      description: The resource record cache time to live (TTL), in seconds.
+    - name: hostedZoneId
+      required: true
+      description: Specify the hosted zone ID
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - A
+      - AAAA
+      - CAA
+      - CNAME
+      - MX
+      - NAPTR
+      - NS
+      - PTR
+      - SOA
+      - SPF
+      - SRV
+      - TX
+      description: The type of the record to create
+    - name: comment
+      description: Any comments you want to include.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.Route53.RecordSetsChange.Id
+      description: The ID of the request.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Status
+      description: The current state of the request. PENDING indicates that this request
+        has not yet been applied to all Amazon Route 53 DNS servers.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Comment
+      description: A complex type that describes change information about changes
+        made to your hosted zone.
+      type: string
+    description: Creates a resource record set. Creates a resource record set that
+      has the specified values.
+  - name: aws-route53-delete-record
+    arguments:
+    - name: source
+      required: true
+      description: The name of the domain you want to Create. i.e. www.example.com
+    - name: target
+      required: true
+      description: The DNS record value
+    - name: ttl
+      required: true
+      description: The resource record cache time to live (TTL), in seconds.
+    - name: hostedZoneId
+      required: true
+      description: Specify the hosted zone ID
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - A
+      - AAAA
+      - CAA
+      - CNAME
+      - MX
+      - NAPTR
+      - NS
+      - PTR
+      - SOA
+      - SPF
+      - SRV
+      - TX
+      description: The type of the record to create
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.Route53.RecordSetsChange.Id
+      description: The ID of the request.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Status
+      description: The current state of the request. PENDING indicates that this request
+        has not yet been applied to all Amazon Route 53 DNS servers.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Comment
+      description: A complex type that describes change information about changes
+        made to your hosted zone.
+      type: string
+    description: Deletes a resource record set. Deletes an existing resource record
+      set that has the specified values.
+  - name: aws-route53-list-hosted-zones
+    arguments:
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.Route53.HostedZones.Id
+      description: The ID that Amazon Route 53 assigned to the hosted zone when you
+        created it.
+      type: string
+    - contextPath: AWS.Route53.HostedZones.Name
+      description: The name of the domain.
+      type: string
+    - contextPath: AWS.Route53.HostedZones.CallerReference
+      description: The value that you specified for CallerReference when you created
+        the hosted zone.
+      type: string
+    - contextPath: AWS.Route53.HostedZones.Config.Comment
+      description: Any comments that you want to include about the hosted zone.
+      type: string
+    - contextPath: AWS.Route53.HostedZones.Config.PrivateZone
+      description: A value that indicates whether this is a private hosted zone.
+      type: string
+    - contextPath: AWS.Route53.HostedZones.ResourceRecordSetCount
+      description: The number of resource record sets in the hosted zone.
+      type: number
+    - contextPath: AWS.Route53.HostedZones.LinkedService.ServicePrincipal
+      description: 'If the health check or hosted zone was created by another service,
+        the service that created the resource. '
+      type: string
+    - contextPath: AWS.Route53.HostedZones.LinkedService.Description
+      description: 'If the health check or hosted zone was created by another service,
+        an optional description that can be provided by the other service. '
+      type: string
+    description: 'Retrieves a list of the public and private hosted zones that are
+      associated with the current AWS account. '
+  - name: aws-route53-list-resource-record-sets
+    arguments:
+    - name: hostedZoneId
+      required: true
+      description: The ID of the hosted zone that contains the resource record sets
+        that you want to list.
+    - name: startRecordName
+      description: ' The first name in the lexicographic ordering of resource record
+        sets that you want to list.'
+    - name: startRecordType
+      auto: PREDEFINED
+      predefined:
+      - SOA
+      - A
+      - TXT
+      - NS
+      - CNAME
+      - MX
+      - NAPTR
+      - PTR
+      - SRV
+      - SPF
+      - AAAA
+      - CAA
+      description: The type of resource record set to begin the record listing from.
+    - name: startRecordIdentifier
+      description: Weighted resource record sets only.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.Route53.RecordSets.Name
+      description: The name of the domain.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.Type
+      description: The DNS record type.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.SetIdentifier
+      description: 'An identifier that differentiates among multiple resource record
+        sets that have the same combination of DNS name and type. '
+      type: string
+    - contextPath: AWS.Route53.RecordSets.Weight
+      description: Weighted resource record sets only.
+      type: number
+    - contextPath: AWS.Route53.RecordSets.Region
+      description: Latency-based resource record sets only
+      type: string
+    - contextPath: AWS.Route53.RecordSets.GeoLocation.ContinentCode
+      description: The two-letter code for the continent.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.GeoLocation.CountryCode
+      description: The two-letter code for the country.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.GeoLocation.SubdivisionCode
+      description: The code for the subdivision, for example, a state in the United
+        States or a province in Canada.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.Failover
+      description: Failover resource record sets only
+      type: string
+    - contextPath: AWS.Route53.RecordSets.MultiValueAnswer
+      description: Multivalue answer resource record sets only
+      type: string
+    - contextPath: AWS.Route53.RecordSets.TTL
+      description: The resource record cache time to live (TTL), in seconds.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.ResourceRecords.Value
+      description: The current  record value.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.AliasTarget.HostedZoneId
+      description: Alias resource record sets only
+      type: string
+    - contextPath: AWS.Route53.RecordSets.AliasTarget.DNSName
+      description: Alias resource record sets only
+      type: string
+    - contextPath: AWS.Route53.RecordSets.AliasTarget.EvaluateTargetHealth
+      description: Alias resource record sets only
+      type: string
+    - contextPath: AWS.Route53.RecordSets.HealthCheckId
+      description: ID of the applicable health check.
+      type: string
+    - contextPath: AWS.Route53.RecordSets.TrafficPolicyInstanceId
+      description: the ID of the traffic policy instance that Amazon Route 53 created
+        this resource record set for.
+      type: string
+    description: Lists the resource record sets in a specified hosted zone.
+  - name: aws-route53-waiter-resource-record-sets-changed
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the change.
+    - name: waiterDelay
+      description: 'The amount of time in seconds to wait between attempts. Default:
+        30'
+    - name: waiterMaxAttempts
+      description: 'The maximum number of attempts to be made. Default: 60'
+    description: A waiter function that waits until record set change is successful
+  - name: aws-route53-test-dns-answer
+    arguments:
+    - name: hostedZoneId
+      required: true
+      description: The ID of the hosted zone that you want Amazon Route 53 to simulate
+        a query for.
+    - name: recordName
+      required: true
+      description: The name of the resource record set that you want Amazon Route
+        53 to simulate a query for.
+    - name: recordType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - SOA
+      - A
+      - TXT
+      - NS
+      - CNAME
+      - MX
+      - NAPTR
+      - PTR
+      - SRV
+      - SPF
+      - AAAA
+      - CAA
+      description: The type of the resource record set.
+    - name: resolverIP
+      description: If you want to simulate a request from a specific DNS resolver,
+        specify the IP address for that resolver. If you omit this value, TestDnsAnswer
+        uses the IP address of a DNS resolver in the AWS US East (N. Virginia) Region
+        (us-east-1 ).
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.Route53.TestDNSAnswer.Nameserver
+      description: The Amazon Route 53 name server used to respond to the request.
+      type: string
+    - contextPath: AWS.Route53.TestDNSAnswer.RecordName
+      description: The name of the resource record set that you submitted a request
+        for.
+      type: string
+    - contextPath: AWS.Route53.TestDNSAnswer.RecordType
+      description: The type of the resource record set that you submitted a request
+        for.
+      type: string
+    - contextPath: AWS.Route53.TestDNSAnswer.ResponseCode
+      description: A list that contains values that Amazon Route 53 returned for this
+        resource record set.
+      type: string
+    - contextPath: AWS.Route53.TestDNSAnswer.Protocol
+      description: A code that indicates whether the request is valid or not.
+      type: string
+    - contextPath: AWS.Route53.TestDNSAnswer.RecordData
+      description: The protocol that Amazon Route 53 used to respond to the request,
+        either UDP or TCP .
+      type: string
+    description: Gets the value that Amazon Route 53 returns in response to a DNS
+      request for a specified record name and type. You can optionally specify the
+      IP address of a DNS resolver, an EDNS0 client subnet IP address, and a subnet
+      mask.
+  - name: aws-route53-upsert-record
+    arguments:
+    - name: source
+      required: true
+      description: The name of the domain you want to Create. i.e. www.example.com
+    - name: target
+      required: true
+      description: The DNS record value
+    - name: ttl
+      required: true
+      description: The resource record cache time to live (TTL), in seconds.
+    - name: hostedZoneId
+      required: true
+      description: Specify the hosted zone ID
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - A
+      - AAAA
+      - CAA
+      - CNAME
+      - MX
+      - NAPTR
+      - NS
+      - PTR
+      - SOA
+      - SPF
+      - SRV
+      - TX
+      description: The type of the record to create
+    - name: comment
+      description: Any comments you want to include.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.Route53.RecordSetsChange.Id
+      description: The ID of the request.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Status
+      description: The current state of the request. PENDING indicates that this request
+        has not yet been applied to all Amazon Route 53 DNS servers.
+      type: string
+    - contextPath: AWS.Route53.RecordSetsChange.Comment
+      description: A complex type that describes change information about changes
+        made to your hosted zone.
+      type: string
+    description: Upsert a resource record set. If a resource record set does not already
+      exist, AWS creates it. If a resource set does exist, Amazon Route 53 updates
+      it with the values in the request.
+  dockerimage: demisto/boto3:2.0.0.19411
+  runonce: false
+tests:
+- No tests
+fromversion: 5.0.0

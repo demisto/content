@@ -1,2 +1,11 @@
 [file:Sixgill-Darkfeed]
 ignore=PA116
+
+[file:Sixgill_Darkfeed.yml]
+ignore=BA108,BA109
+
+[file:Sixgill_Darkfeed_Enrichment.yml]
+ignore=BA108,BA109
+
+[file:Darkfeed_IOC_detonation_and_proactive_blocking.yml]
+ignore=PB115

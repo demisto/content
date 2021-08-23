@@ -1,0 +1,302 @@
+description: Obtains additional information on the threat actor involved in the incident
+  and associates related indicators to the incident.
+id: Incident Postprocessing - Group-IB Threat Intelligence & Attribution
+inputs: []
+name: Incident Postprocessing - Group-IB Threat Intelligence & Attribution
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ca9dc26f-55ca-4aa3-85f7-3a6db57989cc
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: ca9dc26f-55ca-4aa3-85f7-3a6db57989cc
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 40
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 05de087a-3453-4f39-86a4-669dc48a6a67
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 05de087a-3453-4f39-86a4-669dc48a6a67
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1380
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: type
+                root: incident
+          operator: isEqualString
+          right:
+            value:
+              simple: GIB OSI Git Leak
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: type
+                root: incident
+          operator: isEqualString
+          right:
+            value:
+              simple: GIB OSI Public Leak
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: type
+                root: incident
+          operator: isEqualString
+          right:
+            value:
+              simple: GIB Data Breach
+      label: Doesn't need
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "19"
+      Doesn't need:
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if this incident type needs postprocessing.
+      id: 20cd311f-83fc-4928-8ff9-4c85213a2201
+      iscommand: false
+      name: Does this incident type need postprocessing?
+      type: condition
+      version: -1
+    taskid: 20cd311f-83fc-4928-8ff9-4c85213a2201
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 200
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      id:
+        complex:
+          accessor: gibthreatactorid
+          root: incident
+      isAPT:
+        complex:
+          accessor: gibthreatactorisapt
+          root: incident
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Command performs Group IB event lookup in hi/threat_actor (or in
+        apt/threat_actor if the APT flag is true) collection with provided ID.
+      id: dca7f32d-426f-44ad-89a0-bb05da088f71
+      iscommand: true
+      name: gibtia-get-threat-actor-info
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-threat-actor-info
+      type: regular
+      version: -1
+    taskid: dca7f32d-426f-44ad-89a0-bb05da088f71
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 610
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      id:
+        complex:
+          accessor: id
+          root: GIBTIA.ThreatActor.stat.reports
+      isAPT:
+        complex:
+          accessor: isAPT
+          root: GIBTIA.ThreatActor
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Command performs Group IB event lookup in hi/threat (or in apt/threat
+        if the APT flag is true) collection with provided ID.
+      id: fcfa158d-ffe9-4dd0-8309-253e6b5ba6cf
+      iscommand: true
+      name: gibtia-get-threat-info
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-threat-info
+      type: regular
+      version: -1
+    taskid: fcfa158d-ffe9-4dd0-8309-253e6b5ba6cf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1035
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: GIBTIA.ThreatActor.stat.reports
+          operator: isNotEmpty
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if there is a threat report in the threat actor info.
+      id: 09877942-acdb-491a-8c43-6a1cef56fbd7
+      iscommand: false
+      name: Is there a report?
+      type: condition
+      version: -1
+    taskid: 09877942-acdb-491a-8c43-6a1cef56fbd7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 790
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: gibthreatactorid
+                root: incident
+          operator: isNotEmpty
+      label: "yes"
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if there is a threat actor in the incident.
+      id: a53043e1-1f77-443c-8f72-3e6af3f7d004
+      iscommand: false
+      name: Is there a threat actor?
+      type: condition
+      version: -1
+    taskid: a53043e1-1f77-443c-8f72-3e6af3f7d004
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 410
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "19_7_#default#": 0.38,
+      "9_7_Doesn't need": 0.78
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 380,
+        "x": 550,
+        "y": 40
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- Group-IB Threat Intelligence & Attribution-Test

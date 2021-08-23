@@ -377,6 +377,7 @@ def test_get_indicators_command(mocker):
                      'HumanReadable': humanreadable,
                      'EntryContext': {},
                      'IndicatorTimeline': [],
+                     "Relationships": [],
                      'IgnoreAutoExtract': False,
                      'Note': False}
 

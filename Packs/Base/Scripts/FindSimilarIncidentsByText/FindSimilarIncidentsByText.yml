@@ -97,7 +97,7 @@ outputs:
   description: Similar incident name.
   type: string
 script: '-'
-subtype: python2
+subtype: python3
 system: false
 tags:
 - ml
@@ -106,9 +106,9 @@ tags:
 - incidents
 timeout: '0'
 type: python
-dockerimage: demisto/machine-learning
+dockerimage: demisto/sklearn:1.0.0.19770
 runas: DBotRole
 runonce: true
 tests:
-- Dedup - Generic v2 - Test
+- No test
 fromversion: 5.0.0

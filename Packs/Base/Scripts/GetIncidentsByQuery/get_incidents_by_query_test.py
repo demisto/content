@@ -1,5 +1,5 @@
 from GetIncidentsByQuery import build_incidents_query, get_incidents, parse_relative_time, main, \
-    preprocess_incidents_fields_list, get_demisto_datetme_format, PYTHON_MAGIC
+    preprocess_incidents_fields_list, get_demisto_datetme_format, get_fields_to_populate_arg, PYTHON_MAGIC
 
 from CommonServerPython import *
 
@@ -176,3 +176,9 @@ def test_preprocess_incidents_fields_list():
 
 def test_get_demisto_datetme_format():
     assert "2020-01-01T00:00:00+00:00" == get_demisto_datetme_format("2020-01-01 00:00:00+00:00")
+
+
+def test_get_fields_to_populate_arg():
+    assert get_fields_to_populate_arg(["field1", "grid_field.test1"]) == "field1,grid_field"
+    assert get_fields_to_populate_arg(["field1", "field2"]) == "field1,field2"
+    assert get_fields_to_populate_arg([]) == ""

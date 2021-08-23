@@ -1,2 +1,11 @@
 [file:PaloAlto_TrapsESM_Beta.yml]
-ignore=IN110,IN109
+ignore=IN110,IN109,BA108,BA109
+
+[file:layoutscontainer-Traps.json]
+ignore=BA101
+
+[file:PaloAltoNetworks_Traps.yml]
+ignore=BA108,BA109
+
+[file:README.md]
+ignore=RM104

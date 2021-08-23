@@ -2,6 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/demisto/content.svg?style=svg)](https://circleci.com/gh/demisto/content)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/demisto/content.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/demisto/content/context:python)
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/demisto/content)
 
 # Cortex XSOAR Platform - Content Repository
 #### Demisto is now Cortex XSOAR.
@@ -12,10 +13,10 @@ We security folks love to tinker, keep enhancing and sharpening our toolset and 
 We invite you to use the playbooks and scripts, modify them to suit your needs and see what works for you, get involved in the community discussion and of course remember to give back and contribute so that others can enjoy and learn from your hard work and build upon it to enhance it even further.
 
 ## Documentation
-If you wish to develop and contribute content, make sure to check our Content Developer Portal at: https://xsoar.pan.dev/
+If you wish to develop and contribute Content, make sure to check our Content Developer Portal at: https://xsoar.pan.dev/
 
 ## Contributing
-Contributions are welcome and appreciated. For instructions about adding/modifying content please see our [Content Contribution Guide](CONTRIBUTING.md).
+Contributions are welcome and appreciated. For instructions about adding/modifying content please see our [Content Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
 
 
 ## Playbooks

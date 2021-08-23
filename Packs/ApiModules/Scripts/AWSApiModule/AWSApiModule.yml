@@ -1,0 +1,16 @@
+commonfields:
+  id: AWSApiModule
+  version: -1
+name: AWSApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: AWS Client class, provides generic Infrastructure to all AWS integrations
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/boto3:2.0.0.19445
+fromversion: 5.5.0

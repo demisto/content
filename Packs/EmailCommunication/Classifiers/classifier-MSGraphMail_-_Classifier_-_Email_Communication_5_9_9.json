@@ -1,0 +1,140 @@
+{
+ "brandName": "MicrosoftGraphMail",
+ "custom": true,
+ "defaultIncidentType": "Email Communication",
+ "feed": false,
+ "id": "faa1bfc8-37cd-44e0-81fe-73092e381563",
+ "isDefault": false,
+ "keyTypeMap": {
+	"High": "Email Communication",
+	"Low": "Email Communication",
+	"MicrosoftGraphMail": "Email Communication",
+	"Normal": "Email Communication"
+ },
+ "mapping": {
+		"Email Communication": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Attachment ID": {
+					"complex": {
+						"accessor": "path",
+						"filters": [],
+						"root": "Attachments",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Attachment Name": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "Attachments",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Email BCC": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "Bcc",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Email Body": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "Body",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Email Body Format": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "Format",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Email Body HTML": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "Format",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Email CC": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "Cc",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Email From": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "From",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Email HTML": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "Body",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Email Latest Message": {
+					"complex": null,
+					"simple": "ID"
+				},
+				"Email Message ID": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "ID",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Email Subject": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "Subject",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Email To": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "To",
+						"transformers": []
+					},
+					"simple": ""
+				}
+			}
+		}
+	},
+ "transformer": {
+  "complex": null,
+  "simple": "Type"
+ },
+ "version": -1,
+ "fromVersion": "5.5.0",
+ "toVersion": "5.9.9"
+}

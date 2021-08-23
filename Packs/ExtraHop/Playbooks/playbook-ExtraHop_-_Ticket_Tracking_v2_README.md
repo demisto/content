@@ -1,4 +1,4 @@
-Links the Demisto incident back to the ExtraHop detection that created it for ticket tracking purposes.
+Links the Cortex XSOAR incident back to the ExtraHop detection that created it for ticket tracking purposes.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

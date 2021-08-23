@@ -1,8 +1,7 @@
-Use the McAfee EPO integration to manage security threats and responses.
 
 This integration was integrated and tested with McAfee ePO v5.3.2.
 
-## Configure McAfee ePO on Demisto
+## Configure McAfee ePO on Cortex XSOAR
 
 1.  Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2.  Search for McAfee ePO.
@@ -33,7 +32,7 @@ Example `!epo-help` outputs with permission information:
 
 ## Commands
 
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1.  Print help for ePO commands: epo-help
 2.  Get the latest DAT file: epo-get-latest-dat

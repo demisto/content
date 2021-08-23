@@ -1,0 +1,11 @@
+{
+  "id": "progressioncount",
+  "name": "Confluera Progressions Count",
+  "dataType": "scripts",
+  "widgetType": "number",
+  "query": "ConflueraProgressionsCount",
+  "version": -1,
+  "description": "Logs progressions count",
+  "isPredefined": true,
+  "fromVersion": "6.0.0"
+}

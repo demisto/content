@@ -1,0 +1,30 @@
+{
+    "id": "incident_devsecopsiacvulnerablefiles",
+    "version": -1,
+    "modified": "2020-09-09T18:44:12.925362353+04:00",
+    "name": "DevSecOps IaC Vulnerable Files",
+    "ownerOnly": false,
+    "cliName": "devsecopsiacvulnerablefiles",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "DevSecOps New Git PR"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

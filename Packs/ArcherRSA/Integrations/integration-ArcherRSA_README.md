@@ -2,7 +2,7 @@
 <h2>Overview</h2>
 <p>Deprecated. Use the RSA Archer v2 integration instead.</p>
 <hr>
-<h2>Configure the RSA Archer integration on Demisto</h2>
+<h2>Configure the RSA Archer integration on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for RSA Archer.</li>
@@ -33,7 +33,7 @@
 <p>Fetches incidents data from RSA Archer, by using the <code>archer-fetch-incidents</code> command. In the first fetch, the program fetches incidents from the previous day until the time you run the command.</p>
 <hr>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_4037375851529412223838">Create a record: archer-create-record</a></li>
 <li><a href="#h_914233048261529412549945">Update a record: archer-update-record</a></li>
@@ -50,7 +50,7 @@
 <li><a href="#h_5690460115251529491112217">Get field mapping by level ID: archer-get-mapping-by-level</a></li>
 <li><a href="#h_3906877896001529492105590">Fetch Archer incidents: archer-manually-fetch-incident</a></li>
 <li><a href="#h_862940326801529492724147">Download Archer file to the War Room: archer-get-file</a></li>
-<li><a href="#h_5111225307651529492866353">Upload a file from Demisto to Archer: archer-upload-file</a></li>
+<li><a href="#h_5111225307651529492866353">Upload a file from Cortex XSOAR to Archer: archer-upload-file</a></li>
 <li><a href="#h_447548299391529493439939">Add data to the detailed analysis field: archer-add-to-detailed-analysis</a></li>
 <li><a href="#h_81021858117391550577986609">Get an Archer user's user ID: archer-get-user-id</a></li>
 <li><a href="#h_75316240823191550577993400">Get a list of values for a field: archer-get-valuelist</a></li>
@@ -937,7 +937,7 @@
 </pre>
 <hr>
 <h3 id="h_3906877896001529492105590">Fetch Archer incidents</h3>
-<p>Fetches specific incidents from Archer to the Demisto War Room. You can also manually fetch automations.</p>
+<p>Fetches specific incidents from Archer to the Cortex XSOAR War Room. You can also manually fetch automations.</p>
 <h5>Base Command</h5>
 <p><code>archer-manually-fetch-incident</code></p>
 <p> </p>
@@ -978,7 +978,7 @@
 </pre>
 <hr>
 <h3 id="h_862940326801529492724147">Download Archer file to the War Room</h3>
-<p>Downloads a file from Archer to the Demisto War Room context.</p>
+<p>Downloads a file from Archer to the Cortex XSOAR War Room context.</p>
 <h5>Base Command</h5>
 <p><code>archer-get-file</code></p>
 <p> </p>
@@ -1008,8 +1008,8 @@
 <h5>Raw Output</h5>
 <pre>Uploaded file: Screen Shot 2018-02-22 at 11.09.33.png'</pre>
 <hr>
-<h3 id="h_5111225307651529492866353">Upload a file from Demisto to Archer</h3>
-<p>Uploads a file from Demisto to Archer.</p>
+<h3 id="h_5111225307651529492866353">Upload a file from Cortex XSOAR to Archer</h3>
+<p>Uploads a file from Cortex XSOAR to Archer.</p>
 <h5>Base Command</h5>
 <p><code>archer-upload-file</code></p>
 <p> </p>
@@ -1043,7 +1043,7 @@
 <tr>
 <td style="width: 180px;">entryId</td>
 <td style="width: 460px;">
-<p>Entry ID of the file in the Demisto context</p>
+<p>Entry ID of the file in the Cortex XSOAR context</p>
 </td>
 </tr>
 </tbody>

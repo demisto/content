@@ -19,14 +19,23 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-API_TOKEN = demisto.params()['APIToken']
-BASE_URL = demisto.params()['baseURL']
+API_TOKEN = demisto.params().get('APIToken')
+BASE_URL = demisto.params().get('baseURL')
 USE_SSL = not demisto.params().get('insecure', False)
 DEFAULT_HEADERS = {
     'Authorization': 'Bearer {}'.format(API_TOKEN),
     'Accept': 'application/json'
 }
 MALICIOUS_THRESHOLD = int(demisto.params().get('dboscore_threshold', -100))
+
+reliability = demisto.params().get('integrationReliability')
+reliability = reliability if reliability else DBotScoreReliability.B
+
+if DBotScoreReliability.is_valid_type(reliability):
+    reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+else:
+    Exception("Please provide a valid value for the Source Reliability parameter.")
+
 
 ''' MAPS '''
 
@@ -495,7 +504,8 @@ def get_domain_security_command():
                     'Indicator': domain,
                     'Type': 'domain',
                     'Vendor': 'Cisco Umbrella Investigate',
-                    'Score': DBotScore
+                    'Score': DBotScore,
+                    'Reliability': reliability
                 }
 
             context[outputPaths['domain']] = {
@@ -513,7 +523,9 @@ def get_domain_security_command():
             'Indicator': domain,
             'Type': 'domain',
             'Vendor': 'Cisco Umbrella Investigate',
-            'Score': 0
+            'Score': 0,
+            'Reliability': reliability
+
         }
     results.append({
         'Type': entryTypes['note'],
@@ -697,7 +709,8 @@ def get_ip_malicious_domains_command():
                 'Indicator': domain['name'],
                 'Type': 'domain',
                 'Vendor': 'Cisco Umbrella Investigate',
-                'Score': 3
+                'Score': 3,
+                'Reliability': reliability
             })
 
         if contents:
@@ -815,7 +828,8 @@ def get_domain_command():
         'Indicator': domain,
         'Type': 'domain',
         'Vendor': 'Cisco Umbrella Investigate',
-        'Score': dbotscore
+        'Score': dbotscore,
+        'Reliability': reliability
     }
 
     contents.append({
@@ -1099,7 +1113,8 @@ def get_domain_details_command():
                     'Indicator': domain,
                     'Type': 'domain',
                     'Vendor': 'Cisco Umbrella Investigate',
-                    'Score': dbotscore
+                    'Score': dbotscore,
+                    'Reliability': reliability
                 }
                 if dbotscore == 3:
                     context[outputPaths['domain']] = {}
@@ -1500,7 +1515,8 @@ def get_malicious_domains_for_ip_command():
                     'Indicator': domain,
                     'Type': 'domain',
                     'Vendor': 'Cisco Umbrella Investigate',
-                    'Score': 3
+                    'Score': 3,
+                    'Reliability': reliability
                 })
                 context_malicious.append({
                     'Name': domain,
@@ -1797,6 +1813,7 @@ def get_url_timeline(url):
 
 LOG('command is %s' % (demisto.command(),))
 try:
+
     handle_proxy()
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.

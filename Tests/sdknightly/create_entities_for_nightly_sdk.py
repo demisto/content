@@ -25,7 +25,7 @@ def create_incident_field(path: Path, incident_to_associate: str) -> str:
     hello_field_path = 'Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_Status.json'
     with open(hello_field_path) as stream:
         field = json.load(stream)
-    name = 'Hello World Incident Test'
+    name = 'Hello World IncidentField Test'
     cliname = name.lower().replace(' ', '')
     field.update({
         'name': name,

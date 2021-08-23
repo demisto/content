@@ -11,6 +11,7 @@ import traceback
 import copy
 import json
 import base64
+import re
 
 from typing import (
     Any, Dict, Optional, Iterator,
@@ -38,12 +39,16 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_FIRST_FETCH = "3 days"  # default parameter for first fetch
 
 ISSUE_PROGRESS_STATUS = ['New', 'Investigating', 'InProgress', 'AcceptableRisk', 'Resolved']
-ISSUE_PROGRESS_STATUS_CLOSED = ['AcceptableRisk', 'Resolved']
+ISSUE_PROGRESS_STATUS_CLOSED = ['AcceptableRisk', 'Resolved', 'NoRisk']
 ISSUE_ACTIVITY_STATUS = ['Active', 'Inactive']
 ISSUE_PRIORITY = ['Critical', 'High', 'Medium', 'Low']
+CLOUD_MANAGEMENT_STATUS = ['ManagedCloud', 'UnmanagedCloud', 'NotApplicable']
 ISSUE_SORT_OPTIONS = ['created', '-created', 'modified', '-modified', 'assigneeUsername',
                       '-assigneeUsername', 'priority', '-priority', 'progressStatus', '-progressStatus',
                       'activityStatus', '-activityStatus', 'headline', '-headline']
+
+SERVICE_DISCOVERY_TYPE = ["ColocatedOnIp", "DirectlyDiscovered"]
+SERVICE_SORT_OPTIONS = ['firstObserved', '-firstObserved', 'lastObserved', '-lastObserved', 'name', '-name']
 
 EXPANSE_RESOLVEDSTATUS_TO_XSOAR = {
     'Resolved': 'Resolved',
@@ -56,6 +61,15 @@ EXPANSE_ISSUE_READABLE_HEADER_LIST = [
     'annotations', 'assets', 'helpText'
 ]
 
+EXPANSE_SERVICE_READABLE_HEADER_LIST = [
+    'id', 'name', 'ips', 'domains', 'portNumber', 'activityStatus', 'businessUnits', 'certificates', 'tlsVersions',
+    'classifications', 'firstObserved', 'lastObserved', 'annotations', 'assets', 'discoveryInfo'
+]
+
+EXPANSE_POC_READABLE_HEADER_LIST = [
+    'id', 'email', 'firstName', 'lastName', 'phone', 'role', 'created', 'modified'
+]
+
 MIRROR_DIRECTION = {
     'None': None,
     'Incoming': 'In',
@@ -66,11 +80,12 @@ MIRROR_DIRECTION = {
 TAGGABLE_ASSET_TYPE_MAP = {
     'Domain': 'domains',
     'Certificate': 'certificates',
-    'cloud-resource': 'cloud_resource',
+    'CloudResource': 'cloud-resources',
     'IpRange': 'ip-range'
 }
 
 ASSET_TAG_OPERATIONS = ['ASSIGN', 'UNASSIGN']
+ASSET_POC_OPERATIONS = ['ASSIGN', 'UNASSIGN']
 
 ISSUE_UPDATE_TYPES = {
     'Assignee': 'assigneeUsername',
@@ -93,6 +108,8 @@ SEVERITY_PRIORITY_MAP = {v: k for k, v in PRIORITY_SEVERITY_MAP.items()}
 IPRANGE_INCLUDE_OPTIONS = ["none", "annotations", "severityCounts", "attributionReasons",
                            "relatedRegistrationInformation", "locationInformation"]
 
+POC_EMAIL_PATTERN = r"^\S+@\S+$"
+
 """ CLIENT CLASS """
 
 
@@ -106,7 +123,7 @@ class Client(BaseClient):
         hdr = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "User-Agent": "Expanse_XSOAR/0.0.1",
+            "User-Agent": "Expanse_XSOAR/1.7.0",
         }
         super().__init__(base_url, verify=verify, proxy=proxy, headers=hdr, **kwargs)
 
@@ -200,6 +217,7 @@ class Client(BaseClient):
                    created_after: Optional[str] = None,
                    modified_before: Optional[str] = None,
                    modified_after: Optional[str] = None,
+                   cloud_management_status: Optional[str] = None,
                    sort: Optional[str] = None
                    ) -> Iterator[Any]:
 
@@ -221,6 +239,7 @@ class Client(BaseClient):
             'createdAfter': created_after,
             'modifiedBefore': modified_before,
             'modifiedAfter': modified_after,
+            'cloudManagementStatus': cloud_management_status if cloud_management_status else None,
             'sort': sort
         }
 
@@ -246,6 +265,48 @@ class Client(BaseClient):
                 continue
             yield u
 
+    def get_services(self,
+                     limit: int,
+                     content_search: Optional[str] = None,
+                     provider: Optional[str] = None,
+                     business_units: Optional[str] = None,
+                     service_type: Optional[str] = None,
+                     inet_search: Optional[str] = None,
+                     domain_search: Optional[str] = None,
+                     port_number: Optional[str] = None,
+                     activity_status: Optional[str] = None,
+                     discovery_type: Optional[str] = None,
+                     country_code: Optional[str] = None,
+                     tags: Optional[str] = None,
+                     cloud_management_status: Optional[str] = None,
+                     sort: Optional[str] = None
+                     ) -> Iterator[Any]:
+
+        params = {
+            'limit': limit,
+            'contentSearch': content_search,
+            'providerName': provider if provider else None,
+            'businessUnitName': business_units if business_units else None,
+            'classificationId': service_type if service_type else None,
+            'ipSearch': inet_search,
+            'domainSearch': domain_search,
+            'portNumber': port_number if port_number else None,
+            'countryCode': country_code if country_code else None,
+            'activityStatus': activity_status if activity_status else None,
+            'discoveryType': discovery_type if discovery_type else None,
+            'tagName': tags if tags else None,
+            'cloudManagementStatus': cloud_management_status if cloud_management_status else None,
+            'sort': sort
+        }
+
+        return self._paginate(
+            method='GET', url_suffix="/v1/services/services", params=params
+        )
+
+    def get_service_by_id(self, service_id: str) -> Dict[str, Any]:
+        return self._http_request(
+            method='GET', url_suffix=f'/v1/services/services/{service_id}')
+
     def list_businessunits(self, limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
         params = dict(limit=limit)
         return self._paginate(
@@ -260,6 +321,29 @@ class Client(BaseClient):
             method='GET',
             url_suffix='/v1/issues/providers',
             params=params
+        )
+
+    def list_pocs(self, limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
+        params = dict(limit=limit)
+        return self._paginate(
+            method='GET',
+            url_suffix='/v2/annotation/point-of-contact',
+            params=params
+        )
+
+    def create_poc(self, email: str, first_name: Optional[str], last_name: Optional[str], role: Optional[str],
+                   phone: Optional[str]) -> Dict[str, Any]:
+        data: Dict = {
+            'email': email,
+            'firstName': first_name,
+            'lastName': last_name,
+            'phone': phone,
+            'role': role
+        }
+        return self._http_request(
+            method='POST',
+            url_suffix='/v2/annotation/point-of-contact',
+            data=json.dumps(data)
         )
 
     def list_tags(self, limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
@@ -298,7 +382,8 @@ class Client(BaseClient):
             demisto.debug(f'get_asset_details: unsupported asset type {asset_type}')
         return data
 
-    def manage_asset_tags(self, asset_type: str, operation_type: str, asset_id: str, tag_ids: List[str]) -> Dict[str, Any]:
+    def manage_asset_tags(self, asset_type: str, operation_type: str, asset_id: str,
+                          tag_ids: List[str]) -> Dict[str, Any]:
         endpoint_base = asset_type if asset_type == "ip-range" else f"assets/{asset_type}"
 
         data: Dict = {"operations": [{
@@ -310,6 +395,21 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix=f'/v2/{endpoint_base}/tag-assignments/bulk',
+            json_data=data
+        )
+
+    def manage_asset_pocs(self, asset_type: str, operation_type: str, asset_id: str, poc_ids: List[str]) -> Dict[str, Any]:
+        endpoint_base = asset_type if asset_type == "ip-range" else f"assets/{asset_type}"
+
+        data: Dict = {"operations": [{
+            'operationType': operation_type,
+            'contactIds': poc_ids,
+            'assetId': asset_id
+
+        }]}
+        return self._http_request(
+            method='POST',
+            url_suffix=f'/v2/{endpoint_base}/contact-assignments/bulk',
             json_data=data
         )
 
@@ -404,6 +504,27 @@ class Client(BaseClient):
             url_suffix='/v2/assets/ips',
             params=params
         )
+
+    def get_cloud_resources(self, params: Dict[str, Any]) -> Iterator[Any]:
+        return self._paginate(
+            method='GET',
+            url_suffix='/v2/assets/cloud-resources',
+            params=params
+        )
+
+    def get_cloud_resource(self, asset_id: str) -> Dict[str, Any]:
+        try:
+            result: Dict = self._http_request(
+                method='GET',
+                url_suffix=f'/v2/assets/cloud-resources/{asset_id}',
+                raise_on_status=True,
+            )
+        except DemistoException as e:
+            if str(e).startswith('Error in API call [404]') or str(e).startswith('Error in API call [400]'):
+                demisto.info("Cloud resource with ID: {asset_id} was not found. Error message from API: {str(e)}")
+                return {}
+            raise e
+        return result
 
     def list_risk_rules(self, params: Dict[str, Any]) -> Iterator[Any]:
         return self._paginate(
@@ -579,7 +700,8 @@ def range_to_cidrs(start: str, end: str) -> Iterator[str]:
         raise ValueError(f'Invalid IP address in range: {str(e)}')
 
 
-def check_int(arg: Any, arg_name: str, min_val: int = None, max_val: int = None, required: bool = False) -> Optional[int]:
+def check_int(arg: Any, arg_name: str, min_val: int = None, max_val: int = None,
+              required: bool = False) -> Optional[int]:
     """Converts a string argument to a Python int
     This function is used to quickly validate an argument provided and convert
     it into an ``int`` type. It will throw a ValueError if the input is invalid
@@ -687,9 +809,9 @@ def find_indicator_md5_by_hash(h: str) -> Optional[str]:
     if field is None:
         return None
 
-    fetched_iocs = demisto.searchIndicators(
-        query=f'{field}:{h} and type:Certificate and -md5:""',
-        page=0, size=1  # we just take the first one
+    search_indicators = IndicatorsSearcher()
+    fetched_iocs = search_indicators.search_indicators_by_version(
+        query=f'{field}:{h} and type:Certificate and -md5:""', size=1  # we just take the first one
     ).get('iocs')
     if fetched_iocs is None or len(fetched_iocs) == 0:
         return None
@@ -863,6 +985,49 @@ def format_certificate_data(certificates: List[Dict[str, Any]]) -> List[CommandR
     return command_results
 
 
+def format_cloud_resource_data(cloud_resources: List[Dict[str, Any]]) -> List[CommandResults]:
+    cloud_resource_data_list: List[Dict[str, Any]] = []
+    command_results = []
+    hr_cloud_resource_list = []
+    for cloud_resource_data in cloud_resources:
+        cloud_resource_data_list.append(cloud_resource_data)
+
+        cloud_resource_standard_context = DBotScoreOnlyIndicator(
+            dbot_score=Common.DBotScore(
+                indicator=cloud_resource_data['ips'][0],
+                indicator_type=DBotScoreType.IP,
+                integration_name="ExpanseV2",
+                score=Common.DBotScore.NONE
+            )
+        )
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown("New IP indicator was found", {"IP": cloud_resource_data['ips'][0]}),
+            indicator=cloud_resource_standard_context
+        ))
+        hr_cloud_resource_list.append({
+            "ID": cloud_resource_data.get("id"),
+            "IP": cloud_resource_data.get("ips"),
+            "Domain": cloud_resource_data.get("domain"),
+            "Cloud Provider": cloud_resource_data.get("provider", {}).get("name"),
+            "Asset Type": cloud_resource_data.get("type"),
+            "Instance ID": cloud_resource_data.get("instanceId"),
+            "Region": cloud_resource_data.get("region"),
+            "Source": cloud_resource_data.get("sourceDetails"),
+        })
+    readable_output = tableToMarkdown(
+        'Expanse Cloud Resource List', hr_cloud_resource_list) if len(hr_cloud_resource_list) > 0 else \
+        "## No Cloud Resources found"
+    command_results.append(CommandResults(
+        outputs_prefix='Expanse.CloudResource',
+        outputs_key_field='id',
+        outputs=cloud_resource_data_list if len(cloud_resource_data_list) > 0 else None,
+        readable_output=readable_output,
+        raw_response=cloud_resources
+    ))
+
+    return command_results
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -900,11 +1065,11 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     tags = ','.join(argToList(args.get('tag')))
 
     content_search = args.get('content_search')
-    inet_search = args.get('domain_search')
+    inet_search = args.get('inet_search')
     domain_search = args.get('domain_search')
 
     arg_list = argToList(args.get('port_number'))
-    # this will trigger exceptions if data is invalid
+    # this will trigger exceptions if the port provided isn't a valid port number 0-65535
     all(check_int(i, 'port_number', 0, 65535, True) for i in arg_list)
     port_number = ','.join(arg_list)
 
@@ -922,6 +1087,11 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if arg_list and not all(i in ISSUE_PRIORITY for i in arg_list):
         raise ValueError(f'priority must include: {", ".join(ISSUE_PRIORITY)}')
     priority = ','.join(arg_list)
+
+    arg_list = argToList(args.get('cloud_management_status'))
+    if arg_list and not all(i in CLOUD_MANAGEMENT_STATUS for i in arg_list):
+        raise ValueError(f'cloud_management_status must include: {", ".join(CLOUD_MANAGEMENT_STATUS)}')
+    cloud_management_status = ','.join(arg_list)
 
     arg_list = argToList(args.get('sort'))
     if arg_list and not all(i in ISSUE_SORT_OPTIONS for i in arg_list):
@@ -947,7 +1117,8 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                               inet_search=inet_search, domain_search=domain_search, port_number=port_number,
                               progress_status=progress_status, activity_status=activity_status, priority=priority,
                               tags=tags, created_before=created_before, created_after=created_after,
-                              modified_before=modified_before, modified_after=modified_after, sort=sort),
+                              modified_before=modified_before, modified_after=modified_after,
+                              cloud_management_status=cloud_management_status, sort=sort),
             total_results
         )
     )
@@ -967,6 +1138,117 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
+def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    total_results, max_page_size = calculate_limits(args.get('limit', None))
+
+    provider = ','.join(argToList(args.get('provider')))
+    business_units = ','.join(argToList(args.get('business_unit')))
+    service_type = ','.join(argToList(args.get('service_type')))
+    tags = ','.join(argToList(args.get('tag')))
+
+    content_search = args.get('content_search')
+    inet_search = args.get('inet_search')
+    domain_search = args.get('domain_search')
+
+    arg_list = argToList(args.get('port_number'))
+    # this will trigger exceptions if data is invalid
+    all(check_int(i, 'port_number', 0, 65535, True) for i in arg_list)
+    port_number = ','.join(arg_list)
+
+    arg_list = argToList(args.get('country_code'))
+    # This will check to make sure that a provided country code is a two character alpha string
+    if arg_list and not all(i.isalpha() and len(i) == 2 for i in arg_list):
+        raise ValueError('country_code must be an ISO-3166 two character country code')
+    country_code = ','.join([i.upper() for i in arg_list])
+
+    arg_list = argToList(args.get('activity_status'))
+    if arg_list and not all(i in ISSUE_ACTIVITY_STATUS for i in arg_list):
+        raise ValueError(f'activity_status must include: {", ".join(ISSUE_ACTIVITY_STATUS)}')
+    activity_status = ','.join(arg_list)
+
+    arg_list = argToList(args.get('discovery_type'))
+    if arg_list and not all(i in SERVICE_DISCOVERY_TYPE for i in arg_list):
+        raise ValueError(f'discovery_type must include: {", ".join(SERVICE_DISCOVERY_TYPE)}')
+    discovery_type = ','.join(arg_list)
+
+    arg_list = argToList(args.get('cloud_management_status'))
+    if arg_list and not all(i in CLOUD_MANAGEMENT_STATUS for i in arg_list):
+        raise ValueError(f'cloud_management_status must include: {", ".join(CLOUD_MANAGEMENT_STATUS)}')
+    cloud_management_status = ','.join(arg_list)
+
+    sort = args.get('sort')
+    if sort and sort not in SERVICE_SORT_OPTIONS:
+        raise ValueError(f'sort must include: {", ".join(SERVICE_SORT_OPTIONS)}')
+
+    services = list(
+        islice(
+            client.get_services(limit=max_page_size, content_search=content_search, provider=provider,
+                                business_units=business_units, service_type=service_type,
+                                inet_search=inet_search, domain_search=domain_search, port_number=port_number,
+                                activity_status=activity_status, discovery_type=discovery_type,
+                                tags=tags, cloud_management_status=cloud_management_status,
+                                country_code=country_code, sort=sort),
+            total_results
+        )
+    )
+
+    if len(services) < 1:
+        return CommandResults(readable_output='No Services Found')
+
+    # reduce some objects for human readable
+    hr_services = copy.deepcopy(services)
+    for service in hr_services:
+        service["classifications"] = [c.get("name") for c in service.get("classifications", [])]
+        service["tlsVersions"] = [f'version: {t.get("tlsVersion")} - cipher_suite: {t.get("cipherSuite")}'
+                                  for t in service.get("tlsVersions", [])]
+        service["certificates"] = [f'subject_name: {c.get("certificate", {}).get("subjectName")}' for c in
+                                   service.get("certificates", [])]
+
+    readable_output = tableToMarkdown(
+        name='Expanse Services',
+        t=hr_services,
+        headers=EXPANSE_SERVICE_READABLE_HEADER_LIST,
+        headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Expanse.Service",
+        outputs_key_field="id",
+        outputs=services
+    )
+
+
+def get_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    if not (service_id := args.get('service_id')):
+        raise ValueError('service_id not specified')
+
+    service = client.get_service_by_id(service_id=service_id)
+
+    # reduce some objects for human readable
+    hr_service = copy.deepcopy(service)
+    if hr_service is not None:
+        hr_service["classifications"] = [c.get("name") for c in hr_service.get("classifications", [])]
+        hr_service["tlsVersions"] = [f'version: {t.get("tlsVersion")} - cipher_suite: {t.get("cipherSuite")}'
+                                     for t in hr_service.get("tlsVersions", [])]
+        hr_service["certificates"] = [f'subject_name: {c.get("certificate", {}).get("subjectName")}'
+                                      for c in hr_service.get("certificates", [])]
+
+    readable_output = tableToMarkdown(
+        name='Expanse Services',
+        t=hr_service,
+        headers=EXPANSE_SERVICE_READABLE_HEADER_LIST,
+        headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Expanse.Service",
+        outputs_key_field="id",
+        outputs=service
+    )
+
+
 def get_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if not (issue_id := args.get('issue_id')):
         raise ValueError('issue_id not specified')
@@ -981,7 +1263,10 @@ def get_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Expanse.Issue", outputs_key_field="id", outputs=issue
+        readable_output=readable_output,
+        outputs_prefix="Expanse.Issue",
+        outputs_key_field="id",
+        outputs=issue
     )
 
 
@@ -1088,7 +1373,8 @@ def fetch_incidents(client: Client, max_incidents: int,
                     last_run: Dict[str, Union[Optional[int], Optional[str]]], first_fetch: Optional[int],
                     priority: Optional[str], activity_status: Optional[str],
                     progress_status: Optional[str], business_units: Optional[str], issue_types: Optional[str],
-                    tags: Optional[str], mirror_direction: Optional[str], sync_tags: Optional[List[str]],
+                    tags: Optional[str], cloud_management_status: Optional[str],
+                    mirror_direction: Optional[str], sync_tags: Optional[List[str]],
                     fetch_details: Optional[bool]
                     ) -> Tuple[Dict[str, Union[Optional[int], Optional[str]]], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
@@ -1135,12 +1421,18 @@ def fetch_incidents(client: Client, max_incidents: int,
         raise ValueError(f'activityStatus must include: {", ".join(ISSUE_ACTIVITY_STATUS)}')
     _activity_status = ','.join(arg_list)
 
+    arg_list = argToList(cloud_management_status)
+    if arg_list and not all(i in CLOUD_MANAGEMENT_STATUS for i in arg_list):
+        raise ValueError(f'cloudManagementStatus must include: {", ".join(CLOUD_MANAGEMENT_STATUS)}')
+    _cloud_management_status = ','.join(arg_list)
+
     created_after = timestamp_us_to_datestring_utc(latest_created_time, DATE_FORMAT)
 
     r = client.get_issues(
         limit=max_incidents if not last_issue_id else max_incidents + 1,  # workaround to avoid unnecessary API calls
         priority=_priority, business_units=business_units,
         progress_status=_progress_status, activity_status=_activity_status, tags=tags,
+        issue_type=issue_types, cloud_management_status=_cloud_management_status,
         created_after=created_after, sort='created'
     )
 
@@ -1228,10 +1520,33 @@ def fetch_incidents(client: Client, max_incidents: int,
     return next_run, incidents
 
 
+def get_modified_remote_data_command(client: Client, args: Dict[str, Any]) -> GetModifiedRemoteDataResponse:
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update  # In the first run, this value will be set to 1 minute earlier
+
+    demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
+
+    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
+    modified_after = last_update_utc.strftime(DATE_FORMAT)
+
+    modified_incidents = client.get_issues(
+        limit=100,
+        modified_after=modified_after
+    )
+
+    modified_incident_ids = list()
+    for raw_incident in modified_incidents:
+        incident_id = raw_incident.get('id')
+        modified_incident_ids.append(incident_id)
+
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+
 def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: bool = False,
                             incoming_tags: Optional[List[str]] = [],
                             mirror_details: bool = False) -> GetRemoteDataResponse:
     parsed_args = GetRemoteDataArgs(args)
+    demisto.debug(f'Performing get-remote-data command with incident id: {parsed_args.remote_incident_id}')
     issue_updates: List[Dict[str, Any]] = sorted(
         islice(
             client.get_issue_updates(
@@ -1260,7 +1575,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
         updated_field = ISSUE_UPDATE_TYPES[update_type]
         previous_value = update.get('previousValue')
         update_user = update['user']['username'] \
-            if ('user' in update and isinstance(update['user'], dict) and 'username' in update['user']) else 'Unknown user'
+            if ('user' in update and isinstance(update['user'], dict)
+                and 'username' in update['user']) else 'Unknown user'
 
         # handle incoming comment
         if update_type == 'Comment':
@@ -1296,23 +1612,45 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
                 demisto.debug(f'The user assigned to Expanse incident {parsed_args.remote_incident_id} [{new_value}]'
                               f'is not registered on XSOAR, cannot change owner')
 
-        # handle issue closure
-        elif update_type == 'ProgressStatus' and new_value in ISSUE_PROGRESS_STATUS_CLOSED:
-            close_reason = EXPANSE_RESOLVEDSTATUS_TO_XSOAR[
-                new_value] if new_value in EXPANSE_RESOLVEDSTATUS_TO_XSOAR else 'Other'
-            resolve_comment = latest_comment['value'] if 'value' in latest_comment else ''
-            demisto.debug(f'Closing Expanse issue {parsed_args.remote_incident_id}')
+        elif update_type == 'ProgressStatus':
+            # handle issue closure
+            if previous_value not in ISSUE_PROGRESS_STATUS_CLOSED and new_value in ISSUE_PROGRESS_STATUS_CLOSED:
+                close_reason = EXPANSE_RESOLVEDSTATUS_TO_XSOAR.get(new_value, 'Other')
+                resolve_comment = latest_comment.get('value', '')
+                demisto.debug(f'Closing Expanse issue {parsed_args.remote_incident_id}')
+                new_entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': {
+                        'dbotIncidentClose': True,
+                        'closeReason': close_reason,
+                        'closeNotes': resolve_comment,
+                    },
+                    'ContentsFormat': EntryFormat.JSON,
+                })
+                incident_updates['closeReason'] = close_reason
+                incident_updates['closeNotes'] = resolve_comment
+
+            # handle issue reopening
+            elif previous_value in ISSUE_PROGRESS_STATUS_CLOSED and new_value not in ISSUE_PROGRESS_STATUS_CLOSED:
+                demisto.debug(f'Reopening Expanse issue {parsed_args.remote_incident_id}')
+                new_entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': {
+                        'dbotIncidentReopen': True,
+                    },
+                    'ContentsFormat': EntryFormat.JSON,
+                })
+
+                incident_updates['closeReason'] = None
+                incident_updates['closeNotes'] = None
+
+            incident_updates[updated_field] = new_value
             new_entries.append({
                 'Type': EntryType.NOTE,
-                'Contents': {
-                    'dbotIncidentClose': True,
-                    'closeReason': close_reason,
-                    'closeNotes': resolve_comment
-                },
-                'ContentsFormat': EntryFormat.JSON
+                'Contents': f'Mirroring: {update_user} updated field [{updated_field}] from [{previous_value}] to [{new_value}]',
+                'ContentsFormat': EntryFormat.TEXT,
+                'Note': False
             })
-            incident_updates['closeReason'] = close_reason
-            incident_updates['closeNotes'] = resolve_comment
 
         # handle everything else
         else:
@@ -1441,6 +1779,62 @@ def list_providers_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
+def list_pocs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    total_results, max_page_size = calculate_limits(args.get('limit'))
+    outputs = list(
+        islice(client.list_pocs(limit=max_page_size), total_results)
+    )
+    readable_output = tableToMarkdown(
+        name='Expanse Points of Contact',
+        t=outputs,
+        headers=EXPANSE_POC_READABLE_HEADER_LIST,
+        headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        outputs_prefix="Expanse.PointOfContact",
+        outputs_key_field="id",
+        outputs=outputs if len(outputs) > 0 else None,
+        readable_output="## No Point Of Contacts found" if len(outputs) == 0 else readable_output
+    )
+
+
+def create_poc_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    email: str = args.get('email', '')
+    if not email or not re.match(POC_EMAIL_PATTERN, email):
+        raise ValueError('Point of Contact email needs to be a valid email')
+
+    first_name: str = args.get('first_name', '')
+    if first_name and len(first_name) > 64:
+        raise ValueError('Point of Contact first_name needs to be less than 64 characters')
+
+    last_name: str = args.get('last_name', '')
+    if last_name and len(last_name) > 64:
+        raise ValueError('Point of Contact last_name needs to be less than 64 characters')
+
+    phone: str = args.get('phone', '')
+    if phone and not phone.isnumeric():
+        raise ValueError('Point of Contact phone needs to be a numeric string')
+
+    role: str = args.get('role', '')
+    if role and len(role) > 64:
+        raise ValueError('Point of Contact role needs to be less than 64 characters')
+
+    try:
+        poc = client.create_poc(email, first_name, last_name, role, phone)
+    except DemistoException as e:
+        if str(e).startswith('Error in API call [409]'):
+            return CommandResults(readable_output='Point of Contact email already exists')
+        raise e
+
+    return CommandResults(
+        outputs_prefix="Expanse.PointOfContact",
+        outputs_key_field="id",
+        outputs=poc,
+        readable_output=f"New POC created for {email}"
+    )
+
+
 def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     total_results, max_page_size = calculate_limits(args.get('limit'))
     outputs = list(
@@ -1502,6 +1896,37 @@ def manage_asset_tags_command(client: Client, args: Dict[str, Any]) -> CommandRe
     client.manage_asset_tags(mapped_asset_type, operation_type, asset_id, tags)
     return CommandResults(
         readable_output='Operation complete'
+    )
+
+
+def manage_asset_pocs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    operation_type = args.get('operation_type')
+    if operation_type not in ASSET_POC_OPERATIONS:
+        raise ValueError(f'Operation type must be one of {",".join(ASSET_POC_OPERATIONS)}')
+
+    asset_type = args.get('asset_type')
+    if not asset_type or asset_type not in TAGGABLE_ASSET_TYPE_MAP:
+        raise ValueError(f'Asset type must be one of {",".join(TAGGABLE_ASSET_TYPE_MAP.keys())}')
+    mapped_asset_type = TAGGABLE_ASSET_TYPE_MAP[asset_type]
+
+    asset_id = args.get('asset_id')
+    if not asset_id:
+        raise ValueError('Asset id must be provided')
+
+    poc_ids = argToList(args.get('pocs'))
+    poc_emails = argToList(args.get('poc_emails'))
+
+    if len(poc_emails) > 0:
+        for p in client.list_pocs():
+            if p.get('email') in poc_emails:
+                poc_ids.append(p['id'])
+    pocs: List[str] = list(set(poc_ids))
+    if len(pocs) < 1:
+        raise ValueError('Must provide valid Point of Contact IDs or emails')
+
+    client.manage_asset_pocs(mapped_asset_type, operation_type, asset_id, pocs)
+    return CommandResults(
+        readable_output=f'Operation complete ({operation_type} {poc_emails or poc_ids} to {asset_id})'
     )
 
 
@@ -1619,6 +2044,72 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
         )
     )
     return format_domain_data(domain_data)
+
+
+def get_cloud_resource_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    asset_id: Optional[str] = args.pop('id', None)
+
+    if asset_id is not None:
+        output = client.get_cloud_resource(asset_id=asset_id)
+        return format_cloud_resource_data([output])
+
+    total_results, max_page_size = calculate_limits(args.get('limit'))
+
+    params: Dict[str, Any] = {
+        "limit": max_page_size
+    }
+
+    domain_search: Optional[str] = args.get('domain')
+    if domain_search is not None:
+        params['domainSearch'] = domain_search
+
+    ip_search: Optional[str] = args.get('ip')
+    if ip_search is not None:
+        params['inetSearch'] = ip_search
+
+    provider_id = argToList(args.get('providers'))
+    if len(provider_id) > 0:
+        params['providerId'] = ','.join(provider_id)
+
+    provider_name = argToList(args.get('provider_names'))
+    if len(provider_name) > 0:
+        params['providerName'] = ','.join(provider_name)
+
+    business_unit_id = argToList(args.get('business_units'))
+    if len(business_unit_id) > 0:
+        params['businessUnitId'] = ','.join(business_unit_id)
+
+    business_unit_name = argToList(args.get('business_unit_names'))
+    if len(business_unit_name) > 0:
+        params['businessUnitName'] = ','.join(business_unit_name)
+
+    tag_id = argToList(args.get('tags'))
+    if len(tag_id) > 0:
+        params['tagId'] = ','.join(tag_id)
+
+    tag_name = argToList(args.get('tag_names'))
+    if len(tag_name) > 0:
+        params['tagName'] = ','.join(tag_name)
+
+    type_search = argToList(args.get('types'))
+    if len(type_search) > 0:
+        params['type'] = ','.join(type_search)
+
+    region_search = argToList(args.get('regions'))
+    if len(region_search) > 0:
+        params['region'] = ','.join(region_search)
+
+    last_observed_date: Optional[str] = args.pop('last_observed_date', None)
+    if last_observed_date is not None:
+        params['minLastObservedDate'] = last_observed_date
+
+    cloud_resource_data = list(
+        islice(
+            client.get_cloud_resources(params=params),
+            total_results
+        )
+    )
+    return format_cloud_resource_data(cloud_resource_data)
 
 
 def get_certificate_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
@@ -1930,7 +2421,11 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     for ip in ips:
         ip_data = next(client.get_ips(params={'inetSearch': f"{ip}", "limit": 1}), None)
         if ip_data is None:
-            continue
+            # If we don't get anything back from the ips endpoint, we can return
+            # details from IP Ranges
+            ip_data = next(client.get_ipranges(params={'inet': f"{ip}", "limit": 1}), None)
+            if ip_data is None:
+                continue
 
         ip_data['ip'] = ip
 
@@ -1945,7 +2440,7 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             hostname=ip_data.get('domain', None)
         )
         command_results.append(CommandResults(
-            readable_output=tableToMarkdown("New IP indicator was found", ip_standard_context.to_context()),
+            readable_output=tableToMarkdown("New IP indicator was found", {"IP": ip, "Domain": ip_data.get('domain')}),
             indicator=ip_standard_context
         ))
         ip_context_excluded_fields: List[str] = []
@@ -2040,6 +2535,67 @@ def get_risky_flows_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
+def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns all domains that have resolved to IP addresses a certificate has been seen on. There is no direct way to
+    correlate between certificates and domains in Expanse this does so indirectly.
+    """
+    search = args['common_name']
+    params = {
+        "commonNameSearch": search
+    }
+
+    matching_domains = []  # type:ignore
+
+    certificates_iterator = client.get_certificates(params=params)
+    certificates = [certificate for certificate in certificates_iterator]
+
+    for certificate in certificates:
+        certificate_details = client.get_certificate_by_md5_hash(
+            md5_hash=certificate.get('certificate', {}).get('md5Hash'))
+
+        for ip in certificate_details.get('details', {}).get('recentIps', []):
+            params = {
+                'inetSearch': ip.get('ip'),
+                'assetType': 'DOMAIN'
+            }
+            matching_domains += client.get_ips(params=params)
+
+    if len(matching_domains) == 0:
+        return CommandResults(readable_output="No data found")
+
+    context = get_expanse_certificate_to_domain_context(common_name=search, data=matching_domains)
+
+    context_copy = context.copy()
+    del context_copy['DomainList']  # Remove full objects from human readable response
+    human_readable = tableToMarkdown("Expanse Domains matching Certificate Common Name: {search}".format(search=search),
+                                     context_copy)
+
+    return CommandResults(
+        outputs_prefix="Expanse.IPDomains",
+        readable_output=human_readable,
+        raw_response=matching_domains,
+        outputs_key_field="SearchTerm",
+        outputs=context,
+    )
+
+
+def get_expanse_certificate_to_domain_context(common_name, data):
+    """
+    Provides custom context information for domains looked up via certificate.
+
+    :param common_name: The original search parameter
+    :param data: The data returned from the API query
+    :return: A dict of aggregated domain details
+    """
+    return {
+        "SearchTerm": common_name,
+        "TotalDomainCount": len(data),
+        "FlatDomainList": [domain.get('domain') for domain in data],
+        "DomainList": data
+    }
+
+
 """ MAIN FUNCTION """
 
 
@@ -2048,6 +2604,7 @@ def main() -> None:
     """
 
     params = demisto.params()
+    args = demisto.args()
     command = demisto.command()
     api_key = params.get("apikey")
     base_url = urljoin(params.get("url", "").rstrip("/"), "/api")
@@ -2082,6 +2639,7 @@ def main() -> None:
             business_units = argToList(params.get('business_unit'))
             issue_types = argToList(params.get('issue_type'))
             tags = argToList(params.get('tag'))
+            cloud_management_status = params.get('cloud_management_status')
 
             sync_tags = argToList(params.get('sync_tags'))
 
@@ -2098,6 +2656,7 @@ def main() -> None:
                 progress_status=progress_status,
                 business_units=business_units,
                 tags=tags,
+                cloud_management_status=cloud_management_status,
                 issue_types=issue_types,
                 mirror_direction=mirror_direction,
                 sync_tags=sync_tags,
@@ -2109,7 +2668,7 @@ def main() -> None:
 
         #  To be compatible with 6.1
         elif command == "get-modified-remote-data":
-            raise DemistoException('get-modified-remote-data not implemented')
+            return_results(get_modified_remote_data_command(client, args))
 
         elif command == "get-remote-data":
             sync_owners = argToBoolean(params.get('sync_owners'))
@@ -2118,114 +2677,165 @@ def main() -> None:
             mirror_details = False
             # mirror_details = argToBoolean(params.get('mirror_details'))
             incoming_tags = argToList(params.get('incoming_tags'))
-            return_results(get_remote_data_command(client, demisto.args(), sync_owners, incoming_tags, mirror_details))
+            return_results(get_remote_data_command(client, args, sync_owners, incoming_tags, mirror_details))
 
         elif command == "update-remote-system":
             sync_owners = argToBoolean(params.get('sync_owners'))
-            return_results(update_remote_system_command(client, demisto.args(), sync_owners))
+            return_results(update_remote_system_command(client, args, sync_owners))
 
         elif command == "expanse-get-issues":
-            return_results(get_issues_command(client, demisto.args()))
+            return_results(get_issues_command(client, args))
 
         elif command == "expanse-get-issue":
-            return_results(get_issue_command(client, demisto.args()))
+            return_results(get_issue_command(client, args))
 
         elif command == "expanse-get-issue-updates":
-            return_results(get_issue_updates_command(client, demisto.args()))
+            return_results(get_issue_updates_command(client, args))
 
         elif command == "expanse-update-issue":
-            return_results(update_issue_command(client, demisto.args()))
+            return_results(update_issue_command(client, args))
 
         elif command == "expanse-get-issue-comments":
-            return_results(get_issue_comments_command(client, demisto.args()))
+            return_results(get_issue_comments_command(client, args))
 
         elif command == "expanse-list-businessunits":
-            return_results(list_businessunits_command(client, demisto.args()))
+            return_results(list_businessunits_command(client, args))
 
         elif command == "expanse-list-providers":
-            return_results(list_providers_command(client, demisto.args()))
+            return_results(list_providers_command(client, args))
 
         elif command == "expanse-list-tags":
-            return_results(list_tags_command(client, demisto.args()))
+            return_results(list_tags_command(client, args))
 
         elif command == "expanse-get-iprange":
-            return_results(get_iprange_command(client, demisto.args()))
+            return_results(get_iprange_command(client, args))
 
         elif command == "expanse-create-tag":
-            return_results(create_tag_command(client, demisto.args()))
+            return_results(create_tag_command(client, args))
 
         elif command == "expanse-assign-tags-to-asset":
-            args = demisto.args()
             args['operation_type'] = 'ASSIGN'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-unassign-tags-from-asset":
-            args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-assign-tags-to-iprange":
-            args = demisto.args()
             args['operation_type'] = 'ASSIGN'
             args['asset_type'] = 'IpRange'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-unassign-tags-from-iprange":
-            args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
             args['asset_type'] = 'IpRange'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-assign-tags-to-certificate":
-            args = demisto.args()
             args['operation_type'] = 'ASSIGN'
             args['asset_type'] = 'Certificate'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-unassign-tags-from-certificate":
-            args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
             args['asset_type'] = 'Certificate'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-assign-tags-to-domain":
-            args = demisto.args()
             args['operation_type'] = 'ASSIGN'
             args['asset_type'] = 'Domain'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-unassign-tags-from-domain":
-            args = demisto.args()
             args['operation_type'] = 'UNASSIGN'
             args['asset_type'] = 'Domain'
-            return_results(manage_asset_tags_command(client, demisto.args()))
+            return_results(manage_asset_tags_command(client, args))
 
         elif command == "expanse-get-domain":
-            return_results(get_domain_command(client, demisto.args()))
+            return_results(get_domain_command(client, args))
 
         elif command == "expanse-get-certificate":
-            return_results(get_certificate_command(client, demisto.args()))
+            return_results(get_certificate_command(client, args))
 
         elif command == "expanse-get-associated-domains":
-            return_results(get_associated_domains_command(client, demisto.args()))
+            return_results(get_associated_domains_command(client, args))
 
         elif command == "certificate":
-            return_results(certificate_command(client, demisto.args()))
+            return_results(certificate_command(client, args))
 
         elif command == "domain":
-            return_results(domain_command(client, demisto.args()))
+            return_results(domain_command(client, args))
 
         elif command == "ip":
-            return_results(ip_command(client, demisto.args()))
+            return_results(ip_command(client, args))
 
         elif command == "cidr":
-            return_results(cidr_command(client, demisto.args()))
+            return_results(cidr_command(client, args))
+
+        elif command == "expanse-get-cloud-resources":
+            return_results(get_cloud_resource_command(client, args))
+
+        elif command == "expanse-get-cloud-resource":
+            return_results(get_cloud_resource_command(client, args))
 
         elif command == "expanse-get-risky-flows":
-            return_results(get_risky_flows_command(client, demisto.args()))
+            return_results(get_risky_flows_command(client, args))
 
         elif command == "expanse-list-risk-rules":
-            return_results(list_risk_rules_command(client, demisto.args()))
+            return_results(list_risk_rules_command(client, args))
+
+        elif command == "expanse-get-services":
+            return_results(get_services_command(client, args))
+
+        elif command == "expanse-get-service":
+            return_results(get_service_command(client, args))
+
+        elif command == "expanse-list-pocs":
+            return_results(list_pocs_command(client, args))
+
+        elif command == "expanse-create-poc":
+            return_results(create_poc_command(client, args))
+
+        elif command == "expanse-assign-pocs-to-asset":
+            args['operation_type'] = 'ASSIGN'
+            return_results(manage_asset_pocs_command(client, args))
+
+        elif command == "expanse-unassign-pocs-from-asset":
+            args['operation_type'] = 'UNASSIGN'
+            return_results(manage_asset_pocs_command(client, args))
+
+        elif command == "expanse-assign-pocs-to-iprange":
+            args['operation_type'] = 'ASSIGN'
+            args['asset_type'] = 'IpRange'
+            return_results(manage_asset_pocs_command(client, args))
+
+        elif command == "expanse-unassign-pocs-from-iprange":
+            args['operation_type'] = 'UNASSIGN'
+            args['asset_type'] = 'IpRange'
+            return_results(manage_asset_pocs_command(client, args))
+
+        elif command == "expanse-assign-pocs-to-certificate":
+            args['operation_type'] = 'ASSIGN'
+            args['asset_type'] = 'Certificate'
+            return_results(manage_asset_pocs_command(client, args))
+
+        elif command == "expanse-unassign-pocs-from-certificate":
+            args['operation_type'] = 'UNASSIGN'
+            args['asset_type'] = 'Certificate'
+            return_results(manage_asset_pocs_command(client, args))
+
+        elif command == "expanse-assign-pocs-to-domain":
+            args['operation_type'] = 'ASSIGN'
+            args['asset_type'] = 'Domain'
+            return_results(manage_asset_pocs_command(client, args))
+
+        elif command == "expanse-unassign-pocs-from-domain":
+            args['operation_type'] = 'UNASSIGN'
+            args['asset_type'] = 'Domain'
+            return_results(manage_asset_pocs_command(client, args))
+
+        elif command == 'expanse-get-domains-for-certificate':
+            return_results(domains_for_certificate_command(client, args))
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')

@@ -1,0 +1,5 @@
+[file:README.md]
+ignore=RM106
+
+[file:QuestKace.yml]
+ignore=IN126

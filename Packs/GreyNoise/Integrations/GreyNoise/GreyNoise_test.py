@@ -10,7 +10,8 @@ from test_data.input_data import (  # type: ignore
     generate_advanced_query_data,
     query_command_data,
     get_ip_context_data_data,
-    stats_command_data
+    stats_command_data,
+    riot_command_response_data
 )
 
 
@@ -18,6 +19,7 @@ class DummyResponse:
     """
     Dummy Response object of requests.response for unit testing.
     """
+
     def __init__(self, headers, text, status_code):
         self.headers = headers
         self.text = text
@@ -190,3 +192,27 @@ def test_get_ip_context_data(input_data, expected_output):
     """
     response = GreyNoise.get_ip_context_data(input_data)
     assert response == expected_output
+
+
+@pytest.mark.parametrize("test_scenario, status_code, input_data, expected", riot_command_response_data)
+def test_riot_command(mocker, test_scenario, status_code, input_data, expected):
+    """
+    Test various inputs for riot command
+    """
+    client = GreyNoise.Client(api_key="true_api_key", api_server="dummy_server", timeout=10,
+                              proxy="proxy", use_cache=False, integration_name="dummy_integration")
+    dummy_response = DummyResponse(
+        {
+            "Content-Type": "application/json"
+        },
+        json.dumps(expected["raw_data"]),
+        status_code
+    )
+    mocker.patch('requests.Session.get', return_value=dummy_response)
+    if test_scenario == "positive":
+        response = GreyNoise.riot_command(client, input_data)
+        assert response.outputs == expected["raw_data"]
+    else:
+        with pytest.raises(Exception) as err:
+            _ = GreyNoise.riot_command(client, input_data)
+        assert str(err.value) == expected["error_message"].format(input_data["ip"])

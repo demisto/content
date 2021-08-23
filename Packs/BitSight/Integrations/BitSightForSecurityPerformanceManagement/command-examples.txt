@@ -1,0 +1,3 @@
+!bitsight-get-companies-guid
+!bitsight-get-company-details guid=a940bb61-33c4-42c9-9231-c8194c305db3
+!bitsight-get-company-findings guid=a940bb61-33c4-42c9-9231-c8194c305db3 first_seen=2021-01-01 last_seen=2021-02-01

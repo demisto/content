@@ -1,0 +1,1 @@
+!pingcastle-get-report delete_report=No

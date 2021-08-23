@@ -1,0 +1,2 @@
+[file:AWS-CloudWatchLogs.yml]
+ignore=BA108,BA109

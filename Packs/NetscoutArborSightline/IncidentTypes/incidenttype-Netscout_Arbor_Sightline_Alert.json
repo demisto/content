@@ -1,0 +1,28 @@
+{
+    "autorun": false,
+    "color": "#295AFF",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Netscout Arbor Sightline Alert",
+    "layout": "Netscout Arbor Sightline Alert",
+    "locked": false,
+    "name": "Netscout Arbor Sightline Alert",
+    "onChangeRepAlg": 0,
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "preProcessingScript": "",
+    "fromVersion": "5.5.0"
+}

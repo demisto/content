@@ -11,7 +11,7 @@
 <li>SMG does not have a REST API, therefore the integration parses HTML response using the Beautiful Soup package. It also sends and gets data through it.</li>
 <li>The integration adds and removes IoCs to the relevant default Bad Sender lists, and not custom ones.</li>
 </ul>
-<h2>Configure Symantec Messaging Gateway on Demisto</h2>
+<h2>Configure Symantec Messaging Gateway on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Symantec Messaging Gateway.</li>
@@ -29,7 +29,7 @@
 <li>Click <strong>Test</strong> to validate URLs and connection. </li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_18389780861530522674047">Block an email address: smg-block-email</a></li>
 <li><a href="#h_59612418551530522681308">Block a domain: smg-block-domain</a></li>
@@ -82,7 +82,7 @@
 </table>
 <p> </p>
 <h5>Raw Output</h5>
-<pre>Email address admin@company.com was blocked successfully.</pre>
+<pre>Email address admin@example.com was blocked successfully.</pre>
 <p> </p>
 <h3 id="h_59612418551530522681308">2. Block a domain</h3>
 <hr>
@@ -214,7 +214,7 @@
 </table>
 <p> </p>
 <h5>Raw Output</h5>
-<pre>Email address admin@company.com was unblocked successfully.</pre>
+<pre>Email address admin@example.com was unblocked successfully.</pre>
 <p> </p>
 <h3 id="h_2689340341961530522712183">5. Unblock a domain</h3>
 <hr>

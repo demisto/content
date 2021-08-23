@@ -1,0 +1,51 @@
+{
+	"pChunk": {
+		"KLCSP_ITERATOR_ARRAY": [
+			{
+				"type": "params",
+				"value": {
+					"KLHST_INSTANCEID": "025ed284-389b-44c5-a9ef-6e723f7d9466",
+					"KLHST_WKS_ANTI_SPAM_STATUS": 0,
+					"KLHST_WKS_COLLAB_SRVS_STATUS": 0,
+					"KLHST_WKS_CPU_ARCH": 2,
+					"KLHST_WKS_CREATED": {
+						"type": "datetime",
+						"value": "2021-02-23T10:14:33Z"
+					},
+					"KLHST_WKS_CTYPE": 36871,
+					"KLHST_WKS_DLP_STATUS": 0,
+					"KLHST_WKS_DN": "EC2AMAZ-U66K3JL",
+					"KLHST_WKS_DNSDOMAIN": "eu-west-2.compute.internal",
+					"KLHST_WKS_DNSNAME": "ip-172-32-34-237",
+					"KLHST_WKS_EDR_STATUS": 0,
+					"KLHST_WKS_EMAIL_AV_STATUS": 0,
+					"KLHST_WKS_FQDN": "ip-172-32-34-237.eu-west-2.compute.internal",
+					"KLHST_WKS_GROUPID": 0,
+					"KLHST_WKS_HOSTNAME": "4328e16g-bf83-47c3-8d0b-0fdf79f9d673",
+					"KLHST_WKS_LAST_VISIBLE": {
+						"type": "datetime",
+						"value": "2021-03-19T16:18:53Z"
+					},
+					"KLHST_WKS_NAG_VERSION": "12.2.0.4376",
+					"KLHST_WKS_NAG_VER_ID": 786434,
+					"KLHST_WKS_OSSP_VER_MAJOR": 0,
+					"KLHST_WKS_OSSP_VER_MINOR": 0,
+					"KLHST_WKS_OS_BUILD_NUMBER": 14393,
+					"KLHST_WKS_OS_NAME": "Microsoft Windows Server 2016",
+					"KLHST_WKS_OS_RELEASE_ID": 1607,
+					"KLHST_WKS_OWNER_IS_CUSTOM": false,
+					"KLHST_WKS_PTYPE": 2,
+					"KLHST_WKS_RBT_REQUEST_REASON": 0,
+					"KLHST_WKS_RBT_REQUIRED": false,
+					"KLHST_WKS_RTP_AV_BASES_TIME": {
+						"type": "datetime",
+						"value": "2021-03-19T12:30:00Z"
+					},
+					"KLHST_WKS_RTP_AV_VERSION": "11.5.0.590",
+					"KLHST_WKS_STATUS": 29
+				}
+			}
+		]
+	},
+	"PxgRetVal": 1
+}

@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+deprecated: true
 commonfields:
   id: QRadar
   version: -1
@@ -52,8 +53,8 @@ configuration:
   name: enrich_size
   required: false
   type: 0
-description: Fetch offenses as incidents and search QRadar
-display: IBM QRadar
+description: Deprecated. Use IBM QRadar v2 or IBM QRadar v3 instead.
+display: IBM QRadar (Deprecated)
 name: QRadar
 script:
   commands:
@@ -1588,8 +1589,9 @@ script:
   script: '-'
   subtype: python2
   type: python
+  dockerimage: demisto/python:2.7.18.20958
 tests:
-- test_Qradar
+- No test
 fromversion: 5.5.0
 defaultclassifier: QRadar
 defaultmapperin: QRadar-mapper

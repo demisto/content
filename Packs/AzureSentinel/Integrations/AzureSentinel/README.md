@@ -18,9 +18,9 @@ Follow these steps for a self-deployed configuration.
 
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 2. Make sure the following permissions are granted for the app registration:
-   -  API/Permission name `user_impersonation` of type `Delegated`
-3. Copy the following URL and replace the ***CLIENT_ID*** and ***REDIRECT_URI*** with your own client ID and redirect URI, accordingly.
-```https://login.microsoftonline.com/common/oauth2/authorize?response_type=code&resource=https://management.core.windows.net&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI```
+   -  Azure Service Management - permission `user_impersonation` of type `Delegated`
+3. Copy the following URL and replace the ***TENANT_ID***, ***CLIENT_ID*** and ***REDIRECT_URI*** with your own tenant ID, client ID and redirect URI, accordingly.
+```https://login.microsoftonline.com/TENANT_ID/oauth2/authorize?response_type=code&resource=https://management.core.windows.net&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI```
 4. Enter the link and you will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 5. Copy the ***AUTH_CODE*** (without the “code=” prefix) and paste it in your instance configuration under the **Authorization code** parameter. 
@@ -34,7 +34,7 @@ Follow these steps for a self-deployed configuration.
 To get the ***Subscription ID***, ***Workspace Name*** and ***Resource Group*** parameters, navigate in the Azure Portal to ***Azure Sentinel > YOUR-WORKSPACE > Settings*** and click on ***Workspace Settings*** tab.
 
 
-## Configure Azure Sentinel on Demisto
+## Configure Azure Sentinel on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Azure Sentinel.
@@ -60,7 +60,7 @@ To get the ***Subscription ID***, ***Workspace Name*** and ***Resource Group*** 
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-sentinel-get-incident-by-id
 ***
@@ -196,6 +196,8 @@ Updates a single incident in Azure Sentinel.
 | status | The incident status. | Optional | 
 | classification | The reason the incident was closed. Required when updating the status to Closed. Possible values are:  BenignPositive, FalsePositive, TruePositive, Undetermined | Optional | 
 | classification_reason | The classification reason the incident was closed with. Required when updating the status to Closed and the classification is determined. Possible values are:  InaccurateData, IncorrectAlertLogic, SuspiciousActivity, SuspiciousButExpected | Optional | 
+| assignee_email | Email of the incident assignee. Note that the API field updated is `owner.email` | Optional | 
+| labels | Incident labels. Note that all labels will be set as `labelType=User`. | Optional | 
 
 
 ##### Context Output
@@ -227,7 +229,7 @@ Updates a single incident in Azure Sentinel.
 
 
 ##### Command Example
-```!azure-sentinel-update-incident incident_id=f1670c58-43dc-4b82-a13a-c732325c41f5 severity=Medium```
+```azure-sentinel-update-incident incident_id=f1670c58-43dc-4b82-a13a-c732325c41f5 severity=Informational assignee_email=example@example.com```
 
 ##### Human Readable Output
 ### Updated incidents b3de6b49-0945-454e-bb59-98087573cfc2 details

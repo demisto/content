@@ -7,7 +7,7 @@ Creates a channel in Slack v2 or in Microsoft Teams. If both Slack v2 and Micros
 | --- | --- |
 | Script Type | python3 |
 | Tags | Shift Management, ooo |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
 ---

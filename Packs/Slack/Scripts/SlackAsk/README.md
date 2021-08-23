@@ -2,8 +2,8 @@
   Sends a message (question) to either user (in a direct message) or to a channel. The message includes predefined reply options. The response can also close a task (might be conditional) in a playbook.
 </p>
 <h2>Use Case</h2>
-<p>This automation allows you to ask users in Slack(including external to Demisto) questions, have them respond and 
-reflect the answer back to Demisto.</p>
+<p>This automation allows you to ask users in Slack(including external to Cortex XSOAR) questions, have them respond and 
+reflect the answer back to Cortex XSOAR.</p>
 <h2>Prerequisites</h2>
 <p>Requires an instance of the Slack v2 integration.</p>
 <h3>Inputs</h3>
@@ -87,7 +87,7 @@ reflect the answer back to Demisto.</p>
 <h3>Guide</h3>
 <span>
 The automation is most useful in a playbook to determine the outcome of a conditional task - which will be one of the provided options.
-It uses a mechanism that allows external users to respond in Demisto(per investigation) with entitlement strings embedded within the message contents.
+It uses a mechanism that allows external users to respond in Cortex XSOAR(per investigation) with entitlement strings embedded within the message contents.
 <img alt="" src="https://user-images.githubusercontent.com/35098543/66044107-7de39f00-e529-11e9-8099-049502b4d62f.png"/>
 <br>
 The automation can utilize the interactive capabilities of Slack to send a form with buttons - 

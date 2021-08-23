@@ -1,0 +1,73 @@
+[
+  [
+    {
+      "Type": "Services",
+      "RegistryPath": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\S-1-5-20",
+      "RegistryKey": "ProfileImagePath",
+      "RegistryValue": "C:\\Windows\\ServiceProiles\\NetworkService"
+    },
+    {
+      "Type": "Services",
+      "RegistryPath": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\S-1-5-20",
+      "RegistryKey": "Flags",
+      "RegistryValue": "0"
+    },
+    {
+      "Type": "Services",
+      "RegistryPath": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\S-1-5-20",
+      "RegistryKey": "State",
+      "RegistryValue": "0"
+    },
+    {
+      "Type": "Services",
+      "RegistryPath": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\S-1-5-20",
+      "RegistryKey": "Sid",
+      "RegistryValue": "S-1-5-20"
+    },
+    {
+      "Type": "Services",
+      "RegistryPath": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\S-1-5-18",
+      "RegistryKey": "Flags",
+      "RegistryValue": "12"
+    },
+    {
+      "Type": "Services",
+      "RegistryPath": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\S-1-5-18",
+      "RegistryKey": "ProfileImagePath",
+      "RegistryValue": "%systemroot%\\system32config\\systemprofile"
+    },
+    {
+      "Type": "Services",
+      "RegistryPath": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\S-1-5-18",
+      "RegistryKey": "RefCount",
+      "RegistryValue": "1"
+    },
+    {
+      "Type": "Services",
+      "RegistryPath": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\S-1-5-18",
+      "RegistryKey": "Sid",
+      "RegistryValue": "S-1-5-18"
+    },
+    {
+      "Type": "Services",
+      "RegistryPath": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\S-1-5-18",
+      "RegistryKey": "State",
+      "RegistryValue": "0"
+    }
+  ],
+  [
+    {
+      "ProfileImagePath": "C:\\Windows\\ServiceProiles\\NetworkService",
+      "Flags": "0",
+      "State": "0",
+      "Sid": "S-1-5-20"
+    },
+    {
+      "Flags": "12",
+      "ProfileImagePath": "%systemroot%\\system32config\\systemprofile",
+      "RefCount": "1",
+      "Sid": "S-1-5-18",
+      "State": "0"
+    }
+  ]
+]

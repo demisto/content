@@ -1,3 +1,5 @@
+import shutil
+
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -284,43 +286,52 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
                                  category: List[str] = None, from_: str = None, to: str = None, description: str = None,
                                  target: str = None, log_forwarding: str = None,
                                  disable_server_response_inspection: str = None, tags: List[str] = None,
-                                 profile_setting: str = None) -> Dict:
+                                 profile_setting: str = None, where: str = 'bottom', dst: str = None) -> Dict:
     if application is None or len(application) == 0:
         # application always must be specified and the default should be any
         application = ['any']
 
-    rulename = rulename if rulename else ('demisto-' + (str(uuid.uuid4()))[:8])
+    # flake8: noqa
+    rulename = rulename if rulename else f'demisto-{str(uuid.uuid4())[:8]}'
     params = {
         'type': 'config',
         'action': api_action,
         'key': API_KEY,
+        'where': where,  # default where will be bottom for BC purposes
         'element': add_argument_open(action, 'action', False)
-        + add_argument_target(target, 'target')
-        + add_argument_open(description, 'description', False)
-        + add_argument_list(source, 'source', True, True)
-        + add_argument_list(destination, 'destination', True, True)
-        + add_argument_list(application, 'application', True)
-        + add_argument_list(category, 'category', True)
-        + add_argument_open(source_user, 'source-user', True)
-        + add_argument_list(from_, 'from', True, True)  # default from will always be any
-        + add_argument_list(to, 'to', True, True)  # default to will always be any
-        + add_argument_list(service, 'service', True, True)
-        + add_argument_yes_no(negate_source, 'negate-source')
-        + add_argument_yes_no(negate_destination, 'negate-destination')
-        + add_argument_yes_no(disable, 'disabled')
-        + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
-        + add_argument(log_forwarding, 'log-setting', False)
-        + add_argument_list(tags, 'tag', True)
-        + add_argument_profile_setting(profile_setting, 'profile-setting')
+                   + add_argument_target(target, 'target')
+                   + add_argument_open(description, 'description', False)
+                   + add_argument_list(source, 'source', True, True)
+                   + add_argument_list(destination, 'destination', True, True)
+                   + add_argument_list(application, 'application', True)
+                   + add_argument_list(category, 'category', True)
+                   + add_argument_open(source_user, 'source-user', True)
+                   + add_argument_list(from_, 'from', True, True)  # default from will always be any
+                   + add_argument_list(to, 'to', True, True)  # default to will always be any
+                   + add_argument_list(service, 'service', True, True)
+                   + add_argument_yes_no(negate_source, 'negate-source')
+                   + add_argument_yes_no(negate_destination, 'negate-destination')
+                   + add_argument_yes_no(disable, 'disabled')
+                   + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
+                   + add_argument(log_forwarding, 'log-setting', False)
+                   + add_argument_list(tags, 'tag', True)
+                   + add_argument_profile_setting(profile_setting, 'profile-setting')
     }
+    if dst:
+        if where not in ('before', 'after'):
+            raise DemistoException('Please provide a dst rule only when the where argument is before or after.')
+        else:
+            params['dst'] = dst
+
     if DEVICE_GROUP:
         if not PRE_POST:
-            raise Exception('Please provide the pre_post argument when configuring'
-                            ' a security rule in Panorama instance.')
+            raise Exception('Please provide the pre_post argument when configuring '
+                            'a security rule in Panorama instance.')
         else:
-            params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+            params['xpath'] = f"{XPATH_SECURITY_RULES}{PRE_POST}/security/rules/entry[@name='{rulename}']"
     else:
-        params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
+        params['xpath'] = f"{XPATH_SECURITY_RULES}[@name='{rulename}']"
+
     return params
 
 
@@ -482,10 +493,13 @@ def panorama_command(args: dict):
 
 
 @logger
-def panorama_commit():
+def panorama_commit(args):
+    command: str = ''
+    if device_group := args.get('device-group'):
+        command += f'<device-group><entry name="{device_group}"/></device-group>'
     params = {
         'type': 'commit',
-        'cmd': '<commit></commit>',
+        'cmd': f'<commit>{command}</commit>',
         'key': API_KEY
     }
     result = http_request(
@@ -497,17 +511,18 @@ def panorama_commit():
     return result
 
 
-def panorama_commit_command():
+def panorama_commit_command(args: dict):
     """
-    Commit and show message in warroom
+    Commit and show message in the war room
     """
-    result = panorama_commit()
+    result = panorama_commit(args)
 
     if 'result' in result['response']:
         # commit has been given a jobid
         commit_output = {
             'JobID': result['response']['result']['job'],
-            'Status': 'Pending'
+            'Status': 'Pending',
+            'Description': args.get('description')
         }
         return_results({
             'Type': entryTypes['note'],
@@ -528,7 +543,7 @@ def panorama_commit_command():
 def panorama_commit_status(args: dict):
     params = {
         'type': 'op',
-        'cmd': '<show><jobs><id>' + args['job_id'] + '</id></jobs></show>',
+        'cmd': f'<show><jobs><id>{args.get("job_id")}</id></jobs></show>',
         'key': API_KEY
     }
     result = http_request(
@@ -583,14 +598,24 @@ def panorama_commit_status_command(args: dict):
 
 
 @logger
-def panorama_push_to_device_group():
+def panorama_push_to_device_group(args: dict):
+    command: str = ''
+    command += f'<device-group><entry name="{DEVICE_GROUP}"/></device-group>'
+
+    if argToBoolean(args.get('validate-only', 'false')):
+        command += '<validate-only>yes</validate-only>'
+    if not argToBoolean(args.get('include-template', 'true')):
+        command += '<include-template>no</include-template>'
+    if description := args.get('description'):
+        command += f'<description>{description}</description>'
+
     params = {
         'type': 'commit',
         'action': 'all',
-        'cmd': '<commit-all><shared-policy><device-group><entry name=\"' + DEVICE_GROUP
-               + '\"/></device-group></shared-policy></commit-all>',
+        'cmd': f'<commit-all><shared-policy>{command}</shared-policy></commit-all>',
         'key': API_KEY
     }
+
     result = http_request(
         URL,
         'POST',
@@ -600,14 +625,15 @@ def panorama_push_to_device_group():
     return result
 
 
-def panorama_push_to_device_group_command():
+def panorama_push_to_device_group_command(args: dict):
     """
     Push Panorama configuration and show message in warroom
     """
+
     if not DEVICE_GROUP:
         raise Exception("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
 
-    result = panorama_push_to_device_group()
+    result = panorama_push_to_device_group(args)
     if 'result' in result['response']:
         # commit has been given a jobid
         push_output = {
@@ -635,7 +661,7 @@ def panorama_push_to_device_group_command():
 def panorama_push_status(job_id: str):
     params = {
         'type': 'op',
-        'cmd': '<show><jobs><id>' + job_id + '</id></jobs></show>',
+        'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
         'key': API_KEY
     }
     result = http_request(
@@ -666,8 +692,8 @@ def panorama_push_status_command(job_id: str):
     """
     result = panorama_push_status(job_id)
     job = result.get('response', {}).get('result', {}).get('job', {})
-    if job.get('type', '') != 'CommitAll':
-        raise Exception('JobID given is not of a Push.')
+    if job.get('type', '') not in ('CommitAll', 'ValidateAll'):
+        raise Exception('JobID given is not of a Push neither of a validate.')
 
     push_status_output = {'JobID': job.get('id')}
     if job.get('status', '') == 'FIN':
@@ -689,12 +715,16 @@ def panorama_push_status_command(job_id: str):
 
     # WARNINGS - Job warnings
     status_warnings = []  # type: ignore
+    status_errors = []  # type: ignore
     devices = safeget(result, ["response", "result", "job", "devices", "entry"])
     if devices:
         for device in devices:
             device_warnings = safeget(device, ["details", "msg", "warnings", "line"])
             status_warnings.extend([] if not device_warnings else device_warnings)
+            device_errors = safeget(device, ["details", "msg", "errors", "line"])
+            status_errors.extend([] if not device_errors else device_errors)
     push_status_output["Warnings"] = status_warnings
+    push_status_output["Errors"] = status_errors
 
     return_results({
         'Type': entryTypes['note'],
@@ -702,7 +732,7 @@ def panorama_push_status_command(job_id: str):
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Push to Device Group status:', push_status_output,
-                                         ['JobID', 'Status', 'Details', 'Warnings'], removeNull=True),
+                                         ['JobID', 'Status', 'Details', 'Errors', 'Warnings'], removeNull=True),
         'EntryContext': {"Panorama.Push(val.JobID == obj.JobID)": push_status_output}
     })
 
@@ -714,23 +744,22 @@ def prettify_addresses_arr(addresses_arr: list) -> List:
     if not isinstance(addresses_arr, list):
         return prettify_address(addresses_arr)
     pretty_addresses_arr = []
+
     for address in addresses_arr:
         pretty_address = {'Name': address['@name']}
         if DEVICE_GROUP:
             pretty_address['DeviceGroup'] = DEVICE_GROUP
         if 'description' in address:
             pretty_address['Description'] = address['description']
-
         if 'ip-netmask' in address:
             pretty_address['IP_Netmask'] = address['ip-netmask']
-
         if 'ip-range' in address:
             pretty_address['IP_Range'] = address['ip-range']
-
         if 'fqdn' in address:
             pretty_address['FQDN'] = address['fqdn']
-
-        if 'tag' in address and 'member' in address['tag']:
+        if 'tag' in address and address['tag'] is not None and 'member' in address['tag']:
+            # handling edge cases in which the Tag value is None, e.g:
+            # {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}
             pretty_address['Tags'] = address['tag']['member']
 
         pretty_addresses_arr.append(pretty_address)
@@ -795,7 +824,9 @@ def prettify_address(address: Dict) -> Dict:
     if 'fqdn' in address:
         pretty_address['FQDN'] = address['fqdn']
 
-    if 'tag' in address and 'member' in address['tag']:
+    if 'tag' in address and address['tag'] is not None and 'member' in address['tag']:
+        # handling edge cases in which the Tag value is None, e.g:
+        # {'@name': 'test', 'ip-netmask': '1.1.1.1', 'tag': None}
         pretty_address['Tags'] = address['tag']['member']
 
     return pretty_address
@@ -964,7 +995,9 @@ def prettify_address_groups_arr(address_groups_arr: list) -> List:
             pretty_address_group['DeviceGroup'] = DEVICE_GROUP
         if 'description' in address_group:
             pretty_address_group['Description'] = address_group['description']
-        if 'tag' in address_group and 'member' in address_group['tag']:
+        if 'tag' in address_group and address_group['tag'] is not None and 'member' in address_group['tag']:
+            # handling edge cases in which the Tag value is None, e.g:
+            # {'@name': 'test', 'static': {'member': 'test_address'}, 'tag': None}
             pretty_address_group['Tags'] = address_group['tag']['member']
 
         if pretty_address_group['Type'] == 'static':
@@ -1028,10 +1061,11 @@ def prettify_address_group(address_group: Dict) -> Dict:
     }
     if DEVICE_GROUP:
         pretty_address_group['DeviceGroup'] = DEVICE_GROUP
-
     if 'description' in address_group:
         pretty_address_group['Description'] = address_group['description']
-    if 'tag' in address_group and 'member' in address_group['tag']:
+    if 'tag' in address_group and address_group['tag'] is not None and 'member' in address_group['tag']:
+        # handling edge cases in which the Tag value is None, e.g:
+        # {'@name': 'test', 'static': {'member': 'test_address'}, 'tag': None}
         pretty_address_group['Tags'] = address_group['tag']['member']
 
     if pretty_address_group['Type'] == 'static':
@@ -1220,8 +1254,8 @@ def panorama_edit_address_group_command(args: dict):
     """
     Edit an address group
     """
-    address_group_name = args['name']
-    type_ = args['type']
+    address_group_name = args.get('name', '')
+    type_ = args.get('type', '').lower()
     match = args.get('match')
     element_to_add = argToList(args['element_to_add']) if 'element_to_add' in args else None
     element_to_remove = argToList(
@@ -1231,7 +1265,7 @@ def panorama_edit_address_group_command(args: dict):
         if not match:
             raise Exception('To edit a Dynamic Address group, Please provide a match.')
         match_param = add_argument_open(match, 'filter', False)
-        match_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/dynamic/filter"
+        match_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/dynamic/filter"
 
     if type_ == 'static':
         if (element_to_add and element_to_remove) or (not element_to_add and not element_to_remove):
@@ -1247,7 +1281,7 @@ def panorama_edit_address_group_command(args: dict):
         else:
             addresses = [item for item in address_group_list if item not in element_to_remove]
         addresses_param = add_argument_list(addresses, 'member', False)
-        addresses_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/static"
+        addresses_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/static"
 
     description = args.get('description')
     tags = argToList(args['tags']) if 'tags' in args else None
@@ -1287,7 +1321,7 @@ def panorama_edit_address_group_command(args: dict):
 
     if description:
         description_param = add_argument_open(description, 'description', False)
-        description_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/description"
+        description_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/description"
         params['xpath'] = description_path
         params['element'] = description_param
         result = http_request(
@@ -1299,7 +1333,7 @@ def panorama_edit_address_group_command(args: dict):
 
     if tags:
         tag_param = add_argument_list(tags, 'tag', True)
-        tag_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/tag"
+        tag_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/tag"
         params['xpath'] = tag_path
         params['element'] = tag_param
         result = http_request(
@@ -1335,7 +1369,7 @@ def prettify_services_arr(services_arr: Union[dict, list]):
             pretty_service['DeviceGroup'] = DEVICE_GROUP
         if 'description' in service:
             pretty_service['Description'] = service['description']
-        if 'tag' in service and 'member' in service['tag']:
+        if 'tag' in service and service['tag'] is not None and 'member' in service['tag']:
             pretty_service['Tags'] = service['tag']['member']
 
         protocol = ''
@@ -1408,7 +1442,7 @@ def prettify_service(service: Dict):
         pretty_service['DeviceGroup'] = DEVICE_GROUP
     if 'description' in service:
         pretty_service['Description'] = service['description']
-    if 'tag' in service and 'member' in service['tag']:
+    if 'tag' in service and service['tag'] is not None and 'member' in service['tag']:
         pretty_service['Tags'] = service['tag']['member']
 
     protocol = ''
@@ -1587,7 +1621,9 @@ def prettify_service_groups_arr(service_groups_arr: list):
         }
         if DEVICE_GROUP:
             pretty_service_group['DeviceGroup'] = DEVICE_GROUP
-        if 'tag' in service_group and 'member' in service_group['tag']:
+        if 'tag' in service_group and service_group['tag'] is not None and 'member' in service_group['tag']:
+            # handling edge cases in which the Tag value is None, e.g:
+            # {'@name': 'sg_group', 'members': {'member': 'test_sg'}, 'tag': None}
             pretty_service_group['Tags'] = service_group['tag']['member']
 
         pretty_service_groups_arr.append(pretty_service_group)
@@ -1643,7 +1679,9 @@ def prettify_service_group(service_group: dict):
     }
     if DEVICE_GROUP:
         pretty_service_group['DeviceGroup'] = DEVICE_GROUP
-    if 'tag' in service_group and 'member' in service_group['tag']:
+    if 'tag' in service_group and service_group['tag'] is not None and 'member' in service_group['tag']:
+        # handling edge cases in which the Tag value is None, e.g:
+        # {'@name': 'sg_group', 'members': {'member': 'test_sg'}, 'tag': None}
         pretty_service_group['Tags'] = service_group['tag']['member']
 
     return pretty_service_group
@@ -1935,15 +1973,15 @@ def panorama_create_custom_url_category(custom_url_category_name: str, type_: An
     element = add_argument(description, 'description', False)
     if major_version <= 8:
         if type_ or categories:
-            raise Exception('The type and categories arguments are only relevant for PAN-OS 9.x versions.')
+            raise DemistoException('The type and categories arguments are only relevant for PAN-OS 9.x versions.')
         element += add_argument_list(sites, 'list', True)
     else:  # major is 9.x
         if not type_:
-            raise Exception('The type argument is mandatory for PAN-OS 9.x versions.')
+            raise DemistoException('The type argument is mandatory for PAN-OS 9.x versions.')
         if (not sites and not categories) or (sites and categories):
-            raise Exception('Exactly one of the sites and categories arguments should be defined.')
+            raise DemistoException('Exactly one of the sites and categories arguments should be defined.')
         if (type_ == 'URL List' and categories) or (type_ == 'Category Match' and sites):
-            raise Exception('URL List type is only for sites, Category Match is only for categories.')
+            raise DemistoException('URL List type is only for sites, Category Match is only for categories.')
 
         if type_ == 'URL List':
             element += add_argument_list(sites, 'list', True)
@@ -1954,7 +1992,7 @@ def panorama_create_custom_url_category(custom_url_category_name: str, type_: An
     params = {
         'action': 'set',
         'type': 'config',
-        'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
+        'xpath': f'{XPATH_OBJECTS}profiles/custom-url-category/entry[@name=\'{custom_url_category_name}\']',
         'element': element,
         'key': API_KEY
     }
@@ -2406,6 +2444,29 @@ def panorama_get_url_filter_command(name: str):
         }
     })
 
+@logger
+def create_url_filter_params(
+        url_filter_name: str, action: str,
+        url_category_list: str,
+        override_allow_list: Optional[str] = None,
+        override_block_list: Optional[str] = None,
+        description: Optional[str] = None):
+    element = add_argument_list(url_category_list, action, True) + \
+              add_argument_list(override_allow_list, 'allow-list', True) + \
+              add_argument_list(override_block_list, 'block-list', True) + \
+              add_argument(description, 'description', False)
+    major_version = get_pan_os_major_version()
+    if major_version <= 8:  # up to version 8.X included, the action xml tag needs to be added
+        element += "<action>block</action>"
+    url_filter_params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f'{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']',
+        'element': element,
+        'key': API_KEY
+    }
+    return url_filter_params
+
 
 @logger
 def panorama_create_url_filter(
@@ -2414,18 +2475,9 @@ def panorama_create_url_filter(
         override_allow_list: Optional[str] = None,
         override_block_list: Optional[str] = None,
         description: Optional[str] = None):
-    element = add_argument_list(url_category_list, action, True) + add_argument_list(override_allow_list, 'allow-list',
-                                                                                     True) + add_argument_list(
-        override_block_list, 'block-list', True) + add_argument(description, 'description',
-                                                                False) + "<action>block</action>"
+    params = create_url_filter_params(url_filter_name, action, url_category_list, override_allow_list,
+                                      override_block_list, description)
 
-    params = {
-        'action': 'set',
-        'type': 'config',
-        'xpath': XPATH_OBJECTS + "profiles/url-filtering/entry[@name='" + url_filter_name + "']",
-        'element': element,
-        'key': API_KEY
-    }
     result = http_request(
         URL,
         'POST',
@@ -2757,6 +2809,8 @@ def panorama_create_rule_command(args: dict):
     log_forwarding = args.get('log_forwarding', None)
     tags = argToList(args['tags']) if 'tags' in args else None
     profile_setting = args.get('profile_setting')
+    where = args.get('where', 'bottom')
+    dst = args.get('dst')
 
     if not DEVICE_GROUP:
         if target:
@@ -2771,7 +2825,8 @@ def panorama_create_rule_command(args: dict):
                                           disable_server_response_inspection=disable_server_response_inspection,
                                           description=description, target=target,
                                           log_forwarding=log_forwarding, tags=tags, category=categories,
-                                          from_=source_zone, to=destination_zone, profile_setting=profile_setting)
+                                          from_=source_zone, to=destination_zone, profile_setting=profile_setting,
+                                          where=where, dst=dst)
     result = http_request(
         URL,
         'POST',
@@ -2989,6 +3044,8 @@ def panorama_custom_block_rule_command(args: dict):
     target = argToList(args.get('target')) if 'target' in args else None
     log_forwarding = args.get('log_forwarding', None)
     tags = argToList(args['tags']) if 'tags' in args else None
+    where = args.get('where', 'bottom')
+    dst = args.get('dst')
 
     if not DEVICE_GROUP:
         if target:
@@ -3014,12 +3071,12 @@ def panorama_custom_block_rule_command(args: dict):
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination=['any'], rulename=rulename + '-from', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags)
+                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
             result = http_request(URL, 'POST', body=params)
         if block_destination:
             params = prepare_security_rule_params(api_action='set', action='drop', destination=object_value,
                                                   source=['any'], rulename=rulename + '-to', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags)
+                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
             result = http_request(URL, 'POST', body=params)
         custom_block_output['IP'] = object_value
 
@@ -3027,26 +3084,26 @@ def panorama_custom_block_rule_command(args: dict):
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination=['any'], rulename=rulename + '-from', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags)
+                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
             result = http_request(URL, 'POST', body=params)
         if block_destination:
             params = prepare_security_rule_params(api_action='set', action='drop', destination=object_value,
                                                   source=['any'], rulename=rulename + '-to', target=target,
-                                                  log_forwarding=log_forwarding, tags=tags)
+                                                  log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
             result = http_request(URL, 'POST', body=params)
         custom_block_output['AddressGroup'] = object_value
 
     elif object_type == 'url-category':
         params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               category=object_value, rulename=rulename, target=target,
-                                              log_forwarding=log_forwarding, tags=tags)
+                                              log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
         result = http_request(URL, 'POST', body=params)
         custom_block_output['CustomURLCategory'] = object_value
 
     elif object_type == 'application':
         params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               application=object_value, rulename=rulename, target=target,
-                                              log_forwarding=log_forwarding, tags=tags)
+                                              log_forwarding=log_forwarding, tags=tags, where=where, dst=dst)
         result = http_request(URL, 'POST', body=params)
         custom_block_output['Application'] = object_value
 
@@ -4490,8 +4547,8 @@ def panorama_security_policy_match(application: Optional[str] = None, category: 
                                    destination: Optional[str] = None, destination_port: Optional[str] = None,
                                    from_: Optional[str] = None, to_: Optional[str] = None,
                                    protocol: Optional[str] = None, source: Optional[str] = None,
-                                   source_user: Optional[str] = None):
-    params = {'type': 'op', 'key': API_KEY,
+                                   source_user: Optional[str] = None, target: Optional[str] = None):
+    params = {'type': 'op', 'key': API_KEY, 'target': target,
               'cmd': build_policy_match_query(application, category, destination, destination_port, from_, to_,
                                               protocol, source, source_user)}
 
@@ -4558,8 +4615,11 @@ def prettify_query_fields(application: Optional[str] = None, category: Optional[
 
 
 def panorama_security_policy_match_command(args: dict):
-    if not VSYS:
-        raise Exception("The 'panorama-security-policy-match' command is only relevant for a Firewall instance.")
+    target = args.get('target')
+    if not VSYS and not target:
+        err_msg = "The 'panorama-security-policy-match' command is relevant for a Firewall instance " \
+                  "or for a Panorama instance, to be used with the target argument."
+        raise DemistoException(err_msg)
 
     application = args.get('application')
     category = args.get('category')
@@ -4572,7 +4632,7 @@ def panorama_security_policy_match_command(args: dict):
     source_user = args.get('source-user')
 
     matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
-                                                    protocol, source, source_user)
+                                                    protocol, source, source_user, target)
     if not matching_rules:
         return_results('The query did not match a Security policy.')
     else:
@@ -5117,8 +5177,6 @@ def panorama_content_update_install_status_command(args: dict):
     """
     Check jobID of content update install status
     """
-    if DEVICE_GROUP:
-        raise Exception('Content download status is only supported on Firewall (not Panorama).')
     target = str(args['target']) if 'target' in args else None
     job_id = args['job_id']
     result = panorama_content_update_install_status(target, job_id)
@@ -5336,8 +5394,6 @@ def panorama_install_panos_status_command(args: dict):
     """
     Check jobID of panos install status
     """
-    if DEVICE_GROUP:
-        raise Exception('PAN-OS installation status status is only supported on Firewall (not Panorama).')
     target = str(args['target']) if 'target' in args else None
     job_id = args['job_id']
     result = panorama_install_panos_status(target, job_id)
@@ -6850,7 +6906,8 @@ def list_configured_user_id_agents_command(args):
     raw_response = list_configured_user_id_agents_request(args, version)
     if raw_response:
         formatted_results = prettify_configured_user_id_agents(raw_response)
-        headers = ['Name', 'Disabled', 'SerialNumber', 'Host', 'Port', 'CollectorName', 'LdapProxy', 'NtlmAuth', 'IpUserMapping']
+        headers = ['Name', 'Disabled', 'SerialNumber', 'Host', 'Port', 'CollectorName', 'LdapProxy', 'NtlmAuth',
+                   'IpUserMapping']
 
         return_results(
             CommandResults(
@@ -6930,6 +6987,87 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
         XPATH_RULEBASE = f"/config/devices/entry[@name=\'localhost.localdomain\']/vsys/entry[@name=\'{VSYS}\']/"
 
 
+def panorama_upload_content_update_file_command(args: dict):
+    category = args.get('category')
+    entry_id = args.get('entryID')
+    file_path = demisto.getFilePath(entry_id)['path']
+    file_name = demisto.getFilePath(entry_id)['name']
+    shutil.copy(file_path, file_name)
+    with open(file_name, 'rb') as file:
+        params = {'type': 'import', 'category': category, 'key': API_KEY}
+        response = http_request(uri=URL, method="POST", headers={}, body={}, params=params, files={'file': file})
+        human_readble = tableToMarkdown("Results", t=response.get('response'))
+        content_upload_info = {
+            'Message': response['response']['msg'],
+            'Status': response['response']['@status']
+        }
+        results = CommandResults(raw_response=response,
+                                 readable_output=human_readble,
+                                 outputs_prefix="Panorama.Content.Upload",
+                                 outputs_key_field="Status",
+                                 outputs=content_upload_info)
+
+    shutil.rmtree(file_name, ignore_errors=True)
+    return results
+
+
+@logger
+def panorama_install_file_content_update(version: str, category: str, validity: str):
+    """
+    More information about the API endpoint of that request can see here:
+    https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/run-operational-mode-commands-api.html#idb894d5f5-091f-4e08-b051-4c22cc9c660d
+    """
+    if category == "content":
+        params = {
+            'type': 'op',
+            'cmd': (
+                f'<request><{category}><upgrade><install><skip-content-validity-check>{validity}'
+                f'</skip-content-validity-check><file>{version}</file></install></upgrade></{category}></request>'),
+            'key': API_KEY
+        }
+    else:
+        params = {
+            'type': 'op',
+            'cmd': (
+                f'<request><{category}><upgrade><install><file>{version}'
+                f'</file></install></upgrade></{category}></request>'), 'key': API_KEY
+        }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def panorama_install_file_content_update_command(args: dict):
+    version = args.get('version_name')
+    category = args.get('category')
+    validity = args['skip_validity_check']
+    result = panorama_install_file_content_update(version, category, validity)
+
+    if 'result' in result.get('response'):
+        # installation has been given a jobid
+        content_install_info = {
+            'JobID': result['response']['result']['job'],
+            'Status': 'Pending'
+        }
+        entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_info}
+        human_readable = tableToMarkdown('Result:', content_install_info, ['JobID', 'Status'], removeNull=True)
+
+        return_results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': human_readable,
+            'EntryContext': entry_context
+        })
+    else:
+        # no content install took place
+        return_results(result['response']['msg'])
+
+
 def main():
     try:
         args = demisto.args()
@@ -6949,13 +7087,13 @@ def main():
             panorama_command(args)
 
         elif demisto.command() == 'panorama-commit':
-            panorama_commit_command()
+            panorama_commit_command(args)
 
         elif demisto.command() == 'panorama-commit-status':
             panorama_commit_status_command(args)
 
         elif demisto.command() == 'panorama-push-to-device-group':
-            panorama_push_to_device_group_command()
+            panorama_push_to_device_group_command(args)
 
         elif demisto.command() == 'panorama-push-status':
             panorama_push_status_command(**args)
@@ -7289,6 +7427,12 @@ def main():
 
         elif demisto.command() == 'panorama-list-configured-user-id-agents':
             list_configured_user_id_agents_command(args)
+
+        elif demisto.command() == 'panorama-upload-content-update-file':
+            return_results(panorama_upload_content_update_file_command(args))
+
+        elif demisto.command() == 'panorama-install-file-content-update':
+            panorama_install_file_content_update_command(args)
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')

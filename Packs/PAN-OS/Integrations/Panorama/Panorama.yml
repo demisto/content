@@ -266,7 +266,14 @@ script:
     - contextPath: File.SSDeep
       description: SSDeep hash of the file.
       type: string
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: Commit description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
     description: Commits a configuration to the Palo Alto firewall or Panorama, but
       does not validate if the commit was successful. Committing to Panorama does
       not push the configuration to the firewalls. To push the configuration, run
@@ -282,13 +289,39 @@ script:
       type: string
   - arguments:
     - default: true
-      description: The device group for which to return addresses (Panorama instances).
+      description: The device group to which to push (Panorama instances).
       isArray: false
       name: device-group
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Pre policy validation.
+      isArray: false
+      name: validate-only
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether to include template changes.
+      isArray: false
+      name: include-template
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Push description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
     deprecated: false
-    description: Pushes rules from PAN-OS to the configured device group.
+    description: Pushes configuration from PAN-OS to the configured device group.
     execution: false
     name: panorama-push-to-device-group
     outputs:
@@ -300,6 +333,12 @@ script:
       type: Number
     - contextPath: Panorama.Push.Status
       description: Push status.
+      type: String
+    - contextPath: Panorama.Push.Warnings
+      description: Push warnings.
+      type: String
+    - contextPath: Panorama.Push.Errors
+      description: Push erros.
       type: String
   - arguments:
     - default: false
@@ -2018,6 +2057,27 @@ script:
       name: profile_setting
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: bottom
+      default: false
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom".
+        If you specify "top" or "bottom", you need to supply the "dst" argument.
+      isArray: false
+      name: where
+      predefined:
+        - before
+        - after
+        - top
+        - bottom
+      required: false
+      secret: false
+    - default: false
+      description: Destination rule relative to the rule that you are moving. This
+        field is only relevant if you specify "top" or "bottom" in the "where" argument.
+      isArray: false
+      name: dst
+      required: false
+      secret: false
     deprecated: false
     description: Creates a policy rule.
     execution: true
@@ -2141,6 +2201,27 @@ script:
       description: Tags for which to use for the custom block policy rule.
       isArray: true
       name: tags
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: bottom
+      default: false
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom".
+        If you specify "top" or "bottom", you need to supply the "dst" argument.
+      isArray: false
+      name: where
+      predefined:
+        - before
+        - after
+        - top
+        - bottom
+      required: false
+      secret: false
+    - default: false
+      description: Destination rule relative to the rule that you are moving. This
+        field is only relevant if you specify "top" or "bottom" in the "where" argument.
+      isArray: false
+      name: dst
       required: false
       secret: false
     deprecated: false
@@ -3291,6 +3372,12 @@ script:
       description: The source user.
       isArray: false
       name: source-user
+      required: false
+      secret: false
+    - default: false
+      description: Target number of the firewall. Use only on a Panorama instance.
+      isArray: false
+      name: target
       required: false
       secret: false
     deprecated: false
@@ -4564,7 +4651,58 @@ script:
     - contextPath: Panorama.UserIDAgents.Disabled
       description: Whether the user-ID agent is disbaled.
       type: String
-  dockerimage: demisto/python3:3.9.2.17246
+  - name: panorama-upload-content-update-file
+    arguments:
+    - name: entryID
+      required: true
+      description: Entry ID of the file to upload.
+    - name: category
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - wildfire
+      - anti-virus
+      - content
+      description: The category of the content.
+    outputs:
+    - contextPath: Panorama.Content.Upload.Status
+      description: Content upload status.
+      type: string
+    - contextPath: Panorama.Content.Upload.Message
+      description: Content upload message.
+      type: string
+    description: Uploads a content file to Panorama.
+  - name: panorama-install-file-content-update
+    arguments:
+    - name: version_name
+      required: true
+      description: Update file name to be installed on PAN-OS.
+    - name: category
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - wildfire
+      - anti-virus
+      - content
+      description: The category of the content.
+    - name: skip_validity_check
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Skips file validity check with PAN-OS update server. Use this option
+        for air-gapped networks and only if you trust the content file.
+      defaultValue: "no"
+    outputs:
+    - contextPath: Panorama.Content.Install.JobID
+      description: JobID of the installation.
+      type: string
+    - contextPath: Panorama.Content.Install.Status
+      description: Installation status.
+      type: string
+    description: Installs specific content update file.
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
   longRunning: false

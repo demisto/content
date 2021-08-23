@@ -90,7 +90,7 @@ tags:
 - Utility
 - file
 - pcap
-comment: Deprecated. We recommend using PCAPMinerV2 instead. PCAPMiner is a tool to parse PCAP files and will return things like extracted files that are found, HTTP flows, and a variety of other information. It is uses a docker instance located on docker hub trorabaugh/dempcap:1.0.  To use simply upload a PCAP file and then run PCAPMiner entryId="<your_entry_id>". To get the entry id click on the link on the top right hand corner of a file attachment.
+comment: Deprecated. Use PCAPMinerV2 instead. PCAPMiner is a tool to parse PCAP files and will return things like extracted files that are found, HTTP flows, and a variety of other information. It is uses a docker instance located on docker hub trorabaugh/dempcap:1.0.  To use simply upload a PCAP file and then run PCAPMiner entryId="<your_entry_id>". To get the entry id click on the link on the top right hand corner of a file attachment.
 enabled: true
 args:
 - name: entryId

@@ -1,0 +1,28 @@
+{
+    "contextPath": "",
+    "contextValue": "",
+    "defaultMapping": null,
+    "details": "Threat Actor",
+    "legacyNames": ["STIX Threat Actor"],
+    "disabled": false,
+    "enhancementScriptNames": [],
+    "excludedBrands": [],
+    "expiration": 0,
+    "file": false,
+    "fileHashesPriority": null,
+    "formatScript": "",
+    "id": "Threat Actor",
+    "locked": false,
+    "manualMapping": {},
+    "mergeContext": false,
+    "regex": "",
+    "reputationCommand": "",
+    "reputationScriptName": "",
+    "sortValues": null,
+    "system": false,
+    "updateAfter": 0,
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "layout": "STIX Threat Actor"
+
+}

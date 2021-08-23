@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: 'JSON string to verfiy.'
+  description: 'JSON string to verify.'
   isArray: false
   name: json
   required: true
@@ -27,5 +27,7 @@ tags:
 - JSON
 - Utility
 type: powershell
-dockerimage: demisto/powershell:7.0.1.9103
+dockerimage: demisto/powershell:7.1.3.22028
 fromversion: 5.5.0
+tests:
+- VerifyJSON - Test

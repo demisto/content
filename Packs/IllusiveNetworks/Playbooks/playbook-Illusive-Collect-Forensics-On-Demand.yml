@@ -41,7 +41,9 @@ tasks:
       version: -1
       name: illusive-run-forensics-on-demand
       description: Collect forensics on a specified host and retrieve the forensics
-        timeline
+        timeline.
+      tags:
+      - forensics
       script: IllusiveNetworks|||illusive-run-forensics-on-demand
       type: regular
       iscommand: true
@@ -129,6 +131,8 @@ tasks:
       version: -1
       name: illusive-get-event-incident-id
       description: event_id
+      tags:
+      - forensics
       script: IllusiveNetworks|||illusive-get-event-incident-id
       type: regular
       iscommand: true
@@ -213,7 +217,9 @@ tasks:
       id: 17e61225-ffe1-4c2f-8f57-f444f9cb0902
       version: -1
       name: illusive-get-forensics-timeline
-      description: Retrieve forensics timeline for a specific incident
+      description: Retrieve forensics timeline for a specific incident.
+      tags:
+      - forensics
       script: IllusiveNetworks|||illusive-get-forensics-timeline
       type: regular
       iscommand: true
@@ -253,7 +259,9 @@ tasks:
       id: 222a72af-c675-4ea4-8719-ce3285fa2900
       version: -1
       name: Print Forensics Timeline
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room. (Markdown supported.)
+      tags:
+      - forensics
       scriptName: Print
       type: regular
       iscommand: false
@@ -326,7 +334,7 @@ inputs:
   value:
     simple: 172.27.102.12
   required: true
-  description: The host fqdn or IP address on which to collect forensics
+  description: The host FQDN or IP address on which to collect forensics.
   playbookInputQuery:
 - key: start_date
   value: {}
@@ -342,21 +350,21 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: Illusive.Forensics.Evidence.details
-  description: The forensics evidence details
+  description: The forensics evidence details.
 - contextPath: Illusive.Forensics.Evidence.eventId
-  description: The event ID
+  description: The event ID.
 - contextPath: Illusive.Forensics.Evidence.id
-  description: The forensics evidence ID
+  description: The forensics evidence ID.
 - contextPath: Illusive.Forensics.Evidence.source
-  description: The Evidence source
+  description: The evidence source.
 - contextPath: Illusive.Forensics.Evidence.starred
-  description: Whether the forensics evidence has been starred
+  description: Whether the forensics evidence has been starred.
 - contextPath: Illusive.Forensics.Evidence.time
-  description: 'Date and time of the forensics evidence '
+  description: 'Date and time of the forensics evidence. '
 - contextPath: Illusive.Forensics.Evidence.title
-  description: The forensics evidence description
+  description: The forensics evidence description.
 - contextPath: Illusive.Forensics.IncidentId
-  description: The Incident Id
+  description: The incident ID.
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

@@ -6,7 +6,7 @@ An IoT vulnerability post processing script to resolve the vulnerability inciden
 | --- | --- |
 | Script Type | python3 |
 | Tags | iot, post-processing |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 This script is executing the 'iot-security-resolve-vuln' command to resolve a vulnerability in the Palo Alto Networks IoT security portal during post-processing.
 

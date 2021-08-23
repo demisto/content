@@ -882,7 +882,7 @@ def get_scan_report_command():
         'Description': scan_results['description'],
         'Policy': scan_results['details'],
         'Group': scan_results.get('ownerGroup', {}).get('name'),
-        'Checks': scan_results['completedChecks'],
+        'Checks': scan_results.get('completedChecks'),
         'StartTime': timestamp_to_utc(scan_results['startTime']),
         'EndTime': timestamp_to_utc(scan_results['finishTime']),
         'Duration': scan_duration_to_demisto_format(scan_results['scanDuration']),

@@ -1,0 +1,36 @@
+name: Contribution Form Filled label verification
+on:
+  pull_request:
+    types: [opened, synchronize, labeled, unlabeled]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  contribution_form_filled_verification:
+    runs-on: ubuntu-latest
+    # This status check only runs for: forked PRS that don't contain the '[Marketplace Contribution]' in their title, the head branch is not a test branch and the PR don't have the 'Contribution Form Filled' label.
+    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == true && contains(github.head_ref, 'xsoar-bot-contrib-ContributionTestPack') == false && contains(github.event.pull_request.labels.*.name, 'Contribution Form Filled') == false && contains(github.event.pull_request.title, '[Marketplace Contribution]') == false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: master
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pipenv
+          cd Utils/github_workflow_scripts
+          pipenv install --dev
+      - name: Check if contribution form needs to be filled
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Checking if contribution form needs to be filled for PR: $PR_NUMBER"
+          cd Utils/github_workflow_scripts
+          pipenv run ./check_if_needs_to_fill_contribution_form.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN

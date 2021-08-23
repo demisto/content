@@ -1,0 +1,5 @@
+[file:README.md]
+ignore=RM104
+
+[file:Threat_Vault.yml]
+ignore=BA108,BA109

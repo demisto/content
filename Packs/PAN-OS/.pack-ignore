@@ -5,4 +5,13 @@ ignore=PA116
 ignore=IN136
 
 [file:README.md]
-ignore=RM102
+ignore=RM102,RM106
+
+[file:playbook-PAN-OS_-_Block_IP_-_Static_Address_Group_README.md]
+ignore=RM106
+
+[file:playbook-PAN-OS_-_Block_URL_-_Custom_URL_Category_README.md]
+ignore=RM106
+
+[file:playbook-PAN-OS_Create_Or_Edit_Rule_Test.yml]
+ignore=auto-test

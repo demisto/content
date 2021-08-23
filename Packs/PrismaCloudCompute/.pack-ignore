@@ -1,3 +1,19 @@
 [file:PaloAltoNetworks_PrismaCloudCompute.yml]
-ignore=IN126
+ignore=IN126,BA108,BA109
 
+[file:layoutscontainer-Prisma_Cloud_Compute_Cloud_Discovery.json]
+ignore=BA101
+
+[file:layoutscontainer-Prisma_Cloud_Compute_Compliance.json]
+ignore=BA101
+
+[file:layoutscontainer-Prisma_Cloud_Compute_Vulnerability.json]
+ignore=BA101
+
+[file:README.md]
+ignore=RM106
+
+[file:classifier-mapper-incoming-PrismaCloudCompute.json]
+ignore=BA101
+[file:incidentfield-Prisma_Cloud_Compute_Raw_Alert_JSON.json]
+ignore=IF100

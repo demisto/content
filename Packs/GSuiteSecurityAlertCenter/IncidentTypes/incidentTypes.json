@@ -1,0 +1,23 @@
+{
+    "id": "G Suite Security Alert Center",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "G Suite Security Alert Center",
+    "prevName": "G Suite Security Alert Center",
+    "color": "#e55100",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "layout": "G Suite Security Alert Center",
+    "fromVersion": "5.0.0"
+}

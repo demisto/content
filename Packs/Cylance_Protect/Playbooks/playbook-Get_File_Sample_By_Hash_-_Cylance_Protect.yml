@@ -2,9 +2,9 @@ id: get_file_sample_by_hash_-_cylance_protect
 version: -1
 name: Get File Sample By Hash - Cylance Protect
 fromversion: 5.0.0
-description: |-
-  Returns to the war-room a file sample correlating to SHA256 hashes in the inputs using Cylance Protect integration
+description: Deprecated. Use "Get File Sample By Hash - Cylance Protect v2" playbook instead.
 starttaskid: "0"
+hidden: true
 tasks:
   "0":
     id: "0"
@@ -294,7 +294,8 @@ tasks:
       id: 5492c4d0-b0c3-4245-8c14-e43fc3ce553f
       version: -1
       name: Unzip File
-      description: Unzip a file using fileName or entryID to specify a file. Files unzipped will be pushed to the war room and names will be pushed to the context.
+      description: Unzip a file using fileName or entryID to specify a file. Files
+        unzipped will be pushed to the war room and names will be pushed to the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -576,7 +577,8 @@ tasks:
       id: 7e6d9805-2917-46d9-891c-a944aa45b1f8
       version: -1
       name: Unzip File
-      description: Unzip a file using fileName or entryID to specify a file. Files unzipped will be pushed to the war room and names will be pushed to the context.
+      description: Unzip a file using fileName or entryID to specify a file. Files
+        unzipped will be pushed to the war room and names will be pushed to the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -648,4 +650,5 @@ outputs:
   description: The sample file
   type: unknown
 tests:
-- get_file_sample_by_hash_-_cylance_protect_-_test
+- no test (new v2 playbook has an updated test)
+deprecated: true

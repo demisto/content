@@ -7,7 +7,7 @@ Finds the top malicious ratio indicators. The malicious ratio is defined by the 
 | --- | --- |
 | Script Type | python |
 | Tags | widget |
-| Demisto Version | 4.0.0+ |
+| Cortex XSOAR Version | 4.0.0+ |
 
 ## Inputs
 ---

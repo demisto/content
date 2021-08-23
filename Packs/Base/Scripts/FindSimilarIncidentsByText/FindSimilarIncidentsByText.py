@@ -2,7 +2,7 @@
 import dateutil.parser
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
-
+from six import string_types
 from CommonServerPython import *
 
 INCIDENT_TEXT_FIELD = 'incident_text_for_tfidf'
@@ -16,7 +16,7 @@ def get_similar_texts(text, other_texts):
     vect = TfidfVectorizer(min_df=1, stop_words='english')
     if type(text) is not list:
         text = [text]
-    tfidf = vect.fit_transform(text + other_texts)
+    tfidf = vect.fit_transform(text + list(other_texts))
     similarity_vector = linear_kernel(tfidf[0:1], tfidf).flatten()
     return similarity_vector[1:]
 
@@ -28,10 +28,10 @@ def get_texts_from_incident(incident, text_fields):
         if label['type'].lower() in text_fields:
             texts.append(label['value'])
 
-    # custom fields + incident fields
+    # custom fields + incident fields.
     custom_fields = incident.get('CustomFields') or {}
-    for field_name, field_value in (custom_fields.items() + incident.items()):
-        if field_name in text_fields and isinstance(field_value, basestring):
+    for field_name, field_value in (list(custom_fields.items()) + list(incident.items())):
+        if field_name in text_fields and isinstance(field_value, string_types):
             texts.append(field_value)
 
     return " ".join(texts)
@@ -50,7 +50,7 @@ def get_incidents_by_time(incident_time, incident_type, incident_id, hours_time_
                                                                 incident_type)
 
     if ignore_closed:
-        query += " and -closed:*"
+        query += " and -status: closed"
 
     if incident_id:
         query += ' and -id:%s' % incident_id
@@ -58,15 +58,18 @@ def get_incidents_by_time(incident_time, incident_type, incident_id, hours_time_
     args = {'query': query, 'size': max_number_of_results, 'sort': '%s.desc' % time_field}
     if time_field == "created":
         args['from'] = min_date.isoformat()
-    res = demisto.executeCommand("getIncidents",
-                                 {'query': query,
-                                  'size': max_number_of_results, 'sort': '%s.desc' % time_field})
 
-    if res[0]['Type'] == entryTypes['error']:
-        raise Exception(str(res[0]['Contents']))
+    res = demisto.executeCommand('GetIncidentsByQuery', {
+        'query': query,
+        'fromDate': min_date.isoformat(),
+        'toDate': max_date.isoformat(),
+        'limit': max_number_of_results
+    })
+    if is_error(res):
+        return_error(res)
 
-    incident_list = res[0]['Contents']['data']
-    return incident_list or []
+    incident_list = json.loads(res[0]['Contents']) if len(res) > 0 else []
+    return incident_list
 
 
 def incident_to_record(incident, time_field):
@@ -126,8 +129,10 @@ def main():
                                        IGNORE_CLOSED, INCIDENT_QUERY_SIZE, TIME_FIELD)
 
     # filter candidates with minimum length constraint
-    map(lambda x: add_text_to_incident(x, TEXT_FIELDS), candidates)
-    candidates = [x for x in candidates if len(x.get(INCIDENT_TEXT_FIELD, 0)) >= MIN_TEXT_LENGTH]
+    for candidate in candidates:
+        add_text_to_incident(candidate, TEXT_FIELDS)
+    # map(lambda x: add_text_to_incident(x, TEXT_FIELDS), candidates)
+    candidates = [x for x in candidates if len(x.get(INCIDENT_TEXT_FIELD, "")) >= MIN_TEXT_LENGTH]
 
     # compare candidates to the orginial incident using TF-IDF
     candidates_text = map(lambda x: x[INCIDENT_TEXT_FIELD], candidates)

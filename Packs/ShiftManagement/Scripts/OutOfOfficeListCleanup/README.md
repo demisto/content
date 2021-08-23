@@ -7,7 +7,7 @@ Removes any users from the out-of-office list whose 'off until day' is in the pa
 | --- | --- |
 | Script Type | python3 |
 | Tags | ooo, Shift Management |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
 ---

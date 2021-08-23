@@ -1,2 +1,5 @@
 [file:Microsoft-Graph-Calendar-Test.yml]
 ignore=auto-test
+
+[file:MicrosoftGraphCalendar.yml]
+ignore=DS107

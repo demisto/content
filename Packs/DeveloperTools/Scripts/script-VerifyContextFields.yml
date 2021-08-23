@@ -22,7 +22,7 @@ script: >
 type: javascript
 tags:
 - Utility
-comment: Deprecated. Verify fields are in context (use VerifyContext instead)
+comment: Deprecated. Use playbook filters instead. Verify fields are in context.
 enabled: true
 args:
 - name: field1

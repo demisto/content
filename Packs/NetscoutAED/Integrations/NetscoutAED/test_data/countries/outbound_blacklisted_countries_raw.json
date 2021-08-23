@@ -1,0 +1,19 @@
+{
+    "blacklisted-countries": [
+        {
+            "annotation": "",
+            "country": "AI",
+            "updateTime": 1615913829
+        },
+        {
+            "annotation": "Test",
+            "country": "BD",
+            "updateTime": 1615913836
+        },
+        {
+            "annotation": null,
+            "country": "BF",
+            "updateTime": 1615803534
+        }
+    ]
+}
