@@ -13,8 +13,6 @@ APP_USER_OUTPUT = {
     "email": "testdemisto@paloaltonetworks.com"
 }
 
-USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=True, app_data=APP_USER_OUTPUT)
-
 APP_DISABLED_USER_OUTPUT = {
     "id": "mock_id",
     "userName": "mock_user_name",
@@ -24,7 +22,14 @@ APP_DISABLED_USER_OUTPUT = {
     "email": "testdemisto@paloaltonetworks.com"
 }
 
-DISABLED_USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=False, app_data=APP_DISABLED_USER_OUTPUT)
+APP_UPDATED_USER_OUTPUT = {
+    "id": "mock_id",
+    "userName": "mock_user_name",
+    "first_name": "new_mock_first_name",
+    "last_name": "new_mock_last_name",
+    "active": True,
+    "email": "testdemisto@paloaltonetworks.com"
+}
 
 
 def mock_client():
@@ -109,19 +114,19 @@ class TestAWSILM:
         mocker.patch.object(demisto, 'error')
 
         client = mock_client()
-        args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
+        args = {'user-profile': {'username': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
-            m.get(userUri, status_code=500, text='{"error": {"detail": "details", "message": "message"}}')
+            m.get(userUri, status_code=500, text="{'detail', 'INTERNAL SERVER ERROR'}")
 
-            user_profile = IAMCommand().get_user(client, args)
+            user_profile = IAMCommand(attr='username').get_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
         assert outputs.get('action') == IAMActions.GET_USER
         assert outputs.get('success') is False
         assert outputs.get('errorCode') == 500
-        assert outputs.get('errorMessage') == 'message: details'
+        assert outputs.get('errorMessage') == 'INTERNAL SERVER ERROR'
 
     def test_create_user_command__success(self):
         """
@@ -134,13 +139,13 @@ class TestAWSILM:
             - Ensure a User Profile object with the user data is returned
         """
         client = mock_client()
-        args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
+        args = {'user-profile': {'username': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 0, "Resources": []})
             m.post(userUri, json=APP_USER_OUTPUT)
 
-            user_profile = IAMCommand().create_user(client, args)
+            user_profile = IAMCommand(attr='username').create_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -165,23 +170,24 @@ class TestAWSILM:
             - Ensure the command is considered successful and the user is still disabled
         """
         client = mock_client()
-        args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}, 'allow-enable': 'false'}
+        args = {'user-profile': {'username': 'mock_user_name'}, 'allow-enable': 'false'}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 1, "Resources": [APP_USER_OUTPUT]})
-            m.patch(f'{userUri}mock_id', json=APP_DISABLED_USER_OUTPUT)
+            m.get(f'{userUri}mock_id', json=APP_USER_OUTPUT)
+            m.patch(f'{userUri}mock_id', json=APP_UPDATED_USER_OUTPUT)
 
-            user_profile = IAMCommand().create_user(client, args)
+            user_profile = IAMCommand(attr='username').create_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
         assert outputs.get('action') == IAMActions.UPDATE_USER
         assert outputs.get('success') is True
-        assert outputs.get('active') is False
+        assert outputs.get('active') is True
         assert outputs.get('id') == 'mock_id'
         assert outputs.get('username') == 'mock_user_name'
-        assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
-        assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
+        assert outputs.get('details', {}).get('first_name') == 'new_mock_first_name'
+        assert outputs.get('details', {}).get('last_name') == 'new_mock_last_name'
 
     def test_update_user_command__non_existing_user(self):
         """
@@ -198,13 +204,13 @@ class TestAWSILM:
             - Ensure a User Profile object with the user data is returned
         """
         client = mock_client()
-        args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
+        args = {'user-profile': {'username': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 0, "Resources": []})
             m.post(userUri, json=APP_USER_OUTPUT)
 
-            user_profile = IAMCommand(create_if_not_exists=True).create_user(client, args)
+            user_profile = IAMCommand(create_if_not_exists=True, attr='username').create_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -228,9 +234,9 @@ class TestAWSILM:
             - Ensure the command is considered successful and skipped
         """
         client = mock_client()
-        args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
+        args = {'user-profile': {'username': 'mock_user_name'}}
 
-        user_profile = IAMCommand(is_update_enabled=False).update_user(client, args)
+        user_profile = IAMCommand(is_update_enabled=False, attr='username').update_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -255,8 +261,10 @@ class TestAWSILM:
         args = {'user-profile': {'username': 'mock_user_name'}, 'allow-enable': 'true'}
 
         with requests_mock.Mocker() as m:
-            m.get('https://test.com/scim/v2/Users/?filter=userName eq "mock_user_name"', json={"totalResults": 1, "Resources": [APP_DISABLED_USER_OUTPUT]})
-            m.patch(f'{userUri}mock_id', json=APP_USER_OUTPUT)
+            m.get('https://test.com/scim/v2/Users/?filter=userName eq "mock_user_name"',
+                  json={"totalResults": 1, "Resources": [APP_DISABLED_USER_OUTPUT]})
+            m.get(f'{userUri}mock_id', json=APP_DISABLED_USER_OUTPUT)
+            m.patch(f'{userUri}mock_id', json=APP_UPDATED_USER_OUTPUT)
 
             user_profile = IAMCommand(attr='username').update_user(client, args)
 
@@ -267,8 +275,8 @@ class TestAWSILM:
         assert outputs.get('active') is True
         assert outputs.get('id') == 'mock_id'
         assert outputs.get('username') == 'mock_user_name'
-        assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
-        assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
+        assert outputs.get('details', {}).get('first_name') == 'new_mock_first_name'
+        assert outputs.get('details', {}).get('last_name') == 'new_mock_last_name'
 
     def test_disable_user_command__non_existing_user(self):
         """
@@ -283,12 +291,12 @@ class TestAWSILM:
             - Ensure the command is considered successful and skipped
         """
         client = mock_client()
-        args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
+        args = {'user-profile': {'username': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 0, "Resources": []})
 
-            user_profile = IAMCommand().disable_user(client, args)
+            user_profile = IAMCommand(attr='username').disable_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 

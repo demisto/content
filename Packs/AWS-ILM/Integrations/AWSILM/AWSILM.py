@@ -13,6 +13,23 @@ ERROR_CODES_TO_SKIP = [
     404
 ]
 
+
+def build_body_request_for_update_user(old_user_data, new_user_data):
+    data = {"schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"]}
+
+    operations = []
+    for key, value in new_user_data.items():
+        operation = {
+            "op": "replace" if key in old_user_data.keys() else "add",
+            "path": key,
+            "value": [value] if key in ("emails", "phoneNumbers", "address") else value
+        }
+        operations.append(operation)
+    data.update({"Operations": operations})
+
+    return data
+
+
 '''CLIENT CLASS'''
 
 
@@ -24,18 +41,18 @@ class Client(BaseClient):
 
         self._http_request(method='GET', url_suffix=userUri)
 
-    def get_user(self, email: str) -> Optional['IAMUserAppData']:
+    def get_user(self, user_name: str) -> Optional['IAMUserAppData']:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type email: ``str``
-        :param email: Email address of the user
+        :type user_name: ``str``
+        :param user_name: User name of the user
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
         params = {
-            'filter': f'userName eq "{email}"'  # I'm not sure email is always the user name.
+            'filter': f'userName eq "{user_name}"'  # I'm not sure email is always the user name.
         }
 
         res = self._http_request(
@@ -76,14 +93,14 @@ class Client(BaseClient):
 
         return IAMUserAppData(user_id, username, is_active, res)
 
-    def update_user(self, user_id: str, user_data: Dict[str, Any]) -> 'IAMUserAppData':
+    def update_user(self, user_id: str, new_user_data: Dict[str, Any]) -> 'IAMUserAppData':
         """ Updates a user in the application using REST API.
 
         :type user_id: ``str``
         :param user_id: ID of the user in the application
 
-        :type user_data: ``Dict[str, Any]``
-        :param user_data: User data in the application format
+        :type new_user_data: ``Dict[str, Any]``
+        :param new_user_data: New user data in the application format
 
         :return: An IAMUserAppData object that contains the data of the updated user in the application.
         :rtype: ``IAMUserAppData``
@@ -93,33 +110,10 @@ class Client(BaseClient):
             url_suffix=userUri + user_id
         )
 
-        # The following fields are required for the PUT method
-        user_data['id'] = user_id
-        new_given_name = user_data.get('name', {}).get('givenName')
-        new_family_name = user_data.get('name', {}).get('familyName')
-        old_given_name = old_user_data.get('name', {}).get('givenName')
-        old_family_name = old_user_data.get('name', {}).get('familyName')
-        user_name = {
-            'givenName': new_given_name if new_family_name else old_given_name,
-            'familyName': new_family_name if new_family_name else old_family_name
-        }
-        user_data['name'] = user_name
-        if not user_data.get('displayName'):
-            user_data['displayName'] = old_user_data.get('displayName')
-        if not user_data.get('userName'):
-            user_data['userName'] = old_user_data.get('userName')
-
-        # The 'emails' value type is a list
-        if user_data.get('emails'):
-            user_data['emails'] = [user_data['emails']]
-
-        # Default is false
-        user_data['active'] = True if old_user_data['active'] else False
-
         res = self._http_request(
-            method='PUT',
+            method='PATCH',
             url_suffix=userUri + user_id,
-            json_data=user_data
+            json_data=build_body_request_for_update_user(old_user_data, new_user_data)
         )
 
         is_active = res.get('active')
@@ -326,9 +320,8 @@ def get_error_details(res: Dict[str, Any]) -> str:
     :return: The parsed error details.
     :rtype: ``str``
     """
-    message = res.get('error', {}).get('message')
-    details = res.get('error', {}).get('detail')
-    return f'{message}: {details}'
+    details = res.get('detail')
+    return details
 
 
 class OutputContext:
