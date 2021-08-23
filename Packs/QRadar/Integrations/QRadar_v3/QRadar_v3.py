@@ -2,7 +2,6 @@ import concurrent.futures
 import secrets
 from enum import Enum
 from ipaddress import ip_address
-from threading import Lock
 from typing import Tuple
 
 import pytz
@@ -261,7 +260,34 @@ USECS_ENTRIES = {'last_persisted_time',
                  'first_seen_profiler',
                  'modified_time',
                  'last_event_time',
-                 'modified_date'}
+                 'modified_date',
+                 'first_event_flow_seen',
+                 'last_event_flow_seen'}
+
+LOCAL_DESTINATION_IPS_OLD_NEW_MAP = {
+    'domain_id': 'DomainID',
+    'event_flow_count': 'EventFlowCount',
+    'first_event_flow_seen': 'FirstEventFlowSeen',
+    'id': 'ID',
+    'last_event_flow_seen': 'LastEventFlowSeen',
+    'local_destination_ip': 'LocalDestinationIP',
+    'magnitude': 'Magnitude',
+    'network': 'Network',
+    'offense_ids': 'OffenseIDs',
+    'source_address_ids': 'SourceAddressIDs'
+}
+SOURCE_IPS_OLD_NEW_MAP = {
+    'domain_id': 'DomainID',
+    'event_flow_count': 'EventFlowCount',
+    'first_event_flow_seen': 'FirstEventFlowSeen',
+    'id': 'ID',
+    'last_event_flow_seen': 'LastEventFlowSeen',
+    'local_destination_address_ids': 'LocalDestinationAddressIDs',
+    'magnitude': 'Magnitude',
+    'network': 'Network',
+    'offense_ids': 'OffenseIDs',
+    'source_ip': 'SourceIP'
+}
 ''' ENRICHMENT MAPS '''
 
 ASSET_PROPERTIES_NAME_MAP = {
@@ -606,11 +632,13 @@ class Client(BaseClient):
             params=assign_params(filter=filter_, fields=fields)
         )
 
-    def get_addresses(self, address_suffix: str, filter_: Optional[str] = None, fields: Optional[str] = None):
+    def get_addresses(self, address_suffix: str, filter_: Optional[str] = None, fields: Optional[str] = None,
+                      range_: Optional[str] = None):
         return self.http_request(
             method='GET',
             url_suffix=f'/siem/{address_suffix}',
-            params=assign_params(filter=filter_, fields=fields)
+            params=assign_params(filter=filter_, fields=fields),
+            additional_headers={'Range': range_} if range_ else None
         )
 
     def test_connection(self):
@@ -2473,6 +2501,73 @@ def qradar_get_custom_properties_command(client: Client, args: Dict) -> CommandR
     )
 
 
+def perform_ips_command_request(client: Client, args: Dict[str, Any], is_destination_addresses: bool):
+    """
+    Performs request to QRadar IPs endpoint.
+    Args:
+        client (Client): Client to perform the request to QRadar service.
+        args (Dict[str, Any]): XSOAR arguments.
+        is_destination_addresses (bool): Whether request is for destination addresses or source addresses.
+
+    Returns:
+        - Request response.
+    """
+    range_: str = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    filter_: Optional[str] = args.get('filter')
+    fields: Optional[str] = args.get('fields')
+
+    address_type = 'local_destination' if is_destination_addresses else 'source'
+    url_suffix = f'{address_type}_addresses'
+
+    response = client.get_addresses(url_suffix, filter_, fields, range_)
+
+    return response
+
+
+def qradar_ips_source_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get source IPS from QRadar service.
+    Args:
+        client (Client): Client to perform API calls to QRadar service.
+        args (Dict[str, Any): XSOAR arguments.
+
+    Returns:
+        (CommandResults).
+    """
+    response = perform_ips_command_request(client, args, is_destination_addresses=False)
+    outputs = sanitize_outputs(response, SOURCE_IPS_OLD_NEW_MAP)
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Source IPs', outputs),
+        outputs_prefix='QRadar.SourceIP',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def qradar_ips_local_destination_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get local destination IPS from QRadar service.
+    Args:
+        client (Client): Client to perform API calls to QRadar service.
+        args (Dict[str, Any): XSOAR arguments.
+
+    Returns:
+        (CommandResults).
+    """
+    response = perform_ips_command_request(client, args, is_destination_addresses=True)
+    outputs = sanitize_outputs(response, LOCAL_DESTINATION_IPS_OLD_NEW_MAP)
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Local Destination IPs', outputs),
+        outputs_prefix='QRadar.LocalDestinationIP',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
 def qradar_reset_last_run_command() -> str:
     """
     Puts the reset flag inside integration context.
@@ -2637,15 +2732,15 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     """
     remote_args = GetRemoteDataArgs(args)
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
-
-    offense = client.offenses_list(offense_id=remote_args.remote_incident_id)
+    offense_id = remote_args.remote_incident_id
+    offense = client.offenses_list(offense_id=offense_id)
     offense_last_update = get_time_parameter(offense.get('last_persisted_time'))
 
     # versions below 6.1 compatibility
     last_update = get_time_parameter(args.get('lastUpdate'))
     if last_update and last_update > offense_last_update:
         demisto.debug('Nothing new in the ticket')
-        return GetRemoteDataResponse({'id': remote_args.remote_incident_id, 'in_mirror_error': ''}, [])
+        return GetRemoteDataResponse({'id': offense_id, 'in_mirror_error': ''}, [])
 
     demisto.debug(f'Updating offense. Offense last update was {offense_last_update}')
     entries = []
@@ -2653,12 +2748,25 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         demisto.debug(f'Offense is closed: {offense}')
         if closing_reason := offense.get('closing_reason_id', ''):
             closing_reason = client.closing_reasons_list(closing_reason).get('text')
+        offense_close_time = offense.get('close_time', '')
+        closed_offense_notes = client.offense_notes_list(offense_id, f'items={DEFAULT_RANGE_VALUE}',
+                                                         filter_=f'create_time >= {offense_close_time}')
+        # In QRadar UI, when you close a reason, a note is added with the reason and more details. Try to get note
+        # if exists, else fallback to closing reason only, as closing QRadar through an API call does not create a note.
+        close_reason_with_note = next((note.get('note_text') for note in closed_offense_notes if
+                                       note.get('note_text').startswith('This offense was closed with reason:')),
+                                      closing_reason)
+        if not close_reason_with_note:
+            print_debug_msg(f'Could not find closing reason or closing note for offense with offense id {offense_id}')
+            close_reason_with_note = 'Unknown closing reason from QRadar'
+        else:
+            close_reason_with_note = f'From QRadar: {close_reason_with_note}'
 
         entries.append({
             'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
-                'closeReason': f'From QRadar: {closing_reason}'
+                'closeReason': close_reason_with_note
             },
             'ContentsFormat': EntryFormat.JSON
         })
@@ -2832,6 +2940,12 @@ def main() -> None:
 
         elif command == 'qradar-get-custom-properties':
             return_results(qradar_get_custom_properties_command(client, args))
+
+        elif command == 'qradar-ips-source-get':
+            return_results(qradar_ips_source_get_command(client, args))
+
+        elif command == 'qradar-ips-local-destination-get':
+            return_results(qradar_ips_local_destination_get_command(client, args))
 
         elif command == 'qradar-reset-last-run':
             return_results(qradar_reset_last_run_command())

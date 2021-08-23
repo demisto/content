@@ -29,11 +29,11 @@ def test_fetch_incidents(mocker):
     mapped_user = util_load_json('test_data/mapped_user.json')
 
     mocker.patch.object(Client, 'get_full_report', return_value=client_response.get('Report_Entry'))
-    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, {}))
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, {}, {}))
     mocker.patch.object(demisto, 'mapObject', return_value=mapped_user)
     client = Client(base_url="", verify="verify", headers={}, proxy=False, ok_codes=(200, 204), auth=None)
 
-    fetch_events = fetch_incidents(client, {}, "", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None)
+    fetch_events = fetch_incidents(client, {}, "", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None, 1)
     assert fetch_events == EVENT_RESULTS
 
 
@@ -50,11 +50,12 @@ def test_fetch_incidents_email_change(requests_mock, mocker):
         employee_id_to_user_profile, email_to_user_profile, event_data
 
     requests_mock.get('https://test.com', json=full_report)
-    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=(employee_id_to_user_profile, email_to_user_profile))
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, employee_id_to_user_profile,
+                                                                    email_to_user_profile))
     mocker.patch.object(demisto, 'mapObject', return_value=mapped_workday_user)
     client = Client(base_url="", verify="verify", headers={}, proxy=False, ok_codes=(200, 204), auth=None)
 
-    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None)
+    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None, 1)
     assert fetch_events == event_data
 
 
@@ -71,12 +72,13 @@ def test_fetch_incidents_employee_id_change(requests_mock, mocker):
         employee_id_to_user_profile, email_to_user_profile, event_data
 
     requests_mock.get('https://test.com', json=full_report)
-    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=(employee_id_to_user_profile, email_to_user_profile))
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, employee_id_to_user_profile,
+                                                                    email_to_user_profile))
     mocker.patch.object(demisto, 'mapObject', return_value=mapped_workday_user)
     client = Client(base_url="", verify="verify", headers={}, proxy=False,
                     ok_codes=(200, 204), auth=None)
 
-    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None)
+    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None, 1)
     assert fetch_events == event_data
 
 
@@ -92,11 +94,61 @@ def test_fetch_incidents_orphan_user(requests_mock, mocker):
     from test_data.fetch_incidents_orphan_user_mock_data import full_report, email_to_user_profile, event_data
 
     requests_mock.get('https://test.com', json=full_report)
-    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, email_to_user_profile))
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, {}, email_to_user_profile))
     client = Client(base_url="", verify="verify", headers={}, proxy=False,
                     ok_codes=(200, 204), auth=None)
 
-    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None)
+    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None, 1)
+    assert fetch_events == event_data
+
+
+def test_fetch_incidents_source_priority(requests_mock, mocker):
+    """
+    Given
+    - A workday full report of employees.
+    When
+    - Workday IAM configured source priority is 2.
+    - A user profile with email rrahardjo@paloaltonetworks.com has a source priority 1.
+    Then
+    - Ensure the event for rrahardjo@paloaltonetworks.com is dropped.
+    """
+    from test_data.fetch_incidents_source_priority_mock_data import full_report, email_to_user_profile, \
+        employee_id_to_user_profile, mapped_workday_user, event_data
+
+    requests_mock.get('https://test.com', json=full_report)
+    mocker.patch.object(demisto, 'mapObject', return_value=mapped_workday_user)
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, employee_id_to_user_profile,
+                                                                    email_to_user_profile))
+    client = Client(base_url="", verify="verify", headers={}, proxy=False,
+                    ok_codes=(200, 204), auth=None)
+
+    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None,
+                                   source_priority=2)
+    assert fetch_events == event_data
+
+
+def test_fetch_incidents_partial_name_match(requests_mock, mocker):
+    """
+    Given
+    - A workday full report of employees.
+    When
+    - A new hire is detected with the same display name as an existing active user.
+    Then
+    - Ensure an "IAM - Sync user" event is detected with the partial name match details.
+    """
+    from test_data.fetch_incidents_partial_name_match_mock_data import full_report, email_to_user_profile, \
+        employee_id_to_user_profile, display_name_to_user_profile, mapped_workday_user, event_data
+
+    requests_mock.get('https://test.com', json=full_report)
+    mocker.patch.object(demisto, 'mapObject', return_value=mapped_workday_user)
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=(display_name_to_user_profile,
+                                                                    employee_id_to_user_profile,
+                                                                    email_to_user_profile))
+    mocker.patch('Workday_IAM.get_orphan_users', return_value=[])  # skip the orphan user detection
+    client = Client(base_url="", verify="verify", headers={}, proxy=False,
+                    ok_codes=(200, 204), auth=None)
+
+    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None, 1)
     assert fetch_events == event_data
 
 

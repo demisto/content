@@ -4,6 +4,8 @@
 
 
 trigger-private-build:
+  tags:
+    - gke
   needs: []
   stage: unittests-and-validations
   extends:
@@ -36,6 +38,8 @@ run-validations:
 
 
 create-instances:
+  tags:
+    - gke
   extends:
     - .default-job-settings
   rules:
@@ -102,6 +106,8 @@ create-instances:
 
 
 .test_content_on_server_instances_base:
+  tags:
+    - gke
   extends:
     - .default-job-settings
     - .push-rule
@@ -121,6 +127,8 @@ create-instances:
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
+    - echo Going to sleep for 60 seconds to allow server finish indexing
+    - sleep 60
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - |
       if [ -f ./Tests/failed_tests.txt ]; then
@@ -151,6 +159,24 @@ server_6_0:
     INSTANCE_ROLE: "Server 6.0"
 
 
+server_6_1:
+  extends: .test_content_on_server_instances_base
+  #  No need to trigger in case of release branch
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.1"
+
+
+server_6_2:
+  extends: .test_content_on_server_instances_base
+  #  No need to trigger in case of release branch
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.2"
+
+
 server_master:
   extends:
     - .test_content_on_server_instances_base
@@ -164,6 +190,8 @@ server_master:
 
 
 fan-in-nightly:
+  tags:
+    - gke
   stage: fan-in
   rules:
     - if: '$NIGHTLY'

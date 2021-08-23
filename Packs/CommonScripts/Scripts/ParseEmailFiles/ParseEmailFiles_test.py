@@ -1,10 +1,12 @@
 # coding=utf-8
 from __future__ import print_function
+
+import pytest
+
+import demistomock as demisto
+from CommonServerPython import entryTypes
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
     data_to_md, create_headers_map, DataModel
-from CommonServerPython import entryTypes
-import demistomock as demisto
-import pytest
 
 
 def exec_command_for_file(
@@ -407,6 +409,10 @@ def test_email_with_special_character(mocker):
         'This =?UTF-8?B?VGVzdMKu?= passes',
         'This Test® passes'
     ),
+    (
+        '=?utf-8?B?44CQ?= =?utf-8?B?4pGg?=',    # test case: double utf-8 byte encoded
+        '\xe3\x80\x90\xe2\x91\xa0'              # 【①
+    ),
 ])
 def test_utf_subject_convert(encoded_subject, decoded_subject):
     decoded = convert_to_unicode(encoded_subject)
@@ -666,6 +672,20 @@ def test_eml_contains_htm_attachment(mocker):
     assert results[0]['EntryContext']['Email'][u'Attachments'] == '1.htm'
 
 
+def test_signed_attachment(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('email_with_signed_attachment.eml',
+                                                          info="multipart/mixed"))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    results = demisto.results.call_args[0]
+
+    assert len(results[0]['EntryContext']['Email']) == 2
+
+
 def test_eml_contains_html_and_text(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand',
@@ -689,6 +709,22 @@ def test_eml_format_multipart_mix(mocker):
     mocker.patch.object(demisto, 'executeCommand',
                         side_effect=exec_command_for_file('multipart_mixed_format.p7m',
                                                           info="multipart/mixed"))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert "Warsaw, Poland <o:p></o:p>" in results[0]['EntryContext']['Email']['HTML']
+
+
+def test_eml_format_multipart_related(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('multipart_related_format.p7m',
+                                                          info="multipart/related"))
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
