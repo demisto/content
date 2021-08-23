@@ -141,7 +141,7 @@ tasks:
       name: Check If Fields Exist
       description: Receive fields and context. Verifies that these field exists in
         context.
-      scriptName: VerifyContextFieldsList
+      scriptName: VerifyObjectFieldsList
       type: regular
       iscommand: false
       brand: ""
