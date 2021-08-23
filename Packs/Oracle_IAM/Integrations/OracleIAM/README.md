@@ -1,5 +1,4 @@
 An Identity and Access Management integration template.
-This integration was integrated and tested with version xx of OracleIAM
 
 ## Configure OracleIAM on Cortex XSOAR
 
