@@ -15,8 +15,6 @@ ERROR_CODES_TO_SKIP = [
 
 
 def build_body_request_for_update_user(old_user_data, new_user_data):
-    data = {"schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"]}
-
     operations = []
     for key, value in new_user_data.items():
         operation = {
@@ -25,7 +23,11 @@ def build_body_request_for_update_user(old_user_data, new_user_data):
             "value": [value] if key in ("emails", "phoneNumbers", "address") else value
         }
         operations.append(operation)
-    data.update({"Operations": operations})
+
+    data = {
+        "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+        "Operations": operations
+    }
 
     return data
 
@@ -320,7 +322,7 @@ def get_error_details(res: Dict[str, Any]) -> str:
     :return: The parsed error details.
     :rtype: ``str``
     """
-    details = res.get('detail')
+    details = str(res.get('detail'))
     return details
 
 
@@ -396,7 +398,7 @@ def get_group_command(client, args):
                 generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=404,
                                                     errorMessage="Group Not Found", details=res_json)
 
-                readable_output = tableToMarkdown(f'AWS Get Group:', generic_iam_context.data, removeNull=True)
+                readable_output = tableToMarkdown('AWS Get Group:', generic_iam_context.data, removeNull=True)
 
                 return CommandResults(
                     raw_response=generic_iam_context.data,
@@ -411,7 +413,7 @@ def get_group_command(client, args):
                 group_name = res_json['Resources'][0].get('displayName')
                 generic_iam_context = OutputContext(success=True, iden=group_id,
                                                     displayName=group_name, details=res_json)
-                readable_output = tableToMarkdown(f'AWS Get Group:', generic_iam_context.data, removeNull=True)
+                readable_output = tableToMarkdown('AWS Get Group:', generic_iam_context.data, removeNull=True)
 
                 return CommandResults(
                     raw_response=generic_iam_context.data,
@@ -426,7 +428,7 @@ def get_group_command(client, args):
                                                 errorCode=res_json.get('code'),
                                                 errorMessage=res_json.get('message'), details=res_json)
 
-            readable_output = tableToMarkdown(f'AWS Get Group:', generic_iam_context.data, removeNull=True)
+            readable_output = tableToMarkdown('AWS Get Group:', generic_iam_context.data, removeNull=True)
 
             return CommandResults(
                 raw_response=generic_iam_context.data,
@@ -450,7 +452,7 @@ def get_group_command(client, args):
                                             errorCode=res_json.get('code'),
                                             errorMessage=res_json.get('message'), details=res_json)
 
-    readable_output = tableToMarkdown(f'AWS Get Group:', generic_iam_context.data, removeNull=True)
+    readable_output = tableToMarkdown('AWS Get Group:', generic_iam_context.data, removeNull=True)
 
     return CommandResults(
         raw_response=generic_iam_context.data,
@@ -481,7 +483,7 @@ def create_group_command(client, args):
                                             errorCode=res_json.get('code'),
                                             errorMessage=res_json.get('message'), details=res_json)
 
-    readable_output = tableToMarkdown(f'AWS Create Group:', generic_iam_context.data, removeNull=True)
+    readable_output = tableToMarkdown('AWS Create Group:', generic_iam_context.data, removeNull=True)
 
     return CommandResults(
         raw_response=generic_iam_context.data,
@@ -522,7 +524,7 @@ def update_group_command(client, args):
                                                     errorCode=res_json.get('code'),
                                                     errorMessage=res_json.get('message'), details=res_json)
 
-                readable_output = tableToMarkdown(f'AWS Update Group:', generic_iam_context.data, removeNull=True)
+                readable_output = tableToMarkdown('AWS Update Group:', generic_iam_context.data, removeNull=True)
 
                 return CommandResults(
                     raw_response=generic_iam_context.data,
@@ -549,7 +551,7 @@ def update_group_command(client, args):
                                                     errorCode=res_json.get('code'),
                                                     errorMessage=res_json.get('message'), details=res_json)
 
-                readable_output = tableToMarkdown(f'AWS Update Group:', generic_iam_context.data, removeNull=True)
+                readable_output = tableToMarkdown('AWS Update Group:', generic_iam_context.data, removeNull=True)
 
                 return CommandResults(
                     raw_response=generic_iam_context.data,
@@ -573,7 +575,7 @@ def update_group_command(client, args):
                                             errorCode=res_json.get('code'), errorMessage=res_json.get('message'),
                                             details=res_json)
 
-    readable_output = tableToMarkdown(f'AWS Update Group:', generic_iam_context.data, removeNull=True)
+    readable_output = tableToMarkdown('AWS Update Group:', generic_iam_context.data, removeNull=True)
 
     return CommandResults(
         raw_response=generic_iam_context.data,
@@ -605,7 +607,7 @@ def delete_group_command(client, args):
                                             errorCode=res_json.get('code'), errorMessage=res_json.get('message'),
                                             details=res_json)
 
-    readable_output = tableToMarkdown(f'AWS Delete Group:', generic_iam_context.data, removeNull=True)
+    readable_output = tableToMarkdown('AWS Delete Group:', generic_iam_context.data, removeNull=True)
 
     return CommandResults(
         raw_response=generic_iam_context.data,

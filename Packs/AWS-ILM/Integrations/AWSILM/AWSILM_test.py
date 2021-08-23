@@ -56,12 +56,12 @@ class TestAWSILM:
             - Ensure the resulted User Profile object holds the correct user details
         """
         client = mock_client()
-        args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
+        args = {'user-profile': {'username': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 1, "Resources": [APP_USER_OUTPUT]})
 
-            user_profile = IAMCommand().get_user(client, args)
+            user_profile = IAMCommand(attr='username').get_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -85,12 +85,12 @@ class TestAWSILM:
             - Ensure the resulted User Profile object holds information about an unsuccessful result.
         """
         client = mock_client()
-        args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
+        args = {'user-profile': {'username': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 0, "Resources": []})
 
-            user_profile = IAMCommand().get_user(client, args)
+            user_profile = IAMCommand(attr='username').get_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -117,7 +117,8 @@ class TestAWSILM:
         args = {'user-profile': {'username': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
-            m.get(userUri, status_code=500, text="{'detail', 'INTERNAL SERVER ERROR'}")
+            m.get(f'{userUri}?filter=userName eq "mock_user_name"', status_code=500,
+                  json={"detail": "INTERNAL SERVER ERROR"})
 
             user_profile = IAMCommand(attr='username').get_user(client, args)
 
