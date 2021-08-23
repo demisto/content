@@ -3927,7 +3927,7 @@ script:
       name: limit
       required: false
       secret: false
-      defaultvalue: 30
+      defaultValue: 30
     - default: false
       description: The name of the organization containing the repository. Defaults to organization instance parameter if not given.
       isArray: false
