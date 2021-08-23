@@ -4,7 +4,7 @@ from CommonServerPython import *
 import requests
 import traceback
 from typing import Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -388,13 +388,11 @@ def test_module(
     """
     demisto.debug("Initialized test module...")
 
-    # TODO add validation that incidentFetchInterval is not greater than 2 days
     interval = arg_to_number(arg=incident_fetch_interval, arg_name="incident_fetch_interval", required=False)
 
-    if interval > 1440 * 2:
+    if interval > 1440 * 2:  # type: ignore
         return "Test failed. Incident Fetch Interval is greater than 2 days."
 
-    # TODO add validation that max_fetch is not greater than 50
     max_incidents = int(client.max_fetch)
     if max_incidents > 50:
         return "Test failed. Max Fetch is larger than 50."
@@ -899,11 +897,11 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
 
     response = client.get_alerts_last_week(email=email, portfolio_id=portfolio_id)
 
-    entries = response.get("entries")
+    entries = response.get("entries")  # type: ignore
 
     alerts: List[Dict[str, str]] = []
 
-    for entry in entries:
+    for entry in entries:  # type: ignore
         content: Dict[str, str] = {
             "Alert ID": entry.get("id"),
             "Company": entry.get("company_name"),
@@ -916,7 +914,6 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
         # Some alerts may have more than one change data object
         change_str = ""
         if len(change_data) > 1:
-            
             for change in change_data:
                 factor_part = f"**{change.get('factor').replace('_', ' ').title()}** "
                 direction = f"**{change.get('direction')}** by {change.get('score_impact')} "
@@ -931,7 +928,6 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
 
         content["Details"] = change_str
         alerts.append(content)
-            
 
     markdown = tableToMarkdown(f"Latest Alerts for user {email}", alerts)
 
@@ -1063,7 +1059,6 @@ def main() -> None:
 
     # Fetch configuration
     max_fetch = params.get("max_fetch")
-    first_fetch = params.get("first_fetch")
     incident_fetch_interval = params.get("incidentFetchInterval")
 
     args: Dict[str, str] = demisto.args()
