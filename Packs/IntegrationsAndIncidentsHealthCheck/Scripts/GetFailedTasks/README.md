@@ -27,4 +27,4 @@ This script is used in the following playbooks and scripts.
 There are no outputs for this script.
 
 ## Troubleshooting
-In order for the automation script to be able to retrieve the failed tasks, the API key configured in the Demisto REST API integration, need to be of a user with *Read* permissions the queried incident.
+In order for the automation script to be able to retrieve the failed tasks, the API key configured in the Demisto REST API integration, need to be of a user with *Read* permissions to the queried incident.
