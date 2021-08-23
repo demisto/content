@@ -608,6 +608,7 @@ def test_get_xql_query_results_polling_command_success_under_1000(mocker):
                      'results': [{'x': 'test1', 'y': None}],
                      'execution_id': 'query_id_mock'}
     mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-query')
     command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
     assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1,
                                        'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
@@ -637,6 +638,7 @@ def test_get_xql_query_results_polling_command_success_more_than_1000(mocker):
                      'results': {'stream_id': 'test_stream_id'},
                      'execution_id': 'query_id_mock'}
     mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, 'File Data'))
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-query')
     mocker.patch('XQLQueryingEngine.fileResult',
                  return_value={'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'results.gz',
                                'FileID': '12345'})
@@ -665,6 +667,7 @@ def test_get_xql_query_results_polling_command_prending(mocker):
                      'execution_id': 'query_id_mock',
                      'results': None}
     mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-query')
     command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
     assert command_results.readable_output == 'Query is still running, it may take a little while...'
     assert command_results.outputs == {'status': 'PENDING', 'execution_id': 'query_id_mock', 'results': None}
