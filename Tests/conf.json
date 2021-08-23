@@ -3490,6 +3490,13 @@
             "integrations": "AzureWAF"
         },
         {
+            "integrations": ["AutoFocus Daily Feed", "Demisto REST API"],
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "timeout": 2400
+        },
+        {
             "integrations": "SOCRadarIncidents",
             "playbookID": "SOCRadarIncidents-Test"
         },
@@ -3596,6 +3603,7 @@
     "skipped_integrations": {
         
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Ipstack": "Usage limit reached (Issue 38063)",
         "SolarWinds": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
         "SOCRadarThreatFusion": "No instance - developed by partner",
@@ -3678,7 +3686,7 @@
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
@@ -3695,7 +3703,8 @@
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance"
+        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance",
+        "AutoFocus V2": "Nightly build troubleshooting"
     },
     "nightly_integrations": [
         "Lastline v2",
