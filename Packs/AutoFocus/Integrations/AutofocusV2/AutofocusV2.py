@@ -1120,6 +1120,9 @@ def resolve_ip_address(ip):
 
 def convert_url_to_ascii_character(url_name):
     regex_groups = re.search('([a-zA-Z\W]*)([^a-zA-Z\W]*)([a-zA-Z\W]*)', url_name)
+    one = regex_groups.group(1)
+    two = regex_groups.group(2)
+    three = regex_groups.group(3)
     if regex_groups:
         if regex_groups.group(2) != '':
             decoded_value = str(regex_groups.group(1)) + str(regex_groups.group(2)).encode('idna').decode(
