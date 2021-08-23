@@ -673,7 +673,7 @@ tasks:
       name: Set Microsoft Headers Severity Check
       description: Calculates the severity after processing the PCL, BCL and PCL values
         inside Microsoft headers. If no value is entered, nothing is returned.
-      scriptName: SetAndHandleEmpty
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
