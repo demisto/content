@@ -4,7 +4,7 @@ from CommonServerPython import *
 import requests
 import traceback
 from typing import Dict, Any
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -284,7 +284,7 @@ def get_last_run(last_run: str, first_fetch: str):
         return int(last_run)
     else:
         if not first_fetch:
-            days_ago = "3 days"
+            days_ago = "2 days"
         else:
             days_ago = first_fetch
 
@@ -372,7 +372,10 @@ def incidents_to_import(
 """ COMMAND FUNCTIONS """
 
 
-def test_module(client: SecurityScorecardClient) -> str:
+def test_module(
+    client: SecurityScorecardClient,
+    incident_fetch_interval: Optional[str]
+) -> str:
     """Tests API connectivity and authentication
 
     Runs the fetch-alerts mechanism to validate all integration parameters
@@ -385,7 +388,16 @@ def test_module(client: SecurityScorecardClient) -> str:
     """
     demisto.debug("Initialized test module...")
 
-    # TODO add validation that the fetch days is not greater than 2 days
+    # TODO add validation that incidentFetchInterval is not greater than 2 days
+    interval = arg_to_number(arg=incident_fetch_interval, arg_name="incident_fetch_interval", required=False)
+
+    if interval > 1440 * 2:
+        return "Test failed. Incident Fetch Interval is greater than 2 days."
+
+    # TODO add validation that max_fetch is not greater than 50
+    max_incidents = int(client.max_fetch)
+    if max_incidents > 50:
+        return "Test failed. Max Fetch is larger than 50."
 
     try:
         client.fetch_alerts(page_size=1)
@@ -1051,6 +1063,8 @@ def main() -> None:
 
     # Fetch configuration
     max_fetch = params.get("max_fetch")
+    first_fetch = params.get("first_fetch")
+    incident_fetch_interval = params.get("incidentFetchInterval")
 
     args: Dict[str, str] = demisto.args()
 
@@ -1070,7 +1084,12 @@ def main() -> None:
         )
 
         if demisto.command() == 'test-module':
-            return_results(test_module(client))
+            return_results(
+                test_module(
+                    client=client,
+                    incident_fetch_interval=incident_fetch_interval
+                )
+            )
         elif demisto.command() == "fetch-incidents":
             fetch_alerts(client=client)
         elif demisto.command() == 'securityscorecard-portfolios-list':

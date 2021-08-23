@@ -33,13 +33,13 @@ configuration:
   required: false
   defaultvalue: '50'
   type: 0
-  additionalinfo: Maximum number of alerts per fetch. Default is 50, maximum is 100.
+  additionalinfo: Maximum number of alerts per fetch. The maximum is 50.
 - name: first_fetch
   display: First fetch
-  defaultvalue: 3 days
+  defaultvalue: 2 days
   required: false
   type: 0
-  additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days. SecurityScorecard provides a maximum of 7 days back.
+  additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days. SecurityScorecard provides a maximum of 7 days back. To ensure no alerts are missed, it's recommended to use a value less than 2 days.
 - name: incidentType
   display: Incident type
   required: false
