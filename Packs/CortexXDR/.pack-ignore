@@ -38,3 +38,6 @@ ignore=IF100
 
 [file:incidentfield-XDR_Similar_Incidents.json]
 ignore=IF100
+
+[file:CarbonBlackEdr_Test.yml]
+ignore=auto-test
