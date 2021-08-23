@@ -1,0 +1,9 @@
+{
+    "kind": "drive#permission",
+    "id": "17",
+    "type": "user",
+    "emailAddress": "johndoe@example.com",
+    "role": "reader",
+    "displayName": "Jogn Doe",
+    "deleted": false
+}

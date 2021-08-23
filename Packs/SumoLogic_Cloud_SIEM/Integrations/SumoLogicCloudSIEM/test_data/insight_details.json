@@ -17,7 +17,23 @@
     "lastUpdatedBy": null,
     "name": "Command and Control with Defense Evasion and Execution",
     "readableId": "INSIGHT-220",
-    "recordSummaryFields": [],
+    "recordSummaryFields": [
+      {
+        "fieldName": "description",
+        "fieldValue": "A new process has been created",
+        "recordCount": 4
+      },
+      {
+        "fieldName": "device_hostname",
+        "fieldValue": "testcomputer.somedomain.net",
+        "recordCount": 4
+      },
+      {
+        "fieldName": "user_username",
+        "fieldValue": "system",
+        "recordCount": 1
+      }
+    ],
     "relatedEntities": [],
     "resolution": "No Action",
     "severity": "HIGH",

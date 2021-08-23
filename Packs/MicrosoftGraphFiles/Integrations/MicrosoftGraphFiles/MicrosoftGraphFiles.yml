@@ -32,10 +32,10 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-description: Use the Microsoft Graph Files integration to enable your app to get authorized
-  access to files in OneDrive, SharePoint, and MS Teams across your entire organization.
-  This integration requires admin consent.
-display: Microsoft Graph Files
+description: Use the O365 File Management (Onedrive/Sharepoint/Teams) integration
+  to enable your app to get authorized access to files in OneDrive, SharePoint, and
+  MS Teams across your entire organization. This integration requires admin consent.
+display: O365 File Management (Onedrive/Sharepoint/Teams)
 name: Microsoft_Graph_Files
 script:
   commands:
@@ -56,9 +56,9 @@ script:
       description: |-
         MS Graph resource ID.
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
       isArray: false
       name: object_type_id
       predefined:
@@ -94,9 +94,9 @@ script:
       description: |-
         MS Graph resource ID.
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
       isArray: false
       name: object_type_id
       required: true
@@ -210,9 +210,9 @@ script:
       description: |-
         MS Graph resource ID.
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
       isArray: false
       name: object_type_id
       required: true
@@ -320,9 +320,9 @@ script:
       description: |-
         MS Graph resource ID.
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
       isArray: false
       name: object_type_id
       required: true
@@ -488,9 +488,9 @@ script:
       description: |-
         MS Graph resource ID.
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
       isArray: false
       name: object_type_id
       required: true
@@ -644,9 +644,9 @@ script:
       description: |-
         MS Graph resource ID.
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
       isArray: false
       name: object_type_id
       required: true
@@ -694,7 +694,7 @@ script:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
-  dockerimage: demisto/python_pancloud:1.0.0.14303
+  dockerimage: demisto/python_pancloud:1.0.0.23674
   feed: false
   isfetch: false
   longRunning: false

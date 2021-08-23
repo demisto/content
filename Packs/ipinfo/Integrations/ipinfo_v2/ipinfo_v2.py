@@ -60,7 +60,7 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List
                                             entity_a_type=FeedIndicatorType.IP,
                                             entity_b=hostname,
                                             entity_b_type=FeedIndicatorType.Domain,
-                                            brand='IPinfo',
+                                            brand='ipinfo_v2',
                                             source_reliability=reliability))
 
     if 'org' in raw_result:
@@ -140,7 +140,6 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List
         ip=ip,
         dbot_score=Common.DBotScore(indicator=ip,
                                     indicator_type=DBotScoreType.IP,
-                                    integration_name='IPinfo_v2',
                                     reliability=dbot_reliability,
                                     score=Common.DBotScore.NONE),
         asn=asn,

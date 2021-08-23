@@ -17,3 +17,12 @@ This allows the user to take additional steps on the campaign findings, like blo
 - You can use the data gathered from the FindEmailCampaign script to identify malicious indicators used in the campaign and block them.
 - The pack expects you to have pre-existing email incidents created from a mail listener such as EWS v2.
 - The Phishing content pack is required because the **FindEmailCampaign** script uses the **FindDuplicateEmailIncidents** script from that pack.
+
+_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/articles/phishing-campaign)._
+
+![image](https://user-images.githubusercontent.com/43602124/125288979-630da380-e327-11eb-91d1-9284c2e5a332.png)
+
+![image](https://user-images.githubusercontent.com/43602124/125288084-68b6b980-e326-11eb-99c0-19e1b7b6af8c.png)
+
+
+

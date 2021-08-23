@@ -1,0 +1,48 @@
+{
+  "data": {
+    "id": "9",
+    "type": "attachment_payloads",
+    "links": {
+      "self": "https://triage.example.com/api/public/v2/attachment_payloads/9"
+    },
+    "attributes": {
+      "mime_type": "image/png; charset=binary",
+      "md5": "9f16385db56b9429fc210b19df070fe7",
+      "sha256": "7609ec052a3834f0ac822001837d7b25dea34bd38143a13ea6a187c1922aad28",
+      "risk_score": null,
+      "created_at": "2020-10-21T20:54:36.531Z",
+      "updated_at": "2020-10-21T20:54:36.531Z"
+    },
+    "relationships": {
+      "attachments": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/attachment_payloads/9/relationships/attachments",
+          "related": "https://triage.example.com/api/public/v2/attachment_payloads/9/attachments"
+        }
+      },
+      "clusters": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/attachment_payloads/9/relationships/clusters",
+          "related": "https://triage.example.com/api/public/v2/attachment_payloads/9/clusters"
+        }
+      },
+      "integration_submissions": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/attachment_payloads/9/relationships/integration_submissions",
+          "related": "https://triage.example.com/api/public/v2/attachment_payloads/9/integration_submissions"
+        }
+      },
+      "reports": {
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/attachment_payloads/9/relationships/reports",
+          "related": "https://triage.example.com/api/public/v2/attachment_payloads/9/reports"
+        }
+      }
+    }
+  },
+  "links": {
+    "first": "https://triage.example.com/api/public/v2/attachment_payloads?page%5Bnumber%5D=1&page%5Bsize%5D=2",
+    "next": "https://triage.example.com/api/public/v2/attachment_payloads?page%5Bnumber%5D=2&page%5Bsize%5D=2",
+    "last": "https://triage.example.com/api/public/v2/attachment_payloads?page%5Bnumber%5D=103&page%5Bsize%5D=2"
+  }
+}

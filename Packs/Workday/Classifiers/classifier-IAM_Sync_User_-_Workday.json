@@ -144,7 +144,7 @@
 					"complex": {
 						"accessor": "",
 						"filters": [],
-						"root": "Email_Address",
+						"root": "User_Name",
 						"transformers": [
 							{
 								"args": {},
@@ -305,7 +305,7 @@
 					"complex": {
 						"accessor": "",
 						"filters": [],
-						"root": "Email_Address",
+						"root": "User_Name",
 						"transformers": [
 							{
 								"args": {},
@@ -466,7 +466,7 @@
 					"complex": {
 						"accessor": "",
 						"filters": [],
-						"root": "Email_Address",
+						"root": "User_Name",
 						"transformers": [
 							{
 								"args": {},
@@ -627,7 +627,7 @@
 					"complex": {
 						"accessor": "",
 						"filters": [],
-						"root": "Email_Address",
+						"root": "User_Name",
 						"transformers": [
 							{
 								"args": {},
@@ -788,7 +788,7 @@
 					"complex": {
 						"accessor": "",
 						"filters": [],
-						"root": "Email_Address",
+						"root": "User_Name",
 						"transformers": [
 							{
 								"args": {},
@@ -949,7 +949,7 @@
 					"complex": {
 						"accessor": "",
 						"filters": [],
-						"root": "Email_Address",
+						"root": "User_Name",
 						"transformers": [
 							{
 								"args": {},

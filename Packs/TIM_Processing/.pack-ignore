@@ -20,13 +20,13 @@ ignore=PB115
 ignore=PB115
 
 [file:playbook-TIM_-_Process_Indicators_Against_Business_Partners_Domains.yml]
-ignore=PB115
+ignore=PB115,BA111
 
 [file:playbook-TIM_-_Process_Indicators_Against_Business_Partners_IP_List.yml]
-ignore=PB115
+ignore=PB115,BA111
 
 [file:playbook-TIM_-_Process_Indicators_Against_Business_Partners_URL_List.yml]
-ignore=PB115
+ignore=PB115,BA111
 
 [file:playbook-TIM_-_Process_Indicators_Against_Organizations_External_IP.yml]
 ignore=PB115

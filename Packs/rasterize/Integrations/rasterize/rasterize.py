@@ -32,7 +32,7 @@ EMPTY_RESPONSE_ERROR_MSG = "There is nothing to render. This can occur when ther
                            " Please check your URL."
 DEFAULT_W, DEFAULT_H = '600', '800'
 DEFAULT_W_WIDE = '1024'
-CHROME_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'  # noqa
+CHROME_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36'  # noqa
 DRIVER_LOG = f'{tempfile.gettempdir()}/chromedriver.log'
 DEFAULT_CHROME_OPTIONS = [
     '--no-sandbox',
@@ -178,6 +178,10 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
 
         if r_type.lower() == 'pdf':
             output = get_pdf(driver, width, height)
+        elif r_type.lower() == 'json':
+            html = driver.page_source
+            output = {'image_b64': base64.b64encode(get_image(driver, width, height)).decode('utf8'),
+                      'html': html}
         else:
             output = get_image(driver, width, height)
 
@@ -298,6 +302,10 @@ def rasterize_command():
     filename = f'url.{"pdf" if r_type == "pdf" else "png"}'  # type: ignore
 
     output = rasterize(path=url, r_type=r_type, width=w, height=h, wait_time=wait_time, max_page_load_time=page_load)
+    if r_type == 'json':
+        return_results(CommandResults(raw_response=output, readable_output="Successfully load image for url: " + url))
+        return
+
     res = fileResult(filename=filename, data=output)
     if r_type == 'png':
         res['Type'] = entryTypes['image']

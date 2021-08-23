@@ -2076,5 +2076,6 @@ inputs:
   description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
 outputs: []
 fromversion: 5.0.0
+toversion: 5.9.9
 tests:
 - Phishing v2 - Test - Incident Starter

@@ -9,6 +9,7 @@ def configure_job(job_name: str, existing_job: Optional[Dict[str, Any]] = None) 
     """
     instance_context = demisto.context()
     job_params = existing_job or {}
+    is_scheduled = job_params.get('scheduled')
 
     for job in instance_context.get('ConfigurationSetup', {}).get('Jobs', []):
         if job.get('name') == job_name:
@@ -18,11 +19,18 @@ def configure_job(job_name: str, existing_job: Optional[Dict[str, Any]] = None) 
     if not job_params:
         return False
 
-    res = demisto.executeCommand('demisto-api-post', {'uri': '/jobs', 'body': job_params})
-    if is_error(res):
-        error_message = f'{SCRIPT_NAME} - {get_error(res)}'
+    if is_scheduled is False:
+        job_params['scheduled'] = False
+
+    status, res = execute_command(
+        'demisto-api-post',
+        {'uri': '/jobs', 'body': job_params},
+        fail_on_error=False,
+    )
+
+    if not status:
+        error_message = f'{SCRIPT_NAME} - {res}'
         demisto.debug(error_message)
-        return_error(error_message)
         return False
 
     return True
@@ -43,13 +51,18 @@ def search_existing_job(job_name: str) -> Dict[str, Any]:
         'query': f'name:"{job_name}"',
     }
 
-    res = demisto.executeCommand('demisto-api-post', {'uri': '/jobs/search', 'body': body})
-    if is_error(res):
-        error_message = f'{SCRIPT_NAME} - {get_error(res)}'
+    status, res = execute_command(
+        'demisto-api-post',
+        {'uri': '/jobs/search', 'body': body},
+        fail_on_error=False,
+    )
+
+    if not status:
+        error_message = f'{SCRIPT_NAME} - {res}'
         demisto.debug(error_message)
         return {}
 
-    search_results = res[0].get('Contents', {}).get('response', {}).get('data')
+    search_results = res.get('response', {}).get('data')
     if search_results:
         return search_results[0]
 

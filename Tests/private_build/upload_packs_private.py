@@ -273,7 +273,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
 
     pack_was_modified = not is_infra_run
 
-    task_status, user_metadata = pack.load_user_metadata()
+    task_status = pack.load_user_metadata()
     if not task_status:
         pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name
         pack.cleanup()
@@ -297,11 +297,10 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    task_status = pack.format_metadata(user_metadata=user_metadata,
-                                       index_folder_path=index_folder_path,
-                                       packs_dependencies_mapping=packs_dependencies_mapping,
-                                       build_number=build_number, commit_hash=current_commit_hash,
-                                       pack_was_modified=pack_was_modified, statistics_handler=None)
+    task_status, _ = pack.format_metadata(index_folder_path=index_folder_path,
+                                          packs_dependencies_mapping=packs_dependencies_mapping,
+                                          build_number=build_number, commit_hash=current_commit_hash,
+                                          pack_was_modified=pack_was_modified, statistics_handler=None)
 
     if not task_status:
         pack.status = PackStatus.FAILED_METADATA_PARSING.name

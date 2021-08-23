@@ -1,0 +1,57 @@
+{
+  "data":
+    {
+      "id": "15",
+      "type": "urls",
+      "links": {
+        "self": "https://triage.example.com/api/public/v2/urls/15"
+      },
+      "attributes": {
+        "url": "http://triage.example.com/servlet/MailView?ms=MTE4NDM1ODgS1&r=LTMyMjA1MjQ1ODcS1&j=MTc2MDQ3MTQ4MwS2&mt=1&rt=0",
+        "risk_score": null,
+        "created_at": "2020-10-21T20:54:24.185Z",
+        "updated_at": "2020-10-21T20:54:24.185Z"
+      },
+      "relationships": {
+        "domain": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/urls/15/relationships/domain",
+            "related": "https://triage.example.com/api/public/v2/urls/15/domain"
+          }
+        },
+        "hostname": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/urls/15/relationships/hostname",
+            "related": "https://triage.example.com/api/public/v2/urls/15/hostname"
+          },
+          "data": {
+            "type": "hostnames",
+            "id": "6"
+          }
+        },
+        "clusters": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/urls/15/relationships/clusters",
+            "related": "https://triage.example.com/api/public/v2/urls/15/clusters"
+          }
+        },
+        "integration_submissions": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/urls/15/relationships/integration_submissions",
+            "related": "https://triage.example.com/api/public/v2/urls/15/integratio  n_submissions"
+          }
+        },
+        "reports": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/urls/15/relationships/reports",
+            "related": "https://triage.example.com/api/public/v2/urls/15/reports"
+          }
+        }
+      }
+    },
+  "links": {
+    "first": "https://triage.example.com/api/public/v2/urls?page%5Bnumber%5D=1&page%5Bsize%5D=20",
+    "next": "https://triage.example.com/api/public/v2/urls?page%5Bnumber%5D=2&page%5Bsize%5D=20",
+    "last": "https://triage.example.com/api/public/v2/urls?page%5Bnumber%5D=261&page%5Bsize%5D=20"
+  }
+}

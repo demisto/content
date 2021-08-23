@@ -13,10 +13,16 @@ from utils import get_env_var, timestamped_print
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
-REVIEWERS = ['Itay4', 'yaakovpraisler', 'Shellyber', 'tomneeman151293']
-WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Make sure to register your ' \
-              'contribution by filling the [Contribution Registration](https://forms.gle/XDfxU4E61ZwEESSMA) form, ' \
-              'so our content wizard @{selected_reviewer} will know he can start review the proposed changes. '
+REVIEWERS = ['guykeller', 'abaumgarten', 'tallieber', 'ChanochShayner', 'barchen1', 'BEAdi']
+MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
+WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
+              'wizard @{selected_reviewer} will very shortly look over your proposed changes.'
+
+WELCOME_MSG_WITH_GFORM = 'Thank you for your contribution. Your generosity and caring are unrivaled! Make sure to ' \
+                         'register your contribution by filling the [Contribution Registration]' \
+                         '(https://forms.gle/XDfxU4E61ZwEESSMA) form, ' \
+                         'so our content wizard @{selected_reviewer} will know he can start review the proposed ' \
+                         'changes.'
 
 
 def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
@@ -111,8 +117,9 @@ def main():
     print(f'{t.cyan}Assigned user "{reviewer_to_assign}" to the PR{t.normal}')
     print(f'{t.cyan}Requested review from user "{reviewer_to_assign}"{t.normal}')
 
-    # create welcome comment
-    body = WELCOME_MSG.format(selected_reviewer=reviewer_to_assign)
+    # create welcome comment (only users who contributed through Github need to have that contribution form filled)
+    message_to_send = WELCOME_MSG if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR else WELCOME_MSG_WITH_GFORM
+    body = message_to_send.format(selected_reviewer=reviewer_to_assign)
     pr.create_issue_comment(body)
     print(f'{t.cyan}Created welcome comment{t.normal}')
 

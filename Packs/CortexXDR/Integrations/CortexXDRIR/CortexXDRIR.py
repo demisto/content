@@ -8,8 +8,9 @@ from operator import itemgetter
 from typing import Any, Dict, Tuple
 
 import dateparser
-import demistomock as demisto  # noqa: F401
 import urllib3
+
+import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
@@ -1725,14 +1726,19 @@ def convert_os_to_standard(endpoint_os):
     return os_type
 
 
+def get_endpoint_properties(single_endpoint):
+    status = 'Online' if single_endpoint.get('endpoint_status', '').lower() == 'connected' else 'Offline'
+    is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
+    hostname = single_endpoint['host_name'] if single_endpoint.get('host_name') else single_endpoint.get(
+        'endpoint_name')
+    ip = single_endpoint.get('ip')
+    return status, is_isolated, hostname, ip
+
+
 def generate_endpoint_by_contex_standard(endpoints, ip_as_string):
     standard_endpoints = []
     for single_endpoint in endpoints:
-        status = 'Online' if single_endpoint.get('endpoint_status') == 'connected' else 'Offline'
-        is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
-        hostname = single_endpoint['host_name'] if single_endpoint.get('host_name', '') else single_endpoint.get(
-            'endpoint_name')
-        ip = single_endpoint.get('ip')
+        status, is_isolated, hostname, ip = get_endpoint_properties(single_endpoint)
         # in the `xdr-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
         # in the `endpoint` command we use the standard
         if ip_as_string and isinstance(ip, list):
@@ -2679,7 +2685,8 @@ def get_update_args(delta, inc_status):
     update_args = delta
     handle_outgoing_incident_owner_sync(update_args)
     handle_user_unassignment(update_args)
-    handle_outgoing_issue_closure(update_args, inc_status)
+    if update_args.get('closingUserId'):
+        handle_outgoing_issue_closure(update_args, inc_status)
     return update_args
 
 

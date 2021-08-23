@@ -959,9 +959,12 @@ def main():
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket)
 
+    # Packages that depend on new packs that are not in the previous index.json
+    packs_missing_dependencies = []
+
     # starting iteration over packs
     for pack in packs_list:
-        task_status, user_metadata = pack.load_user_metadata()
+        task_status = pack.load_user_metadata()
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
             pack.cleanup()
@@ -994,8 +997,20 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
-                                           current_commit_hash, pack_was_modified, statistics_handler)
+        task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
+                                                                    packs_dependencies_mapping, build_number,
+                                                                    current_commit_hash, pack_was_modified,
+                                                                    statistics_handler, pack_names)
+
+        if is_missing_dependencies:
+            # If the pack is dependent on a new pack
+            # (which is not yet in the index.zip as it might not have been iterated yet)
+            # we will note that it is missing dependencies.
+            # And finally after updating all the packages in index.zip - i.e. the new pack exists now.
+            # We will go over the pack again to add what was missing.
+            # See issue #37290
+            packs_missing_dependencies.append(pack)
+
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
@@ -1059,8 +1074,31 @@ def main():
             continue
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
-        if skipped_upload and exists_in_index:
+        if skipped_upload and exists_in_index and pack not in packs_missing_dependencies:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
+            pack.cleanup()
+            continue
+
+        pack.status = PackStatus.SUCCESS.name
+
+    logging.info(f"packs_missing_dependencies: {packs_missing_dependencies}")
+
+    # Going over all packs that were marked as missing dependencies,
+    # updating them with the new data for the new packs that were added to the index.zip
+    for pack in packs_missing_dependencies:
+        task_status, _ = pack.format_metadata(index_folder_path, packs_dependencies_mapping,
+                                              build_number, current_commit_hash, False, statistics_handler,
+                                              pack_names, format_dependencies_only=True)
+
+        if not task_status:
+            pack.status = PackStatus.FAILED_METADATA_REFORMATING.name
+            pack.cleanup()
+            continue
+
+        task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
+                                          pack_version=pack.latest_version, hidden_pack=pack.hidden)
+        if not task_status:
+            pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
             pack.cleanup()
             continue
 

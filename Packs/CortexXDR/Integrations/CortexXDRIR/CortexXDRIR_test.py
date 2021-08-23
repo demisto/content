@@ -3,10 +3,11 @@ import json
 import os
 import zipfile
 
-import demistomock as demisto
 import pytest
-from CommonServerPython import Common
 from freezegun import freeze_time
+
+import demistomock as demisto
+from CommonServerPython import Common
 
 XDR_URL = 'https://api.xdrurl.com'
 
@@ -337,10 +338,12 @@ def test_endpoint_command(requests_mock):
                                         'IPAddress': '3.3.3.3',
                                         'OS': 'Linux',
                                         'Vendor': 'Cortex XDR - IR',
-                                        'Status': 'Offline',
+                                        'Status': 'Online',
                                         'IsIsolated': 'No'}]}
 
     results = outputs[0].to_context()
+    for key, val in results.get("EntryContext").items():
+        assert results.get("EntryContext")[key] == get_endpoints_response[key]
     assert results.get("EntryContext") == get_endpoints_response
 
 
@@ -1356,7 +1359,7 @@ def test_get_update_args_close_incident():
         - update_args assigned_user_mail has the correct associated mail
     """
     from CortexXDRIR import get_update_args
-    delta = {'closeReason': 'Other', "closeNotes": "Not Relevant"}
+    delta = {'closeReason': 'Other', "closeNotes": "Not Relevant", 'closingUserId': 'admin'}
     update_args = get_update_args(delta, 2)
     assert update_args.get('status') == 'resolved_other'
     assert update_args.get('resolve_comment') == 'Not Relevant'
@@ -2670,3 +2673,74 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
             'parameters_values': {'process_name': 'process2.exe'}
         }
     }
+
+
+CONNECTED_STATUS = {
+    'endpoint_status': 'Connected',
+    'is_isolated': 'Isolated',
+    'host_name': 'TEST',
+    'ip': '1.1.1.1'
+}
+
+NO_STATUS = {
+    'is_isolated': 'Isolated',
+    'host_name': 'TEST',
+    'ip': '1.1.1.1'
+}
+
+OFFLINE_STATUS = {
+    'endpoint_status': 'Offline',
+    'is_isolated': 'Isolated',
+    'host_name': 'TEST',
+    'ip': '1.1.1.1'
+}
+
+
+@pytest.mark.parametrize("endpoint, expected", [
+    (CONNECTED_STATUS, 'Online'),
+    (NO_STATUS, 'Offline'),
+    (OFFLINE_STATUS, 'Offline')
+])
+def test_get_endpoint_properties(endpoint, expected):
+    """
+    Given:
+        - Endpoint data
+    When
+        - The status of the enndpoint is 'Connected' with a capital C.
+    Then
+        - The status of the endpointn is determined to be 'Online'
+    """
+    from CortexXDRIR import get_endpoint_properties
+
+    status, is_isolated, hostname, ip = get_endpoint_properties(endpoint)
+    assert status == expected
+
+
+def test_get_update_args_when_getting_close_reason():
+    """
+    Given:
+        - closingUserId from update_remote_system
+    When
+        - An incident in XSOAR was closed with "Duplicate" as a close reason.
+    Then
+        - The status that the incident is getting to be mirrored out is "resolved_duplicate"
+    """
+    from CortexXDRIR import get_update_args
+    update_args = get_update_args({'closeReason': 'Duplicate', 'closeNote': 'Closed as Duplicate.',
+                                   'closingUserId': 'Admin'}, 2)
+    assert update_args.get('status') == 'resolved_duplicate'
+    assert update_args.get('closeNote') == 'Closed as Duplicate.'
+
+
+def test_get_update_args_when_not_getting_close_reason():
+    """
+    Given:
+        - delta from update_remote_system
+    When
+        - An incident in XSOAR was closed and update_remote_system has occurred.
+    Then
+        - Because There is no change in the "closeReason" value, the status should not change.
+    """
+    from CortexXDRIR import get_update_args
+    update_args = get_update_args({'someChange': '1234'}, 2)
+    assert update_args.get('status') is None

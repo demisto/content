@@ -1316,8 +1316,8 @@ def fetch_incidents():
             raw_res = get_detections_entities(detections_ids)
 
             if "resources" in raw_res:
-                raw_res['type'] = "detections"
                 for detection in demisto.get(raw_res, "resources"):
+                    detection['incident_type'] = incident_type
                     incident = detection_to_incident(detection)
                     incident_date = incident['occurred']
 
@@ -1363,8 +1363,8 @@ def fetch_incidents():
         if incidents_ids:
             raw_res = get_incidents_entities(incidents_ids)
             if "resources" in raw_res:
-                raw_res['type'] = "incidents"
                 for incident in demisto.get(raw_res, "resources"):
+                    incident['incident_type'] = incident_type
                     incident_to_context = incident_to_incident_context(incident)
                     incident_date = incident_to_context['occurred']
 

@@ -1,6 +1,6 @@
 {
   "data": {
-    "hasNextPage": true,
+    "hasNextPage": false,
     "objects": [
       {
         "artifacts": [],
@@ -284,7 +284,7 @@
         "timestamp": "2021-05-18T14:45:51"
       }
     ],
-    "total": 231
+    "total": 2
   },
   "errors": []
 }

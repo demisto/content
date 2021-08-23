@@ -530,10 +530,86 @@ script:
       type: String
   - arguments: []
     name: slack-get-integration-context
-    description: Returns the integration context as a file. Use this command for debug purposes only.
+    description: Returns the integration context as a file. Use this command for debug
+      purposes only.
     execution: false
     hidden: true
-  dockerimage: demisto/slack:1.0.0.19258
+  - arguments:
+    - default: false
+      description: The name of a channel or a regex pattern
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The member ID who created the channel
+      isArray: false
+      name: creator
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify True to include only archived channels, False to include only unarchived channels, or leave blank for no effect
+      isArray: false
+      name: is_archived
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify True to find the general channel (if other filters also match), False to exclude the general channel, or leave blank for no effect
+      isArray: false
+      name: is_general
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify True to include only private channels, False to include only public channels, or leave blank for no effect
+      isArray: false
+      name: is_private
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - defaultValue: '20'
+      description: The maximum number of channels to return
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of channels matching criteria
+    execution: false
+    name: slack-filter-channels
+    outputs:
+    - contextPath: Slack.Channel.ID
+      description: The channel ID
+      type: String
+    - contextPath: Slack.Channel.Name
+      description: The channel name
+      type: String
+    - contextPath: Slack.Channel.Created
+      description: The channel creation timestamp
+      type: Number
+    - contextPath: Slack.Channel.Creator
+      description: The channel creator's member ID
+      type: String
+    - contextPath: Slack.Channel.IsArchived
+      description: Has the channel been archived?
+      type: Boolean
+    - contextPath: Slack.Channel.IsGeneral
+      description: Is the channel the general channel?
+      type: Boolean
+    - contextPath: Slack.Channel.IsPrivate
+      description: Is the channel a private channel?
+      type: Boolean
+  dockerimage: demisto/slack:1.0.0.20672
   feed: false
   isfetch: false
   longRunning: true

@@ -95,8 +95,7 @@ def main():
     try:
         if group_size == 0:
             raise DemistoException('The group size argument should be 1 or higher.')
-        if sleep_time > 10:
-            raise DemistoException('The sleep time can not be greater than 10.')
+
         # Get Context for Failed Tasks
         failed_tasks = check_context()
         # Remove Excluded Playbooks And Limit

@@ -1,7 +1,7 @@
 args:
 - default: false
-  description: Incident ID to get the prediction of. If empty, predicts the current incident
-    ID.
+  description: Incident ID to get the prediction of. If empty, predicts the current
+    incident ID.
   isArray: false
   name: incidentId
   predefined:
@@ -82,7 +82,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.18831
+dockerimage: demisto/ml:1.0.0.23334
 runas: DBotWeakRole
 runonce: false
 tests:

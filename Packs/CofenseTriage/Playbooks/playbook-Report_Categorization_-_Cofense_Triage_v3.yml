@@ -1,0 +1,1127 @@
+id: Report Categorization - Cofense Triage v3
+version: -1
+name: Report Categorization - Cofense Triage v3
+description: Report Categorization playbook investigates reports that are unprocessed
+  or uncategorized on Cofense Triage as incident alerts in XSOAR and categorizes them
+  based on the severity of the incident.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fd8ecd22-bfe9-4166-852f-873250c7d36b
+    type: start
+    task:
+      id: fd8ecd22-bfe9-4166-852f-873250c7d36b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": -390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 79fc2c47-dd1e-48f2-8fcb-067e15e11fd1
+    type: regular
+    task:
+      id: 79fc2c47-dd1e-48f2-8fcb-067e15e11fd1
+      version: -1
+      name: Assign analyst to incident
+      description: Assigns a random analyst to the incident.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      assignBy:
+        simple: random
+      onCall:
+        complex:
+          root: inputs.OnCall
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 4e92dc29-c958-4154-8343-5e9eebbe54c2
+    type: regular
+    task:
+      id: 4e92dc29-c958-4154-8343-5e9eebbe54c2
+      version: -1
+      name: Extract indicators from incident
+      description: Extract all indicators according to server indicators configuration.
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        complex:
+          root: Email
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 84966100-069c-4e76-83b9-2ccf24ce6b3a
+    type: playbook
+    task:
+      id: 84966100-069c-4e76-83b9-2ccf24ce6b3a
+      version: -1
+      name: Calculate Severity - Generic v2
+      description: |-
+        Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
+
+        - DBotScores of indicators
+        - Critical assets
+        - Email authenticity
+        - Current incident severity
+      playbookName: Calculate Severity - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Account:
+        complex:
+          root: Account
+          transformers:
+          - operator: uniq
+      CriticalEndpoints:
+        simple: admin
+      CriticalGroups:
+        simple: admins,administrators
+      CriticalUsers:
+        simple: admin,administrator
+      DBotScore:
+        complex:
+          root: DBotScore
+      EmailAuthenticityCheck:
+        complex:
+          root: Email
+          accessor: AuthenticityCheck
+          transformers:
+          - operator: uniq
+      Endpoint:
+        complex:
+          root: Endpoint
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 0ebd171a-5b1b-4f6e-8216-31158b785ee3
+    type: title
+    task:
+      id: 0ebd171a-5b1b-4f6e-8216-31158b785ee3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 2540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 0f63c17f-a2cc-4341-871c-67653506259a
+    type: regular
+    task:
+      id: 0f63c17f-a2cc-4341-871c-67653506259a
+      version: -1
+      name: Report Download
+      description: Downloads the raw email for the report that matches the specified
+        report ID.
+      script: '|||cofense-report-download'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      id:
+        complex:
+          root: inputs.ReportID
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 45ff57c3-c414-4868-8ae5-692bec160146
+    type: regular
+    task:
+      id: 45ff57c3-c414-4868-8ae5-692bec160146
+      version: -1
+      name: Parse Email
+      description: Parse an email from an eml or msg file and populate all relevant
+        context data to investigate the email. Also extracts inner attachments and
+        returns them to the war room. The incident labels themselves are preserved
+        and not modified - only the "Label/x" context items that originated from the
+        labels, and the best practice is to rely on these for the remainder of the
+        playbook.
+      scriptName: ParseEmailFiles
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+      - "9"
+    scriptarguments:
+      entryid:
+        complex:
+          root: File
+          accessor: EntryID
+      max_depth: {}
+      parse_only_headers: {}
+    reputationcalc: 1
+    results:
+    - AttachmentName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Cofense Triage Report Attachment Information
+      output:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: Email.AttachmentNames
+                iscontext: true
+          transformers:
+          - operator: ConvertKeysToTableFieldFormat
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: dc1a8043-f371-440d-8a03-4a5b238b2c3d
+    type: regular
+    task:
+      id: dc1a8043-f371-440d-8a03-4a5b238b2c3d
+      version: -1
+      name: Rasterize Email
+      description: Converts the body of an email to an image file or a PDF file.
+      script: '|||rasterize-email'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      height: {}
+      htmlBody:
+        complex:
+          root: Email
+          accessor: HTML
+      offline: {}
+      type: {}
+      width: {}
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 5ba0b2b3-7a2a-4eed-8b1a-91d99ee054df
+    type: regular
+    task:
+      id: 5ba0b2b3-7a2a-4eed-8b1a-91d99ee054df
+      version: -1
+      name: Rasterize Attachments
+      description: Converts an image file to a PDF file.
+      script: '|||rasterize-image'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: File
+          accessor: EntryID
+      height: {}
+      width: {}
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 02b97a9a-1430-44bf-8833-b3d4e45fb6de
+    type: regular
+    task:
+      id: 02b97a9a-1430-44bf-8833-b3d4e45fb6de
+      version: -1
+      name: Check Email Authenticity
+      description: Checks the authenticity of an email based on the email's SPF, DMARC,
+        and DKIM.
+      scriptName: CheckEmailAuthenticity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      headers:
+        complex:
+          root: Email
+          accessor: HeadersMap
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Email Authenticity Check
+      output:
+        complex:
+          root: Email
+          accessor: AuthenticityCheck
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 046d92ac-dded-4519-8351-0b2586408801
+    type: playbook
+    task:
+      id: 046d92ac-dded-4519-8351-0b2586408801
+      version: -1
+      name: Send Indicators - Cofense Triage v3
+      playbookName: Send Indicators - Cofense Triage v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      Level:
+        complex:
+          root: DBotScore
+          accessor: Score
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: 0,1,2,3
+              mapped_values:
+                value:
+                  simple: Benign,Benign,Malicious,Suspicious
+      Source:
+        complex:
+          root: DBotScore
+          accessor: Vendor
+      Type:
+        complex:
+          root: DBotScore
+          accessor: Type
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: url,hash,file
+              mapped_values:
+                value:
+                  simple: url,hash,hash
+      Value:
+        complex:
+          root: DBotScore
+          accessor: Indicator
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: e7afefec-d160-4d51-8a0a-5afe246cb4f9
+    type: condition
+    task:
+      id: e7afefec-d160-4d51-8a0a-5afe246cb4f9
+      version: -1
+      name: Is Category ID empty?
+      description: Whether the provided category exists or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "no":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "no"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cofense.Category
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2290,
+          "y": 1940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 0f72dc08-3e41-4f1a-8a96-6416aa7c8986
+    type: regular
+    task:
+      id: 0f72dc08-3e41-4f1a-8a96-6416aa7c8986
+      version: -1
+      name: Categorize Report
+      description: Categorizes a report into a specific category provided by the user.
+      script: '|||cofense-report-categorize'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      category_id:
+        complex:
+          root: Cofense.Category
+          accessor: id
+      id:
+        complex:
+          root: inputs.ReportID
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2590,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: cc292de2-5433-4f12-841c-da81f9982856
+    type: condition
+    task:
+      id: cc292de2-5433-4f12-841c-da81f9982856
+      version: -1
+      name: Is AutoCategorize true?
+      description: Whether the report should be automatically categorized.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoCategorize
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.MaliciousCategory
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 2d37a2b7-d3f4-401b-8573-c38e6a776f93
+    type: condition
+    task:
+      id: 2d37a2b7-d3f4-401b-8573-c38e6a776f93
+      version: -1
+      name: Is Email Malicious or Non-Malicious?
+      description: Whether the reported email is malicious or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Malicious:
+      - "35"
+      Non-Malicious:
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: severity
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    - label: Non-Malicious
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: incident.severity
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 43d75ae4-d4b0-46d3-8ad2-58d713b0e995
+    type: regular
+    task:
+      id: 43d75ae4-d4b0-46d3-8ad2-58d713b0e995
+      version: -1
+      name: Get Category ID
+      description: |-
+        Retrieves categories based on the provided parameters.
+        Categories are applied while processing the email to indicate the type of threat (or non-threat) that reports and clusters pose to the organization.
+      script: '|||cofense-category-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      name:
+        complex:
+          root: inputs.MaliciousCategory
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 41ea93f7-d246-4e26-8304-15de27e41c39
+    type: collection
+    task:
+      id: 41ea93f7-d246-4e26-8304-15de27e41c39
+      version: -1
+      name: Provide a category to categorize a report as malicious
+      description: Gets the category name to categorize the report.
+      type: collection
+      iscommand: false
+      brand: Cofense Triage v3
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      category_id:
+        simple: "2"
+      id:
+        complex:
+          root: inputs.Report ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Provide a category name to categorize report as malicious
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Categorize Report
+      description: User needs to provide the category name to categorize report
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 2db1bcc2-e648-413e-8aa0-887af7d2d3d7
+    type: regular
+    task:
+      id: 2db1bcc2-e648-413e-8aa0-887af7d2d3d7
+      version: -1
+      name: Get Category ID
+      description: |-
+        Retrieves categories based on the provided parameters.
+        Categories are applied while processing the email to indicate the type of threat (or non-threat) that reports and clusters pose to the organization.
+      script: '|||cofense-category-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      name:
+        complex:
+          root: Categorize Report.Answers
+          accessor: "0"
+          transformers:
+          - operator: FirstArrayElement
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2290,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 8b92f25a-feeb-470e-8cd0-826496e0c739
+    type: regular
+    task:
+      id: 8b92f25a-feeb-470e-8cd0-826496e0c739
+      version: -1
+      name: Get Category ID
+      description: |-
+        Retrieves categories based on the provided parameters.
+        Categories are applied while processing the email to indicate the type of threat (or non-threat) that reports and clusters pose to the organization.
+      script: '|||cofense-category-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      name:
+        complex:
+          root: inputs.NonMaliciousCategory
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2930,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 0e6f19c7-9ec2-4297-84da-c9bbd899babd
+    type: collection
+    task:
+      id: 0e6f19c7-9ec2-4297-84da-c9bbd899babd
+      version: -1
+      name: Provide a category to categorize a report as non-malicious
+      description: Gets the category name to categorize the report.
+      type: collection
+      iscommand: false
+      brand: Cofense Triage v3
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      category_id:
+        simple: "2"
+      id:
+        complex:
+          root: inputs.Report ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Provide a category name to categorize report as non-malicious
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Categorize Report
+      description: User needs to provide the category name to categorize report
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 2caeb8ba-fe11-4049-8988-7cee6266d708
+    type: condition
+    task:
+      id: 2caeb8ba-fe11-4049-8988-7cee6266d708
+      version: -1
+      name: Is AutoCategorize true?
+      description: Whether the report should be automatically categorized.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoCategorize
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.NonMaliciousCategory
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2760,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 5dd3b06e-9cd8-4169-8db2-995c75d462c7
+    type: condition
+    task:
+      id: 5dd3b06e-9cd8-4169-8db2-995c75d462c7
+      version: -1
+      name: Is Cofense Triage v3 Integration Enable?
+      description: 'Whether Cofense Triage v3 integration is enabled or not. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cofense Triage v3
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: bcad9a81-ad5d-4538-8f82-f61976311486
+    type: condition
+    task:
+      id: bcad9a81-ad5d-4538-8f82-f61976311486
+      version: -1
+      name: Is Rasterize Integration Enable?
+      description: Whether Rasterize integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "15"
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Rasterize
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "31_12_#default#": 0.1,
+      "46_12_#default#": 0.1,
+      "47_12_#default#": 0.1,
+      "47_15_yes": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2995,
+        "width": 2502.5,
+        "x": 807.5,
+        "y": -390
+      }
+    }
+  }
+inputs:
+- key: OnCall
+  value:
+    simple: "false"
+  required: false
+  description: Set to true to assign only user that is currently on shift. Requires
+    Cortex XSOAR v5.5 or later.
+  playbookInputQuery:
+- key: ReportID
+  value:
+    complex:
+      root: incident
+      accessor: cofensetriagereportid
+  required: true
+  description: Requires report ID to investigate and categorize the report that is
+    pulled from Cofense Triage.
+  playbookInputQuery:
+- key: AutoCategorize
+  value:
+    simple: "False"
+  required: false
+  description: Whether the user wants to categorize the report automatically or not.
+  playbookInputQuery:
+- key: MaliciousCategory
+  value: {}
+  required: false
+  description: The category to be assigned to the report if it is malicious.
+  playbookInputQuery:
+- key: NonMaliciousCategory
+  value: {}
+  required: false
+  description: The category to be assigned to the report if it is non-malicious.
+  playbookInputQuery:
+outputs: []
+tests:
+- Cofense Triage v3-Test
+fromversion: 6.0.0

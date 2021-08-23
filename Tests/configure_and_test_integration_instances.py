@@ -357,7 +357,7 @@ def get_new_and_modified_integration_files(branch_name):
         (tuple): Returns a tuple of two lists, the file paths of the new integrations and modified integrations.
     """
     # get changed yaml files (filter only added and modified files)
-    file_validator = ValidateManager()
+    file_validator = ValidateManager(skip_dependencies=True)
     file_validator.branch_name = branch_name
     modified_files, added_files, _, _ = file_validator.get_changed_files_from_git()
 
