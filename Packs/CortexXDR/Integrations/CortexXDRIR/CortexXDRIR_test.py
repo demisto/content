@@ -1359,7 +1359,7 @@ def test_get_update_args_close_incident():
         - update_args assigned_user_mail has the correct associated mail
     """
     from CortexXDRIR import get_update_args
-    delta = {'closeReason': 'Other', "closeNotes": "Not Relevant"}
+    delta = {'closeReason': 'Other', "closeNotes": "Not Relevant", 'closingUserId': 'admin'}
     update_args = get_update_args(delta, 2)
     assert update_args.get('status') == 'resolved_other'
     assert update_args.get('resolve_comment') == 'Not Relevant'
@@ -2714,3 +2714,33 @@ def test_get_endpoint_properties(endpoint, expected):
 
     status, is_isolated, hostname, ip = get_endpoint_properties(endpoint)
     assert status == expected
+
+
+def test_get_update_args_when_getting_close_reason():
+    """
+    Given:
+        - closingUserId from update_remote_system
+    When
+        - An incident in XSOAR was closed with "Duplicate" as a close reason.
+    Then
+        - The status that the incident is getting to be mirrored out is "resolved_duplicate"
+    """
+    from CortexXDRIR import get_update_args
+    update_args = get_update_args({'closeReason': 'Duplicate', 'closeNote': 'Closed as Duplicate.',
+                                   'closingUserId': 'Admin'}, 2)
+    assert update_args.get('status') == 'resolved_duplicate'
+    assert update_args.get('closeNote') == 'Closed as Duplicate.'
+
+
+def test_get_update_args_when_not_getting_close_reason():
+    """
+    Given:
+        - delta from update_remote_system
+    When
+        - An incident in XSOAR was closed and update_remote_system has occurred.
+    Then
+        - Because There is no change in the "closeReason" value, the status should not change.
+    """
+    from CortexXDRIR import get_update_args
+    update_args = get_update_args({'someChange': '1234'}, 2)
+    assert update_args.get('status') is None
