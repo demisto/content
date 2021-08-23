@@ -668,10 +668,10 @@ def test_get_xql_query_results_polling_command_prending(mocker):
                      'results': None}
     mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-query')
+    mocker.patch('XQLQueryingEngine.ScheduledCommand', return_value=None)
     command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
     assert command_results.readable_output == 'Query is still running, it may take a little while...'
     assert command_results.outputs == {'status': 'PENDING', 'execution_id': 'query_id_mock', 'results': None}
-    assert command_results.scheduled_command._command == 'xdr-get-xql-query-results'
 
 
 def test_get_xql_quota_command(mocker):

@@ -594,7 +594,6 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     :return: The command results.
     :rtype: ``Union[CommandResults, dict]``
     """
-    # ScheduledCommand.raise_error_if_not_supported()
     query = args.get('query', '')
     time_frame = args.get('time_frame')
     # get the first executed command in the polling
