@@ -1264,12 +1264,6 @@ def main():
     if 'rsaarcher' in api_endpoint:
         base_url = urljoin(base_url, 'rsaarcher')
 
-    # base_url = params.get('url').strip('/')
-    # api_endpoint = params.get('api_endpoint', "")
-    # if api_endpoint:
-    #     if 'rsaarcher' in api_endpoint.lower():
-    #         base_url = urljoin(base_url, 'rsaarcher')
-
     cache = get_integration_context()
     if not cache.get('fieldValueList'):
         cache['fieldValueList'] = {}
