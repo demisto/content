@@ -172,7 +172,8 @@ def test_fetch_all_incidents(mocker):
     incidents, last_item_time = create_incidents_from_input(
         test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
     assert len(incidents) == 3
-    assert incidents[0].get('id') == '17'
+    assert incidents[0].get(
+        'name') == 'Azure Active Directory Identity and Access Incident: newCountry adminDismissedAllRiskForUser 17'
     assert last_item_time == dateparser.parse('2021-07-25T11:02:54Z')
 
 
@@ -191,5 +192,6 @@ def test_fetch_new_incidents(mocker):
     incidents, last_item_time = create_incidents_from_input(
         test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
     assert len(incidents) == 1
-    assert incidents[0].get('id') == '37'
+    assert incidents[0].get(
+        'name') == 'Azure Active Directory Identity and Access Incident: newCountry adminDismissedAllRiskForUser 37'
     assert last_item_time == dateparser.parse('2021-07-25T11:02:54Z')
