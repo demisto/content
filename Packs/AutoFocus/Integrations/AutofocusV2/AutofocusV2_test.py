@@ -402,7 +402,10 @@ def test_create_relationships_list():
 
 URLS_LIST = [
     ("www.München.com", "www.Mxn--tdanchen.com"),
-    ("www.example.com", "www.example.com")
+    ("www.example.com", "www.example.com"),
+    ("www.Mününchen.com", "www.Mxn--tdanxn--tdanchen.com"),
+    ("www.Müünchen.com", "www.Mxn--tdaanchen.com"),
+    ("www.MükÖnchen.com", "www.Mxn--tdakxn--ndanchen.com")
 ]
 
 

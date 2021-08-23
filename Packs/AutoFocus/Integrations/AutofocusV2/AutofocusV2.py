@@ -1119,17 +1119,14 @@ def resolve_ip_address(ip):
 
 
 def convert_url_to_ascii_character(url_name):
-    regex_groups = re.search('([a-zA-Z\W]*)([^a-zA-Z\W]*)([a-zA-Z\W]*)', url_name)
-    one = regex_groups.group(1)
-    two = regex_groups.group(2)
-    three = regex_groups.group(3)
-    if regex_groups:
-        if regex_groups.group(2) != '':
-            decoded_value = str(regex_groups.group(1)) + str(regex_groups.group(2)).encode('idna').decode(
-                "utf-8") + regex_groups.group(3)
-            return decoded_value
-        else:
-            return url_name
+    lst = re.findall('([a-zA-Z\W]*)([^a-zA-Z\W]*)([a-zA-Z\W]*)', url_name)
+    value = ""
+    for regex_group in lst:
+        if regex_group[1] != '':
+            m = str(regex_group[1]).encode('idna').decode("utf-8")
+            decoded_value = str(regex_group[0]) + str(regex_group[1]).encode('idna').decode("utf-8") + regex_group[2]
+            value += decoded_value
+    return value if value else url_name
 
 
 ''' COMMANDS'''
