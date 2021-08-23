@@ -11,7 +11,7 @@ enabled: true
 args:
 - name: query
   required: true
-  description: Query used to check whether there are sufficient incidents in Cortex XSOAR.
+  description: The query used to check whether there are sufficient incidents in Cortex XSOAR.
 - name: size
   required: true
   description: The amount of incidents in which to check.
@@ -23,7 +23,7 @@ outputs:
   description: Whether there are enough incidents in Cortex XSOAR that match the query.
   type: boolean
 - contextPath: IncidentsCheck.Query
-  description: Whether the incidents query, which was used to check the condition was met.
+  description: The incidents query used to check whether the condition was met.
   type: boolean
 scripttarget: 0
 subtype: python3
