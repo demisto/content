@@ -1,0 +1,690 @@
+{
+    "description": "Maps incoming Flashpoint indicator fields",
+    "feed": true,
+    "id": "Flashpoint Feed - Incoming Mapper",
+    "mapping": {
+        "CIDR": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        },
+        "Flashpoint Indicator": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "First Seen By Source": {
+                    "complex": {
+                        "accessor": "date-time",
+                        "filters": [],
+                        "root": "first_observed_at",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Attribute ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "fpid",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Attribute UUID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "uuid",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event Creator Email": {
+                    "complex": {
+                        "accessor": "event_creator_email",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event Href": {
+                    "complex": {
+                        "accessor": "uuid",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "https://fp.tools/home/technical_data/iocs/items/"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event Information": {
+                    "complex": {
+                        "accessor": "info",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event UUID": {
+                    "complex": {
+                        "accessor": "uuid",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Indicator Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "type",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Malware Description": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "malware_description",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Report": {
+                    "complex": {
+                        "accessor": "report",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Timestamp": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "timestamp",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "Event.Tag",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "domainRepUnified": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "First Seen By Source": {
+                    "complex": {
+                        "accessor": "date-time",
+                        "filters": [],
+                        "root": "first_observed_at",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Attribute ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "fpid",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Attribute UUID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "uuid",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event Creator Email": {
+                    "complex": {
+                        "accessor": "event_creator_email",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event Href": {
+                    "complex": {
+                        "accessor": "uuid",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "https://fp.tools/home/technical_data/iocs/items/"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event Information": {
+                    "complex": {
+                        "accessor": "info",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event UUID": {
+                    "complex": {
+                        "accessor": "uuid",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Indicator Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Flashpoint Malware Description": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "malware_description",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Report": {
+                    "complex": {
+                        "accessor": "report",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Timestamp": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "timestamp",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "Event.Tag",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "ipRep": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "First Seen By Source": {
+                    "complex": {
+                        "accessor": "date-time",
+                        "filters": [],
+                        "root": "first_observed_at",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Attribute ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "fpid",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Attribute UUID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "uuid",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event Creator Email": {
+                    "complex": {
+                        "accessor": "event_creator_email",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event Href": {
+                    "complex": {
+                        "accessor": "uuid",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "https://fp.tools/home/technical_data/iocs/items/"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event Information": {
+                    "complex": {
+                        "accessor": "info",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event UUID": {
+                    "complex": {
+                        "accessor": "uuid",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Indicator Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Flashpoint Malware Description": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "malware_description",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Report": {
+                    "complex": {
+                        "accessor": "report",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Timestamp": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "timestamp",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "Event.Tag",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "unifiedFileRep": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "First Seen By Source": {
+                    "complex": {
+                        "accessor": "date-time",
+                        "filters": [],
+                        "root": "first_observed_at",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Attribute ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "fpid",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Attribute UUID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "uuid",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event Creator Email": {
+                    "complex": {
+                        "accessor": "event_creator_email",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event Href": {
+                    "complex": {
+                        "accessor": "uuid",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "https://fp.tools/home/technical_data/iocs/items/"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event Information": {
+                    "complex": {
+                        "accessor": "info",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event UUID": {
+                    "complex": {
+                        "accessor": "uuid",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Indicator Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Flashpoint Malware Description": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "malware_description",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Report": {
+                    "complex": {
+                        "accessor": "report",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Timestamp": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "timestamp",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "Event.Tag",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "urlRep": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "First Seen By Source": {
+                    "complex": {
+                        "accessor": "date-time",
+                        "filters": [],
+                        "root": "first_observed_at",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Attribute ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "fpid",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Attribute UUID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "uuid",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event Creator Email": {
+                    "complex": {
+                        "accessor": "event_creator_email",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event Href": {
+                    "complex": {
+                        "accessor": "uuid",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "https://fp.tools/home/technical_data/iocs/items/"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event Information": {
+                    "complex": {
+                        "accessor": "info",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Event UUID": {
+                    "complex": {
+                        "accessor": "uuid",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Indicator Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Flashpoint Malware Description": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "malware_description",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Report": {
+                    "complex": {
+                        "accessor": "report",
+                        "filters": [],
+                        "root": "Event",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Timestamp": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "timestamp",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "Event.Tag",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "Flashpoint Feed - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
