@@ -94,7 +94,7 @@ very_long_column_name = 11 * "column_name_OF_LEN_264__"
 
 @pytest.mark.parametrize(argnames="keys, columns, unpack_nested_elements, dt_response_path, expected_results_path",
                          argvalues=[
-                             (["name", "value"], [f"col!@#$%^&*()ע_1", very_long_column_name], False,
+                             (["name", "value"], ["col!@#$%^&*()ע_1", very_long_column_name], False,
                               'context_entry_list_missing_key.json',
                               'expected_list_grid_none_value.json')
                          ])
