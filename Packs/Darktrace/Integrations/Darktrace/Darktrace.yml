@@ -492,6 +492,10 @@ script:
       defaultValue: "0"
       description: Offset of starting point for fetching details of the modelbreach
     description: Retrieve additional details on a modelbreach
+    outputs:
+    - contextPath: Darktrace.ModelBreach
+      description: ''
+      type: Unknown
   - name: darktrace-add-comment
     arguments:
     - name: pbid
@@ -501,18 +505,30 @@ script:
       required: true
       description: Comment to add to the modelbreach
     description: Adds a comment to a modelbreach
+    outputs:
+    - contextPath: Darktrace.Comments
+      description: ''
+      type: Unknown
   - name: darktrace-get-model
     arguments:
     - name: uuid
       required: true
       description:  All models have a uuid and a pid. The uuid (universally unique identifier) is a 128-bit hexadecimal number
     description: Get the details of a model given the UUID
+    outputs:
+    - contextPath: Darktrace.Model
+      description: ''
+      type: Unknown
   - name: darktrace-get-component
     arguments:
     - name: cid
       required: true
       description: ID of the component. The cid is referenced in the data attribute for model breaches.
     description: Get details of a component given the CID
+    outputs:
+    - contextPath: Darktrace.Component
+      description: ''
+      type: Unknown
   dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: true
