@@ -149,7 +149,7 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      context:
+      object:
         simple: ${foundIncidents}
       fields_to_search:
         simple: ${searchField}
