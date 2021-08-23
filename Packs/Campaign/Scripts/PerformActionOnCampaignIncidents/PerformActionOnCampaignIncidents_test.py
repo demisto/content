@@ -9,7 +9,7 @@ CUSTOM_FIELDS = {
     SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME: INCIDENT_IDS
 }
 MOCKED_INCIDENT = {
-    'id': 100,
+    'id': '100',
     'CustomFields': CUSTOM_FIELDS
 }
 
@@ -22,6 +22,7 @@ def prepare(mocker):
     mocker.patch.object(demisto, 'executeCommand')
     mocker.patch('PerformActionOnCampaignIncidents.get_campaign_incident_ids', return_value=INCIDENT_IDS)
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'callingContext', return_value='admin')
 
 
 @pytest.mark.parametrize('action', ACTIONS_MAPPER.keys())

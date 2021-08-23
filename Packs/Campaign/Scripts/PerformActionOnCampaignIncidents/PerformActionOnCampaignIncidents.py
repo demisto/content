@@ -83,16 +83,15 @@ def perform_unlink_and_reopen(ids, action):
     return COMMAND_SUCCESS.format(action='unlinked & reopen', ids=','.join(ids))
 
 
-def set_incident_owners(incident_ids, user_name):
+def set_incident_owners(incident_ids, action, user_name):
 
     incident_ids.append(demisto.incident()["id"])
 
     for incident_id in incident_ids:
         res = demisto.executeCommand("setIncident", {"id": incident_id, "owner": user_name})
 
-        if is_error(res):
-            return_error('Failed to take ownership on incident id {}. Error details:\n{}'.format(incident_id,
-                                                                                                 get_error(res)))
+        if isError(res):
+            return_error(COMMAND_ERROR_MSG.format(action=action, ids=','.join(incident_ids)))
 
 
 def perform_take_ownership(ids, action):
@@ -102,7 +101,7 @@ def perform_take_ownership(ids, action):
     if not current_user_name:
         return_error("Could not found The current user name.")
 
-    set_incident_owners(ids, current_user_name)
+    set_incident_owners(ids, action, current_user_name)
 
     return COMMAND_SUCCESS.format(action=action, ids=','.join(ids))
 
