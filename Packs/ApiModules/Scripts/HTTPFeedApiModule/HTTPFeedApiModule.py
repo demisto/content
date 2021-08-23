@@ -509,11 +509,8 @@ def feed_main(feed_name, params=None, prefix=''):
                                                              params.get('auto_detect_type'),
                                                              params.get('create_relationships'))
 
-            # get demisto version
-            demisto_version = get_demisto_version().get('version', '5.5.0')
-
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
-            if LooseVersion(demisto_version) >= LooseVersion('6.5.0'):
+            if is_demisto_version_ge('6.5.0'):
                 # we submit the indicators in batches
                 for b in batch(indicators, batch_size=2000):
                     demisto.createIndicators(b, noUpdate=no_update)
