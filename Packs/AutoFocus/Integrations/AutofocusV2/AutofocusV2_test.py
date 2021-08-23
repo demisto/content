@@ -405,7 +405,7 @@ URLS_LIST = [
     ("www.example.com", "www.example.com"),
     ("www.Mününchen.com", "www.Mxn--tdanxn--tdanchen.com"),
     ("www.Müünchen.com", "www.Mxn--tdaanchen.com"),
-    ("www.MükÖnchen.com", "www.Mxn--tdakxn--ndanchen.com")
+    ("www.MükÖnchen.com", "www.Mxn--tdakxn--ndanchen.com"),
 ]
 
 
