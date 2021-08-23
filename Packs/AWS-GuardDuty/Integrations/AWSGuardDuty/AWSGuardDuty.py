@@ -1,8 +1,9 @@
+from datetime import date, datetime
+
 import boto3
-from datetime import datetime, date
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from botocore.config import Config
+from CommonServerPython import *  # noqa: F401
 
 AWS_DEFAULT_REGION = None
 AWS_roleArn = None
@@ -725,6 +726,128 @@ def get_members(args):
         return raise_error(e)
 
 
+def create_member(args):
+    try:
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+
+        accountDetails = []
+        account = {'AccountId': args.get('accountId'), 'Email': args.get('email')}
+        accountDetails.append(account)
+
+        response = client.create_members(
+            DetectorId=args.get('detectorId'),
+            AccountDetails=accountDetails
+        )
+
+        unprocessed_accounts = response.get('UnprocessedAccounts', [])
+
+        ec = {"AWS.GuardDuty.CreateMember.UnprocessedAccounts": unprocessed_accounts} \
+            if unprocessed_accounts else None
+
+        return create_entry('AWS GuardDuty Create Member', unprocessed_accounts, ec)
+
+    except Exception as e:
+        return raise_error(e)
+
+
+def invite_member(args):
+    try:
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+
+        accountIds = []
+        accountIds.append(args.get('accountId'))
+
+        response = client.invite_members(
+            DetectorId=args.get('detectorId'),
+            AccountIds=accountIds
+        )
+
+        unprocessed_accounts = response.get('UnprocessedAccounts', [])
+
+        ec = {"AWS.GuardDuty.InviteMember.UnprocessedAccounts": unprocessed_accounts} \
+            if unprocessed_accounts else None
+
+        return create_entry('AWS GuardDuty Invite Member', unprocessed_accounts, ec)
+
+    except Exception as e:
+        return raise_error(e)
+
+
+def list_invitations(args):
+    try:
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+
+        paginator = client.get_paginator('list_invitations')
+        # paginationConfig = {'MaxItems': 10, 'PageSize': 10, 'StartingToken': None}
+        # response_iterator = paginator.paginate(PaginationConfig=paginationConfig)
+        response_iterator = paginator.paginate()
+        data = []
+        for page in response_iterator:
+            for finding in page['Invitations']:
+                data.append({
+                    'AccountId': finding['AccountId'],
+                    'InvitationId': finding['InvitationId'],
+                    'RelationshipStatus': finding['RelationshipStatus'],
+                    'InvitedAt': finding['InvitedAt']
+                })
+
+        ec = {"AWS.GuardDuty.Invitations": data}
+        return create_entry('AWS GuardDuty Invitations', data, ec)
+
+    except Exception as e:
+        return raise_error(e)
+
+
+def accept_invitation(args):
+    try:
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+
+        response = client.accept_invitation(
+            DetectorId=args.get('detectorId'),
+            MasterId=args.get('masterId'),
+            InvitationId=args.get('invitationId')
+        )
+
+        result = 'Failed'
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            result = 'Success'
+
+        accepted_invitaions = []
+        accepted_invitaions.append({
+            'MasterId': args.get('masterId'),
+            'InvitationId': args.get('invitationId'),
+            'Result': result
+        })
+
+        ec = {"AWS.GuardDuty.AcceptedInvitations": accepted_invitaions} \
+            if accepted_invitaions else None
+
+        return create_entry('AWS GuardDuty Accept Invitation', accepted_invitaions, ec)
+
+    except Exception as e:
+        return raise_error(e)
+
+
 def test_function():
     try:
         client = aws_session()
@@ -827,6 +950,18 @@ def main():
 
     if demisto.command() == 'aws-gd-get-members':
         result = get_members(demisto.args())
+
+    if demisto.command() == 'aws-gd-create-member':
+        result = create_member(demisto.args())
+
+    if demisto.command() == 'aws-gd-invite-member':
+        result = invite_member(demisto.args())
+
+    if demisto.command() == 'aws-gd-list-invitations':
+        result = list_invitations(demisto.args())
+
+    if demisto.command() == 'aws-gd-accept-invitation':
+        result = accept_invitation(demisto.args())
 
     if demisto.command() == 'fetch-incidents':
         fetch_incidents()
