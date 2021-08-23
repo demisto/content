@@ -5,6 +5,7 @@ import io
 import pytest
 import slack_sdk
 from slack_sdk.web.slack_response import SlackResponse
+from slack_sdk.errors import SlackApiError
 
 from unittest.mock import MagicMock
 
@@ -3727,6 +3728,16 @@ def test_get_poll_minutes(sent, expected_minutes):
 
 
 def test_edit_message(mocker):
+    """
+    Given:
+        The text 'Boom', a threadID and known channel.
+
+    When:
+        Editing a message
+
+    Then:
+        Send a request to slack where the text includes the url footer, and valid channel ID.
+    """
     import SlackV3
     # Set
 
@@ -3781,7 +3792,59 @@ def test_edit_message(mocker):
     assert args == expected_body
 
 
+def test_edit_message_not_valid_thread_id(mocker):
+    """
+    Given:
+        The text 'Boom', an incorrect threadID and known channel.
+
+    When:
+        Editing a message
+
+    Then:
+        Send a request to slack where the text includes the url footer, and valid channel ID.
+    """
+    import SlackV3
+    # Set
+
+    err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='POST',
+                                                req_args={},
+                                                data={'ok': False, 'error': 'message_not_found'},
+                                                status_code=429,
+                                                headers={})
+    api_call = SlackApiError('The request to the Slack API failed.', err_response)
+
+    expected_body = ('The request to the Slack API failed.\n'"The server responded with: {'ok': False, 'error': 'message_not_found'}")
+
+    link = 'https://www.eizelulz.com:8443/#/WarRoom/727'
+    mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'warRoom': link})
+    mocker.patch.object(demisto, 'args', return_value={'channel': "random", "threadID": "162928", "message": "Boom"})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
+
+
+    # Arrange
+    with pytest.raises(InterruptedError):
+        SlackV3.slack_edit_message()
+
+    err_msg = return_error_mock.call_args[0][0]
+
+    # Assert
+    assert err_msg == expected_body
+
+
 def test_pin_message(mocker):
+    """
+     Given:
+        The a valid threadID and known channel.
+
+    When:
+        Pinning a message
+
+    Then:
+        Send a request to slack where message is successfully pinned.
+    """
     import SlackV3
     # Set
 
@@ -3810,3 +3873,46 @@ def test_pin_message(mocker):
     assert SlackV3.send_slack_request_sync.call_count == 1
 
     assert args == expected_body
+
+
+def test_pin_message_invalid_thread_id(mocker):
+    """
+     Given:
+        The an invalid threadID and known channel.
+
+    When:
+        Pinning a message
+
+    Then:
+        Send a request to slack where an error message is returned indicating the message could not
+        be found.
+    """
+    import SlackV3
+    # Set
+
+    err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='POST',
+                                                req_args={},
+                                                data={'ok': False, 'error': 'message_not_found'},
+                                                status_code=429,
+                                                headers={})
+    api_call = SlackApiError('The request to the Slack API failed.', err_response)
+
+    expected_body = (
+        'The request to the Slack API failed.\n'"The server responded with: {'ok': False, "
+        "'error': 'message_not_found'}")
+
+    mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
+    mocker.patch.object(demisto, 'args', return_value={'channel': "random", "threadID": "1629281551.001000"})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
+
+    # Arrange
+    with pytest.raises(InterruptedError):
+        SlackV3.pin_message()
+
+    err_msg = return_error_mock.call_args[0][0]
+
+    # Assert
+    assert err_msg == expected_body
+
