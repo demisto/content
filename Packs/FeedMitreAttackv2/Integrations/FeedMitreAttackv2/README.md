@@ -150,3 +150,42 @@ Gets the Attack Pattern value from the Attack Pattern ID.
 | Attack ID | Attack Value |
 | ---- | --- |
 | T1111 | Some Attack Value |
+### attack-pattern
+***
+Looks up the reputation of the indicator.
+
+
+#### Base Command
+
+`attack-pattern`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| attack_pattern | Indicator to look up. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Score | number | The actual score. | 
+| DBotScore.Type | string | The indicator type. | 
+| DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| AttackPattern.STIXID | string | The STIX ID of the Attack Pattern. | 
+| AttackPattern.KillChainPhases | string | The kill chain phases of the Attack Pattern. | 
+| AttackPattern.FirstSeenBySource | string | The first seen by source of the Attack Pattern. | 
+| AttackPattern.Description | string | The description of the Attack Pattern. | 
+| AttackPattern.OperatingSystemRefs | string | The operating system references of the Attack Pattern. | 
+| AttackPattern.Publications | string | The publications of the Attack Pattern. | 
+| AttackPattern.MITREID | string | The MITRE ID of the Attack Pattern. | 
+| AttackPattern.Tags | string | The tags of the Attack Pattern. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
