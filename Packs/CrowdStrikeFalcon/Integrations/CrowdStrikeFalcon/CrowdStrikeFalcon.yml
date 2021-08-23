@@ -2213,16 +2213,6 @@ script:
         name: name
         required: false
         secret: false
-      - auto: PREDEFINED
-        default: false
-        description: The group type of the group. Can be 'static' or 'dynamic'
-        isArray: false
-        name: group_type
-        predefined:
-          - static
-          - dynamic
-        required: false
-        secret: false
       - default: false
         description: Description of the host
         isArray: false
@@ -2295,12 +2285,36 @@ script:
     execution: false
     name: cs-falcon-list-host-group-members
     outputs:
-      - contextPath: CrowdStrike.HostGroupMember.host_group_members
-        description: The id of host group members
-        type: Unknown
-      - contextPath: CrowdStrike.HostGroupMember.total
-        description: Total number of host group members
-        type: Number
+    - contextPath: CrowdStrike.HostGroupMember.ID
+      description: The ID of the device.
+      type: String
+    - contextPath: CrowdStrike.HostGroupMember.LocalIP
+      description: The local IP address of the device.
+      type: String
+    - contextPath: CrowdStrike.HostGroupMember.ExternalIP
+      description: The external IP address of the device.
+      type: String
+    - contextPath: CrowdStrike.HostGroupMember.Hostname
+      description: The host name of the device.
+      type: String
+    - contextPath: CrowdStrike.HostGroupMember.OS
+      description: The operating system of the device.
+      type: String
+    - contextPath: CrowdStrike.HostGroupMember.MacAddress
+      description: The MAC address of the device.
+      type: String
+    - contextPath: CrowdStrike.HostGroupMember.FirstSeen
+      description: The first time the device was seen.
+      type: String
+    - contextPath: CrowdStrike.HostGroupMember.LastSeen
+      description: The last time the device was seen.
+      type: String
+    - contextPath: CrowdStrike.HostGroupMember.PolicyType
+      description: The policy type of the device.
+      type: String
+    - contextPath: CrowdStrike.HostGroupMember.Status
+      description: The device status.
+      type: String
   - arguments:
       - default: false
         description: The host group id

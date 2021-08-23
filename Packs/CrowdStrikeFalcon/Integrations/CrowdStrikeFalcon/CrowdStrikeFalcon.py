@@ -2532,29 +2532,39 @@ def create_host_group_command(name,
 
 def update_host_group_command(host_group_id,
                               name=None,
-                              group_type=None,
                               description=None,
                               assignment_rule=None):
     return change_host_group(method='PATCH',
                              host_group_id=host_group_id,
                              name=name,
-                             group_type=group_type,
                              description=description,
                              assignment_rule=assignment_rule)
 
 
-def list_host_group_members_command(host_group_id=None, filter=None, offset=None, limit=None):
+def list_host_group_members_command(host_group_id=None, filter=None, offset=None, limit=None) -> List[CommandResults]:
     params = {'id': host_group_id,
               'filter': filter,
               'offset': offset,
               'limit': limit}
     response = http_request(method='GET',
-                            url_suffix='/devices/queries/host-group-members/v1',
+                            url_suffix='/devices/combined/host-group-members/v1',
                             params=params)
-    output = {'host_group_members': response.get('resources'),
-              'total': demisto.get(response, 'meta.pagination.total')}
-    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
-                          outputs=output)
+    devices = response.get('resources')
+    command_results: List[CommandResults] = []
+    if not devices:
+        return command_results
+    for single_device in devices:
+        entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
+        # headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
+        headers = list(SEARCH_DEVICE_KEY_MAP.values())
+        command_results.append(CommandResults(
+            outputs_prefix='CrowdStrike.HostGroupMember',
+            outputs_key_field='ID',
+            outputs=entry,
+            readable_output=tableToMarkdown('Devices', entry, headers=headers, headerTransform=pascalToSpace),
+        ))
+
+    return command_results
 
 
 def add_host_group_members_command(host_group_id: str, host_ids: List[str]):
