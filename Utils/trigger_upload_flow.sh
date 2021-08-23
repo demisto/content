@@ -431,13 +431,12 @@ if [ "$#" -lt "1" ]; then
   fail "
   [-sb, --sdk-branch]           The sdk branch name, if empty will run the version specified in the requirements file.
   [-cb, --content-branch]       The content branch name, if empty will run on master branch.
-  [-gt, --gitlab-ci-token]      The ci token for gitlab, if provided wil run gitlab pipeline.
-  [-ct, --circle-ci-token]      The ci token for circle, if provided wil run circle pipeline.
+  [-gt, --gitlab-ci-token]      The ci token for gitlab, if provided will run gitlab pipeline.
+  [-ct, --circle-ci-token]      The ci token for circle, if provided will run circle pipeline.
   [-gb, --bucket]               The name of the bucket to upload the packs to. Default is marketplace-dist-dev.
   [-f, --force]                 Whether to trigger the force upload flow.
   [-p, --packs]                 CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]        A slack channel to send notifications to. Default is dmst-bucket-upload.
-  [-p, --packs]                 CSV list of pack IDs. Mandatory when the --force flag is on.
   [-cp, --content-path]         The path of content, default is ~/dev/demistio/content
   [-pr, --production]           Whether to trigger the production upload flow.
   "
