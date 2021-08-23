@@ -187,14 +187,16 @@ class DataModel(object):
                 enc = res['encoding'] or 'ascii'  # in rare cases chardet fails to detect and return None as encoding
                 if enc != 'ascii':
                     if enc.lower() == 'windows-1252' and res['confidence'] < 0.9:
-                        demisto.debug('encoding detection confidence below threshold {}, '
-                                      'switching encoding to "windows-1250"'.format(res))
 
                         enc = DEFAULT_ENCODING if DEFAULT_ENCODING else 'windows-1250'
+                        demisto.debug('encoding detection confidence below threshold {}, '
+                                      'switching encoding to "{}"'.format(res, enc))
 
                     temp = data_value
                     data_value = temp.decode(enc, errors='ignore')
                     if '\x00' in data_value:
+                        demisto.debug('None bytes found on encoded string, will try use utf-16-le '
+                                      'encoding instead')
                         data_value = temp.decode("utf-16-le", errors="ignore")
 
                 elif b'\x00' not in data_value:
