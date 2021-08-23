@@ -34,7 +34,7 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = generic_ansible('AlibabaCloud', 'ali_instance_info', args, int_params, host_type, creds_masure pping)
+            result = generic_ansible('AlibabaCloud', 'ali_instance_info', args, int_params, host_type, creds_mapping)
 
             if result:
                 return_results('ok')
