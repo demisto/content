@@ -52,6 +52,7 @@ except PyMISPError as e:
     handle_connection_errors(e.message)
 
 PREDEFINED_FEEDS = {
+    bar
     'CIRCL': {'name': 'CIRCL OSINT Feed',
               'url': 'https://www.circl.lu/doc/misp/feed-osint',
               'format': 'misp',
