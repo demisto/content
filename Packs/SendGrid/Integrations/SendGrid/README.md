@@ -1,10 +1,10 @@
 SendGrid provides a cloud-based service that assists businesses with email delivery. It allows companies to track email opens, unsubscribes, bounces, and spam reports. Our SendGrid pack utilize these SendGrid use cases to help you send and manage your emails.
-This integration was integrated and tested with version xx of SendGrid_copy
+This integration was integrated and tested with version 6.7.0 of SendGrid
 
-## Configure SendGrid_copy on Cortex XSOAR
+## Configure SendGrid on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SendGrid_copy.
+2. Search for SendGrid.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
