@@ -1,7 +1,7 @@
 args:
 - default: false
   isArray: false
-  name: url
+  name: urls
   required: false
   secret: false
 - auto: PREDEFINED
@@ -12,6 +12,12 @@ args:
   predefined:
   - 'True'
   - 'False'
+  required: false
+  secret: false
+- default: false
+  defaultValue: '1'
+  isArray: false
+  name: numberEntryToReturn
   required: false
   secret: false
 commonfields:

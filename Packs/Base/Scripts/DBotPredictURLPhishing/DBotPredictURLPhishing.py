@@ -20,7 +20,6 @@ MSG_INVALID_URL = "URL does not seem to be valid. Reason: "
 MSG_NO_URL_GIVEN = "Please input one URL"
 MSG_FAILED_RASTERIZE = "Rasterize for this url did not work correctly"
 MSG_IMPOSSIBLE_CONNECTION = "Failed to establish a new connection - Name or service not known"
-MSG_IMPOSSIBLE_CONNECTION = "Failed to establish a new connection - Name or service not known"
 MSG_WHITE_LIST = "White List"
 EMPTY_STRING = ""
 URL_PHISHING_MODEL_NAME = "phishing_model"
@@ -37,6 +36,8 @@ SUSPICIOUS_VERDICT = "suspicious"
 
 BENIGN_THRESHOLD = 0.4
 SUSPICIOUS_THRESHOLD = 0.6
+SCORE_INVALID_URL = -1
+SCORE_BENIGN = 0
 
 GREEN_COLOR = "{{color:#15ff2c}}(%s)"
 RED_COLOR = "{{color:#fd0800}}(%s)"
@@ -343,7 +344,8 @@ def get_verdict(pred_json: Dict) -> Union[float, str]:
         else:
             return score, MALICIOUS_VERDICT
 
-
+def create_dict_context(url, verdict, pred_json, score, is_white_listed):
+    return {'url': url, 'verdict': verdict, 'pred_json': pred_json, 'score': score, 'is_white_listed': is_white_listed}
 
 def extract_created_date(entry_list: List) -> bool:
     """
@@ -362,27 +364,29 @@ def extract_created_date(entry_list: List) -> bool:
                 return date > threshold_date
     return  False
 
-def get_prediction_single_url(url):
+def get_prediction_single_url(model, url, force_model):
+    is_white_listed = False
     if not url:
-        return_error(MSG_NO_URL_GIVEN)
+        url, MSG_NO_URL_GIVEN, {}, SCORE_INVALID_URL, is_white_listed
 
     # Check if URL is valid and accessible
     valid_url, error = is_valid_url(url)
     if not valid_url:
-        return_error(MSG_INVALID_URL + error)
+        return url, MSG_INVALID_URL + error, {}, SCORE_INVALID_URL, is_white_listed
+
 
     #Check domain age from WHOIS command
-    res = demisto.executeCommand('whois', {'query': 'google.com',
+    domain = extract_domainv2(url)
+    res = demisto.executeCommand('whois', {'query': domain,
                                        })
     is_new_domain = extract_created_date(res)
 
     # Check is domain in white list -  If yes we don't run the model
     if in_white_list(model, url):
         if not force_model:
-            return_entry_white_list(url)
-            return
+            return url, BENIGN_VERDICT, {}, SCORE_BENIGN, is_white_listed
         else:
-            whitelist = True
+            is_white_listed = True
 
     # Rasterize html and image
     res = demisto.executeCommand('rasterize', {'type': 'json',
@@ -404,17 +408,27 @@ def get_prediction_single_url(url):
 
     score, verdict = get_verdict(pred_json)
 
-    # Return entry of the script
-    return_entry_summary(pred_json, url, verdict, whitelist)
+    return create_dict_context(url, verdict, pred_json, score, is_white_listed)
 
-    # Get rasterize image or logo detection if logo was found
-    image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
-    if not image:
-        image = image_from_base64_to_bytes(output_rasterize.get('image_b64', None))
-    res = fileResult(filename='Logo detection engine', data=image)
-    res['Type'] = entryTypes['image']
-    demisto.results(res)
 
+def return_general_summary(results, tag="Summary"):
+    df_summary = pd.DataFrame()
+    df_summary['url'] = [x.get('url') for x in results]
+    df_summary['verdict'] = [x.get('verdict') for x in results]
+    df_summary_json = df_summary.to_dict(orient='records')
+    return_entry = {
+        "Type": entryTypes["note"],
+        "ContentsFormat": formats['json'],
+        "HumanReadable": tableToMarkdown("Summary", df_summary_json),
+        "Contents": df_summary_json,
+        "EntryContext": {'DBotPredictURLPhishing': df_summary_json}
+    }
+    if tag is not None:
+        return_entry["Tags"] = ['SimilarIncidents_{}'.format(tag)]
+    demisto.results(return_entry)
+
+def return_detailed_summary(results, number_entries_to_return):
+    pass
 
 
 
@@ -423,61 +437,28 @@ def main():
         load_oob_model()
     model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
     model = decode_model_data(model_64_str)
-    whitelist = False
-    url = demisto.args().get('url', None)
+
     force_model = bool(demisto.args().get('forceModel', 'False'))
+    urls = [x.strip() for x in demisto.args().get('urls', '').split(',')]
+    number_entries_to_return = int(demisto.args().get('numberEntryToReturn'))
+    results = [get_prediction_single_url(model, x, force_model) for x in urls]
 
-    if not url:
-        return_error(MSG_NO_URL_GIVEN)
+    return_general_summary(results)
+    return_detailed_summary(results, number_entries_to_return)
 
-    # Check if URL is valid and accessible
-    valid_url, error = is_valid_url(url)
-    if not valid_url:
-        return_error(MSG_INVALID_URL + error)
 
-    #Check domain age from WHOIS command
-    res = demisto.executeCommand('whois', {'query': 'google.com',
-                                       })
-    is_new_domain = extract_created_date(res)
 
-    # Check is domain in white list -  If yes we don't run the model
-    if in_white_list(model, url):
-        if not force_model:
-            return_entry_white_list(url)
-            return
-        else:
-            whitelist = True
 
-    # Rasterize html and image
-    res = demisto.executeCommand('rasterize', {'type': 'json',
-                                               'url': url,
-                                               })
-    if len(res) > 0:
-        output_rasterize = res[0]['Contents']
-    else:
-        return_error(MSG_FAILED_RASTERIZE)
-
-    # Create X_pred
-    if isinstance(output_rasterize, str):
-        return_error(output_rasterize)
-    X_pred = create_X_pred(output_rasterize, url)
-
-    # Prediction of the model
-    pred_json = model.predict(X_pred)
-    pred_json[DOMAIN_AGE_KEY] = is_new_domain
-
-    score, verdict = get_verdict(pred_json)
-
-    # Return entry of the script
-    return_entry_summary(pred_json, url, verdict, whitelist)
-
-    # Get rasterize image or logo detection if logo was found
-    image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
-    if not image:
-        image = image_from_base64_to_bytes(output_rasterize.get('image_b64', None))
-    res = fileResult(filename='Logo detection engine', data=image)
-    res['Type'] = entryTypes['image']
-    demisto.results(res)
+    # # Return entry of the script
+    # return_entry_summary(pred_json, url, verdict, whitelist)
+    #
+    # # Get rasterize image or logo detection if logo was found
+    # image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
+    # if not image:
+    #     image = image_from_base64_to_bytes(output_rasterize.get('image_b64', None))
+    # res = fileResult(filename='Logo detection engine', data=image)
+    # res['Type'] = entryTypes['image']
+    # demisto.results(res)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
