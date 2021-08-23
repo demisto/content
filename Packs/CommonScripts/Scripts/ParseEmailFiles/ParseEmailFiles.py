@@ -181,21 +181,32 @@ class DataModel(object):
     def PtypString(data_value):
         if data_value:
             try:
+                if USER_ENCODING:
+                    return data_value.decode(USER_ENCODING, errors="ignore")
                 res = chardet.detect(data_value)
                 enc = res['encoding'] or 'ascii'  # in rare cases chardet fails to detect and return None as encoding
                 if enc != 'ascii':
                     if enc.lower() == 'windows-1252' and res['confidence'] < 0.9:
                         demisto.debug('encoding detection confidence below threshold {}, '
                                       'switching encoding to "windows-1250"'.format(res))
-                        enc = 'windows-1250'
-                    data_value = data_value.decode(enc, errors='ignore').replace('\x00', '')
-                elif '\x00' not in data_value:
-                    data_value = data_value.decode("ascii", errors="ignore").replace('\x00', '')
+
+                        enc = DEFAULT_ENCODING if DEFAULT_ENCODING else 'windows-1250'
+
+                    temp = data_value
+                    data_value = temp.decode(enc, errors='ignore')
+                    if '\x00' in data_value:
+                        data_value = temp.decode("utf-16-le", errors="ignore")
+
+                elif b'\x00' not in data_value:
+                    data_value = data_value.decode("ascii", errors="ignore")
                 else:
-                    data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
+                    data_value = data_value.decode("utf-16-le", errors="ignore")
 
             except UnicodeDecodeError:
-                data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
+                data_value = data_value.decode("utf-16-le", errors="ignore")
+
+        if isinstance(data_value, (bytes, bytearray)):
+            data_value = data_value.decode('utf-8')
 
         return data_value
 
@@ -2659,6 +2670,8 @@ ATTACHMENT_HEADER_SIZE = 8
 EMBEDDED_MSG_HEADER_SIZE = 24
 CONTROL_CHARS = re.compile(r'[\n\r\t]')
 MIME_ENCODED_WORD = re.compile(r'(.*)=\?(.+)\?([B|Q])\?(.+)\?=(.*)')  # guardrails-disable-line
+USER_ENCODING = demisto.args().get('forced_encoding', '')
+DEFAULT_ENCODING = demisto.args().get('default_encoding', '')
 
 
 class Message(object):
