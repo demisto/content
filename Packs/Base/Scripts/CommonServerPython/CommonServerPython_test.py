@@ -5563,7 +5563,7 @@ class TestCustomIndicator:
         assert context['DBotScore(val.Indicator &&'
                        ' val.Indicator == obj.Indicator &&'
                        ' val.Vendor == obj.Vendor && val.Type == obj.Type)']['Indicator'] == 'test'
-        assert context['prefix(val.value && val.value == obj.value)']['Value'] == 'test_value'
+        assert context['prefix(val.value && val.value == obj.value)']['value'] == 'test_value'
         assert context['prefix(val.value && val.value == obj.value)']['param'] == 'value'
 
     def test_custom_indicator_no_params(self):
