@@ -252,14 +252,13 @@ class TestAWSILM:
             - Ensure the user is enabled at the end of the command execution.
         """
         client = mock_client()
-        args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com', 'givenname': 'mock_first_name'},
-                'allow-enable': 'true'}
+        args = {'user-profile': {'username': 'mock_user_name'}, 'allow-enable': 'true'}
 
         with requests_mock.Mocker() as m:
-            m.get(userUri, json={"totalResults": 1, "Resources": [APP_DISABLED_USER_OUTPUT]})
+            m.get('https://test.com/scim/v2/Users/?filter=userName eq "mock_user_name"', json={"totalResults": 1, "Resources": [APP_DISABLED_USER_OUTPUT]})
             m.patch(f'{userUri}mock_id', json=APP_USER_OUTPUT)
 
-            user_profile = IAMCommand().create_user(client, args)
+            user_profile = IAMCommand(attr='username').update_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
