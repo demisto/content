@@ -2521,6 +2521,10 @@
             "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
         },
         {
+            "integrations": "MITRE ATT&CK v2",
+            "playbookID": "FeedMitreAttackv2_test"
+        },
+        {
             "integrations": "ANYRUN",
             "playbookID": "ANYRUN-Test"
         },
