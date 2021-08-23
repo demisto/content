@@ -28,7 +28,8 @@ def normalized_string(phrase: str) -> str:
 
 
 def normalized_column_name(phrase: str) -> str:
-    """ Normalize columns or Grid to connected word in lower-case.
+    """ Normalize columns or Grid to connected word in lowercase, to match the logic of stripToClumnName() from
+        the client's `strings.js` and the server logic.
 
     Args:
         phrase: Phrase to normalize.
@@ -295,7 +296,7 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
         raise DemistoException(f'The number of keys: {len(keys)} should match the number of columns: {len(columns)}.')
     # Get old Data
     old_table = get_current_table(grid_id=grid_id)
-    # Change columns to all lower case. Not using `normalize()` as underscores are allowed in columns names.
+    # Change columns to all lower case (underscores allowed).
     columns = [normalized_column_name(phrase) for phrase in columns]
     # Create new Table from the given context path.
     new_table: pd.DataFrame = build_grid(context_path=context_path,
