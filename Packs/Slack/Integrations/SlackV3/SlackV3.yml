@@ -439,9 +439,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: The timestamp of the message to pin.
+      description: The ID of the thread of which to pin - can be retrieved from
+        a previous send-notification command.
       isArray: false
-      name: message_ts
+      name: threadID
       required: true
       secret: false
     deprecated: false
@@ -457,9 +458,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Timestamp of the message.
+      description: The ID of the thread of which to edit - can be retrieved from
+        a previous send-notification command.
       isArray: false
-      name: message_ts
+      name: threadID
       required: true
       secret: false
     - default: false

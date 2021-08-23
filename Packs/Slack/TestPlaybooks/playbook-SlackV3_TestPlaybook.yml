@@ -199,7 +199,7 @@ tasks:
           - operator: Stringify
       message:
         simple: This is changed
-      message_ts:
+      threadID:
         simple: ${Slack.Thread.ID}
     separatecontext: false
     view: |-
@@ -238,7 +238,7 @@ tasks:
           root: TimeNowUnix
           transformers:
           - operator: Stringify
-      message_ts:
+      threadID:
         simple: ${Slack.Thread.ID}
     separatecontext: false
     view: |-

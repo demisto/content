@@ -1914,7 +1914,7 @@ def get_user():
 def slack_edit_message():
     args = demisto.args()
     channel = args.get('channel')
-    message_ts = args.get('message_ts')
+    thread_id = demisto.args().get('threadID')
     message = args.get('message')
     blocks = args.get('blocks')
     ignore_add_url = args.get('ignore_add_url')
@@ -1933,7 +1933,7 @@ def slack_edit_message():
     if not channel_id:
         return_error('Channel was not found - Either the Slack app is not a member of the channel, '
                      'or the slack app does not have permission to find the channel.')
-    if not message_ts:
+    if not thread_id:
         return_error('The timestamp of the message to edit is required.')
 
     if message and not blocks:
@@ -1956,7 +1956,7 @@ def slack_edit_message():
 
     body = {
         'channel': channel_id,
-        'ts': message_ts
+        'ts': thread_id
     }
     if message:
         clean_message = handle_tags_in_message_sync(message)
@@ -1964,27 +1964,30 @@ def slack_edit_message():
     if blocks:
         block_list = json.loads(blocks, strict=False)
         body['blocks'] = block_list
+    try:
+        response = send_slack_request_sync(CLIENT, 'chat.update', body=body)
 
-    response = send_slack_request_sync(CLIENT, 'chat.update', body=body)
+        hr = "The message was successfully edited."
+        result_edit = {
+            'ID': response.get('ts', None),
+            'Channel': response.get('channel', None),
+            'Text': response.get('text', None)
+        }
+        context = {
+            'Slack.Thread(val.ID === obj.ID)': result_edit
+        }
+        return_results(CommandResults(
+            readable_output=hr,
+            outputs=context,
+            raw_response=json.dumps(response.data)))
 
-    hr = "The message was successfully edited."
-    result_edit = {
-        'ID': response.get('ts', None),
-        'Channel': response.get('channel', None),
-        'Text': response.get('text', None)
-    }
-    context = {
-        'Slack.Thread(val.ID === obj.ID)': result_edit
-    }
-    return_results(CommandResults(
-        readable_output=hr,
-        outputs=context,
-        raw_response=json.dumps(response.data)))
+    except SlackApiError as slack_error:
+        return_error(f"{slack_error}")
 
 
 def pin_message():
     channel = demisto.args().get('channel')
-    message_ts = demisto.args().get('message_ts')
+    thread_id = demisto.args().get('threadID')
 
     channel_id = ''
 
@@ -2001,12 +2004,14 @@ def pin_message():
                      'or the slack app does not have permission to find the channel.')
     body = {
         'channel': channel_id,
-        'timestamp': message_ts
+        'timestamp': thread_id
     }
+    try:
+        send_slack_request_sync(CLIENT, 'pins.add', body=body)
+        return_results('The message was successfully pinned.')
 
-    send_slack_request_sync(CLIENT, 'pins.add', body=body)
-
-    return_results('The message was successfully pinned.')
+    except SlackApiError as slack_error:
+        return_error(f"{slack_error}")
 
 
 def long_running_main():

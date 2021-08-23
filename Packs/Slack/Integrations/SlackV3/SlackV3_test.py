@@ -3766,7 +3766,7 @@ def test_edit_message(mocker):
     link = 'https://www.eizelulz.com:8443/#/WarRoom/727'
     mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
     mocker.patch.object(demisto, 'demistoUrls', return_value={'warRoom': link})
-    mocker.patch.object(demisto, 'args', return_value={'channel': "random", "message_ts": "1629281551.001000", "message": "Boom"})
+    mocker.patch.object(demisto, 'args', return_value={'channel': "random", "threadID": "1629281551.001000", "message": "Boom"})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(SlackV3, 'send_slack_request_sync', return_value=slack_response_mock)
 
@@ -3797,7 +3797,7 @@ def test_pin_message(mocker):
     }
 
     mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
-    mocker.patch.object(demisto, 'args', return_value={'channel': "random", "message_ts": "1629281551.001000"})
+    mocker.patch.object(demisto, 'args', return_value={'channel': "random", "threadID": "1629281551.001000"})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(SlackV3, 'send_slack_request_sync', return_value=slack_response_mock)
 
