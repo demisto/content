@@ -8,6 +8,11 @@ RETURN_ERROR_TARGET = 'CrowdStrikeFalcon.return_error'
 SERVER_URL = 'https://4.4.4.4'
 
 
+def load_json(file: str):
+    with open(file, 'r') as f:
+        return json.load(f)
+
+
 @pytest.fixture(autouse=True)
 def get_access_token(requests_mock, mocker):
     mocker.patch.object(
@@ -2792,72 +2797,162 @@ def test_get_endpint_command(requests_mock, mocker):
     assert context['Endpoint(val.ID && val.ID == obj.ID)'] == [endpoint_context]
 
 
-def test_create_hostgroup(requests_mock):
-    from CrowdStrikeFalcon import change_host_group
+def test_create_hostgroup_valid(requests_mock):
+    """
+    Test Create hostgroup with valid args with a successful args
+    Given
+     - Valid arguments for hostgroup
+    When
+     - Calling create hostgroup command
+    Then
+     - Create the hostgroup and return the properties
+     """
+    from CrowdStrikeFalcon import create_host_group_command
     name = 'test name'
     description = 'test description'
     group_type = 'static'
-    response = {
-        "meta": {
-            "query_time": 1.42e-7,
-            "trace_id": "0d85e49a-930a-4842-bf90-7bf2c1704b69"
-        },
-        "errors": None,
-        "resources": [
-            {
-                "id": "b1a0cd73ecab411581cbe467fc3319f5",
-                "group_type": group_type,
-                "name": name,
-                "description": description,
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
-                "created_timestamp": "2021-08-17T11:58:42.453661998Z",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
-                "modified_timestamp": "2021-08-17T11:58:42.453661998Z"
-            }
-        ]
-    }
+    assignment_rule = "device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7']"
+
+    response_data = load_json('test_data/test_create_hostgroup_data.json')
+    response_data['resources'][0]['name'] = name
+    response_data['resources'][0]['group_type'] = group_type
+    response_data['resources'][0]['description'] = description
+    response_data['resources'][0]['assignment_rule'] = assignment_rule
+
     requests_mock.post(
         f'{SERVER_URL}/devices/entities/host-groups/v1',
-        json=response,
+        json=response_data,
         status_code=200
     )
-    command_res = change_host_group('POST', name='test name', description='test description', group_type='static')
-    assert name == command_res.outputs.get('name')
-    assert description == command_res.outputs.get('description')
-    assert group_type == command_res.outputs.get('group_type')
+    command_res = create_host_group_command(name='test name', description='test description', group_type='static')
+    assert name == command_res.outputs[0].get('name')
+    assert description == command_res.outputs[0].get('description')
+    assert group_type == command_res.outputs[0].get('group_type')
+
+
+def test_create_hostgroup_invalid(requests_mock):
+    """
+    Test Create hostgroup with valid args with unsuccessful args
+    Given
+     - Invalid arguments for hostgroup
+    When
+     - Calling create hostgroup command
+    Then
+     - Throw an error
+     """
+    from CrowdStrikeFalcon import create_host_group_command
+    response_data = load_json('test_data/test_create_hostgroup_invalid_data.json')
+    requests_mock.post(
+        f'{SERVER_URL}/devices/entities/host-groups/v1',
+        json=response_data,
+        status_code=400,
+        reason='Bad Request'
+    )
+    with pytest.raises(SystemExit):
+        create_host_group_command(name="dem test",
+                                  description="dem des",
+                                  group_type='static',
+                                  assignment_rule="device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7']")
 
 
 def test_update_hostgroup(requests_mock):
-    from CrowdStrikeFalcon import change_host_group
+    """
+    Test Create hostgroup with valid args with a successful id
+    Given
+     - Valid arguments for hostgroup
+    When
+     - Calling update hostgroup command
+    Then
+     - update the hostgroup and return the properties
+     """
+    from CrowdStrikeFalcon import update_host_group_command
     name = 'test name'
     description = 'test description'
     group_type = 'static'
-    response = {
-        "meta": {
-            "query_time": 1.42e-7,
-            "trace_id": "0d85e49a-930a-4842-bf90-7bf2c1704b69"
-        },
-        "errors": None,
-        "resources": [
-            {
-                "id": "b1a0cd73ecab411581cbe467fc3319f5",
-                "group_type": group_type,
-                "name": name,
-                "description": description,
-                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
-                "created_timestamp": "2021-08-17T11:58:42.453661998Z",
-                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
-                "modified_timestamp": "2021-08-17T11:58:42.453661998Z"
-            }
-        ]
-    }
+    assignment_rule = "device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7']"
+
+    response_data = load_json('test_data/test_create_hostgroup_data.json')
+    response_data['resources'][0]['name'] = name
+    response_data['resources'][0]['group_type'] = group_type
+    response_data['resources'][0]['description'] = description
+    response_data['resources'][0]['assignment_rule'] = assignment_rule
+
     requests_mock.patch(
         f'{SERVER_URL}/devices/entities/host-groups/v1',
-        json=response,
+        json=response_data,
         status_code=200
     )
-    command_res = change_host_group('PATCH', host_group_id='b1a0cd73ecab411581cbe467fc3319f5',
-                                    name='test name', description='test description', group_type='static')
-    assert name == command_res.outputs.get('name')
-    assert description == command_res.outputs.get('description')
-    assert group_type == command_res.outputs.get('group_type')
+    command_res = update_host_group_command(host_group_id='b1a0cd73ecab411581cbe467fc3319f5',
+                                            name=name,
+                                            description=description,
+                                            group_type=group_type)
+    assert name == command_res.outputs[0].get('name')
+    assert description == command_res.outputs[0].get('description')
+    assert group_type == command_res.outputs[0].get('group_type')
+    assert assignment_rule == command_res.outputs[0].get('assignment_rule')
+
+
+def test_update_hostgroup_invalid(requests_mock):
+    """
+    Test Create hostgroup with valid args with unsuccessful args
+    Given
+     - Invalid arguments for hostgroup
+    When
+     - Calling create hostgroup command
+    Then
+     - Throw an error
+     """
+    from CrowdStrikeFalcon import update_host_group_command
+    response_data = load_json('test_data/test_create_hostgroup_invalid_data.json')
+    requests_mock.patch(
+        f'{SERVER_URL}/devices/entities/host-groups/v1',
+        json=response_data,
+        status_code=400,
+        reason='Bad Request'
+    )
+    with pytest.raises(SystemExit):
+        update_host_group_command(
+            host_group_id='b1a0cd73ecab411581cbe467fc3319f5',
+            name="dem test",
+            description="dem des",
+            group_type='static',
+            assignment_rule="device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7']")
+
+
+@pytest.mark.parametrize('status, expected_status_api', [('New', "20"),
+                                                         ('Reopened', "25"),
+                                                         ('In Progress', "30"),
+                                                         ('Closed', "40")])
+def test_resolve_incidents(requests_mock, status, expected_status_api):
+    """
+    Test Create resolve incidents with valid status code
+    Given
+     - Valid status, as expected by product description
+    When
+     - Calling resolve incident command
+    Then
+     - Map the status to the status number that the api expects
+     """
+    from CrowdStrikeFalcon import resolve_incident_command
+    m = requests_mock.post(
+        f'{SERVER_URL}/incidents/entities/incident-actions/v1',
+        json={})
+    resolve_incident_command('test', status)
+    assert m.last_request.json()['action_parameters'][0]['value'] == expected_status_api
+
+
+def test_resolve_incident_invalid():
+    """
+    Test Create resolve incidents with invalid status code
+    Given
+     - Invalid status, which is not expected by product description
+    When
+     - Calling resolve incident command
+    Then
+     - Throw an error
+     """
+    from CrowdStrikeFalcon import resolve_incident_command
+    with pytest.raises(DemistoException):
+        resolve_incident_command('test', '')
+        resolve_incident_command('test', 'new')
+        resolve_incident_command('test', 'BAD ARG')

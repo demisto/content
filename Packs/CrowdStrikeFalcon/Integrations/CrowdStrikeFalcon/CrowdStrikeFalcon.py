@@ -215,6 +215,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         if res.status_code not in valid_status_codes:
             res_json = res.json()
             reason = res.reason
+            # print(f'reason is {reason}')
             resources = res_json.get('resources', {})
             if resources:
                 for host_id, resource in resources.items():
@@ -1291,8 +1292,16 @@ def timestamp_length_equalization(timestamp1, timestamp2):
     return int(timestamp1), int(timestamp2)
 
 
-def change_host_group(method, host_group_id=None, name=None, group_type=None, description=None,
-                      assignment_rule=None):
+def change_host_group(method: str,
+                      host_group_id: str = None,
+                      name: str = None,
+                      group_type: str = None,
+                      description: str = None,
+                      assignment_rule: str = None) -> CommandResults:
+    allowed_methods = {'POST', 'PATCH'}
+    if method not in allowed_methods:
+        raise DemistoException(f'CrowdStrike Falcon error: method should be in {allowed_methods}')
+
     data = {'resources': [{
         'id': host_group_id,
         "name": name,
@@ -1302,15 +1311,19 @@ def change_host_group(method, host_group_id=None, name=None, group_type=None, de
     }]}
     response = http_request(method=method,
                             url_suffix='/devices/entities/host-groups/v1',
-                            json=data,
-                            )
+                            json=data)
     resources = response.get('resources')
     return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
                           outputs_key_field='id',
                           outputs=resources)
 
 
-def change_host_group_members(action_name, host_group_id: str, host_ids: List[str]):
+def change_host_group_members(action_name: str,
+                              host_group_id: str,
+                              host_ids: List[str]) -> CommandResults:
+    allowed_actions = {'add-hosts', 'remove-hosts'}
+    if action_name not in allowed_actions:
+        raise DemistoException(f'CrowdStrike Falcon error: action name should be in {allowed_actions}')
     data = {'action_parameters': [{'name': 'filter',
                                    'value': f"(device_id:{str(host_ids)})"}],
             'ids': [host_group_id]}
@@ -2538,7 +2551,7 @@ def list_host_group_members_command(host_group_id=None, filter=None, offset=None
     response = http_request(method='GET',
                             url_suffix='/devices/queries/host-group-members/v1',
                             params=params)
-    output = {'resources': response.get('resources'),
+    output = {'host_group_members': response.get('resources'),
               'total': demisto.get(response, 'meta.pagination.total')}
     return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
                           outputs=output)
@@ -2556,7 +2569,10 @@ def remove_host_group_members_command(host_group_id: str, host_ids: List[str]):
                                      host_ids=host_ids)
 
 
-def resolve_incident(ids, status):
+def resolve_incident_command(ids, status):
+    if status not in STATUS_TEXT_TO_NUM:
+        raise DemistoException(f'CrowdStrike Falcon Error:'
+                               f'Status given is not in in {STATUS_TEXT_TO_NUM.keys()}')
     data = {
         "action_parameters": [
             {
@@ -2574,8 +2590,7 @@ def resolve_incident(ids, status):
     # incidents = response.get('resources')
     # incidents_human_readable = incidents_to_human_readable(incidents)
     readable = '\n'.join([f'{incident_id} changed successfully to {status}' for incident_id in ids])
-    return CommandResults(outputs_prefix='CrowdStrike.Incidents',
-                          readable_output=readable)
+    return CommandResults(readable_output=readable)
 
 
 def test_module():
@@ -2694,8 +2709,8 @@ def main():
             return_results(remove_host_group_members_command(host_group_id=args.get('host_group_id'),
                                                              host_ids=argToList(args.get('host_ids'))))
         elif command == 'cs-falcon-resolve-incident':
-            return_results(resolve_incident(status=args.get('status'),
-                                            ids=argToList(args.get('ids'))))
+            return_results(resolve_incident_command(status=args.get('status'),
+                                                    ids=argToList(args.get('ids'))))
 
 
 
