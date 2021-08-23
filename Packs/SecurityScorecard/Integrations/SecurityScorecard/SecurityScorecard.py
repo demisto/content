@@ -385,6 +385,8 @@ def test_module(client: SecurityScorecardClient) -> str:
     """
     demisto.debug("Initialized test module...")
 
+    # TODO add validation that the fetch days is not greater than 2 days
+
     try:
         client.fetch_alerts(page_size=1)
         demisto.debug("Test module successful")
@@ -887,25 +889,37 @@ def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -
 
     entries = response.get("entries")
 
-    # Retrieve the alert metadata (direction, score, factor, grade_letter, score_impact)
-    alerts = []
+    alerts: List[Dict[str, str]] = []
 
-    for entry in entries:  # type: ignore
-        # change_data is a list that includes all alert metadata that triggered the event
-        changes = entry.get("change_data")
-        for change in changes:
-            alert = {}
-            alert["id"] = entry.get("id")
-            alert["change_type"] = entry.get("change_type")
-            alert["domain"] = entry.get("domain")
-            alert["company"] = entry.get("company_name")
-            alert["created"] = entry.get("created_at")
-            alert["direction"] = change.get("direction")
-            alert["score"] = change.get("score")
-            alert["factor"] = change.get("factor")
-            alert["grade_letter"] = change.get("grade_letter")
-            alert["score_impact"] = change.get("score_impact")
-            alerts.append(alert)
+    for entry in entries:
+        content: Dict[str, str] = {
+            "Alert ID": entry.get("id"),
+            "Company": entry.get("company_name"),
+            "Domain": entry.get("domain"),
+            "Creation Time": entry.get("created_at")
+        }
+
+        change_data = entry.get("change_data")
+
+        # Some alerts may have more than one change data object
+        change_str = ""
+        if len(change_data) > 1:
+            
+            for change in change_data:
+                factor_part = f"**{change.get('factor').replace('_', ' ').title()}** "
+                direction = f"**{change.get('direction')}** by {change.get('score_impact')} "
+                final_score = f"to {change.get('score')} ({change.get('grade_letter')})\n"
+                change_str = change_str + factor_part + direction + final_score
+
+        else:
+            factor_part = f"**{change_data[0]['factor'].replace('_', ' ').title()}** "
+            direction = f"**{change_data[0]['direction']}** by {change_data[0]['score_impact']} "
+            final_score = f"to {change_data[0]['score']} ({change_data[0]['grade_letter']})\n"
+            change_str = factor_part + direction + final_score
+
+        content["Details"] = change_str
+        alerts.append(content)
+            
 
     markdown = tableToMarkdown(f"Latest Alerts for user {email}", alerts)
 
