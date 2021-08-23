@@ -1885,6 +1885,36 @@ def get_path_data():
     return_results(results)
 
 
+def github_releases_list_command():
+    args: Dict[str, Any] = demisto.args()
+
+    repo: str = args.get('repository') or REPOSITORY
+    organization: str = args.get('organization') or USER
+    limit = int(args.get('limit', 30))
+
+    page_number: int = 1
+    per_page: int = 100
+    results: List[Dict] = []
+    while len(results) < limit:
+        url_suffix: str = f'/repos/{organization}/{repo}/releases?per_page={per_page}&page={page_number}'
+        response = http_request(method='GET', url_suffix=url_suffix)
+        # No more releases to bring from GitHub services.
+        if not response:
+            break
+        results.extend(response)
+        page_number += 1
+
+    results = results[:limit]
+
+    result: CommandResults = CommandResults(
+        outputs_prefix='GitHub.Release',
+        outputs_key_field='id',
+        outputs=results,
+        readable_output=tableToMarkdown(f'Releases Data Of {repo}', results, removeNull=True)
+    )
+    return_results(result)
+
+
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -1940,7 +1970,8 @@ COMMANDS = {
     'GitHub-create-release': create_release_command,
     'Github-list-issue-events': get_issue_events_command,
     'GitHub-add-issue-to-project-board': add_issue_to_project_board_command,
-    'GitHub-get-path-data': get_path_data
+    'GitHub-get-path-data': get_path_data,
+    'GitHub-releases-list': github_releases_list_command
 }
 
 
