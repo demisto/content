@@ -328,9 +328,9 @@ class TestOracleIAM:
         mock_result = mocker.patch('OracleIAM.return_results')
 
         schema = {
-            'result': [
-                {'name': 'field1', 'label': 'desc1'},
-                {'name': 'field2', 'label': 'desc2'},
+            'attributes': [
+                {'name': 'field1', 'description': 'desc1'},
+                {'name': 'field2', 'description': 'desc2'},
             ]
         }
 
