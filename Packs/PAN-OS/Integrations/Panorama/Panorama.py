@@ -3705,7 +3705,6 @@ def panorama_register_ip_tag(tag: str, ips: List, persistent: str, timeout: int)
                f'</register></payload></uid-message>',
         'key': API_KEY
     }
-
     result = http_request(
         URL,
         'POST',
@@ -3721,7 +3720,8 @@ def panorama_register_ip_tag_command(args: dict):
     """
     tag: str = args.get('tag', '')
     ips: list = argToList(args.get('IPs'))
-    persistent: str = '1' if argToBoolean(args.get('persistent', 'true')) else '0'
+    persistent = args.get('persistent', 'true')
+    persistent = '1' if persistent == 'true' else '0'
     # if not given, timeout will be 0 and persistent will be used
     timeout = int(args.get('timeout', '0'))
 
