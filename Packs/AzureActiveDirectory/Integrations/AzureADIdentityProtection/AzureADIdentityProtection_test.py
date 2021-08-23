@@ -1,3 +1,4 @@
+import io
 import json
 
 import dateparser
@@ -168,7 +169,8 @@ def test_fetch_all_incidents(mocker):
     from AzureADIdentityProtection import create_incidents_from_input
     test_incidents = util_load_json('test_data/incidents.json')
     last_fetch_datetime: datetime = dateparser.parse('2021-07-10T11:02:54Z')
-    incidents, last_item_time = create_incidents_from_input(test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
+    incidents, last_item_time = create_incidents_from_input(
+        test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
     assert len(incidents) == 3
     # TODO Implement
     # assert incidents[0].get('name') == 'Carbon Black EDR: 1 svchost.exe'
@@ -187,7 +189,8 @@ def test_fetch_new_incidents(mocker):
     from AzureADIdentityProtection import create_incidents_from_input
     test_incidents = util_load_json('test_data/incidents.json')
     last_fetch_datetime: datetime = dateparser.parse('2021-07-20T11:02:54Z')
-    incidents, last_item_time = create_incidents_from_input(test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
+    incidents, last_item_time = create_incidents_from_input(
+        test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
     assert len(incidents) == 1
     # TODO Implement
     # assert incidents[0].get('name') == 'Carbon Black EDR: 1 svchost.exe'
