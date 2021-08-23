@@ -316,7 +316,7 @@ tasks:
       registrarname: {}
       reportedby: {}
       reputation: {}
-      riskrules:
+      recordedfutureriskrules:
         simple: ${RecordedFuture.CVE.concatRules}
       service: {}
       sha1: {}
