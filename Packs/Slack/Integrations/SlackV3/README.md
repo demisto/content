@@ -456,7 +456,7 @@ Edit an existing Slack message.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | channel | The channel the message is posted in. | Optional |
-| message_ts | Timestamp of the message. | Required | 
+| threadID | The ID of the thread of which to edit - can be retrieved from a previous send-notification command. | Required | 
 | message | The updated message. | Optional | 
 | blocks | A JSON string of the block to send. | Optional | 
 | ignore_add_url | Whether to include a URL to the relevant component in XSOAR. Can be "true" or "false". Default value is "false". | Optional | 
@@ -472,7 +472,7 @@ Edit an existing Slack message.
 
 
 #### Command Example
-```!slack-edit-message channel="random" message_ts="1629281551.001000" message="Eyy"```
+```!slack-edit-message channel="random" threadID="1629281551.001000" message="Eyy"```
 
 #### Context Example
 ```json
@@ -505,7 +505,7 @@ Pins a selected message to the given channel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | channel | The channel the message is posted in. | Optional |
-| message_ts | Timestamp of the message. | Required | 
+| threadID | The ID of the thread of which to pin - can be retrieved from a previous send-notification command. | Required | 
 
 
 #### Context Output
@@ -514,7 +514,7 @@ There is no context output for this command.
 
 
 #### Command Example
-```!slack-pin-message channel=random message_ts=1629281551.001000```
+```!slack-pin-message channel=random threadID=1629281551.001000```
 
 #### Human Readable Output
 
