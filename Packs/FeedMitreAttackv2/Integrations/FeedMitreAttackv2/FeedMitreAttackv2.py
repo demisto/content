@@ -543,27 +543,26 @@ def get_mitre_value_from_id(client, args):
 
     attack_values = []
     for attack_id in attack_ids:
-        for collection in client.collections:
-            collection_id = f"stix/collections/{collection.id}/"
-            collection_url = urljoin(client.base_url, collection_id)
-            collection_data = Collection(collection_url, verify=False)
+        collection_id = f"stix/collections/{ENTERPRISE_COLLECTION_ID}/"
+        collection_url = urljoin(client.base_url, collection_id)
+        collection_data = Collection(collection_url, verify=client.verify, proxies=client.proxies)
 
-            tc_source = TAXIICollectionSource(collection_data)
-            attack_pattern_name = tc_source.query([
-                Filter("external_references.external_id", "=", attack_id),
+        tc_source = TAXIICollectionSource(collection_data)
+        attack_pattern_name = tc_source.query([
+            Filter("external_references.external_id", "=", attack_id),
+            Filter("type", "=", "attack-pattern")
+        ])[0]['name']
+
+        if len(attack_id) > 5:  # sub-technique
+            parent_name = tc_source.query([
+                Filter("external_references.external_id", "=", attack_id[:5]),
                 Filter("type", "=", "attack-pattern")
             ])[0]['name']
+            attack_pattern_name = f'{parent_name}: {attack_pattern_name}'
 
-            if len(attack_id) > 5:  # sub-technique
-                parent_name = tc_source.query([
-                    Filter("external_references.external_id", "=", attack_id[:5]),
-                    Filter("type", "=", "attack-pattern")
-                ])[0]['name']
-                attack_pattern_name = f'{parent_name}: {attack_pattern_name}'
-
-            if attack_pattern_name:
-                attack_values.append({'id': attack_id, 'value': attack_pattern_name})
-                break
+        if attack_pattern_name:
+            attack_values.append({'id': attack_id, 'value': attack_pattern_name})
+            break
     if attack_values:
         return CommandResults(
             outputs=attack_values,

@@ -3,16 +3,17 @@ commonfields:
   id: PowerShell Remoting
   version: -1
 configuration:
-- additionalinfo: Fully Qualified Domain Name suffix to be added to the hostname.
+- additionalinfo: Fully Qualified Domain Name suffix to be added to the hostname. For example mydomain.local
   display: Domain
   name: domain
   required: false
   type: 0
 - display: DNS
+  additionalinfo: Optional IP address of a DNS server the integration will use to resolve your hosts. Use this setting when the host linux machine uses a different DNS from the Windows machines you are targeting.
   name: dns
   required: false
   type: 0
-- additionalinfo: Username in the target machine.
+- additionalinfo: Username in the target machine. This can be a local or domain user with administrative privileges
   display: Username
   name: credentials
   required: true
@@ -352,7 +353,7 @@ script:
       - contextPath: PsRemote.FQDN
         description: The Fully Qualified Domain Name of the host on which the command was invoked.
         type: string
-  dockerimage: demisto/powershell-ubuntu:7.1.3.22304
+  dockerimage: demisto/powershell-ubuntu:7.1.3.22925
   runonce: false
   script: ''
   type: powershell
