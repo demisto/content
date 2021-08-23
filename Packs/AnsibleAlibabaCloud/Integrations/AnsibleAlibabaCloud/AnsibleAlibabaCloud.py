@@ -27,7 +27,7 @@ def main() -> None:
     int_params = demisto.params()
     creds_mapping = {
         "identifier": "alicloud_access_key",
-        "password": "alicloud_secret_key"
+        "password": "alicloud_secret_key"  # guardrails-disable-line
     }
 
     try:
