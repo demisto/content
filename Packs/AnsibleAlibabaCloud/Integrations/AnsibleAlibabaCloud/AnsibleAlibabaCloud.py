@@ -25,12 +25,16 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
     int_params = demisto.params()
+    creds_mapping = {
+        "identifier": "alicloud_access_key",
+        "password": "alicloud_secret_key"
+    }
 
     try:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = generic_ansible('AlibabaCloud', 'ali_instance_info', args, int_params, host_type)
+            result = generic_ansible('AlibabaCloud', 'ali_instance_info', args, int_params, host_type, creds_masure pping)
 
             if result:
                 return_results('ok')
@@ -38,9 +42,10 @@ def main() -> None:
                 return_results(result)
 
         elif command == 'ali-instance':
-            return_results(generic_ansible('AlibabaCloud', 'ali_instance', args, int_params, host_type))
+            return_results(generic_ansible('AlibabaCloud', 'ali_instance', args, int_params, host_type, creds_mapping))
         elif command == 'ali-instance-info':
-            return_results(generic_ansible('AlibabaCloud', 'ali_instance_info', args, int_params, host_type))
+            return_results(generic_ansible('AlibabaCloud', 'ali_instance_info', args, int_params, host_type,
+                                           creds_mapping))
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

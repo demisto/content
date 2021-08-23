@@ -10,14 +10,10 @@ configuration:
   type: 0
 - additionalinfo: Provide a username for authenticating with the API.
   display: Username
-  name: username
+  displaypassword: Password
+  name: creds
   required: false
-  type: 0
-- additionalinfo: Provide a password for authenticating with the API.
-  display: Password
-  name: password
-  required: false
-  type: 4
+  type: 9
 - additionalinfo: Token used to authenticate with the API.
   display: API Key
   name: api_key

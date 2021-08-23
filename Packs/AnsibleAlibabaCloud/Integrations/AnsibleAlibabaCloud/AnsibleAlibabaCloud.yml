@@ -5,14 +5,10 @@ commonfields:
 configuration:
 - additionalinfo: Aliyun Cloud access key
   display: Access Key
-  name: alicloud_access_key
+  displaypassword: Access Secret Key
+  name: creds
   required: true
-  type: 0
-- additionalinfo: Aliyun Cloud secret key
-  display: Access Secret Key
-  name: alicloud_secret_key
-  required: true
-  type: 4
+  type: 9
 - additionalinfo: Aliyun Cloud region
   display: Region
   name: alicloud_region

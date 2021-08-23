@@ -226,7 +226,8 @@ def generate_ansible_inventory(args: Dict[str, Any], int_params: Dict[str, Any],
 
 
 def generic_ansible(integration_name: str, command: str,
-                    args: Dict[str, Any], int_params: Dict[str, Any], host_type: str) -> CommandResults:
+                    args: Dict[str, Any], int_params: Dict[str, Any], host_type: str,
+                    creds_mapping: Dict[str, str] = None) -> CommandResults:
     """Run a Ansible module and return the results as a CommandResult.
 
     Keyword arguments:
@@ -245,6 +246,7 @@ def generic_ansible(integration_name: str, command: str,
                  * ios -- Cisco IOS based network device
                  * local  -- this indicates that the command should be executed locally.
                              Mostly used by modules that connect out to cloud services.
+    creds_mapping -- A mapping for the 'creds' param names to expected ansible param names
     """
 
     readable_output = ""
@@ -270,10 +272,17 @@ def generic_ansible(integration_name: str, command: str,
 
         module_args += "%s=\"%s\" " % (arg_key, arg_value)
 
-        # If this isn't host based, then all the integration parms will be used as command args
+        # If this isn't host based, then all the integration params will be used as command args
     if host_type == 'local':
         for arg_key, arg_value in int_params.items():
-            module_args += "%s=\"%s\" " % (arg_key, arg_value)
+
+            # if given creds param and a cred mapping - use the naming mapping to correct the arg names
+            if arg_key == 'creds' and creds_mapping:
+                module_args += "%s=\"%s\" " % (creds_mapping.get('identifier'), arg_value.get('identifier'))
+                module_args += "%s=\"%s\" " % (creds_mapping.get('password'), arg_value.get('password'))
+
+            else:
+                module_args += "%s=\"%s\" " % (arg_key, arg_value)
 
     r = ansible_runner.run(inventory=inventory, host_pattern='all', module=command, quiet=True,
                            omit_event_data=True, ssh_key=sshkey, module_args=module_args, forks=fork_count)

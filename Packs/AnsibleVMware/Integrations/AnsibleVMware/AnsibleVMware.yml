@@ -16,14 +16,10 @@ configuration:
   type: 0
 - additionalinfo: The username to access the vSphere vCenter or ESXi server.
   display: Username
-  name: username
+  displaypassword: Password
+  name: creds
   required: true
-  type: 0
-- additionalinfo: The password to access the vSphere vCenter or ESXi server.
-  display: Password
-  name: password
-  required: true
-  type: 4
+  type: 9
 - additionalinfo: Allows connection when SSL certificates are not valid. Set to `false`
     when certificates are not trusted.
   defaultvalue: 'True'

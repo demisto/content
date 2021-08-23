@@ -25,6 +25,10 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
     int_params = demisto.params()
+    creds_mapping = {
+        "identifier": "key_name",
+        "password": "key_secret"
+    }
 
     try:
 
@@ -34,7 +38,7 @@ def main() -> None:
                            Please refer to the documentation for details on how to perform \
                            configuration tests.')
         elif command == 'dns-nsupdate':
-            return_results(generic_ansible('DNS', 'nsupdate', args, int_params, host_type))
+            return_results(generic_ansible('DNS', 'nsupdate', args, int_params, host_type, creds_mapping))
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

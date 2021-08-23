@@ -8,16 +8,12 @@ configuration:
   name: subscription_id
   required: true
   type: 0
-- additionalinfo: Azure client secret
-  display: Access Secret
-  name: secret
-  required: true
-  type: 4
 - additionalinfo: Azure client ID
   display: Client ID
-  name: client_id
+  displaypassword: Access Secret
+  name: creds
   required: true
-  type: 0
+  type: 9
 - additionalinfo: Azure tenant ID
   display: Tenant ID
   name: tenant

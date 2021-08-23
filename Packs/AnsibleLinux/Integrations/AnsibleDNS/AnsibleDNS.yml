@@ -16,15 +16,10 @@ configuration:
   defaultvalue: '53'
 - additionalinfo: Use TSIG key name to authenticate against DNS `server'
   display: TSIG Key Name
-  name: key_name
+  displaypassword: TSIG Key Secret
+  name: creds
   required: true
-  type: 0
-- additionalinfo: Use TSIG key secret, associated with `key_name', to authenticate
-    against `server'
-  display: TSIG Key Secret
-  name: key_secret
-  required: true
-  type: 4
+  type: 9
 - additionalinfo: Specify key algorithm used by TSIG Key Secret
   defaultvalue: 'hmac-md5'
   display: Key Algorithm
