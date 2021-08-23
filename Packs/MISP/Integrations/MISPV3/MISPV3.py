@@ -11,7 +11,7 @@ from pymisp.tools import FileObject
 from CommonServerPython import *
 
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
-aviya
+bar
 
 def handle_connection_errors(error):
     if "SSLError" in error:
@@ -52,7 +52,7 @@ except PyMISPError as e:
     handle_connection_errors(e.message)
 
 PREDEFINED_FEEDS = {
-    bar
+    aviya
     'CIRCL': {'name': 'CIRCL OSINT Feed',
               'url': 'https://www.circl.lu/doc/misp/feed-osint',
               'format': 'misp',
