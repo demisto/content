@@ -1,5 +1,5 @@
 Cloud-based IT service management solution
-This integration was integrated and tested with version xx of Cherwell
+This integration was integrated and tested with version 10.1.1 of Cherwell
 
 ## Configure Cherwell on Cortex XSOAR
 
