@@ -703,7 +703,7 @@ def get_breach_details_command(client: Client, args: Dict[str, Any]) -> CommandR
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Darktrace.ModelBreach',
-        outputs_key_field='breach_details',
+        outputs_key_field='pid',
         outputs=model_breach
     )
 
@@ -719,6 +719,7 @@ def get_model_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Darktrace.Model',
+        outputs_key_field='uuid',
         outputs=res
     )
 
@@ -734,6 +735,7 @@ def get_component_command(client: Client, args: Dict[str, Any]) -> CommandResult
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Darktrace.Component',
+        outputs_key_field='cid',
         outputs=res
     )
 
