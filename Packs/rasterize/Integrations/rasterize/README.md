@@ -44,6 +44,7 @@ Converts the contents of a URL to an image file or a PDF file.
 | width | The page width, for example, 1024px. Specify with or without the px suffix. | Optional | 
 | height | The page height, for example, 800px. Specify with or without the px suffix. | Optional | 
 | type | The file type to which to convert the contents of the URL. Can be "pdf" or "png". Default is "png". | Optional | 
+| file_name | The name the file will be saved as. Default is "url". | Optional | 
 
 
 #### Context Output
@@ -88,6 +89,7 @@ Converts the body of an email to an image file or a PDF file.
 | height | The HTML page height, for example, 800px. Specify with or without the px suffix. | Optional | 
 | type | The file type to which to convert the email body. Can be "pdf" or "png". Default is "png". | Optional | 
 | offline | If "true", will block all outgoing communication. | Optional | 
+| file_name | The name the file will be saved as. Default is "email". | Optional | 
 
 
 #### Context Output
@@ -131,6 +133,7 @@ Converts an image file to a PDF file.
 | EntryID | The entry ID of the image file. | Required | 
 | width | The image width, for example, 600px. Specify with or without the px suffix. | Optional | 
 | height | The image height, for example, 800px. Specify with or without the px suffix. If empty, the height is the entire image. | Optional | 
+| file_name | The name the file will be saved as. Default is the EntryID. | Optional | 
 
 
 #### Context Output
@@ -174,6 +177,7 @@ Converts a PDF file to an image file.
 | maxPages | The maximum number of pages to render. Default is "3". | Optional | 
 | pdfPassword | The password to access the PDF. | Optional | 
 | horizontal | Whether to stack the pages horizontally. If "true", will stack the pages horizontally. If "false", will stack the pages vertically. Default is "false". | Optional | 
+| file_name | The name the file will be saved as. Default is "image". | Optional | 
 
 
 #### Context Output
