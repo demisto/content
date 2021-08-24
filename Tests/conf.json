@@ -2750,6 +2750,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Kaspersky Security Center",
+            "playbookID": "Kaspersky Security Center - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "Test Convert file hash to corresponding hashes",
             "fromversion": "4.5.0",
             "integrations": "VirusTotal",
