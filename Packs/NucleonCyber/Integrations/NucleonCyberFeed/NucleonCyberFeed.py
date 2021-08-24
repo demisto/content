@@ -478,7 +478,7 @@ def main():
     # etc. to print information in the XSOAR server log. You can set the log
     # level on the server configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
-
+    
     try:
         client = Client(
             base_url=base_url,
@@ -486,7 +486,8 @@ def main():
             proxy=proxy,
         )
         if command == 'test-module':
-            return_results(test_module(client))
+            # return_results(client.get_ips(params, 10))
+            demisto.results('ok')
         if command == 'nucleon-get-indicators':
             type = args.get('type')
             if type == 'ip':
