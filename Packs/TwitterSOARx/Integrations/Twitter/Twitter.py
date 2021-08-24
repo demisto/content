@@ -85,7 +85,7 @@ class Client(BaseClient):
             else:
                 search_url += "&count=100"
         search_url += "&tweet_mode=extended"
-        headers = Client.create_headers(client, demisto.params().get('bearer_token'))
+        headers = Client.create_headers(self, demisto.params().get('bearer_token'))
         json_response = Client.connect_to_endpoint(Client, search_url, headers)
         table = []
 
@@ -134,7 +134,7 @@ class Client(BaseClient):
             int(demisto.args().get('page'))
         except ValueError:
             return_error("Page must be an integer.")
-        for user in ((Client.auth(client).search_users(q=name, page=int(demisto.args().get('page')),
+        for user in ((Client.auth(Client).search_users(q=name, page=int(demisto.args().get('page')),
                                                        count=int(demisto.args().get('count')), include_entities=True))):
             if 'url' in user.entities.keys():
                 user_url = user.entities.get('url').get('urls')[0].get('expanded_url')
@@ -215,20 +215,20 @@ def test_module(client):
 
 def main():
     if demisto.command() == 'test-module':
-        result = test_module(client)
+        result = test_module(Client)
         return_results(result)
     if demisto.command() == 'twitter-get-users':
         name = demisto.args().get('name')
-        Client.get_users(client, name)
+        Client.get_users(Client, name)
     if demisto.command() == 'twitter-get-user-info':
         usernames = "usernames=" + demisto.args().get('usernames')
-        Client.get_user_info(client, usernames)
+        Client.get_user_info(Client, usernames)
     if demisto.command() == 'twitter-get-tweets':
         if demisto.args().get('q')[0] == '#':
             q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
         else:
             q = demisto.args().get('q')
-        Client.get_tweets(client, q)
+        Client.get_tweets(Client, q)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
