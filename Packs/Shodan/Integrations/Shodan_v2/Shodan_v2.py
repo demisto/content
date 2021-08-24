@@ -201,7 +201,7 @@ def ip_command():
         dbot_score = {
             'Indicator': ip,
             'Type': 'ip',
-            'Vendor': 'Shodan',
+            'Vendor': 'Shodan_v2',
             'Score': 0,
         }
 
