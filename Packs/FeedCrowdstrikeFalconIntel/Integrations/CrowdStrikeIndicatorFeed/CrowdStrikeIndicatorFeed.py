@@ -290,7 +290,8 @@ def main() -> None:
     credentials = params.get('credentials')
     proxy = params.get('proxy', False)
     insecure = params.get('insecure', False)
-    first_fetch_datetime = arg_to_datetime(params.get('first_fetch'))
+    first_fetch_param = params.get('first_fetch')
+    first_fetch_datetime = arg_to_datetime(first_fetch_param) if first_fetch_param else None
     first_fetch = first_fetch_datetime.timestamp() if first_fetch_datetime else None
 
     base_url = params.get('base_url')
