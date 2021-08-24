@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import tweepy
-import urllib # type: ignore[code, ...]
+import urllib  # type: ignore[attr-defined]
 import requests
 
 
@@ -85,7 +85,7 @@ class Client(BaseClient):
             else:
                 search_url += "&count=100"
         search_url += "&tweet_mode=extended"
-        headers = Client.create_headers(demisto.params().get('bearer_token'))
+        headers = Client.create_headers(client, demisto.params().get('bearer_token'))
         json_response = Client.connect_to_endpoint(search_url, headers)
         table = []
 
@@ -219,16 +219,16 @@ def main():
         return_results(result)
     if demisto.command() == 'twitter-get-users':
         name = demisto.args().get('name')
-        Client.get_users('client', name)
+        Client.get_users(client, name)
     if demisto.command() == 'twitter-get-user-info':
         usernames = "usernames=" + demisto.args().get('usernames')
-        Client.get_user_info('client', usernames)
+        Client.get_user_info(client, usernames)
     if demisto.command() == 'twitter-get-tweets':
         if demisto.args().get('q')[0] == '#':
             q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
         else:
             q = demisto.args().get('q')
-        Client.get_tweets('client', q)
+        Client.get_tweets(client, q)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
