@@ -236,10 +236,9 @@ def get_dns_query(endpoint_ids: str, args: dict) -> str:
     :return: The created query.
     :rtype: ``str``
     """
-    external_domain_list = args.get('external_domain', '')
-    if not external_domain_list:
-        raise DemistoException('Please provide a external_domain argument.')
-    external_domain_list = format_arg(external_domain_list)
+    if not args.get('external_domain') and not args.get('dns_query'):
+        raise DemistoException('Please provide at least one of the external_domain, dns_query arguments.')
+    external_domain_list = format_arg(args.get('external_domain', '*'))
     dns_query_list = format_arg(args.get('dns_query', '*'))
     return f'dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = STORY and ' \
            f'dst_action_external_hostname in ({external_domain_list}) or dns_query_name in ({dns_query_list})' \

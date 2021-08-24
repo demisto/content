@@ -1098,7 +1098,7 @@ script:
       description: Query by extrenal domain name.
       isArray: true
       name: external_domain
-      required: true
+      required: false
       secret: false
     - default: false
       description: Query by dns query.
