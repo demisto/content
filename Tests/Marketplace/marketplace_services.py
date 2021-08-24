@@ -1639,7 +1639,7 @@ class Pack(object):
                         })
                     elif current_directory == PackFolders.PREPROCESS_RULES.value:
                         folder_collected_items.append({
-                            'name': content_item.get('scriptName', "") #TODO: verify, couldnt find in scheme
+                            'name': content_item.get('scriptName', "")
                         })
 
                 if current_directory in PackFolders.pack_displayed_items():
