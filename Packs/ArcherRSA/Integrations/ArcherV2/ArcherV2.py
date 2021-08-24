@@ -1258,9 +1258,11 @@ def fetch_incidents_command(client: Client, params: dict, last_run: dict) -> Tup
 def main():
     params = demisto.params()
     credentials = params.get('credentials')
+    base_url = params.get('url').strip('/')
 
-    base_url = params.get('url').strip('/').lower().replace('rsaarcher', '')
-    api_endpoint = params.get('api_endpoint') or 'rsaarcher/api'
+    compiled = re.compile(re.escape('rsaarcher'), re.IGNORECASE)
+    base_url = compiled.sub("", base_url)
+    api_endpoint = params.get('api_endpoint', 'rsaarcher/api').lower()
     if 'rsaarcher' in api_endpoint:
         base_url = urljoin(base_url, 'rsaarcher')
 
