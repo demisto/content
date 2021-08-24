@@ -2517,6 +2517,14 @@ def perform_ips_command_request(client: Client, args: Dict[str, Any], is_destina
     fields: Optional[str] = args.get('fields')
 
     address_type = 'local_destination' if is_destination_addresses else 'source'
+    ips_arg_name: str = f'{address_type}_ip'
+    ips: List[str] = argToList(args.get(ips_arg_name, []))
+
+    if ips and filter_:
+        raise DemistoException(f'Both filter and {ips_arg_name} have been supplied. Please supply only one.')
+
+    if ips:
+        filter_ = ' OR '.join([f'{ips_arg_name}="{ip_}"' for ip_ in ips])
     url_suffix = f'{address_type}_addresses'
 
     response = client.get_addresses(url_suffix, filter_, fields, range_)
