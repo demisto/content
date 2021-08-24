@@ -3,10 +3,10 @@ import secrets
 from enum import Enum
 from ipaddress import ip_address
 from typing import Tuple
-
+from threading import Lock
 import pytz
 import urllib3
-from CommonServerUserPython import *  # noqa
+# from CommonServerUserPython import *  # noqa
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
@@ -2524,7 +2524,7 @@ def perform_ips_command_request(client: Client, args: Dict[str, Any], is_destina
         raise DemistoException(f'Both filter and {ips_arg_name} have been supplied. Please supply only one.')
 
     if ips:
-        filter_ = ' OR '.join([f'"{ip_}"' for ip_ in ips])
+        filter_ = ' OR '.join([f'{ips_arg_name}="{ip_}"' for ip_ in ips])
     url_suffix = f'{address_type}_addresses'
 
     response = client.get_addresses(url_suffix, filter_, fields, range_)
