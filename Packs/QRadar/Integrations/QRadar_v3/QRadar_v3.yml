@@ -2814,7 +2814,7 @@ script:
     name: qradar-upload-indicators
   - arguments:
     - default: false
-      description: Comma separated list. Source IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2"
+      description: Comma separated list. Source IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2".
       isArray: true
       name: source_ip
       required: false
@@ -2879,9 +2879,9 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Comma separated list. Local destination IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2"
+      description: Comma separated list. Local destination IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2".
       isArray: true
-      name: local_destenation_ip
+      name: local_destination_ip
       required: false
       secret: false
     - default: false
