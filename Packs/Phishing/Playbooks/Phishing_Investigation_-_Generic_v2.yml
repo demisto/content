@@ -179,7 +179,7 @@ tasks:
       attachNames: {}
       bcc: {}
       body:
-        simple: "Hi ${.=function(val) { var reporter = val.ReporterAddress ;var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && acc.Email && acc.Email.Address === reporter }); return account && account[0] && account[0].DisplayName || reporter || ''; }(val)},\nWe've received your email and are investigating.\nPlease do not touch the email until further notice.\n\nCordially, \n  Your friendly neighborhood security team"
+        simple: "Hi ${.=function(val) { var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've received your email and are investigating.\nPlease do not touch the email until further notice.\n\nCordially, \n  Your friendly neighborhood security team"
       cc: {}
       from: {}
       htmlBody: {}
@@ -256,7 +256,7 @@ tasks:
       bcc: {}
       body:
         simple: |-
-          Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
+          Hi ${.=function(val) { var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},
           We've concluded that the email you forwarded to us is safe.
           Thank you for your alertness and your participation in keeping our organization secure.
 
@@ -290,7 +290,7 @@ tasks:
     task:
       id: 38d12767-452d-438e-8361-2c19bdb6bc65
       version: -1
-      name: Update  the user that the reported email is malicious
+      name: Update the user that the reported email is malicious
       description: Send an email to the user explaining that the email they reported is malicious.
       script: '|||send-mail'
       type: regular
@@ -304,7 +304,7 @@ tasks:
       attachNames: {}
       bcc: {}
       body:
-        simple: "Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},\nWe've concluded that the email you forwarded to us is malicious. No further action is required on your part. Good job on detecting and forwarding it to us!\n\nAll the best,\n  Your security team"
+        simple: "Hi ${.=function(val) { var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've concluded that the email you forwarded to us is malicious. No further action is required on your part. Good job on detecting and forwarding it to us!\n\nAll the best,\n  Your security team"
       cc: {}
       htmlBody: {}
       replyTo: {}
