@@ -138,7 +138,6 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
         last_fetch = int(last_fetch)
         startDate = (datetime.fromtimestamp(cast(int, last_fetch) + 1).strftime(API_DATE_FORMAT))
 
-    latest_created_time = cast(int, last_fetch)
     incidents: List[Dict[str, Any]] = []
     page = 1
     isContinue = True
@@ -193,9 +192,7 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
                     }
                     incidents.append(inc)
 
-            latest_created_time = int(url_access_time)
-
-        next_run = {'last_fetch': latest_created_time}
+        next_run = {'last_fetch': int(url_access_time)}
     return next_run, incidents
 
 
@@ -214,7 +211,6 @@ def fetch_incidents_high_risk_users(client: Client, max_results: int, last_run: 
         last_fetch = int(last_fetch)
         startDate = (datetime.fromtimestamp(cast(int, last_fetch) + 1).strftime(API_DATE_FORMAT))
 
-    latest_created_time = cast(int, last_fetch)
     incidents: List[Dict[str, Any]] = []
     page = 1
     isContinue = True
@@ -237,9 +233,7 @@ def fetch_incidents_high_risk_users(client: Client, max_results: int, last_run: 
             if record1.get('employeeId') is not None:
                 incidents.append(inc1)
 
-        latest_created_time = int(url_access_time)
-
-        next_run = {'last_fetch': latest_created_time}
+        next_run = {'last_fetch': int(url_access_time)}
     return next_run, incidents
 
 
