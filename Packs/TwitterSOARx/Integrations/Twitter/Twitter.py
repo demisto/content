@@ -19,18 +19,18 @@ class Client(BaseClient):
 # https://github.com/twitterdev/Twitter-API-v2-sample-code/blob/master/User-Lookup/get_users_with_bearer_token.py
 # Changes made: changed function name to "create_users_info_url", added extra user fields and made user_fields a constant,
 # usernames is no longer a static variable, removed the print statement from connect_to_endpoint
-    def create_users_info_url(usernames):
+    def create_users_info_url(self, usernames):
         USER_FIELDS = "&user.fields=description,pinned_tweet_id,protected,\
         created_at,id,location,name,url,public_metrics,profile_image_url,username,verified,withheld"
         TWITTER_APIV2_URL = "https://api.twitter.com/2/users/by?{}&{}"
         url = TWITTER_APIV2_URL.format(usernames, USER_FIELDS)
         return url
 
-    def create_headers(bearer_token):
+    def create_headers(self, bearer_token):
         headers = {"Authorization": "Bearer {}".format(bearer_token)}
         return headers
 
-    def connect_to_endpoint(url, headers):
+    def connect_to_endpoint(self, url, headers):
         response = requests.request("GET", url, headers=headers)
         if response.status_code != 200:
             raise Exception(
@@ -40,7 +40,7 @@ class Client(BaseClient):
             )
         return response.json()
 
-    def get_tweets(q):
+    def get_tweets(self, q):
         TWITTER_APIV1_TWEETS_URL = "https://api.twitter.com/1.1/search/tweets.json?q="
         search_url = TWITTER_APIV1_TWEETS_URL + q
 # Query arguments are set to have no default value. If the user does not input a value, the integration will check for if
@@ -154,7 +154,7 @@ class Client(BaseClient):
 
 # Documentation on the user class used: https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user
 
-    def get_user_info():
+    def get_user_info(self, usernames):
         url = Client.create_users_info_url()
         headers = Client.create_headers(demisto.params().get('bearer_token'))
         json_response = Client.connect_to_endpoint(url, headers)
