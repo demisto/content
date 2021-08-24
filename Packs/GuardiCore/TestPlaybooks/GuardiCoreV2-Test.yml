@@ -158,7 +158,7 @@ tasks:
       limit:
         simple: "3"
       retry-count:
-        simple: "2"
+        simple: "3"
       to_time:
         simple: "2022-08-13T18:27:36Z"
     separatecontext: false
