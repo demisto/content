@@ -854,17 +854,6 @@ jobs:
                   fi
                   ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
             - run:
-                name: Zip Content Packs From GCS
-                command: |
-                  if [[ $CIRCLE_BRANCH != master ]] && [[ $CIRCLE_BRANCH != 20\.* ]] && [[ $CIRCLE_BRANCH != 21\.* ]]; then
-                    echo "Skipping packs download to artifact on non master or release branch"
-                    exit 0
-                  fi
-
-                  ZIP_FOLDER=$(mktemp -d)
-                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_MARKET_KEY
-                when: always
-            - run:
                 name: Store Artifacts to GCS
                 command: ./Tests/scripts/upload_artifacts.sh
                 when: always
@@ -1256,6 +1245,23 @@ jobs:
                   fi
 
                   python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -pbp "$STORAGE_BASE_PATH"
+            - run:
+                name: Download packs from GCP
+                command: |
+                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
+                    STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
+                  fi
+
+                  PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
+                  ZIP_FOLDER=$(mktemp -d)
+                  echo "export ZIP_FOLDER=$ZIP_FOLDER" >> $BASH_ENV
+                  gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
+                when: always
+            - run:
+                name: Zip Content Packs From GCS
+                command: |
+                  python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_MARKET_KEY
+                when: always
             - run:
                 name: Validate Premium Packs
                 shell: /bin/bash
