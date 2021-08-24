@@ -118,6 +118,10 @@ Returns all services that have been found on the given host IP.
 | Shodan.IP.OS | String | The operating system that powers the device | 
 | Shodan.IP.Port | Number | The port number that the service is operating on | 
 | Shodan.IP.Address | String | The IP address of the host as a string | 
+| DBotScore.Indicator | String | The indicator value. | 
+| DBotScore.Score | Number | The indicator score according to the vendor. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor name. |
 
 
 ##### Command Example
