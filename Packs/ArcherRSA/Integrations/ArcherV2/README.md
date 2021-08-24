@@ -24,6 +24,8 @@ The RSA Archer GRC Platform provides a common foundation for managing policies, 
 | fields_to_fetch | List of fields from the application to gets into the incident | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+P.S : the api_endpoint parameter should be used only if you have another api endpoint.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
