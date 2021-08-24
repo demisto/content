@@ -106,7 +106,7 @@ def main():
     try:
         # start the server in a background thread
         demisto.debug('Starting markdown artifacts http server...')
-        server_thread = threading.Thread(target=startServer).start()
+        threading.Thread(target=startServer).start()
         time.sleep(5)
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
