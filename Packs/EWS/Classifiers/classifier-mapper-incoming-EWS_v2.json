@@ -1,7 +1,7 @@
 {
     "description": "Maps incoming EWS phishing email message fields.",
     "feed": false,
-    "id": "EWS - Incoming Mapper",
+    "id": "EWS v2-mapper",
     "mapping": {
         "Phishing": {
             "dontMapEventToLabels": false,
