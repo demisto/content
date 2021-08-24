@@ -6,13 +6,14 @@ from RSSWidget import collect_entries_data_from_response, create_widget_content,
 import demistomock as demisto
 
 
-@pytest.mark.parametrize('parsed_response, expected_result', [
-    (NO_ARTICLE, NO_ARTICLE_RES),
-    (ONE_ARTICLE, ONE_ARTICLE_RES),
-    (TWO_ARTICLES, TWO_ARTICLES_RES),
-    (ONE_ARTICLE_NOT_PUBLISHED, ONE_ARTICLE_NOT_PUBLISHED_RES)
+@pytest.mark.parametrize('parsed_response, limit, expected_result', [
+    (NO_ARTICLE, 'all', NO_ARTICLE_RES),
+    (ONE_ARTICLE, 'all', ONE_ARTICLE_RES),
+    (TWO_ARTICLES, 'all', TWO_ARTICLES_RES),
+    (ONE_ARTICLE_NOT_PUBLISHED, 'all', ONE_ARTICLE_NOT_PUBLISHED_RES),
+    (TWO_ARTICLES, 1, ONE_ARTICLE_RES),
 ])
-def test_no_entries_collect_entries_data_from_response(parsed_response, expected_result):
+def test_collect_entries_data_from_response(parsed_response, limit, expected_result):
     """
     Given: Parsed response from feed.
 
@@ -20,7 +21,7 @@ def test_no_entries_collect_entries_data_from_response(parsed_response, expected
 
     Then: Verify the collected data.
     """
-    result = collect_entries_data_from_response(parsed_response)
+    result = collect_entries_data_from_response(parsed_response, limit=limit)
 
     assert len(result) == len(expected_result)
     for entry in expected_result:
@@ -50,7 +51,7 @@ def test_full_flow(mocker, requests_mock):
     requests_mock.get('https://test.com')
     mocker.patch.object(rssw, 'parse_feed_data', return_value=TWO_ARTICLES)
     mocker.patch.object(demisto, 'results')
-    mocker.patch.object(demisto, 'args', return_value={'url': 'https://test.com'})
+    mocker.patch.object(demisto, 'args', return_value={'url': 'https://test.com', 'limit': ''})
 
     main()
 

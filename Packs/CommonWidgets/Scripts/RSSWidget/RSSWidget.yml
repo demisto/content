@@ -13,6 +13,8 @@ args:
   required: true
   default: true
   description: The URL of the RSS feed.
+- name: limit
+  description: Maximum number of entries to return.
 - name: insecure
   auto: PREDEFINED
   predefined:
