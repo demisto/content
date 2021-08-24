@@ -33,7 +33,6 @@ IOC_ARGS_TO_INDICATOR_KEY_MAP = {
         'dns': 'ip',
         'organization': 'org',
         'traffic_light_protocol': 'tlp',
-        # 'malware_family': 'meta.maltype',
         'geo_country': 'country',
         'creation_date': 'created_ts',
         'updated_date': 'modified_ts',
@@ -46,22 +45,18 @@ IOC_ARGS_TO_INDICATOR_KEY_MAP = {
         'asn': 'asn',
         'organization': 'org',
         'geo_country': 'country',
-        # 'malware_family': 'meta.maltype',
         'traffic_light_protocol': 'tlp'
     },
     'ip': {
         'ip': 'value',
         'asn': 'asn',
-        # 'organization': 'org',
         'geo_latitude': 'latitude',
         'geo_longitude': 'longitude',
         'geo_country': 'country',
-        # 'malware_family': 'meta.maltype',
         'traffic_light_protocol': 'tlp'
     },
     'file': {
         'organization': 'org',
-        # 'malware_family': 'meta.maltype',
         'traffic_light_protocol': 'tlp'
     }
 }
@@ -163,13 +158,7 @@ RELATIONSHIPS_MAPPING = {
     ]
 }
 
-THRESHOLDS_FROM_PARAM = {
-    'url': arg_to_number(demisto.params().get('url_threshold')),
-    'ip': arg_to_number(demisto.params().get('ip_threshold')),
-    'file': arg_to_number(demisto.params().get('file_threshold')),
-    'domain': arg_to_number(demisto.params().get('domain_threshold')),
-    'threatstream-email-reputation': arg_to_number(demisto.params().get('email_threshold'))
-}
+THRESHOLDS_FROM_PARAM: Dict = {}
 
 ''' HELPER FUNCTIONS '''
 
@@ -223,13 +212,13 @@ def find_worst_indicator(indicators):
     return indicators[0]
 
 
-def prepare_args(args):
+def prepare_args(args, command, params):
     # removing empty keys that can be passed from playbook input
     args = {k: v for (k, v) in args.items() if v}
 
     # special handling for ip, domain, file, url and threatstream-email-reputation commands
-    if demisto.command() in REPUTATION_COMANDS:
-        default_include_inactive = demisto.params().get('include_inactive', False)
+    if command in REPUTATION_COMANDS:
+        default_include_inactive = params.get('include_inactive', False)
         include_inactive = argToBoolean(args.pop('include_inactive', default_include_inactive))
         args['status'] = "active,inactive" if include_inactive else "active"
     if 'indicator_severity' in args:
@@ -463,13 +452,13 @@ def test_module(client: Client):
     demisto.results('ok')
 
 
-def ips_reputation_command(client: Client, ip, threshold=None, status="active"):
+def ips_reputation_command(client: Client, ip, status, threshold=None):
     ips = argToList(ip, ',')
     for single_ip in ips:
-        get_ip_reputation(client, single_ip, threshold, status)
+        get_ip_reputation(client, single_ip, status, threshold)
 
 
-def get_ip_reputation(client: Client, ip, threshold=None, status="active"):
+def get_ip_reputation(client: Client, ip, status, threshold=None):
     """
         Checks the reputation of given ip from ThreatStream and
         returns the indicator with highest confidence score.
@@ -516,16 +505,16 @@ def get_ip_reputation(client: Client, ip, threshold=None, status="active"):
     ))
 
 
-def domains_reputation_command(client: Client, domain, threshold=None, status="active"):
+def domains_reputation_command(client: Client, domain, status, threshold=None):
     """
         Wrapper function for get_domain_reputation.
     """
     domains = argToList(domain, ',')
     for single_domain in domains:
-        get_domain_reputation(client, single_domain, threshold, status)
+        get_domain_reputation(client, single_domain, status, threshold)
 
 
-def get_domain_reputation(client: Client, domain, threshold=None, status="active"):
+def get_domain_reputation(client: Client, domain, status, threshold=None):
     """
         Checks the reputation of given domain from ThreatStream and
         returns the indicator with highest confidence score.
@@ -574,16 +563,16 @@ def get_domain_reputation(client: Client, domain, threshold=None, status="active
     ))
 
 
-def files_reputation_command(client: Client, file, threshold=None, status="active"):
+def files_reputation_command(client: Client, file, status, threshold=None):
     """
         Wrapper function for get_file_reputation.
     """
     files = argToList(file, ',')
     for single_file in files:
-        get_file_reputation(client, single_file, threshold, status)
+        get_file_reputation(client, single_file, status, threshold)
 
 
-def get_file_reputation(client: Client, file, threshold=None, status="active"):
+def get_file_reputation(client: Client, file, status, threshold=None):
     """
         Checks the reputation of given hash of the file from ThreatStream and
         returns the indicator with highest severity score.
@@ -636,16 +625,16 @@ def get_file_reputation(client: Client, file, threshold=None, status="active"):
     ))
 
 
-def urls_reputation_command(client: Client, url, threshold=None, status="active"):
+def urls_reputation_command(client: Client, url, status, threshold=None):
     """
         Wrapper function for get_url_reputation.
     """
     urls = argToList(url, ',')
     for single_url in urls:
-        get_url_reputation(client, single_url, threshold, status)
+        get_url_reputation(client, single_url, status, threshold)
 
 
-def get_url_reputation(client: Client, url, threshold=None, status="active"):
+def get_url_reputation(client: Client, url, status, threshold=None):
     """
         Checks the reputation of given url address from ThreatStream and
         returns the indicator with highest confidence score.
@@ -693,7 +682,7 @@ def get_url_reputation(client: Client, url, threshold=None, status="active"):
     ))
 
 
-def get_email_reputation(client: Client, email, threshold=None, status="active"):
+def get_email_reputation(client: Client, email, status, threshold=None):
     """
         Checks the reputation of given email address from ThreatStream and
         returns the indicator with highest confidence score.
@@ -987,7 +976,7 @@ def get_submission_status(client: Client, report_id, output=True):
 
 def file_name_to_valid_string(file_name):
     try:
-        # In case the user uses Demisto version < 5.0 and the new docker image will not be automatically changed
+        # In case the user uses Cortex XSOAR version < 5.0 and the new docker image will not be automatically changed
         import emoji
 
         if emoji.emoji_count(file_name):  # type: ignore
@@ -1119,12 +1108,19 @@ def main():
 
     params = demisto.params()
 
+    # init credentials
     user_name = params.get('username')
     api_key = params.get('apikey')
     server_url = params.get('url', '').strip('/')
-
     CREDENTIALS['username'] = user_name
     CREDENTIALS['api_key'] = api_key
+
+    # init threshold from params
+    THRESHOLDS_FROM_PARAM['url'] = arg_to_number(params.get('url_threshold'))
+    THRESHOLDS_FROM_PARAM['ip'] = arg_to_number(params.get('ip_threshold'))
+    THRESHOLDS_FROM_PARAM['file'] = arg_to_number(params.get('file_threshold'))
+    THRESHOLDS_FROM_PARAM['domain'] = arg_to_number(params.get('domain_threshold'))
+    THRESHOLDS_FROM_PARAM['threatstream-email-reputation'] = arg_to_number(params.get('email_threshold'))
 
     reliability = params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.B
@@ -1144,7 +1140,7 @@ def main():
         )
 
         handle_proxy()
-        args = prepare_args(demisto.args())
+        args = prepare_args(demisto.args(), command, params)
         if command == 'test-module':
             test_module(client)
         elif command == 'ip':

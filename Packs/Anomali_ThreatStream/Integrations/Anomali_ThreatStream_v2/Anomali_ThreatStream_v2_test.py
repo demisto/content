@@ -145,7 +145,7 @@ def test_get_file_reputation(mocker, file_hash, expected_result_file_path, raw_r
     mocker.patch.object(demisto, 'results')
 
     client = mock_client()
-    get_file_reputation(client, file_hash)
+    get_file_reputation(client, file_hash, 'active')
     context = demisto.results.call_args_list[0][0][0].get('EntryContext')
 
     assert context == expected_result
