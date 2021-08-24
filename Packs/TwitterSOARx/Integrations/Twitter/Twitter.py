@@ -134,7 +134,7 @@ class Client(BaseClient):
             int(demisto.args().get('page'))
         except ValueError:
             return_error("Page must be an integer.")
-        for user in ((Client.auth().search_users(q=name, page=int(demisto.args().get('page')),
+        for user in ((Client.auth(client).search_users(q=name, page=int(demisto.args().get('page')),
                                                  count=int(demisto.args().get('count')), include_entities=True))):
             if 'url' in user.entities.keys():
                 user_url = user.entities.get('url').get('urls')[0].get('expanded_url')
@@ -155,7 +155,7 @@ class Client(BaseClient):
 # Documentation on the user class used: https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user
 
     def get_user_info(self, usernames):
-        url = Client.create_users_info_url()
+        url = Client.create_users_info_url(client, usernames)
         headers = Client.create_headers(self, demisto.params().get('bearer_token'))
         json_response = Client.connect_to_endpoint(self, url, headers)
         table = []
@@ -219,16 +219,16 @@ def main():
         return_results(result)
     if demisto.command() == 'twitter-get-users':
         name = demisto.args().get('name')
-        Client.get_users(BaseClient, name)
+        Client.get_users(client, name)
     if demisto.command() == 'twitter-get-user-info':
         usernames = "usernames=" + demisto.args().get('usernames')
-        Client.get_user_info(BaseClient, usernames)
+        Client.get_user_info(client, usernames)
     if demisto.command() == 'twitter-get-tweets':
         if demisto.args().get('q')[0] == '#':
             q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
         else:
             q = demisto.args().get('q')
-        Client.get_tweets(BaseClient, q)
+        Client.get_tweets(client, q)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
