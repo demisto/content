@@ -152,6 +152,25 @@ upload-packs-to-marketplace:
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH"
       fi
     - section_end "Upload Packs To Marketplace Storage"
+    - section_start "Download packs from GCP"
+    - |
+      if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
+        STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
+      else
+        STORAGE_BASE_PATH="content/packs"
+      fi
+      PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
+      ZIP_FOLDER=$(mktemp -d)
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
+      echo "successfully activated google cloud service account"
+      gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
+      echo "successfully downloaded index.zip"
+      gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
+    - section_end "Download packs from GCP"
+    - section_start "Zip Content Packs From GCS"
+    - |
+      python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
+    - section_end "Zip Content Packs From GCS"
     - section_start "Validate Premium Packs"
     - |
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
