@@ -31,8 +31,8 @@ configuration:
   name: validate_certs
   required: true
   type: 4
-description: Manage VMware vSphere Server, Guests, and ESXi Hosts
-display: VMware v2
+description: Manage VMware vSphere Server, Guests, and ESXi Hosts. Deprecated. Use Ansible VMware (from the Ansible VMware pack) instead.
+display: Ansible VMware (Deprecated)
 name: VMwareV2
 script:
   commands:
@@ -4541,7 +4541,7 @@ script:
       name: cluster_name
     description: Manage VMware vCenter license keys
     name: vmware-vcenter-license
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+  dockerimage: demisto/ansible-runner:1.0.0.21184
   runonce: false
   script: ''
   subtype: python3
@@ -4549,3 +4549,4 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+deprecated: true
