@@ -78,7 +78,7 @@ class Client(BaseClient):
         global_username = params.get('username')
         global_password = params.get('password')
         global_usrn = params.get('usrn')
-        global_client_id = params.get('client_id')
+        global_client_id = params.get('clientid')
         body = {'usrn': global_usrn, 'clientID': global_client_id, 'limit': limit}
         json_payload = self._http_request(
             'POST',
@@ -164,6 +164,7 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
         automated_ = item.get('automated')
         bruteForce_ = item.get('bruteForce')
         sourceCountry_ = item.get('sourceCountry')
+        
         tags_name = {
             'nucleon_botnet': bot_,
             'nucleon_darknet': darknet_,
@@ -173,6 +174,7 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
             'nucleon_bruteForce': bruteForce_,
             'nucleon_governments': governments_,
         }
+        
         for tag_name, tag_value in tags_name.items():
             if (isinstance(tag_value, str) and tag_value == 'true') or (isinstance(tag_value, bool) and tag_value is True):
                 tags_.append(tag_name)
@@ -192,8 +194,7 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
             'proxy': proxy_,
             'automated': automated_,
             'bruteForce': bruteForce_,
-            'sourceCountry': sourceCountry_,
-
+            'sourceCountry': sourceCountry_
         }
 
         # Create indicator object for each value.
@@ -345,34 +346,6 @@ def fetch_urls(client: Client, limit: int = -1) \
     return indicators
 
 
-def get_indicators_command(client: Client,
-                           params: Dict[str, str],
-                           args: Dict[str, str]
-                           ) -> CommandResults:
-    """Wrapper for retrieving indicators from the feed to the war-room.
-    Args:
-        client: Client object with request
-        params: demisto.params()
-        args: demisto.args()
-    Returns:
-        Outputs.
-        IP indicators
-    """
-    limit = int(args.get('limit', '10'))
-    tlp_color = params.get('tlp_color')
-    feed_tags = argToList(params.get('feedTags', ''))
-    indicators = fetch_indicators(client, tlp_color, feed_tags, limit)
-    human_readable = tableToMarkdown('IP indicators from NucleonCyberFeed:', indicators,
-                                     headers=['value', 'type', 'exp'], headerTransform=string_to_table_header, removeNull=True)
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix='NucleonCyber.Indicators',
-        outputs_key_field='value',
-        raw_response=indicators,
-        outputs=indicators,
-    )
-
-
 def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
@@ -389,6 +362,39 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List:
     return [ips, urls, hashes]
 
 
+def get_indicators_command(client: Client,
+                           params: Dict[str, str],
+                           args: Dict[str, str]
+                           ) -> CommandResults:
+    """Wrapper for retrieving indicators from the feed to the war-room.
+    Args:
+        client: Client object with request
+        params: demisto.params()
+        args: demisto.args()
+    Returns:
+        Outputs.
+        IP indicators
+    """
+    limit = int(args.get('limit', '10'))
+    tlp_color = params.get('tlp_color') if params.get('tlp_color') else 'GREEN'
+    feed_tags = argToList(params.get('feedTags', ''))
+    indicators = fetch_indicators(client, tlp_color, feed_tags, limit)
+    human_readable = tableToMarkdown(
+        'IP indicators from NucleonCyberFeed: ',
+        indicators,
+        headers=['value', 'type', 'exp'],
+        headerTransform=string_to_table_header,
+        removeNull=True
+    )
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='NucleonCyber.Indicators',
+        outputs_key_field='value',
+        raw_response=indicators,
+        outputs=indicators,
+    )
+
+
 def get_hashes_command(client: Client,
                        args: Dict[str, Any]
                        ) -> CommandResults:
@@ -402,8 +408,13 @@ def get_hashes_command(client: Client,
     """
     limit = int(args.get('limit', '10'))
     hashes = fetch_hashes(client, limit)
-    human_readable = tableToMarkdown('Hash indicators from NucleonCyberFeed:', hashes,
-                                     headers=['value', 'type'], headerTransform=string_to_table_header, removeNull=True)
+    human_readable = tableToMarkdown(
+        'Hash indicators from NucleonCyberFeed: ',
+        hashes,
+        headers=['value', 'type'],
+        headerTransform=string_to_table_header,
+        removeNull=True
+    )
 
     return CommandResults(
         readable_output=human_readable,
@@ -427,9 +438,13 @@ def get_urls_command(client: Client,
     """
     limit = int(args.get('limit', '10'))
     urls = fetch_urls(client, limit)
-    human_readable = tableToMarkdown('URL indicators from NucleonCyberFeed:', urls,
-                                     headers=['value', 'type'], headerTransform=string_to_table_header, removeNull=True)
-
+    human_readable = tableToMarkdown(
+        'URL indicators from NucleonCyberFeed:',
+        urls,
+        headers=['value', 'type'],
+        headerTransform=string_to_table_header,
+        removeNull=True
+    )
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='NucleonCyber.Indicators.url',
@@ -466,7 +481,6 @@ def main():
     # etc. to print information in the XSOAR server log. You can set the log
     # level on the server configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
-    demisto.debug(f'Command being called is {command}')
 
     try:
         client = Client(
@@ -474,22 +488,20 @@ def main():
             verify=insecure,
             proxy=proxy,
         )
-
         if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
-
-        elif command == 'nucleoncyber-get-ips':
-            # This is the command that fetches a limited number of indicators from the feed source
-            # and displays them in the war room.
-            return_results(get_indicators_command(client, params, args))
-
-        elif command == 'nucleoncyber-get-urls':
-            return_results(get_urls_command(client, args))
-
-        elif command == 'nucleoncyber-get-hashes':
-            return_results(get_hashes_command(client, args))
-
+        if command == 'nucleon-get-indicators':
+            # get param
+            type = args.get('type')    
+            if type == 'ip':
+                return_results(get_indicators_command(client, params, args))
+            elif type == 'hash':
+                return_results(get_hashes_command(client, args))
+            elif type == 'url':
+                return_results(get_urls_command(client, args))
+            else:
+                # return_error(f'########\n{params=}\n{args=}\nwe are inside else')
+                return_results(get_indicators_command(client, params, args))
         elif command == 'fetch-indicators':
             # This is the command that initiates a request to the feed endpoint and create new indicators objects from
             # the data fetched. If the integration instance is configured to fetch indicators, then this is the command
@@ -501,14 +513,11 @@ def main():
                 demisto.createIndicators(iter_)
             for iter_ in batch(hashes, batch_size=2000):
                 demisto.createIndicators(iter_)
-
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
-
-    # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # Print the traceback
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}\n\n########{base_url=},\n{verify=}\n{proxy=}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

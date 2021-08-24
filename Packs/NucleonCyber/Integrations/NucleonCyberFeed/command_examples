@@ -1,3 +1,4 @@
-!nucleoncyber-get-ips
-!nucleoncyber-get-urls
-!nucleoncyber-get-hashes
+!nucleon-get-indicators
+!nucleon-get-indicators type="ip"
+!nucleon-get-indicators type="hash"
+!nucleon-get-indicators type="url"

@@ -36,10 +36,9 @@ configuration:
 - defaultvalue: "clientID"
   display: ClientID
   additionalinfo: The given clientID to use for NucleonCyber API connection
-  name: client_id
+  name: clientid
   required: true
   type: 0
-
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: Bad
@@ -132,6 +131,13 @@ script:
   commands:
   - arguments:
     - default: false
+      defaultValue: 'ip'
+      description: The indecator type (ip, url or hash).
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    - default: false
       defaultValue: '10'
       description: The maximum number of results to return.
       isArray: false
@@ -139,47 +145,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets ips indicators from the feed.
+    description: Gets indicators from the feed.
     execution: false
-    name: nucleoncyber-get-ips
+    name: nucleon-get-indicators
     outputs:
     - contextPath: NucleonCyber.Indicators.value
-      description: IP.
+      description: IP/HASH/URL.
       type: String
     - contextPath: NucleonCyber.Indicators.exp
       description: Indicators exp.
-      type: String
-  - arguments:
-    - default: false
-      defaultValue: '10'
-      description: The maximum number of results to return.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Gets urls indicators from the feed.
-    execution: false
-    name: nucleoncyber-get-urls
-    outputs:
-    - contextPath: NucleonCyber.Indicators.url
-      description: urls.
-      type: String
-  - arguments:
-    - default: false
-      defaultValue: '10'
-      description: The maximum number of results to return.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Gets hashs indicators from the feed.
-    execution: false
-    name: nucleoncyber-get-hashes
-    outputs:
-    - contextPath: NucleonCyber.Indicators.hash
-      description: hashes.
       type: String
   dockerimage: demisto/python3:3.9.6.22912
   feed: true
