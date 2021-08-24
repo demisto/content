@@ -10,9 +10,9 @@ The integration includes out-of-the-box commands which supports agentless forens
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Domain | Fully Qualified Domain Name suffix to be added to the hostname. | False |
-    | DNS |  | False |
-    | Username | Username in the target machine. | True |
+    | Domain | Fully Qualified Domain Name suffix to be added to the hostname. For example mydomain.local | False |
+    | DNS | The IP address of the DNS server the integration will use to resolve your hosts. | False | 
+    | Username | Username in the target machine. This can be a local or domain user with administrative privileges | True |
     | Password |  | True |
     | Test Host | Hostname or IP address to use as a test for the integration connectivity. | False |
     | Authentication Method |  | True |
