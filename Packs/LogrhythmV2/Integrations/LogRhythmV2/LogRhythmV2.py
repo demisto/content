@@ -1008,6 +1008,8 @@ class Client(BaseClient):
         alarms = response.get('alarmsSearchDetails')
         if alarm_id:
             alarms = next((alarm for alarm in alarms if alarm.get('alarmId') == int(alarm_id)), None)
+            if type(alarms) is dict:
+                alarms = [alarms]
 
         if created_after:
             filtered_alarms = []
@@ -1188,6 +1190,7 @@ class Client(BaseClient):
                'Content-Disposition: form-data; name="note"\n\n' \
                '-------------------------------'
 
+
         response = self._http_request('POST', f'lr-case-api/cases/{case_id}/evidence/file', headers=headers, data=data)
 
         return response
@@ -1279,14 +1282,12 @@ class Client(BaseClient):
             entities = next((entity for entity in entities if entity.get('id') == int(entity_id)), None)
         return entities
 
-    def hosts_list_request(self, host_id=None, host_name=None, entity_name=None, record_status=None, offset=None,
+    def hosts_list_request(self, host_name=None, entity_name=None, record_status=None, offset=None,
                            count=None, endpoint_id_list=None, endpoint_hostname_list=None):
         params = assign_params(name=host_name, entity=entity_name, recordStatus=record_status, offset=offset, count=count)
         headers = self._headers
 
         hosts = self._http_request('GET', 'lr-admin-api/hosts', params=params, headers=headers)
-        if host_id:
-            hosts = next((host for host in hosts if host.get('id') == int(host_id)), None)
 
         if endpoint_id_list:
             endpoint_id_list = [int(id_) for id_ in endpoint_id_list]
@@ -1500,8 +1501,6 @@ class Client(BaseClient):
 
         # delete empty values
         data = {k: v for k, v in data.items() if type(v) is bool or v}
-
-        demisto.info(json.dumps(data))
 
         response = self._http_request('POST', 'lr-admin-api/hosts', json_data=data, headers=headers)
 
@@ -1988,8 +1987,9 @@ def hosts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     record_status = args.get('record_status')
     offset = args.get('offset')
     count = args.get('count')
+    host_ids = [host_id] if host_id else []
 
-    response = client.hosts_list_request(host_id, host_name, entity_name, record_status, offset, count)
+    response = client.hosts_list_request(host_name, entity_name, record_status, offset, count, host_ids)
     if response:
         hr = tableToMarkdown('Hosts', response, headerTransform=pascalToSpace)
     else:
@@ -2274,8 +2274,9 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def test_module(client: Client) -> None:
+def test_module(client: Client, fetch_type: str, cases_max_fetch: int, alarms_max_fetch: int) -> None:
     client.lists_get_request(None, None, None)
+    fetch_incidents_command(client, fetch_type, cases_max_fetch, alarms_max_fetch)
     return_results('ok')
 
 
@@ -2396,7 +2397,7 @@ def main() -> None:
         }
 
         if command == 'test-module':
-            test_module(client)
+            test_module(client, incidents_type, cases_max_fetch, alarms_max_fetch)
         elif command == 'fetch-incidents':
             demisto.incidents(fetch_incidents_command(client, incidents_type, cases_max_fetch, alarms_max_fetch))
         elif command in commands:
