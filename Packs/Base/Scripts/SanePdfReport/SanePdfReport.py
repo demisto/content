@@ -9,12 +9,16 @@ import random
 import string
 import subprocess
 from pathlib import Path
+import threading
+import time
+from http.server import HTTPServer, http
 
 WORKING_DIR = Path("/app")
 INPUT_FILE_PATH = 'sample.json'
 OUTPUT_FILE_PATH = 'out{id}.pdf'
 DISABLE_LOGOS = True  # Bugfix before sane-reports can work with image files.
-
+MD_IMAGE_PATH = '/markdown/image'
+MD_HTTP_PORT = 10888
 
 def random_string(size=10):
     return ''.join(
@@ -49,12 +53,68 @@ def quit_driver_and_reap_children():
                 demisto.info(f'waitpid result: {waitres}')
         else:
             demisto.debug(f'No zombie processes found for ps output: {ps_out}')
+
+        # Kill Markdown artifacts server
+        global server_object
+        server_object.shutdown()
+
     except Exception as e:
         demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
 
 
+def startServer():
+    class fileHandler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            demisto.debug(f'Handling MD Image request {self.path}')
+            if not self.path.startswith(MD_IMAGE_PATH):
+                # not a standart xsoar markdown image endpoint
+                self.send_response(400)
+                self.flush_headers()
+                return
+            fileID = os.path.split(self.path)[1]
+            try:
+                res = demisto.getFilePath(fileID)
+                file_path = res.get('path')
+                name = res.get('name')
+                try:
+                    self.send_response(200)
+                    self.send_header("Content-type", "application/octet-stream")
+                    self.send_header("Content-Disposition", f'attachment; filename={name}')
+                    self.end_headers()
+                    # Open the file
+                    with open(f'{file_path}', 'rb') as file:
+                        self.wfile.write(file.read()) # Read the file and send the contents
+                    self.flush_headers()
+                except BrokenPipeError:  # ignore broken pipe as socket might have been closed
+                    pass
+            except Exception as ex:
+                demisto.debug(f'Failed to get markdown file {fileID}. Error: {ex}')
+                self.send_response(404)
+                self.flush_headers()
+
+    # Make sure the server is created at current directory
+    os.chdir('.')
+    # Create server object listening the port 10888
+    global server_object
+    server_object = HTTPServer(server_address=('', MD_HTTP_PORT), RequestHandlerClass=fileHandler)
+    # Start the web server
+    server_object.serve_forever()
+
 def main():
     try:
+        # start the server in a background thread
+        demisto.debug('Starting markdown artifacts http server...')
+        server_thread = threading.Thread(target=startServer).start()
+        time.sleep(5)
+
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex(('localhost', MD_HTTP_PORT))
+        if result == 0:
+            demisto.debug('Server is running')
+            sock.close()
+        else:
+            demisto.error('Markdown artifacts server is not responding')
+
         sane_json_b64 = demisto.args().get('sane_pdf_report_base64', '').encode(
             'utf-8')
         orientation = demisto.args().get('orientation', 'portrait')
@@ -64,11 +124,12 @@ def main():
         headerRightImage = demisto.args().get('demistoLogo', '')
         pageSize = demisto.args().get('paperSize', 'letter')
         disableHeaders = demisto.args().get('disableHeaders', '')
+        mdServerURL = f'http://localhost:{MD_HTTP_PORT}'
 
         # Note: After headerRightImage the empty one is for legacy argv in server.js
         extra_cmd = f"{orientation} {resourceTimeout} {reportType} " + \
                     f'"{headerLeftImage}" "{headerRightImage}" "" ' + \
-                    f'"{pageSize}" "{disableHeaders}"'
+                    f'"{pageSize}" "{disableHeaders}" "" "" "{mdServerURL}"'
 
         # Generate a random input file so we won't override on concurrent usage
         input_id = random_string()
@@ -89,7 +150,7 @@ def main():
             f' resourceTimeout="{resourceTimeout}",' \
             f' reportType="{reportType}", headerLeftImage="{headerLeftImage}",' \
             f' headerRightImage="{headerRightImage}", pageSize="{pageSize}",' \
-            f' disableHeaders="{disableHeaders}" '
+            f' disableHeaders="{disableHeaders}", mdServerURL="{mdServerURL}"'
         LOG(f"Sane-pdf parameters: {params}]")
         cmd_string = " ".join(cmd)
         LOG(f"Sane-pdf cmd: {cmd_string}")
