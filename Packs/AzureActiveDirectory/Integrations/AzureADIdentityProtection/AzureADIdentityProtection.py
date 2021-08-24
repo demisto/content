@@ -262,7 +262,7 @@ def create_incidents_from_input(input: List[Dict[str, str]], last_fetch_datetime
         activity_date_time_str: str = current_input.get('activityDateTime', '')
 
         activity_datetime = dateparser.parse(activity_date_time_str)
-        # to prevent duplicates, adding incidents with creation_time > last fetched incident
+        # To prevent duplicates, adding incidents with creation_time > last fetched incident
         if last_fetch:
             if activity_datetime <= last_fetch:
                 demisto.debug(f'{INTEGRATION_NAME} - alert {str(current_input)} created at {activity_date_time_str}.'
@@ -280,12 +280,6 @@ def create_incidents_from_input(input: List[Dict[str, str]], last_fetch_datetime
         }
         incidents.append(incident)
 
-        activity_date_time_str = activity_date_time_str.split(".")[0]
-        if not activity_date_time_str.endswith("Z"):
-            # microseconds, 'activityDateTime': '2021-07-15T11:02:54.12345Z'
-            activity_date_time_str += "Z"
-
-        # timestamp = datetime.strptime(activity_date_time_str, DATE_FORMAT)
         timestamp = activity_datetime
         if timestamp > last_fetch:
             last_fetch = timestamp
@@ -301,8 +295,8 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
     last_fetch = last_run.get('last_item_time', '')
     if not last_fetch:
         # handle first time fetch
-        FETCH_TIME = params.get('first_fetch', '1 days')
-        default_fetch_datetime, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
+        first_fetch = params.get('first_fetch', '1 days')
+        default_fetch_datetime, _ = parse_date_range(date_range=first_fetch, utc=True, to_timestamp=False)
         last_fetch = str(default_fetch_datetime.isoformat(timespec='seconds')) + 'Z'
 
     last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT)
@@ -313,18 +307,14 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
     next_link: str = ''
     filter_expression = params.get('fetch_filter_expression', f'lastUpdatedDateTime gt {last_fetch}')
     while do_fetch_call:
-        try:
-            risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(
-                limit=int(params.get('max_fetch', '50')),
-                filter_expression=filter_expression,
-                next_link=next_link,
-                user_id=params.get('fetch_user_id', ''),
-                user_principal_name=params.get('fetch_user_principal_name', ''),
-                country='',
-            )
-        except Exception:
-            demisto.error(traceback.format_exc())
-            risk_detection_list_raw = {}
+        risk_detection_list_raw: Dict = client.azure_ad_identity_protection_risk_detection_list_raw(
+            limit=int(params.get('max_fetch', '50')),
+            filter_expression=filter_expression,
+            next_link=next_link,
+            user_id=params.get('fetch_user_id', ''),
+            user_principal_name=params.get('fetch_user_principal_name', ''),
+            country='',
+        )
 
         next_link = get_next_link_url(risk_detection_list_raw)
         if not next_link:
@@ -415,6 +405,3 @@ from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-
-# !azure-ad-identity-protection-risky-user-list limit=3 filter_expression="riskLastUpdatedDateTime gt 2017-07-01T08:00:00.000Z"
