@@ -164,7 +164,6 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
         automated_ = item.get('automated')
         bruteForce_ = item.get('bruteForce')
         sourceCountry_ = item.get('sourceCountry')
-        
         tags_name = {
             'nucleon_botnet': bot_,
             'nucleon_darknet': darknet_,
@@ -174,11 +173,9 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
             'nucleon_bruteForce': bruteForce_,
             'nucleon_governments': governments_,
         }
-        
         for tag_name, tag_value in tags_name.items():
             if (isinstance(tag_value, str) and tag_value == 'true') or (isinstance(tag_value, bool) and tag_value is True):
                 tags_.append(tag_name)
-
         raw_data = {
             'value': value_,
             'type': type_,
@@ -491,8 +488,7 @@ def main():
         if command == 'test-module':
             return_results(test_module(client))
         if command == 'nucleon-get-indicators':
-            # get param
-            type = args.get('type')    
+            type = args.get('type')
             if type == 'ip':
                 return_results(get_indicators_command(client, params, args))
             elif type == 'hash':
@@ -517,7 +513,7 @@ def main():
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as e:
         demisto.error(traceback.format_exc())  # Print the traceback
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}\n\n########{base_url=},\n{verify=}\n{proxy=}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
