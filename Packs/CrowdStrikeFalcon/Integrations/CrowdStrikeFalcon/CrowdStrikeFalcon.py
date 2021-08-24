@@ -1313,7 +1313,7 @@ def change_host_group(is_post: bool,
 
 def change_host_group_members(action_name: str,
                               host_group_id: str,
-                              host_ids: List[str]) -> CommandResults:
+                              host_ids: List[str]) -> Dict:
     allowed_actions = {'add-hosts', 'remove-hosts'}
     if action_name not in allowed_actions:
         raise DemistoException(f'CrowdStrike Falcon error: action name should be in {allowed_actions}')
@@ -1324,10 +1324,7 @@ def change_host_group_members(action_name: str,
                             url_suffix='/devices/entities/host-group-actions/v1',
                             params={'action_name': action_name},
                             json=data)
-    resources = response.get('resources')
-    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
-                          outputs_key_field='id',
-                          outputs=resources)
+    return response
 
 
 def host_group_members(filter: str, host_group_id: str, limit: str, offset: str):
@@ -2594,16 +2591,26 @@ def list_host_group_members_command(host_group_id: str = None, filter: str = Non
     return command_results
 
 
-def add_host_group_members_command(host_group_id: str, host_ids: List[str]):
-    return change_host_group_members(action_name='add-hosts',
-                                     host_group_id=host_group_id,
-                                     host_ids=host_ids)
+def add_host_group_members_command(host_group_id: str, host_ids: List[str]) -> CommandResults:
+    response = change_host_group_members(action_name='add-hosts',
+                                         host_group_id=host_group_id,
+                                         host_ids=host_ids)
+    resources = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=resources,
+                          raw_response=response)
 
 
-def remove_host_group_members_command(host_group_id: str, host_ids: List[str]):
-    return change_host_group_members(action_name='remove-hosts',
-                                     host_group_id=host_group_id,
-                                     host_ids=host_ids)
+def remove_host_group_members_command(host_group_id: str, host_ids: List[str]) -> CommandResults:
+    response = change_host_group_members(action_name='remove-hosts',
+                                         host_group_id=host_group_id,
+                                         host_ids=host_ids)
+    resources = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=resources,
+                          raw_response=response)
 
 
 def resolve_incident_command(ids: List[str], status: str):
