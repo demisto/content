@@ -77,18 +77,6 @@ class Client(BaseClient):
             headers=http_headers
         )
 
-    def add_comment(self, pbid, comment):
-
-        request = "/modelbreaches/" + pbid + "/comments"
-        http_headers = get_headers(self._auth, request)
-        body = {"message": str(comment)}
-        return self._http_request(
-            method='POST',
-            url_suffix=request,
-            headers=http_headers,
-            data=body
-        )
-
     def get_model(self, uuid):
 
         request = "/models?uuid=" + uuid
@@ -720,25 +708,6 @@ def get_breach_details_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def add_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    pbid = str(args.get('pbid', None))
-    if not pbid:
-        raise ValueError('Darktrace Model Breach ID not specified')
-
-    comment = str(args.get('comment', None))
-    if not comment:
-        raise ValueError('Darktrace comment needed')
-
-    res = client.add_comment(pbid=pbid, comment=comment)
-
-    return CommandResults(
-        readable_output=res,
-        outputs_prefix='Darktrace.Comments',
-        outputs=res
-    )
-
-
 def get_model_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     uuid = str(args.get('uuid', None))
     if not uuid:
@@ -1204,9 +1173,6 @@ def main() -> None:
 
         elif demisto.command() == 'darktrace-get-breach-details':
             return_results(get_breach_details_command(client, demisto.args()))
-
-        elif demisto.command() == 'darktrace-add-comment':
-            return_results(add_comment_command(client, demisto.args()))
 
         elif demisto.command() == 'darktrace-get-model':
             return_results(get_model_command(client, demisto.args()))

@@ -272,19 +272,6 @@ Returns details on a modelbreach
 | --- | --- | --- |
 | Darktrace.ModelBreach.breach_details | Dictionary | Details of the model breach |
 
-### darktrace-add-comment
-***
-Adds a comment to a single modelbreach given a pbid
-
-#### Base Command
-`darktrace-add-comment`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| pbid | Darktrace model breach ID | Required | 
-| comment | The comment to add | Required | 
-
 ### darktrace-get-model
 ***
 Returns a model given a UUID

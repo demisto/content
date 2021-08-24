@@ -495,20 +495,7 @@ script:
     outputs:
     - contextPath: Darktrace.ModelBreach
       description: ''
-      type: Unknown
-  - name: darktrace-add-comment
-    arguments:
-    - name: pbid
-      required: true
-      description: Darktrace modelbreach ID
-    - name: comment
-      required: true
-      description: Comment to add to the modelbreach
-    description: Adds a comment to a modelbreach
-    outputs:
-    - contextPath: Darktrace.Comments
-      description: ''
-      type: Unknown
+      type: Unknown  
   - name: darktrace-get-model
     arguments:
     - name: uuid
