@@ -155,7 +155,7 @@ def fetch_indicators_command(
                 indicators_list.append(ind)
             if get_indicators_mode and len(indicators_list) == limit:
                 break
-        if get_indicators_mode:
+        if not get_indicators_mode:
             client.commit_indicators()
     except Exception as err:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{err}]\nTrace:\n{traceback.format_exc()}'
