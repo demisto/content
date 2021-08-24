@@ -8,7 +8,7 @@ import requests
 
 
 class Client(BaseClient):
-    def auth(self):
+    def auth():
         auth = tweepy.OAuthHandler(demisto.params().get('apikey'), demisto.params().get('apikey_secret'))
         auth.set_access_token(demisto.params().get('access_token'), demisto.params().get('access_token_secret'))
         api = tweepy.API(auth)
@@ -41,7 +41,7 @@ class Client(BaseClient):
             )
         return response.json()
 
-    def get_tweets(self):
+    def get_tweets():
         TWITTER_APIV1_TWEETS_URL = "https://api.twitter.com/1.1/search/tweets.json?q="
         if demisto.args().get('q')[0] == '#':
             q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
@@ -129,7 +129,7 @@ class Client(BaseClient):
 
 # Documentation for the tweepy search_users api call: https://docs.tweepy.org/en/stable/api.html#API.search_users
 
-    def get_users(self):
+    def get_users():
         table = []
         try:
             int(demisto.args().get('count'))
@@ -159,7 +159,7 @@ class Client(BaseClient):
 
 # Documentation on the user class used: https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user
 
-    def get_user_info(self):
+    def get_user_info():
         url = Client.create_users_info_url()
         headers = Client.create_headers(demisto.params().get('bearer_token'))
         json_response = Client.connect_to_endpoint(url, headers)
