@@ -135,7 +135,7 @@ class Client(BaseClient):
         except ValueError:
             return_error("Page must be an integer.")
         for user in ((Client.auth(self).search_users(q=name, page=int(demisto.args().get('page')),
-                                                       count=int(demisto.args().get('count')), include_entities=True))):
+                                                     count=int(demisto.args().get('count')), include_entities=True))):
             if 'url' in user.entities.keys():
                 user_url = user.entities.get('url').get('urls')[0].get('expanded_url')
             else:
@@ -219,16 +219,16 @@ def main():
         return_results(result)
     if demisto.command() == 'twitter-get-users':
         name = demisto.args().get('name')
-        Client.get_users(Client, name)
+        Client.get_users("Client", name)
     if demisto.command() == 'twitter-get-user-info':
         usernames = "usernames=" + demisto.args().get('usernames')
-        Client.get_user_info(Client, usernames)
+        Client.get_user_info("Client", usernames)
     if demisto.command() == 'twitter-get-tweets':
         if demisto.args().get('q')[0] == '#':
             q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
         else:
             q = demisto.args().get('q')
-        Client.get_tweets(Client, q)
+        Client.get_tweets("Client", q)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
