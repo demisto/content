@@ -581,6 +581,9 @@ def start_xql_query_polling_command(client: Client, args: dict) -> Union[Command
     if not execution_id:
         raise DemistoException('Failed to start query\n')
     args['query_id'] = execution_id
+    # the query data is being saved in the integration context for the next scheduled command command.
+    set_integration_context({execution_id: {'query': args.get('query'), 'time_frame': args.get('time_frame'),
+                                            'command_name': demisto.command()}})
     return get_xql_query_results_polling_command(client, args)
 
 
@@ -595,10 +598,11 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     :return: The command results.
     :rtype: ``Union[CommandResults, dict]``
     """
-    query = args.get('query', '')
-    time_frame = args.get('time_frame')
-    # get the first executed command in the polling
-    command_name = args.get('command_name', '') if 'command_name' in args else demisto.command()
+    # get the query data either from the integration context (if its not the first run) or from the given args.
+    query_id = args.get('query_id', '')
+    integration_context = get_integration_context()
+    command_data = integration_context.get(query_id, args)
+    command_name = command_data.get('command_name', demisto.command())
     interval_in_secs = int(args.get('interval_in_seconds', 10))
     outputs, file_data = get_xql_query_results(client, args)  # get query results with query_id
     outputs_prefix = get_outputs_prefix(command_name)
@@ -612,9 +616,8 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
 
     # if status is pending, the command will be called again in the next run until success.
     if outputs.get('status') == 'PENDING':
-        polling_args = {**args, 'command_name': command_name}
         scheduled_command = ScheduledCommand(command='xdr-get-xql-query-results', next_run_in_seconds=interval_in_secs,
-                                             args=polling_args, timeout_in_seconds=600)
+                                             args=args, timeout_in_seconds=600)
         command_results.scheduled_command = scheduled_command
         command_results.readable_output = 'Query is still running, it may take a little while...'
         return command_results
@@ -622,6 +625,8 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     results_to_format = outputs.pop('results')
 
     # create Human Readable output
+    query = command_data.get('query', '')
+    time_frame = command_data.get('time_frame')
     extra_for_human_readable = ({'query': query, 'time_frame': time_frame})
     outputs.update(extra_for_human_readable)
     command_results.readable_output = tableToMarkdown('General Results', outputs, headerTransform=string_to_table_header,
@@ -637,6 +642,7 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
 
     command_results.readable_output += tableToMarkdown('Data Results', outputs.get('results'),
                                                        headerTransform=string_to_table_header)
+    get_integration_context().clear()
     return command_results
 
 
@@ -751,6 +757,8 @@ def main() -> None:
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command.\nError: {str(e)}')
+    finally:
+        get_integration_context().clear()
 
 
 ''' ENTRY POINT '''

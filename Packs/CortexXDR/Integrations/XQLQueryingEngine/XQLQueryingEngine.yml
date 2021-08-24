@@ -214,27 +214,6 @@ script:
       name: query_id
       required: true
       secret: false
-    - default: false
-      description: ''
-      isArray: false
-      name: query
-      required: false
-      hidden: true
-      secret: false
-    - default: false
-      description: ''
-      isArray: false
-      name: command_name
-      required: false
-      hidden: true
-      secret: false
-    - default: false
-      description: ''
-      isArray: false
-      name: time_frame
-      required: false
-      hidden: true
-      secret: false
     deprecated: false
     description: |-
       Retrieve results of an executed XQL query API.
