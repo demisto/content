@@ -124,7 +124,7 @@ class Client(BaseClient):
 
 # Documentation for the tweepy search_users api call: https://docs.tweepy.org/en/stable/api.html#API.search_users
 
-    def get_users(name):
+    def get_users(self, name):
         table = []
         try:
             int(demisto.args().get('count'))
@@ -156,8 +156,8 @@ class Client(BaseClient):
 
     def get_user_info(self, usernames):
         url = Client.create_users_info_url()
-        headers = Client.create_headers(demisto.params().get('bearer_token'))
-        json_response = Client.connect_to_endpoint(url, headers)
+        headers = Client.create_headers(self, demisto.params().get('bearer_token'))
+        json_response = Client.connect_to_endpoint(self, url, headers)
         table = []
         for value in json_response.get('data'):
             obj = {
@@ -219,16 +219,16 @@ def main():
         return_results(result)
     if demisto.command() == 'twitter-get-users':
         name = demisto.args().get('name')
-        Client.get_users()
+        Client.get_users(self, name)
     if demisto.command() == 'twitter-get-user-info':
         usernames = "usernames=" + demisto.args().get('usernames')
-        Client.get_user_info(usernames)
+        Client.get_user_info(self, usernames)
     if demisto.command() == 'twitter-get-tweets':
         if demisto.args().get('q')[0] == '#':
             q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
         else:
             q = demisto.args().get('q')
-        Client.get_tweets(q)
+        Client.get_tweets(self, q)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
