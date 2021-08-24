@@ -2267,7 +2267,7 @@ script:
         name: filter
         required: false
         secret: false
-      - default: true
+      - default: false
         description: Page offset
         isArray: false
         name: offset
@@ -2419,7 +2419,7 @@ script:
     description: Resolve incidents
     execution: false
     name: cs-falcon-resolve-incident
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: true
   longRunning: false
