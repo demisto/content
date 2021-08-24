@@ -5,7 +5,6 @@ from CommonServerPython import *  # noqa: F401
 import datetime
 
 import pytz
-from pytz import reference, timezone
 
 ''' GLOBAL VARIABLES '''
 args = demisto.args()

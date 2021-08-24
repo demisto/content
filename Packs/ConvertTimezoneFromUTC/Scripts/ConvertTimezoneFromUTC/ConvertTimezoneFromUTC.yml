@@ -16,21 +16,14 @@ comment: Takes UTC and converts it to the specified timezone. Format must match 
   UTC date's format and output will be the same format. Can use in conjunction with
   ConvertDateToString
 commonfields:
-  id: 27f9b79e-f11d-4116-8df9-14137f97903f
+  id: ConvertTimezoneFromUTC
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-    itemVersion: ""
-    packID: 2956be27-b8d1-4dad-8359-197223017e60
-    propagationLabels:
-    - all
-    toServerVersion: ""
-dockerimage: docker.io/demisto/python3:3.9.6.22912
+dockerimage: demisto/python3:3.9.6.22912
 enabled: true
-engineinfo: {}
 name: ConvertTimezoneFromUTC
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -40,3 +33,6 @@ tags:
 - transformer
 - date
 type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
