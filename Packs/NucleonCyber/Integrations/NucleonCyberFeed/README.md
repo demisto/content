@@ -1,5 +1,5 @@
 This is the NucleonCyber Feed  integration
-This integration was integrated and tested with version xx of NucleonCyberFeed
+This integration was integrated and tested with version 6.0.0 of NucleonCyberFeed
 ## Configure NucleonCyberFeed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
