@@ -20,6 +20,7 @@ VALID_ADDRESS_FORMAT = r"[a-z0-9.!#$%&'*+-/=?^_`{|}~]+(\[@\]|@)[a-z0-9.-]+\.[a-z
 VALID_ADDRESS_REGEX = VALID_EXTENSION + VALID_ADDRESS_FORMAT
 
 
+# some comment
 def verify_is_email(email_address: str) -> bool:
     try:
         return re.match(VALID_ADDRESS_REGEX, email_address, re.IGNORECASE) is not None
