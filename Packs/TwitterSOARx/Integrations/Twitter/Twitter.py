@@ -219,7 +219,7 @@ def main():
         return_results(result)
     if demisto.command() == 'twitter-get-users':
         name = demisto.args().get('name')
-        Client.get_users(arg: "Client", name)
+        Client.get_users(arg: Client, name)
     if demisto.command() == 'twitter-get-user-info':
         usernames = "usernames=" + demisto.args().get('usernames')
         Client.get_user_info(arg: Client, usernames)
