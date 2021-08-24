@@ -69,8 +69,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''aws'' AND cloud.service = ''Amazon
-                    EC2'' AND json.rule = ( '
+                  simple: 'config from cloud.resource where cloud.type = ''aws'' AND
+                    cloud.service = ''Amazon EC2'' AND api.name = ''aws-ec2-describe-instances''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -84,13 +85,13 @@ tasks:
     task:
       brand: ""
       description: Search EC2 instances in Prisma Cloud
-      id: 94247d01-1c67-4de9-8b39-d4175697f72e
+      id: 5d21d3ef-d78f-4b93-8b0a-07a355a64601
       iscommand: true
       name: Search in EC2 Instances
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 94247d01-1c67-4de9-8b39-d4175697f72e
+    taskid: 5d21d3ef-d78f-4b93-8b0a-07a355a64601
     timertriggers: []
     type: regular
     view: |-
@@ -156,8 +157,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''aws'' AND cloud.service = ''Amazon
-                    Elastic Load Balancing'' AND json.rule = ( '
+                  simple: 'config from cloud.resource where cloud.type = ''aws'' AND
+                    cloud.service = ''Amazon Elastic Load Balancing'' AND api.name
+                    = ''aws-elbv2-describe-load-balancers'' AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -171,13 +173,13 @@ tasks:
     task:
       brand: ""
       description: Search EC2 Elastic Load Balancers in Prisma Cloud
-      id: 5eabacc6-aed6-4c3b-839e-f232de432e57
+      id: 53e36036-6367-4c36-869e-2e0eea7eb955
       iscommand: true
       name: Search in EC2 NLB
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 5eabacc6-aed6-4c3b-839e-f232de432e57
+    taskid: 53e36036-6367-4c36-869e-2e0eea7eb955
     timertriggers: []
     type: regular
     view: |-
@@ -439,9 +441,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: "config where cloud.type = 'aws' AND cloud.service = 'Amazon\
-                    \ Route53' AND api.name = 'aws-route53-list-hosted-zones' AND\
-                    \ json.rule = \n ( "
+                  simple: 'config from cloud.resource where cloud.type = ''aws'' AND
+                    cloud.service = ''Amazon Route53'' AND api.name = ''aws-route53-list-hosted-zones''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -457,13 +459,13 @@ tasks:
     task:
       brand: ""
       description: Search EC2 instances in Prisma Cloud
-      id: 808a6ab0-9bf6-4d29-8d61-a292bb0ab02e
+      id: ace1585b-f50b-4466-8ec0-ba15ea621d90
       iscommand: true
       name: Search in Route53 Hosted Zones
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 808a6ab0-9bf6-4d29-8d61-a292bb0ab02e
+    taskid: ace1585b-f50b-4466-8ec0-ba15ea621d90
     timertriggers: []
     type: regular
     view: |-

@@ -98,8 +98,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''azure'' AND cloud.service =
-                    ''Azure Compute'' AND json.rule = ( '
+                  simple: 'config from cloud.resource where cloud.type = ''azure''
+                    AND cloud.service = ''Azure Compute'' AND api.name = ''azure-vm-list''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -113,13 +114,13 @@ tasks:
     task:
       brand: ""
       description: Search Azure VM instances in Prisma Cloud
-      id: ef6587a9-3f8d-42da-841b-7ea508b3e19a
+      id: 747967fa-f4f0-4afb-8d24-bfe451752cfd
       iscommand: true
       name: Search in Azure Compute
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: ef6587a9-3f8d-42da-841b-7ea508b3e19a
+    taskid: 747967fa-f4f0-4afb-8d24-bfe451752cfd
     timertriggers: []
     type: regular
     view: |-
@@ -381,8 +382,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''azure'' AND cloud.service =
-                    ''Azure Virtual Network'' AND json.rule = ( '
+                  simple: 'config from cloud.resource where cloud.type = ''azure''
+                    AND cloud.service = ''Azure Virtual Network'' AND api.name = ''azure-network-public-ip-address''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -398,13 +400,13 @@ tasks:
     task:
       brand: ""
       description: Search Azure VM instances in Prisma Cloud
-      id: 881c9029-ed14-489d-8a2f-7def9adba178
+      id: c6f7f040-449a-4734-8dce-733b84e70c14
       iscommand: true
       name: Search in Azure Public IP
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 881c9029-ed14-489d-8a2f-7def9adba178
+    taskid: c6f7f040-449a-4734-8dce-733b84e70c14
     timertriggers: []
     type: regular
     view: |-
@@ -430,7 +432,7 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'properties.inboundIpAddress equals '
+                  simple: 'properties.outboundIpAddresses equals '
               suffix: {}
             operator: concat
           - args:
@@ -441,8 +443,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''azure'' AND cloud.service =
-                    ''Azure App Service'' AND json.rule = ( '
+                  simple: 'config from cloud.resource where cloud.type = ''azure''
+                    AND cloud.service = ''Azure App Service'' AND api.name = ''azure-app-service''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -458,13 +461,13 @@ tasks:
     task:
       brand: ""
       description: Search Azure VM instances in Prisma Cloud
-      id: 311faecb-5148-49cb-8feb-b1fb58a9dcd7
+      id: 9da485c0-2441-424e-87e6-10ec95671e6e
       iscommand: true
       name: Search in Azure App Service
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 311faecb-5148-49cb-8feb-b1fb58a9dcd7
+    taskid: 9da485c0-2441-424e-87e6-10ec95671e6e
     timertriggers: []
     type: regular
     view: |-

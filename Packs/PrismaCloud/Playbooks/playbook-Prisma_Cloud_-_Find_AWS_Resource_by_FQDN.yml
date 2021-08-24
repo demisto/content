@@ -77,9 +77,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: "config where cloud.type = 'aws' AND cloud.service = 'Amazon\
-                    \ Route53' AND api.name = 'aws-route53-list-hosted-zones' AND\
-                    \ json.rule = \n ( "
+                  simple: 'config from cloud.resource where cloud.type = ''aws'' AND
+                    cloud.service = ''Amazon Route53'' AND api.name = ''aws-route53-list-hosted-zones''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -95,13 +95,13 @@ tasks:
     task:
       brand: ""
       description: Search Route53 hosted zones in Prisma Cloud
-      id: ea7872de-3747-41c8-81c1-574c5adf8f87
+      id: 42c46d62-d2a6-42e2-83b9-0e87dc352e3b
       iscommand: true
       name: Search FQDN in Route53 HostedZone Entries
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: ea7872de-3747-41c8-81c1-574c5adf8f87
+    taskid: 42c46d62-d2a6-42e2-83b9-0e87dc352e3b
     timertriggers: []
     type: regular
     view: |-
@@ -166,8 +166,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''aws'' AND cloud.service = ''Amazon
-                    Elastic Load Balancing'' AND json.rule =  ( '
+                  simple: 'config from cloud.resource where cloud.type = ''aws'' AND
+                    cloud.service = ''Amazon Elastic Load Balancing'' AND api.name
+                    = ''aws-elb-describe-load-balancers'' AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -183,13 +184,13 @@ tasks:
     task:
       brand: ""
       description: Search AWS Elastic Load Balancers in Prisma Cloud
-      id: adda060f-e7c6-4a51-81c1-da6e31b8341a
+      id: 1b59f137-fb46-4639-8904-00bb5f021d86
       iscommand: true
       name: Search in Load Balancers (dnsname)
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: adda060f-e7c6-4a51-81c1-da6e31b8341a
+    taskid: 1b59f137-fb46-4639-8904-00bb5f021d86
     timertriggers: []
     type: regular
     view: |-
@@ -226,8 +227,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''aws'' and cloud.service = ''Amazon
-                    CloudFront'' and json.rule =  ( '
+                  simple: 'config from cloud.resource where cloud.type = ''aws'' AND
+                    cloud.service = ''Amazon CloudFront'' AND api.name = ''aws-cloudfront-list-distributions''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -243,13 +245,13 @@ tasks:
     task:
       brand: ""
       description: Search AWS CloudFront in Prisma Cloud
-      id: b8787bf4-585c-4396-87e3-a2c7ff7183e8
+      id: 2580bc20-bcf2-467b-87cd-0c5ea9c1bafd
       iscommand: true
       name: Search in CloudFront
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: b8787bf4-585c-4396-87e3-a2c7ff7183e8
+    taskid: 2580bc20-bcf2-467b-87cd-0c5ea9c1bafd
     timertriggers: []
     type: regular
     view: |-
@@ -340,9 +342,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: "config where cloud.type = 'aws' AND cloud.service = 'Amazon\
-                    \ Route53' AND api.name = 'aws-route53-list-hosted-zones' AND\
-                    \ json.rule = \n ( "
+                  simple: 'config from cloud.resource where cloud.type = ''aws'' AND
+                    cloud.service = ''Amazon Route53'' AND api.name = ''aws-route53-list-hosted-zones''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -358,13 +360,13 @@ tasks:
     task:
       brand: ""
       description: Search Route53 Hosted Zones in Prisma Cloud
-      id: 63596c16-01a3-43c6-899d-e1bfaa8ce36c
+      id: ea2fd6b3-2dc3-4d03-8917-78779c2c8b18
       iscommand: true
       name: Search Domain in Route53 HostedZone Name
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 63596c16-01a3-43c6-899d-e1bfaa8ce36c
+    taskid: ea2fd6b3-2dc3-4d03-8917-78779c2c8b18
     timertriggers: []
     type: regular
     view: |-
@@ -625,9 +627,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: "config where cloud.type = 'aws' AND cloud.service = 'Amazon\
-                    \ S3' AND api.name = 'aws-s3api-get-bucket-acl' AND json.rule\
-                    \ = \n ( "
+                  simple: 'config from cloud.resource where cloud.type = ''aws'' AND
+                    cloud.service = ''Amazon S3'' AND api.name = ''aws-s3api-get-bucket-acl''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -643,13 +645,13 @@ tasks:
     task:
       brand: ""
       description: Search Route53 Hosted Zones in Prisma Cloud
-      id: 426ccb2e-a16c-4fc6-8db8-1d79c156c2a3
+      id: 0f5c499c-6d23-4d7a-8904-025bc365040a
       iscommand: true
       name: Search FQDN in S3
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 426ccb2e-a16c-4fc6-8db8-1d79c156c2a3
+    taskid: 0f5c499c-6d23-4d7a-8904-025bc365040a
     timertriggers: []
     type: regular
     view: |-
@@ -1123,8 +1125,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''aws'' AND cloud.service = ''Amazon
-                    Elastic Load Balancing'' AND json.rule =  ( '
+                  simple: 'config from cloud.resource where cloud.type = ''aws'' AND
+                    cloud.service = ''Amazon Elastic Load Balancing'' AND api.name
+                    = ''aws-elb-describe-load-balancers'' AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -1140,13 +1143,13 @@ tasks:
     task:
       brand: ""
       description: Search AWS Elastic Load Balancers in Prisma Cloud
-      id: f97f71ef-ea20-4d15-88ec-8a01deab9532
+      id: 7aab8faf-31eb-4938-803a-38c0cc0a53ea
       iscommand: true
       name: Search in Load Balancers (description.dnsname)
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: f97f71ef-ea20-4d15-88ec-8a01deab9532
+    taskid: 7aab8faf-31eb-4938-803a-38c0cc0a53ea
     timertriggers: []
     type: regular
     view: |-
@@ -1183,8 +1186,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''aws'' and cloud.service = ''Amazon
-                    EKS'' and json.rule =  ( '
+                  simple: 'config from cloud.resource where cloud.type = ''aws'' AND
+                    cloud.service = ''Amazon EKS'' AND api.name = ''aws-eks-describe-cluster''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -1200,13 +1204,13 @@ tasks:
     task:
       brand: ""
       description: Search AWS CloudFront in Prisma Cloud
-      id: 2ad9c170-43de-45b4-8701-bda4dd680f6c
+      id: 80fc8d82-c52a-4f58-8b82-cd53c9fe9c06
       iscommand: true
       name: Search FQDN in EKS Endpoint
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 2ad9c170-43de-45b4-8701-bda4dd680f6c
+    taskid: 80fc8d82-c52a-4f58-8b82-cd53c9fe9c06
     timertriggers: []
     type: regular
     view: |-
@@ -1413,9 +1417,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: "config where cloud.type = 'aws' AND cloud.service = 'Amazon\
-                    \ EC2' AND api.name = 'aws-ec2-describe-instances' AND json.rule\
-                    \ = \n ( "
+                  simple: 'config from cloud.resource where cloud.type = ''aws'' AND
+                    cloud.service = ''Amazon EC2'' AND api.name = ''aws-ec2-describe-instances''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -1431,13 +1435,13 @@ tasks:
     task:
       brand: ""
       description: Search Route53 Hosted Zones in Prisma Cloud
-      id: b435a043-8763-4887-824c-b2360f6291ba
+      id: 32822336-a548-45da-8285-90b091caecd9
       iscommand: true
       name: Search FQDN in EC2
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: b435a043-8763-4887-824c-b2360f6291ba
+    taskid: 32822336-a548-45da-8285-90b091caecd9
     timertriggers: []
     type: regular
     view: |-
@@ -1474,8 +1478,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: "config where cloud.type = 'aws' AND cloud.service = 'Amazon\
-                    \ API Gateway' AND json.rule = \n ( "
+                  simple: 'config from cloud.resource where cloud.type = ''aws'' AND
+                    cloud.service = ''Amazon API Gateway'' AND api.name = ''aws-apigateway-domain-name''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -1491,13 +1496,13 @@ tasks:
     task:
       brand: ""
       description: Search Route53 Hosted Zones in Prisma Cloud
-      id: 9462461a-1520-4f28-8138-1957fc38328a
+      id: c405e3d8-6a9e-421f-8b8a-499d31c8541a
       iscommand: true
       name: Search FQDN in API Gateway
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 9462461a-1520-4f28-8138-1957fc38328a
+    taskid: c405e3d8-6a9e-421f-8b8a-499d31c8541a
     timertriggers: []
     type: regular
     view: |-

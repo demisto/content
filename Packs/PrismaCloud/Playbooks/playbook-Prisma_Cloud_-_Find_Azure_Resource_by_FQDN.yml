@@ -803,8 +803,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''azure'' and cloud.service =
-                    ''Azure App Service'' and json.rule =  ( '
+                  simple: 'config from cloud.resource where cloud.type = ''azure''
+                    AND cloud.service = ''Azure App Service'' AND api.name = ''azure-app-service''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: )
@@ -819,13 +820,13 @@ tasks:
       brand: ""
       description: Search configuration inventory on the Prisma Cloud (RedLock) platform
         using RQL language
-      id: 1310abac-4fba-442a-8917-50b083086dc9
+      id: 3107b94b-2010-48eb-85c0-ebaed826a7ec
       iscommand: true
       name: Search FQDNs in App Service
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 1310abac-4fba-442a-8917-50b083086dc9
+    taskid: 3107b94b-2010-48eb-85c0-ebaed826a7ec
     timertriggers: []
     type: regular
     view: |-
@@ -951,8 +952,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''azure'' and cloud.service =
-                    ''Azure Virtual Network'' and json.rule =  ( '
+                  simple: 'config from cloud.resource where cloud.type = ''azure''
+                    AND cloud.service = ''Azure Virtual Network'' AND api.name = ''azure-network-public-ip-address''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: )
@@ -967,13 +969,13 @@ tasks:
       brand: ""
       description: Search configuration inventory on the Prisma Cloud (RedLock) platform
         using RQL language
-      id: bd299765-2d65-4603-827c-43ed8978261e
+      id: 80352352-4b39-4b7a-86d4-c07bf3a61b9d
       iscommand: true
       name: Search FQDNs in Public IPs
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: bd299765-2d65-4603-827c-43ed8978261e
+    taskid: 80352352-4b39-4b7a-86d4-c07bf3a61b9d
     timertriggers: []
     type: regular
     view: |-
@@ -1011,8 +1013,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''azure'' and cloud.service =
-                    ''Azure Application Gateway'' and json.rule =  ( '
+                  simple: 'config from cloud.resource where cloud.type = ''azure''
+                    AND cloud.service = ''Azure Application Gateway'' AND api.name
+                    = ''azure-application-gateway'' AND json.rule = ( '
               suffix:
                 value:
                   simple: )
@@ -1027,13 +1030,13 @@ tasks:
       brand: ""
       description: Search configuration inventory on the Prisma Cloud (RedLock) platform
         using RQL language
-      id: b9f87a1a-8f45-44e3-8233-6e07a7320f58
+      id: c91a738c-b191-4725-894b-8deeef6ef3a2
       iscommand: true
       name: Search FQDNs in Azure Application Gateway
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: b9f87a1a-8f45-44e3-8233-6e07a7320f58
+    taskid: c91a738c-b191-4725-894b-8deeef6ef3a2
     timertriggers: []
     type: regular
     view: |-
@@ -1171,8 +1174,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''azure'' and cloud.service =
-                    ''Azure Storage'' and json.rule =  ( '
+                  simple: 'config from cloud.resource where cloud.type = ''azure''
+                    AND cloud.service = ''Azure Storage'' AND api.name = ''azure-storage-account-list''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: )
@@ -1187,13 +1191,13 @@ tasks:
       brand: ""
       description: Search configuration inventory on the Prisma Cloud (RedLock) platform
         using RQL language
-      id: e7b16762-83e9-41b7-8095-266d36a5d466
+      id: 49476811-2e58-4291-8f00-305c666af44b
       iscommand: true
       name: Search FQDNs in Azure Storage
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: e7b16762-83e9-41b7-8095-266d36a5d466
+    taskid: 49476811-2e58-4291-8f00-305c666af44b
     timertriggers: []
     type: regular
     view: |-
@@ -1319,8 +1323,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''azure'' and cloud.service =
-                    ''Azure Kubernetes Service'' and json.rule =  ( '
+                  simple: 'config from cloud.resource where cloud.type = ''azure''
+                    AND cloud.service = ''Azure Kubernetes Service'' AND api.name
+                    = ''azure-kubernetes-cluster'' AND json.rule = ( '
               suffix:
                 value:
                   simple: )
@@ -1335,20 +1340,20 @@ tasks:
       brand: ""
       description: Search configuration inventory on the Prisma Cloud (RedLock) platform
         using RQL language
-      id: 28ea4616-343e-4625-8289-2a946282bbb6
+      id: 8ddbb096-d42c-49a5-846e-30995677f78c
       iscommand: true
       name: Search FQDNs in AKS
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 28ea4616-343e-4625-8289-2a946282bbb6
+    taskid: 8ddbb096-d42c-49a5-846e-30995677f78c
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": -350,
-          "y": 1110
+          "x": -430,
+          "y": 1140
         }
       }
 version: -1

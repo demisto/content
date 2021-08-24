@@ -713,8 +713,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''gcp'' and cloud.service = ''Google
-                    Cloud DNS'' and json.rule = ( '
+                  simple: 'config from cloud.resource where cloud.type = ''gcp'' AND
+                    cloud.service = ''Google Cloud DNS'' AND api.name = ''gcloud-dns-managed-zone''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: ' )'
@@ -729,20 +730,20 @@ tasks:
       brand: ""
       description: Search configuration inventory on the Prisma Cloud (RedLock) platform
         using RQL language
-      id: 2db56794-0219-4474-8ceb-5a3f7b8482f5
+      id: 32767fe7-d8ea-422b-8bed-c3327a805dc7
       iscommand: true
       name: Search Zone Name in Google Cloud DNS
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 2db56794-0219-4474-8ceb-5a3f7b8482f5
+    taskid: 32767fe7-d8ea-422b-8bed-c3327a805dc7
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": -660,
-          "y": 1080
+          "x": -780,
+          "y": 1030
         }
       }
 version: -1
