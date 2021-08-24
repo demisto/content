@@ -11,7 +11,8 @@ import subprocess
 from pathlib import Path
 import threading
 import time
-from http.server import HTTPServer, http
+import http
+from http.server import HTTPServer
 
 WORKING_DIR = Path("/app")
 INPUT_FILE_PATH = 'sample.json'
@@ -19,7 +20,7 @@ OUTPUT_FILE_PATH = 'out{id}.pdf'
 DISABLE_LOGOS = True  # Bugfix before sane-reports can work with image files.
 MD_IMAGE_PATH = '/markdown/image'
 MD_HTTP_PORT = 10888
-global server_object
+SERVER_OBJECT = None
 
 
 def random_string(size=10):
@@ -48,10 +49,10 @@ def find_zombie_processes():
 def quit_driver_and_reap_children():
     try:
         # Kill Markdown artifacts server
-        global server_object
-        if server_object:
+        global SERVER_OBJECT
+        if SERVER_OBJECT:
             demisto.debug("Shutting down markdown artifacts server")
-            server_object.shutdown()
+            SERVER_OBJECT.shutdown()
 
         zombies, ps_out = find_zombie_processes()
         if zombies:
@@ -99,10 +100,10 @@ def startServer():
     # Make sure the server is created at current directory
     os.chdir('.')
     # Create server object listening the port 10888
-    global server_object
-    server_object = HTTPServer(server_address=('', MD_HTTP_PORT), RequestHandlerClass=fileHandler)
+    global SERVER_OBJECT
+    SERVER_OBJECT = HTTPServer(server_address=('', MD_HTTP_PORT), RequestHandlerClass=fileHandler)
     # Start the web server
-    server_object.serve_forever()
+    SERVER_OBJECT.serve_forever()
 
 
 def main():
