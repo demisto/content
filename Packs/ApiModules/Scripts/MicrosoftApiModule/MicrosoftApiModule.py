@@ -13,6 +13,7 @@ from typing import Dict, Tuple, List, Optional
 class Scopes:
     graph = 'https://graph.microsoft.com/.default'
     security_center = 'https://api.securitycenter.windows.com/.default'
+    security_center_apt_service = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
     management_azure = 'https://management.azure.com/.default'
 
 
@@ -285,7 +286,6 @@ class MicrosoftClient(BaseClient):
                                  scope: Optional[str] = None,
                                  integration_context: Optional[dict] = None
                                  ) -> Tuple[str, int, str]:
-
         if self.grant_type == AUTHORIZATION_CODE:
             if not self.multi_resource:
                 return self._get_self_deployed_token_auth_code(refresh_token, scope=scope)
