@@ -25,14 +25,7 @@
  "content": true,
  "group": 0,
  "hidden": false,
- "associatedTypes": [
-  "Phishing",
-  "Email Communication"
- ],
- "systemAssociatedTypes": [
-  "Email Communication"
- ],
- "associatedToAll": false,
+ "associatedToAll": true,
  "unmapped": false,
  "unsearchable": false,
  "caseInsensitive": true,

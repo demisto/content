@@ -23,13 +23,7 @@
  "content": true,
  "group": 0,
  "hidden": false,
- "associatedTypes": [
-  "Phishing"
- ],
- "systemAssociatedTypes": [
-  "Phishing"
- ],
- "associatedToAll": false,
+ "associatedToAll": true,
  "unmapped": false,
  "unsearchable": false,
  "fromVersion": "5.0.0"

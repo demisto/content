@@ -23,16 +23,7 @@
  "content": true,
  "group": 0,
  "hidden": false,
- "associatedTypes": [
-  "Phishing",
-  "Trend Micro CAS Event",
-  "Email Communication"
- ],
- "systemAssociatedTypes": [
-  "Phishing",
-  "Email Communication"
- ],
- "associatedToAll": false,
+ "associatedToAll": true,
  "unmapped": false,
  "unsearchable": false,
  "fromVersion": "5.0.0"
