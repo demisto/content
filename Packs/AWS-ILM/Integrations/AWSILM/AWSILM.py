@@ -81,7 +81,7 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the created user in the application.
         :rtype: ``IAMUserAppData``
         """
-        user_data['emails'] = [user_data['emails']]
+        user_data['emails'] = [user_data.get('emails')]
 
         res = self._http_request(
             method='POST',
