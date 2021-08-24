@@ -1,6 +1,7 @@
 import pytest
 import os
 import json
+
 import demistomock as demisto
 from CommonServerPython import outputPaths, entryTypes, DemistoException
 
@@ -2834,7 +2835,7 @@ def test_get_endpint_command(requests_mock, mocker):
     assert context['Endpoint(val.ID && val.ID == obj.ID)'] == [endpoint_context]
 
 
-def test_create_hostgroup_invalid(requests_mock):
+def test_create_hostgroup_invalid(requests_mock, mocker):
     """
     Test Create hostgroup with valid args with unsuccessful args
     Given
