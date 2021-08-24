@@ -2244,6 +2244,26 @@ class TestFetch:
         assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_detection_time': '2020-09-04T09:16:11Z',
                                                           'detection_offset': 0}
 
+    def test_fetch_incident_type(self, set_up_mocks, mocker):
+        """
+        Tests the addition of incident_type field to the context
+        Given:
+            Old getLastRun which holds `first_behavior_time` and `last_detection_id`
+        When:
+            2 results are returned (which equals the FETCH_LIMIT)
+        Then:
+            "incident_type": "detection" is in raw result returned by the indicator
+
+        """
+        from CrowdStrikeFalcon import fetch_incidents
+        mocker.patch.object(demisto, 'getLastRun', return_value={
+            'first_behavior_detection_time': '2020-09-04T09:16:10Z',
+            'last_detection_id': 1234
+        })
+        incidents = fetch_incidents()
+        for incident in incidents:
+            assert "\"incident_type\": \"detection\"" in incident.get('rawJSON', '')
+
 
 class TestIncidentFetch:
     """ Test the logic of the fetch
@@ -2289,6 +2309,23 @@ class TestIncidentFetch:
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0] == {'first_behavior_incident_time': '2020-09-04T09:16:11Z',
                                                           'last_fetched_incident': 'ldt:1', 'incident_offset': 0}
+
+    def test_incident_type_in_fetch(self, set_up_mocks, mocker):
+        """Tests the addition of incident_type field to the context
+        Given:
+            Old getLastRun which holds `first_behavior_time` and `last_incident_id`
+        When:
+            2 results are returned (which equals the FETCH_LIMIT)
+        Then:
+            "incident_type": "incident" is in raw result returned by the indicator
+
+        """
+        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_incident_time': '2020-09-04T09:16:10Z',
+                                                                 'last_incident_id': 1234})
+        from CrowdStrikeFalcon import fetch_incidents
+        incidents = fetch_incidents()
+        for incident in incidents:
+            assert "\"incident_type\": \"incident\"" in incident.get('rawJSON', '')
 
 
 def get_fetch_data():

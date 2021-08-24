@@ -13,6 +13,7 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
+BASE_URL: str
 USER: str
 TOKEN: str
 PRIVATE_KEY: str
@@ -29,8 +30,6 @@ RELEASE_SUFFIX: str
 PULLS_SUFFIX: str
 FILE_SUFFIX: str
 HEADERS: dict
-
-BASE_URL = 'https://api.github.com'
 
 RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
 ISSUE_HEADERS = ['ID', 'Repository', 'Organization', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at',
@@ -1946,6 +1945,7 @@ COMMANDS = {
 
 
 def main():
+    global BASE_URL
     global USER
     global TOKEN
     global PRIVATE_KEY
@@ -1964,6 +1964,7 @@ def main():
     global HEADERS
 
     params = demisto.params()
+    BASE_URL = params.get('url', 'https://api.github.com')
     USER = params.get('user')
     TOKEN = params.get('token', '')
     creds: dict = params.get('credentials', {})
