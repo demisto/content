@@ -1214,7 +1214,16 @@
         {
             "integrations": "WildFire-v2",
             "playbookID": "Wildfire Test",
-            "is_mockable": false
+            "is_mockable": false,
+            "fromversion": "5.0.0",
+            "toversion": "6.1.9"
+        },
+        {
+            "integrations": "WildFire-v2",
+            "playbookID": "Wildfire Test With Polling",
+            "is_mockable": false,
+            "fromversion": "6.2.0",
+            "timeout": 1100
         },
         {
             "integrations": "WildFire-v2",
