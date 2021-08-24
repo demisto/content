@@ -270,7 +270,7 @@ Returns details on a modelbreach
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Darktrace.ModelBreach.breach_details | Dictionary | Details of the model breach |
+| Darktrace.ModelBreach| Dictionary | Details of the model breach |
 
 ### darktrace-get-model
 ***
