@@ -19,6 +19,8 @@ OUTPUT_FILE_PATH = 'out{id}.pdf'
 DISABLE_LOGOS = True  # Bugfix before sane-reports can work with image files.
 MD_IMAGE_PATH = '/markdown/image'
 MD_HTTP_PORT = 10888
+global server_object
+
 
 def random_string(size=10):
     return ''.join(
@@ -69,7 +71,7 @@ def startServer():
         def do_GET(self):
             demisto.debug(f'Handling MD Image request {self.path}')
             if not self.path.startswith(MD_IMAGE_PATH):
-                # not a standart xsoar markdown image endpoint
+                # not a standard xsoar markdown image endpoint
                 self.send_response(400)
                 self.flush_headers()
                 return
@@ -85,7 +87,7 @@ def startServer():
                     self.end_headers()
                     # Open the file
                     with open(f'{file_path}', 'rb') as file:
-                        self.wfile.write(file.read()) # Read the file and send the contents
+                        self.wfile.write(file.read())  # Read the file and send the contents
                     self.flush_headers()
                 except BrokenPipeError:  # ignore broken pipe as socket might have been closed
                     pass
@@ -101,6 +103,7 @@ def startServer():
     server_object = HTTPServer(server_address=('', MD_HTTP_PORT), RequestHandlerClass=fileHandler)
     # Start the web server
     server_object.serve_forever()
+
 
 def main():
     try:
