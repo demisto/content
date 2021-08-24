@@ -8,7 +8,7 @@ import requests
 
 
 class Client(BaseClient):
-    def auth():
+    def auth(self):
         auth = tweepy.OAuthHandler(demisto.params().get('apikey'), demisto.params().get('apikey_secret'))
         auth.set_access_token(demisto.params().get('access_token'), demisto.params().get('access_token_secret'))
         api = tweepy.API(auth)
@@ -19,19 +19,18 @@ class Client(BaseClient):
 # https://github.com/twitterdev/Twitter-API-v2-sample-code/blob/master/User-Lookup/get_users_with_bearer_token.py
 # Changes made: changed function name to "create_users_info_url", added extra user fields and made user_fields a constant,
 # usernames is no longer a static variable, removed the print statement from connect_to_endpoint
-    def create_users_info_url(self):
-        usernames = "usernames=" + demisto.args().get('usernames')
+    def create_users_info_url(usernames):
         USER_FIELDS = "&user.fields=description,pinned_tweet_id,protected,\
         created_at,id,location,name,url,public_metrics,profile_image_url,username,verified,withheld"
         TWITTER_APIV2_URL = "https://api.twitter.com/2/users/by?{}&{}"
         url = TWITTER_APIV2_URL.format(usernames, USER_FIELDS)
         return url
 
-    def create_headers(self, bearer_token):
+    def create_headers(bearer_token):
         headers = {"Authorization": "Bearer {}".format(bearer_token)}
         return headers
 
-    def connect_to_endpoint(self, url, headers):
+    def connect_to_endpoint(url, headers):
         response = requests.request("GET", url, headers=headers)
         if response.status_code != 200:
             raise Exception(
@@ -41,12 +40,8 @@ class Client(BaseClient):
             )
         return response.json()
 
-    def get_tweets():
+    def get_tweets(q):
         TWITTER_APIV1_TWEETS_URL = "https://api.twitter.com/1.1/search/tweets.json?q="
-        if demisto.args().get('q')[0] == '#':
-            q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
-        else:
-            q = demisto.args().get('q')
         search_url = TWITTER_APIV1_TWEETS_URL + q
 # Query arguments are set to have no default value. If the user does not input a value, the integration will check for if
 # a value for the argument exists and append it to the HTTP request if so.
@@ -129,7 +124,7 @@ class Client(BaseClient):
 
 # Documentation for the tweepy search_users api call: https://docs.tweepy.org/en/stable/api.html#API.search_users
 
-    def get_users():
+    def get_users(name):
         table = []
         try:
             int(demisto.args().get('count'))
@@ -139,7 +134,7 @@ class Client(BaseClient):
             int(demisto.args().get('page'))
         except ValueError:
             return_error("Page must be an integer.")
-        for user in ((Client.auth().search_users(q=demisto.args().get('name'), page=int(demisto.args().get('page')),
+        for user in ((Client.auth().search_users(q=name, page=int(demisto.args().get('page')),
                                                  count=int(demisto.args().get('count')), include_entities=True))):
             if 'url' in user.entities.keys():
                 user_url = user.entities.get('url').get('urls')[0].get('expanded_url')
@@ -223,11 +218,17 @@ def main():
         result = test_module(client)
         return_results(result)
     if demisto.command() == 'twitter-get-users':
+        name = demisto.args().get('name')
         Client.get_users()
     if demisto.command() == 'twitter-get-user-info':
-        Client.get_user_info()
+        usernames = "usernames=" + demisto.args().get('usernames')
+        Client.get_user_info(usernames)
     if demisto.command() == 'twitter-get-tweets':
-        Client.get_tweets()
+        if demisto.args().get('q')[0] == '#':
+            q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
+        else:
+            q = demisto.args().get('q')
+        Client.get_tweets(q)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
