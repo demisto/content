@@ -23,8 +23,8 @@ configuration:
   name: concurrency
   required: true
   type: 0
-description: Cisco NX-OS Platform management over SSH
-display: Cisco NX-OS
+description: Cisco NXOS Platform management over SSH. Deprecated. Use Ansible Cisco NXOS (from the Ansible Cisco NXOS pack) instead.
+display: Ansible Cisco NXOS (Deprecated)
 name: CiscoNX-OS
 script:
   commands:
@@ -3274,7 +3274,7 @@ script:
       - absent
     description: Creates a Virtual Network Identifier member (VNI)
     name: nxos-vxlan-vtep-vni
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+  dockerimage: demisto/ansible-runner:1.0.0.21184
   runonce: false
   script: ''
   subtype: python3
@@ -3282,3 +3282,4 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+deprecated: true
