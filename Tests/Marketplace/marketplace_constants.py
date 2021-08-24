@@ -109,7 +109,7 @@ class Metadata(object):
     KEY_WORDS = 'keywords'
     DEPENDENCIES = 'dependencies'
     PREMIUM = 'premium'
-    VERNDOR_ID = 'vendorId'
+    VENDOR_ID = 'vendorId'
     PARTNER_ID = 'partnerId'
     PARTNER_NAME = 'partnerName'
     CONTENT_COMMIT_HASH = 'contentCommitHash'
