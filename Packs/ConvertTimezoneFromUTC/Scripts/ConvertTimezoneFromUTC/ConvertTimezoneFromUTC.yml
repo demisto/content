@@ -1,0 +1,42 @@
+args:
+- default: true
+  description: Time in UTC in the format specified
+  name: value
+  required: true
+- defaultValue: '%Y-%m-%d %H:%M:%S'
+  description: Format that the input expects, and output will format to (i.e "%Y-%m-%d
+    %H:%M:%S")
+  name: format
+- description: Timezone to be converted to (i.e. 'US/Eastern', 'Etc/Greenwich','Canada/Eastern').
+    Review documentation on http://pytz.sourceforge.net/#helpers for what timezones
+    are available.
+  name: timezone
+  required: true
+comment: Takes UTC and converts it to the specified timezone. Format must match the
+  UTC date's format and output will be the same format. Can use in conjunction with
+  ConvertDateToString
+commonfields:
+  id: 27f9b79e-f11d-4116-8df9-14137f97903f
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 2956be27-b8d1-4dad-8359-197223017e60
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: docker.io/demisto/python3:3.9.6.22912
+enabled: true
+engineinfo: {}
+name: ConvertTimezoneFromUTC
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- date
+type: python
