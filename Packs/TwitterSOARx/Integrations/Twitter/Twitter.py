@@ -86,7 +86,7 @@ class Client(BaseClient):
                 search_url += "&count=100"
         search_url += "&tweet_mode=extended"
         headers = Client.create_headers(self, demisto.params().get('bearer_token'))
-        json_response = Client.connect_to_endpoint(Client, search_url, headers)
+        json_response = Client.connect_to_endpoint(self, search_url, headers)
         table = []
 
         def get_entity(value, entity, subentity):
@@ -155,7 +155,7 @@ class Client(BaseClient):
 # Documentation on the user class used: https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user
 
     def get_user_info(self, usernames):
-        url = Client.create_users_info_url(client, usernames)
+        url = Client.create_users_info_url(self, usernames)
         headers = Client.create_headers(self, demisto.params().get('bearer_token'))
         json_response = Client.connect_to_endpoint(self, url, headers)
         table = []
@@ -219,16 +219,16 @@ def main():
         return_results(result)
     if demisto.command() == 'twitter-get-users':
         name = demisto.args().get('name')
-        Client.get_users(Client, name)
+        Client.get_users(self, name)
     if demisto.command() == 'twitter-get-user-info':
         usernames = "usernames=" + demisto.args().get('usernames')
-        Client.get_user_info(Client, usernames)
+        Client.get_user_info(self, usernames)
     if demisto.command() == 'twitter-get-tweets':
         if demisto.args().get('q')[0] == '#':
             q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
         else:
             q = demisto.args().get('q')
-        Client.get_tweets(Client, q)
+        Client.get_tweets(self, q)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
