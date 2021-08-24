@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import tweepy
-import urllib
+import urllib # type: ignore[code, ...]
 import requests
 
 
