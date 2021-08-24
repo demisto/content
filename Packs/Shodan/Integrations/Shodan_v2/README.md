@@ -3,12 +3,6 @@
 
 Search engine for Internet-connected devices
 
-## Shodan_v2 Playbook
----
-
-## Use Cases
----
-
 ## Configure Shodan_v2 on Cortex XSOAR
 ---
 
@@ -21,8 +15,6 @@ Search engine for Internet-connected devices
     * __Trust self-signed certificate (insecure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
-## Fetched Incidents Data
----
 
 ## Commands
 ---
