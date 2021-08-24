@@ -221,3 +221,19 @@ def test_generate_query_item(filter_type, value_type, value, expected):
     """
     query_item = CLIENT.generate_query_item(filter_type, value_type, value)
     assert query_item['values'][0] == expected
+
+
+def test_add_host_request(requests_mock):
+    """
+    Given:
+    - Entity ID, entity name and hostname for creating a new host.
+
+    When:
+    - Running add_host_request.
+
+    Then:
+    - Validate that add host request body created as expected.
+    """
+    requests_mock.post(f'{BASE_URL}lr-admin-api/hosts', json={})
+    CLIENT.add_host_request('1', 'entity', 'host1', None, None, None, None, None, None, None, None, None, None)
+    assert requests_mock.last_request.text == '{"id": -1, "entity": {"name": "entity", "id": 1}, "name": "host1"}'
