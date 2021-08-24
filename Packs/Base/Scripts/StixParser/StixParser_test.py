@@ -239,6 +239,3 @@ def test_missing_firstSeen(mocker):
     from StixParser import main
     TestStix1.mock_demisto_with_file("./TestData/missing_firstSeen.json", mocker)
     main()
-
-
-# im here to trigger the test
