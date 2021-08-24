@@ -215,7 +215,6 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         if res.status_code not in valid_status_codes:
             res_json = res.json()
             reason = res.reason
-            # print(f'reason is {reason}')
             resources = res_json.get('resources', {})
             if resources:
                 for host_id, resource in resources.items():
@@ -1292,16 +1291,13 @@ def timestamp_length_equalization(timestamp1, timestamp2):
     return int(timestamp1), int(timestamp2)
 
 
-def change_host_group(method: str,
+def change_host_group(is_post: bool,
                       host_group_id: str = None,
                       name: str = None,
                       group_type: str = None,
                       description: str = None,
-                      assignment_rule: str = None) -> CommandResults:
-    allowed_methods = {'POST', 'PATCH'}
-    if method not in allowed_methods:
-        raise DemistoException(f'CrowdStrike Falcon error: method should be in {allowed_methods}')
-
+                      assignment_rule: str = None) -> Dict:
+    method = 'POST' if is_post else 'PATCH'
     data = {'resources': [{
         'id': host_group_id,
         "name": name,
@@ -1312,10 +1308,7 @@ def change_host_group(method: str,
     response = http_request(method=method,
                             url_suffix='/devices/entities/host-groups/v1',
                             json=data)
-    resources = response.get('resources')
-    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
-                          outputs_key_field='id',
-                          outputs=resources)
+    return response
 
 
 def change_host_group_members(action_name: str,
@@ -1335,6 +1328,35 @@ def change_host_group_members(action_name: str,
     return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
                           outputs_key_field='id',
                           outputs=resources)
+
+
+def host_group_members(filter: str, host_group_id: str, limit: str, offset: str):
+    params = {'id': host_group_id,
+              'filter': filter,
+              'offset': offset,
+              'limit': limit}
+    response = http_request(method='GET',
+                            url_suffix='/devices/combined/host-group-members/v1',
+                            params=params)
+    return response
+
+
+def resolve_incident(ids: List[str], status: str):
+    if status not in STATUS_TEXT_TO_NUM:
+        raise DemistoException(f'CrowdStrike Falcon Error: '
+                               f'Status given is {status} and it is not in {STATUS_TEXT_TO_NUM.keys()}')
+    data = {
+        "action_parameters": [
+            {
+                "name": "update_status",
+                "value": STATUS_TEXT_TO_NUM[status]
+            }
+        ],
+        "ids": ids
+    }
+    http_request(method='POST',
+                 url_suffix='/incidents/entities/incident-actions/v1',
+                 json=data)
 
 
 ''' COMMANDS FUNCTIONS '''
@@ -2519,36 +2541,41 @@ def list_incident_summaries_command():
     )
 
 
-def create_host_group_command(name :str,
-                              group_type:str=None,
-                              description:str=None,
-                              assignment_rule:str=None):
-    return change_host_group(method='POST',
-                             name=name,
-                             group_type=group_type,
-                             description=description,
-                             assignment_rule=assignment_rule)
+def create_host_group_command(name: str,
+                              group_type: str = None,
+                              description: str = None,
+                              assignment_rule: str = None) -> CommandResults:
+    response = change_host_group(is_post=True,
+                                 name=name,
+                                 group_type=group_type,
+                                 description=description,
+                                 assignment_rule=assignment_rule)
+    resources = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=resources,
+                          raw_response=response)
 
 
-def update_host_group_command(host_group_id:str,
-                              name:str=None,
-                              description:str=None,
-                              assignment_rule:str=None):
-    return change_host_group(method='PATCH',
-                             host_group_id=host_group_id,
-                             name=name,
-                             description=description,
-                             assignment_rule=assignment_rule)
+def update_host_group_command(host_group_id: str,
+                              name: str = None,
+                              description: str = None,
+                              assignment_rule: str = None) -> CommandResults:
+    response = change_host_group(is_post=False,
+                                 host_group_id=host_group_id,
+                                 name=name,
+                                 description=description,
+                                 assignment_rule=assignment_rule)
+    resources = response.get('resources')
+    return CommandResults(outputs_prefix='CrowdStrike.HostGroup',
+                          outputs_key_field='id',
+                          outputs=resources,
+                          raw_response=response)
 
 
-def list_host_group_members_command(host_group_id:str=None, filter:str=None, offset:str=None, limit:str=None) -> List[CommandResults]:
-    params = {'id': host_group_id,
-              'filter': filter,
-              'offset': offset,
-              'limit': limit}
-    response = http_request(method='GET',
-                            url_suffix='/devices/combined/host-group-members/v1',
-                            params=params)
+def list_host_group_members_command(host_group_id: str = None, filter: str = None, offset: str = None,
+                                    limit: str = None) -> List[CommandResults]:
+    response = host_group_members(filter, host_group_id, limit, offset)
     devices = response.get('resources')
     command_results: List[CommandResults] = []
     if not devices:
@@ -2561,6 +2588,7 @@ def list_host_group_members_command(host_group_id:str=None, filter:str=None, off
             outputs_key_field='ID',
             outputs=entry,
             readable_output=tableToMarkdown('Devices', entry, headers=headers, headerTransform=pascalToSpace),
+            raw_response=response
         ))
 
     return command_results
@@ -2578,26 +2606,8 @@ def remove_host_group_members_command(host_group_id: str, host_ids: List[str]):
                                      host_ids=host_ids)
 
 
-def resolve_incident_command(ids:List[str], status:str):
-    if status not in STATUS_TEXT_TO_NUM:
-        raise DemistoException(f'CrowdStrike Falcon Error:'
-                               f'Status given is not in in {STATUS_TEXT_TO_NUM.keys()}')
-    data = {
-        "action_parameters": [
-            {
-                "name": "update_status",
-                "value": STATUS_TEXT_TO_NUM[status]
-            }
-        ],
-        "ids": ids
-    }
-    http_request(method='POST',
-                 url_suffix='/incidents/entities/incident-actions/v1',
-                 json=data)
-    # response = http_request(method='POST', url_suffix='/incidents/entities/incidents/GET/v1',
-    #                         json={'ids': ids})
-    # incidents = response.get('resources')
-    # incidents_human_readable = incidents_to_human_readable(incidents)
+def resolve_incident_command(ids: List[str], status: str):
+    resolve_incident(ids, status)
     readable = '\n'.join([f'{incident_id} changed successfully to {status}' for incident_id in ids])
     return CommandResults(readable_output=readable)
 
@@ -2723,7 +2733,6 @@ def main():
 
 
 
-    # Log exceptions
     except Exception as e:
         return_error(str(e))
 
