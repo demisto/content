@@ -355,7 +355,7 @@
             }
         }
     },
-    "name": "EWS - Incoming Mapper_copy_1",
+    "name": "EWS - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"
