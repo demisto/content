@@ -695,7 +695,7 @@ def get_breach_details_command(client: Client, args: Dict[str, Any]) -> CommandR
     count = str(args.get('count', None))
     offset = str(args.get('offset', None))
 
-    model_breach = client.get_modelbreach_details(pbid=pbid, endtime=endtime, count=count, offset=offset)
+    model_breach = (client.get_modelbreach_details(pbid=pbid, endtime=endtime, count=count, offset=offset))[1:]
 
     if 'time' in model_breach:
         created_time = int(model_breach.get('time', '0'))
@@ -716,7 +716,7 @@ def get_breach_details_command(client: Client, args: Dict[str, Any]) -> CommandR
         readable_output=readable_output,
         outputs_prefix='Darktrace.ModelBreach',
         outputs_key_field='breach_details',
-        outputs=readable_output
+        outputs=model_breach
     )
 
 
