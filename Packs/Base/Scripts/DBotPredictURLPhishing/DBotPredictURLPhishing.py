@@ -15,9 +15,10 @@ import requests
 import dill
 import copy
 import datetime
+import numpy as np
 
 MSG_INVALID_URL = "URL does not seem to be valid. Reason: "
-MSG_NO_URL_GIVEN = "Please input one URL"
+MSG_NO_URL_GIVEN = "Please input at least one URL"
 MSG_FAILED_RASTERIZE = "Rasterize for this url did not work correctly"
 MSG_IMPOSSIBLE_CONNECTION = "Failed to establish a new connection - Name or service not known"
 MSG_WHITE_LIST = "White List"
@@ -32,15 +33,26 @@ DOMAIN_AGE_KEY = 'New domain (less than %s year)' %str(THRESHOLD_NEW_DOMAIN_YEAR
 
 MALICIOUS_VERDICT = "malicious"
 BENIGN_VERDICT = "benign"
+BENIGN_VERDICT_WHITELIST = "benign - whitelist"
 SUSPICIOUS_VERDICT = "suspicious"
 
-BENIGN_THRESHOLD = 0.4
-SUSPICIOUS_THRESHOLD = 0.6
+BENIGN_THRESHOLD = 0.5
+SUSPICIOUS_THRESHOLD = 0.7
+
 SCORE_INVALID_URL = -1
 SCORE_BENIGN = 0
 
+
 GREEN_COLOR = "{{color:#15ff2c}}(%s)"
 RED_COLOR = "{{color:#fd0800}}(%s)"
+
+VERDICT_MALICIOUS_COLOR = "{{background:#fd0800}}({{color:#ffffff}}(**%s**))"
+VERDICT_SUSPICIOUS_COLOR = "{{background:#fd9a14}}({{color:#ffffff}}(**%s**))"
+VERDICT_BENIGN_COLOR = "{{background:#15ff2c}}({{color:#ffffff}}(**%s**))"
+VERDICT_ERROR_COLOR = "{{background:#feff2b}}({{color:#000000}}(**%s**))"
+MAPPING_VERDICT_COLOR = {MALICIOUS_VERDICT:VERDICT_MALICIOUS_COLOR, BENIGN_VERDICT:VERDICT_BENIGN_COLOR,
+                         SUSPICIOUS_VERDICT:VERDICT_SUSPICIOUS_COLOR, BENIGN_VERDICT_WHITELIST:VERDICT_BENIGN_COLOR}
+
 SCORE_THRESHOLD = 0.7
 
 STATUS_CODE_VALID = 200
@@ -50,6 +62,9 @@ MODEL_KEY_LOGO_FOUND = 'logo_found'
 MODEL_KEY_SEO = 'seo'
 MODEL_KEY_LOGO_IMAGE_BYTES = 'image_bytes'
 MODEL_KEY_LOGO_LOGIN_FORM = 'login_form'
+
+WEIGHT_HEURISTIC = {DOMAIN_AGE_KEY: 1, MODEL_KEY_LOGO_LOGIN_FORM: 1, MODEL_KEY_SEO: 1,
+                    MODEL_KEY_URL_SCORE: 2, MODEL_KEY_LOGO_FOUND: 1}
 
 
 def get_model_data(model_name: str) -> Union[str, str]:
@@ -248,19 +263,19 @@ def return_entry_summary(pred_json: Dict, url: str, verdict: str, whitelist: boo
     :param whitelist: if url belongs to whitelist of the model
     :return: entry to demisto
     """
+    if not pred_json:
+        return
     if whitelist:
-        verdict = BENIGN_VERDICT
-        url_score = pred_json[MODEL_KEY_URL_SCORE]
+        url_score = SCORE_BENIGN
         url_score = GREEN_COLOR % str(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR % str(
             url_score)  # GREEN_COLOR%'0'
-        color = GREEN_COLOR
     else:
         url_score = pred_json[MODEL_KEY_URL_SCORE]
         url_score = GREEN_COLOR % str(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR % str(url_score)
-        color = RED_COLOR
     pred_json_colored = get_colored_pred_json(pred_json)
+    domain = extract_domainv2(url)
     explain = {
-        "Domain": extract_domainv2(url),
+        "Domain": domain,
         "URL": url,
         "NewDomain": str(pred_json[DOMAIN_AGE_KEY]),
         "LogoFound": str(pred_json[MODEL_KEY_LOGO_FOUND]),
@@ -269,25 +284,29 @@ def return_entry_summary(pred_json: Dict, url: str, verdict: str, whitelist: boo
         "ContentBasedVerdict": str(pred_json[MODEL_KEY_SEO])
     }
     explain_hr = {
-        "Domain from the URL": extract_domainv2(url),
+        "Domain from the URL": domain,
         "Has the domain bad SEO ?": str(pred_json_colored[MODEL_KEY_SEO]),
         DOMAIN_AGE_KEY: str(pred_json_colored[DOMAIN_AGE_KEY]),
         "Has the website a login form?": str(pred_json_colored[MODEL_KEY_LOGO_LOGIN_FORM]),
         "Logo found that does not correspond to the given domain": str(pred_json_colored[MODEL_KEY_LOGO_FOUND]),
         "URL severity score (from 0 to 1)": url_score
     }
-    verdict_hr = {
-        "Verdict": color % verdict,
-        "URL": url
-    }
     return_entry = {
         "Type": entryTypes["note"],
         "ContentsFormat": formats['json'],
-        "HumanReadable": tableToMarkdown("Verdict", verdict_hr) + tableToMarkdown("Report", explain_hr),
+        "HumanReadable": tableToMarkdown("Report %s" %domain, explain_hr),
         "Contents": explain,
         "EntryContext": {'DBotPredictURLPhishing': explain}
     }
     demisto.results(return_entry)
+    # Get rasterize image or logo detection if logo was found
+    image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
+    if not image:
+        return
+        image = image_from_base64_to_bytes(output_rasterize.get('image_b64', None))
+    res = fileResult(filename='Logo detection engine', data=image)
+    res['Type'] = entryTypes['image']
+    demisto.results(res)
 
 
 def return_entry_white_list(url):
@@ -327,16 +346,41 @@ def return_entry_white_list(url):
     demisto.results(return_entry)
 
 
-def get_verdict(pred_json: Dict) -> Union[float, str]:
+def get_score(pred_json):
+    use_age = False
+    use_logo = False
+    if pred_json[DOMAIN_AGE_KEY]:
+        use_age = True
+    if pred_json[MODEL_KEY_LOGO_FOUND]:
+        use_logo = True
+    total_weight_used = WEIGHT_HEURISTIC[DOMAIN_AGE_KEY] * use_age + \
+                        WEIGHT_HEURISTIC[MODEL_KEY_LOGO_LOGIN_FORM] + \
+                        WEIGHT_HEURISTIC[MODEL_KEY_SEO]+ \
+                        WEIGHT_HEURISTIC[MODEL_KEY_URL_SCORE]+ \
+                        WEIGHT_HEURISTIC[MODEL_KEY_LOGO_FOUND] * use_logo
+    score = (
+             use_age * WEIGHT_HEURISTIC[DOMAIN_AGE_KEY]*pred_json[DOMAIN_AGE_KEY] +
+             WEIGHT_HEURISTIC[MODEL_KEY_LOGO_LOGIN_FORM]*pred_json[MODEL_KEY_LOGO_LOGIN_FORM] +
+             WEIGHT_HEURISTIC[MODEL_KEY_SEO] * pred_json[MODEL_KEY_SEO] +
+             WEIGHT_HEURISTIC[MODEL_KEY_URL_SCORE] * pred_json[MODEL_KEY_URL_SCORE] +
+             use_logo * WEIGHT_HEURISTIC[MODEL_KEY_LOGO_FOUND] * pred_json[MODEL_KEY_LOGO_FOUND]
+            ) / (total_weight_used)
+    return score
+
+
+
+def get_verdict(pred_json: Dict, is_white_listed: bool) -> Union[float, str]:
     """
     Return verdict of the url based on the output of the model
     :param pred_json: output from the model
     :return:
     """
+    if is_white_listed:
+        return SCORE_BENIGN, BENIGN_VERDICT
+    score = get_score(pred_json)
     if pred_json[MODEL_KEY_LOGO_FOUND]:
-        return 1
+        return score, MALICIOUS_VERDICT
     else:
-        score = (pred_json[DOMAIN_AGE_KEY] + pred_json[MODEL_KEY_LOGO_LOGIN_FORM] + 2*pred_json[MODEL_KEY_SEO] + 2*pred_json[MODEL_KEY_URL_SCORE]) / 6
         if score < BENIGN_THRESHOLD:
             return score, BENIGN_VERDICT
         elif score < SUSPICIOUS_THRESHOLD:
@@ -366,14 +410,10 @@ def extract_created_date(entry_list: List) -> bool:
 
 def get_prediction_single_url(model, url, force_model):
     is_white_listed = False
-    if not url:
-        url, MSG_NO_URL_GIVEN, {}, SCORE_INVALID_URL, is_white_listed
-
     # Check if URL is valid and accessible
     valid_url, error = is_valid_url(url)
     if not valid_url:
-        return url, MSG_INVALID_URL + error, {}, SCORE_INVALID_URL, is_white_listed
-
+        return create_dict_context(url, MSG_INVALID_URL + error, {}, SCORE_INVALID_URL, is_white_listed)
 
     #Check domain age from WHOIS command
     domain = extract_domainv2(url)
@@ -384,7 +424,7 @@ def get_prediction_single_url(model, url, force_model):
     # Check is domain in white list -  If yes we don't run the model
     if in_white_list(model, url):
         if not force_model:
-            return url, BENIGN_VERDICT, {}, SCORE_BENIGN, is_white_listed
+            return create_dict_context(url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed)
         else:
             is_white_listed = True
 
@@ -406,7 +446,7 @@ def get_prediction_single_url(model, url, force_model):
     pred_json = model.predict(X_pred)
     pred_json[DOMAIN_AGE_KEY] = is_new_domain
 
-    score, verdict = get_verdict(pred_json)
+    score, verdict = get_verdict(pred_json, is_white_listed)
 
     return create_dict_context(url, verdict, pred_json, score, is_white_listed)
 
@@ -414,7 +454,9 @@ def get_prediction_single_url(model, url, force_model):
 def return_general_summary(results, tag="Summary"):
     df_summary = pd.DataFrame()
     df_summary['url'] = [x.get('url') for x in results]
-    df_summary['verdict'] = [x.get('verdict') for x in results]
+    df_summary['verdict'] = [MAPPING_VERDICT_COLOR[x.get('verdict')] %x.get('verdict') if x.get('verdict')
+                                                                                           in MAPPING_VERDICT_COLOR.keys()
+                             else VERDICT_ERROR_COLOR %x.get('verdict') for x in results ]
     df_summary_json = df_summary.to_dict(orient='records')
     return_entry = {
         "Type": entryTypes["note"],
@@ -428,7 +470,15 @@ def return_general_summary(results, tag="Summary"):
     demisto.results(return_entry)
 
 def return_detailed_summary(results, number_entries_to_return):
-    pass
+    severity_list = [x.get('score') for x in results]
+    indice_descending_severity = np.argsort(-np.array(severity_list), kind='mergesort')
+    for i in range(min(number_entries_to_return, len(results))):
+        index = indice_descending_severity[i]
+        pred_json = results[index].get('pred_json')
+        url = results[index].get('url')
+        verdict = results[index].get('verdict')
+        is_white_listed = results[index].get('is_white_listed')
+        return_entry_summary(pred_json, url, verdict, is_white_listed)
 
 
 
@@ -438,8 +488,10 @@ def main():
     model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
     model = decode_model_data(model_64_str)
 
-    force_model = bool(demisto.args().get('forceModel', 'False'))
-    urls = [x.strip() for x in demisto.args().get('urls', '').split(',')]
+    force_model = demisto.args().get('forceModel', 'False') == 'True'
+    urls = [x.strip() for x in demisto.args().get('urls', '').split(',') if x]
+    if not urls:
+        return_error(MSG_NO_URL_GIVEN)
     number_entries_to_return = int(demisto.args().get('numberEntryToReturn'))
     results = [get_prediction_single_url(model, x, force_model) for x in urls]
 
@@ -447,18 +499,6 @@ def main():
     return_detailed_summary(results, number_entries_to_return)
 
 
-
-
-    # # Return entry of the script
-    # return_entry_summary(pred_json, url, verdict, whitelist)
-    #
-    # # Get rasterize image or logo detection if logo was found
-    # image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
-    # if not image:
-    #     image = image_from_base64_to_bytes(output_rasterize.get('image_b64', None))
-    # res = fileResult(filename='Logo detection engine', data=image)
-    # res['Type'] = entryTypes['image']
-    # demisto.results(res)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
