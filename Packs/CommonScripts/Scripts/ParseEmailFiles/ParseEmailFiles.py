@@ -182,6 +182,7 @@ class DataModel(object):
         if data_value:
             try:
                 if USER_ENCODING:
+                    demisto.debug('Using argument user_encoding: {} to decode parsed message.'.format(USER_ENCODING))
                     return data_value.decode(USER_ENCODING, errors="ignore")
                 res = chardet.detect(data_value)
                 enc = res['encoding'] or 'ascii'  # in rare cases chardet fails to detect and return None as encoding
@@ -189,7 +190,7 @@ class DataModel(object):
                     if enc.lower() == 'windows-1252' and res['confidence'] < 0.9:
 
                         enc = DEFAULT_ENCODING if DEFAULT_ENCODING else 'windows-1250'
-                        demisto.debug('encoding detection confidence below threshold {}, '
+                        demisto.debug('Encoding detection confidence below threshold {}, '
                                       'switching encoding to "{}"'.format(res, enc))
 
                     temp = data_value
