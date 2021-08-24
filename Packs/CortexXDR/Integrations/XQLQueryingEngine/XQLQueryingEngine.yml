@@ -77,17 +77,6 @@ script:
       name: interval_in_seconds
       required: false
       secret: false
-    - default: false
-      description: |-
-        Integer representing the maximum number of results to return. For example:
-        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
-        If limit = 100 and the query produced 50 results, only 50 results will be returned.
-        If limit=null or empty (default) all results are returned with the Get XQL Query Results Stream API. For example, if limit=5000, only 5,000 results are returned.
-      isArray: false
-      name: limit
-      required: false
-      defaultValue: 200
-      secret: false
     deprecated: false
     description: |-
       Execute an XQL query and retrieve results of an executed XQL query API.

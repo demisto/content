@@ -16,6 +16,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DEFAULT_LIMIT = 200
 
 ''' CLIENT CLASS '''
 
@@ -355,6 +356,7 @@ def convert_relative_time_to_milliseconds(time_to_convert: str) -> int:
             'minute': 60 * 1000,
             'hour': 60 * 60 * 1000,
             'day': 24 * 60 * 60 * 1000,
+            'week': 7 * 24 * 60 * 60 * 1000,
             'month': 30 * 24 * 60 * 60 * 1000,
             'year': 12 * 30 * 24 * 60 * 60 * 1000
         }
@@ -364,7 +366,7 @@ def convert_relative_time_to_milliseconds(time_to_convert: str) -> int:
                 return time_multiples[k] * num
         raise ValueError
     except ValueError:
-        raise DemistoException('Please enter a valid time frame (seconds, minutes, hours, days, months, years).')
+        raise DemistoException('Please enter a valid time frame (seconds, minutes, hours, days, weeks, months, years).')
 
 
 def start_xql_query(client: Client, args: Dict[str, Any]) -> str:
@@ -384,10 +386,8 @@ def start_xql_query(client: Client, args: Dict[str, Any]) -> str:
     if '//' in query:
         raise DemistoException('Please remove notes (//) from query')
 
-    limit = args.get('limit')
-    if limit and limit in query:
-        return_warning('It is best to use a limit argument rather than inserting a limit directly into the query.')
-        query = f'{query} | limit {limit}'
+    if 'limit' not in query:  # if user did not provide a limit in the query, we will use the default one.
+        query = f'{query} | limit {str(DEFAULT_LIMIT)}'
     data = {
         'request_data': {
             'query': query,
@@ -422,11 +422,13 @@ def get_xql_query_results(client: Client, args: dict) -> Tuple[dict, Optional[by
     if not query_id:
         raise ValueError('query ID is not specified')
     format_method = args.get('format', 'json')
+    limit = args.get('limit', DEFAULT_LIMIT)
     data = {
         'request_data': {
             'query_id': query_id,
             'pending_flag': True,
-            'format': format_method
+            'format': format_method,
+            'limit': limit
         }
     }
 
@@ -689,8 +691,8 @@ def get_built_in_query_results_polling_command(client: Client, args: dict) -> Un
     query = f'{query}{extra_fields_list}'
 
     # add limit to query
-    limit = args.get('limit', '200')
-    query = f'{query} | limit {limit}'
+    if 'limit' in args:
+        query = f"{query} | limit {args.get('limit')}"
 
     query_args = {
         'query': query,
