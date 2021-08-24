@@ -363,9 +363,8 @@ def test_get_entity_details(requests_mock):
     assert integration_response.outputs_prefix == 'Darktrace.EntityDetails'
 
 
-def test_get_modelbreach_details(requests_mock):
+def test_get_modelbreach_details(mocker):
     """Tests the list-similar-devices command function.
-
     Configures requests_mock instance to generate the appropriate
     get_alert API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
@@ -374,8 +373,7 @@ def test_get_modelbreach_details(requests_mock):
 
     # GIVEN an integration is configured and you would like to find similar devices
     mock_api_response = util_load_json('test_data/breach_details.json')
-    requests_mock.get('https://mock.darktrace.com/details?endtime=1629803362&order=desc&includetotalbytes=true&count=2&pbid=123',
-                      json=mock_api_response)
+    mocker.patch.object(Client, 'get_modelbreach_details', return_value=mock_api_response)
 
     client = Client(
         base_url='https://mock.darktrace.com',
