@@ -219,16 +219,16 @@ def main():
         return_results(result)
     if demisto.command() == 'twitter-get-users':
         name = demisto.args().get('name')
-        Client.get_users(name)
+        Client.get_users(Client, name)
     if demisto.command() == 'twitter-get-user-info':
         usernames = "usernames=" + demisto.args().get('usernames')
-        Client.get_user_info(usernames)
+        Client.get_user_info(Client, usernames)
     if demisto.command() == 'twitter-get-tweets':
         if demisto.args().get('q')[0] == '#':
             q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
         else:
             q = demisto.args().get('q')
-        Client.get_tweets(q)
+        Client.get_tweets(Client, q)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
