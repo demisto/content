@@ -45,6 +45,12 @@ def find_zombie_processes():
 
 def quit_driver_and_reap_children():
     try:
+        # Kill Markdown artifacts server
+        global server_object
+        if server_object:
+            demisto.debug("Shutting down markdown artifacts server")
+            server_object.shutdown()
+
         zombies, ps_out = find_zombie_processes()
         if zombies:
             demisto.info(f'Found zombie processes will waitpid: {ps_out}')
@@ -53,10 +59,6 @@ def quit_driver_and_reap_children():
                 demisto.info(f'waitpid result: {waitres}')
         else:
             demisto.debug(f'No zombie processes found for ps output: {ps_out}')
-
-        # Kill Markdown artifacts server
-        global server_object
-        server_object.shutdown()
 
     except Exception as e:
         demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
