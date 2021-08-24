@@ -2557,7 +2557,7 @@ def list_host_group_members_command(host_group_id:str=None, filter:str=None, off
         entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
         headers = list(SEARCH_DEVICE_KEY_MAP.values())
         command_results.append(CommandResults(
-            outputs_prefix='CrowdStrike.HostGroupMember',
+            outputs_prefix='CrowdStrike.Device',
             outputs_key_field='ID',
             outputs=entry,
             readable_output=tableToMarkdown('Devices', entry, headers=headers, headerTransform=pascalToSpace),
@@ -2573,7 +2573,7 @@ def add_host_group_members_command(host_group_id: str, host_ids: List[str]):
 
 
 def remove_host_group_members_command(host_group_id: str, host_ids: List[str]):
-    return change_host_group_members(action_name='remove=hosts',
+    return change_host_group_members(action_name='remove-hosts',
                                      host_group_id=host_group_id,
                                      host_ids=host_ids)
 

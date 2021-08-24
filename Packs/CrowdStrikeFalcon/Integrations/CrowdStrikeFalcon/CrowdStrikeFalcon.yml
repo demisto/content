@@ -2309,9 +2309,6 @@ script:
     - contextPath: CrowdStrike.Device.LastSeen
       description: The last time the device was seen.
       type: String
-    - contextPath: CrowdStrike.Device.PolicyType
-      description: The policy type of the device.
-      type: String
     - contextPath: CrowdStrike.Device.Status
       description: The device status.
       type: String

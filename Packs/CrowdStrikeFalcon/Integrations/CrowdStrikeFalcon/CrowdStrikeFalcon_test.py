@@ -2834,39 +2834,6 @@ def test_get_endpint_command(requests_mock, mocker):
     assert context['Endpoint(val.ID && val.ID == obj.ID)'] == [endpoint_context]
 
 
-def test_create_hostgroup_valid(requests_mock):
-    """
-    Test Create hostgroup with valid args with a successful args
-    Given
-     - Valid arguments for hostgroup
-    When
-     - Calling create hostgroup command
-    Then
-     - Create the hostgroup and return the properties
-     """
-    from CrowdStrikeFalcon import create_host_group_command
-    name = 'test name'
-    description = 'test description'
-    group_type = 'static'
-    assignment_rule = "device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7']"
-
-    response_data = load_json('test_data/test_create_hostgroup_data.json')
-    response_data['resources'][0]['name'] = name
-    response_data['resources'][0]['group_type'] = group_type
-    response_data['resources'][0]['description'] = description
-    response_data['resources'][0]['assignment_rule'] = assignment_rule
-
-    requests_mock.post(
-        f'{SERVER_URL}/devices/entities/host-groups/v1',
-        json=response_data,
-        status_code=200
-    )
-    command_res = create_host_group_command(name='test name', description='test description', group_type='static')
-    assert name == command_res.outputs[0].get('name')
-    assert description == command_res.outputs[0].get('description')
-    assert group_type == command_res.outputs[0].get('group_type')
-
-
 def test_create_hostgroup_invalid(requests_mock):
     """
     Test Create hostgroup with valid args with unsuccessful args
@@ -2890,43 +2857,6 @@ def test_create_hostgroup_invalid(requests_mock):
                                   description="dem des",
                                   group_type='static',
                                   assignment_rule="device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7']")
-
-
-def test_update_hostgroup(requests_mock):
-    """
-    Test Create hostgroup with valid args with a successful id
-    Given
-     - Valid arguments for hostgroup
-    When
-     - Calling update hostgroup command
-    Then
-     - update the hostgroup and return the properties
-     """
-    from CrowdStrikeFalcon import update_host_group_command
-    name = 'test name'
-    description = 'test description'
-    group_type = 'static'
-    assignment_rule = "device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7']"
-
-    response_data = load_json('test_data/test_create_hostgroup_data.json')
-    response_data['resources'][0]['name'] = name
-    response_data['resources'][0]['group_type'] = group_type
-    response_data['resources'][0]['description'] = description
-    response_data['resources'][0]['assignment_rule'] = assignment_rule
-
-    requests_mock.patch(
-        f'{SERVER_URL}/devices/entities/host-groups/v1',
-        json=response_data,
-        status_code=200
-    )
-    command_res = update_host_group_command(host_group_id='b1a0cd73ecab411581cbe467fc3319f5',
-                                            name=name,
-                                            description=description,
-                                            group_type=group_type)
-    assert name == command_res.outputs[0].get('name')
-    assert description == command_res.outputs[0].get('description')
-    assert group_type == command_res.outputs[0].get('group_type')
-    assert assignment_rule == command_res.outputs[0].get('assignment_rule')
 
 
 def test_update_hostgroup_invalid(requests_mock):
@@ -2974,7 +2904,7 @@ def test_resolve_incidents(requests_mock, status, expected_status_api):
     m = requests_mock.post(
         f'{SERVER_URL}/incidents/entities/incident-actions/v1',
         json={})
-    resolve_incident_command('test', status)
+    resolve_incident_command(['test'], status)
     assert m.last_request.json()['action_parameters'][0]['value'] == expected_status_api
 
 
@@ -2990,6 +2920,48 @@ def test_resolve_incident_invalid():
      """
     from CrowdStrikeFalcon import resolve_incident_command
     with pytest.raises(DemistoException):
-        resolve_incident_command('test', '')
-        resolve_incident_command('test', 'new')
-        resolve_incident_command('test', 'BAD ARG')
+        resolve_incident_command(['test'], '')
+        resolve_incident_command(['test'], 'new')
+        resolve_incident_command(['test'], 'BAD ARG')
+
+
+def test_list_host_group_members(requests_mock):
+    """
+    Test list host group members with not arguments given
+    Given
+     - No arguments given, as is
+    When
+     - Calling list_host_group_members_command
+    Then
+     - Return all the hosts
+     """
+    from CrowdStrikeFalcon import list_host_group_members_command
+    test_list_hostgroup_members_data = load_json('test_data/test_list_hostgroup_members_data.json')
+    requests_mock.get(
+        f'{SERVER_URL}/devices/combined/host-group-members/v1',
+        json=test_list_hostgroup_members_data,
+        status_code=200
+    )
+    command_results = list_host_group_members_command()
+    actual_results = [{'ID': '75b2dba7ba8d450da481ed6830cc9d9d', 'ExternalIP': '35.224.136.145',
+                'MacAddress': '42-01-0a-80-00-15', 'Hostname': 'FALCON-CROWDSTR', 'FirstSeen': '2021-08-12T16:13:26Z',
+                'LastSeen': '2021-08-23T04:59:48Z', 'LocalIP': '10.128.0.21', 'OS': 'Windows Server 2019',
+                'Status': 'normal'},
+               {'ID': '15dbb9d8f06b45fe9f61eb46e829d986', 'ExternalIP': '35.224.136.145',
+                'MacAddress': '42-01-0a-80-00-07', 'Hostname': 'FALCON-CROWDSTR', 'FirstSeen': '2020-02-10T12:40:18Z',
+                'LastSeen': '2021-08-23T11:32:27Z', 'LocalIP': '10.128.0.7', 'OS': 'Windows Server 2019',
+                'Status': 'contained'},
+               {'ID': '046761c46ec84f40b27b6f79ce7cd32c', 'ExternalIP': '35.224.136.145',
+                'MacAddress': '42-01-0a-80-00-14', 'Hostname': 'INSTANCE-1', 'FirstSeen': '2021-08-23T05:04:41Z',
+                'LastSeen': '2021-08-23T11:16:44Z', 'LocalIP': '10.128.0.20', 'OS': 'Windows Server 2019',
+                'Status': 'normal'},
+               {'ID': '07007dd3f95c4d628fb097072bf7f7f3', 'ExternalIP': '35.224.136.145',
+                'MacAddress': '42-01-0a-80-00-14', 'Hostname': 'INSTANCE-1', 'FirstSeen': '2021-08-11T13:57:29Z',
+                'LastSeen': '2021-08-23T04:45:37Z', 'LocalIP': '10.128.0.20', 'OS': 'Windows Server 2019',
+                'Status': 'normal'},
+               {'ID': '0bde2c4645294245aca522971ccc44c4', 'ExternalIP': '35.224.136.145',
+                'MacAddress': '42-01-0a-80-00-13', 'Hostname': 'falcon-crowdstrike-sensor-centos7',
+                'FirstSeen': '2021-08-08T11:33:21Z', 'LastSeen': '2021-08-23T11:14:36Z', 'LocalIP': '10.128.0.19',
+                'OS': 'CentOS 7.9', 'Status': 'normal'}]
+    for actual_res, command_res in zip(actual_results, command_results):
+        assert actual_res == command_res.outputs
