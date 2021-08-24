@@ -42,7 +42,36 @@ class AzureSentinelClient(MicrosoftClient):
                  client_secret: str, subscription_id: str,
                  resource_group_name: str, workspace_name: str,
                  verify: bool = True, proxy: bool = False):
+        """
+        AzureSentinelClient class that make use client credentials for authorization with Azure.
 
+        :type server_url: ``str``
+        :param server_url: The server url.
+
+        :type tenant_id: ``str``
+        :param tenant_id: The tenant id.
+
+        :type client_id: ``str``
+        :param client_id: The client id.
+
+        :type client_secret: ``str``
+        :param client_secret: The client secret from Azure registered application.
+
+        :type subscription_id: ``str``
+        :param subscription_id: The subscription id.
+
+        :type resource_group_name: ``str``
+        :param resource_group_name: The resource group name.
+
+        :type workspace_name: ``str``
+        :param workspace_name: The workspace name.
+
+        :type verify: ``bool``
+        :param verify: Whether the request should verify the SSL certificate.
+
+        :type proxy: ``bool``
+        :param proxy: Whether to run the integration using the system proxy.
+        """
         if not server_url:
             server_url = f'https://management.azure.com/subscriptions/{subscription_id}/'\
                          f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/'\
@@ -63,6 +92,9 @@ class AzureSentinelClient(MicrosoftClient):
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None):
+        """
+        Override the base `http_request` for adding some required params and headers
+        """
         if not full_url:
             params = params or {}
             params['api-version'] = API_VERSION
@@ -75,7 +107,8 @@ class AzureSentinelClient(MicrosoftClient):
             json_data=data,
             params=params,
             error_handler=error_handler,
-            resp_type='response')
+            resp_type='response',
+        )
 
         if res.content:
             return res.json()
@@ -90,10 +123,10 @@ def error_handler(response: requests.Response):
     """
     if response.status_code in (400, 401, 403, 404):
         res_json = response.json()
-        code = res_json.get('error', {}).get('code', 'Error')
+        error_kind = res_json.get('error', {}).get('code', 'BadRequest')
         error_msg = res_json.get('error', {}).get('message', res_json)
         raise ValueError(
-            f'[{code} {response.status_code}] {error_msg}'
+            f'[{error_kind} {response.status_code}] {error_msg}'
         )
 
 
@@ -104,6 +137,11 @@ def format_date(date):
 
 
 def incident_data_to_xsoar_format(inc_data):
+    """
+    Convert the incident data from the raw to XSOAR format.
+
+    :param inc_data: (dict) The incident raw data.
+    """
     properties = inc_data.get('properties', {})
 
     formatted_data = {
@@ -137,6 +175,11 @@ def incident_data_to_xsoar_format(inc_data):
 
 
 def watchlist_data_to_xsoar_format(watchlist_data):
+    """
+    Convert the watchlist data from the raw to XSOAR format.
+
+    :param watchlist_data: (dict) The alert raw data.
+    """
     properties = watchlist_data.get('properties', {})
 
     formatted_data = {
@@ -158,7 +201,7 @@ def watchlist_data_to_xsoar_format(watchlist_data):
 
 def alert_data_to_xsoar_format(alert_data):
     """
-    Convert the data alert data from the raw to XSOAR format.
+    Convert the alert data from the raw to XSOAR format.
 
     :param alert_data: (dict) The alert raw data.
     """
@@ -198,7 +241,12 @@ def watchlist_item_data_to_xsoar_format(item_data):
 
 
 def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str, str]):
-    # Get Etag and other mandatory properties (title, severity, status) for update_incident command
+    """
+    Prepare etag and other mandatory incident properties for update_incident command.
+
+    :param client: The client.
+    :param args: The args for the command.
+    """
     fetched_incident_data = get_incident_by_id_command(client, args).raw_response
 
     title = args.get('title')
@@ -249,6 +297,12 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
 
 
 def comment_data_to_xsoar_format(comment_data, inc_id):
+    """
+    Convert the comment data from the raw to XSOAR format.
+
+    :param comment_data: (dict) The comment raw data.
+    :param inc_id: The id of the incident hold this comment.
+    """
     properties = comment_data.get('properties', {})
 
     formatted_data = {
@@ -263,6 +317,12 @@ def comment_data_to_xsoar_format(comment_data, inc_id):
 
 
 def incident_related_resource_data_to_xsoar_format(resource_data, incident_id):
+    """
+    Convert the incident relation from the raw to XSOAR format.
+
+    :param resource_data: (dict) The related resource raw data.
+    :param incident_id: The incident id.
+    """
     properties = resource_data.get('properties', {})
 
     formatted_data = {
@@ -274,6 +334,12 @@ def incident_related_resource_data_to_xsoar_format(resource_data, incident_id):
 
 
 def entity_related_resource_data_to_xsoar_format(resource_data, entity_id):
+    """
+    Convert the entity relation from the raw to XSOAR format.
+
+    :param resource_data: (dict) The related resource raw data.
+    :param entity_id: The entity id.
+    """
     properties = resource_data.get('properties', {})
 
     formatted_data = {
@@ -284,15 +350,10 @@ def entity_related_resource_data_to_xsoar_format(resource_data, entity_id):
     return formatted_data
 
 
-def flatten_entity_attributes(attributes):
-    # This method flattens a GET entity response json.
-    flattened_results = attributes.get('properties', {})
-    flattened_results['ID'] = attributes.get('name')
-    flattened_results['Kind'] = attributes.get('kind')
-    return flattened_results
-
-
 def severity_to_level(severity):
+    """
+    Maps severity to a level represented by number.
+    """
     if severity == 'Informational':
         return 0.5
     elif severity == 'Low':
@@ -671,7 +732,9 @@ def get_entity_by_id_command(client, args):
 
         result = client.http_request('GET', url_suffix, is_get_entity_cmd=True)
 
-        flattened_result = flatten_entity_attributes(result)
+        flattened_result = result.get('properties', {})
+        flattened_result['ID'] = result.get('name')
+        flattened_result['Kind'] = result.get('kind')
 
         readable_output = tableToMarkdown(f'Entity {entity_id} details',
                                           flattened_result,
