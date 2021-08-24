@@ -1,0 +1,438 @@
+category: IT Services
+commonfields:
+  id: AnsibleHCloud
+  version: -1
+configuration:
+- additionalinfo: This is the API Token for the Hetzner Cloud.
+  display: Username
+  displaypassword: API Token
+  hiddenusername: true
+  name: creds
+  required: true
+  type: 9
+- additionalinfo: This is the API Endpoint for the Hetzner Cloud.
+  defaultvalue: https://api.hetzner.cloud/v1
+  display: Endpoint
+  name: endpoint
+  required: true
+  type: 0
+description: Manage your Hetzner Cloud environment
+display: Ansible HCloud
+fromversion: 6.0.0
+name: AnsibleHCloud
+script:
+  commands:
+  - arguments:
+    - description: The ID of the datacenter you want to get.
+      name: id
+    - description: The name of the datacenter you want to get.
+      name: name
+    description: "Gather info about the Hetzner Cloud datacenters.\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_datacenter_info_module.html"
+    name: hcloud-datacenter-info
+    outputs:
+    - contextPath: HCloud.HcloudDatacenterInfo.hcloud_datacenter_info
+      description: 'The datacenter info as list This module was called `hcloud_datacenter_facts`
+        before Ansible 2.9, returning `ansible_facts` and `hcloud_datacenter_facts`.
+        Note that the `hcloud_datacenter_info` module no longer returns `ansible_facts`
+        and the value was renamed to `hcloud_datacenter_info`!'
+      type: unknown
+  - arguments:
+    - description: The ID of the Floating IP you want to get.
+      name: id
+    - description: The label selector for the Floating IP you want to get.
+      name: label_selector
+    description: "Gather infos about the Hetzner Cloud Floating IPs.\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_floating_ip_info_module.html"
+    name: hcloud-floating-ip-info
+    outputs:
+    - contextPath: HCloud.HcloudFloatingIpInfo.hcloud_floating_ip_info
+      description: The Floating ip infos as list
+      type: unknown
+  - arguments:
+    - description: The ID of the image you want to get.
+      name: id
+    - description: The name of the image you want to get.
+      name: name
+    - description: The label selector for the images you want to get.
+      name: label_selector
+    - auto: PREDEFINED
+      defaultValue: system
+      description: The label selector for the images you want to get.
+      name: type
+      predefined:
+      - system
+      - snapshot
+      - backup
+    description: "Gather infos about your Hetzner Cloud images.\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_image_info_module.html"
+    name: hcloud-image-info
+    outputs:
+    - contextPath: HCloud.HcloudImageInfo.hcloud_image_info
+      description: The image infos as list
+      type: unknown
+  - arguments:
+    - description: The ID of the location you want to get.
+      name: id
+    - description: The name of the location you want to get.
+      name: name
+    description: "Gather infos about your Hetzner Cloud locations.\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_location_info_module.html"
+    name: hcloud-location-info
+    outputs:
+    - contextPath: HCloud.HcloudLocationInfo.hcloud_location_info
+      description: The location infos as list
+      type: unknown
+  - arguments:
+    - description: 'The ID of the Hetzner Cloud Networks to manage. Only required
+        if no Network `name` is given.'
+      name: id
+    - description: 'The Name of the Hetzner Cloud Network to manage. Only required
+        if no Network `id` is given or a Network does not exists.'
+      name: name
+    - description: 'IP range of the Network. Required if Network does not exists.'
+      name: ip_range
+    - description: User-defined labels (key-value pairs).
+      isArray: true
+      name: labels
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the Network.
+      name: state
+      predefined:
+      - absent
+      - present
+    description: "Create and manage cloud Networks on the Hetzner Cloud.\n Further\
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_network_module.html"
+    name: hcloud-network
+    outputs:
+    - contextPath: HCloud.HcloudNetwork.hcloud_network
+      description: The Network
+      type: unknown
+  - arguments:
+    - description: The ID of the network you want to get.
+      name: id
+    - description: The name of the network you want to get.
+      name: name
+    - description: The label selector for the network you want to get.
+      name: label_selector
+    description: "Gather info about your Hetzner Cloud networks.\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_network_info_module.html"
+    name: hcloud-network-info
+    outputs:
+    - contextPath: HCloud.HcloudNetworkInfo.hcloud_network_info
+      description: The network info as list
+      type: unknown
+  - arguments:
+    - description: The name of the Hetzner Cloud server you want to add the reverse
+        DNS entry to.
+      name: server
+      required: true
+    - description: The IP address that should point to `dns_ptr`.
+      name: ip_address
+      required: true
+    - description: 'The DNS address the `ip_address` should resolve to. Omit the param
+        to reset the reverse DNS entry to the default value.'
+      name: dns_ptr
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the reverse DNS entry.
+      name: state
+      predefined:
+      - absent
+      - present
+    description: "Create and manage reverse DNS entries on the Hetzner Cloud.\n Further\
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_rdns_module.html"
+    name: hcloud-rdns
+    outputs:
+    - contextPath: HCloud.HcloudRdns.hcloud_rdns
+      description: The reverse DNS entry
+      type: unknown
+  - arguments:
+    - description: The name of the Hetzner Cloud Network.
+      name: network
+      required: true
+    - description: Destination network or host of this route.
+      name: destination
+      required: true
+    - description: Gateway for the route.
+      name: gateway
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the route.
+      name: state
+      predefined:
+      - absent
+      - present
+    description: "Create and delete cloud routes on the Hetzner Cloud.\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_route_module.html"
+    name: hcloud-route
+    outputs:
+    - contextPath: HCloud.HcloudRoute.hcloud_route
+      description: One Route of a Network
+      type: unknown
+  - arguments:
+    - description: 'The ID of the Hetzner Cloud server to manage. Only required if
+        no server `name` is given'
+      name: id
+    - description: 'The Name of the Hetzner Cloud server to manage. Only required
+        if no server `id` is given or a server does not exists.'
+      name: name
+    - description: 'The Server Type of the Hetzner Cloud server to manage. Required
+        if server does not exists.'
+      name: server_type
+    - description: 'List of SSH key names The key names correspond to the SSH keys
+        configured for your Hetzner Cloud account access.'
+      isArray: true
+      name: ssh_keys
+    - description: List of Volumes IDs that should be attached to the server on server
+        creation.
+      isArray: true
+      name: volumes
+    - description: 'Image the server should be created from. Required if server does
+        not exists.'
+      name: image
+    - description: 'Location of Server. Required if no `datacenter` is given and server
+        does not exists.'
+      name: location
+    - description: 'Datacenter of Server. Required of no `location` is given and server
+        does not exists.'
+      name: datacenter
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: Enable or disable Backups for the given Server.
+      name: backups
+      predefined:
+      - 'Yes'
+      - 'No'
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'Resize the disk size, when resizing a server. If you want to downgrade
+        the server later, this value should be False.'
+      name: upgrade_disk
+      predefined:
+      - 'Yes'
+      - 'No'
+    - auto: PREDEFINED
+      defaultValue: 'No'
+      description: 'Force the upgrade of the server. Power off the server if it is
+        running on upgrade.'
+      name: force_upgrade
+      predefined:
+      - 'Yes'
+      - 'No'
+    - description: 'User Data to be passed to the server on creation. Only used if
+        server does not exists.'
+      name: user_data
+    - description: Add the Hetzner rescue system type you want the server to be booted
+        into.
+      name: rescue_mode
+    - description: User-defined labels (key-value pairs).
+      isArray: true
+      name: labels
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the server.
+      name: state
+      predefined:
+      - absent
+      - present
+      - restarted
+      - started
+      - stopped
+      - rebuild
+    description: "Create and manage cloud servers on the Hetzner Cloud.\n Further\
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_module.html"
+    name: hcloud-server
+    outputs:
+    - contextPath: HCloud.HcloudServer.hcloud_server
+      description: The server instance
+      type: unknown
+  - arguments:
+    - description: The ID of the server you want to get.
+      name: id
+    - description: The name of the server you want to get.
+      name: name
+    - description: The label selector for the server you want to get.
+      name: label_selector
+    description: "Gather infos about your Hetzner Cloud servers.\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_info_module.html"
+    name: hcloud-server-info
+    outputs:
+    - contextPath: HCloud.HcloudServerInfo.hcloud_server_info
+      description: The server infos as list
+      type: unknown
+  - arguments:
+    - description: The name of the Hetzner Cloud Networks.
+      name: network
+      required: true
+    - description: The name of the Hetzner Cloud server.
+      name: server
+      required: true
+    - description: The IP the server should have.
+      name: ip
+    - description: Alias IPs the server has.
+      isArray: true
+      name: alias_ips
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the server_network.
+      name: state
+      predefined:
+      - absent
+      - present
+    description: "Manage the relationship between Hetzner Cloud Networks and servers\n\
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_network_module.html"
+    name: hcloud-server-network
+    outputs:
+    - contextPath: HCloud.HcloudServerNetwork.hcloud_server_network
+      description: The relationship between a server and a network
+      type: unknown
+  - arguments:
+    - description: The ID of the server type you want to get.
+      name: id
+    - description: The name of the server type you want to get.
+      name: name
+    description: "Gather infos about the Hetzner Cloud server types.\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_type_info_module.html"
+    name: hcloud-server-type-info
+    outputs:
+    - contextPath: HCloud.HcloudServerTypeInfo.hcloud_server_type_info
+      description: The server type infos as list
+      type: unknown
+  - arguments:
+    - description: 'The ID of the Hetzner Cloud ssh_key to manage. Only required if
+        no ssh_key `name` is given'
+      name: id
+    - description: 'The Name of the Hetzner Cloud ssh_key to manage. Only required
+        if no ssh_key `id` is given or a ssh_key does not exists.'
+      name: name
+    - description: 'The Fingerprint of the Hetzner Cloud ssh_key to manage. Only required
+        if no ssh_key `id` or `name` is given.'
+      name: fingerprint
+    - description: User-defined labels (key-value pairs)
+      isArray: true
+      name: labels
+    - description: 'The Public Key to add. Required if ssh_key does not exists.'
+      name: public_key
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the ssh_key.
+      name: state
+      predefined:
+      - absent
+      - present
+    description: "Create and manage ssh keys on the Hetzner Cloud.\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_ssh_key_module.html"
+    name: hcloud-ssh-key
+    outputs:
+    - contextPath: HCloud.HcloudSshKey.hcloud_ssh_key
+      description: The ssh_key instance
+      type: unknown
+  - arguments:
+    - description: The ID of the ssh key you want to get.
+      name: id
+    - description: The name of the ssh key you want to get.
+      name: name
+    - description: The fingerprint of the ssh key you want to get.
+      name: fingerprint
+    - description: The label selector for the ssh key you want to get.
+      name: label_selector
+    description: "Gather infos about your Hetzner Cloud ssh_keys.\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_ssh_key_info_module.html"
+    name: hcloud-ssh-key-info
+    outputs:
+    - contextPath: HCloud.HcloudSshKeyInfo.hcloud_ssh_key_info
+      description: The ssh key instances
+      type: unknown
+  - arguments:
+    - description: The ID or Name  of the Hetzner Cloud Networks.
+      name: network
+      required: true
+    - description: IP range of the subnetwork.
+      name: ip_range
+      required: true
+    - description: Type of subnetwork.
+      name: type
+      required: true
+    - description: Name of network zone.
+      name: network_zone
+      required: true
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the subnetwork.
+      name: state
+      predefined:
+      - absent
+      - present
+    description: "Manage cloud subnetworks on the Hetzner Cloud.\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_subnetwork_module.html"
+    name: hcloud-subnetwork
+    outputs:
+    - contextPath: HCloud.HcloudSubnetwork.hcloud_subnetwork
+      description: One Subnet of a Network
+      type: unknown
+  - arguments:
+    - description: 'The ID of the Hetzner Cloud Block Volume to manage. Only required
+        if no volume `name` is given'
+      name: id
+    - description: 'The Name of the Hetzner Cloud Block Volume to manage. Only required
+        if no volume `id` is given or a volume does not exists.'
+      name: name
+    - description: 'The size of the Block Volume in GB. Required if volume does not
+        yet exists.'
+      name: size
+    - description: Automatically mount the Volume.
+      name: automount
+    - auto: PREDEFINED
+      description: 'Automatically Format the volume on creation Can only be used in
+        case the Volume does not exists.'
+      name: format
+      predefined:
+      - xfs
+      - ext4
+    - description: 'Location of the Hetzner Cloud Volume. Required if no `server`
+        is given and Volume does not exists.'
+      name: location
+    - description: 'Server Name the Volume should be assigned to. Required if no `location`
+        is given and Volume does not exists.'
+      name: server
+    - description: User-defined key-value pairs.
+      isArray: true
+      name: labels
+    - auto: PREDEFINED
+      defaultValue: present
+      description: State of the volume.
+      name: state
+      predefined:
+      - absent
+      - present
+    description: "Create and manage block volumes on the Hetzner Cloud.\n Further\
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_volume_module.html"
+    name: hcloud-volume
+    outputs:
+    - contextPath: HCloud.HcloudVolume.hcloud_volume
+      description: The block volume
+      type: unknown
+  - arguments:
+    - description: The ID of the volume you want to get.
+      name: id
+    - description: The name of the volume you want to get.
+      name: name
+    - description: The label selector for the volume you want to get.
+      name: label_selector
+    description: "Gather infos about your Hetzner Cloud volumes.\n Further documentation\
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_volume_info_module.html"
+    name: hcloud-volume-info
+    outputs:
+    - contextPath: HCloud.HcloudVolumeInfo.hcloud_volume_info
+      description: The volume infos as list
+      type: unknown
+  dockerimage: demisto/ansible-runner:1.0.0.23806
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
