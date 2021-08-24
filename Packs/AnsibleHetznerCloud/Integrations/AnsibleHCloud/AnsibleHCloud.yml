@@ -4,10 +4,12 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: This is the API Token for the Hetzner Cloud.
-  display: API Token
-  name: api_token
+  display: Username
+  displaypassword: API Token
+  hiddenusername: true
+  name: creds
   required: true
-  type: 4
+  type: 9
 - additionalinfo: This is the API Endpoint for the Hetzner Cloud.
   defaultvalue: https://api.hetzner.cloud/v1
   display: Endpoint
