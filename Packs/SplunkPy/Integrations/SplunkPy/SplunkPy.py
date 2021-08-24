@@ -112,11 +112,12 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
-    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
-
-    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
-                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+    kwargs_oneshot = {
+        'earliest_time': last_run,
+        'latest_time': now,
+        'count': FETCH_LIMIT,
+        'offset': search_offset,
+    }
 
     searchquery_oneshot = dem_params['fetchQuery']
 
@@ -1149,11 +1150,12 @@ def get_mapping_fields_command(service):
     start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
     last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
-    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
-
-    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
-                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+    kwargs_oneshot = {
+        'earliest_time': last_run,
+        'latest_time': now,
+        'count': FETCH_LIMIT,
+        'offset': search_offset,
+    }
 
     searchquery_oneshot = dem_params['fetchQuery']
 
@@ -1403,8 +1405,11 @@ def rawToDict(raw):
                         result[key] = val
 
         else:
-            raw_response = re.split('(?<=\S),', raw)  # split by any non-whitespace character
-            for key_val in raw_response:
+            # search for the pattern: `key="value", `
+            # (the double quotes are optional)
+            # we append `, ` to the end of the string to catch the last value
+            raw_response = re.findall(r'(\S+=("?)[\S\s]+?\2), ', raw + ', ')
+            for key_val, _ in raw_response:
                 key_value = key_val.replace('"', '').strip()
                 if '=' in key_value:
                     key_and_val = key_value.split('=', 1)
