@@ -135,7 +135,7 @@ class Client(BaseClient):
         except ValueError:
             return_error("Page must be an integer.")
         for user in ((Client.auth(client).search_users(q=name, page=int(demisto.args().get('page')),
-                                                 count=int(demisto.args().get('count')), include_entities=True))):
+                                                       count=int(demisto.args().get('count')), include_entities=True))):
             if 'url' in user.entities.keys():
                 user_url = user.entities.get('url').get('urls')[0].get('expanded_url')
             else:
