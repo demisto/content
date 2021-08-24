@@ -184,7 +184,7 @@ tasks:
       value:
         complex:
           root: incident
-          accessor: emailfrom
+          accessor: labels.Email/from
     reputationcalc: 1
     separatecontext: false
     view: |-
