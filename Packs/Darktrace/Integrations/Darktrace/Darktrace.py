@@ -692,7 +692,7 @@ def get_breach_details_command(client: Client, args: Dict[str, Any]) -> CommandR
         raise ValueError('Darktrace Model Breach ID not specified')
 
     endtime = str(args.get('endtime', None))
-    count = str(args.get('count', None))
+    count = str(int(args.get('count', None)) + 1)
     offset = str(args.get('offset', None))
 
     model_breach = (client.get_modelbreach_details(pbid=pbid, endtime=endtime, count=count, offset=offset))[1:]
