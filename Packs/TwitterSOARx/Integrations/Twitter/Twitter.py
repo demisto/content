@@ -86,7 +86,7 @@ class Client(BaseClient):
                 search_url += "&count=100"
         search_url += "&tweet_mode=extended"
         headers = Client.create_headers(client, demisto.params().get('bearer_token'))
-        json_response = Client.connect_to_endpoint(search_url, headers)
+        json_response = Client.connect_to_endpoint(Client, search_url, headers)
         table = []
 
         def get_entity(value, entity, subentity):
@@ -215,20 +215,20 @@ def test_module(client):
 
 def main():
     if demisto.command() == 'test-module':
-        result = test_module(client)
+        result = test_module(Client)
         return_results(result)
     if demisto.command() == 'twitter-get-users':
         name = demisto.args().get('name')
-        Client.get_users(client, name)
+        Client.get_users(Client, name)
     if demisto.command() == 'twitter-get-user-info':
         usernames = "usernames=" + demisto.args().get('usernames')
-        Client.get_user_info(client, usernames)
+        Client.get_user_info(Client, usernames)
     if demisto.command() == 'twitter-get-tweets':
         if demisto.args().get('q')[0] == '#':
             q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
         else:
             q = demisto.args().get('q')
-        Client.get_tweets(client, q)
+        Client.get_tweets(Client, q)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
