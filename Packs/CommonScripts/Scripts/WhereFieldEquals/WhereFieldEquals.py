@@ -17,7 +17,7 @@ def where_field_equals(args):
 
     found_matches = []
     for dict_item in values_to_search:
-        if dict_item.get(field) == equal_to:
+        if isinstance(dict_item, dict) and dict_item.get(field) == equal_to:
             if get_field:
                 value = dict_item.get(get_field)
                 if value:
