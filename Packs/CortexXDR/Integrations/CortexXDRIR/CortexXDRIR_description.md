@@ -14,3 +14,7 @@ Cortex XDR is the world's first detection and response app that natively integra
 
 ---
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ir)
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ir)
