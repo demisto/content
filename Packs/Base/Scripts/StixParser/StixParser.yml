@@ -19,7 +19,7 @@ tags:
 timeout: 0s
 type: python
 subtype: python2
-dockerimage: demisto/stix:1.0.0.19265
+dockerimage: demisto/stix:1.0.0.23135
 tests:
 - STIXParserTest
 dependson: {}
