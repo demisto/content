@@ -65,7 +65,12 @@ class TestSalesforceFusionIAM:
 
         with requests_mock.Mocker() as m:
             m.get(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json=APP_USER_OUTPUT)
-            m.get(f'{URI_PREFIX}parameterizedSearch/', json={"searchRecords": [{"Id": "mock_id"}]})
+            m.get(
+                f'{URI_PREFIX}parameterizedSearch?q=testdemisto@paloaltonetworks.com&sobject=FF__Key_Contact__c'
+                f'&FF__Key_Contact__c.where=Work_Email__c=%27testdemisto@paloaltonetworks.com%27'
+                f'&FF__Key_Contact__c.fields=Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name',
+                json={"searchRecords": [{"Id": "mock_id"}]}
+            )
 
             user_profile = IAMCommand().get_user(client, args)
 
@@ -94,7 +99,12 @@ class TestSalesforceFusionIAM:
         args = {'user-profile': {'email': 'testdemisto@paloaltonetworks.com'}}
 
         with requests_mock.Mocker() as m:
-            m.get(f'{URI_PREFIX}parameterizedSearch/', json={})
+            m.get(
+                f'{URI_PREFIX}parameterizedSearch?q=testdemisto@paloaltonetworks.com&sobject=FF__Key_Contact__c'
+                f'&FF__Key_Contact__c.where=Work_Email__c=%27testdemisto@paloaltonetworks.com%27'
+                f'&FF__Key_Contact__c.fields=Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name',
+                json={}
+            )
 
             user_profile = IAMCommand().get_user(client, args)
 
@@ -125,7 +135,12 @@ class TestSalesforceFusionIAM:
         mocker.patch.object(demisto, 'error')
 
         with requests_mock.Mocker() as m:
-            m.get(f'{URI_PREFIX}parameterizedSearch/', status_code=500, json=error_msg)
+            m.get(
+                f'{URI_PREFIX}parameterizedSearch?q=testdemisto@paloaltonetworks.com&sobject=FF__Key_Contact__c'
+                f'&FF__Key_Contact__c.where=Work_Email__c=%27testdemisto@paloaltonetworks.com%27'
+                f'&FF__Key_Contact__c.fields=Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name',
+                status_code=500, json=error_msg
+            )
 
             user_profile = IAMCommand().get_user(client, args)
 
@@ -151,8 +166,12 @@ class TestSalesforceFusionIAM:
 
         with requests_mock.Mocker() as m:
             # User does not exist
-            m.get(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json={})
-            m.get(f'{URI_PREFIX}parameterizedSearch/', json={})
+            m.get(
+                f'{URI_PREFIX}parameterizedSearch?q=testdemisto@paloaltonetworks.com&sobject=FF__Key_Contact__c'
+                f'&FF__Key_Contact__c.where=Work_Email__c=%27testdemisto@paloaltonetworks.com%27'
+                f'&FF__Key_Contact__c.fields=Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name',
+                json={}
+            )
             # Create the user
             m.post(f'{URI_PREFIX}sobjects/FF__Key_Contact__c', json=APP_USER_OUTPUT)
 
@@ -186,7 +205,12 @@ class TestSalesforceFusionIAM:
         with requests_mock.Mocker() as m:
             # User already exist
             m.get(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json=APP_UPDATED_USER_OUTPUT)
-            m.get(f'{URI_PREFIX}parameterizedSearch/', json={"searchRecords": [{"Id": "mock_id"}]})
+            m.get(
+                f'{URI_PREFIX}parameterizedSearch?q=testdemisto@paloaltonetworks.com&sobject=FF__Key_Contact__c'
+                f'&FF__Key_Contact__c.where=Work_Email__c=%27testdemisto@paloaltonetworks.com%27'
+                f'&FF__Key_Contact__c.fields=Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name',
+                json={"searchRecords": [{"Id": "mock_id"}]}
+            )
             # Update the user
             m.post(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json={})
 
@@ -223,7 +247,12 @@ class TestSalesforceFusionIAM:
         with requests_mock.Mocker() as m:
             # User does not exist
             m.get(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json={})
-            m.get(f'{URI_PREFIX}parameterizedSearch/', json={})
+            m.get(
+                f'{URI_PREFIX}parameterizedSearch?q=testdemisto@paloaltonetworks.com&sobject=FF__Key_Contact__c'
+                f'&FF__Key_Contact__c.where=Work_Email__c=%27testdemisto@paloaltonetworks.com%27'
+                f'&FF__Key_Contact__c.fields=Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name',
+                json={}
+            )
             # The create user endpoint
             m.post(f'{URI_PREFIX}sobjects/FF__Key_Contact__c', json=APP_USER_OUTPUT)
             # The update user endpoint
@@ -282,7 +311,12 @@ class TestSalesforceFusionIAM:
 
         with requests_mock.Mocker() as m:
             m.get(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json=APP_UPDATED_USER_OUTPUT)
-            m.get(f'{URI_PREFIX}parameterizedSearch/', json={"searchRecords": [{"Id": "mock_id"}]})
+            m.get(
+                f'{URI_PREFIX}parameterizedSearch?q=testdemisto@paloaltonetworks.com&sobject=FF__Key_Contact__c'
+                f'&FF__Key_Contact__c.where=Work_Email__c=%27testdemisto@paloaltonetworks.com%27'
+                f'&FF__Key_Contact__c.fields=Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name',
+                json={"searchRecords": [{"Id": "mock_id"}]}
+            )
             m.post(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json={})
 
             user_profile = IAMCommand().update_user(client, args)
@@ -315,7 +349,12 @@ class TestSalesforceFusionIAM:
         with requests_mock.Mocker() as m:
             # User does not exist
             m.get(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json={})
-            m.get(f'{URI_PREFIX}parameterizedSearch/', json={})
+            m.get(
+                f'{URI_PREFIX}parameterizedSearch?q=testdemisto@paloaltonetworks.com&sobject=FF__Key_Contact__c'
+                f'&FF__Key_Contact__c.where=Work_Email__c=%27testdemisto@paloaltonetworks.com%27'
+                f'&FF__Key_Contact__c.fields=Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name',
+                json={"searchRecords": [{"Id": "mock_id"}]}
+            )
 
             user_profile = IAMCommand().disable_user(client, args)
 
@@ -338,7 +377,7 @@ class TestSalesforceFusionIAM:
         """
         import demistomock as demisto
         mocker.patch.object(demisto, 'command', return_value='get-mapping-fields')
-        mocker.patch.object(demisto, 'params', return_value={'url': 'http://example.com'})
+        mocker.patch.object(demisto, 'params', return_value={'url': 'https://test.com'})
         mock_result = mocker.patch('SalesforceFusionIAM.return_results')
 
         schema = {
@@ -349,7 +388,7 @@ class TestSalesforceFusionIAM:
         }
 
         with requests_mock.Mocker() as m:
-            m.get(f'http://example.com/api/now{URI_PREFIX}sobjects/FF__Key_Contact__c/describe/', json=schema)
+            m.get(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/describe/', json=schema)
 
             main()
 

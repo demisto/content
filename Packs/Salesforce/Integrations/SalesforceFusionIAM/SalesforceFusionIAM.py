@@ -63,7 +63,7 @@ class Client(BaseClient):
             "q": email,
             "sobject": "FF__Key_Contact__c",
             "FF__Key_Contact__c.where": f"Work_Email__c='{email}'",
-            "FF__Key_Contact__c.fields": "Id, FF__First_Name__c, FF__Last_Name__c,Work_Email__c,Name"
+            "FF__Key_Contact__c.fields": "Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name"
         }
 
         res = self._http_request(
