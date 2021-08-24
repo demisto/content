@@ -41,12 +41,12 @@ def parse_feed_data(feed_response: str) -> FeedParserDict:
         raise DemistoException(f"Failed to parse feed.\nError:\n{str(err)}", exception=err)
 
 
-def collect_entries_data_from_response(parsed_feed_data: FeedParserDict, limit: int) -> List[Dict[str, Any]]:
+def collect_entries_data_from_response(parsed_feed_data: FeedParserDict, limit: Union[int, None]) -> List[Dict[str, Any]]:
     """Collects relevant data from the parsed RSS feed entries.
 
     Args:
         parsed_feed_data (FeedParserDict): Parsed RSS feed data.
-        limit (int): Maximum number of results to return.
+        limit (Union[int, None]): Maximum number of results to return.
 
     Returns:
         List[Dict[str, Any]]: The data from the RSS feed relevant for the widget.
@@ -117,8 +117,8 @@ def main():
         use_ssl=not args.get('insecure', False),
         proxy=args.get('proxy', False),
     )
-    
-    limit = 'all' if args.get('limit') == '' else arg_to_number(args.get('limit'))
+
+    limit = sys.maxsize if args.get('limit') == '' else arg_to_number(args.get('limit'))
 
     try:
         rss_raw_data = client.get_feed_data()

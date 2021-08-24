@@ -1,3 +1,4 @@
+import sys
 import pytest
 from test_data.test_variables import NO_ARTICLE, NO_ARTICLE_RES, ONE_ARTICLE, ONE_ARTICLE_RES, ONE_ARTICLE_STRING, \
     TWO_ARTICLES, TWO_ARTICLES_RES, TWO_ARTICLES_STRING,\
@@ -7,10 +8,10 @@ import demistomock as demisto
 
 
 @pytest.mark.parametrize('parsed_response, limit, expected_result', [
-    (NO_ARTICLE, 'all', NO_ARTICLE_RES),
-    (ONE_ARTICLE, 'all', ONE_ARTICLE_RES),
-    (TWO_ARTICLES, 'all', TWO_ARTICLES_RES),
-    (ONE_ARTICLE_NOT_PUBLISHED, 'all', ONE_ARTICLE_NOT_PUBLISHED_RES),
+    (NO_ARTICLE, sys.maxsize, NO_ARTICLE_RES),
+    (ONE_ARTICLE, sys.maxsize, ONE_ARTICLE_RES),
+    (TWO_ARTICLES, sys.maxsize, TWO_ARTICLES_RES),
+    (ONE_ARTICLE_NOT_PUBLISHED, sys.maxsize, ONE_ARTICLE_NOT_PUBLISHED_RES),
     (TWO_ARTICLES, 1, ONE_ARTICLE_RES),
 ])
 def test_collect_entries_data_from_response(parsed_response, limit, expected_result):
@@ -46,15 +47,20 @@ def test_create_widget_content(data, text_output):
     assert res == text_output
 
 
-def test_full_flow(mocker, requests_mock):
+@pytest.mark.parametrize('limit, exepcted_result', [
+    ('', TWO_ARTICLES_STRING_REVERSED),
+    ('1', ONE_ARTICLE_STRING),
+]
+)
+def test_full_flow(mocker, requests_mock, limit, exepcted_result):
     import RSSWidget as rssw
     requests_mock.get('https://test.com')
     mocker.patch.object(rssw, 'parse_feed_data', return_value=TWO_ARTICLES)
     mocker.patch.object(demisto, 'results')
-    mocker.patch.object(demisto, 'args', return_value={'url': 'https://test.com', 'limit': ''})
+    mocker.patch.object(demisto, 'args', return_value={'url': 'https://test.com', 'limit': limit})
 
     main()
 
     res = demisto.results.call_args[0][0]
     assert res['ContentsFormat'] == 'markdown'
-    assert res['Contents'] == TWO_ARTICLES_STRING_REVERSED
+    assert res['Contents'] == exepcted_result
