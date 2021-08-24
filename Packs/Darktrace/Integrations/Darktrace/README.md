@@ -307,7 +307,7 @@ Returns the details of a component given a CID
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Darktrace.Model | Dictionary | Details of the component |
+| Darktrace.Component | Dictionary | Details of the component |
 
 
 ### darktrace-list-similar-devices
