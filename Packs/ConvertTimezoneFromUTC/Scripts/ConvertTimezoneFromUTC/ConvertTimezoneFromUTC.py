@@ -12,7 +12,7 @@ args = demisto.args()
 
 
 def determine_correct_format(time, fmt):
-    time = datetime.datetime.strptime(time, fmt)
+    time = datetime.strptime(time, fmt)
 
     return time
 
