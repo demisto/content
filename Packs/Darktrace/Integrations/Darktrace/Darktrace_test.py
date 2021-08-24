@@ -428,6 +428,7 @@ def test_get_component(requests_mock):
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == 'Darktrace.Component'
 
+
 def test_get_model(requests_mock):
     """Tests the list-similar-devices command function.
 
@@ -459,4 +460,3 @@ def test_get_model(requests_mock):
 
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == 'Darktrace.Model'
-
