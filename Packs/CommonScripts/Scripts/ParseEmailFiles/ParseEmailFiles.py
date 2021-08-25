@@ -181,21 +181,35 @@ class DataModel(object):
     def PtypString(data_value):
         if data_value:
             try:
+                if USER_ENCODING:
+                    demisto.debug('Using argument user_encoding: {} to decode parsed message.'.format(USER_ENCODING))
+                    return data_value.decode(USER_ENCODING, errors="ignore")
                 res = chardet.detect(data_value)
                 enc = res['encoding'] or 'ascii'  # in rare cases chardet fails to detect and return None as encoding
                 if enc != 'ascii':
                     if enc.lower() == 'windows-1252' and res['confidence'] < 0.9:
-                        demisto.debug('encoding detection confidence below threshold {}, '
-                                      'switching encoding to "windows-1250"'.format(res))
-                        enc = 'windows-1250'
-                    data_value = data_value.decode(enc, errors='ignore').replace('\x00', '')
-                elif '\x00' not in data_value:
-                    data_value = data_value.decode("ascii", errors="ignore").replace('\x00', '')
+
+                        enc = DEFAULT_ENCODING if DEFAULT_ENCODING else 'windows-1250'
+                        demisto.debug('Encoding detection confidence below threshold {}, '
+                                      'switching encoding to "{}"'.format(res, enc))
+
+                    temp = data_value
+                    data_value = temp.decode(enc, errors='ignore')
+                    if '\x00' in data_value:
+                        demisto.debug('None bytes found on encoded string, will try use utf-16-le '
+                                      'encoding instead')
+                        data_value = temp.decode("utf-16-le", errors="ignore")
+
+                elif b'\x00' not in data_value:
+                    data_value = data_value.decode("ascii", errors="ignore")
                 else:
-                    data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
+                    data_value = data_value.decode("utf-16-le", errors="ignore")
 
             except UnicodeDecodeError:
-                data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
+                data_value = data_value.decode("utf-16-le", errors="ignore")
+
+        if isinstance(data_value, (bytes, bytearray)):
+            data_value = data_value.decode('utf-8')
 
         return data_value
 
@@ -2659,6 +2673,8 @@ ATTACHMENT_HEADER_SIZE = 8
 EMBEDDED_MSG_HEADER_SIZE = 24
 CONTROL_CHARS = re.compile(r'[\n\r\t]')
 MIME_ENCODED_WORD = re.compile(r'(.*)=\?(.+)\?([B|Q])\?(.+)\?=(.*)')  # guardrails-disable-line
+USER_ENCODING = demisto.args().get('forced_encoding', '')
+DEFAULT_ENCODING = demisto.args().get('default_encoding', '')
 
 
 class Message(object):
@@ -3387,13 +3403,21 @@ def get_utf_string(text, field):
     return utf_string
 
 
-def mime_decode(word_mime_encoded):
-    prefix, charset, encoding, encoded_text, suffix = word_mime_encoded.groups()
-    if encoding.lower() == 'b':
-        byte_string = base64.b64decode(encoded_text)
-    elif encoding.lower() == 'q':
-        byte_string = quopri.decodestring(encoded_text)
-    return prefix + byte_string.decode(charset) + suffix
+def mime_decode(encoded_string):
+    word_mime_encoded = MIME_ENCODED_WORD.search(encoded_string)
+    if word_mime_encoded:
+        prefix, charset, encoding, encoded_text, suffix = word_mime_encoded.groups()
+        if encoding.lower() == 'b':
+            byte_string = base64.b64decode(encoded_text)
+        elif encoding.lower() == 'q':
+            byte_string = quopri.decodestring(encoded_text)
+        try:
+            return prefix + byte_string.decode(charset) + suffix
+        except UnicodeDecodeError:
+            demisto.debug('Failed to decode encoded_string: {}. charset: {}, '
+                          'encoding: {}, encoded_text: {}'.format(encoded_string, charset, encoding, encoded_text))
+            return prefix + byte_string.decode(charset, errors='replace') + suffix
+    return ''
 
 
 def convert_to_unicode(s, is_msg_header=True):
@@ -3401,13 +3425,25 @@ def convert_to_unicode(s, is_msg_header=True):
     try:
         res = ''  # utf encoded result
         if is_msg_header:  # Mime encoded words used on message headers only
+            encode_decode_phrase = s
             try:
-                word_mime_encoded = s and MIME_ENCODED_WORD.search(s)
+                word_mime_encoded = MIME_ENCODED_WORD.search(encode_decode_phrase)
                 if word_mime_encoded:
-                    word_mime_decoded = mime_decode(word_mime_encoded)
-                    if word_mime_decoded and not MIME_ENCODED_WORD.search(word_mime_decoded):
-                        # ensure decoding was successful
-                        return word_mime_decoded
+                    if '?= =?' in encode_decode_phrase:
+                        encode_decode_phrase = encode_decode_phrase.replace('?= =?', '?==?')
+                    while word_mime_encoded:
+                        # encoded-word" is a sequence of printable ASCII characters that begins with "=?",
+                        # ends with "?=", and has two "?"s in between.
+                        start_encoding_index = encode_decode_phrase.index('=?')
+                        end_encoding_index = encode_decode_phrase.index('?=') + 2
+                        # index return the index where "?=" starts, need to include it on the substring
+                        encoded_substring = encode_decode_phrase[start_encoding_index:end_encoding_index]
+                        decoded_substring = mime_decode(encoded_substring)
+                        encode_decode_phrase = encode_decode_phrase[:start_encoding_index] + decoded_substring + \
+                                               encode_decode_phrase[end_encoding_index:]  # noqa: E127
+                        word_mime_encoded = MIME_ENCODED_WORD.search(encode_decode_phrase)
+                    return encode_decode_phrase
+
             except Exception as e:
                 # in case we failed to mine-decode, we continue and try to decode
                 demisto.debug('Failed decoding mime-encoded string: {}. Will try regular decoding.'.format(str(e)))
@@ -3770,7 +3806,8 @@ def main():
             output = create_email_output(email_data, attached_emails)
 
         elif any(eml_candidate in file_type_lower for eml_candidate in
-                 ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'multipart/alternative', 'multipart/mixed', 'message/rfc822',
+                 ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'multipart/alternative', 'multipart/mixed',
+                  'message/rfc822',
                   'application/pkcs7-mime', 'multipart/related']):
             if 'unicode (with bom) text' in file_type_lower:
                 email_data, attached_emails = handle_eml(
