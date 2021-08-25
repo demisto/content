@@ -275,5 +275,6 @@
 
     - UNZIP_PATH=$(mktemp -d)
     - unzip $INDEX_PATH -d $UNZIP_PATH > $ARTIFACTS_FOLDER/logs/unzip_index.log
+    - section_end "Validate landingPageSections.json"
 
     - python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
