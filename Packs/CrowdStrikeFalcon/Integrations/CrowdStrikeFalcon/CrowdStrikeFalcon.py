@@ -1292,11 +1292,11 @@ def timestamp_length_equalization(timestamp1, timestamp2):
 
 
 def change_host_group(is_post: bool,
-                      host_group_id: str = None,
-                      name: str = None,
-                      group_type: str = None,
-                      description: str = None,
-                      assignment_rule: str = None) -> Dict:
+                      host_group_id: Optional[str] = None,
+                      name: Optional[str] = None,
+                      group_type: Optional[str] = None,
+                      description: Optional[str] = None,
+                      assignment_rule: Optional[str] = None) -> Dict:
     method = 'POST' if is_post else 'PATCH'
     data = {'resources': [{
         'id': host_group_id,
@@ -1327,7 +1327,10 @@ def change_host_group_members(action_name: str,
     return response
 
 
-def host_group_members(filter: str, host_group_id: str, limit: str, offset: str):
+def host_group_members(filter: Optional[str],
+                       host_group_id: Optional[str],
+                       limit: Optional[str],
+                       offset: Optional[str]):
     params = {'id': host_group_id,
               'filter': filter,
               'offset': offset,
@@ -2555,9 +2558,9 @@ def create_host_group_command(name: str,
 
 
 def update_host_group_command(host_group_id: str,
-                              name: str = None,
-                              description: str = None,
-                              assignment_rule: str = None) -> CommandResults:
+                              name: Optional[str] = None,
+                              description: Optional[str] = None,
+                              assignment_rule: Optional[str] = None) -> CommandResults:
     response = change_host_group(is_post=False,
                                  host_group_id=host_group_id,
                                  name=name,
@@ -2570,8 +2573,10 @@ def update_host_group_command(host_group_id: str,
                           raw_response=response)
 
 
-def list_host_group_members_command(host_group_id: str = None, filter: str = None, offset: str = None,
-                                    limit: str = None) -> List[CommandResults]:
+def list_host_group_members_command(host_group_id: Optional[str] = None,
+                                    filter: Optional[str] = None,
+                                    offset: Optional[str] = None,
+                                    limit: Optional[str] = None) -> List[CommandResults]:
     response = host_group_members(filter, host_group_id, limit, offset)
     devices = response.get('resources')
     command_results: List[CommandResults] = []
@@ -2738,8 +2743,8 @@ def main():
             return_results(resolve_incident_command(status=args.get('status'),
                                                     ids=argToList(args.get('ids'))))
         else:
-            raise NotImplemented(f'CrowdStrike Falcon error: '
-                                 f'command {command} is not implemented')
+            raise NotImplementedError(f'CrowdStrike Falcon error: '
+                                      f'command {command} is not implemented')
 
 
 

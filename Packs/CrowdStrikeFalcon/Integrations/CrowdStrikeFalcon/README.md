@@ -2071,4 +2071,377 @@ Lists incident summaries.
 >|ID|IPAddress|OS|OSVersion|Hostname|Status|MACAddress|Vendor
 >|---|---|---|---|---|---|---|---|
 >| 15dbb9d8f06b45fe9f61eb46e829d986 | 1.1.1.1 | Windows | Windows Server 2019| Hostname | Online | 1-1-1-1 | CrowdStrike Falcon|\n"
+### cs-falcon-create-host-group
+***
+Create a host group
 
+
+#### Base Command
+
+`cs-falcon-create-host-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the host. | Required | 
+| group_type | The group type of the group. Can be 'static' or 'dynamic'. Possible values are: static, dynamic. | Optional | 
+| description | Description of the host. | Optional | 
+| assignment_rule | The assignmet rule. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.HostGroup.id | String | The id of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group | 
+| CrowdStrike.HostGroup.name | String | The name of the hostgroup | 
+| CrowdStrike.HostGroup.description | String | The description of the hostgroup | 
+| CrowdStrike.HostGroup.created_by | String | The created client of the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | The timestamp of created hostgroup | 
+| CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | The integration name of the endpoint vendor. | 
+
+
+#### Command Example
+```!cs-falcon-create-host-group name="test_name_1" description="test_description" group_type=static```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "HostGroup": {
+            "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "created_timestamp": "2021-08-25T08:02:02.060242909Z",
+            "description": "test_description",
+            "group_type": "static",
+            "id": "f82edc8a565d432a8114ebdbf255f5b2",
+            "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "modified_timestamp": "2021-08-25T08:02:02.060242909Z",
+            "name": "test_name_1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|
+>| api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:02.060242909Z | test_description | static | f82edc8a565d432a8114ebdbf255f5b2 | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:02.060242909Z | test_name_1 |
+
+### cs-falcon-update-host-group
+***
+Update a host group
+
+
+#### Base Command
+
+`cs-falcon-update-host-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_group_id | The host group id. | Required | 
+| name | The name of the host. | Optional | 
+| description | Description of the host. | Optional | 
+| assignment_rule | The assignmet rule. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.HostGroup.id | String | The id of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group | 
+| CrowdStrike.HostGroup.name | String | The name of the hostgroup | 
+| CrowdStrike.HostGroup.description | String | The description of the hostgroup | 
+| CrowdStrike.HostGroup.created_by | String | The created client of the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | The timestamp of created hostgroup | 
+| CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | The integration name of the endpoint vendor. | 
+
+
+#### Command Example
+```!cs-falcon-update-host-group host_group_id=4902d5686bed41ba88a37439f38913ba name="test_name_update_1" description="test_description_update"```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "HostGroup": {
+            "assignment_rule": "device_id:[''],hostname:['']",
+            "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "created_timestamp": "2021-08-22T07:48:35.111070562Z",
+            "description": "test_description_update",
+            "group_type": "static",
+            "id": "4902d5686bed41ba88a37439f38913ba",
+            "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
+            "name": "test_name_update_1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|---|
+>| device_id:[''],hostname:[''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | 4902d5686bed41ba88a37439f38913ba | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
+
+### cs-falcon-list-host-group-members
+***
+Get the list of host group members
+
+
+#### Base Command
+
+`cs-falcon-list-host-group-members`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_group_id | The host group id. | Optional | 
+| filter | Filter the result. | Optional | 
+| offset | Page offset. | Optional | 
+| limit | Number of result in a page. Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Device.ID | String | The ID of the device. | 
+| CrowdStrike.Device.LocalIP | String | The local IP address of the device. | 
+| CrowdStrike.Device.ExternalIP | String | The external IP address of the device. | 
+| CrowdStrike.Device.Hostname | String | The host name of the device. | 
+| CrowdStrike.Device.OS | String | The operating system of the device. | 
+| CrowdStrike.Device.MacAddress | String | The MAC address of the device. | 
+| CrowdStrike.Device.FirstSeen | String | The first time the device was seen. | 
+| CrowdStrike.Device.LastSeen | String | The last time the device was seen. | 
+| CrowdStrike.Device.Status | String | The device status. | 
+
+
+#### Command Example
+```!cs-falcon-list-host-group-members```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "Device": [
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-12T16:13:26Z",
+                "Hostname": "FALCON-CROWDSTR",
+                "ID": "75b2dba7ba8d450da481ed6830cc9d9d",
+                "LastSeen": "2021-08-23T04:59:48Z",
+                "LocalIP": "10.128.0.21",
+                "MacAddress": "42-01-0a-80-00-15",
+                "OS": "Windows Server 2019",
+                "Status": "normal"
+            },
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2020-02-10T12:40:18Z",
+                "Hostname": "FALCON-CROWDSTR",
+                "ID": "15dbb9d8f06b45fe9f61eb46e829d986",
+                "LastSeen": "2021-08-25T07:42:47Z",
+                "LocalIP": "10.128.0.7",
+                "MacAddress": "42-01-0a-80-00-07",
+                "OS": "Windows Server 2019",
+                "Status": "contained"
+            },
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-23T05:04:41Z",
+                "Hostname": "INSTANCE-1",
+                "ID": "046761c46ec84f40b27b6f79ce7cd32c",
+                "LastSeen": "2021-08-25T07:49:06Z",
+                "LocalIP": "10.128.0.20",
+                "MacAddress": "42-01-0a-80-00-14",
+                "OS": "Windows Server 2019",
+                "Status": "normal"
+            },
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-11T13:57:29Z",
+                "Hostname": "INSTANCE-1",
+                "ID": "07007dd3f95c4d628fb097072bf7f7f3",
+                "LastSeen": "2021-08-23T04:45:37Z",
+                "LocalIP": "10.128.0.20",
+                "MacAddress": "42-01-0a-80-00-14",
+                "OS": "Windows Server 2019",
+                "Status": "normal"
+            },
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-08T11:33:21Z",
+                "Hostname": "falcon-crowdstrike-sensor-centos7",
+                "ID": "0bde2c4645294245aca522971ccc44c4",
+                "LastSeen": "2021-08-25T07:50:47Z",
+                "LocalIP": "10.128.0.19",
+                "MacAddress": "42-01-0a-80-00-13",
+                "OS": "CentOS 7.9",
+                "Status": "normal"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Devices
+>|ID|External IP|Local IP|Hostname|OS|Mac Address|First Seen|Last Seen|Status|
+>|---|---|---|---|---|---|---|---|---|
+>| 0bde2c4645294245aca522971ccc44c4 | 35.224.136.145 | 10.128.0.19 | falcon-crowdstrike-sensor-centos7 | CentOS 7.9 | 42-01-0a-80-00-13 | 2021-08-08T11:33:21Z | 2021-08-25T07:50:47Z | normal |
+
+### cs-falcon-add-host-group-members
+***
+Add host group members
+
+
+#### Base Command
+
+`cs-falcon-add-host-group-members`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_group_id | The host group id. | Required | 
+| host_ids | The id of the host. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.HostGroup.id | String | The id of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group | 
+| CrowdStrike.HostGroup.name | String | The name of the hostgroup | 
+| CrowdStrike.HostGroup.description | String | The description of the hostgroup | 
+| CrowdStrike.HostGroup.created_by | String | The created client of the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | The timestamp of created hostgroup | 
+| CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | The integration name of the endpoint vendor. | 
+
+
+#### Command Example
+```!cs-falcon-add-host-group-members host_group_id="4902d5686bed41ba88a37439f38913ba" host_ids="0bde2c4645294245aca522971ccc44c4"```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "HostGroup": {
+            "assignment_rule": "device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7','']",
+            "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "created_timestamp": "2021-08-22T07:48:35.111070562Z",
+            "description": "test_description_update",
+            "group_type": "static",
+            "id": "4902d5686bed41ba88a37439f38913ba",
+            "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
+            "name": "test_name_update_1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|---|
+>| device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7',''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | 4902d5686bed41ba88a37439f38913ba | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
+
+### cs-falcon-remove-host-group-members
+***
+Remove host group members
+
+
+#### Base Command
+
+`cs-falcon-remove-host-group-members`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_group_id | The host group id. | Required | 
+| host_ids | The id of the host. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.HostGroup.id | String | The id of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group | 
+| CrowdStrike.HostGroup.name | String | The name of the hostgroup | 
+| CrowdStrike.HostGroup.description | String | The description of the hostgroup | 
+| CrowdStrike.HostGroup.created_by | String | The created client of the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | The timestamp of created hostgroup | 
+| CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | The integration name of the endpoint vendor. | 
+
+
+#### Command Example
+```!cs-falcon-remove-host-group-members host_group_id="4902d5686bed41ba88a37439f38913ba" host_ids="0bde2c4645294245aca522971ccc44c4"```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "HostGroup": {
+            "assignment_rule": "device_id:[''],hostname:['']",
+            "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "created_timestamp": "2021-08-22T07:48:35.111070562Z",
+            "description": "test_description_update",
+            "group_type": "static",
+            "id": "4902d5686bed41ba88a37439f38913ba",
+            "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
+            "name": "test_name_update_1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|---|
+>| device_id:[''],hostname:[''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | 4902d5686bed41ba88a37439f38913ba | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
+
+### cs-falcon-resolve-incident
+***
+Resolve incidents
+
+
+#### Base Command
+
+`cs-falcon-resolve-incident`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | Incidents ids. | Required | 
+| status | The new status of the incident. Can be "New", "In Progress", "Reopened", "Closed". Possible values are: New, In Progress, Reopened, Closed. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!cs-falcon-resolve-incident ids="inc:0bde2c4645294245aca522971ccc44c4:f3825bf7df684237a1eb62b39124ebef,inc:07007dd3f95c4d628fb097072bf7f7f3:ecd5c5acd4f042e59be2f990e9ada258" status="Closed"```
+
+#### Human Readable Output
+
+>inc:0bde2c4645294245aca522971ccc44c4:f3825bf7df684237a1eb62b39124ebef changed successfully to Closed
+>inc:07007dd3f95c4d628fb097072bf7f7f3:ecd5c5acd4f042e59be2f990e9ada258 changed successfully to Closed
