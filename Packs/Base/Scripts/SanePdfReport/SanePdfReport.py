@@ -23,6 +23,7 @@ MD_HTTP_PORT = 10888
 SERVER_OBJECT = None
 MD_IMAGE_SUPPORT_MIN_VER = '6.5'
 
+
 def random_string(size=10):
     return ''.join(
         random.choices(string.ascii_uppercase + string.digits, k=size))
@@ -125,7 +126,7 @@ def main():
                     f'"{pageSize}" "{disableHeaders}"'
 
         isMDImagesSupported = is_demisto_version_ge(MD_IMAGE_SUPPORT_MIN_VER)
-        if  isMDImagesSupported:
+        if isMDImagesSupported:
             # start the server in a background thread
             demisto.debug('Starting markdown artifacts http server...')
             threading.Thread(target=startServer).start()
