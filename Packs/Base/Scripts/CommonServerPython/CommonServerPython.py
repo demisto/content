@@ -227,6 +227,8 @@ class DBotScoreType(object):
     DBotScoreType.CRYPTOCURRENCY
     DBotScoreType.EMAIL
     DBotScoreType.ATTACKPATTERN
+    DBotScoreType.CUSTOM
+
     :return: None
     :rtype: ``None``
     """
@@ -242,6 +244,7 @@ class DBotScoreType(object):
     CRYPTOCURRENCY = 'cryptocurrency'
     EMAIL = 'email'
     ATTACKPATTERN = 'attackpattern'
+    CUSTOM = 'custom'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -264,6 +267,7 @@ class DBotScoreType(object):
             DBotScoreType.CRYPTOCURRENCY,
             DBotScoreType.EMAIL,
             DBotScoreType.ATTACKPATTERN,
+            DBotScoreType.CUSTOM,
         )
 
 
@@ -389,8 +393,8 @@ class FeedIndicatorType(object):
         :type ip: ``str``
         :param ip: IP address to get it's indicator type.
 
-        :rtype: ``str``
         :return:: Indicator type from FeedIndicatorType, or None if invalid IP address.
+        :rtype: ``str``
         """
         if re.match(ipv4cidrRegex, ip):
             return FeedIndicatorType.CIDR
@@ -415,8 +419,8 @@ class FeedIndicatorType(object):
         :type indicator_type: ``str``
         :param indicator_type: Type of an indicator.
 
-        :rtype: ``str``
         :return:: Indicator type .
+        :rtype: ``str``
         """
         if is_demisto_version_ge("6.2.0") and indicator_type.startswith(STIX_PREFIX):
             return indicator_type[len(STIX_PREFIX):]
@@ -595,8 +599,8 @@ def add_http_prefix_if_missing(address=''):
         :type address: ``string``
         :param address: Proxy address.
 
-        :rtype: ``string``
         :return: proxy address after the 'http://' prefix was added, if needed.
+        :rtype: ``string``
     """
     PROXY_PREFIXES = ['http://', 'https://', 'socks5://', 'socks5h://', 'socks4://', 'socks4a://']
     if not address:
@@ -629,8 +633,8 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
         :type insecure_param_name: ``string``
         :param insecure_param_name: Name of insecure param. If None will search insecure and unsecure
 
-        :rtype: ``dict``
         :return: proxies dict for the 'proxies' parameter of 'requests' functions
+        :rtype: ``dict``
     """
     proxies = {}  # type: dict
     if demisto.params().get(proxy_param_name, checkbox_default_value):
@@ -710,8 +714,8 @@ def urljoin(url, suffix=""):
         :type suffix: ``string``
         :param suffix: the second part of the url
 
-        :rtype: ``string``
         :return: Full joined url
+        :rtype: ``string``
     """
     if url[-1:] != "/":
         url = url + "/"
@@ -1810,6 +1814,11 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         mdResult += '**No entries.**\n'
         return mdResult
 
+    if not headers and isinstance(t, dict) and len(t.keys()) == 1:
+        # in case of a single key, create a column table where each element is in a different row.
+        headers = list(t.keys())
+        t = list(t.values())[0]
+
     if not isinstance(t, list):
         t = [t]
 
@@ -1821,7 +1830,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         # should be only one header
         if headers and len(headers) > 0:
             header = headers[0]
-            t = map(lambda item: dict((h, item) for h in [header]), t)
+            t = [{header: item} for item in t]
         else:
             raise Exception("Missing headers param for tableToMarkdown. Example: headers=['Some Header']")
 
@@ -2474,6 +2483,68 @@ class Common(object):
             ret_value = {
                 Common.DBotScore.get_context_path(): dbot_context
             }
+            return ret_value
+
+    class CustomIndicator(Indicator):
+
+        def __init__(self, indicator_type, value, dbot_score, data, context_prefix):
+            """
+            :type indicator_type: ``Str``
+            :param indicator_type: The name of the indicator type.
+
+            :type value: ``Any``
+            :param value: The value of the indicator.
+
+            :type dbot_score: ``DBotScore``
+            :param dbot_score: If custom indicator has a score then create and set a DBotScore object.
+
+            :type data: ``Dict(Str,Any)``
+            :param data: A dictionary containing all the param names and their values.
+
+            :type context_prefix: ``Str``
+            :param context_prefix: Will be used as the context path prefix.
+
+            :return: None
+            :rtype: ``None``
+            """
+            if hasattr(DBotScoreType, indicator_type.upper()):
+                raise ValueError('Creating a custom indicator type with an existing type name is not allowed')
+            if not value:
+                raise ValueError('value is mandatory for creating the indicator')
+            if not context_prefix:
+                raise ValueError('context_prefix is mandatory for creating the indicator')
+
+            self.CONTEXT_PATH = '{context_prefix}(val.value && val.value == obj.value)'.\
+                format(context_prefix=context_prefix)
+
+            self.value = value
+
+            if not isinstance(dbot_score, Common.DBotScore):
+                raise ValueError('dbot_score must be of type DBotScore')
+
+            self.dbot_score = dbot_score
+            self.indicator_type = indicator_type
+            self.data = data
+            INDICATOR_TYPE_TO_CONTEXT_KEY[indicator_type.lower()] = indicator_type.capitalize()
+
+            for key in self.data:
+                setattr(self, key, data[key])
+
+        def to_context(self):
+            custom_context = {
+                'value': self.value
+            }
+
+            custom_context.update(self.data)
+
+            ret_value = {
+                self.CONTEXT_PATH: custom_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+            ret_value[Common.DBotScore.get_context_path()]['Type'] = self.indicator_type
+
             return ret_value
 
     class IP(Indicator):
@@ -5503,13 +5574,24 @@ class EntityRelationship:
 
         @staticmethod
         def is_valid(_type):
-            # type: (str) -> bool
+            """
+            :type _type: ``str``
+            :param _type: the data to be returned and will be set to context
 
+            :return: Is the given type supported
+            :rtype: ``bool``
+            """
             return _type in EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 
         @staticmethod
         def get_reverse(name):
-            # type: (str) -> str
+            """
+            :type name: ``str``
+            :param name: Relationship name
+
+            :return: Returns the reversed relationship name
+            :rtype: ``str``
+            """
 
             return EntityRelationship.Relationships.RELATIONSHIPS_NAMES[name]
 
@@ -5576,8 +5658,8 @@ class EntityRelationship:
 
     def to_entry(self):
         """ Convert object to XSOAR entry
-        :rtype: ``dict``
         :return: XSOAR entry representation.
+        :rtype: ``dict``
         """
         entry = {}
 
@@ -5602,8 +5684,8 @@ class EntityRelationship:
 
     def to_indicator(self):
         """ Convert object to XSOAR entry
-        :rtype: ``dict``
         :return: XSOAR entry representation.
+        :rtype: ``dict``
         """
         indicator_relationship = {}
 
@@ -5624,8 +5706,8 @@ class EntityRelationship:
 
     def to_context(self):
         """ Convert object to XSOAR context
-        :rtype: ``dict``
         :return: XSOAR context representation.
+        :rtype: ``dict``
         """
         indicator_relationship_context = {}
 
