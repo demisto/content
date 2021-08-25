@@ -1,5 +1,3 @@
-This Content Pack is used to fetch incident logs, detail investigation on data lake, finding threats and anomaly to respond these threats in realtime.
-
 ### Configure Logsign SIEM Integration on Cortex XSOAR
 
 1. Navigate to Settings > Integrations > Servers & Services.

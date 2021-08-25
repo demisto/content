@@ -144,20 +144,6 @@ def test_get_count_q_cmd(mocker):
     assert LogsignSiem.get_query_command.called
 
 
-def test_fetch_inc_cmd(mocker):
-    """
-        When main function called test function should call.
-    """
-    import LogsignSiem
-
-    mocker.patch.object(demisto, 'args', return_value=ARGS_Q)
-    mocker.patch.object(demisto, 'command', return_value='logsign-get-incidents')
-    mocker.patch.object(LogsignSiem, 'fetch_incidents', return_value=MOCK_INC)
-
-    LogsignSiem.main()
-    assert LogsignSiem.fetch_incidents.called
-
-
 def test_get_incidents(requests_mock):
     last_run = '2021-05-03T13:00:00Z'
     requests_mock.get(f'{TEST_URL}/get_incidents?api_key=apikey&last_run={last_run}', json=MOCK_INCIDENTS)

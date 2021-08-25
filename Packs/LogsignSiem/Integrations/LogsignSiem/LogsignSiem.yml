@@ -43,7 +43,9 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- additionalinfo: You can use single quotes inside double quotes in query parameter.
+- additionalinfo: 'Note: When a space character is used, it must be enclosed in single
+    quotes. Query example: Alert.Info:''Registry Object Changed'''
+  defaultvalue: Alert.Category:*
   display: Query
   hidden: false
   name: query
@@ -55,23 +57,6 @@ display: LogsignSiem
 name: LogsignSiem
 script:
   commands:
-  - arguments:
-    - default: false
-      description: 'Last Run Fomat: ''%Y-%m-%dT%H:%M:%SZ'''
-      isArray: false
-      name: last_run
-      required: false
-      secret: false
-    - default: false
-      description: Query
-      isArray: false
-      name: query
-      required: false
-      secret: false
-    deprecated: false
-    description: Automatically pulls incidents from LogsignSiem
-    execution: false
-    name: logsign-get-incidents
   - arguments:
     - default: false
       description: Query Description
