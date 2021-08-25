@@ -3881,7 +3881,7 @@ def test_pin_message_invalid_thread_id(mocker):
         The an invalid threadID and known channel.
 
     When:
-        Pinning a message
+        Pinning a message.
 
     Then:
         Send a request to slack where an error message is returned indicating the message could not
