@@ -73,7 +73,7 @@ def collect_entries_data_from_response(parsed_feed_data: FeedParserDict, limit: 
                     'link': entry.get('link'),
                     'title': entry.get('title'),
                     'summary': entry.get('summary'),
-                    'author': entry.get('author')
+                    'author': entry.get('author'),
                 }
             )
 
@@ -118,7 +118,7 @@ def main():
         proxy=args.get('proxy', False),
     )
 
-    limit = sys.maxsize if args.get('limit') == '' else arg_to_number(args.get('limit'))
+    limit = sys.maxsize if not args.get('limit') else arg_to_number(args.get('limit'))
 
     try:
         rss_raw_data = client.get_feed_data()
