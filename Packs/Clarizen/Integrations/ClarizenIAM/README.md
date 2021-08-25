@@ -12,8 +12,6 @@ For more information, refer to the [Identity Lifecycle Management article](https
     | Base URL | True |
     | Username | True |
     | Password | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
     | Allow creating users | False |
     | Allow updating users | False |
     | Allow enabling users | False |
@@ -21,6 +19,8 @@ For more information, refer to the [Identity Lifecycle Management article](https
     | Automatically create user if not found in update command | False |
     | Incoming Mapper | True |
     | Outgoing Mapper | True |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
 
 4. Click **Test** to check that you are able to connect to the integration.
 ## Commands

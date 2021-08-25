@@ -31,7 +31,7 @@ class Client(BaseClient):
         uri = '/authentication/login'
         params = {
             "userName": self.username,
-            "Password": self.password
+            "Password": self.password,
         }
 
         return self._http_request(method='POST', url_suffix=uri, data={}, params=params)
@@ -45,7 +45,7 @@ class Client(BaseClient):
         return self._http_request(
             method='GET',
             url_suffix=uri,
-            params=params
+            params=params,
         )
 
     def get_user(self, email: str) -> Optional[IAMUserAppData]:
@@ -64,7 +64,7 @@ class Client(BaseClient):
         res = self._http_request(
             method='POST',
             url_suffix=uri,
-            json_data=data
+            json_data=data,
         )
 
         res_json = res.json()
@@ -98,7 +98,7 @@ class Client(BaseClient):
         res = self._http_request(
             method='PUT',
             url_suffix=uri,
-            json_data=user_data
+            json_data=user_data,
         )
 
         res_json = res.json()
@@ -130,7 +130,7 @@ class Client(BaseClient):
         self._http_request(
             method='POST',
             url_suffix=uri,
-            json_data=user_data
+            json_data=user_data,
         )
 
         user_res = self.get_user_by_id(f'/User/{user_id}')
@@ -155,13 +155,13 @@ class Client(BaseClient):
         uri = '/data/lifecycle'
         user_data = {
             "ids": [f"/User/{user_id}"],
-            "operation": "Enable"
+            "operation": "Enable",
         }
 
         self._http_request(
             method='POST',
             url_suffix=uri,
-            json_data=user_data
+            json_data=user_data,
         )
 
         user_res = self.get_user_by_id(f'/User/{user_id}')
@@ -186,13 +186,13 @@ class Client(BaseClient):
         uri = '/data/lifecycle'
         user_data = {
             "ids": [f"/User/{user_id}"],
-            "operation": "Disable"
+            "operation": "Disable",
         }
 
         self._http_request(
             method='POST',
             url_suffix=uri,
-            json_data=user_data
+            json_data=user_data,
         )
 
         user_res = self.get_user_by_id(f'/User/{user_id}')
@@ -219,7 +219,7 @@ class Client(BaseClient):
         res = self._http_request(
             method='GET',
             url_suffix=uri,
-            params=params
+            params=params,
         )
 
         fields = res.get('entityDescriptions', {}).get('fields', [])
@@ -346,7 +346,7 @@ def main():
 
     headers = {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
     }
 
     client = Client(
@@ -355,7 +355,7 @@ def main():
         proxy=proxy,
         headers=headers,
         ok_codes=(200, 201),
-        auth=(username, password)
+        auth=(username, password),
     )
 
     demisto.debug(f'Command being called is {command}')
@@ -386,10 +386,11 @@ def main():
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields(client))
 
-    except Exception:
+    except Exception as exc:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+        demisto.error(traceback.format_exc())
+        return_error(f'Failed to execute {command} command. Error:\n{exc}', error=exc)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
