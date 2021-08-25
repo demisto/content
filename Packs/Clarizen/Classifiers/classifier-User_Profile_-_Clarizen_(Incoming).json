@@ -10,10 +10,6 @@
 					"complex": null,
 					"simple": "Location"
 				},
-				"Country": {
-					"complex": null,
-					"simple": "country"
-				},
 				"Display Name": {
 					"complex": null,
 					"simple": "Name"
@@ -26,9 +22,9 @@
 					"complex": null,
 					"simple": "firstname"
 				},
-				"Last Name": {
+				"Surname": {
 					"complex": null,
-					"simple": "Surname"
+					"simple": "lastname"
 				},
 				"State": {
 					"complex": null,
@@ -36,15 +32,7 @@
 				},
 				"Mobile Phone": {
 					"complex": null,
-					"simple": "phone_mobile"
-				},
-				"Phone Number": {
-					"complex": null,
-					"simple": "phone_home"
-				},
-				"Street Address": {
-					"complex": null,
-					"simple": "address_one"
+					"simple": "MobilePhone"
 				},
 				"Title": {
 					"complex": null,
@@ -53,14 +41,6 @@
 				"Username": {
 					"complex": null,
 					"simple": "Username"
-				},
-				"Work Phone": {
-					"complex": null,
-					"simple": "MobilePhone"
-				},
-				"Zip Code": {
-					"complex": null,
-					"simple": "zip"
 				}
 			}
 		}
