@@ -364,7 +364,7 @@ def test_get_entity_details(requests_mock):
 
 
 def test_get_modelbreach_details(mocker):
-    """Tests the list-similar-devices command function.
+    """Tests the get-modelbreach-details command function.
     Configures requests_mock instance to generate the appropriate
     get_alert API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
@@ -397,8 +397,7 @@ def test_get_modelbreach_details(mocker):
 
 
 def test_get_component(requests_mock):
-    """Tests the list-similar-devices command function.
-
+    """Tests the get-component command function.
     Configures requests_mock instance to generate the appropriate
     get_alert API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
@@ -430,8 +429,7 @@ def test_get_component(requests_mock):
 
 
 def test_get_model(requests_mock):
-    """Tests the list-similar-devices command function.
-
+    """Tests the get-model command function.
     Configures requests_mock instance to generate the appropriate
     get_alert API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
