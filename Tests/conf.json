@@ -1214,7 +1214,16 @@
         {
             "integrations": "WildFire-v2",
             "playbookID": "Wildfire Test",
-            "is_mockable": false
+            "is_mockable": false,
+            "fromversion": "5.0.0",
+            "toversion": "6.1.9"
+        },
+        {
+            "integrations": "WildFire-v2",
+            "playbookID": "Wildfire Test With Polling",
+            "is_mockable": false,
+            "fromversion": "6.2.0",
+            "timeout": 1100
         },
         {
             "integrations": "WildFire-v2",
@@ -2741,6 +2750,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Kaspersky Security Center",
+            "playbookID": "Kaspersky Security Center - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "Test Convert file hash to corresponding hashes",
             "fromversion": "4.5.0",
             "integrations": "VirusTotal",
@@ -3507,6 +3521,14 @@
         {
             "integrations": "SOCRadarThreatFusion",
             "playbookID": "SOCRadarThreatFusion-Test"
+        },
+        {
+            "integrations": ["ServiceNow v2", "Demisto REST API"],
+            "playbookID": "Fetch Incidents Test",
+            "instance_names": "snow_basic_auth",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "timeout": 2400
         }
     ],
     "skipped_tests": {
