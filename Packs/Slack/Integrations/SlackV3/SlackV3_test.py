@@ -3813,7 +3813,8 @@ def test_edit_message_not_valid_thread_id(mocker):
                                                 headers={})
     api_call = SlackApiError('The request to the Slack API failed.', err_response)
 
-    expected_body = ('The request to the Slack API failed.\n'"The server responded with: {'ok': False, 'error': 'message_not_found'}")
+    expected_body = ('The request to the Slack API failed.\n'"The server responded with: {'ok': "
+                     "False, 'error': 'message_not_found'}")
 
     link = 'https://www.eizelulz.com:8443/#/WarRoom/727'
     mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
@@ -3822,7 +3823,6 @@ def test_edit_message_not_valid_thread_id(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
-
 
     # Arrange
     with pytest.raises(InterruptedError):
@@ -3915,4 +3915,3 @@ def test_pin_message_invalid_thread_id(mocker):
 
     # Assert
     assert err_msg == expected_body
-
