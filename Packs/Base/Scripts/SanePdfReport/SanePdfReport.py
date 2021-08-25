@@ -1,5 +1,3 @@
-import demistomock as demisto
-from CommonServerPython import *
 import traceback
 
 import os
@@ -21,7 +19,7 @@ DISABLE_LOGOS = True  # Bugfix before sane-reports can work with image files.
 MD_IMAGE_PATH = '/markdown/image'
 MD_HTTP_PORT = 10888
 SERVER_OBJECT = None
-
+MD_IMAGE_SUPPORT_MIN_VER = '6.5'
 
 def random_string(size=10):
     return ''.join(
@@ -46,13 +44,14 @@ def find_zombie_processes():
     return zombies, ps_out
 
 
-def quit_driver_and_reap_children():
+def quit_driver_and_reap_children(killMarkdownServer):
     try:
-        # Kill Markdown artifacts server
-        global SERVER_OBJECT
-        if SERVER_OBJECT:
-            demisto.debug("Shutting down markdown artifacts server")
-            SERVER_OBJECT.shutdown()
+        if killMarkdownServer:
+            # Kill Markdown artifacts server
+            global SERVER_OBJECT
+            if SERVER_OBJECT:
+                demisto.debug("Shutting down markdown artifacts server")
+                SERVER_OBJECT.shutdown()
 
         zombies, ps_out = find_zombie_processes()
         if zombies:
@@ -108,19 +107,6 @@ def startServer():
 
 def main():
     try:
-        # start the server in a background thread
-        demisto.debug('Starting markdown artifacts http server...')
-        threading.Thread(target=startServer).start()
-        time.sleep(5)
-
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        result = sock.connect_ex(('localhost', MD_HTTP_PORT))
-        if result == 0:
-            demisto.debug('Server is running')
-            sock.close()
-        else:
-            demisto.error('Markdown artifacts server is not responding')
-
         sane_json_b64 = demisto.args().get('sane_pdf_report_base64', '').encode(
             'utf-8')
         orientation = demisto.args().get('orientation', 'portrait')
@@ -130,12 +116,29 @@ def main():
         headerRightImage = demisto.args().get('demistoLogo', '')
         pageSize = demisto.args().get('paperSize', 'letter')
         disableHeaders = demisto.args().get('disableHeaders', '')
-        mdServerURL = f'http://localhost:{MD_HTTP_PORT}'
 
         # Note: After headerRightImage the empty one is for legacy argv in server.js
         extra_cmd = f"{orientation} {resourceTimeout} {reportType} " + \
                     f'"{headerLeftImage}" "{headerRightImage}" "" ' + \
-                    f'"{pageSize}" "{disableHeaders}" "" "" "{mdServerURL}"'
+                    f'"{pageSize}" "{disableHeaders}"'
+
+        isMDImagesSupported = is_demisto_version_ge(MD_IMAGE_SUPPORT_MIN_VER)
+        if  isMDImagesSupported:
+            # start the server in a background thread
+            demisto.debug('Starting markdown artifacts http server...')
+            threading.Thread(target=startServer).start()
+            time.sleep(5)
+
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            result = sock.connect_ex(('localhost', MD_HTTP_PORT))
+            if result == 0:
+                demisto.debug('Server is running')
+                sock.close()
+            else:
+                demisto.error('Markdown artifacts server is not responding')
+            # add md server address
+            mdServerAddress = f'http://localhost:{MD_HTTP_PORT}'
+            extra_cmd += f' "" "" "{mdServerAddress}"'
 
         # Generate a random input file so we won't override on concurrent usage
         input_id = random_string()
@@ -156,7 +159,11 @@ def main():
             f' resourceTimeout="{resourceTimeout}",' \
             f' reportType="{reportType}", headerLeftImage="{headerLeftImage}",' \
             f' headerRightImage="{headerRightImage}", pageSize="{pageSize}",' \
-            f' disableHeaders="{disableHeaders}", mdServerURL="{mdServerURL}"'
+            f' disableHeaders="{disableHeaders}"'
+
+        if isMDImagesSupported:
+            params += f', mdServerAddress="{mdServerAddress}"'
+
         LOG(f"Sane-pdf parameters: {params}]")
         cmd_string = " ".join(cmd)
         LOG(f"Sane-pdf cmd: {cmd_string}")
@@ -188,7 +195,7 @@ def main():
         return_error(f'[SanePdfReports Automation Error - Exception] - {err}')
 
     finally:
-        quit_driver_and_reap_children()
+        quit_driver_and_reap_children(isMDImagesSupported)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
