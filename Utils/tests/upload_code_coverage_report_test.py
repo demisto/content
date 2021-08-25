@@ -3,9 +3,10 @@ from ruamel import yaml
 import os
 from Utils.upload_code_coverage_report import create_minimal_report
 
+
 def test_create_minimal_report():
-    source_file="./TestData/coverage.json"
-    destination_file="./TestData/coverage_generated.json"
+    source_file = "./TestData/coverage.json"
+    destination_file = "./TestData/coverage_generated.json"
 
     try:
         create_minimal_report(source_file=source_file, destination_file=destination_file)
