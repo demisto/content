@@ -3,14 +3,10 @@ import unittest
 import json
 from pathlib import Path
 from RecordedFuture import (
-    lookup_command,
+    Actions,
     Client,
-    enrich_command,
-    get_alert_rules_command,
-    get_alerts_command,
-    get_alert_single_command,
-    triage_command,
 )
+
 from CommonServerPython import CommandResults
 import vcr as vcrpy
 import io
@@ -52,10 +48,11 @@ class RFTest(unittest.TestCase):
         self.client = Client(
             base_url=base_url, verify=verify_ssl, headers=headers, proxy=None
         )
+        self.actions = Actions(self.client)
 
     @vcr.use_cassette()
     def test_ip_reputation(self) -> None:
-        resp = lookup_command(self.client, "37.48.83.137", "ip")
+        resp = self.actions.lookup_command("37.48.83.137", "ip")
         entity = resp[0].to_context()["Contents"]["data"]["results"][0]
         context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name && val.name == obj.name)']
         self.assertIsInstance(resp[0], CommandResults)
@@ -65,14 +62,14 @@ class RFTest(unittest.TestCase):
 
     @vcr.use_cassette()
     def test_intelligence(self) -> None:
-        resp = enrich_command(self.client, "184.168.221.96", "ip", True, True)
+        resp = self.actions.enrich_command("125.63.101.62", "ip", True, True)
         context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name && val.name == obj.name)']  # noqa
 
         self.assertIsInstance(resp[0], CommandResults)
         # rules are concatenated
         self.assertIn(',', context['concatRules'])
         self.assertEqual(
-            "184.168.221.96", resp[0].to_context()["Contents"]["data"]["name"]
+            "125.63.101.62", resp[0].to_context()["Contents"]["data"]["name"]
         )
 
     @vcr.use_cassette()
@@ -83,7 +80,7 @@ class RFTest(unittest.TestCase):
     @vcr.use_cassette()
     def test_intelligence_profile(self) -> None:
         """Will fetch related entities even if related_entities param is false"""  # noqa
-        resp = enrich_command(self.client, "184.168.221.96", "ip", True, False, "Vulnerability Analyst")  # noqa
+        resp = self.actions.enrich_command("184.168.221.96", "ip", True, False, "Vulnerability Analyst")  # noqa
         self.assertIsInstance(resp[0], CommandResults)
         data = resp[0].raw_response['data']
         list_of_lists = sorted([[*entry][0] for entry in data['relatedEntities']]) # noqa
@@ -104,7 +101,7 @@ class RFTest(unittest.TestCase):
             "vulnerability": ["CVE-2020-8813", "CVE-2011-3874"],
         }
         # mocker.patch.object(DBotScore, 'get_integration_name', return_value='Recorded Future v2')
-        resp = triage_command(self.client, entities, context)
+        resp = self.actions.triage_command(entities, context)
         self.assertIsInstance(resp[0], CommandResults)
         self.assertFalse(resp[0].to_context()["Contents"]["verdict"])
         self.assertEqual("phishing", resp[0].to_context()["Contents"]["context"])
@@ -124,7 +121,7 @@ class RFTest(unittest.TestCase):
             "vulnerability": ["CVE-2020-8813", "CVE-2011-3874"],
             "filter": "yes"
         }
-        resp = triage_command(self.client, entities, context)
+        resp = self.actions.triage_command(entities, context)
         context = resp[0].to_context()
         self.assertIsInstance(resp[0], CommandResults)
         self.assertFalse(context["Contents"]["verdict"])
@@ -134,7 +131,7 @@ class RFTest(unittest.TestCase):
 
     @vcr.use_cassette()
     def test_get_alerting_rules(self) -> None:
-        resp = get_alert_rules_command(self.client, rule_name="", limit=10)
+        resp = self.actions.get_alert_rules_command(rule_name="", limit=10)
         self.assertTrue(resp)
         self.assertTrue(resp["Contents"]["data"])
         self.assertIsInstance(resp, dict)
@@ -142,7 +139,7 @@ class RFTest(unittest.TestCase):
 
     @vcr.use_cassette()
     def test_get_alerts(self) -> None:
-        resp = get_alerts_command(self.client, params={'limit': 200})
+        resp = self.actions.get_alerts_command(params={'limit': 200})
         self.assertTrue(resp)
         self.assertTrue(resp["Contents"]["data"])
         self.assertIsInstance(resp, dict)
@@ -151,13 +148,13 @@ class RFTest(unittest.TestCase):
     @vcr.use_cassette()
     def test_single_alert_vulnerability(self) -> None:
         """Gets data for an alert related to vulnerabilities"""
-        resp = get_alert_single_command(self.client, "f1IGiW")
+        resp = self.actions.get_alert_single_command("f1IGiW")
         self.assertTrue(resp.get('HumanReadable'))
 
     @vcr.use_cassette()
     def test_single_alert_credential_leaks(self):
         """Alert related to credential leaks"""
-        resp = get_alert_single_command(self.client, "fzpmIG")
+        resp = self.actions.get_alert_single_command("fzpmIG")
         self.assertTrue(resp.get('HumanReadable'))
         context = resp['EntryContext']['RecordedFuture.SingleAlert(val.ID === obj.id)']  # noqa
         entity = context['flat_entities'][0]
@@ -172,12 +169,21 @@ class RFTest(unittest.TestCase):
     @vcr.use_cassette()
     def test_single_alert_typosquat(self):
         """Alert related to typosquats"""
-        resp = get_alert_single_command(self.client, "fp0_an")
+        resp = self.actions.get_alert_single_command("fp0_an")
         self.assertTrue(resp.get('HumanReadable'))
+
+    @vcr.use_cassette()
+    def test_get_links_command(self):
+        """Get Technical Links"""
+        resp = self.actions.get_links_command('152.169.22.67', 'ip')
+        context = resp.to_context()
+        self.assertIsInstance(resp, CommandResults)
+        self.assertTrue(context.get('HumanReadable'))
+        self.assertTrue(context.get('Contents'))
 
 
 def create_client():
-    base_url = "https://api.recordedfuture.com/v2/"
+    base_url = "https://api.recordedfuture.com/gw/xsoar/"
     verify_ssl = True
     token = os.environ.get("RF_TOKEN")
     headers = {
