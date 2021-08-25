@@ -7,23 +7,29 @@ from typing import Dict
 from Tests.Marketplace.marketplace_services import init_storage_client
 
 
-TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = '%Y-%m-%d'
+TIMESTAMP_FORMAT_SECONDS = '%Y-%m-%dT%H:%M:%SZ'
+TIMESTAMP_FORMAT_MICROSECONDS = '%Y-%m-%dT%H:%M:%S.%f'
 
 
 def create_minimal_report(source_file: str, destination_file: str):
     with open(source_file, 'r') as cov_util_output:
         data = json.load(cov_util_output)
 
-    # TODO Check that we were able to read the json report corretly
+    # TODO Check that we were able to read the json report correctly
 
     minimal_coverage_contents_files: Dict[str, float] = {}
     files = data['files']
     for current_file_name, current_file_data in files.items():
         minimal_coverage_contents_files[current_file_name] = round(current_file_data['summary']['percent_covered'], 2)
 
+    timestamp_from_file = data['meta']['timestamp']
+    datetime_from_timestamp: datetime = datetime.strptime(timestamp_from_file, TIMESTAMP_FORMAT_MICROSECONDS)
+    str_from_datetime: str = datetime.strftime(datetime_from_timestamp, TIMESTAMP_FORMAT_SECONDS)
+
     minimal_coverage_contents = {
         'files': minimal_coverage_contents_files,
-        'last_updated': datetime.utcnow().strftime(TIME_FORMAT),
+        'last_updated': str_from_datetime,
         'total_coverage': data['totals']['percent_covered']
     }
     with open(destination_file, 'w') as minimal_output:
@@ -38,8 +44,8 @@ def upload_file_to_google_cloud_storage(service_account: str,
     """Uploads a file to the bucket."""
     json_dest = '{}/coverage-min.json'.format(destination_blob_dir)
     with open(minimal_file_name, 'r') as data_file:
-        updated = datetime.strptime(json.load(data_file)['last_updated'], TIME_FORMAT)
-    historic_data_dest = '{}/history/coverage-min-{}.json'.format(destination_blob_dir, updated.strftime('%Y-%m-%d'))
+        updated = datetime.strptime(json.load(data_file)['last_updated'], TIMESTAMP_FORMAT_SECONDS)
+    historic_data_dest = '{}/history/coverage-min-{}.json'.format(destination_blob_dir, updated.strftime(DATE_FORMAT))
 
     upload_list = [json_dest, historic_data_dest]
     # google cloud storage client initialized
