@@ -54,7 +54,7 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: IAM Integration for Clarizen. Handles user account auto-provisioning to Clarizen.
+description: IAM integration for Clarizen. Handles user account auto-provisioning to Clarizen.
 display: Clarizen IAM
 name: Clarizen IAM
 script:
@@ -69,8 +69,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active.
+      description: 'When set to true, after the command execution the status of the
+        user in the 3rd-party integration will be active. Possible values: "true" and "false".'
       isArray: false
       name: allow-enable
       predefined:
@@ -124,8 +124,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active.
+      description: 'When set to true, after the command execution the status of the
+        user in the 3rd-party integration will be active. Possible values: "true" and "false".'
       isArray: false
       name: allow-enable
       predefined:
