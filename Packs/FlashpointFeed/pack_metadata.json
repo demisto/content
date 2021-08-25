@@ -15,7 +15,7 @@
         "TIM"
     ],
     "useCases": ["Threat Intelligence Management"],
-    "keywords": ["Flashpoint", "Indicators", "IoC"],
+    "keywords": ["Flashpoint", "Indicators", "IoC", "Feed"],
     "githubUser": [],
     "certification": "certified"
 }
