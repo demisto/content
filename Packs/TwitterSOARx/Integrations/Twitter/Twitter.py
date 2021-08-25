@@ -214,21 +214,22 @@ def test_module(client):
 
 
 def main():
+    client = Client()
     if demisto.command() == 'test-module':
-        result = test_module(Client)
+        result = test_module(client)
         return_results(result)
     if demisto.command() == 'twitter-get-users':
         name = demisto.args().get('name')
-        Client.get_users(self, name)
+        client.get_users(self, name)
     if demisto.command() == 'twitter-get-user-info':
         usernames = "usernames=" + demisto.args().get('usernames')
-        Client.get_user_info(self, usernames)
+        client.get_user_info(self, usernames)
     if demisto.command() == 'twitter-get-tweets':
         if demisto.args().get('q')[0] == '#':
             q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
         else:
             q = demisto.args().get('q')
-        Client.get_tweets(self, q)
+        client.get_tweets(self, q)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
