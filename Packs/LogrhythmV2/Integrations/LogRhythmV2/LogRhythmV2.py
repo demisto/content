@@ -1307,10 +1307,18 @@ class Client(BaseClient):
         return response
 
     def lists_get_request(self, list_type, list_name, can_edit):
-        params = assign_params(listType=list_type, name=list_name, canEdit=can_edit)
         headers = self._headers
 
-        response = self._http_request('GET', 'lr-admin-api/lists', params=params, headers=headers)
+        if list_type:
+            headers['listType'] = list_type
+
+        if list_name:
+            headers['name'] = list_name
+
+        if can_edit:
+            headers['canEdit'] = can_edit
+
+        response = self._http_request('GET', 'lr-admin-api/lists', headers=headers)
 
         return response
 
@@ -1998,7 +2006,7 @@ def hosts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     command_results = CommandResults(
         readable_output=hr,
         outputs_prefix='LogrhythmV2.HostsList',
-        outputs_key_field='',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )
@@ -2171,8 +2179,8 @@ def execute_search_query_command(client: Client, args: Dict[str, Any]) -> Comman
 
     command_results = CommandResults(
         readable_output=f'New search query created, Task ID={task_id}',
-        outputs_prefix='LogrhythmV2.ExecuteSearchQuery',
-        outputs_key_field='',
+        outputs_prefix='Logrhythm.Search.Task',
+        outputs_key_field='LogrhythmV2.ExecuteSearchQuery.TaskId',
         outputs=response,
         raw_response=response
     )
@@ -2193,11 +2201,13 @@ def get_query_result_command(client: Client, args: Dict[str, Any]) -> CommandRes
     else:
         hr = f'No results, task status: {status}'
 
+    ec = [{'TaskID': task_id, 'TaskStatus': status, 'Items': items}]
+
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.GetQueryResult',
-        outputs_key_field='',
-        outputs=response,
+        outputs_prefix='Logrhythm.Search.Results',
+        outputs_key_field='TaskID',
+        outputs=ec,
         raw_response=response
     )
 
@@ -2240,12 +2250,11 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     endpoint_id_list = argToList(args.get('id'))
     endpoint_hostname_list = argToList(args.get('hostname'))
 
-
     endpoints = client.hosts_list_request(endpoint_id_list = endpoint_id_list,
                                           endpoint_hostname_list=endpoint_hostname_list)
 
     if type(endpoints) is dict:
-        endpoints=[endpoints]
+        endpoints = [endpoints]
 
     command_results = []
 
