@@ -88,7 +88,7 @@ parse_code_and_body_data = [
 
 # api_key, api_response, status_code, expected_output
 test_module_data = [
-    ("true_key", {"message": "pong"}, 200, "ok"),
+    ("true_key", "Success: Access and API Key Valid", 200, "ok"),
     ("dummy_key", "forbidden", 401, "Unauthenticated. Check the configured API Key."),
     ("dummy_key", "", 429, "API Rate limit hit. Try after sometime."),
     ("dummy_key", "Dummy message", 405, "Failed to execute  command.\n Error: Dummy message"),
