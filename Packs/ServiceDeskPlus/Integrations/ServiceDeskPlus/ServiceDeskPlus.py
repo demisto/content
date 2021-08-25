@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 from typing import Tuple, Dict, List, Any
+import json
 from _collections import defaultdict
 import requests
 import ast
@@ -105,12 +106,12 @@ class Client(BaseClient):
             'Authorization': 'Bearer ' + access_token
         })
 
-    def http_request(self, method, url_suffix, full_url=None, params=None):
+    def http_request(self, method, url_suffix, full_url=None, params=None, data=None):
         ok_codes = (200, 201, 401)  # includes responses that are ok (200) and error responses that should be
         # handled by the client and not in the BaseClient
         try:
             res = self._http_request(method, url_suffix, full_url=full_url, resp_type='response', ok_codes=ok_codes,
-                                     params=params)
+                                     params=params, data=data)
             if res.status_code in [200, 201]:
                 try:
                     return res.json()
@@ -469,10 +470,10 @@ def create_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         Demisto Outputs.
     """
     query = args_to_query(args)
-    params = {
-        'input_data': f'{query}'
+    data = {
+        'input_data': f'{json.dumps(query,ensure_ascii=True)}'
     }
-    result = client.http_request('POST', url_suffix='requests', params=params)
+    result = client.http_request('POST', url_suffix='requests', data=data)
     request = result.get('request', None)
 
     output = {}
