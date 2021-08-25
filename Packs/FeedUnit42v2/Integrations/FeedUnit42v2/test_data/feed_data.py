@@ -534,7 +534,7 @@ DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST = {
                                   'lastseenbysource': '2020-05-12T13:02:30.000000Z'},
                        'name': 'indicated-by',
                        'reverseName': 'indicator-of',
-                       'type': 'IndicatorToIndicator'}],
+                       'type': 'IndicatorToIndicator'}, {}],
     'value': '$$DummyIndicator$$'}
 
 INTRUSION_SET_DATA = [
