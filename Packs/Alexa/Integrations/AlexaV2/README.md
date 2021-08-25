@@ -1,11 +1,11 @@
-Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence. V2
-This integration was integrated and tested with Alexa Rank Indicator V2
+Alexa provides website ranking information that can be used to help determine if a domain has a strong web presence.
+This integration was integrated and tested with Alexa Rank Indicator V2.
 
 ##### New: Alexa Rank Indicator v2
-- Using the Alexa API rank.
-- Domains which are not in Alexa DB, are considered "Unknown" instead of "Suspicious".
-- If the domain doesn't exist there is an error.
-- Default values changed: 1000 for ```Top Domain Threshold``` and unspecified for ```Suspicous Domain Threshold```
+- Use of the Alexa API rank.
+- Domains that are not in the Alexa database, are considered "Unknown" instead of "Suspicious".
+- If the domain doesn't exist, there is an error.
+- Default values changed: 1000 for *Top Domain Threshold* and unspecified for *Suspicous Domain Threshold*.
 
 ## Configure Alexa Rank Indicator V2 on Cortex XSOAR
 
@@ -16,12 +16,12 @@ This integration was integrated and tested with Alexa Rank Indicator V2
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Rank threshold for suspicious domain | For Alexa rank over this threshold, the domain will be marked as suspicious. | True |
+    | Rank threshold for suspicious domain | If the domain's Alexa rank is over this threshold, the domain is marked as suspicious. If the rank is between the threshold for suspicious domains and top domains, the domain is marked as *unknown*. | True |
     | Base API URL |  | True |
-    | Rank threshold for top domains | For Alexa rank less than this threshold, the domain will be considered trusted and marked as good. | True |
+    | Rank threshold for top domains | If the domain's Alexa rank is under this threshold, the domain is considered trusted and marked as good. If the rank is between the threshold for suspicious domains and top domains, the domain is marked as *unknown*. | True |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
-    | Api Key |  | True |
+    | API Key |  | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -29,7 +29,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### domain
 ***
-Provides an Alexa ranking of the Domain in question.
+Provides the Alexa ranking of a domain.
 
 
 #### Base Command
@@ -46,14 +46,14 @@ Provides an Alexa ranking of the Domain in question.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Domain.Name | String | The Domain being checked | 
+| Domain.Name | String | The domain being checked. | 
 | DBotScore.Score | number | The actual score. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
-| Alexa.Domain.Indicator | String | The Domain being checked | 
-| Alexa.Domain.Name | String | The Domain being checked | 
-| Alexa.Domain.Rank | String | Alexa rank as determined by Amazon | 
+| Alexa.Domain.Indicator | String | The domain being checked. | 
+| Alexa.Domain.Name | String | The domain being checked. | 
+| Alexa.Domain.Rank | String | Alexa rank as determined by Amazon. | 
 
 
 #### Command Example
@@ -109,4 +109,3 @@ Provides an Alexa ranking of the Domain in question.
 >|Domain|Alexa Rank|Reputation|
 >|---|---|---|
 >| xsoar.com |  | Suspicous |
-
