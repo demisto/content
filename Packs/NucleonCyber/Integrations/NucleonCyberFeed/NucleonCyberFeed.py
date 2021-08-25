@@ -478,7 +478,7 @@ def main():
     # etc. to print information in the XSOAR server log. You can set the log
     # level on the server configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
-    
+
     try:
         client = Client(
             base_url=base_url,
