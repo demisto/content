@@ -57,10 +57,9 @@ class Client(BaseClient):
         )
 
         if user_app_data:
-            user_id = user_app_data.get('user_id') or email
+            user_id = email
             is_active = user_app_data.get('enabled')
-            username = user_app_data.get('username')
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+            return IAMUserAppData(user_id, None, is_active, user_app_data)
 
         return None
 
@@ -92,7 +91,7 @@ class Client(BaseClient):
         :type user_data: ``Dict[str, Any]``
         :param user_data: User data in the application format
 
-        :return: An IAMUserAppData object that contains the data of the updated user in the application.
+        :return: An IAMUserAppData object from the get_user command that contains the data of the updated user in the application.
         :rtype: ``IAMUserAppData``
         """
         uri = f'user/{user_id}'
@@ -103,7 +102,7 @@ class Client(BaseClient):
             return_empty_response=True,
             empty_valid_codes=[200]
         )
-        return IAMUserAppData(user_id=None, username=None, is_active=None, app_data=user_data)
+        return self.get_user(user_id)
 
     def enable_user(self, user_id: str) -> IAMUserAppData:
         """ Enables a user in the application using REST API.

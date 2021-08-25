@@ -5,24 +5,24 @@ The Prisma Cloud IAM API consists of a set of API endpoints that allow customers
 ## Configure PrismaCloud IAM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PrismaCloudIAM.
+2. Search for PrismaCloud IAM.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Base URL | True |
-    | Username | True |
-    | Password | True |
-    | Customer name | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Allow creating users | False |
-    | Allow updating users | False |
-    | Allow enabling users | False |
-    | Allow disabling users | False |
-    | Automatically create user if not found in update command | False |
-    | Incoming Mapper | True |
-    | Outgoing Mapper | True |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Base URL |  | True |
+    | Username |  | True |
+    | Password |  | True |
+    | Customer name | If you are a multi-tenant user you will also need to provide the customerName. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Allow creating users |  | False |
+    | Allow updating users |  | False |
+    | Allow enabling users |  | False |
+    | Allow disabling users |  | False |
+    | Automatically create user if not found in update command |  | False |
+    | Incoming Mapper |  | True |
+    | Outgoing Mapper |  | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
