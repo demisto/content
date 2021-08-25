@@ -370,8 +370,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A file entry with raw content that represents to watchlist items
-        to create. Example: This line will be skipped header1,header2 value1,value2.'
+      description: A file entry with raw content that represents to watchlist items
+        to create.
       isArray: false
       name: raw_content
       required: true
@@ -397,6 +397,44 @@ script:
     description: Create or update a watchlists in Azure Sentinel.
     execution: false
     name: azure-sentinel-watchlist-create-update
+    outputs:
+    - contextPath: AzureSentinel.Watchlist.Name
+      description: The name of watchlist.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.ID
+      description: The id (a Guid) of the watchlist.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.Description
+      description: A description of the watchlist.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.Provider
+      description: The provider of the watchlist.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.Source
+      description: The source of the watchlist.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.Created
+      description: The time the watchlist was created.
+      type: Date
+    - contextPath: AzureSentinel.Watchlist.Updated
+      description: The time the watchlist was updated.
+      type: Date
+    - contextPath: AzureSentinel.Watchlist.CreatedBy
+      description: The user was created the watchlist.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.UpdatedBy
+      description: The user was updated the watchlist.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.Alias
+      description: The alias of the watchlist.
+      type: String
+    - contextPath: AzureSentinel.Watchlist.Label
+      description: List of labels relevant to this watchlist.
+      type: Unknown
+    - contextPath: AzureSentinel.Watchlist.ItemsSearchKey
+      description: The search key is used to optimize query performance when using
+        watchlists for joins with other data.
+      type: String
   - arguments:
     - default: false
       description: The incident ID.

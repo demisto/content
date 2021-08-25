@@ -540,14 +540,28 @@ Create or update a watchlists in Azure Sentinel.
 | source | The source of the watchlist. Possible values are: Local file, Remote storage. | Required | 
 | labels | The labels of the watchlist. | Optional | 
 | lines_to_skip | The number of lines in a csv content to skip before the header. Default is 0. | Optional | 
-| raw_content | A file entry with raw content that represents to watchlist items to create. Example: This line will be skipped header1,header2 value1,value2. | Required | 
+| raw_content | A file entry with raw content that represents to watchlist items to create. | Required | 
 | items_search_key | The search key is used to optimize query performance when using watchlists for joins with other data. For example, enable a column with IP addresses to be the designated SearchKey field, then use this field as the key field when joining to other event data by IP address. | Required | 
 | content_type | The content type of the raw content. For now, only text/csv is valid. Default is Text/Csv. | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSentinel.Watchlist.Name | String | The name of watchlist. | 
+| AzureSentinel.Watchlist.ID | String | The id \(a Guid\) of the watchlist. | 
+| AzureSentinel.Watchlist.Description | String | A description of the watchlist. | 
+| AzureSentinel.Watchlist.Provider | String | The provider of the watchlist. | 
+| AzureSentinel.Watchlist.Source | String | The source of the watchlist. | 
+| AzureSentinel.Watchlist.Created | Date | The time the watchlist was created. | 
+| AzureSentinel.Watchlist.Updated | Date | The time the watchlist was updated. | 
+| AzureSentinel.Watchlist.CreatedBy | String | The user was created the watchlist. | 
+| AzureSentinel.Watchlist.UpdatedBy | String | The user was updated the watchlist. | 
+| AzureSentinel.Watchlist.Alias | String | The alias of the watchlist. | 
+| AzureSentinel.Watchlist.Label | Unknown | List of labels relevant to this watchlist. | 
+| AzureSentinel.Watchlist.ItemsSearchKey | String | The search key is used to optimize query performance when using watchlists for joins with other data. | 
+
 
 #### Command Example
 ```!azure-sentinel-watchlist-create-update items_search_key=IP raw_content=1711@3c9bd2a0-9eac-465b-8799-459df4997b2d source="Local file" watchlist_alias=test_4 watchlist_display_name=test_4 description="test watchlist"```
