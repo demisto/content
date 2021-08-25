@@ -1759,7 +1759,7 @@ class Pack(object):
             self._preview_only = get_valid_bool(self.user_metadata.get(Metadata.PREVIEW_ONLY, False))
             self._price = convert_price(pack_id=self._pack_name, price_value_input=self.user_metadata.get('price'))
             if self._is_private_pack:
-                self._vendor_id = self.user_metadata.get(Metadata.VERNDOR_ID, "")
+                self._vendor_id = self.user_metadata.get(Metadata.VENDOR_ID, "")
                 self._partner_id = self.user_metadata.get(Metadata.PARTNER_ID, "")
                 self._partner_name = self.user_metadata.get(Metadata.PARTNER_NAME, "")
                 self._content_commit_hash = self.user_metadata.get(Metadata.CONTENT_COMMIT_HASH, "")
