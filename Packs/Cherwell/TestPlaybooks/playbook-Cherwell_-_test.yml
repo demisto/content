@@ -49,7 +49,7 @@ tasks:
     scriptarguments:
       json:
         simple: '{"Priority": "3", "CustomerDisplayName": "Playbook customer", "Description":
-          "This incident was created by Cherwell test playbook", "CallSource": "Event"}'
+          "The incident was created by Cherwell test playbook", "CallSource": "Event"}'
       type:
         simple: Incident
     separatecontext: false
@@ -1015,16 +1015,12 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isExists
           left:
             value:
               complex:
                 root: FetchedIncidents
                 accessor: RecordId
-            iscontext: true
-          right:
-            value:
-              simple: ${Cherwell.BusinessObjects(val.IncidentType).RecordId}
             iscontext: true
     view: |-
       {
