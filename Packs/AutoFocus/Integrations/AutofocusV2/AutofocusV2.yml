@@ -30,6 +30,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Handle errors with 404 status code when searching indicators
+  name: handle_error
+  required: false
+  defaultvalue: true
+  type: 8
 - display: Additional malicious verdicts
   name: mark_as_malicious
   required: false

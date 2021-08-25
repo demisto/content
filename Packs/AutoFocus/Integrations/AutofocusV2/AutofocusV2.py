@@ -317,6 +317,8 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, results
 def parse_response(resp, err_operation):
     try:
         # Handle error responses gracefully
+        if demisto.params().get('handle_error', True) and resp.status_code == 409:
+            raise Exception("Response status code: 409 \nRequested sample not found")
         res_json = resp.json()
         resp.raise_for_status()
         return res_json
@@ -337,8 +339,8 @@ def parse_response(resp, err_operation):
             return return_error(err_msg)
     # Unexpected errors (where no json object was received)
     except Exception as err:
-        err_msg = f'{err_operation}: {err}'
-        return return_error(err_msg)
+        demisto.results(f'{err_operation}: {err}')
+        sys.exit(0)
 
 
 def http_request(url_suffix, method='POST', data={}, err_operation=None):
@@ -603,8 +605,12 @@ def sample_analysis(sample_id, os, filter_data_flag):
     }
     if os:
         data['platforms'] = [os]  # type: ignore
+
     result = http_request(path, data=data, err_operation='Sample analysis failed')
+    if 'error' in result:
+        return demisto.results(result['error'])
     analysis_obj = parse_sample_analysis_response(result, filter_data_flag)
+
     return analysis_obj
 
 
@@ -954,6 +960,14 @@ def search_indicator(indicator_type, indicator_value):
     # Unexpected errors (where no json object was received)
     except Exception as err:
         try:
+            if demisto.params().get('handle_error', True) and result.status_code == 404:
+                return {
+                    'indicator': {
+                        'indicatorType': indicator_type,
+                        'indicatorValue': indicator_value,
+                        'latestPanVerdicts': {'PAN_DB': 'UNKNOWN'}
+                    }
+                }
             text_error = result.json()
         except ValueError:
             text_error = {}
