@@ -39,13 +39,13 @@ def main():
         incident_owners = get_incident_owners(incident_ids)
 
         if incident_owners:
-            html_readable_output = f"<div style='text-align:center; font-size:17px; padding: 5px;'> Incident Owners" \
-                                   f"</br> <div style='font-size:32px;'> {len(incident_owners)} </div>" \
-                                   f" <div style='font-size:16px;'> {', '.join(incident_owners)} </div></div>"
+            html_readable_output = f"<div style='font-size:17px; text-align:center; padding: 50px;'> Incident Owners" \
+                                   f"</br> <div style='font-size:32px;'> {len(incident_owners)} </div> " \
+                                   f"<div style='font-size:17px;'> {', '.join(incident_owners)} </div></div>"
 
         else:
-            html_readable_output = "<div style='text-align:center; font-size:17px; padding: 15px;'> Incident Owners" \
-                                   "</br> <div style='font-size:32px;'> Owners Not Found </div></div>"
+            html_readable_output = "<div style='font-size:17px; text-align:center; padding: 50px;'> Incident Owners" \
+                                   "</br> <div style='font-size:17px;'> Owners Not Found </div></div>"
 
         demisto.results({
             'ContentsFormat': formats['html'],
