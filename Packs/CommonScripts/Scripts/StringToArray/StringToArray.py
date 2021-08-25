@@ -1,5 +1,6 @@
-import json
-from CommonServerUserPython import *  # noqa
+
+from CommonServerPython import *  # noqa
+import demistomock as demisto
 
 
 def main(args):
