@@ -162,10 +162,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: ec190ad3-b8aa-4f33-8e11-915d3f040905
+    taskid: dbff1e50-cad7-4c7a-8a7b-bec38197aee3
     type: condition
     task:
-      id: ec190ad3-b8aa-4f33-8e11-915d3f040905
+      id: dbff1e50-cad7-4c7a-8a7b-bec38197aee3
       version: -1
       name: check auto extract emails
       type: condition
@@ -234,7 +234,7 @@ tasks:
           right:
             value:
               simple: support[@]threatx.com
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               simple: ${Account.Email.Address}
@@ -343,10 +343,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 61522565-16ce-4f71-851e-b1b80035fb52
+    taskid: 9f46859a-6c59-465b-8bdd-c7a21c484429
     type: condition
     task:
-      id: 61522565-16ce-4f71-851e-b1b80035fb52
+      id: 9f46859a-6c59-465b-8bdd-c7a21c484429
       version: -1
       name: check non extraction of invalid emails
       type: condition
@@ -463,7 +463,7 @@ tasks:
           right:
             value:
               simple: .email[@]example.com
-      - - operator: isEqualString
+      - - operator: notContainsGeneral
           left:
             value:
               simple: ${Account.Email.Address}
@@ -2752,4 +2752,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.5.0
+fromversion: 5.0.0
