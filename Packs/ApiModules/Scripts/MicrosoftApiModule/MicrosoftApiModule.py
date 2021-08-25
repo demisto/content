@@ -29,8 +29,6 @@ DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
 REGEX_SEARCH_URL = r'(?P<url>https?://[^\s]+)'
 SESSION_STATE = 'session_state'
 
-TOKEN_RETRIEVAL_URI = 'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
-
 
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',

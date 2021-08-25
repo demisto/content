@@ -83,7 +83,6 @@ class AzureSentinelClient(MicrosoftClient):
             enc_key=client_secret,
             self_deployed=True,
             grant_type=CLIENT_CREDENTIALS,
-            token_retrieval_url=TOKEN_RETRIEVAL_URI,
             base_url=server_url,
             scope=Scopes.management_azure,
             ok_codes=(200, 201, 202, 204),
