@@ -3922,12 +3922,23 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Maximum number of releases data to retrieve.
+      description: Page number to retrieve releases from. If limit argument is not given, defaults to 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Size of the page. If limit argument is not given, defaults to 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of releases data to retrieve. Will get results of the first pages. Cannot be given with page_size or page arguments.
       isArray: false
       name: limit
       required: false
       secret: false
-      defaultValue: 30
     - default: false
       description: The name of the organization containing the repository. Defaults to organization instance parameter if not given.
       isArray: false
@@ -3941,7 +3952,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get releases data from given repository and organization.
+    description: Gets releases data from a given repository and organization.
     execution: false
     name: GitHub-releases-list
     outputs:

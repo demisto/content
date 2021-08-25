@@ -2587,7 +2587,9 @@ Get releases data from given repository and organization.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of releases data to retrieve. | Optional | 
+| page | Page number to retrieve releases from. If limit argument is not given, defaults to 1. | Optional | 
+| page_size | Size of the page. If limit argument is not given, defaults to 50. | Optional |
+| limit | Maximum number of releases data to retrieve. Will get results of the first pages. Cannot be given with page_size or page arguments. | Optional |
 | organization | The name of the organization containing the repository. Defaults to organization instance parameter if not given. | Optional | 
 | repository | The repository containing the releases. Defaults to repository instance parameter if not given. | Optional | 
 
