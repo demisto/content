@@ -1477,8 +1477,7 @@ class Pack(object):
                 PackFolders.GENERIC_FIELDS.value: "GenericFields",
                 PackFolders.GENERIC_MODULES.value: "GenericModules",
                 PackFolders.GENERIC_TYPES.value: "GenericTypes",
-                PackFolders.LISTS.value: "list"
-                PackFolders.GENERIC_TYPES.value: "GenericTypes",
+                PackFolders.LISTS.value: "list",
                 PackFolders.PREPROCESSING_RULE.value: "preprocessrule",
             }
 
