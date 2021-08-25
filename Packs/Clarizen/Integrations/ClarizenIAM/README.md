@@ -1,4 +1,4 @@
-Integrate with Clarizen's Identity Access Management service to execute CRUD operations to employee lifecycle processes.
+Integrate with Clarizen's Identity Access Management service to execute CRUD operations in the employee lifecycle processes.
 For more information, refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 
 ## Configure ClarizenIAM on Cortex XSOAR
