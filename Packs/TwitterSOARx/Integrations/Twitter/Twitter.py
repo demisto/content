@@ -7,7 +7,7 @@ import urllib  # type: ignore[attr-defined]
 import requests
 
 
-class Client(BaseClient):
+class Client:
     def auth(self):
         auth = tweepy.OAuthHandler(demisto.params().get('apikey'), demisto.params().get('apikey_secret'))
         auth.set_access_token(demisto.params().get('access_token'), demisto.params().get('access_token_secret'))
@@ -220,16 +220,16 @@ def main():
         return_results(result)
     if demisto.command() == 'twitter-get-users':
         name = demisto.args().get('name')
-        client.get_users(self, name)
+        client.get_users(name)
     if demisto.command() == 'twitter-get-user-info':
         usernames = "usernames=" + demisto.args().get('usernames')
-        client.get_user_info(self, usernames)
+        client.get_user_info(usernames)
     if demisto.command() == 'twitter-get-tweets':
         if demisto.args().get('q')[0] == '#':
             q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
         else:
             q = demisto.args().get('q')
-        client.get_tweets(self, q)
+        client.get_tweets(q)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
