@@ -495,8 +495,8 @@ script:
     outputs:
     - contextPath: Darktrace.ModelBreach
       description: List of events from the modelbreach and their details. Each event might have different
-      keys. It is recommended to run the command once to check the relevant outputs
-      in context
+        keys. It is recommended to run the command once to check the relevant outputs
+        in context
       type: Unknown  
   - name: darktrace-get-model
     arguments:
