@@ -1,11 +1,10 @@
-import json
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
 from typing import Tuple, Dict, List, Any
+import json
 from _collections import defaultdict
 import requests
 import ast
