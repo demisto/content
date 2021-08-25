@@ -38,7 +38,7 @@ configuration:
   - name: incident_type
     display: Incident Type
     required: false
-    defaultvalue: null
+    defaultvalue: All
     type: 16
     additionalinfo: GuardiCore incident types.
     options:

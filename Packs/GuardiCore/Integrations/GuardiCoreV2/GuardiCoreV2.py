@@ -248,9 +248,10 @@ def get_incidents(client: Client, args: Dict[str, Any]):
     destination = args.get('destination', None)
     tag = args.get('tag', None)
     incident_type = args.get('incident_type', None)
-    if incident_type == 'All':
+
+    if incident_type == 'false' or incident_type == 'All':
         incident_type = None
-    if incident_type:
+    elif incident_type:
         incident_type = ",".join(incident_type).lower()
 
     result = client.get_incidents({
@@ -478,9 +479,9 @@ def main() -> None:
     source = params.get('source', None)
     destination = params.get('destination', None)
     incident_type = params.get('incident_type', None)
-    if incident_type == ['All']:
+    if incident_type == 'false' or incident_type == 'All':
         incident_type = None
-    if incident_type:
+    elif incident_type:
         incident_type = ",".join(incident_type).lower()
     tag = params.get('tag', None)
     first_fetch = params.get('first_fetch', '7 days')
