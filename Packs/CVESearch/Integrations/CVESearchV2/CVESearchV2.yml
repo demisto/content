@@ -50,6 +50,7 @@ script:
     - name: cve_id
       required: true
       default: true
+      isArray: true
       description: 'The CVE ID. For example: CVE-2014-1234.'
     outputs:
     - contextPath: CVE.ID
