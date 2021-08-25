@@ -1214,7 +1214,16 @@
         {
             "integrations": "WildFire-v2",
             "playbookID": "Wildfire Test",
-            "is_mockable": false
+            "is_mockable": false,
+            "fromversion": "5.0.0",
+            "toversion": "6.1.9"
+        },
+        {
+            "integrations": "WildFire-v2",
+            "playbookID": "Wildfire Test With Polling",
+            "is_mockable": false,
+            "fromversion": "6.2.0",
+            "timeout": 1100
         },
         {
             "integrations": "WildFire-v2",
@@ -2741,6 +2750,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Kaspersky Security Center",
+            "playbookID": "Kaspersky Security Center - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "Test Convert file hash to corresponding hashes",
             "fromversion": "4.5.0",
             "integrations": "VirusTotal",
@@ -3507,6 +3521,14 @@
         {
             "integrations": "SOCRadarThreatFusion",
             "playbookID": "SOCRadarThreatFusion-Test"
+        },
+        {
+            "integrations": ["ServiceNow v2", "Demisto REST API"],
+            "playbookID": "Fetch Incidents Test",
+            "instance_names": "snow_basic_auth",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "timeout": 2400
         }
     ],
     "skipped_tests": {
@@ -3603,9 +3625,21 @@
         "MicrosoftGraphMail-Test_prod": "Issue 40125"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
+        "AnsibleAlibabaCloud": "No instance - issue 40447",
+        "AnsibleAzure": "No instance - issue 40447",
+        "AnsibleCiscoIOS": "No instance - issue 40447",
+        "AnsibleCiscoNXOS": "No instance - issue 40447",
+        "AnsibleHCloud": "No instance - issue 40447",
+        "AnsibleKubernetes": "No instance - issue 40447",
+        "AnsibleACME": "No instance - issue 40447",
+        "AnsibleDNS": "No instance - issue 40447",
+        "AnsibleLinux": "No instance - issue 40447",
+        "AnsibleOpenSSL": "No instance - issue 40447",
+        "AnsibleMicrosoftWindows": "No instance - issue 40447",
+        "AnsibleVMware": "No instance - issue 40447",
         "SolarWinds": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
         "SOCRadarThreatFusion": "No instance - developed by partner",
@@ -3684,7 +3718,7 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
@@ -3693,7 +3727,7 @@
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        
+
         "_comment4": "~~~ OTHER ~~~",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
@@ -3870,7 +3904,7 @@
         "HelloWorldPremium_Scan-Test"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
