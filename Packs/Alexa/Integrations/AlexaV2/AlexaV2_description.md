@@ -1,8 +1,9 @@
-Threshold is the point where a domain will be considered unknown versus suspicious.
+*Rank threshold for suspicious domain* - anything above this rank is considered *suspicious*. *Rank threshold for top domains* - anything below this rank is considered *trusted*. Note - If a domain has a rank above the top domain threshold and below the suspicious domain threshold, it will be classified as *unknown.*
 
 
-To get an API key go to: [AWIS API](https://awis.alexa.com/)
-1. Subscribe to Alexa APIs in AWS account (in our case - Alexa Web Information Service).
-2. After subscription you will be forwarded (link) to Log in to the Alexa Developer portal.
-   - You will create an account to the “Alexa Developer portal”, this account will be linked to AWS account (subscription payments).
-   - After login to “Log in to the Alexa Developer portal” you will see the API Key.
+To get an API key, go to: [AWIS API](https://awis.alexa.com/)
+1. If you do not already have an AWS account, create an account. 
+2. Subscribe to Alexa Web Information Service in the AWS marketplace. 
+3. Register your Alexa API account or log in to an existing Alexa API account.
+2. Log in to [Alexa Web Information Service](https://awis.alexa.com/)
+3. Copy the API Key.
