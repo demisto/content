@@ -1745,7 +1745,7 @@ class Pack(object):
             self._categories = input_to_list(input_data=self.user_metadata.get(Metadata.CATEGORIES), capitalize_input=True)
             self._keywords = input_to_list(self.user_metadata.get(Metadata.KEY_WORDS))
         self._dependencies = self._parse_pack_dependencies(
-            self.user_metadata.get(Metadata.DEPENDENCIES, {}), dependencies_data)
+            self.user_metadata.get(Metadata.DEPENDENCIES, {}), dependencies_data) # ADDWDW
 
         # ===== Pack Private Attributes =====
         if not format_dependencies_only:
