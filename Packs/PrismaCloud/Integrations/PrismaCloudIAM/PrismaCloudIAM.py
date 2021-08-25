@@ -102,7 +102,7 @@ class Client(BaseClient):
             return_empty_response=True,
             empty_valid_codes=[200]
         )
-        return self.get_user(user_id)
+        return self.get_user(user_id)  # type: ignore
 
     def enable_user(self, user_id: str) -> IAMUserAppData:
         """ Enables a user in the application using REST API.
