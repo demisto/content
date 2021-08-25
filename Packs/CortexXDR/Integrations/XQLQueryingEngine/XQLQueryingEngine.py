@@ -74,21 +74,22 @@ def init_built_in_commands():
     }
 
 
-def format_arg(str_to_format: str):
-    """Format a string list to fit the query expected input.
+def wrap_list_items_in_double_quotes(string_of_argument: str):
+    """receive a string of arguments and return a string with each argument wrapped in double quotes.
     example:
-        str_to_format: '12345678, 87654321'
+        string_of_argument: '12345678, 87654321'
         output: '"12345678","87654321"'
 
-    :type str_to_format: ``str``
-    :param str_to_format: The string input to format.
+    :type string_of_argument: ``str``
+    :param string_of_argument: The string s of_argument to format.
 
-    :return: The formatted string.
+    :return: The new formatted string.
     :rtype: ``str``
     """
-    if not str_to_format:
-        str_to_format = ''
-    return ','.join(map('"{0}"'.format, argToList(str_to_format)))
+    if not string_of_argument:
+        string_of_argument = ''
+    list_of_args = argToList(string_of_argument)
+    return ','.join(f'"{item}"' for item in list_of_args)
 
 
 def get_file_event_query(endpoint_ids: str, args: dict) -> str:
@@ -105,11 +106,11 @@ def get_file_event_query(endpoint_ids: str, args: dict) -> str:
     file_sha256_list = args.get('file_sha256', '')
     if not file_sha256_list:
         raise DemistoException('Please provide a file_sha256 argument.')
-    file_sha256_list = format_arg(file_sha256_list)
-    return f'dataset = xdr_data | filter agent_id in ({endpoint_ids}) ' \
-           f'and event_type = FILE and action_file_sha256 in ({file_sha256_list})| ' \
-           f'fields agent_hostname, agent_ip_addresses, agent_id, action_file_path, ' \
-           f'action_file_sha256, actor_process_file_create_time'
+    file_sha256_list = wrap_list_items_in_double_quotes(file_sha256_list)
+    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) '
+           'and event_type = FILE and action_file_sha256 in ({file_sha256_list})| '
+           'fields agent_hostname, agent_ip_addresses, agent_id, action_file_path, '
+           'action_file_sha256, actor_process_file_create_time'''
 
 
 def get_process_event_query(endpoint_ids: str, args: dict) -> str:
@@ -126,15 +127,15 @@ def get_process_event_query(endpoint_ids: str, args: dict) -> str:
     process_sha256_list = args.get('process_sha256', '')
     if not process_sha256_list:
         raise DemistoException('Please provide a process_sha256 argument.')
-    process_sha256_list = format_arg(process_sha256_list)
-    return f'dataset = xdr_data | filter agent_id in ({endpoint_ids}) and ' \
-           f'event_type = PROCESS and ' \
-           f'action_process_image_sha256 in ({process_sha256_list}) | ' \
-           f'fields agent_hostname, agent_ip_addresses, agent_id, action_process_image_sha256, action_process_image_name, ' \
-           f'action_process_image_path, action_process_instance_id, action_process_causality_id, ' \
-           f'action_process_signature_vendor, action_process_signature_product, ' \
-           f'action_process_image_command_line, actor_process_image_name, actor_process_image_path, ' \
-           f'actor_process_instance_id, actor_process_causality_id'
+    process_sha256_list = wrap_list_items_in_double_quotes(process_sha256_list)
+    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and '
+           'event_type = PROCESS and '
+           'action_process_image_sha256 in ({process_sha256_list}) | '
+           'fields agent_hostname, agent_ip_addresses, agent_id, action_process_image_sha256, action_process_image_name, '
+           'action_process_image_path, action_process_instance_id, action_process_causality_id, '
+           'action_process_signature_vendor, action_process_signature_product, '
+           'action_process_image_command_line, actor_process_image_name, actor_process_image_path, '
+           'actor_process_instance_id, actor_process_causality_id'''
 
 
 def get_dll_module_query(endpoint_ids: str, args: dict) -> str:
@@ -151,13 +152,13 @@ def get_dll_module_query(endpoint_ids: str, args: dict) -> str:
     loaded_module_sha256 = args.get('loaded_module_sha256', '')
     if not loaded_module_sha256:
         raise DemistoException('Please provide a loaded_module_sha256 argument.')
-    loaded_module_sha256 = format_arg(loaded_module_sha256)
-    return f'dataset = xdr_data | filter agent_id in ({endpoint_ids}) ' \
-           f'and event_type = LOAD_IMAGE and action_module_sha256 in ({loaded_module_sha256})| ' \
-           f'fields agent_hostname, agent_ip_addresses, agent_id, actor_effective_username, action_module_sha256, ' \
-           f'action_module_path, action_module_file_info, action_module_file_create_time, actor_process_image_name, ' \
-           f'actor_process_image_path, actor_process_command_line, actor_process_image_sha256, actor_process_instance_id, ' \
-           f'actor_process_causality_id'
+    loaded_module_sha256 = wrap_list_items_in_double_quotes(loaded_module_sha256)
+    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) '
+           'and event_type = LOAD_IMAGE and action_module_sha256 in ({loaded_module_sha256})| '
+           'fields agent_hostname, agent_ip_addresses, agent_id, actor_effective_username, action_module_sha256, '
+           'action_module_path, action_module_file_info, action_module_file_create_time, actor_process_image_name, '
+           'actor_process_image_path, actor_process_command_line, actor_process_image_sha256, actor_process_instance_id, '
+           'actor_process_causality_id'''
 
 
 def get_network_connection_query(endpoint_ids: str, args: dict) -> str:
@@ -174,15 +175,15 @@ def get_network_connection_query(endpoint_ids: str, args: dict) -> str:
     remote_ip_list = args.get('remote_ip', '')
     if not remote_ip_list:
         raise DemistoException('Please provide a remote_ip argument.')
-    local_ip_list = format_arg(args.get('local_ip', '*'))
-    remote_ip_list = format_arg(remote_ip_list)
+    local_ip_list = wrap_list_items_in_double_quotes(args.get('local_ip', '*'))
+    remote_ip_list = wrap_list_items_in_double_quotes(remote_ip_list)
     port_list = args.get('port', '*')
-    return f'dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = STORY and ' \
-           f'action_local_ip in({local_ip_list}) and action_remote_ip in({remote_ip_list}) and ' \
-           f'action_remote_port in({port_list}) | fields agent_hostname, agent_ip_addresses, agent_id, ' \
-           f'actor_effective_username, action_local_ip, action_remote_ip, action_remote_port, ' \
-           f'dst_action_external_hostname, action_country, actor_process_image_name, actor_process_image_path, ' \
-           f'actor_process_command_line, actor_process_image_sha256, actor_process_instance_id, actor_process_causality_id'
+    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = STORY and '
+           'action_local_ip in({local_ip_list}) and action_remote_ip in({remote_ip_list}) and '
+           'action_remote_port in({port_list}) | fields agent_hostname, agent_ip_addresses, agent_id, '
+           'actor_effective_username, action_local_ip, action_remote_ip, action_remote_port, '
+           'dst_action_external_hostname, action_country, actor_process_image_name, actor_process_image_path, '
+           'actor_process_command_line, actor_process_image_sha256, actor_process_instance_id, actor_process_causality_id'''
 
 
 def get_registry_query(endpoint_ids: str, args: dict) -> str:
@@ -199,11 +200,11 @@ def get_registry_query(endpoint_ids: str, args: dict) -> str:
     reg_key_name = args.get('reg_key_name', '')
     if not reg_key_name:
         raise DemistoException('Please provide a reg_key_name argument.')
-    reg_key_name = format_arg(reg_key_name)
-    return f'dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = REGISTRY and ' \
-           f'action_registry_key_name in ({reg_key_name}) | fields agent_hostname, agent_id, agent_ip_addresses, ' \
-           f'agent_os_type, agent_os_sub_type, event_type, event_sub_type, action_registry_key_name, ' \
-           f'action_registry_value_name, action_registry_data'
+    reg_key_name = wrap_list_items_in_double_quotes(reg_key_name)
+    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = REGISTRY and '
+           'action_registry_key_name in ({reg_key_name}) | fields agent_hostname, agent_id, agent_ip_addresses, '
+           'agent_os_type, agent_os_sub_type, event_type, event_sub_type, action_registry_key_name, '
+           'action_registry_value_name, action_registry_data'''
 
 
 def get_event_log_query(endpoint_ids: str, args: dict) -> str:
@@ -220,10 +221,10 @@ def get_event_log_query(endpoint_ids: str, args: dict) -> str:
     event_id = args.get('event_id', '')
     if not event_id:
         raise DemistoException('Please provide a event_id argument.')
-    return f'dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = EVENT_LOG and ' \
-           f'action_evtlog_event_id in ({event_id}) | fields agent_hostname, agent_id, agent_ip_addresses, ' \
-           f'agent_os_type, agent_os_sub_type, action_evtlog_event_id, event_type, event_sub_type, ' \
-           f'action_evtlog_message, action_evtlog_provider_name'
+    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = EVENT_LOG and '
+           'action_evtlog_event_id in ({event_id}) | fields agent_hostname, agent_id, agent_ip_addresses, '
+           'agent_os_type, agent_os_sub_type, action_evtlog_event_id, event_type, event_sub_type, '
+           'action_evtlog_message, action_evtlog_provider_name'''
 
 
 def get_dns_query(endpoint_ids: str, args: dict) -> str:
@@ -239,14 +240,14 @@ def get_dns_query(endpoint_ids: str, args: dict) -> str:
     """
     if not args.get('external_domain') and not args.get('dns_query'):
         raise DemistoException('Please provide at least one of the external_domain, dns_query arguments.')
-    external_domain_list = format_arg(args.get('external_domain', '*'))
-    dns_query_list = format_arg(args.get('dns_query', '*'))
-    return f'dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = STORY and ' \
-           f'dst_action_external_hostname in ({external_domain_list}) or dns_query_name in ({dns_query_list})' \
-           f'| fields agent_hostname, agent_id, agent_ip_addresses, agent_os_type, agent_os_sub_type, action_local_ip, ' \
-           f'action_remote_ip, action_remote_port, dst_action_external_hostname, dns_query_name, action_app_id_transitions, ' \
-           f'action_total_download, action_total_upload, action_country, action_as_data, os_actor_process_image_path, ' \
-           f'os_actor_process_command_line, os_actor_process_instance_id, os_actor_process_causality_id'
+    external_domain_list = wrap_list_items_in_double_quotes(args.get('external_domain', '*'))
+    dns_query_list = wrap_list_items_in_double_quotes(args.get('dns_query', '*'))
+    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = STORY and '
+           'dst_action_external_hostname in ({external_domain_list}) or dns_query_name in ({dns_query_list})'
+           '| fields agent_hostname, agent_id, agent_ip_addresses, agent_os_type, agent_os_sub_type, action_local_ip, '
+           'action_remote_ip, action_remote_port, dst_action_external_hostname, dns_query_name, action_app_id_transitions, '
+           'action_total_download, action_total_upload, action_country, action_as_data, os_actor_process_image_path, '
+           'os_actor_process_command_line, os_actor_process_instance_id, os_actor_process_causality_id'''
 
 
 def get_file_dropper_query(endpoint_ids: str, args: dict) -> str:
@@ -262,18 +263,18 @@ def get_file_dropper_query(endpoint_ids: str, args: dict) -> str:
     """
     if not args.get('file_path') and not args.get('file_sha256'):
         raise DemistoException('Please provide at least one of the file_path, file_sha256 arguments.')
-    file_path_list = format_arg(args.get('file_path', '*'))
-    file_sha256_list = format_arg(args.get('file_sha256', '*'))
+    file_path_list = wrap_list_items_in_double_quotes(args.get('file_path', '*'))
+    file_sha256_list = wrap_list_items_in_double_quotes(args.get('file_sha256', '*'))
 
-    return f'dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = FILE and ' \
-           f'event_sub_type in (FILE_WRITE, FILE_RENAME) and action_file_path in ({file_path_list}) or ' \
-           f'action_file_sha256 in ({file_sha256_list}) | fields agent_hostname, agent_ip_addresses, agent_id, ' \
-           f'action_file_sha256, action_file_path, actor_process_image_name, actor_process_image_path, ' \
-           f'actor_process_image_path, actor_process_command_line, actor_process_signature_vendor, ' \
-           f'actor_process_signature_product, actor_process_image_sha256, actor_primary_normalized_user, ' \
-           f'os_actor_process_image_path, os_actor_process_command_line, os_actor_process_signature_vendor, ' \
-           f'os_actor_process_signature_product, os_actor_process_image_sha256, os_actor_effective_username, ' \
-           f'causality_actor_remote_host,causality_actor_remote_ip'
+    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = FILE and '
+           'event_sub_type in (FILE_WRITE, FILE_RENAME) and action_file_path in ({file_path_list}) or '
+           'action_file_sha256 in ({file_sha256_list}) | fields agent_hostname, agent_ip_addresses, agent_id, '
+           'action_file_sha256, action_file_path, actor_process_image_name, actor_process_image_path, '
+           'actor_process_image_path, actor_process_command_line, actor_process_signature_vendor, '
+           'actor_process_signature_product, actor_process_image_sha256, actor_primary_normalized_user, '
+           'os_actor_process_image_path, os_actor_process_command_line, os_actor_process_signature_vendor, '
+           'os_actor_process_signature_product, os_actor_process_image_sha256, os_actor_effective_username, '
+           'causality_actor_remote_host,causality_actor_remote_ip'''
 
 
 def get_process_instance_network_activity_query(endpoint_ids: str, args: dict) -> str:
@@ -290,14 +291,14 @@ def get_process_instance_network_activity_query(endpoint_ids: str, args: dict) -
     process_instace_id_list = args.get('process_instace_id', '')
     if not process_instace_id_list:
         raise DemistoException('Please provide a process_instace_id argument.')
-    process_instace_id_list = format_arg(process_instace_id_list)
-    return f'dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = NETWORK and ' \
-           f'actor_process_instance_id in ({process_instace_id_list}) | fields agent_hostname, agent_ip_addresses, ' \
-           f'agent_id, action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname, ' \
-           f'dns_query_name, action_app_id_transitions, action_total_download, action_total_upload, action_country, ' \
-           f'action_as_data, actor_process_image_sha256, actor_process_image_name , actor_process_image_path, ' \
-           f'actor_process_signature_vendor, actor_process_signature_product, actor_causality_id, ' \
-           f'actor_process_image_command_line, actor_process_instance_id'
+    process_instace_id_list = wrap_list_items_in_double_quotes(process_instace_id_list)
+    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = NETWORK and '
+           'actor_process_instance_id in ({process_instace_id_list}) | fields agent_hostname, agent_ip_addresses, '
+           'agent_id, action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname, '
+           'dns_query_name, action_app_id_transitions, action_total_download, action_total_upload, action_country, '
+           'action_as_data, actor_process_image_sha256, actor_process_image_name , actor_process_image_path, '
+           'actor_process_signature_vendor, actor_process_signature_product, actor_causality_id, '
+           'actor_process_image_command_line, actor_process_instance_id'''
 
 
 def get_process_causality_network_activity_query(endpoint_ids: str, args: dict) -> str:
@@ -314,15 +315,15 @@ def get_process_causality_network_activity_query(endpoint_ids: str, args: dict) 
     process_causality_id_list = args.get('process_causality_id', '')
     if not process_causality_id_list:
         raise DemistoException('Please provide a process_causality_id argument.')
-    process_causality_id_list = format_arg(process_causality_id_list)
+    process_causality_id_list = wrap_list_items_in_double_quotes(process_causality_id_list)
 
-    return f'dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = NETWORK and ' \
-           f'actor_process_causality_id in ({process_causality_id_list}) | fields agent_hostname, agent_ip_addresses, ' \
-           f'agent_id, action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname, ' \
-           f'dns_query_name, action_app_id_transitions, action_total_download, action_total_upload, action_country, ' \
-           f'action_as_data, actor_process_image_sha256, actor_process_image_name , actor_process_image_path, ' \
-           f'actor_process_signature_vendor, actor_process_signature_product, actor_causality_id, ' \
-           f'actor_process_image_command_line, actor_process_instance_id'
+    return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = NETWORK and
+           'actor_process_causality_id in ({process_causality_id_list}) | fields agent_hostname, agent_ip_addresses,
+           'agent_id, action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname,
+           'dns_query_name, action_app_id_transitions, action_total_download, action_total_upload, action_country,
+           'action_as_data, actor_process_image_sha256, actor_process_image_name , actor_process_image_path,
+           'actor_process_signature_vendor, actor_process_signature_product, actor_causality_id,
+           'actor_process_image_command_line, actor_process_instance_id'''
 
 
 # =========================================== Helper Functions ===========================================#
@@ -526,13 +527,33 @@ def get_outputs_prefix(command_name: str) -> str:
     """
     if command_name in init_generic_commands():
         return 'PaloAltoNetworksXDR.XQL.GenericQuery'
-    elif command_name in init_built_in_commands():
+    else:  # built in command
         query_name = init_built_in_commands()[command_name].get('name')
         return f'PaloAltoNetworksXDR.XQL.BuiltInQuery.{query_name}'
-    raise NotImplementedError(f'Command {command_name} does not exist.')
 
 
-''' COMMAND FUNCTIONS '''
+def get_nonce() -> str:
+    """
+    Generate a 64 bytes random string.
+
+    :return: the 64 bytes random string.
+    :rtype: ``str``
+    """
+    return "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
+
+
+def remove_query_id_from_integration_context(query_id: str):
+    """
+    Remove the given query_id from the integration context.
+
+    :param query_id: The query ID to remove.
+    :type query_id: ``str``
+    """
+    if query_id:
+        integration_context = get_integration_context()
+        integration_context.pop(query_id)
+        set_integration_context(integration_context)
+
 
 # ========================================== Generic Query ===============================================#
 
@@ -582,9 +603,18 @@ def start_xql_query_polling_command(client: Client, args: dict) -> Union[Command
         raise DemistoException('Failed to start query\n')
     args['query_id'] = execution_id
     # the query data is being saved in the integration context for the next scheduled command command.
-    set_integration_context({execution_id: {'query': args.get('query'), 'time_frame': args.get('time_frame'),
-                                            'command_name': demisto.command()}})
-    return get_xql_query_results_polling_command(client, args)
+    try:
+        set_integration_context({
+            execution_id: {
+                'query': args.get('query'),
+                'time_frame': args.get('time_frame'),
+                'command_name': demisto.command()
+            }
+        })
+        return get_xql_query_results_polling_command(client, args)
+    except Exception:
+        remove_query_id_from_integration_context(execution_id)
+        raise
 
 
 def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[CommandResults, list]:
@@ -629,7 +659,8 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     time_frame = command_data.get('time_frame')
     extra_for_human_readable = ({'query': query, 'time_frame': time_frame})
     outputs.update(extra_for_human_readable)
-    command_results.readable_output = tableToMarkdown('General Results', outputs, headerTransform=string_to_table_header,
+    command_results.readable_output = tableToMarkdown('General Results', outputs,
+                                                      headerTransform=string_to_table_header,
                                                       removeNull=True)
     [outputs.pop(key) for key in list(extra_for_human_readable.keys())]
 
@@ -642,7 +673,9 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
 
     command_results.readable_output += tableToMarkdown('Data Results', outputs.get('results'),
                                                        headerTransform=string_to_table_header)
-    get_integration_context().clear()
+    return_warning(query_id)
+    remove_query_id_from_integration_context(query_id)
+    return_warning(get_integration_context())
     return command_results
 
 
@@ -687,14 +720,15 @@ def get_built_in_query_results_polling_command(client: Client, args: dict) -> Un
     :rtype: ``Union[CommandResults, dict]``
     """
     # build query, if no endpoint_id was given, the query will search in every endpoint_id (*).
-    endpoint_id_list = format_arg(args.get('endpoint_id', '*'))
+    endpoint_id_list = wrap_list_items_in_double_quotes(args.get('endpoint_id', '*'))
     available_commands = init_built_in_commands()
     query = available_commands.get(demisto.command(), {}).get('func')(endpoint_id_list, args)
 
     # add extra fields to query
-    extra_fields_list = ", ".join(str(e) for e in argToList(args.get('extra_fields', [])))
-    extra_fields_list = f', {extra_fields_list}' if extra_fields_list else ''  # add comma to the beginning of fields
-    query = f'{query}{extra_fields_list}'
+    extra_fields = argToList(args.get('extra_fields', []))
+    if extra_fields:
+        extra_fields_list = ", ".join(str(e) for e in extra_fields)
+        query = f'{query}, {extra_fields_list}'
 
     # add limit to query
     if 'limit' in args:
@@ -717,6 +751,7 @@ def main() -> None:
     :return:
     :rtype:
     """
+    return_warning(get_integration_context())
     args = demisto.args()
     params = demisto.params()
     api_key = params.get('apikey')
@@ -727,23 +762,29 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
-        nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
+        # generate a 64 bytes random string
+        nonce = get_nonce()
+        # get the current timestamp as milliseconds.
         timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
-        auth_key = "%s%s%s" % (api_key, nonce, timestamp)
+        # generate the auth key:
+        auth_key = f'{api_key}{nonce}{timestamp}'
+        # convert to bytes object and calculate sha256
         api_key_hash = hashlib.sha256(auth_key.encode("utf-8")).hexdigest()
 
+        # generate HTTP call headers
         headers = {
-            "x-xdr-timestamp": str(timestamp),
+            "x-xdr-timestamp": timestamp,
             "x-xdr-nonce": nonce,
-            "x-xdr-auth-id": str(api_key_id),
-            "Authorization": api_key_hash
+            "x-xdr-auth-id": api_key_id,
+            "Authorization": api_key_hash,
         }
 
         client = Client(
             base_url=base_url,
             verify=verify_cert,
             headers=headers,
-            proxy=proxy)
+            proxy=proxy,
+        )
         generic_commands = init_generic_commands()
         built_in_commands = init_built_in_commands()
         if command in generic_commands:
@@ -756,9 +797,8 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
+        remove_query_id_from_integration_context()
         return_error(f'Failed to execute {command} command.\nError: {str(e)}')
-    finally:
-        get_integration_context().clear()
 
 
 ''' ENTRY POINT '''

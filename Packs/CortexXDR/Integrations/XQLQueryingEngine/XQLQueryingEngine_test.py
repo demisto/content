@@ -15,7 +15,15 @@ def util_load_json(path):
 
 # =========================================== TEST Built-In Queries helpers ===========================================#
 
-def test_format_arg():
+@pytest.mark.parametrize(
+    'input_arg, expected',
+    [('12345678,87654321', '"12345678","87654321"'),
+     ('[12345678, 87654321]', '"12345678","87654321"'),
+     ("12345678", '"12345678"'),
+     ("", ""),
+     ]
+)
+def test_wrap_list_items_in_double_quotes(input_arg, expected):
     """
     Given:
     - A string list to format.
@@ -24,8 +32,8 @@ def test_format_arg():
     Then:
     - Ensure the returned string is correct.
     """
-    response = XQLQueryingEngine.format_arg('12345678, 87654321')
-    assert response == '"12345678","87654321"'
+    response = XQLQueryingEngine.wrap_list_items_in_double_quotes(input_arg)
+    assert response == expected
 
 
 def test_get_file_event_query():
@@ -45,10 +53,10 @@ def test_get_file_event_query():
     }
     response = XQLQueryingEngine.get_file_event_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == 'dataset = xdr_data | filter agent_id in ("test1","test2") ' \
-                       'and event_type = FILE and action_file_sha256 in ("testSHA1","testSHA2")| ' \
-                       'fields agent_hostname, agent_ip_addresses, agent_id, action_file_path, ' \
-                       'action_file_sha256, actor_process_file_create_time'
+    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") '
+           'and event_type = FILE and action_file_sha256 in ("testSHA1","testSHA2")| '
+           'fields agent_hostname, agent_ip_addresses, agent_id, action_file_path, '
+           'action_file_sha256, actor_process_file_create_time'''
 
 
 def test_get_process_event_query():
@@ -68,15 +76,14 @@ def test_get_process_event_query():
     }
     response = XQLQueryingEngine.get_process_event_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == 'dataset = xdr_data | filter agent_id in ("test1","test2") ' \
-                       'and event_type = PROCESS ' \
-                       'and action_process_image_sha256 in ("testSHA1","testSHA2") | ' \
-                       'fields agent_hostname, agent_ip_addresses, agent_id, action_process_image_sha256, ' \
-                       'action_process_image_name, action_process_image_path, action_process_instance_id, ' \
-                       'action_process_causality_id, action_process_signature_vendor, ' \
-                       'action_process_signature_product, action_process_image_command_line, ' \
-                       'actor_process_image_name, actor_process_image_path, actor_process_instance_id, ' \
-                       'actor_process_causality_id'
+    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and '
+           'event_type = PROCESS and '
+           'action_process_image_sha256 in ("testSHA1","testSHA2") | '
+           'fields agent_hostname, agent_ip_addresses, agent_id, action_process_image_sha256, action_process_image_name, '
+           'action_process_image_path, action_process_instance_id, action_process_causality_id, '
+           'action_process_signature_vendor, action_process_signature_product, '
+           'action_process_image_command_line, actor_process_image_name, actor_process_image_path, '
+           'actor_process_instance_id, actor_process_causality_id'''
 
 
 def test_get_dll_module_query():
@@ -96,13 +103,12 @@ def test_get_dll_module_query():
     }
     response = XQLQueryingEngine.get_dll_module_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == 'dataset = xdr_data | filter agent_id in ("test1","test2") and ' \
-                       'event_type = LOAD_IMAGE and ' \
-                       'action_module_sha256 in ("testSHA1","testSHA2")| fields agent_hostname, agent_ip_addresses, ' \
-                       'agent_id, actor_effective_username, action_module_sha256, action_module_path, ' \
-                       'action_module_file_info, action_module_file_create_time, actor_process_image_name, ' \
-                       'actor_process_image_path, actor_process_command_line, actor_process_image_sha256, ' \
-                       'actor_process_instance_id, actor_process_causality_id'
+    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") '
+           'and event_type = LOAD_IMAGE and action_module_sha256 in ("testSHA1","testSHA2")| '
+           'fields agent_hostname, agent_ip_addresses, agent_id, actor_effective_username, action_module_sha256, '
+           'action_module_path, action_module_file_info, action_module_file_create_time, actor_process_image_name, '
+           'actor_process_image_path, actor_process_command_line, actor_process_image_sha256, actor_process_instance_id, '
+           'actor_process_causality_id'''
 
 
 def test_get_network_connection_query():
@@ -124,13 +130,12 @@ def test_get_network_connection_query():
     }
     response = XQLQueryingEngine.get_network_connection_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == 'dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = STORY and ' \
-                       'action_local_ip in("1.1.1.1","2.2.2.2") and action_remote_ip in("3.3.3.3","4.4.4.4") and ' \
-                       'action_remote_port in(7777,8888) | fields agent_hostname, agent_ip_addresses, agent_id, ' \
-                       'actor_effective_username, action_local_ip, action_remote_ip, action_remote_port, ' \
-                       'dst_action_external_hostname, action_country, actor_process_image_name, ' \
-                       'actor_process_image_path, actor_process_command_line, actor_process_image_sha256, ' \
-                       'actor_process_instance_id, actor_process_causality_id'
+    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = STORY and '
+           'action_local_ip in("1.1.1.1","2.2.2.2") and action_remote_ip in("3.3.3.3","4.4.4.4") and '
+           'action_remote_port in(7777,8888) | fields agent_hostname, agent_ip_addresses, agent_id, '
+           'actor_effective_username, action_local_ip, action_remote_ip, action_remote_port, '
+           'dst_action_external_hostname, action_country, actor_process_image_name, actor_process_image_path, '
+           'actor_process_command_line, actor_process_image_sha256, actor_process_instance_id, actor_process_causality_id'''
 
 
 def test_get_registry_query():
@@ -150,11 +155,10 @@ def test_get_registry_query():
     }
     response = XQLQueryingEngine.get_registry_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == 'dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = REGISTRY and ' \
-                       'action_registry_key_name in ("testARG1","testARG2") | fields agent_hostname, agent_id, ' \
-                       'agent_ip_addresses, ' \
-                       'agent_os_type, agent_os_sub_type, event_type, event_sub_type, action_registry_key_name, ' \
-                       'action_registry_value_name, action_registry_data'
+    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = REGISTRY and '
+           'action_registry_key_name in ("testARG1","testARG2") | fields agent_hostname, agent_id, agent_ip_addresses, '
+           'agent_os_type, agent_os_sub_type, event_type, event_sub_type, action_registry_key_name, '
+           'action_registry_value_name, action_registry_data'''
 
 
 def test_get_event_log_query():
@@ -174,10 +178,10 @@ def test_get_event_log_query():
     }
     response = XQLQueryingEngine.get_event_log_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == 'dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = EVENT_LOG and ' \
-                       'action_evtlog_event_id in (1234,4321) | fields agent_hostname, agent_id, agent_ip_addresses, ' \
-                       'agent_os_type, agent_os_sub_type, action_evtlog_event_id, event_type, event_sub_type, ' \
-                       'action_evtlog_message, action_evtlog_provider_name'
+    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = EVENT_LOG and '
+           'action_evtlog_event_id in (1234,4321) | fields agent_hostname, agent_id, agent_ip_addresses, '
+           'agent_os_type, agent_os_sub_type, action_evtlog_event_id, event_type, event_sub_type, '
+           'action_evtlog_message, action_evtlog_provider_name'''
 
 
 def test_get_dns_query():
@@ -198,13 +202,12 @@ def test_get_dns_query():
     }
     response = XQLQueryingEngine.get_dns_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == 'dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = STORY and ' \
-                       'dst_action_external_hostname in ("testARG1","testARG2") or dns_query_name in ("testARG3","testARG4")' \
-                       '| fields agent_hostname, agent_id, agent_ip_addresses, agent_os_type, agent_os_sub_type, ' \
-                       'action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname, ' \
-                       'dns_query_name, action_app_id_transitions, action_total_download, action_total_upload, ' \
-                       'action_country, action_as_data, os_actor_process_image_path, os_actor_process_command_line, ' \
-                       'os_actor_process_instance_id, os_actor_process_causality_id'
+    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = STORY and '
+           'dst_action_external_hostname in ("testARG1","testARG2") or dns_query_name in ("testARG3","testARG4")'
+           '| fields agent_hostname, agent_id, agent_ip_addresses, agent_os_type, agent_os_sub_type, action_local_ip, '
+           'action_remote_ip, action_remote_port, dst_action_external_hostname, dns_query_name, action_app_id_transitions, '
+           'action_total_download, action_total_upload, action_country, action_as_data, os_actor_process_image_path, '
+           'os_actor_process_command_line, os_actor_process_instance_id, os_actor_process_causality_id'''
 
 
 def test_get_file_dropper_query():
@@ -225,17 +228,15 @@ def test_get_file_dropper_query():
     }
     response = XQLQueryingEngine.get_file_dropper_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == 'dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = FILE and ' \
-                       'event_sub_type in (FILE_WRITE, FILE_RENAME) and action_file_path in ("testARG1","testARG2") or ' \
-                       'action_file_sha256 in ("testARG3","testARG4") | fields agent_hostname, agent_ip_addresses, ' \
-                       'agent_id, ' \
-                       'action_file_sha256, action_file_path, actor_process_image_name, actor_process_image_path, ' \
-                       'actor_process_image_path, actor_process_command_line, actor_process_signature_vendor, ' \
-                       'actor_process_signature_product, actor_process_image_sha256, actor_primary_normalized_user, ' \
-                       'os_actor_process_image_path, os_actor_process_command_line, os_actor_process_signature_vendor, ' \
-                       'os_actor_process_signature_product, os_actor_process_image_sha256, ' \
-                       'os_actor_effective_username, ' \
-                       'causality_actor_remote_host,causality_actor_remote_ip'
+    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = FILE and '
+           'event_sub_type in (FILE_WRITE, FILE_RENAME) and action_file_path in ("testARG1","testARG2") or '
+           'action_file_sha256 in ("testARG3","testARG4") | fields agent_hostname, agent_ip_addresses, agent_id, '
+           'action_file_sha256, action_file_path, actor_process_image_name, actor_process_image_path, '
+           'actor_process_image_path, actor_process_command_line, actor_process_signature_vendor, '
+           'actor_process_signature_product, actor_process_image_sha256, actor_primary_normalized_user, '
+           'os_actor_process_image_path, os_actor_process_command_line, os_actor_process_signature_vendor, '
+           'os_actor_process_signature_product, os_actor_process_image_sha256, os_actor_effective_username, '
+           'causality_actor_remote_host,causality_actor_remote_ip'''
 
 
 def test_get_process_instance_network_activity_query():
@@ -255,16 +256,13 @@ def test_get_process_instance_network_activity_query():
     }
     response = XQLQueryingEngine.get_process_instance_network_activity_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == 'dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = NETWORK and ' \
-                       'actor_process_instance_id in ("testARG1","testARG2") | fields agent_hostname, ' \
-                       'agent_ip_addresses, ' \
-                       'agent_id, action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname, ' \
-                       'dns_query_name, action_app_id_transitions, action_total_download, action_total_upload, ' \
-                       'action_country, ' \
-                       'action_as_data, actor_process_image_sha256, actor_process_image_name , ' \
-                       'actor_process_image_path, ' \
-                       'actor_process_signature_vendor, actor_process_signature_product, actor_causality_id, ' \
-                       'actor_process_image_command_line, actor_process_instance_id'
+    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = NETWORK and '
+           'actor_process_instance_id in ("testARG1","testARG2") | fields agent_hostname, agent_ip_addresses, '
+           'agent_id, action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname, '
+           'dns_query_name, action_app_id_transitions, action_total_download, action_total_upload, action_country, '
+           'action_as_data, actor_process_image_sha256, actor_process_image_name , actor_process_image_path, '
+           'actor_process_signature_vendor, actor_process_signature_product, actor_causality_id, '
+           'actor_process_image_command_line, actor_process_instance_id'''
 
 
 def test_get_process_causality_network_activity_query():
@@ -284,16 +282,13 @@ def test_get_process_causality_network_activity_query():
     }
     response = XQLQueryingEngine.get_process_causality_network_activity_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
-    assert response == 'dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = NETWORK and ' \
-                       'actor_process_causality_id in ("testARG1","testARG2") | fields agent_hostname, ' \
-                       'agent_ip_addresses, ' \
-                       'agent_id, action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname, ' \
-                       'dns_query_name, action_app_id_transitions, action_total_download, action_total_upload, ' \
-                       'action_country, ' \
-                       'action_as_data, actor_process_image_sha256, actor_process_image_name , ' \
-                       'actor_process_image_path, ' \
-                       'actor_process_signature_vendor, actor_process_signature_product, actor_causality_id, ' \
-                       'actor_process_image_command_line, actor_process_instance_id'
+    assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = NETWORK and
+           'actor_process_causality_id in ("testARG1","testARG2") | fields agent_hostname, agent_ip_addresses,
+           'agent_id, action_local_ip, action_remote_ip, action_remote_port, dst_action_external_hostname,
+           'dns_query_name, action_app_id_transitions, action_total_download, action_total_upload, action_country,
+           'action_as_data, actor_process_image_sha256, actor_process_image_name , actor_process_image_path,
+           'actor_process_signature_vendor, actor_process_signature_product, actor_causality_id,
+           'actor_process_image_command_line, actor_process_instance_id'''
 
 
 # =========================================== TEST Helper Functions ===========================================#
@@ -725,9 +720,9 @@ def test_get_built_in_query_results_polling_command(mocker):
     res = mocker.patch('XQLQueryingEngine.start_xql_query_polling_command')
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-file-event-query')
     XQLQueryingEngine.get_built_in_query_results_polling_command(CLIENT, args)
-    assert res.call_args.args[1]['query'] == \
-           'dataset = xdr_data | filter agent_id in ("123456","654321") and event_type = FILE and ' \
-           'action_file_sha256 in ("abcde","edcba","p1p2p3")| fields agent_hostname, agent_ip_addresses, ' \
-           'agent_id, action_file_path, action_file_sha256, actor_process_file_create_time, EXTRA1, EXTRA2 | limit 400'
+    assert res.call_args.args[1]['query'] == '''dataset = xdr_data | filter agent_id in ("123456","654321") '
+           'and event_type = FILE and action_file_sha256 in ("abcde","edcba","p1p2p3")| '
+           'fields agent_hostname, agent_ip_addresses, agent_id, action_file_path, '
+           'action_file_sha256, actor_process_file_create_time, EXTRA1, EXTRA2 | limit 400'''
     assert res.call_args.args[1]['tenants'] == ["tenantID", "tenantID"]
     assert res.call_args.args[1]['time_frame'] == '7 days'
