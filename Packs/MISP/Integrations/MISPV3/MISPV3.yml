@@ -56,7 +56,7 @@ configuration:
   name: attributes_limit
   required: false
   type: 0
-description: Malware information sharing platform and threat sharing.
+description: Malware  information sharing platform and threat sharing.
 display: MISP v3
 name: MISP V3
 script:

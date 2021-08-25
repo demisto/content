@@ -60,7 +60,7 @@ configuration:
   - Incidents
   required: false
   type: 16
-description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API),
+description: The  CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API),
   enables fetching and resolving detections, searching devices, getting behaviors
   by ID, containing hosts, and lifting host containment. getting behaviors by ID,
   containing hosts, and lifting host containment.

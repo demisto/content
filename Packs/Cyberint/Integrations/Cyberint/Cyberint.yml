@@ -114,7 +114,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Cyberint provides intelligence-driven digital risk protection. This integration
+description: Cyberint  provides intelligence-driven digital risk protection. This integration
   will help your enterprise effectively consume actionable cyber alerts to increase
   your security posture.
 display: Cyberint

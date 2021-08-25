@@ -56,7 +56,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Manage Palo Alto Networks Firewall and Panorama. For more information
+description: Manage  Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama

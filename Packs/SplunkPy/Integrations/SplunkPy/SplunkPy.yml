@@ -171,10 +171,10 @@ configuration:
   defaultvalue: "20"
   type: 0
   required: false
-  additionalinfo: The limit of how many events to retrieve per each one of the enrichment
+  additionalinfo: The  limit of how many events to retrieve per each one of the enrichment
     types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not
     recommended).
-description: Runs queries on Splunk servers.
+description: Runs  queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
 script:
