@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import tweepy
-import urllib  # type: ignore[attr-defined]
+import urllib
 import requests
 
 
@@ -46,9 +46,9 @@ class Client:
 # Query arguments are set to have no default value. If the user does not input a value, the integration will check for if
 # a value for the argument exists and append it to the HTTP request if so.
         if demisto.args().get('from_user'):
-            search_url += urllib.parse.quote(f" from:{demisto.args().get('from_user')}")
+            search_url += urllib.parse.quote(f" from:{demisto.args().get('from_user')}")  # type: ignore[attr-defined]
         if demisto.args().get('to_user'):
-            search_url += urllib.parse.quote(f" to:{demisto.args().get('to_user')}")
+            search_url += urllib.parse.quote(f" to:{demisto.args().get('to_user')}")  # type: ignore[attr-defined]
         if demisto.args().get('geocode'):
             search_url += "&geocode=" + demisto.args().get('geocode')
             geocode_check = demisto.args().get('geocode').split(',')
@@ -226,7 +226,7 @@ def main():
         client.get_user_info(usernames)
     if demisto.command() == 'twitter-get-tweets':
         if demisto.args().get('q')[0] == '#':
-            q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]
+            q = urllib.parse.quote(' ') + demisto.args().get('q')[1:]  # type: ignore[attr-defined]
         else:
             q = demisto.args().get('q')
         client.get_tweets(q)
