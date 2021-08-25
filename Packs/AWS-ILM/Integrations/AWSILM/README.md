@@ -38,7 +38,7 @@ Creates a user.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | User Profile indicator details. | Required | 
-| allow-enable | When set to true, after the command execution the status of the user in the 3rd-party integration will be active. Possible values are: true, false. Default is true. | Optional | 
+| allow-enable | When set to true, after the command execution, the status of the user in the 3rd-party integration will be active. Possible values are: true, false. Default is true. | Optional | 
 
 
 #### Context Output
@@ -135,7 +135,7 @@ Updates an existing user with the data passed in the user-profile argument.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-profile | A User Profile indicator. | Required | 
-| allow-enable | When set to true, after the command execution the status of the user in the 3rd-party integration will be active. Possible values are: true, false. Default is true. | Optional | 
+| allow-enable | When set to true, after the command execution, the status of the user in the 3rd-party integration will be active. Possible values are: true, false. Default is true. | Optional | 
 
 
 #### Context Output
@@ -421,13 +421,13 @@ Retrieves a group
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GetGroup.id | String | Group Id | 
-| GetGroup.displayName | String | Display Name of the Group | 
-| GetGroup.members.display | String | Display Name of the group member | 
-| GetGroup.members.value | String | Id of the group member | 
-| GetGroup.success | Boolean | Success status of the command | 
-| GetGroup.errorCode | Number | Error Code if there is failure | 
-| GetGroup.errorMessage | Unknown | Error Details if there is failure | 
+| GetGroup.id | String | Group ID. | 
+| GetGroup.displayName | String | Display name of the group. | 
+| GetGroup.members.display | String | Display name of the group member. | 
+| GetGroup.members.value | String | ID of the group member. | 
+| GetGroup.success | Boolean | Success status of the command. | 
+| GetGroup.errorCode | Number | Error code if there is a failure. | 
+| GetGroup.errorMessage | Unknown | Error details if there is a failure. | 
 
 
 #### Command Example
@@ -485,18 +485,18 @@ Creates an empty group
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scim | Group SCIM data with displayName. | Required | 
+| scim | Group SCIM data with the display name. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CreateGroup.id | String | Group Id | 
-| CreateGroup.displayName | String | Display Name of the Group | 
-| CreateGroup.success | Boolean | Success status of the command | 
-| CreateGroup.errorCode | Number | Error Code if there is failure | 
-| CreateGroup.errorMessage | Unknown | Error Details if there is failure | 
+| CreateGroup.id | String | Group ID. | 
+| CreateGroup.displayName | String | Display name of the group. | 
+| CreateGroup.success | Boolean | Success status of the command. | 
+| CreateGroup.errorCode | Number | Error code if there is a failure. | 
+| CreateGroup.errorMessage | Unknown | Error details if there is a failure. | 
 
 
 #### Command Example
@@ -544,7 +544,7 @@ Creates an empty group
 
 ### iam-update-group
 ***
-Updates an existing group resource. This command allows individual (or groups of) users to be added or removed from the group with a single operation. A max of 100 users can be modified in 1 call
+Updates an existing group resource. This command allows individual (or groups of) users to be added or removed from the group with a single operation. A maximum of 100 users can be modified in a single call.
 
 
 #### Base Command
@@ -555,19 +555,19 @@ Updates an existing group resource. This command allows individual (or groups of
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | scim | Group SCIM data. | Required | 
-| memberIdsToAdd | List of members ids to add. A maximum of 100 users per call can be modified using this command. Possible values are: comma separated optional values. | Optional | 
-| memberIdsToDelete | List of members ids to be deleted from the group. A maximum of 100 users per call can be modified using this command. Possible values are: comma separated optional values. | Optional | 
+| memberIdsToAdd | List of members IDs to add. A maximum of 100 users per call can be modified using this command. Possible values are: Comma-separated optional values. | Optional | 
+| memberIdsToDelete | List of members IDs to be deleted from the group. A maximum of 100 users per call can be modified using this command. Possible values are: Comma-separated optional values. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| UpdateGroup.id | String | Group Id | 
-| UpdateGroup.displayName | String | Display Name of the Group | 
-| UpdateGroup.success | Boolean | Success status of the command | 
-| UpdateGroup.errorCode | Number | Error Code if there is failure | 
-| UpdateGroup.errorMessage | Unknown | Error Details if there is failure | 
+| UpdateGroup.id | String | Group ID. | 
+| UpdateGroup.displayName | String | Display name of the group. | 
+| UpdateGroup.success | Boolean | Success status of the commands. | 
+| UpdateGroup.errorCode | Number | Error code if there is a failure. | 
+| UpdateGroup.errorMessage | Unknown | Error details if there is a failure. | 
 
 
 #### Command Example
@@ -613,18 +613,18 @@ Permanently removes a group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scim | Group SCIM with id in it. | Required | 
+| scim | Group SCIM with ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DeleteGroup.id | String | Group Id | 
-| DeleteGroup.displayName | String | Display Name of the Group | 
-| DeleteGroup.success | Boolean | Success status of the command | 
-| DeleteGroup.errorCode | Number | Error Code if there is failure | 
-| DeleteGroup.errorMessage | Unknown | Error Details if there is failure | 
+| DeleteGroup.id | String | Group ID. | 
+| DeleteGroup.displayName | String | Display name of the group. | 
+| DeleteGroup.success | Boolean | Success status of the commands | 
+| DeleteGroup.errorCode | Number | Error code if there is a failure. | 
+| DeleteGroup.errorMessage | Unknown | Error details if there is failure. | 
 
 
 #### Command Example
