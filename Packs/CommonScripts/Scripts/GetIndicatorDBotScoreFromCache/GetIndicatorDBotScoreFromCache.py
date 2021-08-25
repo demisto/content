@@ -11,9 +11,9 @@ def main():
         data = res[0]["Contents"][0]
         score = data["score"]
         vendor = "XSOAR"
-        reliability = data.get("aggregatedReliability")
+        reliability = data["aggregatedReliability"]
         indicatorType = data["indicator_type"]
-        expirationStatus = False if data.get("expirationStatus") == "active" else True
+        expirationStatus = False if data["expirationStatus"] == "active" else True
 
         dbotscore = {
             "Indicator": value,
