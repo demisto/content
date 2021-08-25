@@ -28,11 +28,10 @@ There are no outputs for this script.
 
 ### Human Readable Output
 ---
-## [Article Title #1](https://test-article.com/)
-_Posted June 25, 2021 3:35 PM by Timor_
-#### Article #1 Summary
----
-## [Article Title #2](https://test-article.com/)
-_Posted June 18, 2021 3:35 PM by Shai_
-#### Article #2 Summary
----
+**[Article Title #1](https://test-article.com/)**<br />
+*Posted June 25, 2021 3:35 PM by Timor*<br />
+Article #1 Summary
+
+**[Article Title #2](https://test-article.com/)**<br />
+*Posted June 18, 2021 3:35 PM by Shai*<br />
+Article #2 Summary
