@@ -48,7 +48,7 @@ tasks:
       - "2"
     scriptarguments:
       value:
-        simple: test.com
+        simple: GetIndicatorDBotScoreFromCache-Test.com
     separatecontext: false
     view: |-
       {
@@ -77,7 +77,7 @@ tasks:
       brand: ""
     scriptarguments:
       value:
-        simple: aqa.com
+        simple: GetIndicatorDBotScoreFromCache-Test.com
     separatecontext: false
     view: |-
       {
