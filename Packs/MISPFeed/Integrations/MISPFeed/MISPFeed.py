@@ -182,6 +182,7 @@ class Client(BaseClient):
                     result.append({
                         'value': attribute,
                         'type': get_attribute_indicator_type(attribute),
+                        'raw_type': attribute['type'],
                         'FeedURL': self._base_url,
                     })
         except ValueError as err:
@@ -253,6 +254,7 @@ def fetch_indicators(client: Client,
     for indicator in indicators_iterator:
         value_ = indicator.get('value').get('value')
         type_ = indicator.get('type')
+        raw_type = indicator.pop('raw_type')
         raw_data = {
             'value': value_,
             'type': type_,
@@ -274,14 +276,14 @@ def fetch_indicators(client: Client,
             # A dictionary of the raw data returned from the feed source about the indicator.
             'rawJSON': raw_data
         }
-        update_indicator_fields(indicator_obj, tlp_color)
+        update_indicator_fields(indicator_obj, tlp_color, raw_type)
 
         indicators.append(indicator_obj)
 
     return indicators
 
 
-def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[str]) -> None:
+def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[str], raw_type: str) -> None:
     first_seen = indicator_obj['rawJSON']['value'].get('first_seen', None)
     last_seen = indicator_obj['rawJSON']['value'].get('last_seen', None)
     timestamp = indicator_obj['rawJSON']['value'].get('timestamp', None)
@@ -313,6 +315,19 @@ def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[s
 
     if tlp_color:
         indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
+    if 'md5' in raw_type or 'sha1' in raw_type or 'sha256' in raw_type:
+        hash_value = indicator_obj['value']
+        if 'filename|' in raw_type:
+            pipe_index = hash_value.index("|")
+            filename = hash_value[0:pipe_index]
+            hash_value = hash_value[pipe_index + 1:]
+
+            indicator_obj['fields']['Associated File Names'] = filename
+            indicator_obj['value'] = hash_value
+            raw_type = raw_type[raw_type.index("|") + 1:]
+
+        indicator_obj['fields'][raw_type.upper()] = hash_value
 
 
 def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[str, str]) -> CommandResults:
