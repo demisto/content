@@ -481,6 +481,7 @@ def main():
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
                              create_if_not_exists, mapper_in, mapper_out)
 
+    base_url = 'https://api.slack.com/scim/v1/'
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -488,22 +489,18 @@ def main():
     }
 
     client = Client(
-        base_url='https://api.slack.com/scim/v1/',
+        base_url=base_url,
         verify=verify_certificate,
         proxy=proxy,
         headers=headers,
-        ok_codes=(200, 201)
+        ok_codes=(200, 201),
     )
 
     group_client = GroupClient(
-        base_url='https://api.slack.com/scim/v1/',
+        base_url=base_url,
         verify=verify_certificate,
-        headers={
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': f'Bearer {access_token}'
-        },
-        proxy=proxy
+        proxy=proxy,
+        headers=headers,
     )
 
     demisto.debug(f'Command being called is {command}')

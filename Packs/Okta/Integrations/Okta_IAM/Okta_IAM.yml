@@ -443,31 +443,31 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves the group information including members
+    description: Retrieves the group information, including its members.
     execution: false
     name: iam-get-group
     outputs:
     - contextPath: GetGroup.id
-      description: Group Id
+      description: ID of the group.
       type: String
     - contextPath: GetGroup.displayName
-      description: Display Name of the Group
+      description: The display name of the group.
       type: String
     - contextPath: GetGroup.members.display
-      description: Display Name of the group member
+      description: The display name of the group member.
       type: String
     - contextPath: GetGroup.members.value
-      description: Id of the group member
+      description: ID of the group member.
       type: String
     - contextPath: GetGroup.success
-      description: Success status of the command
+      description: Indicates whether the command succeeded.
       type: Boolean
     - contextPath: GetGroup.errorCode
-      description: Error Code if there is failure
+      description: HTTP error response code.
       type: Number
     - contextPath: GetGroup.errorMessage
-      description: Error Details if there is failure
-      type: Unknown
+      description: Reason why the API failed.
+      type: String
   - arguments:
     - default: false
       description: 'Useful for performing structured queries where constraints on
@@ -488,7 +488,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filters the upper  time bound of the log events in the Internet
+      description: 'Filters the upper time bound of the log events in the Internet
         Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
       isArray: false
       name: until
