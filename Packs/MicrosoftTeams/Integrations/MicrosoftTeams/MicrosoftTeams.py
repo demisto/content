@@ -253,6 +253,9 @@ def create_adaptive_card(body: list, actions: list = None) -> dict:
             '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
             'version': '1.0',
             'type': 'AdaptiveCard',
+            'msteams': {
+                'width': 'Full'
+            },
             'body': body
         }
     }
