@@ -1,5 +1,4 @@
 G Suite Auditor is an integration to receive Audit logs from  G Suite different applications - admin,drive,calender and more.
-This integration was integrated and tested with version of GsuiteAuditor
 
 ## Configure Service Account for G Suite Auditor
 
@@ -158,7 +157,7 @@ Retrieves a list of activities for a specific customer's account and application
                 ],
                 "id": {
                     "applicationName": "admin",
-                    "customerId": "C02f0zfqw",
+                    "customerId": "11111",
                     "time": "2021-07-27T02:47:20.894Z",
                     "uniqueQualifier": "-7168880636905757919"
                 }
@@ -183,7 +182,7 @@ Retrieves a list of activities for a specific customer's account and application
                 ],
                 "id": {
                     "applicationName": "admin",
-                    "customerId": "C02f0zfqw",
+                    "customerId": "1111",
                     "time": "2021-07-27T01:47:40.585Z",
                     "uniqueQualifier": "-4797090398870165525"
                 },

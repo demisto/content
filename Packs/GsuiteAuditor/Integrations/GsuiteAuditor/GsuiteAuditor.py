@@ -1,4 +1,5 @@
 # import demistomock as demisto
+
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from GSuiteApiModule import *  # noqa: E402
@@ -15,51 +16,17 @@ ADMIN_EMAIL = None
 
 ''' CONSTANTS '''
 
-MESSAGES: Dict[str, str] = {
-    'TEST_FAILED_ERROR': 'Test connectivity failed. Check the configuration parameters provided.',
-    'BOOLEAN_ERROR': 'The argument {} must be either true or false.',
-    'INTEGER_ERROR': 'The argument {} must be a positive integer.',
-    'REQUIRED_ARGS_CUSTOM_SCHEMA': 'Argument field_raw_json or field_json_entry_id is required.',
-    'CUSTOM_SCHEMA_UPDATE_REQUIRED_ARGS': 'Argument schema_id or schema_name is required.',
-    'UNEXPECTED_ERROR': 'An unexpected error occurred.',
-    'DATATRANSFER_MISSING_ARGUMENT': 'The argument application_id or applications_raw_json'
-                                     ' or application_raw_json_entry_id is required.',
-    'DATATRANSFER_TRANSFER_PARAM_FORMAT_ERROR': 'application_transfer_params argument not in expected format. Please '
-                                                'provide a comma separated string of format "key1:val;key2:val1,val2"',
-    'INVALID_ADMIN_EMAIL': 'Invalid value of argument/parameter Admin Email.'
-}
-
 OUTPUT_PREFIX: Dict[str, str] = {
     'ACTIVITY_LIST': 'GSuite.ActivitySearch',
     'ACTIVITY_LIST_PAGE_TOKEN': 'GSuite.PageToken.ActivitySearch',
 }
 
+REQ_URL = 'https://admin.googleapis.com/'
 URL_SUFFIX = 'admin/reports/v1/activity/users/{}/applications/{}'
 SCOPE = ['https://www.googleapis.com/auth/admin.reports.audit.readonly']
 
-HR_MESSAGES: Dict[str, str] = {
-    'MOBILE_UPDATE_SUCCESS': 'Mobile device with resource id - {} updated.',
-    'MOBILE_DELETE_SUCCESS': 'Mobile device with resource id - {} deleted.',
-    'USER_CREATE': 'User Details',
-    'LIST_COMMAND_SUCCESS': 'Total Retrieved {}: {}',
-    'ALIAS_ADD_SUCCESS': 'Added alias "{}" to user key "{}".',
-    'GROUP_CREATE_SUCCESS': 'A new group named "{}" created.',
-    'ROLE_ASSIGNMENT_CREATE': 'Role Assignment Details',
-    'ROLE_CREATE_PRIVILEGES_INCORRECT_FORMAT': 'role_privileges argument missing or not in expected format. Please '
-                                               'provide a comma separated string of form "PrivilegeName1:ServiceId1,'
-                                               'PrivilegeName2:ServiceId2".',
-    'ROLE_CREATE_SUCCESS': 'A new role created.',
-    'TOKEN_REVOKE_SUCCESS': 'All access tokens deleted for {}.',
-    'NO_RECORDS': 'No {} found for the given argument(s).',
-    'CUSTOM_USER_SCHEMA_CREATE': 'Custom User Schema Details',
-    'CUSTOM_USER_SCHEMA_FIELD_DETAILS': 'Field Details',
-    'CUSTOM_USER_SCHEMA_UPDATE': 'Updated Custom User Schema Details',
-    'DATATRANSFER_REQUEST_CREATE_SUCCESS': 'Data Transfer Details',
-    'NOT_FOUND': 'No {} found.',
-    'USER_DELETE': 'User with user key {} deleted successfully.',
-    'USER_UPDATE': 'Updated User Details'
-}
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_MILISEC_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 ''' HELPER FUNCTIONS '''
 
@@ -93,7 +60,7 @@ def prepare_args_for_activities_list(args: Dict[str, str]) -> Dict[str, str]:
         'startTime': args.get('start_time'),
         'endTime': args.get('end_time'),
         'maxResults': GSuiteClient.validate_get_int(args.get('max_results'),
-                                                    MESSAGES['INTEGER_ERROR'].format('max_results')),
+                                                    'The argument max_results must be a positive integer.'),
         'pageToken': args.get('page_token')
     })
 
@@ -101,12 +68,12 @@ def prepare_args_for_activities_list(args: Dict[str, str]) -> Dict[str, str]:
 def prepare_readable_items(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     readable_items = [
         {
-            'time': item.get('id', {}).get('time'),
-            'applicationName': item.get('id', {}).get('applicationName'),
-            'email': item.get('actor', {}).get('email'),
-            'profileId': item.get('actor', {}).get('profileId'),
-            'ipAddress': item.get('ipAddress', ''),
-            'events': item['events']
+            'Time': item.get('id', {}).get('time'),
+            'Application Name': item.get('id', {}).get('applicationName'),
+            'Email': item.get('actor', {}).get('email'),
+            'Profile Id': item.get('actor', {}).get('profileId'),
+            'Ip Address': item.get('ipAddress', ''),
+            'Events': item['events']
         } for item in items
     ]
 
@@ -142,7 +109,9 @@ def create_end_time(start_time: str, added_time: str) -> str:
 
     timedelta_param = timedelta()
     time_param = int(time_list[0])
-    if time_list[1] == 'minutes':
+    if time_list[1] == 'milliseconds':
+        timedelta_param = timedelta(milliseconds=time_param)
+    elif time_list[1] == 'minutes':
         timedelta_param = timedelta(minutes=time_param)
     elif time_list[1] == 'hours':
         timedelta_param = timedelta(hours=time_param)
@@ -151,18 +120,99 @@ def create_end_time(start_time: str, added_time: str) -> str:
 
     end_time = dateparser.parse(start_time) + timedelta_param
 
-    return end_time.strftime(DATE_FORMAT)
+    return end_time.strftime(DATE_MILISEC_FORMAT)
 
 
 def fetch_request(client: GSuiteClient, app: str, start_time: str, end_time: str) -> List[Dict]:
     """
-    for an app and start time, send an API request and returns the items
+    for an app and start time, send an API request and return the items
     """
+
     response = client.http_request(
         url_suffix=URL_SUFFIX.format('all', app),
         params={'startTime': start_time, 'endTime': end_time})
 
-    return response.get('items', [])
+    items = response.get('items', [])
+    next_page = response.get('nextPageToken')
+
+    # the response might be divided to several pages
+    while next_page:
+        response = client.http_request(
+            url_suffix=URL_SUFFIX.format('all', app),
+            params={'nextPageToken': next_page})
+        items.append(response.get('items', []))
+        next_page = response.get('nextPageToken')
+
+    # debug
+    demisto.debug("\nFETCH_DEBUGGING_1\n")
+    demisto.debug(f"number fetched - {len(items)} from {start_time} to {end_time}\n")
+    return items
+
+
+def prepare_gsuite_client(params: Dict) -> GSuiteClient:
+    service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json', ''))
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    # prepare client class object
+    gsuite_client = GSuiteClient(service_account_dict,
+                                 base_url=REQ_URL, verify=verify_certificate, proxy=proxy,
+                                 headers=headers)
+    return gsuite_client
+
+
+def create_incidents_from_items(sorted_items: List, fetch_limit: int, new_leftover_items: List, last_run: str) -> List:
+    """
+    Create an incidents list from the sorted_items we received, add the leftover items to the new leftover list.
+    return the new incidents list
+    """
+    counter = 0
+    incidents = []
+    for i in range(0, len(sorted_items)):
+        # if we reached our limit add to our leftover list and exit
+        if counter == fetch_limit:
+            new_leftover_items.extend(sorted_items[i:])
+            break
+
+        item = sorted_items[i]
+
+        counter += 1
+        incident = {
+            'name': f"GSuite Auditor event {item['id']['applicationName']} {item['id']['uniqueQualifier']}",
+            'occurred': dateparser.parse(item['id']['time']).strftime(DATE_FORMAT),
+            'rawJSON': json.dumps(item)
+        }
+        incidents.append(incident)
+
+    return incidents
+
+
+def get_new_last_run(last_leftover_item: Dict, last_sorted_item: Dict, end_time: str, last_run: str) -> str:
+    """
+    return the new 'last run' time
+    """
+
+    # check if there's last item
+    if last_leftover_item:
+        return create_end_time(last_leftover_item['id']['time'], '1 milliseconds')
+    elif last_sorted_item:
+        return create_end_time(last_sorted_item['id']['time'], '1 milliseconds')
+    # no items - if we are still retrieving old results advance the time
+    elif end_time < time.ctime():
+        return end_time
+    else:
+        return last_run
+
+
+def get_list_last_item(given_list) -> Any:
+    if len(given_list) != 0:
+        return given_list[-1]
+    else:
+        return None
 
 
 @logger
@@ -223,60 +273,42 @@ def activities_list_command(client: GSuiteClient, args: Dict[str, Any]) -> Comma
 
 @logger
 def fetch_incidents(client: GSuiteClient, first_fetch_time: str, fetch_limit: int, applications: Any) -> List[Dict]:
-    total_items = []
     last_run_dict = demisto.getLastRun()
     last_run = last_run_dict.get('last_run')
-    last_ids = last_run_dict.get('last_ids', [])
     last_leftover_items = last_run_dict.get('last_leftover_items', [])
-    new_leftover_items = []
+
     if not last_run:  # this is the first run
-        last_run = dateparser.parse(first_fetch_time).strftime(DATE_FORMAT)
+        last_run = dateparser.parse(first_fetch_time).strftime(DATE_MILISEC_FORMAT)
 
-    end_time = create_end_time(last_run, "1 hours")
-
+    # get leftover items from last run
+    new_items = []
+    new_leftover_items = []
     if len(last_leftover_items) != 0:
-        total_items = last_leftover_items[:fetch_limit]
+        new_items = last_leftover_items[:fetch_limit]
         new_leftover_items = last_leftover_items[fetch_limit:]
 
-    if len(total_items) < fetch_limit:
+    end_time = create_end_time(last_run, "1 hour")
+    # get new items
+    if len(new_items) < fetch_limit:
         for app in applications:
-            total_items.extend(fetch_request(client, app, last_run, end_time))
+            new_items.extend(fetch_request(client, app, last_run, end_time))
 
-    sorted_items = sorted(total_items, key=lambda k: k['id']['time'])  # sort the data from earlist to last.
+    sorted_items = sorted(new_items,
+                          key=lambda k: dateparser.parse(k['id']['time']))  # sort the data from earliest to last.
+    incidents = create_incidents_from_items(sorted_items, fetch_limit, new_leftover_items, last_run)
+    new_last_run = get_new_last_run(get_list_last_item(new_leftover_items), get_list_last_item(sorted_items), end_time,
+                                    last_run)
 
-    incidents = []
-    counter = 0
-    for i in range(0, len(sorted_items)):
-        item = sorted_items[i]
-        if counter == fetch_limit:
-            new_leftover_items.extend(sorted_items[i:])
-            break
+    # debug
+    demisto.debug("\nFETCH_DEBUGGING_2\n")
+    demisto.debug(f"new_last_run : {new_last_run}\n")
+    demisto.debug(f"number of new leftover : {len(new_leftover_items)}\n")
+    demisto.debug(f"number of new incidents : {len(incidents)}\n")
+    demisto.debug(f"incidents : {incidents}\n")
 
-        if item['id']['uniqueQualifier'] in last_ids:
-            continue
+    demisto.setLastRun(
+        {'last_run': new_last_run, 'last_leftover_items': new_leftover_items})
 
-        counter += 1
-        incident = {
-            'name': f"GSuite Auditor event {item['id']['applicationName']} {item['id']['uniqueQualifier']}",
-            'occurred': item['id']['time'],
-            'rawJSON': json.dumps(item)
-        }
-        incidents.append(incident)
-
-    if len(incidents) > 0:
-        new_last_run = incidents[-1]['occurred']
-    elif end_time < time.ctime():
-        new_last_run = end_time
-    else:
-        new_last_run = last_run
-
-    new_last_ids = []
-    for incident in incidents:
-        if incident['occurred'] == new_last_run:
-            item = json.loads(incident["rawJSON"])
-            new_last_ids.append(item['id']['uniqueQualifier'])
-
-    demisto.setLastRun({'last_run': new_last_run, 'last_ids': new_last_ids, 'last_leftover_incidents': new_leftover_items})
     return incidents
 
 
@@ -296,29 +328,18 @@ def main() -> None:
     try:
         global ADMIN_EMAIL
         params = demisto.params()
-        service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json'))
-        verify_certificate = not params.get('insecure', False)
-        proxy = params.get('proxy', False)
-
-        headers = {
-            'Content-Type': 'application/json'
-        }
-
-        # prepare client class object
-        gsuite_client = GSuiteClient(service_account_dict,
-                                     base_url='https://admin.googleapis.com/', verify=verify_certificate, proxy=proxy,
-                                     headers=headers)
+        gsuite_client = prepare_gsuite_client(params)
 
         # Trim the arguments
         args = GSuiteClient.strip_dict(demisto.args())
         first_fetch_time = demisto.params().get('first_fetch', '12 hours').strip()
         fetch_limit = demisto.params().get('max_fetch', '10')
-        fetch_app = params.get('applications', 'admin')
+        fetch_app = params.get('applications', ['admin'])
 
         ADMIN_EMAIL = args.get('admin_email') if args.get('admin_email') else params.get('admin_email')
         # Validation of ADMIN_EMAIL
         if ADMIN_EMAIL and not is_email_valid(ADMIN_EMAIL):
-            raise ValueError(MESSAGES['INVALID_ADMIN_EMAIL'])
+            raise ValueError('Invalid value of argument/parameter Admin Email.')
 
         gsuite_client.set_authorized_http(scopes=SCOPE, subject=ADMIN_EMAIL)
         # This is the call made when pressing the integration Test button.

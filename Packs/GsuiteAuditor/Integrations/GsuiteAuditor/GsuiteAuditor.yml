@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: GsuiteAuditor
+  id: GSuiteAuditor
   version: -1
 configuration:
 - name: user_service_account_json
@@ -8,7 +8,7 @@ configuration:
   required: true
   defaultvalue: ""
   type: 4
-  additionalinfo: ""
+  additionalinfo: "User's Service Account JSON key."
 - name: admin_email
   display: Admin Email
   required: false
@@ -79,7 +79,7 @@ configuration:
 description: G Suite Auditor is an integration to receive Audit logs from  G Suite
   different applications - admin,drive,calender and more.
 display: G Suite Auditor
-name: GsuiteAuditor
+name: GSuiteAuditor
 script:
   commands:
   - arguments:
@@ -157,16 +157,12 @@ script:
       required: false
       isArray: false
       defaultValue: ""
-      predefined:
-      - ""
     - name: end_time
       description: Sets the end of the range of time shown in the report. example
         - 2010-10-28T10:26:35.000Z
       required: false
       isArray: false
       defaultValue: ""
-      predefined:
-      - ""
     - default: false
       defaultValue: "1000"
       description: "Maximum number of results to return. "
