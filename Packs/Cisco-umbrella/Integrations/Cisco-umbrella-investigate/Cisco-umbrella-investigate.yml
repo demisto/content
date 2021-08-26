@@ -47,7 +47,7 @@ script:
   - arguments:
     - default: true
       description: Enter the domain you would like to categorize (e.g. amazon.com)
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false
