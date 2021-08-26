@@ -152,7 +152,7 @@ STATUS_NUM_TO_TEXT = {20: 'New',
 
 
 def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
-                 get_token_flag=True, no_json=False, json=None, status_code=None, timeout=30):
+                 get_token_flag=True, no_json=False, json=None, status_code=None):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -206,7 +206,6 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             headers=headers,
             files=files,
             json=json,
-            timeout=timeout
         )
     except requests.exceptions.RequestException:
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
