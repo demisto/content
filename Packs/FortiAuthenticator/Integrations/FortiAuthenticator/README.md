@@ -77,7 +77,8 @@ After you successfully execute a command, a DBot message appears in the War Room
             "username": "test_user",
             "token_auth": "true",
             "token_type": "ftm",
-            "token_auth": "FTKMOB123456789A"
+            "token_serial": "FTKMOB123456789A"
+
         }
     }
 }
