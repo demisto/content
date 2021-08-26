@@ -75,7 +75,8 @@ PAN_OS_ERROR_DICT = {
     '18': 'Malformed command - The XML is malformed.',
     # 19,20: success
     '21': 'Internal error - Check with technical support when seeing these errors.',
-    '22': 'Session timed out - The session for this query timed out.'
+    '22': 'Session timed out - The session for this query timed out.',
+    '23': 'Hello'
 }
 
 

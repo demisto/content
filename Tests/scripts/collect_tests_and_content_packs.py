@@ -959,7 +959,7 @@ def get_content_pack_name_of_test(tests: set, id_set: Optional[Dict] = None) -> 
             test_playbook_name = list(test_playbook_object.keys())[0]
             test_playbook_data = list(test_playbook_object.values())[0]
             if test_playbook_name in tests:
-                pack_name = test_playbook_data.get('pack')
+                pack_name = test_playbook_data.get('name')
                 if pack_name:
                     content_packs.add(pack_name)
                     if len(tests) == len(content_packs):
