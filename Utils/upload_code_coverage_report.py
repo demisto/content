@@ -2,6 +2,7 @@
 import argparse
 from datetime import datetime
 import json
+import os
 from typing import Dict
 
 from Tests.Marketplace.marketplace_services import init_storage_client
@@ -12,11 +13,22 @@ TIMESTAMP_FORMAT_SECONDS = '%Y-%m-%dT%H:%M:%SZ'
 TIMESTAMP_FORMAT_MICROSECONDS = '%Y-%m-%dT%H:%M:%S.%f'
 
 
-def create_minimal_report(source_file: str, destination_file: str):
+def create_minimal_report(source_file: str, destination_file: str) -> Dict:
+    ret_value = {}
+
+    if not os.path.isfile(source_file):
+        ret_value['success'] = False
+        print(f'File {source_file} does not exist.')
+        return
+
     with open(source_file, 'r') as cov_util_output:
         data = json.load(cov_util_output)
 
-    # TODO Check that we were able to read the json report correctly
+    # Check that we were able to read the json report correctly
+    if not data or not 'files' in data:
+        ret_value['success'] = False
+        print(f'Empty file, or unable to read contents of {source_file}.')
+        return
 
     minimal_coverage_contents_files: Dict[str, float] = {}
     files = data['files']
@@ -26,6 +38,7 @@ def create_minimal_report(source_file: str, destination_file: str):
     timestamp_from_file = data['meta']['timestamp']
     datetime_from_timestamp: datetime = datetime.strptime(timestamp_from_file, TIMESTAMP_FORMAT_MICROSECONDS)
     str_from_datetime: str = datetime.strftime(datetime_from_timestamp, TIMESTAMP_FORMAT_SECONDS)
+    ret_value['last_updated'] = str_from_datetime
 
     minimal_coverage_contents = {
         'files': minimal_coverage_contents_files,
@@ -35,17 +48,20 @@ def create_minimal_report(source_file: str, destination_file: str):
     with open(destination_file, 'w') as minimal_output:
         minimal_output.write(json.dumps(minimal_coverage_contents))
 
+    ret_value['success'] = True
+    return ret_value
+
 
 def upload_file_to_google_cloud_storage(service_account: str,
                                         bucket_name: str,
                                         minimal_file_name: str,
                                         destination_blob_dir: str,
+                                        last_updated: str,
                                         ):
     """Uploads a file to the bucket."""
-    json_dest = '{}/coverage-min.json'.format(destination_blob_dir)
-    with open(minimal_file_name, 'r') as data_file:
-        updated = datetime.strptime(json.load(data_file)['last_updated'], TIMESTAMP_FORMAT_SECONDS)
-    historic_data_dest = '{}/history/coverage-min-{}.json'.format(destination_blob_dir, updated.strftime(DATE_FORMAT))
+    json_dest = f'{destination_blob_dir}/coverage-min.json'
+    updated = datetime.strptime(last_updated, TIMESTAMP_FORMAT_SECONDS)
+    historic_data_dest = '{}/history/coverage-min/coverage-min-{}.json'.format(destination_blob_dir, updated.strftime(DATE_FORMAT))
 
     upload_list = [json_dest, historic_data_dest]
     # google cloud storage client initialized
@@ -92,7 +108,6 @@ def options_handler():
                               "Default value is marketplace-dist-dev."),
                         required=False)
 
-    # TODO Pass specific arguments to methods (and no "options")
     parser.add_argument('-f', '--source_file_name',
                         default='coverage.json',
                         help=("Path to the Coverage report in json format. "
@@ -131,15 +146,17 @@ def main():
     options = options_handler()
     coverage_json(options.cov_bin_dir, options.source_file_name)
 
-    create_minimal_report(source_file=options.source_file_name,
+    create_minimal_report_res = create_minimal_report(source_file=options.source_file_name,
                           destination_file=options.minimal_file_name,
                           )
 
-    upload_file_to_google_cloud_storage(service_account=options.service_account,
-                                        bucket_name=options.bucket_name,
-                                        minimal_file_name=options.minimal_file_name,
-                                        destination_blob_dir=options.destination_blob_dir,
-                                        )
+    if create_minimal_report_res.get('success'):
+        upload_file_to_google_cloud_storage(service_account=options.service_account,
+                                            bucket_name=options.bucket_name,
+                                            minimal_file_name=options.minimal_file_name,
+                                            destination_blob_dir=options.destination_blob_dir,
+                                            last_updated=create_minimal_report_res.get('last_updated')
+                                            )
 
 
 if __name__ == '__main__':

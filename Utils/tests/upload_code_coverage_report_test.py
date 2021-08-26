@@ -1,15 +1,16 @@
-
 from ruamel import yaml
 import os
 from Utils.upload_code_coverage_report import create_minimal_report
 
 
-def test_create_minimal_report():
+def test_create_minimal_report(tmpdir):
     source_file = "./TestData/coverage.json"
-    destination_file = "./TestData/coverage_generated.json"
+    destination_file = tmpdir.join("coverage_generated.json")
 
     try:
-        create_minimal_report(source_file=source_file, destination_file=destination_file)
+        create_minimal_report_res = create_minimal_report(source_file=source_file, destination_file=destination_file)
+        assert True == create_minimal_report_res.get('success')
+        assert '2021-08-10T11:37:35Z' == create_minimal_report_res.get('last_updated')
 
         destination_file_contents = yaml.safe_load(open(destination_file))
 
