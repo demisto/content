@@ -191,7 +191,7 @@ class Client(BaseClient):
         return result
 
 
-def get_attribute_indicator_type(attribute: Dict[str, Any]):
+def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
     attribute_type = attribute['type']
     indicator_map = {
         'sha256': FeedIndicatorType.File,
@@ -216,6 +216,20 @@ def get_attribute_indicator_type(attribute: Dict[str, Any]):
 
     }
     return indicator_map.get(attribute_type, None)
+
+
+def get_galaxy_indicator_type(galaxy_tag_name: str) -> Optional[str]:
+    if 'galaxy' in galaxy_tag_name:
+        galaxy_name = galaxy_tag_name[0:galaxy_tag_name.index("=")]
+        galaxy_map = {
+            'misp-galaxy:mitre-attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+            'misp-galaxy:mitre-malware': ThreatIntel.ObjectsNames.MALWARE,
+            'misp-galaxy:mitre-tool': ThreatIntel.ObjectsNames.TOOL,
+            'misp-galaxy:mitre-intrusion-set': ThreatIntel.ObjectsNames.INTRUSION_SET,
+            'misp-galaxy:mitre-course-of-action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
+        }
+        return galaxy_map.get(galaxy_name, None)
+    return None
 
 
 def test_module(client: Client) -> str:
@@ -266,26 +280,52 @@ def fetch_indicators(client: Client,
         }
         for key, value in indicator.items():
             raw_data.update({key: value})
-        indicator_obj = {
-            # The indicator value.
-            'value': value_,
-            # The indicator type as defined in Cortex XSOAR.
-            # One can use the FeedIndicatorType class under CommonServerPython to populate this field.
-            'type': type_,
-            # The name of the service supplying this feed.
-            'service': 'MISP',
-            # A dictionary that maps values to existing indicator fields defined in Cortex XSOAR.
-            # One can use this section in order to map custom indicator fields previously defined
-            # in Cortex XSOAR to their values.
-            'fields': {},
-            # A dictionary of the raw data returned from the feed source about the indicator.
-            'rawJSON': raw_data
-        }
+
+        indicator_obj = build_indicator(value_, type_, raw_data)
+
         update_indicator_fields(indicator_obj, tlp_color, raw_type)
+        galaxy_indicators = build_indicators_from_galaxies(indicator_obj)
+        indicators.extend(galaxy_indicators)
+        create_relationships(indicator_obj, galaxy_indicators)
 
         indicators.append(indicator_obj)
 
     return indicators
+
+
+def build_indicator(value_: str, type_: str, raw_data: Dict[str, Any]) -> Dict[str, Any]:
+    indicator_obj = {
+        'value': value_,
+        'type': type_,
+        'service': 'MISP',
+        'fields': {},
+        'rawJSON': raw_data
+    }
+    return indicator_obj
+
+
+def build_indicators_from_galaxies(indicator_obj: Dict[str, Any]) -> List[Dict[str,Any]]:
+    tags = indicator_obj['rawJSON']['value'].get('Tag', None)
+    galaxy_indicators = []
+    for tag in tags:
+        tag_name = tag.get('name', None)
+        if tag_name and get_galaxy_indicator_type(tag_name):
+            value_ = tag_name[tag_name.index('=\"') + 1: tag_name.index("-") - 1]
+            type_ = get_galaxy_indicator_type(tag_name)
+            raw_data = {
+                'value': value_,
+                'type': type_,
+            }
+            for key, value in tag.items():
+                raw_data.update({key: value})
+
+            galaxy_indicators.append(build_indicator(value_, type_, raw_data))
+
+    return galaxy_indicators
+
+
+def create_relationships(indicator_obj: Dict[str, Any], galaxy_indicators: List[Dict[str,Any]]) -> None:
+
 
 
 def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[str], raw_type: str) -> None:
@@ -311,28 +351,14 @@ def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[s
     if comment:
         indicator_obj['fields']['Description'] = comment
 
-    if tags:
-        indicator_obj['fields']['Tags'] = []
-        for tag in tags:
-            tag_name = tag.get('name', None)
-            if tag_name:
-                indicator_obj['fields']['Tags'].append(tag_name)
-
     if tlp_color:
         indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
+    if tags:
+        handle_tags_fields(indicator_obj, tags)
+
     if 'md5' in raw_type or 'sha1' in raw_type or 'sha256' in raw_type:
-        hash_value = indicator_obj['value']
-        if 'filename|' in raw_type:
-            pipe_index = hash_value.index("|")
-            filename = hash_value[0:pipe_index]
-            hash_value = hash_value[pipe_index + 1:]
-
-            indicator_obj['fields']['Associated File Names'] = filename
-            indicator_obj['value'] = hash_value
-            raw_type = raw_type[raw_type.index("|") + 1:]
-
-        indicator_obj['fields'][raw_type.upper()] = hash_value
+        handle_file_type_fields(raw_type, indicator_obj)
 
 
 def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[str, str]) -> CommandResults:
@@ -376,6 +402,28 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dic
 
     indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color)
     return indicators
+
+
+def handle_tags_fields(indicator_obj: Dict[str, Any], tags: List[Any]) -> None:
+    indicator_obj['fields']['Tags'] = []
+    for tag in tags:
+        tag_name = tag.get('name', None)
+        if tag_name and not get_galaxy_indicator_type(tag_name):
+            indicator_obj['fields']['Tags'].append(tag_name)
+
+
+def handle_file_type_fields(raw_type: str, indicator_obj: Dict[str, Any]) -> None:
+    hash_value = indicator_obj['value']
+    if 'filename|' in raw_type:
+        pipe_index = hash_value.index("|")
+        filename = hash_value[0:pipe_index]
+        hash_value = hash_value[pipe_index + 1:]
+
+        indicator_obj['fields']['Associated File Names'] = filename
+        indicator_obj['value'] = hash_value
+        raw_type = raw_type[raw_type.index("|") + 1:]
+
+    indicator_obj['fields'][raw_type.upper()] = hash_value
 
 
 def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[Any, str]:
