@@ -152,7 +152,7 @@ STATUS_NUM_TO_TEXT = {20: 'New',
 
 
 def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
-                 get_token_flag=True, no_json=False, json=None, status_code=None):
+                 get_token_flag=True, no_json=False, json=None, status_code=None, timeout=30):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -187,6 +187,8 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         :type status_code: ``int``
         :param: status_code: The request codes to accept as OK.
 
+        #Todo add timeout
+
         :return: Returns the http request response json
         :rtype: ``dict``
     """
@@ -203,7 +205,8 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             data=data,
             headers=headers,
             files=files,
-            json=json
+            json=json,
+            timeout=timeout
         )
     except requests.exceptions.RequestException:
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
@@ -2644,13 +2647,11 @@ LOG('Command being called is {}'.format(demisto.command()))
 
 def main():
     command = demisto.command()
-    # should raise error in case of issue
-    if command == 'fetch-incidents':
-        demisto.incidents(fetch_incidents())
-
     args = demisto.args()
     try:
-        if command == 'test-module':
+        if command == 'fetch-incidents':
+            demisto.incidents(fetch_incidents())
+        elif command == 'test-module':
             result = test_module()
             return_results(result)
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
@@ -2742,9 +2743,9 @@ def main():
         elif command == 'cs-falcon-resolve-incident':
             return_results(resolve_incident_command(status=args.get('status'),
                                                     ids=argToList(args.get('ids'))))
-        # else:
-        #     raise NotImplementedError(f'CrowdStrike Falcon error: '
-        #                               f'command {command} is not implemented')
+        else:
+            raise NotImplementedError(f'CrowdStrike Falcon error: '
+                                      f'command {command} is not implemented')
     except Exception as e:
         return_error(str(e))
 
