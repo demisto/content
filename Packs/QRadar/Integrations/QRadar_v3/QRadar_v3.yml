@@ -2814,6 +2814,12 @@ script:
     name: qradar-upload-indicators
   - arguments:
     - default: false
+      description: Comma separated list. Source IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2".
+      isArray: true
+      name: source_ip
+      required: false
+      secret: false
+    - default: false
       description: 'Query to filter IPs. E.g, filter=`source_ip="192.168.0.1"`. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
       isArray: false
       name: filter
@@ -2872,6 +2878,12 @@ script:
       description: List of local destination address IDs associated with the source address.
       type: Unknown
   - arguments:
+    - default: false
+      description: Comma separated list. Local destination IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2".
+      isArray: true
+      name: local_destination_ip
+      required: false
+      secret: false
     - default: false
       description: 'Query to filter IPs. E.g, filter=`local_destination_ip="192.168.0.1"` For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
       isArray: false
