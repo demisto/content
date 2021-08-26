@@ -97,7 +97,7 @@ def parse_timestamp_to_datestring(timestamp):
 
 
 @logger
-def decode_arcsight_output(d, depth=0, remove_nones=True):
+def decode_arcsight_output(d, depth=0, remove_nones=True, fields_to_stringify=None):
     """ Converts some of the values from ArcSight DB into a more useful & readable format """
     # ArcSight stores some None values as follows
     NONE_VALUES = [-9223372036854776000, -9223372036854775808, -2147483648, 5e-324]
@@ -106,13 +106,16 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
     # ArcSight stores Dates as timeStamps in the following keys, -> reformat into Date
     TIMESTAMP_FIELDS = ['createdTimestamp', 'modifiedTimestamp', 'deviceReceiptTime', 'startTime', 'endTime',
                         'stageUpdateTime', 'modificationTime', 'managerReceiptTime', 'createTime', 'agentReceiptTime']
+    if not fields_to_stringify:
+        fields_to_stringify = []
+
     if depth < 10:
         if isinstance(d, list):
-            return [decode_arcsight_output(d_, depth + 1) for d_ in d]
+            return [decode_arcsight_output(d_, depth + 1, fields_to_stringify=fields_to_stringify) for d_ in d]
         if isinstance(d, dict):
             for key, value in d.items():
                 if isinstance(value, dict):
-                    decode_arcsight_output(value, depth + 1)
+                    decode_arcsight_output(value, depth + 1, fields_to_stringify=fields_to_stringify)
                 elif value in NONE_VALUES:
                     if remove_nones:
                         d.pop(key, None)
@@ -125,7 +128,7 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
                 elif key in TIMESTAMP_FIELDS:
                     key = key.replace('Time', 'Date').replace('stamp', '')
                     d[key] = parse_timestamp_to_datestring(value)
-                elif key in ['eventId', 'baseEventIds']:
+                elif key in ['eventId', 'baseEventIds'] + fields_to_stringify:
                     d[key] = str(value)
     return d
 
@@ -463,7 +466,8 @@ def get_case(resource_id, fetch_base_events=False):
 def get_case_command():
     resource_id = demisto.args().get('resourceId')
     with_base_events = demisto.args().get('withBaseEvents') == 'true'
-
+    fields_to_stringify = argToList(demisto.args().get('eventFieldsToStringify'))
+    
     raw_case = get_case(resource_id, fetch_base_events=with_base_events)
     case = {
         'Name': raw_case.get('name'),
@@ -477,7 +481,9 @@ def get_case_command():
     if with_base_events:
         case['events'] = raw_case.get('events')
 
-    contents = decode_arcsight_output(raw_case)
+    contents = decode_arcsight_output(raw_case, fields_to_stringify=fields_to_stringify)
+    if contents.get('events') and fields_to_stringify:
+        contents['events'] = decode_arcsight_output(contents['events'], fields_to_stringify=fields_to_stringify)
     human_readable = tableToMarkdown(name='Case {}'.format(resource_id), t=case, removeNull=True)
     outputs = {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': contents}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)

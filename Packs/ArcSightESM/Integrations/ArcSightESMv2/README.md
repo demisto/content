@@ -155,6 +155,7 @@ Gets information about a single case.
 | --- | --- | --- |
 | resourceId | Resource ID of the case to get information for | Required | 
 | withBaseEvents | If "true", then will return case and base events of that case | Optional | 
+| eventFieldsToStringify | CSV list of event fields to cast to string (useful if a value is long integer). For example: if the event is {"object": "Id": 4} and we want the output to be {"object": "Id": "4"}, the value of this argument should be Id | Optional |
 
 
 #### Context Output
