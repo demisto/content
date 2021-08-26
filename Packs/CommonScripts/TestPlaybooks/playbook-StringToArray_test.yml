@@ -120,7 +120,7 @@ tasks:
               complex:
                 root: StringToArray
                 transformers:
-                - operator: 06307c3c-8564-4c22-8721-224a344ee954
+                - operator: StringToArray
             iscontext: true
           right:
             value:
