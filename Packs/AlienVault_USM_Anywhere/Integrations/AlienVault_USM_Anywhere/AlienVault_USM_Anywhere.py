@@ -276,8 +276,8 @@ def dict_value_to_int(target_dict: Dict, key: str):
 
 
 def item_to_incident(item):
-    if not (occured := item.get('timestamp_occured_iso8601')):
-        occured = convert_timestamp_to_iso86(
+    if not (occurred := item.get('timestamp_occured_iso8601')):
+        occurred = convert_timestamp_to_iso86(
             item.get('timestamp_occured', ''),
             item.get("time_offset", 'Z')
         )
