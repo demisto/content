@@ -6,6 +6,7 @@ from CommonServerPython import *
 
 CLIENT = XQLQueryingEngine.Client(base_url='some_mock_url', verify=False)
 ENDPOINT_IDS = '"test1","test2"'
+INTEGRATION_CONTEXT = {}
 
 
 def util_load_json(path):
@@ -13,7 +14,16 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+def get_integration_context():
+    return INTEGRATION_CONTEXT
+
+
+def set_integration_context(integration_context):
+    global INTEGRATION_CONTEXT
+    INTEGRATION_CONTEXT = integration_context
+
 # =========================================== TEST Built-In Queries helpers ===========================================#
+
 
 @pytest.mark.parametrize(
     'input_arg, expected',
@@ -583,6 +593,48 @@ def test_format_results_do_not_remove_empty_fields():
 
 # =========================================== TEST Generic Query Functions ===========================================#
 
+def test_start_xql_query_polling_command(mocker):
+    """
+    Given:
+    - A query that has a successful status and the number of results is under 1000.
+
+    When:
+    - Calling get_xql_query_results_polling_command function.
+
+    Then:
+    - Ensure returned command results are correct and integration_context was cleared.
+
+    """
+    query = 'MOCK_QUERY'
+    context = {
+        'mock_id': {
+            'query': 'mock_query',
+            'time_frame': '3 days',
+            'command_name': 'previous command',
+        }
+    }
+    set_integration_context(context)
+    mock_response = {'status': 'SUCCESS',
+                     'number_of_results': 1,
+                     'query_cost': {'376699223': 0.0031591666666666665},
+                     'remaining_quota': 1000.0,
+                     'results': [{'x': 'test1', 'y': None}],
+                     'execution_id': 'query_id_mock'}
+    mocker.patch.object(CLIENT, 'start_xql_query', return_value='1234')
+    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-query')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    command_results = XQLQueryingEngine.start_xql_query_polling_command(CLIENT, {'query': query})
+    assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1,
+                                       'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
+                                       'execution_id': 'query_id_mock', 'results': [{'x': 'test1'}]}
+    assert '| query_id_mock | 1 | MOCK_QUERY | 376699223: 0.0031591666666666665 | 1000.0 | SUCCESS |' in \
+           command_results.readable_output
+    assert 'y' in command_results.raw_response['results'][0]
+    assert get_integration_context() == context
+
+
 def test_get_xql_query_results_polling_command_success_under_1000(mocker):
     """
     Given:
@@ -592,7 +644,37 @@ def test_get_xql_query_results_polling_command_success_under_1000(mocker):
     - Calling get_xql_query_results_polling_command function.
 
     Then:
-    - Ensure returned command results are correct.
+    - Ensure returned command results are correct and integration_context was cleared.
+
+    """
+    query = 'MOCK_QUERY'
+    mock_response = {'status': 'SUCCESS',
+                     'number_of_results': 1,
+                     'query_cost': {'376699223': 0.0031591666666666665},
+                     'remaining_quota': 1000.0,
+                     'results': [{'x': 'test1', 'y': None}],
+                     'execution_id': 'query_id_mock'}
+    mocker.patch('XQLQueryingEngine.get_xql_query_results', return_value=(mock_response, None))
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-query')
+    command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
+    assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1,
+                                       'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
+                                       'execution_id': 'query_id_mock', 'results': [{'x': 'test1'}]}
+    assert '| query_id_mock | 1 | MOCK_QUERY | 376699223: 0.0031591666666666665 | 1000.0 | SUCCESS |' in \
+           command_results.readable_output
+    assert 'y' in command_results.raw_response['results'][0]
+
+
+def test_get_xql_query_results_clear_integration_context_on_success(mocker):
+    """
+    Given:
+    - A query that has a successful status and the number of results is under 1000.
+
+    When:
+    - Calling get_xql_query_results_polling_command function.
+
+    Then:
+    - Ensure the integration context was cleared.
 
     """
     query = 'MOCK_QUERY'
@@ -645,7 +727,7 @@ def test_get_xql_query_results_polling_command_success_more_than_1000(mocker):
                                       'results': {'stream_id': 'test_stream_id'}, 'execution_id': 'query_id_mock'}
 
 
-def test_get_xql_query_results_polling_command_prending(mocker):
+def test_get_xql_query_results_polling_command_pending(mocker):
     """
     Given:
     - A query that has a pending status.

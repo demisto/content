@@ -52,26 +52,6 @@ class Client(BaseClient):
 
 
 # =========================================== Built-In Queries Helpers ===========================================#
-def init_built_in_commands():
-    """Initializing built in query commands dictionary.
-
-    :return: The available commands.
-    :rtype: ``dict``
-    """
-    return {
-        'xdr-xql-file-event-query': {'func': get_file_event_query, 'name': 'FileEvent'},
-        'xdr-xql-process-event-query': {'func': get_process_event_query, 'name': 'ProcessEvent'},
-        'xdr-xql-dll-module-query': {'func': get_dll_module_query, 'name': 'DllModule'},
-        'xdr-xql-network-connection-query': {'func': get_network_connection_query, 'name': 'NetworkConnection'},
-        'xdr-xql-registry-query': {'func': get_registry_query, 'name': 'Registry'},
-        'xdr-xql-event-log-query': {'func': get_event_log_query, 'name': 'EventLog'},
-        'xdr-xql-dns-query': {'func': get_dns_query, 'name': 'DNS'},
-        'xdr-xql-file-dropper-query': {'func': get_file_dropper_query, 'name': 'FileDropper'},
-        'xdr-xql-process-instance-network-activity-query': {'func': get_process_instance_network_activity_query,
-                                                            'name': 'ProcessInstanceNetworkActivity'},
-        'xdr-xql-process-causality-network-activity-query': {'func': get_process_causality_network_activity_query,
-                                                             'name': 'ProcessCausalityNetworkActivity'},
-    }
 
 
 def wrap_list_items_in_double_quotes(string_of_argument: str):
@@ -80,11 +60,11 @@ def wrap_list_items_in_double_quotes(string_of_argument: str):
         string_of_argument: '12345678, 87654321'
         output: '"12345678","87654321"'
 
-    :type string_of_argument: ``str``
-    :param string_of_argument: The string s of_argument to format.
+    Args:
+        string_of_argument (str): The string s of_argument to format.
 
-    :return: The new formatted string.
-    :rtype: ``str``
+    Returns:
+        str: The new formatted string
     """
     if not string_of_argument:
         string_of_argument = ''
@@ -95,13 +75,12 @@ def wrap_list_items_in_double_quotes(string_of_argument: str):
 def get_file_event_query(endpoint_ids: str, args: dict) -> str:
     """Create the file event query.
 
-    :type endpoint_ids: ``str``
-    :param endpoint_ids: The endpoint IDs to use.
-    :type args: ``dict``
-    :param args: The arguments to pass to the query.
+    Args:
+        endpoint_ids (str): The endpoint IDs to use.
+        args (dict): The arguments to pass to the query.
 
-    :return: The created query.
-    :rtype: ``str``
+    Returns: The created query.
+        str: The created query.
     """
     file_sha256_list = args.get('file_sha256', '')
     if not file_sha256_list:
@@ -116,13 +95,12 @@ def get_file_event_query(endpoint_ids: str, args: dict) -> str:
 def get_process_event_query(endpoint_ids: str, args: dict) -> str:
     """Create the process event query.
 
-    :type endpoint_ids: ``str``
-    :param endpoint_ids: The endpoint IDs to use.
-    :type args: ``dict``
-    :param args: The arguments to pass to the query.
+    Args:
+        endpoint_ids (str): The endpoint IDs to use.
+        args (dict): The arguments to pass to the query.
 
-    :return: The created query.
-    :rtype: ``str``
+    Returns:
+        str: The created query.
     """
     process_sha256_list = args.get('process_sha256', '')
     if not process_sha256_list:
@@ -141,13 +119,12 @@ def get_process_event_query(endpoint_ids: str, args: dict) -> str:
 def get_dll_module_query(endpoint_ids: str, args: dict) -> str:
     """Create the DLL module query.
 
-    :type endpoint_ids: ``str``
-    :param endpoint_ids: The endpoint IDs to use.
-    :type args: ``dict``
-    :param args: The arguments to pass to the query.
+    Args:
+        endpoint_ids (str): The endpoint IDs to use.
+        args (dict): The arguments to pass to the query.
 
-    :return: The created query.
-    :rtype: ``str``
+    Returns:
+        str: The created query.
     """
     loaded_module_sha256 = args.get('loaded_module_sha256', '')
     if not loaded_module_sha256:
@@ -164,13 +141,12 @@ def get_dll_module_query(endpoint_ids: str, args: dict) -> str:
 def get_network_connection_query(endpoint_ids: str, args: dict) -> str:
     """Create the network connection query.
 
-    :type endpoint_ids: ``str``
-    :param endpoint_ids: The endpoint IDs to use.
-    :type args: ``dict``
-    :param args: The arguments to pass to the query.
+    Args:
+        endpoint_ids (str): The endpoint IDs to use.
+        args (dict): The arguments to pass to the query.
 
-    :return: The created query.
-    :rtype: ``str``
+    Returns:
+        str: The created query.
     """
     remote_ip_list = args.get('remote_ip', '')
     if not remote_ip_list:
@@ -189,13 +165,13 @@ def get_network_connection_query(endpoint_ids: str, args: dict) -> str:
 def get_registry_query(endpoint_ids: str, args: dict) -> str:
     """Create the registry query.
 
-    :type endpoint_ids: ``str``
-    :param endpoint_ids: The endpoint IDs to use.
-    :type args: ``dict``
-    :param args: The arguments to pass to the query.
 
-    :return: The created query.
-    :rtype: ``str``
+    Args:
+        endpoint_ids (str): The endpoint IDs to use.
+        args (dict): The arguments to pass to the query.
+
+    Returns:
+        str: The created query.
     """
     reg_key_name = args.get('reg_key_name', '')
     if not reg_key_name:
@@ -210,13 +186,12 @@ def get_registry_query(endpoint_ids: str, args: dict) -> str:
 def get_event_log_query(endpoint_ids: str, args: dict) -> str:
     """Create the event log query.
 
-    :type endpoint_ids: ``str``
-    :param endpoint_ids: The endpoint IDs to use.
-    :type args: ``dict``
-    :param args: The arguments to pass to the query.
+    Args:
+        endpoint_ids (str): The endpoint IDs to use.
+        args (dict): The arguments to pass to the query.
 
-    :return: The created query.
-    :rtype: ``str``
+    Returns:
+        str: The created query.
     """
     event_id = args.get('event_id', '')
     if not event_id:
@@ -230,13 +205,12 @@ def get_event_log_query(endpoint_ids: str, args: dict) -> str:
 def get_dns_query(endpoint_ids: str, args: dict) -> str:
     """Create the DNS query.
 
-    :type endpoint_ids: ``str``
-    :param endpoint_ids: The endpoint IDs to use.
-    :type args: ``dict``
-    :param args: The arguments to pass to the query.
+    Args:
+        endpoint_ids (str): The endpoint IDs to use.
+        args (dict): The arguments to pass to the query.
 
-    :return: The created query.
-    :rtype: ``str``
+    Returns:
+        str: The created query.
     """
     if not args.get('external_domain') and not args.get('dns_query'):
         raise DemistoException('Please provide at least one of the external_domain, dns_query arguments.')
@@ -253,13 +227,12 @@ def get_dns_query(endpoint_ids: str, args: dict) -> str:
 def get_file_dropper_query(endpoint_ids: str, args: dict) -> str:
     """Create the file dropper query.
 
-    :type endpoint_ids: ``str``
-    :param endpoint_ids: The endpoint IDs to use.
-    :type args: ``dict``
-    :param args: The arguments to pass to the query.
+    Args:
+        endpoint_ids (str): The endpoint IDs to use.
+        args (dict): The arguments to pass to the query.
 
-    :return: The created query.
-    :rtype: ``str``
+    Returns:
+        str: The created query.
     """
     if not args.get('file_path') and not args.get('file_sha256'):
         raise DemistoException('Please provide at least one of the file_path, file_sha256 arguments.')
@@ -280,13 +253,12 @@ def get_file_dropper_query(endpoint_ids: str, args: dict) -> str:
 def get_process_instance_network_activity_query(endpoint_ids: str, args: dict) -> str:
     """Create the process instance networks activity query.
 
-    :type endpoint_ids: ``str``
-    :param endpoint_ids: The endpoint IDs to use.
-    :type args: ``dict``
-    :param args: The arguments to pass to the query.
+    Args:
+        endpoint_ids (str): The endpoint IDs to use.
+        args (dict): The arguments to pass to the query.
 
-    :return: The created query.
-    :rtype: ``str``
+    Returns:
+        str: The created query.
     """
     process_instace_id_list = args.get('process_instace_id', '')
     if not process_instace_id_list:
@@ -304,13 +276,12 @@ def get_process_instance_network_activity_query(endpoint_ids: str, args: dict) -
 def get_process_causality_network_activity_query(endpoint_ids: str, args: dict) -> str:
     """Create the process causality network activity query.
 
-    :type endpoint_ids: ``str``
-    :param endpoint_ids: The endpoint IDs to use.
-    :type args: ``dict``
-    :param args: The arguments to pass to the query.
+    Args:
+        endpoint_ids (str): The endpoint IDs to use.
+        args (dict): The arguments to pass to the query.
 
-    :return: The created query.
-    :rtype: ``str``
+    Returns:
+        str: The created query.
     """
     process_causality_id_list = args.get('process_causality_id', '')
     if not process_causality_id_list:
@@ -328,28 +299,15 @@ def get_process_causality_network_activity_query(endpoint_ids: str, args: dict) 
 
 # =========================================== Helper Functions ===========================================#
 
-def init_generic_commands() -> dict:
-    """Initializing generic commands dictionary.
-
-    :return: The available commands.
-    :rtype: ``dict``
-    """
-    return {
-        'test-module': test_module,
-        'xdr-xql-query': start_xql_query_polling_command,
-        'xdr-get-xql-query-results': get_xql_query_results_polling_command,
-        'xdr-get-xql-quota': get_xql_quota_command,
-    }
-
 
 def convert_relative_time_to_milliseconds(time_to_convert: str) -> int:
     """Convert a relative time string to its Unix timestamp representation in milliseconds.
 
-    :type time_to_convert: ``str``
-    :param time_to_convert: The relative time to convert (supports seconds, minutes, hours, days, months, years)
+    Args:
+        time_to_convert (str): The relative time to convert (supports seconds, minutes, hours, days, months, years).
 
-    :return: The Unix timestamp representation in milliseconds
-    :rtype: ``int``
+    Returns:
+        int: The Unix timestamp representation in milliseconds.
     """
     try:
         time_multiples = {
@@ -373,13 +331,12 @@ def convert_relative_time_to_milliseconds(time_to_convert: str) -> int:
 def start_xql_query(client: Client, args: Dict[str, Any]) -> str:
     """Execute an XQL query.
 
-    :type client: ``Client``
-    :param client: The XDR Client.
-    :type args: ``dict``
-    :param args: The arguments to pass to the API call.
+    Args:
+        client (Client): The XDR Client.
+        args (dict): The arguments to pass to the API call.
 
-    :return: The query execution ID.
-    :rtype: ``str``
+    Returns:
+        str: The query execution ID.
     """
     query = args.get('query', '')
     if not query:
@@ -389,7 +346,7 @@ def start_xql_query(client: Client, args: Dict[str, Any]) -> str:
 
     if 'limit' not in query:  # if user did not provide a limit in the query, we will use the default one.
         query = f'{query} | limit {str(DEFAULT_LIMIT)}'
-    data = {
+    data: Dict[str, Any] = {
         'request_data': {
             'query': query,
         }
@@ -410,13 +367,12 @@ def get_xql_query_results(client: Client, args: dict) -> Tuple[dict, Optional[by
     """Retrieve results of an executed XQL query API. returns the general response and
     a file data if the query has more than 1000 results.
 
-    :type client: ``Client``
-    :param client: The XDR Client.
-    :type args: ``dict``
-    :param args: The arguments to pass to the API call.
+    Args:
+        client (Client): The XDR Client.
+        args (dict): The arguments to pass to the API call.
 
-    :return: The query results.
-    :rtype: ``dict`` or tuple
+    Returns:
+        dict: The query results.
     """
 
     query_id = args.get('query_id')
@@ -448,13 +404,12 @@ def get_xql_query_results(client: Client, args: dict) -> Tuple[dict, Optional[by
 def get_query_result_stream(client: Client, stream_id: str) -> bytes:
     """Retrieve XQL query results with more than 1000 results.
 
-    :type client: ``Client``
-    :param client: The XDR Client.
-    :type stream_id: ``str``
-    :param stream_id: The stream ID of the query.
+    Args:
+        client (Client): The XDR Client.
+        stream_id (str): The stream ID of the query.
 
-    :return: The query results.
-    :rtype: ``bytes``
+    Returns:
+        bytes: The query results.
     """
 
     if not stream_id:
@@ -469,45 +424,84 @@ def get_query_result_stream(client: Client, stream_id: str) -> bytes:
     return client.get_query_result_stream(data)
 
 
+def format_item(item_to_format: Any) -> Any:
+    """
+        Format the given item to the correct format.
+
+    Args:
+        item_to_format (Any): Item to format.
+
+    Returns:
+        Any: Formatted item.
+    """
+    mapper = {
+        'FALSE': False,
+        'TRUE': True,
+        'NULL': None,
+    }
+    return mapper[item_to_format] if item_to_format in mapper else item_to_format
+
+
+def is_empty(item_to_check: Any) -> bool:
+    """
+        Checks if a given iem is empty or not
+
+    Args:
+        item_to_check (Any): The item to check.
+
+    Returns:
+        bool: True if empty, False otherwise.
+    """
+
+    return item_to_check is None or item_to_check == {} or item_to_check == [] or item_to_check == ''
+
+
+def handle_timestamp_item(item_to_convert: Any) -> Union[Any, str]:
+    """
+        Try to convert a given value to datestring.
+
+    Args:
+        item_to_convert (Any): The item to convert.
+
+    Returns:
+        Union[Any, str]: The converted timestamp if convert was successful, otherwise return the original item.
+    """
+
+    try:
+        return timestamp_to_datestring(item_to_convert)
+    except Exception:  # cannot convert item
+        return item_to_convert
+
+
 def format_results(list_to_format: list, remove_empty_fields: bool = True) -> list:
     """
     Recursively format a list of dictionaries and remove empty lists, empty dicts, or None elements from it if desired.
-    :param list_to_format: Input list to format.
-    :type list_to_format: ``list``
-    :param remove_empty_fields: True if the user wants to remove the empty fields.
-    :type remove_empty_fields: ``bool``
 
-    :return: Formatted list.
-    :rtype: ``list``
+    Args:
+        list_to_format (list): Input list to format.
+        remove_empty_fields (bool): True if the user wants to remove the empty fields.
+
+    Returns:
+        list: Formatted list.
     """
 
-    def format_dict(d: Any) -> Any:
+    def format_dict(item_to_format: Any) -> Any:
 
-        if not isinstance(d, (dict, list)):  # format some of the API response fields
-            if d == 'FALSE':
-                return False
-            elif d == 'TRUE':
-                return True
-            elif d == 'NULL':
-                return None
-            else:
-                return d
+        if not isinstance(item_to_format, (dict, list)):  # recursion stopping condition, formatting field
+            return format_item(item_to_format)
 
-        elif isinstance(d, list):
-            return [v for v in (format_dict(v) for v in d) if v]
+        elif isinstance(item_to_format, list):
+            return [v for v in (format_dict(v) for v in item_to_format) if v]
         else:
             new_dict = {}
-            for k, v in d.items():
-                res = format_dict(v)
-                if (res is None or res == {} or res == []) and remove_empty_fields:
-                    continue
-                if 'time' in k:  # Convert timestamp to datestring
-                    try:
-                        new_dict[k] = timestamp_to_datestring(res)
-                    except Exception:
-                        new_dict[k] = res
+            for key, value in item_to_format.items():
+                formatted_res = format_dict(value)
+                if is_empty(formatted_res) and remove_empty_fields:
+                    continue  # do not add item to the new dict
+                if 'time' in key:
+                    new_dict[key] = handle_timestamp_item(formatted_res)
                 else:
-                    new_dict[k] = res
+                    new_dict[key] = formatted_res
             return new_dict
 
     for i, item in enumerate(list_to_format):
@@ -520,15 +514,17 @@ def get_outputs_prefix(command_name: str) -> str:
     """
     Get the correct output output prefix.
 
-    :param command_name: The executed command
-    :type command_name: ``str``
-    :return: the output prefix.
-    :rtype: ``str``
+    Args:
+        command_name (str): The executed command.
+
+    Returns:
+        str: The output prefix.
     """
-    if command_name in init_generic_commands():
+
+    if command_name in GENERIC_QUERY_COMMANDS:
         return 'PaloAltoNetworksXDR.XQL.GenericQuery'
     else:  # built in command
-        query_name = init_built_in_commands()[command_name].get('name')
+        query_name = BUILT_IN_QUERY_COMMANDS[command_name].get('name')
         return f'PaloAltoNetworksXDR.XQL.BuiltInQuery.{query_name}'
 
 
@@ -536,18 +532,31 @@ def get_nonce() -> str:
     """
     Generate a 64 bytes random string.
 
-    :return: the 64 bytes random string.
-    :rtype: ``str``
+    Returns:
+        str: The 64 bytes random string.
     """
     return "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
+
+
+def add_context_to_integration_context(context: dict):
+    """
+    Add the given context to the integration context.
+
+    Args:
+        context (str): The context to add.
+    """
+    if context:
+        integration_context = get_integration_context()
+        integration_context.update(context)
+        set_integration_context(integration_context)
 
 
 def remove_query_id_from_integration_context(query_id: str):
     """
     Remove the given query_id from the integration context.
 
-    :param query_id: The query ID to remove.
-    :type query_id: ``str``
+    Args:
+        query_id (str): The query ID to remove.
     """
     if query_id:
         integration_context = get_integration_context()
@@ -565,13 +574,12 @@ def test_module(client: Client, args: Dict[str, Any]) -> str:
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
 
-    :type client: ``Client``
-    :param Client: client to use
-    :type args: ``dict``
-    :param args: The arguments to pass to the API call.
+    Args:
+        client (Client): The XDR Client.
+        args (dict): The arguments to pass to the API call.
 
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    Returns:
+        str: 'ok' if test passed, anything else will fail the test.
     """
 
     try:
@@ -590,13 +598,12 @@ def test_module(client: Client, args: Dict[str, Any]) -> str:
 def start_xql_query_polling_command(client: Client, args: dict) -> Union[CommandResults, list]:
     """Execute an XQL query as a scheduled command.
 
-    :type client: ``Client``
-    :param client: The XDR Client.
-    :type args: ``dict``
-    :param args: The arguments to pass to the API call.
+    Args:
+        client (Client): The XDR Client.
+        args (dict): The arguments to pass to the API call.
 
-    :return: The command results.
-    :rtype: ``CommandResults``
+    Returns:
+        CommandResults: The command results.
     """
     execution_id = start_xql_query(client, args)
     if not execution_id:
@@ -604,7 +611,7 @@ def start_xql_query_polling_command(client: Client, args: dict) -> Union[Command
     args['query_id'] = execution_id
     # the query data is being saved in the integration context for the next scheduled command command.
     try:
-        set_integration_context({
+        add_context_to_integration_context({
             execution_id: {
                 'query': args.get('query'),
                 'time_frame': args.get('time_frame'),
@@ -620,13 +627,12 @@ def start_xql_query_polling_command(client: Client, args: dict) -> Union[Command
 def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[CommandResults, list]:
     """Retrieve results of an executed XQL query API executes as a scheduled command.
 
-    :type client: ``Client``
-    :param client: The XDR Client.
-    :type args: ``dict``
-    :param args: The arguments to pass to the API call.
+    Args:
+        client (Client): The XDR Client.
+        args (dict): The arguments to pass to the API call.
 
-    :return: The command results.
-    :rtype: ``Union[CommandResults, dict]``
+    Returns:
+        Union[CommandResults, dict]: The command results.
     """
     # get the query data either from the integration context (if its not the first run) or from the given args.
     query_id = args.get('query_id', '')
@@ -642,6 +648,7 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     # if there are more then 1000 results - a file is returned
     if file_data:
         file = fileResult(filename="results.gz", data=file_data)
+        remove_query_id_from_integration_context(query_id)
         return [file, command_results]
 
     # if status is pending, the command will be called again in the next run until success.
@@ -673,22 +680,19 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
 
     command_results.readable_output += tableToMarkdown('Data Results', outputs.get('results'),
                                                        headerTransform=string_to_table_header)
-    return_warning(query_id)
     remove_query_id_from_integration_context(query_id)
-    return_warning(get_integration_context())
     return command_results
 
 
 def get_xql_quota_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Retrieve the amount of query quota available and used.
 
-    :type client: ``Client``
-    :param client: The XDR Client.
-    :type args: ``dict``
-    :param args: The arguments to pass to the API call.
+    Args:
+        client (Client): The XDR Client.
+        args (dict): The arguments to pass to the API call.
 
-    :return: The quota results.
-    :rtype: ``dict``
+    Returns:
+        dict: The quota results.
     """
 
     data: dict = {
@@ -711,18 +715,17 @@ def get_xql_quota_command(client: Client, args: Dict[str, Any]) -> CommandResult
 def get_built_in_query_results_polling_command(client: Client, args: dict) -> Union[CommandResults, list]:
     """Retrieve results of a built in XQL query, execute as a scheduled command.
 
-    :type client: ``Client``
-    :param client: The XDR Client.
-    :type args: ``dict``
-    :param args: The arguments to pass to the API call.
+    Args:
+        client (Client): The XDR Client.
+        args (dict): The arguments to pass to the API call.
 
-    :return: The command results.
-    :rtype: ``Union[CommandResults, dict]``
+    Returns:
+        Union[CommandResults, dict]: The command results.
     """
     # build query, if no endpoint_id was given, the query will search in every endpoint_id (*).
     endpoint_id_list = wrap_list_items_in_double_quotes(args.get('endpoint_id', '*'))
-    available_commands = init_built_in_commands()
-    query = available_commands.get(demisto.command(), {}).get('func')(endpoint_id_list, args)
+    built_in_func = BUILT_IN_QUERY_COMMANDS.get(demisto.command(), {}).get('func')
+    query = built_in_func(endpoint_id_list, args) if callable(built_in_func) else ''
 
     # add extra fields to query
     extra_fields = argToList(args.get('extra_fields', []))
@@ -744,12 +747,61 @@ def get_built_in_query_results_polling_command(client: Client, args: dict) -> Un
 
 ''' MAIN FUNCTION '''
 
+# COMMAND CONSTANTS
+
+BUILT_IN_QUERY_COMMANDS = {
+    'xdr-xql-file-event-query': {
+        'func': get_file_event_query,
+        'name': 'FileEvent'
+    },
+    'xdr-xql-process-event-query': {
+        'func': get_process_event_query,
+        'name': 'ProcessEvent'
+    },
+    'xdr-xql-dll-module-query': {
+        'func': get_dll_module_query,
+        'name': 'DllModule'
+    },
+    'xdr-xql-network-connection-query': {
+        'func': get_network_connection_query,
+        'name': 'NetworkConnection'
+    },
+    'xdr-xql-registry-query': {
+        'func': get_registry_query,
+        'name': 'Registry'
+    },
+    'xdr-xql-event-log-query': {
+        'func': get_event_log_query,
+        'name': 'EventLog'
+    },
+    'xdr-xql-dns-query': {
+        'func': get_dns_query,
+        'name': 'DNS'
+    },
+    'xdr-xql-file-dropper-query': {
+        'func': get_file_dropper_query,
+        'name': 'FileDropper'
+    },
+    'xdr-xql-process-instance-network-activity-query': {
+        'func': get_process_instance_network_activity_query,
+        'name': 'ProcessInstanceNetworkActivity'
+    },
+    'xdr-xql-process-causality-network-activity-query': {
+        'func': get_process_causality_network_activity_query,
+        'name': 'ProcessCausalityNetworkActivity'
+    },
+}
+
+GENERIC_QUERY_COMMANDS = {
+    'test-module': test_module,
+    'xdr-xql-query': start_xql_query_polling_command,
+    'xdr-get-xql-query-results': get_xql_query_results_polling_command,
+    'xdr-get-xql-quota': get_xql_quota_command,
+}
+
 
 def main() -> None:
     """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
     """
     return_warning(get_integration_context())
     args = demisto.args()
@@ -785,11 +837,9 @@ def main() -> None:
             headers=headers,
             proxy=proxy,
         )
-        generic_commands = init_generic_commands()
-        built_in_commands = init_built_in_commands()
-        if command in generic_commands:
-            return_results(generic_commands[command](client, args))
-        elif command in built_in_commands:
+        if command in GENERIC_QUERY_COMMANDS:
+            return_results(GENERIC_QUERY_COMMANDS[command](client, args))
+        elif command in BUILT_IN_QUERY_COMMANDS:
             return_results(get_built_in_query_results_polling_command(client, args))
         else:
             raise NotImplementedError(f'Command {command} does not exist.')
@@ -797,7 +847,6 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        remove_query_id_from_integration_context()
         return_error(f'Failed to execute {command} command.\nError: {str(e)}')
 
 
