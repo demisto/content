@@ -1,0 +1,1775 @@
+id: Wildfire Test With Polling
+version: -1
+name: Wildfire Test With Polling
+description: |-
+  A test playbook for Wild Fire.
+  Does not test the deprecated detonate commands.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3d5a7840-2f87-47f2-8f1c-1d595b89f105
+    type: start
+    task:
+      id: 3d5a7840-2f87-47f2-8f1c-1d595b89f105
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: b6c02432-a3ed-47ca-85a4-161aab5e5016
+    type: regular
+    task:
+      id: b6c02432-a3ed-47ca-85a4-161aab5e5016
+      version: -1
+      name: wildfire-upload-file-url
+      description: Upload a URL of remote file to WildFire for analysis
+      script: '|||wildfire-upload-file-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      upload:
+        simple: http://www.pdf995.com/samples/pdf.pdf
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: ac75c3be-ccd4-4708-8636-70927225756b
+    type: regular
+    task:
+      id: ac75c3be-ccd4-4708-8636-70927225756b
+      version: -1
+      name: wildfire-report
+      description: Retrieve results for a file hash using WildFire
+      script: '|||wildfire-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      hash:
+        simple: ebb031c3945e884e695dbc63c52a5efcd075375046c49729980073585ee13c52
+      verbose:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: dd8ae0a5-39c5-4903-84f5-7634af18066e
+    type: condition
+    task:
+      id: dd8ae0a5-39c5-4903-84f5-7634af18066e
+      version: -1
+      name: test wildfire-report
+      description: Verifies context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 594ba7dc-6492-46e7-8eac-8737570e4c38
+    type: regular
+    task:
+      id: 594ba7dc-6492-46e7-8eac-8737570e4c38
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: f0449e5a-7e50-4ce7-8fc7-9d193d32accf
+    type: regular
+    task:
+      id: f0449e5a-7e50-4ce7-8fc7-9d193d32accf
+      version: -1
+      name: wildfire-upload
+      description: Upload file to WildFire for analysis.
+      script: '|||wildfire-upload'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      upload:
+        simple: ${InfoFile.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 24df2aee-7e09-4b53-8d20-229166f1fd46
+    type: regular
+    task:
+      id: 24df2aee-7e09-4b53-8d20-229166f1fd46
+      version: -1
+      name: wildfire-report
+      description: Retrieve results for a file hash using WildFire
+      script: '|||wildfire-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      format:
+        simple: xml
+      hash:
+        complex:
+          root: WildFire
+          accessor: Report.SHA256
+      verbose:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 03590a46-09fc-4e91-83df-54329befac49
+    type: title
+    task:
+      id: 03590a46-09fc-4e91-83df-54329befac49
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 3cba9964-61e7-4915-83ee-25315e2a0651
+    type: condition
+    task:
+      id: 3cba9964-61e7-4915-83ee-25315e2a0651
+      version: -1
+      name: Search for hashes for report download
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: WildFire
+                accessor: Report.SHA256
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 5cc21618-cee0-4f5f-846d-379406adab7b
+    type: regular
+    task:
+      id: 5cc21618-cee0-4f5f-846d-379406adab7b
+      version: -1
+      name: wildfire-report
+      description: Retrieve results for a file hash using WildFire
+      script: '|||wildfire-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      hash:
+        complex:
+          root: WildFire
+          accessor: Report.SHA256
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 24754380-5dd7-441c-8fcc-3601bdea6b68
+    type: regular
+    task:
+      id: 24754380-5dd7-441c-8fcc-3601bdea6b68
+      version: -1
+      name: wildfire-report - no network data
+      description: Retrieve results for a file hash using WildFire
+      script: '|||wildfire-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      format:
+        simple: xml
+      hash:
+        simple: bf31789a028bfbc44e5c1ae05d8e412dd521bedc7f0c7ec6df3dc4078210a25e
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: bfa997ee-eaee-479b-875c-904bf7291261
+    type: regular
+    task:
+      id: bfa997ee-eaee-479b-875c-904bf7291261
+      version: -1
+      name: http download test data file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      filename:
+        simple: my_verdicts
+      method:
+        simple: GET
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/verdicts_for_wildfire_test_pb.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: f27575b3-eeca-4765-88e2-fe3a2e707e1e
+    type: regular
+    task:
+      id: f27575b3-eeca-4765-88e2-fe3a2e707e1e
+      version: -1
+      name: wildfire-get-verdicts
+      description: Get a verdict regarding multiple hashes
+      script: '|||wildfire-get-verdicts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      EntryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 24f9b182-904e-4d49-819d-54388d5a27fe
+    type: regular
+    task:
+      id: 24f9b182-904e-4d49-819d-54388d5a27fe
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 33a8076d-f1de-4949-8be4-5631feabe6d4
+    type: condition
+    task:
+      id: 33a8076d-f1de-4949-8be4-5631feabe6d4
+      version: -1
+      name: test wildfire-get-verdicts
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: WildFire
+                accessor: Verdicts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: fae3c455-bb09-4044-8e2c-735382a80e94
+    type: regular
+    task:
+      id: fae3c455-bb09-4044-8e2c-735382a80e94
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 5d8833e1-5fa3-4326-81d9-f9e70247d4aa
+    type: regular
+    task:
+      id: 5d8833e1-5fa3-4326-81d9-f9e70247d4aa
+      version: -1
+      name: wildfire-get-verdict
+      description: Get a verdict regarding a hash
+      script: '|||wildfire-get-verdict'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      hash:
+        simple: afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 52a84bab-ab88-4d12-8fff-33c2241eada9
+    type: condition
+    task:
+      id: 52a84bab-ab88-4d12-8fff-33c2241eada9
+      version: -1
+      name: test wildfire-get-verdict
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: dbead002-c565-4a4f-8dff-2933290dd096
+    type: regular
+    task:
+      id: dbead002-c565-4a4f-8dff-2933290dd096
+      version: -1
+      name: file - with sha1 value in the argument file
+      description: Retrieve results for a file hash using WildFire
+      script: WildFire-v2|||file
+      type: regular
+      iscommand: true
+      brand: WildFire-v2
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      file:
+        simple: a31986a65068af86dbfeddad3e63e05f759b2b32
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 0dd8f500-8da2-4bbe-891a-71f928165508
+    type: regular
+    task:
+      id: 0dd8f500-8da2-4bbe-891a-71f928165508
+      version: -1
+      name: commentsToContext
+      description: "Takes the comments of a given entry ID and stores them in the\
+        \ incident context, under a provided context key. \nFor accessing the last\
+        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
+        \ value for the entryId input parameter."
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      contextKey:
+        simple: checkFile
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 229b494f-9062-4fc3-899a-42da706436d7
+    type: regular
+    task:
+      id: 229b494f-9062-4fc3-899a-42da706436d7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 7e81e70a-b285-48bd-8d23-476ad7f5db47
+    type: condition
+    task:
+      id: 7e81e70a-b285-48bd-8d23-476ad7f5db47
+      version: -1
+      name: test file with sha1 input
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: checkFile
+            iscontext: true
+          right:
+            value:
+              simple: WildFire file hash reputation supports only MD5, SHA256
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 2c07c60b-f1b1-4d2c-8716-d66f55df3343
+    type: regular
+    task:
+      id: 2c07c60b-f1b1-4d2c-8716-d66f55df3343
+      version: -1
+      name: file_command_enrichment_test_script_helper
+      scriptName: file_command_enrichment_test_script_helper
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: b972ef7e-21c8-468c-82b9-35c488d0d7ca
+    type: condition
+    task:
+      id: b972ef7e-21c8-468c-82b9-35c488d0d7ca
+      version: -1
+      name: Test enrichment of md5 or sha 256 does exist
+      description: Test enrichment of md5 or sha 256 does exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "32"
+                accessor: Indicator
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: 8cbf90aeab2c93b2819fcfd6262b2cdb
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "64"
+                accessor: Indicator
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: a96a40fc-43bb-45ae-8e68-202c306082d8
+    type: condition
+    task:
+      id: a96a40fc-43bb-45ae-8e68-202c306082d8
+      version: -1
+      name: Test enrichment of sha1 does not exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 74eb807ea392650562b43a0e326e5d14b86f43ce
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 0205e6ed-649e-446f-88b4-677ddba3cc40
+    type: regular
+    task:
+      id: 0205e6ed-649e-446f-88b4-677ddba3cc40
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 479b58cf-583a-4e5b-88f6-1b28668404d1
+    type: regular
+    task:
+      id: 479b58cf-583a-4e5b-88f6-1b28668404d1
+      version: -1
+      name: wildfire-get-sample
+      description: Retrieve a sample from WildFire
+      script: '|||wildfire-get-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      md5:
+        simple: 0e4e3c2d84a9bc726a50b3c91346fbb1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 4e7222c4-88bd-4a25-8a25-d4b9f7dfd6ae
+    type: condition
+    task:
+      id: 4e7222c4-88bd-4a25-8a25-d4b9f7dfd6ae
+      version: -1
+      name: Test wildfire-get-sample
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: afe6b95ad95bc689c356f34ec8d9094c495e4af57c932ac413b65ef132063acc.xls
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: ccfcef45-fca9-4e3a-855e-dae624499339
+    type: regular
+    task:
+      id: ccfcef45-fca9-4e3a-855e-dae624499339
+      version: -1
+      name: wildfire-get-sample benign
+      description: Retrieve a sample
+      script: '|||wildfire-get-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      sha256:
+        simple: 4b4f3e336514eedf8c8a1f9d929b97e42921f757056eb640706bd17e096ddad0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 662a3337-4f73-428c-8aaa-c3cd38bc3d1e
+    type: regular
+    task:
+      id: 662a3337-4f73-428c-8aaa-c3cd38bc3d1e
+      version: -1
+      name: comments to context
+      description: "Takes the comments of a given entry ID and stores them in the\
+        \ incident context, under a provided context key. \nFor accessing the last\
+        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
+        \ value for the entryId input parameter."
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      contextKey:
+        simple: benignSample
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: a427daea-2f7d-4fa4-8e25-bb099c277f1a
+    type: condition
+    task:
+      id: a427daea-2f7d-4fa4-8e25-bb099c277f1a
+      version: -1
+      name: info message of sample not found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: benignSample
+            iscontext: true
+          right:
+            value:
+              simple: Sample was not found.
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 255ec039-688c-4613-8ae0-c6077087a692
+    type: regular
+    task:
+      id: 255ec039-688c-4613-8ae0-c6077087a692
+      version: -1
+      name: file - no network data
+      description: Retrieve results for a file hash using WildFire
+      script: WildFire-v2|||file
+      type: regular
+      iscommand: true
+      brand: WildFire-v2
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      file:
+        simple: 458464b0d08e76020f65f0c5fe8cfb4259dfb39161c1ed8d7fcb164ce49ab50c
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 42a32ed5-9bfe-4c3d-83f5-53e4fddb27a7
+    type: regular
+    task:
+      id: 42a32ed5-9bfe-4c3d-83f5-53e4fddb27a7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 08ac2297-3b52-48e5-8e09-5c4c0425c078
+    type: regular
+    task:
+      id: 08ac2297-3b52-48e5-8e09-5c4c0425c078
+      version: -1
+      name: file - with no report found
+      description: Retrieve results for a file hash using WildFire
+      script: WildFire-v2|||file
+      type: regular
+      iscommand: true
+      brand: WildFire-v2
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      sha256:
+        simple: 684d9d89b9de8178dcd80b7b4d018103
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 3904edc0-336f-431d-8286-98b2abeecc5d
+    type: condition
+    task:
+      id: 3904edc0-336f-431d-8286-98b2abeecc5d
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "51"
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 684d9d89b9de8178dcd80b7b4d018103
+      - - operator: isEqualString
+          left:
+            value:
+              simple: WildFire.Report.Status
+            iscontext: true
+          right:
+            value:
+              simple: NotFound
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 6ef63f6d-b2d3-42e0-8687-102340cc9f88
+    type: regular
+    task:
+      id: 6ef63f6d-b2d3-42e0-8687-102340cc9f88
+      version: -1
+      name: FileCreateAndUpload - js file
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      data:
+        simple: var a='b';
+      filename:
+        simple: test.js
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: dd98f91e-cf45-4283-802a-5707aae5bd02
+    type: regular
+    task:
+      id: dd98f91e-cf45-4283-802a-5707aae5bd02
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 76a01211-2522-49aa-84f7-7d90f8eb1e0c
+    type: regular
+    task:
+      id: 76a01211-2522-49aa-84f7-7d90f8eb1e0c
+      version: -1
+      name: Check outputs failed
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: file with no report produced an unexpected message.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: b8eff081-8008-4d78-811a-5868aa806b42
+    type: regular
+    task:
+      id: b8eff081-8008-4d78-811a-5868aa806b42
+      version: -1
+      name: wildfire-upload js file
+      description: Uploads a file to WildFire for analysis.
+      script: '|||wildfire-upload'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      upload:
+        complex:
+          root: File
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 7ad262c9-b8f9-4e88-8e34-9a58d853cc4b
+    type: regular
+    task:
+      id: 7ad262c9-b8f9-4e88-8e34-9a58d853cc4b
+      version: -1
+      name: wildfire-upload-file-url with polling
+      description: Uploads the URL of a remote file to WildFire for analysis.
+      script: WildFire-v2|||wildfire-upload-file-url
+      type: regular
+      iscommand: true
+      brand: WildFire-v2
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      polling:
+        simple: "true"
+      upload:
+        simple: http://www.pdf995.com/samples/pdf.pdf
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 2b13cbbf-8bc2-4c7f-8228-022fe42a38ca
+    type: condition
+    task:
+      id: 2b13cbbf-8bc2-4c7f-8228-022fe42a38ca
+      version: -1
+      name: test wildfire-upload-file-url with polling
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: WildFire.Report.SHA256
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: WildFire.Report.Status
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: fd8b7a43-f156-437a-8fe4-45b886c362d2
+    type: regular
+    task:
+      id: fd8b7a43-f156-437a-8fe4-45b886c362d2
+      version: -1
+      name: Create File
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      method:
+        simple: GET
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: ca6646ae-025e-4463-841e-c5ef5434bb7b
+    type: regular
+    task:
+      id: ca6646ae-025e-4463-841e-c5ef5434bb7b
+      version: -1
+      name: wildfire-upload with polling
+      description: Uploads a file to WildFire for analysis.
+      script: WildFire-v2|||wildfire-upload
+      type: regular
+      iscommand: true
+      brand: WildFire-v2
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      polling:
+        simple: "true"
+      upload:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: 18ff4946-b202-42c6-8bef-44e029e8c809
+    type: condition
+    task:
+      id: 18ff4946-b202-42c6-8bef-44e029e8c809
+      version: -1
+      name: test wildfire-upload-file-url with polling
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: WildFire.Report.SHA256
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: WildFire.Report.Status
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 35ea01b2-28dc-4103-8be9-fd2a6886ea5f
+    type: regular
+    task:
+      id: 35ea01b2-28dc-4103-8be9-fd2a6886ea5f
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 3bd7a809-1a50-4732-8dc4-e4df6abfd7e0
+    type: regular
+    task:
+      id: 3bd7a809-1a50-4732-8dc4-e4df6abfd7e0
+      version: -1
+      name: wildfire-upload-url with polling
+      description: Uploads a URL of a webpage to WildFire for analysis.
+      script: WildFire-v2|||wildfire-upload-url
+      type: regular
+      iscommand: true
+      brand: WildFire-v2
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      polling:
+        simple: "true"
+      upload:
+        simple: http://www.pdf995.com/samples/pdf
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: bb2ed83a-862f-47ea-85fd-ab8eacdb9cd5
+    type: condition
+    task:
+      id: bb2ed83a-862f-47ea-85fd-ab8eacdb9cd5
+      version: -1
+      name: test wildfire-upload-file-url with polling
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: WildFire.Report.Status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: WildFire.Report.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: fe9d67be-5a70-4e25-8c13-5e5354e717b2
+    type: regular
+    task:
+      id: fe9d67be-5a70-4e25-8c13-5e5354e717b2
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "31_32_yes": 0.9,
+      "40_42_yes": 0.85
+    },
+    "paper": {
+      "dimensions": {
+        "height": 7910,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.2.0
