@@ -44,7 +44,7 @@ script: >-
       } else if (input.indexOf(PROOFPOINT_PREFIXES[3]) === 0) {
           v = 4;
       }
-      // Not Proofpoint so just un-escape!
+      // Not Proofpoint so just un-escape
       if (v === 0) {
           var url = input.replace(/\[\.\]/g, '.')
         if (input.startsWith('https') || input.startsWith('hxxps') || input.startsWith('meows')) {
