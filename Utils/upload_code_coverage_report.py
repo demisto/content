@@ -142,8 +142,8 @@ def main():
     coverage_json(options.cov_bin_dir, options.source_file_name)
 
     success, last_updated = create_minimal_report(source_file=options.source_file_name,
-                                                      destination_file=options.minimal_file_name,
-                                                      )
+                                                  destination_file=options.minimal_file_name,
+                                                  )
 
     if success:
         upload_file_to_google_cloud_storage(service_account=options.service_account,
