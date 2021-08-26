@@ -16,6 +16,10 @@ DEFAULT_FIELDS = [
     "languagelocalekey"
 ]
 
+ERROR_CODES_TO_RETURN_ERROR = [
+    408
+]
+
 
 class Client(BaseClient):
     """
@@ -250,6 +254,9 @@ def handle_exception(e, is_crud_command=True):
         error_code = ''
         error_message = str(e)
 
+    if 'Read timed out' in error_message:
+        error_code = 408
+
     demisto.error(traceback.format_exc())
     return error_message, error_code
 
@@ -307,6 +314,7 @@ def get_user_command(client, args, mapper_in):
         iam_user_profile.set_result(success=False,
                                     error_message=message,
                                     error_code=code,
+                                    return_error=code in ERROR_CODES_TO_RETURN_ERROR,
                                     action=IAMActions.GET_USER
                                     )
         return iam_user_profile
@@ -353,6 +361,7 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
         iam_user_profile.set_result(success=False,
                                     error_message=message,
                                     error_code=code,
+                                    return_error=code in ERROR_CODES_TO_RETURN_ERROR,
                                     action=IAMActions.CREATE_USER
                                     )
         return iam_user_profile
@@ -410,6 +419,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
         iam_user_profile.set_result(success=False,
                                     error_message=message,
                                     error_code=code,
+                                    return_error=code in ERROR_CODES_TO_RETURN_ERROR,
                                     action=IAMActions.UPDATE_USER
                                     )
         return iam_user_profile
@@ -457,11 +467,11 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
         return iam_user_profile
 
     except Exception as e:
-        return_error('error: ' + str(traceback.format_exc()))
         message, code = handle_exception(e)
         iam_user_profile.set_result(success=False,
                                     error_message=message,
                                     error_code=code,
+                                    return_error=code in ERROR_CODES_TO_RETURN_ERROR,
                                     action=IAMActions.DISABLE_USER
                                     )
         return iam_user_profile
