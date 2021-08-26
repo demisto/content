@@ -1,5 +1,7 @@
 id: Indicators reputation-.json Test
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Indicators-reputation-Test
 description: Test our repution*.json regexes in misc folder
 starttaskid: "0"
@@ -93,10 +95,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: c2d7d21a-0a01-467e-87d6-168cf69f0cfd
+    taskid: 1438a1e3-3329-4229-8902-63011370553f
     type: regular
     task:
-      id: c2d7d21a-0a01-467e-87d6-168cf69f0cfd
+      id: 1438a1e3-3329-4229-8902-63011370553f
       version: -1
       name: Set valid emails
       description: Sets a value into the context with the given context key
@@ -112,8 +114,7 @@ tasks:
         simple: valid_emails
       value:
         simple: '"support@threatx.com", "foo@test.com", "5c530c1b.1c69fb81.bd826.0eff@mx.google.com",
-          "woo@demisto.com", "this.is@email.format", "support[@]threatx.com", "foo[@]test.com",
-          "5c530c1b.1c69fb81.bd826.0eff[@]mx.google.com", "woo[@]demisto.com", "this.is[@]email.format"'
+          "woo@demisto.com", "this.is@email.format", "test[@]test.com", "1c69fb81.bd826.0eff[@]mx.google.com"'
     separatecontext: false
     view: |-
       {
@@ -162,10 +163,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: dbff1e50-cad7-4c7a-8a7b-bec38197aee3
+    taskid: 5c5ca689-3599-4ef3-8caa-5d1cc12f97e7
     type: condition
     task:
-      id: dbff1e50-cad7-4c7a-8a7b-bec38197aee3
+      id: 5c5ca689-3599-4ef3-8caa-5d1cc12f97e7
       version: -1
       name: check auto extract emails
       type: condition
@@ -225,7 +226,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: this.is[@]email.format
+              simple: test@test.com
       - - operator: containsGeneral
           left:
             value:
@@ -233,31 +234,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: support[@]threatx.com
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${Account.Email.Address}
-            iscontext: true
-          right:
-            value:
-              simple: 5c530c1b.1c69fb81.bd826.0eff[@]mx.google.com
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${Account.Email.Address}
-            iscontext: true
-          right:
-            value:
-              simple: woo[@]demisto.com
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${Account.Email.Address}
-            iscontext: true
-          right:
-            value:
-              simple: woo[@]demisto.com
+              simple: 1c69fb81.bd826.0eff@mx.google.com
     view: |-
       {
         "position": {
@@ -272,10 +249,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: a6232b02-19da-4ad6-8ffd-179fd5daac79
+    taskid: 446931ff-41a9-4a67-81ba-6c1e7eb3a2d5
     type: regular
     task:
-      id: a6232b02-19da-4ad6-8ffd-179fd5daac79
+      id: 446931ff-41a9-4a67-81ba-6c1e7eb3a2d5
       version: -1
       name: set invalid emails
       description: Sets a value into the context with the given context key
@@ -292,9 +269,8 @@ tasks:
       value:
         simple: '"go.microsoft.com", "#@%^%#$@#$@#.com" "@example.com", "Joe Smith
           <email@example.com>", "email.example.com", "email@example@example.com",
-          ".email@example.com", "あいうえお@example.com", "#[@]%^%#$[@]#$[@]#.com" "[@]example.com",
-          "Joe Smith <email[@]example.com>", "email[@]example[@]example.com", ".email[@]example.com",
-          "あいうえお[@]example.com"'
+          ".email@example.com", "あいうえお@example.com", "#[@]%^%#$[@]#.com" "[@]test.com",
+          "email[@]test[@]example.com"'
     separatecontext: false
     view: |-
       {
@@ -343,10 +319,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 9f46859a-6c59-465b-8bdd-c7a21c484429
+    taskid: 1d99ff76-e9cd-49f1-89cf-85787f699e31
     type: condition
     task:
-      id: 9f46859a-6c59-465b-8bdd-c7a21c484429
+      id: 1d99ff76-e9cd-49f1-89cf-85787f699e31
       version: -1
       name: check non extraction of invalid emails
       type: condition
@@ -430,7 +406,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '#[@]%^%#$[@]#$[@]#.com'
+              simple: email@test@example.com
       - - operator: notContainsGeneral
           left:
             value:
@@ -438,7 +414,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '[@]example.com'
+              simple: '@test.com'
       - - operator: notContainsGeneral
           left:
             value:
@@ -446,31 +422,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Joe Smith <email[@]example.com>
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: ${Account.Email.Address}
-            iscontext: true
-          right:
-            value:
-              simple: email[@]example[@]example.com
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: ${Account.Email.Address}
-            iscontext: true
-          right:
-            value:
-              simple: .email[@]example.com
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: ${Account.Email.Address}
-            iscontext: true
-          right:
-            value:
-              simple: あいうえお[@]example.com
+              simple: '#@%^%#$@#.com'
     view: |-
       {
         "position": {
