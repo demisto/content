@@ -1921,7 +1921,7 @@ def github_releases_list_command():
     else:
         page_size = page_size if page_size else DEFAULT_PAGE_SIZE
         page_number = page_number if page_number else DEFAULT_PAGE_NUMBER
-        url_suffix: str = f'/repos/{organization}/{repo}/releases?per_page={page_size}&page={page_number}'
+        url_suffix = f'/repos/{organization}/{repo}/releases?per_page={page_size}&page={page_number}'
         results = http_request(method='GET', url_suffix=url_suffix)
 
     result: CommandResults = CommandResults(
