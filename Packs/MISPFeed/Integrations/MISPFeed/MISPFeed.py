@@ -197,7 +197,6 @@ def get_attribute_indicator_type(attribute: Dict[str, Any]):
         'sha256': FeedIndicatorType.File,
         'md5': FeedIndicatorType.File,
         'sha1': FeedIndicatorType.File,
-        'filename': FeedIndicatorType.File,
         'filename|md5': FeedIndicatorType.File,
         'filename|sha1': FeedIndicatorType.File,
         'filename|sha256': FeedIndicatorType.File,
