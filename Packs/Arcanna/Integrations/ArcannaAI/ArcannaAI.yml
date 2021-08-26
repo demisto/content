@@ -45,7 +45,7 @@ defaultMapperIn: 'null'
 defaultMapperOut: 'null'
 defaultclassifier: 'null'
 description: Arcanna integration for using the power of AI in SOC
-display: Arcanna.AI (Partner Contribution)
+display: Arcanna.AI
 name: Arcanna.AI
 script:
   commands:
@@ -239,7 +239,7 @@ script:
     description: Returns the Feedback field set on integration
     execution: false
     name: arcanna-get-feedback-field
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: false
   longRunning: false

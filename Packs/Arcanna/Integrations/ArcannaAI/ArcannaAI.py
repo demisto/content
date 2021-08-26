@@ -1,6 +1,6 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from CommonServerUserPython import *  # noqa: F401
 import json
 import urllib3
 import traceback

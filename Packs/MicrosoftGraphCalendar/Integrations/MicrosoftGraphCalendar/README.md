@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>Use the Microsoft Graph Calendar integration to create, and manage different calendars and events according to your requirements.</p>
+<p>Use the O365 Outlook Calendar integration to create, and manage different calendars and events according to your requirements.</p>
 
 <h2>Authentication</h2>
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
@@ -14,10 +14,10 @@ For more details about the authentication used in this integration, see <a href=
 <li>Calendars.ReadWrite - Delegated</li>
 <li>Calendars.ReadWrite - Application</li>
 </ul>
-<h2>Configure Microsoft Graph Calendar on Cortex XSOAR</h2>
+<h2>Configure O365 Outlook Calendar on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong>  &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Microsoft Graph Calendar.</li>
+<li>Search for O365 Outlook Calendar.</li>
 <li>Click <strong>Add instance</strong> to create and configure a new integration instance.
 <ul>
 <li>

@@ -15,6 +15,8 @@ This playbook uses ArcannaAi integration
 ### Commands
 * arcanna-send-event
 * arcanna-get-event-status
+* arcanna-send-event-feedback
+* arcanna-get-feedback-field
 
 ## Playbook Inputs
 ---
@@ -29,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Arcanna-Generic-Investigation](https://user-images.githubusercontent.com/6702878/124025997-cdeede80-d9f9-11eb-8faa-e297c7cd3ca7.png)
+![Arcanna-Generic-Investigation-V2](https://user-images.githubusercontent.com/6702878/131002353-3176a6e0-c08a-43db-910a-5b33de7b60cc.png)
