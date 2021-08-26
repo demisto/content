@@ -14,6 +14,7 @@ urllib3.disable_warnings()
 
 def parse_tag_field(tags_str):
     tags = []
+    
     regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
     for f in tags_str.split(';'):
         match = regex.match(f)
