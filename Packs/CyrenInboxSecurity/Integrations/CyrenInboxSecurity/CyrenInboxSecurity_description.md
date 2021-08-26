@@ -1,9 +1,3 @@
-### Partner Contributed Integration
-#### Integration Author: Cyren
-Support and maintenance for this integration are provided by the author. Please use the following contact details:
-- **Email**: [support@cyren.com](mailto:support@cyren.com)
-- **URL**: [https://www.cyren.com/cyren-inbox-security](https://www.cyren.com/cyren-inbox-security) 
-***
 # Cyren Inbox Security Integration
 
 Utilize this integration to import Cyren Inbox Security incidents into XSOAR where they can be filtered through playbooks to help automate extended processing and analysis of these incidents.

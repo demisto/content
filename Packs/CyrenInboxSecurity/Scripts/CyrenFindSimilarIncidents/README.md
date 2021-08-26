@@ -7,6 +7,7 @@ Finds similar incidents by Cyren Case ID
 | --- | --- |
 | Script Type | python3 |
 | Tags | dedup, duplicate, incidents, dynamic-section |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

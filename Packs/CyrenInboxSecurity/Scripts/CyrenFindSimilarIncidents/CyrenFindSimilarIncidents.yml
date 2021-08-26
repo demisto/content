@@ -3,9 +3,9 @@ args:
   name: case_id
 comment: Finds similar incidents by Cyren Case ID
 commonfields:
-  id: 3b9c9e61-530a-44c1-8058-0fa4401ad070
+  id: Cyren-Find-Similar-Incidents
   version: -1
-dockerimage: demisto/python3:3.9.1.15759
+dockerimage: demisto/python3:3.9.6.22912
 enabled: true
 name: Cyren-Find-Similar-Incidents
 outputs:
@@ -27,7 +27,6 @@ outputs:
 - contextPath: cyrenSimilarIncidentCsv
   description: comma separated raw ids
   type: Unknown
-pswd: ""
 runas: DBotRole
 runonce: false
 script: ''
@@ -40,3 +39,6 @@ tags:
 - dynamic-section
 timeout: 300ns
 type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

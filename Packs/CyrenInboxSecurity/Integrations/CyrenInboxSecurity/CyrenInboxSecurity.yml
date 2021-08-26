@@ -34,9 +34,16 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-defaultMapperIn: 'null'
-defaultMapperOut: 'null'
-defaultclassifier: 'null'
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+defaultclassifier: 'Cyren Inbox Security Classifier'
+defaultmapperin: 'Cyren Inbox Security Mapper'
 description: Cyren Inbox Security is an innovative solution that safeguards Office
   365 mailboxes in your organization against evasive phishing, business email compromise
   (BEC), and fraud. This integration imports incidents from Cyren Inbox Security into
@@ -65,7 +72,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       description: the reason of the resolution
       isArray: false
       name: resolution_reason
@@ -97,21 +104,15 @@ script:
       - REMOVE_BANNER
       required: false
       secret: false
-    - default: false
-      description: The name of the integration instance you want to apply the command
-      isArray: false
-      name: instance_name
-      required: false
-      secret: false
     deprecated: false
     description: resolve a case and remediate incidents
     execution: false
     name: cyren-resolve-and-remediate
     outputs:
-    - contextPath: data.status
+    - contextPath: Cyren.data.status
       description: status of actions performed
       type: string
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.6.22912
   feed: false
   isfetch: true
   longRunning: false
@@ -120,4 +121,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-sourcemoduleid: HelloWorld
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

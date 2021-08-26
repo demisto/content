@@ -7,6 +7,7 @@ Displays threat indicators in readable format
 | --- | --- |
 | Script Type | python3 |
 | Tags | incidents, dynamic-section, transformer |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

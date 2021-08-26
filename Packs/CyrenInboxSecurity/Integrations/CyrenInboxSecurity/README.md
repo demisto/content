@@ -1,5 +1,6 @@
 Cyren Inbox Security is an innovative solution that safeguards Office 365 mailboxes in your organization against evasive phishing, business email compromise (BEC), and fraud. This integration imports incidents from Cyren Inbox Security into XSOAR, and includes a playbook for incident resolution.
 This integration was integrated and tested with version 1.0 of Cyren Inbox Security
+
 ## Configure Cyren Inbox Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -11,8 +12,10 @@ This integration was integrated and tested with version 1.0 of Cyren Inbox Secur
     | Server URL | The endpoint  provided by your Cyren Representative. \(use "sample" to test\) | True |
     | Client ID | The client iD provided by your Cyren Representative. \(use "sample" to test\) | True |
     | Client Secret | The client secret provided by your Cyren Representative. \(use "sample" to test\) | True |
-    | Fetch incidents |  | False |
+    | First fetch time | 1 day, 2 days, etc... | False |
+    | Maximum number of incidents per fetch |  | False |
     | Incident type |  | False |
+    | Fetch incidents |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -35,14 +38,13 @@ resolve a case and remediate incidents
 | resolution_reason | the reason of the resolution. Possible values are: Identified phishing URL, Identified suspicious sender, Other, Scam, Spam. | Optional | 
 | resolution_reason_text | free text for resolution reason. | Optional | 
 | actions | remediation actions to perform. Possible values are: MOVE_TO_SPAM, MOVE_TO_DELETED, ADD_BANNER, SOFT_DELETE, MOVE_TO_INBOX, REMOVE_BANNER. | Optional | 
-| instance_name | The name of the integration instance you want to apply the command. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| data.status | string | status of actions performed | 
+| Cyren.data.status | string | status of actions performed | 
 
 
 #### Command Example
@@ -51,14 +53,19 @@ resolve a case and remediate incidents
 #### Context Example
 ```json
 {
-    "data": {
-        "status": "ok"
+    "Cyren": {
+        "data": {
+            "status": "ok"
+        }
     }
 }
 ```
 
 #### Human Readable Output
 
->{"data": {"status": "ok"}}
+>### cyren-resolve-and-remediate results
+>|status|
+>|---|
+>| ok |
 >
 >*** end of results ***

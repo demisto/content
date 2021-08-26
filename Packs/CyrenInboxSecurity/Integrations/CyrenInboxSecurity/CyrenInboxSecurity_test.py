@@ -44,11 +44,6 @@ NOTE: we do not have to import or build a requests-mock instance explicitly.
 requests-mock library uses a pytest specific mechanism to provide a
 requests_mock instance to any function with an argument named requests_mock.
 
-More Details
-------------
-
-More information about Unit Tests in Cortex XSOAR:
-https://xsoar.pan.dev/docs/integrations/unit-testing
 
 """
 
@@ -69,7 +64,7 @@ def test_simulate_fetch():
     incidents = simulate_fetch()
 
     assert incidents[0]["name"] ==\
-           'Cyren Inbox Security Sample - phishing (System)'
+        'Cyren Inbox Security Sample - phishing (System)'
 
 
 def test_test_module(requests_mock):
@@ -174,4 +169,4 @@ def test_fetch_incidents(requests_mock):
     )
 
     assert incidents[0]["name"] ==\
-           'Cyren Inbox Security - phishing (System)'
+        'Cyren Inbox Security - phishing (System)'

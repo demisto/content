@@ -1,8 +1,8 @@
 description: 'Processes Cyren Incidents, sets resolutions, and applies remediations
   to end-user mailboxes. '
-id: be5080ec-ac04-459c-8eb0-0f0323c7af50
+id: Cyren Inbox Security Default
 inputs: []
-name: Cyren Inbox Security playbook
+name: Cyren Inbox Security Default
 outputs: []
 starttaskid: "0"
 tasks:
@@ -18,6 +18,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Start of Playbook
       id: 2eca6599-ee0e-4d88-8fc5-284980f3a8b6
       iscommand: false
       name: ""
@@ -665,6 +666,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: End of playbook
       id: 2a3fa6bb-f039-479d-8a3a-84a0143fda84
       iscommand: false
       name: Done
@@ -692,6 +694,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Analyst decision to close
       id: 927075b8-525f-4305-8e4a-14c96cd76244
       iscommand: false
       name: Analyst determined remediation
@@ -719,6 +722,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Already remediated, system close
       id: f55a0614-35d2-4859-8cda-44d7e8afb22a
       iscommand: false
       name: System Remediated
@@ -735,6 +739,7 @@ tasks:
         }
       }
 version: -1
+fromversion: 6.0.0
 view: |-
   {
     "linkLabelsPosition": {

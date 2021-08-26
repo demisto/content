@@ -144,9 +144,9 @@ def simulate_fetch():
     now_time = datetime.now()
     now_time_timestamp_seconds = int(date_to_timestamp(now_time) / 1000)
     sample_incident = {
-        "incident_id": "incidentID",
-        "case_id": "caseID",
-        "tx_id": "txID",
+        "incident_id": "incidentID-" + str(now_time_timestamp_seconds),
+        "case_id": "caseID-123",
+        "tx_id": "txID-" + str(now_time_timestamp_seconds),
         "threat_type": "phishing",
         "application": "office365",
         "connection_id": "connectionID",
@@ -155,7 +155,7 @@ def simulate_fetch():
         "tenant_id": "tenantID",
         "remediation_data": {
             "remediation_type": "auto_remediation",
-            "remediation": "remediated",
+            "remediation": "not_remediated",
             "policy_action": [
                 {
                     "performed_date": 1625484377,
@@ -194,7 +194,7 @@ def simulate_fetch():
             "resolution": "pending"
         },
         "message_details": {
-            "internet_message_id": "internetMessageID",
+            "internet_message_id": "internetMessageID-" + str(now_time_timestamp_seconds),
             "targeted_employee": {
                 "name": "user1",
                 "address": "user1@sample.com"
@@ -217,7 +217,7 @@ def simulate_fetch():
             "to_cc_recipients": [],
             "to_bcc_recipients": [],
             "reply_to": [],
-            "email_subject": "subject",
+            "email_subject": "subject - this is a sample",
             "email_body": "",
             "received_datetime": "2021-07-05T11:23:27Z",
             "sent_datetime": "2021-07-05T11:23:22Z",
@@ -237,7 +237,7 @@ def simulate_fetch():
                 }
             ],
             "user_id": "userID",
-            "message_id": "messageID",
+            "message_id": "messageID-" + str(now_time_timestamp_seconds),
             "attachments": [
                 {
                     "file_size": 158,
@@ -300,7 +300,7 @@ def simulate_fetch():
                 ]
             },
         ],
-        "reported_by": "System",
+        "reported_by": "admin@sample.com",
         "confidence": 3,
         "created_at": now_time_timestamp_seconds,
         "updated_at": now_time_timestamp_seconds
@@ -332,7 +332,7 @@ def fetch_incidents(client, client_id, client_secret, last_run,
     This function will execute each interval (default is 1 minute).
 
     Args:
-        client (Client): HelloWorld client
+        client (Client): the client object
         client_id (String): client id
         client_secret (String): client secret
         last_run (dict): a dict with last_fetch as
@@ -341,7 +341,7 @@ def fetch_incidents(client, client_id, client_secret, last_run,
          on when to start fetching incidents
         max_fetch (int): Maximum numbers of incidents per fetch
     Returns:
-        incidents: Incidents that will be created in Demisto
+        incidents: Incidents that will be created in Cortex XSOAR
     """
     # last run is a dict with last_fetch as a key and
     #  a timestamp in seconds as a value
@@ -361,7 +361,7 @@ def fetch_incidents(client, client_id, client_secret, last_run,
     token = client.get_token(client_id, client_secret).\
         get('data').get('access_token')
     cyren_incidents = client.get_incidents(token, date_from, max_fetch)
-    for ci in cyren_incidents.get('data'):
+    for ci in cyren_incidents.get('data',[]):
         incident_name = 'Cyren Inbox Security - {} ({})'.format(
             ci.get('threat_type', 'phishing'), ci.get('reported_by', 'System')
         )
@@ -414,11 +414,12 @@ def resolve_and_remediate_command(client, args, client_id, client_secret):
         )
 
     readable_output = (
-        f'{json.dumps(resp)}\n'
+        tableToMarkdown("cyren-resolve-and-remediate results", resp["data"])
         + '\n*** end of results ***'
     )
 
     return CommandResults(
+        outputs_prefix="Cyren",
         outputs=resp,
         readable_output=readable_output
     )
@@ -432,7 +433,6 @@ def main() -> None:
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
 
-    instance_name = demisto.integrationInstance()
     url = demisto.params().get('url')
     client_id = demisto.params().get('client_id')
     client_secret = demisto.params().get('client_secret')
@@ -473,8 +473,6 @@ def main() -> None:
                 demisto.incidents(incidents)
 
         if demisto.command() == 'cyren-resolve-and-remediate':
-            if instance_name == demisto.args().\
-                    get('instance_name', instance_name):
                 return_results(resolve_and_remediate_command(
                     client,
                     demisto.args(),
