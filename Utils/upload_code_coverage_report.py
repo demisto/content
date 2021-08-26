@@ -25,7 +25,7 @@ def create_minimal_report(source_file: str, destination_file: str) -> Dict:
         data = json.load(cov_util_output)
 
     # Check that we were able to read the json report correctly
-    if not data or not 'files' in data:
+    if not data or 'files' not in data:
         ret_value['success'] = False
         print(f'Empty file, or unable to read contents of {source_file}.')
         return
@@ -61,7 +61,8 @@ def upload_file_to_google_cloud_storage(service_account: str,
     """Uploads a file to the bucket."""
     json_dest = f'{destination_blob_dir}/coverage-min.json'
     updated = datetime.strptime(last_updated, TIMESTAMP_FORMAT_SECONDS)
-    historic_data_dest = '{}/history/coverage-min/coverage-min-{}.json'.format(destination_blob_dir, updated.strftime(DATE_FORMAT))
+    updated_date = updated.strftime(DATE_FORMAT)
+    historic_data_dest = f'{destination_blob_dir}/history/coverage-min/coverage-min-{updated_date}.json'
 
     upload_list = [json_dest, historic_data_dest]
     # google cloud storage client initialized
@@ -147,8 +148,8 @@ def main():
     coverage_json(options.cov_bin_dir, options.source_file_name)
 
     create_minimal_report_res = create_minimal_report(source_file=options.source_file_name,
-                          destination_file=options.minimal_file_name,
-                          )
+                                                      destination_file=options.minimal_file_name,
+                                                      )
 
     if create_minimal_report_res.get('success'):
         upload_file_to_google_cloud_storage(service_account=options.service_account,

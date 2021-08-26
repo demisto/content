@@ -9,7 +9,7 @@ def test_create_minimal_report(tmpdir):
 
     try:
         create_minimal_report_res = create_minimal_report(source_file=source_file, destination_file=destination_file)
-        assert True == create_minimal_report_res.get('success')
+        assert create_minimal_report_res.get('success')
         assert '2021-08-10T11:37:35Z' == create_minimal_report_res.get('last_updated')
 
         destination_file_contents = yaml.safe_load(open(destination_file))
