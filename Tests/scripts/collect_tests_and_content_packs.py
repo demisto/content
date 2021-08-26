@@ -1006,7 +1006,6 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
     logging.info(f'Tests: {tests}')
     content_packs = get_content_pack_name_of_test(tests, id_set)
     for pack in content_packs:
-        logging.info(f'PACK NAME - {pack}')
         ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
 
     if ignored_tests_set:
@@ -1079,7 +1078,6 @@ def filter_tests(tests: set, id_set: json, is_nightly=False) -> set:
         (set): Set of tests without ignored, non supported and deprecated-packs tests.
     """
     tests_with_no_dummy_strings = {test for test in tests if 'no test' not in test.lower()}
-    logging.info(f'Tests with no dummies - {tests_with_no_dummy_strings}')
     tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set)
     logging.info(f'Tests without ignored - {tests_without_ignored}')
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
