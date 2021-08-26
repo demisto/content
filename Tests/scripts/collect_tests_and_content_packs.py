@@ -963,6 +963,8 @@ def get_content_pack_name_of_test(tests: set, id_set: Optional[Dict] = None) -> 
                 if pack_name:
                     content_packs.add(pack_name)
                     if len(tests) == len(content_packs):
+                        logging.debug(f'Get Content pack name of test: tests: {tests}\n len of tests{len(tests)}\n')
+                        logging.debug(f'Get Content pack name of test: content_packs: {content_packs}\n len of content_packs{len(content_packs)}')
                         # we found all content packs for all tests we were looking for
                         break
 
@@ -1008,6 +1010,7 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
         ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
 
     if ignored_tests_set:
+        logging.debug(f'Ingored tests {ignored_tests_set}')
         readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
         logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
         tests.difference_update(ignored_tests_set)
