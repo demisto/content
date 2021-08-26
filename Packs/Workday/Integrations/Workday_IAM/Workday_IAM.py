@@ -13,6 +13,7 @@ IS_PROCESSED_FIELD = 'isprocessed'
 DISPLAY_NAME_FIELD = 'displayname'
 LAST_DAY_OF_WORK_FIELD = 'lastdayofwork'
 TERMINATION_DATE_FIELD = 'terminationdate'
+TERMINATION_TRIGGER_FIELD = 'terminationtrigger'
 EMPLOYMENT_STATUS_FIELD = 'employmentstatus'
 PREHIRE_FLAG_FIELD = 'prehireflag'
 REHIRED_EMPLOYEE_FIELD = 'rehiredemployee'
@@ -34,6 +35,7 @@ UPDATE_USER_EVENT_TYPE = 'IAM - Update User'
 REHIRE_USER_EVENT_TYPE = 'IAM - Rehire User'
 TERMINATE_USER_EVENT_TYPE = 'IAM - Terminate User'
 ACTIVATE_AD_EVENT_TYPE = 'IAM - AD User Activation'
+DEACTIVATE_AD_EVENT_TYPE = 'IAM - AD User Deactivation'
 DEFAULT_INCIDENT_TYPE = 'IAM - Sync User'
 
 
@@ -151,6 +153,14 @@ def is_report_missing_required_user_data(workday_user):
     return False
 
 
+def is_tufe_user(demisto_user):
+    if demisto_user is not None and demisto_user.get(TERMINATION_TRIGGER_FIELD) == 'TUFE':
+        demisto.debug(f'Dropping event for user with email {demisto_user.get(EMAIL_ADDRESS_FIELD)} '
+                      f'as it is a TUFE user.')
+        return True
+    return False
+
+
 def is_event_processed(demisto_user):
     if demisto_user is not None and demisto_user.get(IS_PROCESSED_FIELD) is True:
         demisto.debug(f'Dropping event for user with email {demisto_user.get(EMAIL_ADDRESS_FIELD)} '
@@ -255,6 +265,24 @@ def is_ad_activation_event(demisto_user, workday_user, days_before_hire_to_enabl
     if demisto_user and demisto_user.get(AD_ACCOUNT_STATUS_FIELD, '') == 'Pending':
         if has_reached_threshold_date(days_before_hire_to_enable_ad, workday_user):
             demisto.debug(f'An Active Directory activation event was detected for user '
+                          f'with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.')
+            return True
+    return False
+
+
+def is_ad_deactivation_event(demisto_user, workday_user, days_before_hire_to_enable_ad):
+    if demisto_user and demisto_user.get(AD_ACCOUNT_STATUS_FIELD, '') == 'Pending':
+        if has_reached_threshold_date(days_before_hire_to_enable_ad, workday_user):
+            demisto.debug(f'An Active Directory activation event was detected for user '
+                          f'with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.')
+            return True
+    return False
+
+
+def is_ad_deactivation_event(demisto_user, workday_user, days_before_hire_to_enable_ad):
+    if demisto_user and demisto_user.get(AD_ACCOUNT_STATUS_FIELD, '') == 'Active':
+        if not has_reached_threshold_date(days_before_hire_to_enable_ad, workday_user):
+            demisto.debug(f'An Active Directory deactivation event was detected for user '
                           f'with email address {workday_user.get(EMAIL_ADDRESS_FIELD)}.')
             return True
     return False
@@ -388,6 +416,7 @@ def get_event_details(entry, workday_user, demisto_user, days_before_hire_to_syn
             or new_hire_email_already_taken(workday_user, demisto_user, email_to_user_profile) \
             or is_report_missing_required_user_data(workday_user) \
             or not is_valid_source_of_truth(demisto_user, source_priority) \
+            or is_tufe_user(demisto_user) \
             or is_event_processed(demisto_user):
         return None
 
@@ -398,6 +427,10 @@ def get_event_details(entry, workday_user, demisto_user, days_before_hire_to_syn
     elif is_ad_activation_event(demisto_user, workday_user, days_before_hire_to_enable_ad):
         event_type = ACTIVATE_AD_EVENT_TYPE
         event_details = 'Active Directory user account was enabled.'
+
+    elif is_ad_deactivation_event(demisto_user, workday_user, days_before_hire_to_enable_ad):
+        event_type = DEACTIVATE_AD_EVENT_TYPE
+        event_details = 'Active Directory user account was disabled due to hire date postponement.'
 
     elif is_rehire_event(demisto_user, workday_user, changed_fields):
         event_type = REHIRE_USER_EVENT_TYPE
