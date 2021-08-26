@@ -284,7 +284,7 @@ def item_to_incident(item):
     incident = {
         'Type': 'AlienVault USM',
         'name': 'Alarm: ' + item.get('uuid'),
-        'occurred': occured,
+        'occurred': occurred,
         'rawJSON': json.dumps(item),
     }
 
