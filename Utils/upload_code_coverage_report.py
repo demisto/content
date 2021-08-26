@@ -3,7 +3,7 @@ import argparse
 from datetime import datetime
 import json
 import os
-from typing import Dict
+from typing import Dict, Tuple
 
 from Tests.Marketplace.marketplace_services import init_storage_client
 
@@ -13,22 +13,18 @@ TIMESTAMP_FORMAT_SECONDS = '%Y-%m-%dT%H:%M:%SZ'
 TIMESTAMP_FORMAT_MICROSECONDS = '%Y-%m-%dT%H:%M:%S.%f'
 
 
-def create_minimal_report(source_file: str, destination_file: str) -> Dict:
-    ret_value = {}
-
+def create_minimal_report(source_file: str, destination_file: str) -> Tuple[bool, str]:
     if not os.path.isfile(source_file):
-        ret_value['success'] = False
         print(f'File {source_file} does not exist.')
-        return
+        return False, {}
 
     with open(source_file, 'r') as cov_util_output:
         data = json.load(cov_util_output)
 
     # Check that we were able to read the json report correctly
     if not data or 'files' not in data:
-        ret_value['success'] = False
         print(f'Empty file, or unable to read contents of {source_file}.')
-        return
+        return False, {}
 
     minimal_coverage_contents_files: Dict[str, float] = {}
     files = data['files']
@@ -38,7 +34,6 @@ def create_minimal_report(source_file: str, destination_file: str) -> Dict:
     timestamp_from_file = data['meta']['timestamp']
     datetime_from_timestamp: datetime = datetime.strptime(timestamp_from_file, TIMESTAMP_FORMAT_MICROSECONDS)
     str_from_datetime: str = datetime.strftime(datetime_from_timestamp, TIMESTAMP_FORMAT_SECONDS)
-    ret_value['last_updated'] = str_from_datetime
 
     minimal_coverage_contents = {
         'files': minimal_coverage_contents_files,
@@ -48,8 +43,7 @@ def create_minimal_report(source_file: str, destination_file: str) -> Dict:
     with open(destination_file, 'w') as minimal_output:
         minimal_output.write(json.dumps(minimal_coverage_contents))
 
-    ret_value['success'] = True
-    return ret_value
+    return True, str_from_datetime
 
 
 def upload_file_to_google_cloud_storage(service_account: str,
@@ -147,16 +141,16 @@ def main():
     options = options_handler()
     coverage_json(options.cov_bin_dir, options.source_file_name)
 
-    create_minimal_report_res = create_minimal_report(source_file=options.source_file_name,
+    success, last_updated = create_minimal_report(source_file=options.source_file_name,
                                                       destination_file=options.minimal_file_name,
                                                       )
 
-    if create_minimal_report_res.get('success'):
+    if success:
         upload_file_to_google_cloud_storage(service_account=options.service_account,
                                             bucket_name=options.bucket_name,
                                             minimal_file_name=options.minimal_file_name,
                                             destination_blob_dir=options.destination_blob_dir,
-                                            last_updated=create_minimal_report_res.get('last_updated')
+                                            last_updated=last_updated
                                             )
 
 

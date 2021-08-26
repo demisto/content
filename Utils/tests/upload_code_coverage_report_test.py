@@ -8,9 +8,9 @@ def test_create_minimal_report(tmpdir):
     destination_file = tmpdir.join("coverage_generated.json")
 
     try:
-        create_minimal_report_res = create_minimal_report(source_file=source_file, destination_file=destination_file)
-        assert create_minimal_report_res.get('success')
-        assert '2021-08-10T11:37:35Z' == create_minimal_report_res.get('last_updated')
+        success, last_updated = create_minimal_report(source_file=source_file, destination_file=destination_file)
+        assert success
+        assert '2021-08-10T11:37:35Z' == last_updated
 
         destination_file_contents = yaml.safe_load(open(destination_file))
 
