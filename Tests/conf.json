@@ -2188,6 +2188,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "AlexaV2 Test Playbook",
+            "integrations": "Alexa Rank Indicator v2",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "Phishing v2 - Test - Incident Starter",
             "fromversion": "6.0.0",
             "timeout": 1200,
