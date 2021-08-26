@@ -753,7 +753,7 @@ tasks:
     scriptarguments:
       confidenceThreshold: {}
       domain:
-        simple: gauttam.com
+        simple: gauttam.com,google.com
       long: {}
       owners: {}
       ratingThreshold: {}
