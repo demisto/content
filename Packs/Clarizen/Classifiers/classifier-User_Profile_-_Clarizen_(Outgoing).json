@@ -10,10 +10,6 @@
 					"complex": null,
 					"simple": "city"
 				},
-				"country": {
-					"complex": null,
-					"simple": "country"
-				},
 				"Name": {
 					"complex": null,
 					"simple": "displayname"
@@ -26,33 +22,17 @@
 					"complex": null,
 					"simple": "givenname"
 				},
-				"Surname": {
+				"lastname": {
 					"complex": null,
-					"simple": "lastname"
+					"simple": "surname"
 				},
-				"phone_mobile": {
+				"MobilePhone": {
 					"complex": null,
 					"simple": "mobilephone"
-				},
-				"phone_home": {
-					"complex": null,
-					"simple": "phonenumber"
-				},
-				"address_one": {
-					"complex": null,
-					"simple": "streetaddress"
 				},
 				"Username": {
 					"complex": null,
 					"simple": "username"
-				},
-				"MobilePhone": {
-					"complex": null,
-					"simple": "workphone"
-				},
-				"zip": {
-					"complex": null,
-					"simple": "zipcode"
 				},
 				"DirectManager": {
 					"complex": null,
@@ -87,10 +67,6 @@
 					"complex": null,
 					"simple": "city"
 				},
-				"country": {
-					"complex": null,
-					"simple": "country"
-				},
 				"Name": {
 					"complex": null,
 					"simple": "displayname"
@@ -103,33 +79,17 @@
 					"complex": null,
 					"simple": "givenname"
 				},
-				"Surname": {
+				"lastname": {
 					"complex": null,
-					"simple": "lastname"
+					"simple": "surname"
 				},
-				"phone_mobile": {
+				"MobilePhone": {
 					"complex": null,
 					"simple": "mobilephone"
-				},
-				"phone_home": {
-					"complex": null,
-					"simple": "phonenumber"
-				},
-				"address_one": {
-					"complex": null,
-					"simple": "streetaddress"
 				},
 				"Username": {
 					"complex": null,
 					"simple": "username"
-				},
-				"MobilePhone": {
-					"complex": null,
-					"simple": "workphone"
-				},
-				"zip": {
-					"complex": null,
-					"simple": "zipcode"
 				},
 				"C_PrimaryLanguage": {
 					"complex": null,

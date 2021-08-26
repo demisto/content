@@ -26,17 +26,9 @@
 					"complex": null,
 					"simple": "lastname"
 				},
-				"State": {
-					"complex": null,
-					"simple": "Region"
-				},
 				"Mobile Phone": {
 					"complex": null,
 					"simple": "MobilePhone"
-				},
-				"Title": {
-					"complex": null,
-					"simple": "JobTitle"
 				},
 				"Username": {
 					"complex": null,
