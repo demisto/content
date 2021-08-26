@@ -1,7 +1,7 @@
 id: Test - CrowdStrike Falcon
-version: 6
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Test - CrowdStrike Falcon
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -45,8 +45,11 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
+      add_to_context: {}
       brand_name:
         simple: CrowdstrikeFalcon
+      expect_data: {}
+      instance_name: {}
     separatecontext: false
     view: |-
       {
@@ -60,8 +63,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 00b81917-eb40-4e80-8f9c-adea9a5e0b12
@@ -80,6 +81,7 @@ tasks:
     scriptarguments:
       filter:
         simple: created_timestamp:>'2020-03-05T15:25:00Z'
+      ids: {}
     separatecontext: false
     view: |-
       {
