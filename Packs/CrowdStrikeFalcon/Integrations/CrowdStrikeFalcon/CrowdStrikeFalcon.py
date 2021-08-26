@@ -2742,9 +2742,9 @@ def main():
         elif command == 'cs-falcon-resolve-incident':
             return_results(resolve_incident_command(status=args.get('status'),
                                                     ids=argToList(args.get('ids'))))
-        else:
-            raise NotImplementedError(f'CrowdStrike Falcon error: '
-                                      f'command {command} is not implemented')
+        # else:
+        #     raise NotImplementedError(f'CrowdStrike Falcon error: '
+        #                               f'command {command} is not implemented')
     except Exception as e:
         return_error(str(e))
 
