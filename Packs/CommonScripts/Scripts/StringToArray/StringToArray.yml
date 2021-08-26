@@ -5,9 +5,8 @@ args:
   name: value
   required: true
   secret: false
-comment: |-
-  Converts string, for example: "http://example.com/?score:1,4,time:55"
-  To array: ["http://example.com/?score:1,4,time:55"]
+comment: "Converts string to array. \nFor example: `http://example.com/?score:1,4,time:55`\
+  \ will be transformed to `[\"http://example.com/?score:1,4,time:55\"]`."
 commonfields:
   id: StringToArray
   version: -1

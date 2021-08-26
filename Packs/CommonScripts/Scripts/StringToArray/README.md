@@ -1,5 +1,5 @@
-Converts string, for example: "http://example.com/?score:1,4,time:55"
-To array: ["http://example.com/?score:1,4,time:55"]
+Converts string to array.
+For example: `http://example.com/?score:1,4,time:55` will be transformed to `["http://example.com/?score:1,4,time:55"]`.
 
 ## Script Data
 ---

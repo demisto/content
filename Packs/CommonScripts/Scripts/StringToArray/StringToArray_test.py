@@ -1,7 +1,7 @@
 from StringToArray import *
 
 
-def test_StringToArray():
+def test_string_to_array():
     """Unit test
     Given
     - url to tranform.
