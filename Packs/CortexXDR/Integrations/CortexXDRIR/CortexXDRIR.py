@@ -1902,9 +1902,9 @@ def isolate_endpoint_command(client, args):
             None
         )
     if endpoint_status == 'UNINSTALLED':
-        raise ValueError(
-            f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be isolated.'
-        )
+        raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be isolated.')
+    if endpoint_status == 'DISCONNECTED':
+        raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.')
     if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
@@ -1943,9 +1943,9 @@ def unisolate_endpoint_command(client, args):
             None
         )
     if endpoint_status == 'UNINSTALLED':
-        raise ValueError(
-            f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be isolated.'
-        )
+        raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be un-isolated.')
+    if endpoint_status == 'DISCONNECTED':
+        raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.')
     if is_isolated == 'AGENT_PENDING_ISOLATION':
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation and therefore can not be un-isolated.'
