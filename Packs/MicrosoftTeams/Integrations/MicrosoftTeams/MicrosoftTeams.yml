@@ -43,7 +43,7 @@ configuration:
 - additionalinfo: Whether to send or not automatic notifications to the configured notifications channel.
   display: Automatic Notifications
   hidden: false
-  name: auto_notifications
+  name: disable_auto_notifications
   required: false
   type: 8
   defaultvalue: false

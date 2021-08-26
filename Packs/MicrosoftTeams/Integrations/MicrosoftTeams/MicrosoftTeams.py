@@ -1163,12 +1163,14 @@ def send_message():
         # Got a notification from server
         channel_name = demisto.params().get('incident_notifications_channel', 'General')
         severity: int = int(demisto.args().get('severity'))
-        if (auto_notifications := demisto.params().get('auto_notifications')) is not None:
-            auto_notifications = argToBoolean(auto_notifications)
-        else:
-            auto_notifications = False
 
-        if auto_notifications:
+        # Adding disable and not enable because of adding new boolean parameter always defaults to false value in server
+        if (disable_auto_notifications := demisto.params().get('disable_auto_notifications')) is not None:
+            disable_auto_notifications = argToBoolean(disable_auto_notifications)
+        else:
+            disable_auto_notifications = False
+
+        if not disable_auto_notifications:
             severity_threshold: int = translate_severity(demisto.params().get('min_incident_severity', 'Low'))
             if severity < severity_threshold:
                 return
