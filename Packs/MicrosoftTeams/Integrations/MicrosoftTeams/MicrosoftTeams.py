@@ -93,6 +93,7 @@ def translate_severity(severity: str) -> int:
     """
     severity_dictionary = {
         'Unknown': 0,
+        'Informational': 0.5,
         'Low': 1,
         'Medium': 2,
         'High': 3,
