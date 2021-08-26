@@ -1006,12 +1006,15 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
     logging.info(f'Tests: {tests}')
     content_packs = get_content_pack_name_of_test(tests, id_set)
     for pack in content_packs:
+        logging.info(f'PACK NAME - {pack}')
         ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
 
     if ignored_tests_set:
+        logging.info(f'IGNORED TEST SET - {ignored_tests_set}')
         readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
         logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
         tests.difference_update(ignored_tests_set)
+        logging.info(f'FINALLY TEST - {tests}')
 
     return tests
 
