@@ -208,7 +208,7 @@ def get_attribute_indicator_type(attribute: Dict[str, Any]):
         'email-dst': FeedIndicatorType.Email,
         'url': FeedIndicatorType.URL,
         'regkey': FeedIndicatorType.Registry,
-        'threat-actor': FeedIndicatorType.Registry,  # TODO: Need to add to the class
+        'threat-actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
         'btc': DBotScoreType.CRYPTOCURRENCY,
         'campaign-name': ThreatIntel.ObjectsNames.CAMPAIGN,
         'campaign-id': ThreatIntel.ObjectsNames.CAMPAIGN,
