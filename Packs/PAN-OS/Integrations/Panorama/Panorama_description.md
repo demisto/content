@@ -24,3 +24,7 @@ You can apply additional (optional) filters for the fetch-incident query using t
 #### Query Examples:
 For log type `threat`: (severity geq medium)
 For log type `traffic`:(category eq phishing) or (category eq command-and-control) or (category eq malware)
+=======
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/panorama)
+
