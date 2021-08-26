@@ -62,7 +62,7 @@ def upload_file_to_google_cloud_storage(service_account: str,
     json_dest = f'{destination_blob_dir}/coverage-min.json'
     updated = datetime.strptime(last_updated, TIMESTAMP_FORMAT_SECONDS)
     updated_date = updated.strftime(DATE_FORMAT)
-    historic_data_dest = f'{destination_blob_dir}/history/coverage-min/coverage-min-{updated_date}.json'
+    historic_data_dest = f'{destination_blob_dir}/history/coverage-min/{updated_date}.json'
 
     upload_list = [json_dest, historic_data_dest]
     # google cloud storage client initialized
