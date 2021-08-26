@@ -18,6 +18,26 @@ URI_PREFIX = '/services/data/v51.0/'
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
 
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, manager_email=None):
+        super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
+        self.manager_id = self.get_manager_id(manager_email)
+
+    def get_manager_id(self, manager_email: Optional[str]) -> str:
+        """ Gets the user's manager ID from manager email.
+        :type manager_email: ``str``
+        :param manager_email: user's manager email
+        :return: The user's manager ID
+        :rtype: ``str``
+        """
+
+        # Get manager ID.
+        manager_id = ''
+        if manager_email:
+            res = self.get_user(manager_email)
+            if res is not None:
+                manager_id = res.id
+        return manager_id
+
     def test(self):
         """ Tests connectivity with the application. """
 
@@ -38,7 +58,7 @@ class Client(BaseClient):
 
         res = self._http_request(
             method='GET',
-            url_suffix=uri
+            url_suffix=uri,
         )
 
         if res:
@@ -63,13 +83,13 @@ class Client(BaseClient):
             "q": email,
             "sobject": "FF__Key_Contact__c",
             "FF__Key_Contact__c.where": f"Work_Email__c='{email}'",
-            "FF__Key_Contact__c.fields": "Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name"
+            "FF__Key_Contact__c.fields": "Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name",
         }
 
         res = self._http_request(
             method='GET',
             url_suffix=uri,
-            params=params
+            params=params,
         )
 
         user_app_data = res.get('searchRecords', [])
@@ -89,11 +109,13 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
         uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c'
+        if self.manager_id:
+            user_data['manager_id'] = self.manager_id
 
         res = self._http_request(
             method='POST',
             url_suffix=uri,
-            json_data=user_data
+            json_data=user_data,
         )
 
         user_id = res.get('id')
@@ -115,12 +137,15 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
         uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/{user_id}'
+        if self.manager_id:
+            user_data['manager_id'] = self.manager_id
         params = {"_HttpMethod": "PATCH"}
+
         self._http_request(
             method='POST',
             url_suffix=uri,
             params=params,
-            json_data=user_data
+            json_data=user_data,
         )
 
         return self.get_user_by_id(user_id)
@@ -152,7 +177,7 @@ class Client(BaseClient):
 
         self._http_request(
             method='DELETE',
-            url_suffix=uri
+            url_suffix=uri,
         )
 
         return IAMUserAppData(user_id, "", False, {})
@@ -167,7 +192,7 @@ class Client(BaseClient):
         uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/describe/'
         res = self._http_request(
             method='GET',
-            url_suffix=uri
+            url_suffix=uri,
         )
 
         fields = res.get('result', [])
@@ -277,6 +302,7 @@ def main():
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
+    manager_email = args.get('user-profile', {}).get('manageremailaddress')
 
     is_create_enabled = params.get("create_user_enabled")
     is_enable_enabled = params.get("enable_user_enabled")
@@ -298,7 +324,8 @@ def main():
         proxy=proxy,
         headers=headers,
         ok_codes=(200, 201),
-        auth=(username, password)
+        auth=(username, password),
+        manager_email=manager_email,
     )
 
     demisto.debug(f'Command being called is {command}')
@@ -335,7 +362,7 @@ def main():
                      error=f'Traceback: {traceback.format_exc()}')
 
 
-from IAMApiModule import * # noqa E402
+from IAMApiModule import *  # noqa E402
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()

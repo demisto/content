@@ -10,14 +10,6 @@
 					"complex": null,
 					"simple": "Facility_Location__c"
 				},
-				"Country": {
-					"complex": null,
-					"simple": "country"
-				},
-				"Display Name": {
-					"complex": null,
-					"simple": "name"
-				},
 				"Email": {
 					"complex": null,
 					"simple": "Work_Email__c"
@@ -26,7 +18,7 @@
 					"complex": null,
 					"simple": "FF__First_Name__c"
 				},
-				"Last Name": {
+				"Surname": {
 					"complex": null,
 					"simple": "FF__Last_Name__c"
 				},
@@ -34,29 +26,21 @@
 					"complex": null,
 					"simple": "FF__Mobile_Phone__c"
 				},
-				"State": {
+				"Work Phone": {
 					"complex": null,
-					"simple": "state"
-				},
-				"Street Address": {
-					"complex": null,
-					"simple": "street"
+					"simple": "Work_Mobile_SMS__c"
 				},
 				"Title": {
 					"complex": null,
 					"simple": "FF__Title__c"
 				},
-				"Username": {
+				"Location": {
 					"complex": null,
-					"simple": "userName"
+					"simple": "Building__c"
 				},
-				"Work Phone": {
+				"Display Name": {
 					"complex": null,
-					"simple": "Work_Mobile_SMS__c"
-				},
-				"Zip Code": {
-					"complex": null,
-					"simple": "zip"
+					"simple": "Name"
 				}
 			}
 		}

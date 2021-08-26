@@ -74,10 +74,6 @@
 				"FF__Title__c": {
 					"complex": null,
 					"simple": "title"
-				},
-				"Building__c": {
-					"complex": null,
-					"simple": "location"
 				}
 			}
 		}
