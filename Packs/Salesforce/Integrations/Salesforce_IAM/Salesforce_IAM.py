@@ -41,7 +41,7 @@ class Client(BaseClient):
         # used in non-CRUD commands, to allow collecting their result at the end of `IAM - Sync User` flow
         self.command_details = {
             'instanceName': demisto.callingContext.get('context', {}).get('IntegrationInstance'),
-            'brand': demisto.callingContext.get('context', {}).get('IntegrationInstance'),
+            'brand': demisto.callingContext.get('context', {}).get('IntegrationBrand'),
             'action': demisto.command().replace('-', '_').title().replace('_', '')
         }
 

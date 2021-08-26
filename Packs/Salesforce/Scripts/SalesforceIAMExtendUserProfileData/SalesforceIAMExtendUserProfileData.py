@@ -179,6 +179,7 @@ def main():
                     outputs_key_field='instanceName', 
                     outputs={
                         'email': email,
+                        'action': 'SalesforceIAMExtendUserProfileData',
                         'brand': 'Salesforce IAM',
                         'instanceName': app_instance,
                         'success': True,
@@ -202,6 +203,7 @@ def main():
             readable_output=f'Error while parsing Salesforce provisioning settings. Error is: {traceback.format_exc()}',
             outputs={
                 'email': email,
+                'action': 'SalesforceIAMExtendUserProfileData',
                 'brand': 'Salesforce IAM',
                 'success': False,
                 'instanceName': app_instance,
