@@ -273,8 +273,8 @@ def create_incidents_from_input(input: List[Dict[str, str]], last_fetch_datetime
         current_risk_event_type: str = current_input.get('riskEventType', '')
         current_risk_detail: str = current_input.get('riskDetail', '')
         incident = {
-            'name': f'{INTEGRATION_NAME} Incident:'
-                    f' {current_risk_event_type} {current_risk_detail} {current_id}',
+            'name': f'Azure AD:'
+                    f' {current_id} {current_risk_event_type} {current_risk_detail}',
             'occurred': activity_date_time_str,
             'rawJSON': json.dumps(current_input)
         }
