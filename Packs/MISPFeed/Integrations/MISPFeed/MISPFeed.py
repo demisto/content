@@ -163,33 +163,25 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld Feed implementation, no special attributes defined
-    """
     def search_query(self, body: Dict[str, Any]) -> List:
         result = []
-        attributes = self._http_request('POST',
-                                        url_suffix='/attributes/restSearch',
-                                        full_url=self._base_url,
-                                        resp_type='text',
-                                        data=json.dumps(body),
-                                        headers={'Authorization': demisto.params().get('apikey'),
-                                                  "Accept": "application/json",
-                                                  "Content-Type": "application/json",
-                                                 },
-                                        )
+        headers = {
+            'Authorization': demisto.params().get('apikey'),
+            "Accept": "application/json",
+            'Content-Type': 'application/json'
+        }
+        response = requests.request("POST",
+                                    url=self._base_url + "attributes/restSearch",
+                                    headers=headers,
+                                    data=json.dumps(body),
+                                    verify=False)
         try:
-            attributes = json.loads(attributes)
+            attributes = json.loads(response.content)['response']['Attribute']
             for attribute in attributes:
-                if auto_detect_indicator_type(attribute):
+                if get_attribute_indicator_type(attribute):
                     result.append({
                         'value': attribute,
-                        'type': auto_detect_indicator_type(attribute),
+                        'type': get_attribute_indicator_type(attribute),
                         'FeedURL': self._base_url,
                     })
         except ValueError as err:
@@ -198,8 +190,33 @@ class Client(BaseClient):
         return result
 
 
-def get_attribute_indicator_type(attribute: Dict[str,Any]):
-    print("test")
+def get_attribute_indicator_type(attribute: Dict[str, Any]):
+    attribute_type = attribute['type']
+    indicator_map = {
+        'sha256': FeedIndicatorType.File,
+        'md5': FeedIndicatorType.File,
+        'sha1': FeedIndicatorType.File,
+        'filename': FeedIndicatorType.File,
+        'filename|md5': FeedIndicatorType.File,
+        'filename|sha1': FeedIndicatorType.File,
+        'filename|sha256': FeedIndicatorType.File,
+        'ip-src': FeedIndicatorType.IP,
+        'ip-dst': FeedIndicatorType.IP,
+        'domain': FeedIndicatorType.Domain,
+        'email': FeedIndicatorType.Email,
+        'email-src': FeedIndicatorType.Email,
+        'email-dst': FeedIndicatorType.Email,
+        'url': FeedIndicatorType.URL,
+        'regkey': FeedIndicatorType.Registry,
+        'threat-actor': FeedIndicatorType.Registry,  # TODO: Need to add to the class
+        'btc': DBotScoreType.CRYPTOCURRENCY,
+        'campaign-name': ThreatIntel.ObjectsNames.CAMPAIGN,
+        'campaign-id': ThreatIntel.ObjectsNames.CAMPAIGN,
+        'malware-type': ThreatIntel.ObjectsNames.MALWARE
+
+    }
+    return indicator_map.get(attribute_type, None)
+
 
 def test_module(client: Client) -> str:
     """Builds the iterator to check that the feed is accessible.
@@ -222,24 +239,96 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def search_attributes_command(client: Client,
-                           params: Dict[str, str],
-                           args: Dict[str, str]
-                           ) -> CommandResults:
+def fetch_indicators(client: Client,
+                     tags: List[str],
+                     attribute_type: List[str],
+                     tlp_color: Optional[str],
+                     limit: int = -1) -> List[Dict]:
+    params_dict = build_params_dict(tags, attribute_type)
+    indicators_iterator = client.search_query(params_dict)
+    indicators = []
+    if limit > 0:
+        indicators_iterator = indicators_iterator[:limit]
+
+    for indicator in indicators_iterator:
+        value_ = indicator.get('value').get('value')
+        type_ = indicator.get('type')
+        raw_data = {
+            'value': value_,
+            'type': type_,
+        }
+        for key, value in indicator.items():
+            raw_data.update({key: value})
+        indicator_obj = {
+            # The indicator value.
+            'value': value_,
+            # The indicator type as defined in Cortex XSOAR.
+            # One can use the FeedIndicatorType class under CommonServerPython to populate this field.
+            'type': type_,
+            # The name of the service supplying this feed.
+            'service': 'MISP',
+            # A dictionary that maps values to existing indicator fields defined in Cortex XSOAR.
+            # One can use this section in order to map custom indicator fields previously defined
+            # in Cortex XSOAR to their values.
+            'fields': {},
+            # A dictionary of the raw data returned from the feed source about the indicator.
+            'rawJSON': raw_data
+        }
+        update_indicator_fields(indicator_obj, tlp_color)
+
+        indicators.append(indicator_obj)
+
+    return indicators
+
+
+def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[str]) -> None:
+    first_seen = indicator_obj['rawJSON']['value'].get('first_seen', None)
+    last_seen = indicator_obj['rawJSON']['value'].get('last_seen', None)
+    timestamp = indicator_obj['rawJSON']['value'].get('timestamp', None)
+    category = indicator_obj['rawJSON']['value'].get('category', None)
+    comment = indicator_obj['rawJSON']['value'].get('comment', None)
+    tags = indicator_obj['rawJSON']['value'].get('Tag', None)
+
+    if first_seen:
+        indicator_obj['fields']['First Seen By Source'] = first_seen
+
+    if last_seen:
+        indicator_obj['fields']['Last Seen By Source'] = last_seen
+
+    if timestamp:
+        indicator_obj['fields']['Updated Date'] = timestamp
+
+    if category:
+        indicator_obj['fields']['Category'] = category
+
+    if comment:
+        indicator_obj['fields']['Description'] = comment
+
+    if tags:
+        indicator_obj['fields']['Tags'] = []
+        for tag in tags:
+            tag_name = tag.get('name', None)
+            if tag_name:
+                indicator_obj['fields']['Tags'].append(tag_name)
+
+    if tlp_color:
+        indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
+
+def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[str, str]) -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
-        params: demisto.params()
         args: demisto.args()
+        params: demisto.params()
     Returns:
         Outputs.
     """
-    # limit = int(args.get('limit', '10'))
-    # tlp_color = params.get('tlp_color')
+    limit = int(args.get('limit', '10'))
+    tlp_color = params.get('tlp_color')
     tags = argToList(args.get('tags', ''))
-    attribute_type = argToList(args.get('type', ''))
-    params_dict = build_params_dict(tags, attribute_type)
-    indicators = client.search_query(params_dict)
+    attribute_type = argToList(args.get('attribute_type', ''))
+    indicators = fetch_indicators(client, tags, attribute_type, tlp_color, limit)
     human_readable = "Retrieved " + str(len(indicators)) + " indicators."
     return CommandResults(
         readable_output=human_readable,
@@ -250,7 +339,23 @@ def search_attributes_command(client: Client,
     )
 
 
-def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[Any,str]:
+def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dict]:
+    """Wrapper for retrieving indicators from the feed to the war-room.
+    Args:
+        client: Client object with request
+        params: demisto.params()
+    Returns:
+        Outputs.
+    """
+    # limit = int(args.get('limit', '10'))
+    tlp_color = params.get('tlp_color')
+    tags = argToList(params.get('attribute_tags', ''))
+    attribute_types = argToList(params.get('attribute_types', ''))
+    indicators = fetch_indicators(client, tags, attribute_types, tlp_color)
+    return indicators
+
+
+def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[Any, str]:
     params = {
         'returnFormat': 'json',
         'type': {
@@ -265,20 +370,6 @@ def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[Any,st
     if tags:
         params["tags"]["OR"] = tags
     return params
-
-
-def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
-    """Wrapper for fetching indicators from the feed to the Indicators tab.
-    Args:
-        client: Client object with request
-        params: demisto.params()
-    Returns:
-        Indicators.
-    """
-    # feed_tags = argToList(params.get('feedTags', ''))
-    # tlp_color = params.get('tlp_color')
-    # indicators = fetch_indicators(client, tlp_color, feed_tags)
-    # return indicators
 
 
 def main():
@@ -318,22 +409,13 @@ def main():
         )
 
         if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
-
-        elif command == 'misp-search-attributes':
-            # This is the command that fetches a limited number of indicators from the feed source
-            # and displays them in the war room.
-            return_results(search_attributes_command(client, params, args))
-
+        elif command == 'misp-feed-get-indicators':
+            return_results(get_attributes_command(client, args, params))
         elif command == 'fetch-indicators':
-            # This is the command that initiates a request to the feed endpoint and create new indicators objects from
-            # the data fetched. If the integration instance is configured to fetch indicators, then this is the command
-            # that will be executed at the specified feed fetch interval.
-            indicators = fetch_indicators_command(client, params)
+            indicators = fetch_attributes_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
-
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
