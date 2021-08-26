@@ -741,14 +741,12 @@ def get_ip_malicious_domains(ip):
 
 
 def get_domain_command():
-    # Initialize
-    contents = []
-    context = {}
-    headers = []  # type: ignore
     results = []
-
     domains_list = argToList(demisto.args()['domain'])
     for domain in domains_list:
+        contents = []
+        context = {}
+        headers = []
         domain = extract_domain_name(domain)
         whois = get_whois_for_domain(domain)
         admin = {
