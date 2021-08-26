@@ -412,7 +412,7 @@ def get_group_command(client, args):
                 group_id = res_json['Resources'][0].get('id')
                 group_name = res_json['Resources'][0].get('displayName')
                 generic_iam_context = OutputContext(success=True, iden=group_id,
-                                                    displayName=group_name, details=res_json)
+                                                    displayName=group_name, details=res_json['Resources'][0])
                 readable_output = tableToMarkdown('AWS Get Group:', generic_iam_context.data, removeNull=True)
 
                 return CommandResults(
@@ -505,6 +505,9 @@ def update_group_command(client, args):
 
     member_ids_to_add = args.get('memberIdsToAdd')
     member_ids_to_delete = args.get('memberIdsToDelete')
+
+    if member_ids_to_add == member_ids_to_delete is None:
+        return_error("Missing required argument: 'memberIdsToAdd' or 'memberIdsToDelete'")
 
     if member_ids_to_add:
         if type(member_ids_to_add) != list:

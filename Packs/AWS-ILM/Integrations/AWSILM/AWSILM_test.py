@@ -1,8 +1,9 @@
-from AWSILM import Client, main
+from AWSILM import Client, main, get_group_command, create_group_command, update_group_command, delete_group_command
 from IAMApiModule import *
 import requests_mock
 
 userUri = '/scim/v2/Users/'
+groupUri = '/scim/v2/Groups/'
 
 APP_USER_OUTPUT = {
     "id": "mock_id",
@@ -10,7 +11,7 @@ APP_USER_OUTPUT = {
     "first_name": "mock_first_name",
     "last_name": "mock_last_name",
     "active": True,
-    "email": "testdemisto@paloaltonetworks.com"
+    "email": "testdemisto@paloaltonetworks.com",
 }
 
 APP_DISABLED_USER_OUTPUT = {
@@ -19,7 +20,7 @@ APP_DISABLED_USER_OUTPUT = {
     "first_name": "mock_first_name",
     "last_name": "mock_last_name",
     "active": False,
-    "email": "testdemisto@paloaltonetworks.com"
+    "email": "testdemisto@paloaltonetworks.com",
 }
 
 APP_UPDATED_USER_OUTPUT = {
@@ -28,7 +29,12 @@ APP_UPDATED_USER_OUTPUT = {
     "first_name": "new_mock_first_name",
     "last_name": "new_mock_last_name",
     "active": True,
-    "email": "testdemisto@paloaltonetworks.com"
+    "email": "testdemisto@paloaltonetworks.com",
+}
+
+APP_GROUP_OUTPUT = {
+    "id": "mock_id",
+    "displayName": "The group name",
 }
 
 
@@ -43,7 +49,7 @@ def get_outputs_from_user_profile(user_profile):
     return outputs
 
 
-class TestAWSILM:
+class TestCURDCommands:
     def test_get_user_command__existing_user(self):
         """
         Given:
@@ -306,34 +312,164 @@ class TestAWSILM:
         assert outputs.get('skipped') is True
         assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
 
-    def test_get_mapping_fields_command__runs_the_all_integration_flow(self, mocker):
-        """
-        Given:
-            - An app client object
-        When:
-            - User schema in the application contains the fields 'field1' and 'field2'
-            - Calling the main function with the get-mapping-fields command
-        Then:
-            - Ensure a GetMappingFieldsResponse object that contains the application fields is returned
-        """
-        import demistomock as demisto
-        mocker.patch.object(demisto, 'command', return_value='get-mapping-fields')
-        mocker.patch.object(demisto, 'params', return_value={'url': 'http://example.com', 'tenant_id': 'tenant'})
-        mock_result = mocker.patch('AWSILM.return_results')
 
-        schema = {
-            'result': [
-                {'name': 'field1', 'description': 'desc1'},
-                {'name': 'field2', 'description': 'desc2'},
-            ]
-        }
+class TestGroupCommands:
+    def test_get_group(self, mocker):
+        client = mock_client()
+        args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
+        mock_result = mocker.patch('AWSILM.CommandResults')
 
         with requests_mock.Mocker() as m:
-            m.get('http://example.com/tenant/schema', json=schema)
+            # m.get(groupUri, json={'total_results': 1, 'Resources': [APP_GROUP_OUTPUT]})
+            m.get(f'{groupUri}1234', json=APP_GROUP_OUTPUT)
 
-            main()
+            get_group_command(client, args)
 
-        mapping = mock_result.call_args.args[0].extract_mapping()
+        assert mock_result.call_args.kwargs['outputs']['details'] == APP_GROUP_OUTPUT
 
-        assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field1') == 'desc1'
-        assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field2') == 'desc2'
+    def test_get_group__non_existing_group(self, mocker):
+        client = mock_client()
+        args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
+        mock_result = mocker.patch('AWSILM.CommandResults')
+
+        with requests_mock.Mocker() as m:
+            m.get(f'{groupUri}1234', status_code=404, json={'totalResults': 0, 'Resources': []})
+
+            get_group_command(client, args)
+
+        assert mock_result.call_args.kwargs['outputs']['errorCode'] == 404
+        assert mock_result.call_args.kwargs['outputs']['errorMessage'] == 'Group Not Found'
+
+    def test_get_group__id_and_display_name_empty(self, mocker):
+        client = mock_client()
+        args = {"scim": "{}"}
+        import demistomock as demisto
+        mock_result = mocker.patch.object(demisto, 'results')
+
+        # with requests_mock.Mocker() as m:
+        #     m.get(f'{groupUri}1234', json={'total_results': 0, 'Resources': []})
+
+        get_group_command(client, args)
+
+        assert mock_result == "You must supply either 'id' or 'displayName' in the scim data"
+
+    def test_get_group__display_name(self, mocker):
+        client = mock_client()
+        args = {"scim": "{\"displayName\": \"The group name\"}"}
+        mock_result = mocker.patch('AWSILM.CommandResults')
+
+        with requests_mock.Mocker() as m:
+            m.get(f'{groupUri}', json={'totalResults': 1, 'Resources': [APP_GROUP_OUTPUT]})
+
+            get_group_command(client, args)
+
+        assert mock_result.call_args.kwargs['outputs']['details'] == APP_GROUP_OUTPUT
+
+    def test_create_group(self, mocker):
+        client = mock_client()
+        args = {"scim": "{\"displayName\": \"The group name\"}"}
+        mock_result = mocker.patch('AWSILM.CommandResults')
+
+        with requests_mock.Mocker() as m:
+            m.post(f'{groupUri}', status_code=201, json=APP_GROUP_OUTPUT)
+
+            create_group_command(client, args)
+
+        assert mock_result.call_args.kwargs['outputs']['details'] == APP_GROUP_OUTPUT
+
+    def test_create_group__group_already_exist(self, mocker):
+        client = mock_client()
+        args = {"scim": "{\"displayName\": \"The group name\"}"}
+        mock_result = mocker.patch('AWSILM.CommandResults')
+
+        with requests_mock.Mocker() as m:
+            m.post(f'{groupUri}', status_code=400, json={"code": 400, "message": "Group already exist"})
+
+            create_group_command(client, args)
+
+        assert mock_result.call_args.kwargs['outputs']['errorCode'] == 400
+        assert mock_result.call_args.kwargs['outputs']['errorMessage'] == "Group already exist"
+
+    def test_update_group(self, mocker):
+        client = mock_client()
+        args = {"scim": "{\"id\": \"1234\"}", "memberIdsToAdd": ["111111"],
+                "memberIdsToDelete": ["222222"]}
+        mock_result = mocker.patch('AWSILM.CommandResults')
+
+        with requests_mock.Mocker() as m:
+            m.patch(f'{groupUri}1234', status_code=204, json={})
+
+            update_group_command(client, args)
+
+        assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
+
+    # def test_update_group__nothing_to_update(self, mocker):
+    #     client = mock_client()
+    #     args = {"scim": "{\"id\": \"1234\", \"displayName\": \"The group name\"}"}
+    #     mock_result = mocker.patch('AWSILM.CommandResults')
+    #
+    #     with requests_mock.Mocker() as m:
+    #         m.patch(f'{groupUri}1234', status_code=204, json={})
+    #
+    #         update_group_command(client, args)
+    #
+    #     assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
+    #     assert mock_result.call_args.kwargs['outputs']['displayName'] == 'The group name'
+
+    def test_delete_group(self, mocker):
+        client = mock_client()
+        args = {"scim": "{\"id\": \"1234\"}"}
+        mock_result = mocker.patch('AWSILM.CommandResults')
+
+        with requests_mock.Mocker() as m:
+            m.delete(f'{groupUri}1234', status_code=204, json={})
+
+            delete_group_command(client, args)
+
+        assert mock_result.call_args.kwargs['outputs']['id'] == '1234'
+
+    def test_delete_group__non_existing_group(self, mocker):
+        client = mock_client()
+        args = {"scim": "{\"id\": \"1234\"}"}
+        mock_result = mocker.patch('AWSILM.CommandResults')
+
+        with requests_mock.Mocker() as m:
+            m.delete(f'{groupUri}1234', status_code=404, json={})
+
+            delete_group_command(client, args)
+
+        assert mock_result.call_args.kwargs['outputs']['errorCode'] == 404
+        assert mock_result.call_args.kwargs['outputs']['errorMessage'] == "Group Not Found"
+
+
+def test_get_mapping_fields_command__runs_the_all_integration_flow(mocker):
+    """
+    Given:
+        - An app client object
+    When:
+        - User schema in the application contains the fields 'field1' and 'field2'
+        - Calling the main function with the get-mapping-fields command
+    Then:
+        - Ensure a GetMappingFieldsResponse object that contains the application fields is returned
+    """
+    import demistomock as demisto
+    mocker.patch.object(demisto, 'command', return_value='get-mapping-fields')
+    mocker.patch.object(demisto, 'params', return_value={'url': 'http://example.com', 'tenant_id': 'tenant'})
+    mock_result = mocker.patch('AWSILM.return_results')
+
+    schema = {
+        'result': [
+            {'name': 'field1', 'description': 'desc1'},
+            {'name': 'field2', 'description': 'desc2'},
+        ]
+    }
+
+    with requests_mock.Mocker() as m:
+        m.get('http://example.com/tenant/schema', json=schema)
+
+        main()
+
+    mapping = mock_result.call_args.args[0].extract_mapping()
+
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field1') == 'desc1'
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field2') == 'desc2'
