@@ -152,10 +152,10 @@ def test_get_case(mocker, requests_mock):
     Given:
         - Case with nested event field of type int
         - fields_to_stringify argument set to test_int_number
-    
+
     When:
         - Running get-case command
-    
+
     Then:
         - Ensure the the value of the test_int_number field is a string
     """

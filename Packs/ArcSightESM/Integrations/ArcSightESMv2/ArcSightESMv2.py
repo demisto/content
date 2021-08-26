@@ -467,7 +467,7 @@ def get_case_command():
     resource_id = demisto.args().get('resourceId')
     with_base_events = demisto.args().get('withBaseEvents') == 'true'
     fields_to_stringify = argToList(demisto.args().get('eventFieldsToStringify'))
-    
+
     raw_case = get_case(resource_id, fetch_base_events=with_base_events)
     case = {
         'Name': raw_case.get('name'),
