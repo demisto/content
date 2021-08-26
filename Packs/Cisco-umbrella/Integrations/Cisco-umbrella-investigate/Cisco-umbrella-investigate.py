@@ -847,12 +847,12 @@ def get_domain_command():
             'ContentsFormat': formats['json'],
             'Contents': [contents, whois, name_servers, emails, domain_categorization_table],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain, contents,
-                                            headers) + tableToMarkdown(
-                '"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers) + tableToMarkdown(
-                'Name Servers:', {'Name Servers': name_servers}, headers) + tableToMarkdown('Emails:', {'Emails': emails},
-                                                                                            headers) + tableToMarkdown(
-                'Domain Categorization:', domain_categorization_table, headers),
+            'HumanReadable':
+                tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain, contents, headers)
+                + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers)
+                + tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers)
+                + tableToMarkdown('Emails:', emails, ['Emails'])
+                + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
             'EntryContext': context
         })
 
