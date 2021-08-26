@@ -1078,9 +1078,9 @@ def filter_tests(tests: set, id_set: json, is_nightly=False) -> set:
     Returns:
         (set): Set of tests without ignored, non supported and deprecated-packs tests.
     """
-    logging.debug(f'Tests from filter_tests func - {tests}')
+    logging.info(f'Tests from filter_tests func - {tests}')
     tests_with_no_dummy_strings = {test for test in tests if 'no test' not in test.lower()}
-    logging.debug(f'Tests with no dummy string - {tests_with_no_dummy_strings}')
+    logging.info(f'Tests with no dummy string - {tests_with_no_dummy_strings}')
     tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set)
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
 
