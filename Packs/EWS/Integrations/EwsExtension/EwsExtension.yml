@@ -1824,7 +1824,7 @@ script:
       description: The date in UTC format of when the mailbox audit bypass association
         was created.
       type: Date
-  dockerimage: demisto/powershell-ubuntu:7.1.1.16151
+  dockerimage: demisto/powershell-ubuntu:7.1.3.22304
   feed: false
   isfetch: false
   longRunning: false

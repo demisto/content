@@ -86,7 +86,18 @@ def test_handle_resolutions(mocker, extended, expected):
     assert handle_resolutions(mock_response, limit) == expected
 
 
-def test_ip_command(mocker):
+IP_CASES = [
+    ('ip_response_1',  # case where all data is found in the server response.
+     {'value': '0.0.0.0', 'resolutions_len': 2, 'references_len': 2, 'hashes_len': 3}  # expected
+     ),
+    ('ip_response_2',  # case where 'reference', 'hashes' and 'resolutions' are missing from the server response.
+     {'value': '0.0.0.0', 'resolutions_len': 0, 'references_len': 0, 'hashes_len': 0}
+     )
+]
+
+
+@pytest.mark.parametrize("field_in_mock,expected", IP_CASES)
+def test_ip_command(mocker, field_in_mock, expected):
     """
         Given:
             - a list of ips
@@ -100,17 +111,48 @@ def test_ip_command(mocker):
     # from Packs.Threat_Crowd.Integrations.ThreatCrowdV2.ThreatCrowd_v2 import get_ip
     from ThreatCrowd_v2 import ip_command
 
-    mock_response = get_key_from_test_data('ip_response')
+    mock_response = get_key_from_test_data(field_in_mock)
     mock_request = mocker.patch.object(Client, '_http_request', return_value=mock_response)
 
     res = ip_command(CLIENT, {'ip': '0.0.0.0, 1.1.1.1'})
     assert mock_request.call_args_list[0][1] == {'method': 'GET', 'params': {'ip': '0.0.0.0'},
                                                  'url_suffix': 'ip/report/'}
-    assert res[0].outputs['value'] == "0.0.0.0"
+    assert res[0].outputs['value'] == expected['value']
     assert res[0].indicator.dbot_score.reliability == DBotScoreReliability.C
     assert res[0].indicator.dbot_score.score == 3
     assert res[0].indicator.dbot_score.indicator == "0.0.0.0"
+    assert len(res[0].outputs['resolutions']) == expected['resolutions_len']
+    assert len(res[0].outputs['references']) == expected['references_len']
+    assert len(res[0].outputs['hashes']) == expected['hashes_len']
     assert len(res) == 2
+
+
+def test_ip_command_empty_response(mocker):
+    """
+    Given:
+        - List of IPs.
+    When:
+        - ThreatCrowd service returns returns empty data regarding the requested IP.
+
+    Then:
+        - validates that indicator objects were created as expected
+
+    """
+    from ThreatCrowd_v2 import ip_command
+
+    mock_response = get_key_from_test_data('empty_ip_response')
+    mock_request = mocker.patch.object(Client, '_http_request', return_value=mock_response)
+
+    res = ip_command(CLIENT, {'ip': '0.0.0.0'})
+    assert mock_request.call_args_list[0][1] == {'method': 'GET', 'params': {'ip': '0.0.0.0'},
+                                                 'url_suffix': 'ip/report/'}
+    assert res[0].outputs['value'] == "0.0.0.0"
+    assert res[0].outputs['value'] == "0.0.0.0"
+    assert res[0].indicator.dbot_score.reliability == DBotScoreReliability.C
+    assert res[0].indicator.dbot_score.score == 0
+    assert res[0].indicator.dbot_score.indicator == "0.0.0.0"
+    assert not res[0].outputs['hashes']
+    assert len(res) == 1
 
 
 def test_domain_command(mocker):

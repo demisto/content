@@ -1,5 +1,5 @@
 [file:integration-DemistoLocking.yml]
 ignore=DS107
 
-[file:README.md]
+[file:integration-DemistoLocking_README.md]
 ignore=RM106

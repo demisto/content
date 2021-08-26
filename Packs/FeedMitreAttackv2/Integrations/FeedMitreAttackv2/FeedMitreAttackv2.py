@@ -57,6 +57,7 @@ FILTER_OBJS = {
 }
 
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
+ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -117,10 +118,15 @@ class Client:
         mitre_id_list: Set[str] = set()
         mitre_relationships_list = []
         id_to_name: Dict = {}
+        mitre_id_to_mitre_name: Dict = {}
         counter = 0
 
         # For each collection
         for collection in self.collections:
+
+            # fetch only enterprise objects
+            if collection.id != ENTERPRISE_COLLECTION_ID:
+                continue
 
             # Stop when we have reached the limit defined
             if 0 < limit <= counter:
@@ -162,11 +168,51 @@ class Client:
                                 continue
                             id_to_name[mitre_item_json.get('id')] = value
                             indicator_obj = self.create_indicator(item_type, value, mitre_item_json)
+                            add_obj_to_mitre_id_to_mitre_name(mitre_id_to_mitre_name, mitre_item_json)
                             indicators.append(indicator_obj)
                             counter += 1
                         mitre_id_list.add(mitre_item_json.get('id'))
 
-        return indicators, mitre_relationships_list, id_to_name
+        return indicators, mitre_relationships_list, id_to_name, mitre_id_to_mitre_name
+
+
+def add_obj_to_mitre_id_to_mitre_name(mitre_id_to_mitre_name, mitre_item_json):
+    if mitre_item_json['type'] == 'attack-pattern':
+        mitre_id = [external.get('external_id') for external in mitre_item_json.get('external_references', [])
+                    if external.get('source_name', '') == 'mitre-attack']
+        if mitre_id:
+            mitre_id_to_mitre_name[mitre_id[0]] = mitre_item_json.get('name')
+
+
+def add_technique_prefix_to_sub_technique(indicators, id_to_name, mitre_id_to_mitre_name):
+    for indicator in indicators:
+        if indicator['type'] in ['Attack Pattern', 'STIX Attack Pattern'] and \
+                len(indicator['fields']['mitreid']) > 5:  # Txxxx.xxx is sub technique
+            parent_mitre_id = indicator['fields']['mitreid'][:5]
+            value = indicator['value']
+            technique = mitre_id_to_mitre_name.get(parent_mitre_id)
+            if technique:
+                new_value = f'{technique}: {value}'
+                indicator['value'] = new_value
+                id_to_name[indicator['fields']['stixid']] = new_value
+            else:
+                demisto.debug(f'MITRE Attack Feed v2, There is no such Technique - {parent_mitre_id}')
+
+
+def add_malware_prefix_to_dup_with_intrusion_set(indicators, id_to_name):
+    """
+    Some Malware have names like their Intrusion Set, in which case we add (Malware) as a suffix.
+    """
+    intrusion_sets = []
+    for ind in indicators:
+        if ind['type'] in ['STIX Intrusion Set', 'Intrusion Set']:
+            intrusion_sets.append(ind['value'])
+
+    for ind in indicators:
+        if ind['type'] in ['STIX Malware', 'Malware'] and ind['value'] in intrusion_sets:
+            ind_value = ind['value']
+            ind['value'] = f'{ind_value} [Malware]'
+            id_to_name[ind['fields']['stixid']] = ind['value']
 
 
 def get_item_type(mitre_type, is_up_to_6_2):
@@ -326,7 +372,10 @@ def test_module(client):
 
 def fetch_indicators(client, create_relationships):
     is_up_to_6_2 = is_demisto_version_ge('6.2.0')
-    indicators, mitre_relationships_list, id_to_name = client.build_iterator(create_relationships, is_up_to_6_2)
+    indicators, mitre_relationships_list, id_to_name, mitre_id_to_mitre_name = client.build_iterator(
+        create_relationships, is_up_to_6_2)
+    add_malware_prefix_to_dup_with_intrusion_set(indicators, id_to_name)
+    add_technique_prefix_to_sub_technique(indicators, id_to_name, mitre_id_to_mitre_name)
     relationships = create_relationship_list(mitre_relationships_list, id_to_name)
 
     if create_relationships and mitre_relationships_list:
@@ -379,6 +428,153 @@ def show_feeds_command(client):
     })
 
 
+def get_mitre_data_by_filter(client, mitre_filter):
+    for collection in client.collections:
+
+        collection_url = urljoin(client.base_url, f'stix/collections/{collection.id}/')
+        collection_data = Collection(collection_url, verify=client.verify, proxies=client.proxies)
+
+        tc_source = TAXIICollectionSource(collection_data)
+        if tc_source.query(mitre_filter):
+            mitre_data = tc_source.query(mitre_filter)[0]
+            return mitre_data
+    return {}
+
+
+def build_command_result(value, score, md, attack_obj):
+    dbot_score = Common.DBotScore(
+        indicator=value,
+        indicator_type=DBotScoreType.ATTACKPATTERN,
+        score=score,
+        integration_name="MITRE ATT&CK v2"
+    )
+    attack_context = Common.AttackPattern(
+        stix_id=attack_obj.get('stixid'),
+        kill_chain_phases=attack_obj.get('killchainphases'),
+        first_seen_by_source=attack_obj.get('firstseenbysource'),
+        description=attack_obj.get('description'),
+        operating_system_refs=attack_obj.get('operatingsystemrefs'),
+        publications=attack_obj.get('publications'),
+        mitre_id=attack_obj.get('mitreid'),
+        tags=attack_obj.get('tags'),
+        dbot_score=dbot_score,
+    )
+
+    return CommandResults(
+        outputs_prefix='MITREATTACK.AttackPattern',
+        readable_output=md,
+        outputs_key_field='name',
+        indicator=attack_context,
+    )
+
+
+def attack_pattern_reputation_command(client, args):
+    command_results: List[CommandResults] = []
+
+    mitre_names = argToList(args.get('attack_pattern'))
+    for name in mitre_names:
+        if ':' not in name:  # not sub-technique
+            filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', name)]
+            mitre_data = get_mitre_data_by_filter(client, filter_by_name)
+            if not mitre_data:
+                break
+
+            attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(mitre_data)))
+
+            custom_fields = attack_obj or {}
+            score = INDICATOR_TYPE_TO_SCORE.get('Attack Pattern')
+            value = mitre_data.get('name')
+            md = f"## {[value]}:\n {custom_fields.get('description', '')}"
+
+            command_results.append(build_command_result(value, score, md, attack_obj))
+
+        else:
+            all_name = name.split(':')
+            parent = all_name[0]
+            sub = all_name[1][1:]
+            mitre_id = ''
+
+            # get parent MITRE ID
+            filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', parent)]
+            mitre_data = get_mitre_data_by_filter(client, filter_by_name)
+            if not mitre_data:
+                break
+            indicator_json = json.loads(str(mitre_data))
+            parent_mitre_id = [external.get('external_id') for external in
+                               indicator_json.get('external_references', [])
+                               if external.get('source_name', '') == 'mitre-attack']
+            parent_mitre_id = parent_mitre_id[0]
+            parent_name = indicator_json['name']
+
+            # get sub MITRE ID
+            filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', sub)]
+            mitre_data = get_mitre_data_by_filter(client, filter_by_name)
+            if not mitre_data:
+                break
+            indicator_json = json.loads(str(mitre_data))
+            sub_mitre_id = [external.get('external_id') for external in
+                            indicator_json.get('external_references', [])
+                            if external.get('source_name', '') == 'mitre-attack']
+            sub_mitre_id = sub_mitre_id[0]
+            sub_mitre_id = sub_mitre_id[5:]
+
+            mitre_id = f'{parent_mitre_id}{sub_mitre_id}'
+            mitre_filter = [Filter("external_references.external_id", "=", mitre_id),
+                            Filter("type", "=", "attack-pattern")]
+            mitre_data = get_mitre_data_by_filter(client, mitre_filter)
+            if not mitre_data:
+                break
+
+            attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(mitre_data)))
+
+            custom_fields = attack_obj or {}
+            score = INDICATOR_TYPE_TO_SCORE.get('Attack Pattern')
+            value_ = mitre_data.get('name')
+            value = f'{parent_name}: {value_}'
+            md = f"## {[value]}:\n {custom_fields.get('description', '')}"
+
+            command_results.append(build_command_result(value, score, md, attack_obj))
+
+    return command_results
+
+
+def get_mitre_value_from_id(client, args):
+    attack_ids = argToList(args.get('attack_ids', []))
+
+    attack_values = []
+    for attack_id in attack_ids:
+        collection_id = f"stix/collections/{ENTERPRISE_COLLECTION_ID}/"
+        collection_url = urljoin(client.base_url, collection_id)
+        collection_data = Collection(collection_url, verify=client.verify, proxies=client.proxies)
+
+        tc_source = TAXIICollectionSource(collection_data)
+        attack_pattern_name = tc_source.query([
+            Filter("external_references.external_id", "=", attack_id),
+            Filter("type", "=", "attack-pattern")
+        ])[0]['name']
+
+        if len(attack_id) > 5:  # sub-technique
+            parent_name = tc_source.query([
+                Filter("external_references.external_id", "=", attack_id[:5]),
+                Filter("type", "=", "attack-pattern")
+            ])[0]['name']
+            attack_pattern_name = f'{parent_name}: {attack_pattern_name}'
+
+        if attack_pattern_name:
+            attack_values.append({'id': attack_id, 'value': attack_pattern_name})
+            break
+    if attack_values:
+        return CommandResults(
+            outputs=attack_values,
+            outputs_key_field='id',
+            outputs_prefix='MITREATTACK',
+            readable_output=tableToMarkdown('MITRE ATTACK Attack Patterns values:', attack_values)
+        )
+
+    return CommandResults(readable_output=f'MITRE ATTACK Attack Patterns values: '
+                                          f'No Attack Patterns found for {attack_ids}.')
+
+
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -400,6 +596,12 @@ def main():
 
         elif demisto.command() == 'mitre-show-feeds':
             show_feeds_command(client)
+
+        elif demisto.command() == 'mitre-get-indicator-name':
+            return_results(get_mitre_value_from_id(client, args))
+
+        elif demisto.command() == 'attack-pattern':
+            return_results(attack_pattern_reputation_command(client, args))
 
         elif demisto.command() == 'test-module':
             test_module(client)

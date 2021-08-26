@@ -1,7 +1,7 @@
 import pytest
+import demistomock as demisto
 
-
-from AWS_SecurityHub import get_findings_command
+from AWS_SecurityHub import get_findings_command, fetch_incidents
 
 FILTER_FIELDS_TEST_CASES = [
     (
@@ -122,7 +122,12 @@ def test_parse_resource_ids(test_input, expected_output):
 FINDINGS = [{
     'ProductArn': 'Test',
     'Description': 'Test',
-    'SchemaVersion': '2021-05-27'}]
+    'SchemaVersion': '2021-05-27',
+    'CreatedAt': '2020-03-22T13:22:13.933Z',
+    'Severity': {
+        'Normalized': 0,
+    },
+}]
 
 
 class MockClient:
@@ -146,3 +151,18 @@ def test_aws_securityhub_get_findings_command():
     expected_output = FINDINGS
 
     assert findings == expected_output
+
+
+def test_fetch_incidents(mocker):
+    """
+    Given:
+        - A finding to fetch as incident with created time 2020-03-22T13:22:13.933Z
+    When:
+        - Fetching finding as incident
+    Then:
+        - Verify the last run is set as the created time + 1 millisecond, i.e. 2020-03-22T13:22:13.934Z
+    """
+    mocker.spy(demisto, 'setLastRun')
+    client = MockClient()
+    fetch_incidents(client, 'Low', False, None)
+    assert demisto.setLastRun.call_args[0][0]['lastRun'] == '2020-03-22T13:22:13.934000+00:00'

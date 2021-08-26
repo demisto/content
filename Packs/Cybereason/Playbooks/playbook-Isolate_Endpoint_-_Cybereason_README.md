@@ -34,4 +34,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Isolate Endpoint - Cybereason](https://raw.githubusercontent.com/demisto/content/50dc76b34b17604a6fff66f509e0f11dbfedce9[…]s/Cybereason/doc_files/Isolate_Endpoint_-_Cybereason.png)
+![Isolate Endpoint - Cybereason](../doc_files/Isolate_Endpoint_-_Cybereason.png)

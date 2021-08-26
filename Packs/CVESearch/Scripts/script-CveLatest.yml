@@ -32,7 +32,7 @@ script: >2
 type: javascript
 tags:
 - cve
-comment: Deprecated. Displays the latest updated CVE entries
+comment: Deprecated. No available replacement. Displays the latest updated CVE entries.
 system: true
 deprecated: true
 scripttarget: 0

@@ -1,0 +1,69 @@
+[
+  {
+    "userId": "qa3-user-id",
+    "enabled": "True",
+    "expired": "False",
+    "forcePasswordReset": "False",
+    "email": "qa-user3@respond-software.com",
+    "firstname": "Qa3",
+    "lastname": "User3",
+    "notification": "True",
+    "theme": "dark",
+    "currentTenantId": "None",
+    "lastLoginTime": "None",
+    "allTenantsAccess": "None",
+    "roles": [
+      "User",
+      "Admin"
+    ],
+    "tenantIds": [],
+    "username": "qa-user3@respond-software.com",
+    "isPasswordSet": "True"
+  },
+  {
+    "userId": "qa2-user-id",
+    "enabled": "True",
+    "expired": "False",
+    "forcePasswordReset": "False",
+    "email": "qa-user2@respond-software.com",
+    "firstname": "Qa2",
+    "lastname": "User2",
+    "notification": "True",
+    "theme": "dark",
+    "currentTenantId": "None",
+    "lastLoginTime": "None",
+    "allTenantsAccess": "None",
+    "roles": [
+      "User",
+      "Admin"
+    ],
+    "tenantIds": [],
+    "username": "qa-user2@respond-software.com",
+    "isPasswordSet": "True"
+  },
+  {
+    "userId": "qa1-user-id",
+    "enabled": "True",
+    "expired": "False",
+    "forcePasswordReset": "False",
+    "email": "qa-user@respond-software.com",
+    "firstname": "Qa",
+    "lastname": "User",
+    "notification": "True",
+    "theme": "dark",
+    "currentTenantId": "dev1",
+    "lastLoginTime": "2020-07-06T20:02:40.123+0000",
+    "allTenantsAccess": "None",
+    "roles": [
+      "Context",
+      "User",
+      "SensorStatus",
+      "Admin"
+    ],
+    "tenantIds": [
+      "dev1"
+    ],
+    "username": "qa-user@respond-software.com",
+    "isPasswordSet": "True"
+  }
+]

@@ -1,0 +1,17 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+        "tc_task_url": "https://tiscale-worker-integrations-demo.rl.lan/api/tiscale/v1/task/15795"
+    },
+    "HumanReadable": "## ReversingLabs TitaniumScale upload sample\n **Titanium Scale task URL**: https://tiscale-worker-integrations-demo.rl.lan/api/tiscale/v1/task/15795",
+    "EntryContext": {
+        "ReversingLabs": {
+            "tc_task_url": "https://tiscale-worker-integrations-demo.rl.lan/api/tiscale/v1/task/15795"
+        }
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}

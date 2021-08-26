@@ -1,0 +1,9 @@
+{
+    "success": true,
+    "allowed_loginspects": [
+        {
+            "name": "LogPoint",
+            "ip": "127.0.0.1"
+        }
+    ]
+}

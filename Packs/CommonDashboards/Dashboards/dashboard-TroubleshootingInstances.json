@@ -1,0 +1,912 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "Troubleshooting Instances",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "87b428a0-ac34-11eb-ab42-6d0656e1e789",
+            "id": "87b428a0-ac34-11eb-ab42-6d0656e1e789",
+            "reflectDimensions": false,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "days",
+                        "field": "",
+                        "fromValue": 1,
+                        "toValue": 0
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "failed-automation-executions-per-incident-types-top-5",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-03T17:25:13.308607181Z",
+                "name": "Failed Automation executions per Incident Types (top 5)",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "incidentType"
+                    ],
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "pivot",
+                            "position": 5
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 6
+                        }
+                    ],
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Automations errors per Incident types",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:automation",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "bar"
+            },
+            "x": 8,
+            "y": 2
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "88118640-b408-11eb-97e9-33faa3fc4b0c",
+            "id": "88118640-b408-11eb-97e9-33faa3fc4b0c",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 180,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "description": "Failed Manual Commands Run",
+                "fromServerVersion": "",
+                "id": "failed-manual-commands-run",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-13T16:30:08.664490225Z",
+                "name": "Manual Command execution errors (top 5)",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "command"
+                    ],
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "showGraphValues": false,
+                    "tableColumns": [],
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Errors per manual Commands (top 5)",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration and isManual:T",
+                "shouldCommit": false,
+                "size": 10,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "bar"
+            },
+            "x": 0,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "b624b860-b8c5-11eb-9ffd-6d52ad3fbc03",
+            "id": "b624b860-b8c5-11eb-9ffd-6d52ad3fbc03",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "command-execution-errors-per-integration-category",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-19T17:14:44.606202428Z",
+                "name": "Command execution errors per Integration Category",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "category"
+                    ],
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "showGraphValues": false,
+                    "showOthers": true,
+                    "tableColumns": [],
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Errors per Integrations category (top 5)",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "68233770-b976-11eb-9a53-c339acb94f77",
+            "id": "68233770-b976-11eb-9a53-c339acb94f77",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "description": "Command executions errors",
+                "fromServerVersion": "",
+                "id": "number-of-failed-commands",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-20T14:17:32.135870889Z",
+                "name": "Command executions errors",
+                "packID": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 6
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "groupBy": [],
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "tableColumns": [],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": " Command executions errors",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 5,
+                "widgetType": "trend"
+            },
+            "x": 0,
+            "y": 2
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "0a6f9fb0-bc82-11eb-8c2c-3de4c2cd2074",
+            "id": "0a6f9fb0-bc82-11eb-8c2c-3de4c2cd2074",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "Widget imported",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "description": "Average runtime by Instance per Command (top 5)",
+                "fromServerVersion": "",
+                "id": "runtime-per-command-per-instance",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-24T11:20:22.008866834Z",
+                "name": "Average runtime by Instance per Command (top 5)",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "command",
+                        "instance"
+                    ],
+                    "keys": [
+                        "avg|duration"
+                    ],
+                    "limitType": "top",
+                    "referenceLine": {
+                        "type": "avg"
+                    },
+                    "showGraphValues": false,
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "minutes",
+                    "xAxisLabel": "Command name",
+                    "yAxisLabel": "Runtime"
+                },
+                "prevName": "Average runtime by instance per command (top 5) ",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": true,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 8,
+                "widgetType": "column"
+            },
+            "x": 0,
+            "y": 5
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "38c35d70-bc82-11eb-8c2c-3de4c2cd2074",
+            "id": "38c35d70-bc82-11eb-8c2c-3de4c2cd2074",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "Widget imported",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "description": "Command average runtime per Instance (top 5)",
+                "fromServerVersion": "",
+                "id": "runtime-per-instance",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-24T11:21:43.596237405Z",
+                "name": "Command average runtime per Instance (top 5)",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "instance"
+                    ],
+                    "keys": [
+                        "avg|duration"
+                    ],
+                    "referenceLine": {
+                        "type": "avg"
+                    },
+                    "showGraphValues": true,
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "hours",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Average runtime per Instance (top 5)",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": true,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 6,
+                "widgetType": "column"
+            },
+            "x": 4,
+            "y": 5
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "e53fdbf0-bc82-11eb-8c2c-3de4c2cd2074",
+            "id": "e53fdbf0-bc82-11eb-8c2c-3de4c2cd2074",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "Widget imported",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "description": "Command execution errors per Instance",
+                "fromServerVersion": "",
+                "id": "error-count-per-instance",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-24T11:26:33.95700435Z",
+                "name": "Command execution errors per Instance",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "instance"
+                    ],
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "referenceLine": {
+                        "type": "avg"
+                    },
+                    "showGraphValues": false,
+                    "showOthers": true,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Errors per instance (top 5)",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": true,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 8,
+                "widgetType": "pie"
+            },
+            "x": 4,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "f4c3e0d0-c21d-11eb-80b4-59f9f28834c5",
+            "id": "f4c3e0d0-c21d-11eb-80b4-59f9f28834c5",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "command-execution-errors",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-31T14:39:05.210795094Z",
+                "name": "Command execution errors",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "command"
+                    ],
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "showGraphValues": false,
+                    "showOthers": true,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "pivot",
+                            "position": 5
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 6
+                        }
+                    ],
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Command execution errors",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 9,
+                "widgetType": "pie"
+            },
+            "x": 8,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "56df6320-c21e-11eb-80b4-59f9f28834c5",
+            "id": "56df6320-c21e-11eb-80b4-59f9f28834c5",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "description": "Errors by Incident Type per Command (top 5)",
+                "fromServerVersion": "",
+                "id": "error-count-per-command-per-incident-type",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-31T14:41:50.514729127Z",
+                "name": "Errors by Incident Type per Command (top 5)",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "command",
+                        "incidentType"
+                    ],
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "referenceLine": {
+                        "type": "avg"
+                    },
+                    "showGraphValues": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "regular",
+                    "xAxisLabel": "Command name ",
+                    "yAxisLabel": "Error count"
+                },
+                "prevName": "Errors by Incident Type per Command (top 5)",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 9,
+                "widgetType": "column"
+            },
+            "x": 4,
+            "y": 2
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "0ec30070-c376-11eb-b24f-ffb4c998ecaa",
+            "id": "0ec30070-c376-11eb-b24f-ffb4c998ecaa",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "average-runtime-per-automation-top-5",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-06-02T07:42:16.923909327Z",
+                "name": "Average runtime per Automation (top 5)",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "name"
+                    ],
+                    "keys": [
+                        "avg|duration"
+                    ],
+                    "referenceLine": {
+                        "type": "avg"
+                    },
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "pivot",
+                            "position": 5
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 6
+                        }
+                    ],
+                    "valuesFormat": "minutes",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Average runtime per Automation (top 5)",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:automation",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 8,
+                "widgetType": "column"
+            },
+            "x": 8,
+            "y": 5
+        }
+    ],
+    "name": "Troubleshooting Instances",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 7,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "description": "Troubleshooting Instances",
+    "isPredefined": true
+}

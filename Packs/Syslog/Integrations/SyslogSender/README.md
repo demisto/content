@@ -132,7 +132,6 @@ Message sent to Syslog successfully.
 ## Troubleshooting
 ---
 Make sure you can access the Syslog server on the provided IP address and the port is open.
-If you're experiencing further issues, contact us at [support@demisto.com](mailto:support@demisto.com)
 
 ## Demo Video
 ---

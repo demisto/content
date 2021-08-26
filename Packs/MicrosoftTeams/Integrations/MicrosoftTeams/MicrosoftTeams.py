@@ -43,6 +43,10 @@ MESSAGE_TYPES: dict = {
     'status_changed': 'incidentStatusChanged'
 }
 
+if '@' in BOT_ID:
+    BOT_ID, tenant_id, service_url = BOT_ID.split('@')
+    set_integration_context({'tenant_id': tenant_id, 'service_url': service_url})
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -1155,8 +1159,13 @@ def send_message():
         # Got a notification from server
         channel_name = demisto.params().get('incident_notifications_channel', 'General')
         severity: int = int(demisto.args().get('severity'))
-        severity_threshold: int = translate_severity(demisto.params().get('min_incident_severity', 'Low'))
-        if severity < severity_threshold:
+        auto_notifications: bool = argToBoolean(demisto.params().get('auto_notifications') or True)
+
+        if auto_notifications:
+            severity_threshold: int = translate_severity(demisto.params().get('min_incident_severity', 'Low'))
+            if severity < severity_threshold:
+                return
+        else:
             return
 
     team_member: str = demisto.args().get('team_member', '') or demisto.args().get('to', '')
@@ -1756,6 +1765,7 @@ def main():
 
     ''' EXECUTION '''
     try:
+        support_multithreading()
         handle_proxy()
         command: str = demisto.command()
         LOG(f'Command being called is {command}')

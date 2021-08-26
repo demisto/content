@@ -109,7 +109,7 @@ try:
         'use_ssl': not params.get('insecure', False),
         'proxies': handle_proxy()
     }
-    reliability = params.get('integrationReliability', DBotScoreReliability.A)
+    reliability = params.get('integrationReliability', DBotScoreReliability.A) or DBotScoreReliability.A
 
     if DBotScoreReliability.is_valid_type(reliability):
         instance_params['reliability'] = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)

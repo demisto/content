@@ -108,7 +108,8 @@ def test_fetch_incidents(mocker, requests_mock):
     mock_response = [{
         "name": f'Rubrik Radar Anomaly - {mock_incident["objectName"]}',
         "occurred": mock_incident["lastUpdated"],
-        "rawJSON": json.dumps(mock_incident)
+        "rawJSON": json.dumps(mock_incident),
+        "severity": 1
     }]
 
     assert response == mock_response

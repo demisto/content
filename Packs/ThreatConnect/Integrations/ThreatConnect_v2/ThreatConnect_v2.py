@@ -151,6 +151,7 @@ def create_context(indicators, include_dbot_score=False):
             'LastModified': ind['lastModified'],
             'Rating': rating,
             'Confidence': confidence,
+            'WebLink': ind.get('webLink'),
 
             # relevant for domain
             'Active': ind.get('whoisActive'),

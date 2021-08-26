@@ -1,7 +1,6 @@
-Gurucul Risk Analytics (GRA) is a data science backed cloud native platform that predicts, detects and prevents breaches. It ingests and analyzes massive amounts of data from the network, IT systems, cloud platforms, EDR, applications, IoT, HR and much more to give you a comprehensive contextual view of user and entity behaviors
-This Integration facilitates retrieval of High Risk Entities identified by GRA by creating a case for each entity within GRA.
-These high risk entities are fetched in Cortex XSOAR and a corresponding incident is created for each entity in Cortex XSOAR.
-As a part of this integration, workflows can be configured at Cortex XSOAR based on different commands provided by GRA. These will define the actions to be taken on a particular high risk entity based on the Risk Score.
+[Gurucul Risk Analytics (GRA)](https://gurucul.com/gurucul-risk-analytics-gra) is a data science backed cloud native platform that predicts, detects and prevents breaches. It ingests and analyzes massive amounts of data from the network, IT systems, cloud platforms, EDR, applications, IoT, HR and much more to give you a comprehensive contextual view of user and entity behaviors This Integration facilitates retrieval of High Risk Entities identified by GRA by creating a case for each entity within GRA. These high risk entities are fetched in Cortex XSOAR and a corresponding incident is created for each entity in Cortex XSOAR. As a part of this integration, workflows can be configured at Cortex XSOAR based on different commands provided by GRA. These will define the actions to be taken on a particular high risk entity based on the Risk Score.
+
+Please make sure you look at the integration source code and comments.
 
 ## Configure Gurucul on Cortex XSOAR
 
@@ -11,10 +10,11 @@ As a part of this integration, workflows can be configured at Cortex XSOAR based
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. https://soar.monstersofhack.com\) | True |
+| url | Server URL \(e.g. `https://soar.monstersofhack.com`\) | True |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
 | max_fetch | Maximum number of incidents per fetch | False |
+| fetch_incident_cases | Fetch Incident Cases | False |
 | apikey | API Key | True |
 | threshold_ip | Score threshold for ip reputation command \(0\-100\) | False |
 | threshold_domain | Score threshold for domain reputation command \(0\-100\) | False |
@@ -62,6 +62,7 @@ Retrieve List of All Users (Identities)
 | Gra.Users.title | String | Users title. | 
 | Gra.Users.joiningDate | String | Joining Date. | 
 | Gra.Users.exitDate | String | Exit Date. | 
+| Gra.Users.userRisk | String | User Risk. | 
 
 
 
@@ -437,7 +438,7 @@ Retrieve all High Privileged Accounts for a Given Resource.
 ```
 [{
       "id":2,
-      "name":"Jonathan.Osterman01_NN",
+      "name":"user1",
       "type":null,
       "created_on":"02/09/2017 10:00:00",
       "department":null,
@@ -496,7 +497,7 @@ Retrieve List of All Orphan / Rogue Accounts.
 ```
 [{
       "id":2,
-      "name":"Jonathan.Osterman01_NN",
+      "name":"user1",
       "type":null,
       "created_on":"02/09/2017 10:00:00",
       "department":null,
@@ -556,7 +557,7 @@ Retrieve All Orphan / Rogue Accounts for a Given Resource.
 ```
 [{
       "id":2,
-      "name":"Jonathan.Osterman01_NN",
+      "name":"user1",
       "type":null,
       "created_on":"02/09/2017 10:00:00",
       "department":null,
@@ -655,6 +656,7 @@ get details of the user.
 | Gra.User.title | String |  Title. | 
 | Gra.User.joiningDate | String |  Joining Date. | 
 | Gra.User.profilePicturePath | String |  Profile Picture Path. | 
+| Gra.User.exitDate | Date |  Exit Date. | 
 
 
 #### Command Example
@@ -667,7 +669,7 @@ get details of the user.
     "firstName":"Jonathan",
     "middleName":null,
     "lastName":"Osterman01_NN",
-    "employeeId":"Jonathan.Osterman01_NN",
+    "employeeId":"user1",
     "riskScore":88,
     "userRisk":88,
     "department":"IT",
@@ -718,8 +720,23 @@ get details of the user.
 | Gra.Highrisk.Users.high_risk | String | High Risk. | 
 | Gra.Highrisk.Users.is_orphan | String | Is Orphan Account . | 
 | Gra.Highrisk.Users.is_reassigned | String | Is Reassigned . | 
-| Gra.Highrisk.Users.risk_score | String | Risk Score . | 
 | Gra.Highrisk.Users.updated_on | Date | Updated On . | 
+| Gra.Highrisk.Users.exitDate | Date | Exit Date . | 
+| Gra.Highrisk.Users.created_on | Date | Created On . | 
+| Gra.Highrisk.Users.joiningDate | Date | Joining Date . | 
+| Gra.Highrisk.Users.manager | String | Manager . | 
+| Gra.Highrisk.Users.employeeId | String | Employee Id . | 
+| Gra.Highrisk.Users.firstName | String | First Name . | 
+| Gra.Highrisk.Users.middleName | String | Middle Name . | 
+| Gra.Highrisk.Users.lastName | String | Last Name . | 
+| Gra.Highrisk.Users.location | String | Location . | 
+| Gra.Highrisk.Users.title | String | Title . | 
+| Gra.Highrisk.Users.userRisk | Number | User Risk . | 
+| Gra.Highrisk.Users.riskScore | Number | Risk Score . | 
+| Gra.Highrisk.Users.description | String | Description . | 
+| Gra.Highrisk.Users.is_orphan | String | Is Orphan . | 
+| Gra.Highrisk.Users.phone | String | Phone . | 
+| Gra.Highrisk.Users.email | String | Email . | 
 
 
 #### Command Example
@@ -780,7 +797,7 @@ get details of the user.
 | Gra.Cases.ownerName | String | Owner Name. | 
 | Gra.Cases.riskDate | Date | Risk Risk. | 
 | Gra.Cases.status | String | Case Status . | 
-
+| Gra.Cases.anomalies | String | Anomalies . | 
 
 #### Command Example
 ```!gra-cases status="OPEN" page=1 max=25```
@@ -842,4 +859,172 @@ get details of the user.
 ```
 
 #### Human Readable Output
+
+
+### gra-case-action
+***
+Closing a case and updating the anomaly status as Closed / Risk Managed / Model Reviewed.
+
+#### Base Command
+
+`gra-case-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Action | Required | 
+| caseId | Case ID | Required | 
+| subOption | Sub Option | Required | 
+| caseComment | Case Comment | Required | 
+| riskAcceptDate | Risk Accept Date (applicable only in case of closing a case as Risk Managed) | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Case.Action.Message | String | Message  | 
+
+
+#### Command Example
+```!gra-case-action action=modelReviewCase caseId=5 subOption="Tuning Required" caseComment="This is Completed"```
+
+#### Context Example
+```
+[
+  {
+    "Message": "1 Anomalies in this case closed successfully."
+  }
+]
+```
+
+#### Human Readable Output
+
+### gra-case-action-anomaly
+***
+Closing an anomaly or anomalies within a case and updating the anomaly status as Closed / Risk Managed / Model Reviewed.
+
+#### Base Command
+
+`gra-case-action-anomaly`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Action | Required | 
+| caseId | Case ID | Required | 
+| anomalyNames | Anomaly Names | Required | 
+| subOption | Sub Option | Required | 
+| caseComment | Case Comment | Required | 
+| riskAcceptDate | Risk Accept Date (applicable only in case of closing a case as Risk Managed) | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Case.Action.Anomaly.Message | String | Message  | 
+| Gra.Case.Action.Anomaly.anomalyName | String | Anomaly Name | 
+
+
+#### Command Example
+```!gra-case-action-anomaly action=modelReviewCaseAnomaly caseId=5 anomalyNames=anomalyName1 subOption="Tuning Required" caseComment="This is Completed"```
+
+#### Context Example
+```
+[
+  {
+    "Message": {
+      "anomalyName1": "Anomaly risk accepted successfully."
+    }
+  }
+]
+```
+
+#### Human Readable Output
+
+
+### gra-investigate-anomaly-summary
+***
+Retrieve detailed anomaly summary of specified anomaly name.
+
+#### Base Command
+
+`gra-investigate-anomaly-summary`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| modelName | Model Name | Required | 
+| fromDate | From Date ( yyyy-MM-dd ) | Optional | 
+| toDate | To Date ( yyyy-MM-dd ) | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Investigate.Anomaly.Summary.analyticalFeatures | String | Analytical Features  | 
+| Gra.Investigate.Anomaly.Summary.entityCount | String | Entity Count | 
+| Gra.Investigate.Anomaly.Summary.resourceCount | String | Resource Count | 
+| Gra.Investigate.Anomaly.Summary.records | String | Records | 
+| Gra.Investigate.Anomaly.Summary.anomalyBaseline | String | Anomaly Baseline | 
+| Gra.Investigate.Anomaly.Summary.anomalyLastCatch | String | Anomaly Last Catch | 
+| Gra.Investigate.Anomaly.Summary.executionDays | String | Execution Days | 
+| Gra.Investigate.Anomaly.Summary.chainDetails | String | Chain Details | 
+| Gra.Investigate.Anomaly.Summary.resourceName | String | resourceName | 
+| Gra.Investigate.Anomaly.Summary.type | String | type | 
+| Gra.Investigate.Anomaly.Summary.value | String | value | 
+| Gra.Investigate.Anomaly.Summary.anomalousActivity | Number | anomalousActivity | 
+| Gra.Investigate.Anomaly.Summary.anomalyName | String | anomalyName | 
+| Gra.Investigate.Anomaly.Summary.classifier | String | classifier | 
+| Gra.Investigate.Anomaly.Summary.anomalyFirstCatch | String | anomalyFirstCatch | 
+| Gra.Investigate.Anomaly.Summary.anomalyDescription | String | anomalyDescription | 
+| Gra.Investigate.Anomaly.Summary.similarTemplateAnomalies | String | Similar Template Anomalies | 
+| Gra.Investigate.Anomaly.Summary.entitiesFlagged | Number | Entities Flagged |  
+
+
+#### Command Example
+```!gra-investigate-anomaly-summary modelName=ModelName```
+
+#### Context Example
+```
+{
+  "analyticalFeatures": {
+    "eventdesc": 8
+  },
+  "entityCount": "466",
+  "resourceCount": "4",
+  "records": {
+    "anomalyBaseline": "Baseline period is not configured.",
+    "anomalyLastCatch": "2020-12-06 10:00:59",
+    "executionDays": "null",
+    "chainDetails": [
+      {
+        "resourceName": "resourceName",
+        "type": "model",
+        "value": "modelName"
+      }
+    ],
+    "anomalousActivity": 0,
+    "anomalyName": "modelName",
+    "classifier": "Categories -> Categories Name, Categories -> Default, Resources -> resourceName",
+    "anomalyFirstCatch": "2020-11-08 12:15:00",
+    "anomalyDescription": "This template can be used to create models using the saved search query."
+  },
+  "similarTemplateAnomalies": {
+    "anomaly1": 442,
+    "anomaly2": 4,
+    "anomaly3": 4,
+    "anomaly4": 21,
+    "anomaly5": 8,
+    "anomaly6": 1
+  },
+  "entitiesFlagged": 0
+}
+```
+
+#### Human Readable Output
+
+
 

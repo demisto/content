@@ -1,0 +1,61 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: UBIRCH
+  version: -1
+configuration:
+- display: Your MQTT host name
+  name: url
+  required: true
+  type: 0
+- defaultvalue: '1883'
+  display: Port
+  name: port
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'true'
+  display: Long running instance
+  hidden: true
+  name: longRunning
+  required: false
+  type: 8
+- display: Tenant Id
+  name: tenant_id
+  required: true
+  type: 0
+- defaultvalue: prod
+  display: Stage
+  hidden: false
+  name: stage
+  options:
+  - prod
+  - dev
+  - demo
+  required: true
+  type: 15
+description: The UBIRCH solution can be seen as an external data certification provider,
+  as a data notary service, giving data receivers the capability to verify data they
+  have received with regard to its authenticity and integrity and correctness of sequence.
+display: UBIRCH
+name: UBIRCH
+script:
+  commands:
+  - deprecated: false
+    description: Create a list of sample incidents
+    execution: false
+    name: create-sample-incidents
+  dockerimage: demisto/paho-mqtt:1.0.0.19143
+  feed: false
+  isfetch: false
+  longRunning: true
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

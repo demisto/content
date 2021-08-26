@@ -1,0 +1,15 @@
+
+[file:incidentfield-MAD_Event_Count.json]
+ignore=IF100
+
+[file:incidentfield-MAD_First_Event_Time.json]
+ignore=IF100
+
+[file:incidentfield-MAD_Incident_Id.json]
+ignore=IF100
+
+[file:incidentfield-MAD_Last_Event_Time.json]
+ignore=IF100
+
+[file:classifier-Mandiant_Automated_Defense_Incoming_mapper.json]
+ignore=BA101

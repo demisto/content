@@ -18,10 +18,10 @@ args:
 commonfields:
   id: ExpanseGenerateIssueMapWidgetScript
   version: -1
-dockerimage: demisto/chromium:1.0.0.15159
+dockerimage: demisto/chromium:1.0.0.23161
 enabled: true
 name: ExpanseGenerateIssueMapWidgetScript
-runas: DBotWeakRole
+runas: DBotRole
 runonce: false
 script: '-'
 scripttarget: 0

@@ -16,7 +16,7 @@ if BASE_URL and BASE_URL[-1] != '/':
 API_KEY = demisto.params().get('apikey')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure')
 # How many time before the first fetch to retrieve incidents
-FIRST_FETCH, _ = parse_date_range(demisto.params().get('first_fetch', '3 days'), date_format=TIME_FORMAT)
+FIRST_FETCH, _ = parse_date_range(demisto.params().get('first_fetch', '12 hours') or '12 hours', date_format=TIME_FORMAT)
 
 ''' COMMAND FUNCTIONS '''
 
@@ -245,7 +245,10 @@ def get_emails_context(event):
                 'body': email.get('body'),
                 'body_type': email.get('bodyType'),
                 'headers': email.get('headers'),
-                'urls': email.get('urls')
+                'urls': email.get('urls'),
+                'sender_vap': email.get('sender', {}).get('vap'),
+                'recipient_vap': email.get('recipient', {}).get('vap'),
+                'attachments': email.get('attachments'),
             }))
 
     return emails_context
@@ -321,6 +324,7 @@ def get_incident_command():
     """
     args = demisto.args()
     incident_id = args.pop('incident_id')
+    expand_events = args.get('expand_events')
     fullurl = BASE_URL + 'api/incidents/{}.json'.format(incident_id)
     incident_data = requests.get(
         fullurl,
@@ -328,7 +332,10 @@ def get_incident_command():
             'Content-Type': 'application/json',
             'Authorization': API_KEY
         },
-        verify=VERIFY_CERTIFICATE
+        params={
+            'expand_events': expand_events,
+        },
+        verify=VERIFY_CERTIFICATE,
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:

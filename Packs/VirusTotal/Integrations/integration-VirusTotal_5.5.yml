@@ -489,7 +489,7 @@ script:
             var md = '## VirusTotal IP Reputation for: ' + ip + '\n';
             md += (o.asn) ? 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n' : 'ASN: N/A\n';
             md += 'Country: **' + o.country + '**\n';
-            md += 'VT Link: [' + ip + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(ip) + ')\n';
+            md += 'VT Link: [' + ip + '](https://www.virustotal.com/gui/ip-address/' + encodeURIComponent(ip) + '/detection)\n';
             var detectedUrls = o.detected_urls || [];
             var detectedDownloadedSamples = o.detected_downloaded_samples || [];
             var undetectedDownloadedSamples = o.undetected_downloaded_samples || [];
@@ -752,7 +752,7 @@ script:
             ec[DBOTSCORE_KEY] = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: dbotScore, Reliability: reliability};
             var md = '## VirusTotal Domain Reputation for: ' + domain + '\n';
             md += '#### Domain categories: *' + o.categories + "*\n";
-            md += 'VT Link: [' + domain + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(domain) + ')\n';
+            md += 'VT Link: [' + domain + '](https://www.virustotal.com/gui/domain/' + encodeURIComponent(domain) + '/detection)\n';
             var detectedUrls = o.detected_urls || [];
             var detectedDownloadedSamples = o.detected_downloaded_samples || [];
             var undetectedDownloadedSamples = o.undetected_downloaded_samples || [];

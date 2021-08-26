@@ -7,7 +7,7 @@ Get the overall score for the indicator as calculated by DBot.
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 6.0.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

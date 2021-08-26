@@ -2,7 +2,6 @@ import concurrent.futures
 import secrets
 from enum import Enum
 from ipaddress import ip_address
-from threading import Lock
 from typing import Tuple
 
 import pytz
@@ -15,6 +14,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' ADVANCED GLOBAL PARAMETERS '''
+SAMPLE_SIZE = 2  # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 15  # interval between events polling
 EVENTS_FAILURE_LIMIT = 3  # amount of consecutive failures events fetch will tolerate
 FAILURE_SLEEP = 15  # sleep between consecutive failures events fetch
@@ -64,15 +64,6 @@ MIRROR_DIRECTION: Dict[str, Optional[str]] = {
     'No Mirroring': None,
     'Mirror Offense': 'In'
 }
-EVENT_COLUMNS_DEFAULT_VALUE = \
-    'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
-    'CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, ' \
-    'destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), ' \
-    'RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, ' \
-    'destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), ' \
-    'credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, ' \
-    'postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, ' \
-    'preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime '
 UTC_TIMEZONE = pytz.timezone('utc')
 ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
 ASCENDING_ID_ORDER = '+id'
@@ -269,7 +260,34 @@ USECS_ENTRIES = {'last_persisted_time',
                  'first_seen_profiler',
                  'modified_time',
                  'last_event_time',
-                 'modified_date'}
+                 'modified_date',
+                 'first_event_flow_seen',
+                 'last_event_flow_seen'}
+
+LOCAL_DESTINATION_IPS_OLD_NEW_MAP = {
+    'domain_id': 'DomainID',
+    'event_flow_count': 'EventFlowCount',
+    'first_event_flow_seen': 'FirstEventFlowSeen',
+    'id': 'ID',
+    'last_event_flow_seen': 'LastEventFlowSeen',
+    'local_destination_ip': 'LocalDestinationIP',
+    'magnitude': 'Magnitude',
+    'network': 'Network',
+    'offense_ids': 'OffenseIDs',
+    'source_address_ids': 'SourceAddressIDs'
+}
+SOURCE_IPS_OLD_NEW_MAP = {
+    'domain_id': 'DomainID',
+    'event_flow_count': 'EventFlowCount',
+    'first_event_flow_seen': 'FirstEventFlowSeen',
+    'id': 'ID',
+    'last_event_flow_seen': 'LastEventFlowSeen',
+    'local_destination_address_ids': 'LocalDestinationAddressIDs',
+    'magnitude': 'Magnitude',
+    'network': 'Network',
+    'offense_ids': 'OffenseIDs',
+    'source_ip': 'SourceIP'
+}
 ''' ENRICHMENT MAPS '''
 
 ASSET_PROPERTIES_NAME_MAP = {
@@ -287,6 +305,9 @@ FULL_ASSET_PROPERTIES_NAMES_MAP = {
     'Group Name': 'GroupName',
     'Vulnerabilities': 'Vulnerabilities',
 }
+LONG_RUNNING_REQUIRED_PARAMS = {'fetch_mode': 'Fetch mode',
+                                'offenses_per_fetch': 'Number of offenses to pull per API call (max 50)',
+                                'events_limit': 'Maximum number of events per incident.'}
 
 ''' ENUMS '''
 
@@ -299,8 +320,6 @@ class FetchMode(Enum):
     all_events = 'Fetch With All Events'
     correlations_events_only = 'Fetch Correlation Events Only'
 
-
-FETCH_MODE_DEFAULT_VALUE = FetchMode.all_events.value
 
 ''' CLIENT CLASS '''
 
@@ -613,11 +632,13 @@ class Client(BaseClient):
             params=assign_params(filter=filter_, fields=fields)
         )
 
-    def get_addresses(self, address_suffix: str, filter_: Optional[str] = None, fields: Optional[str] = None):
+    def get_addresses(self, address_suffix: str, filter_: Optional[str] = None, fields: Optional[str] = None,
+                      range_: Optional[str] = None):
         return self.http_request(
             method='GET',
             url_suffix=f'/siem/{address_suffix}',
-            params=assign_params(filter=filter_, fields=fields)
+            params=assign_params(filter=filter_, fields=fields),
+            additional_headers={'Range': range_} if range_ else None
         )
 
     def test_connection(self):
@@ -853,9 +874,9 @@ def create_single_asset_for_offense_enrichment(asset: Dict) -> Dict:
         'mac_address': interface.get('mac_address'),
         'id': interface.get('id'),
         'ip_addresses': [{
-            'type': ip_address.get('type'),
-            'value': ip_address.get('value')
-        } for ip_address in interface.get('ip_addresses', [])]
+            'type': ip_add.get('type'),
+            'value': ip_add.get('value')
+        } for ip_add in interface.get('ip_addresses', [])]
     } for interface in asset.get('interfaces', [])]}
     properties = {prop.get('name'): prop.get('value') for prop in asset.get('properties', [])
                   if 'name' in prop and 'value' in prop}
@@ -921,7 +942,7 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
     destination_addresses_id_ip_dict = get_offense_addresses(client, offenses, True) if enrich_ip_addresses else dict()
 
     def create_enriched_offense(offense: Dict) -> Dict:
-        link_to_offense_suffix = '/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId'\
+        link_to_offense_suffix = '/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId' \
                                  f'''={offense.get('id')}'''
         basic_enriches = {
             'offense_type': offense_types_id_name_dict.get(offense.get('offense_type')),
@@ -1044,9 +1065,9 @@ def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) ->
         os_name = next((prop.get('value') for prop in properties if prop.get('name') == 'Primary OS ID'), None)
 
         ip_enrichment = {
-            'IPAddress': [ip_address.get('value') for interface in interfaces
-                          for ip_address in interface.get('ip_addresses', [])
-                          if ip_address.get('value')]
+            'IPAddress': [ip_add.get('value') for interface in interfaces
+                          for ip_add in interface.get('ip_addresses', [])
+                          if ip_add.get('value')]
         }
 
         os_enrichment = {'OS': os_name} if os_name else dict()
@@ -1155,6 +1176,21 @@ def is_reset_triggered(handle_reset: bool = False):
     return False
 
 
+def validate_long_running_params(params: Dict) -> None:
+    """
+    Receives params, checks whether the required parameters for long running execution is configured.
+    Args:
+        params (Dict): Cortex XSOAR params.
+
+    Returns:
+        (None): If all required params are set, raises DemistoException otherwise.
+    """
+    for param_field, param_display in LONG_RUNNING_REQUIRED_PARAMS.items():
+        if param_field not in params:
+            raise DemistoException(f'Parameter {param_display} is required when enabling long running execution.'
+                                   ' Please set a value for it.')
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -1176,13 +1212,14 @@ def test_module_command(client: Client, params: Dict) -> str:
     try:
         is_long_running = params.get('longRunning')
         if is_long_running:
+            validate_long_running_params(params)
             ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
             get_incidents_long_running_execution(
                 client=client,
                 offenses_per_fetch=1,
                 user_query=params.get('query', ''),
-                fetch_mode=params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE),
-                events_columns=params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE),
+                fetch_mode=params.get('fetch_mode', ''),
+                events_columns=params.get('events_columns', ''),
                 events_limit=1,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
@@ -1440,12 +1477,13 @@ def long_running_execution_command(client: Client, params: Dict):
         params (Dict): Demisto params.
 
     """
-    fetch_mode = params.get('fetch_mode', FETCH_MODE_DEFAULT_VALUE)
+    validate_long_running_params(params)
+    fetch_mode = params.get('fetch_mode', '')
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
-    offenses_per_fetch = int(params.get('offenses_per_fetch', DEFAULT_OFFENSES_PER_FETCH))
+    offenses_per_fetch = int(params.get('offenses_per_fetch'))  # type: ignore
     user_query = params.get('query', '')
-    events_columns = params.get('events_columns', EVENT_COLUMNS_DEFAULT_VALUE)
-    events_limit = int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))
+    events_columns = params.get('events_columns', '')
+    events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
     incident_type = params.get('incident_type')
     mirror_direction = MIRROR_DIRECTION.get(params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION))
     while True:
@@ -1470,7 +1508,7 @@ def long_running_execution_command(client: Client, params: Dict):
             if not incidents and not new_highest_id:
                 continue
 
-            incident_batch_for_sample = incidents if incidents else ctx.get('samples', [])
+            incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
             set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
                                      'last_mirror_update': ctx.get('last_mirror_update')})
 
@@ -2463,6 +2501,81 @@ def qradar_get_custom_properties_command(client: Client, args: Dict) -> CommandR
     )
 
 
+def perform_ips_command_request(client: Client, args: Dict[str, Any], is_destination_addresses: bool):
+    """
+    Performs request to QRadar IPs endpoint.
+    Args:
+        client (Client): Client to perform the request to QRadar service.
+        args (Dict[str, Any]): XSOAR arguments.
+        is_destination_addresses (bool): Whether request is for destination addresses or source addresses.
+
+    Returns:
+        - Request response.
+    """
+    range_: str = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    filter_: Optional[str] = args.get('filter')
+    fields: Optional[str] = args.get('fields')
+
+    address_type = 'local_destination' if is_destination_addresses else 'source'
+    ips_arg_name: str = f'{address_type}_ip'
+    ips: List[str] = argToList(args.get(ips_arg_name, []))
+
+    if ips and filter_:
+        raise DemistoException(f'Both filter and {ips_arg_name} have been supplied. Please supply only one.')
+
+    if ips:
+        filter_ = ' OR '.join([f'{ips_arg_name}="{ip_}"' for ip_ in ips])
+    url_suffix = f'{address_type}_addresses'
+
+    response = client.get_addresses(url_suffix, filter_, fields, range_)
+
+    return response
+
+
+def qradar_ips_source_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get source IPS from QRadar service.
+    Args:
+        client (Client): Client to perform API calls to QRadar service.
+        args (Dict[str, Any): XSOAR arguments.
+
+    Returns:
+        (CommandResults).
+    """
+    response = perform_ips_command_request(client, args, is_destination_addresses=False)
+    outputs = sanitize_outputs(response, SOURCE_IPS_OLD_NEW_MAP)
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Source IPs', outputs),
+        outputs_prefix='QRadar.SourceIP',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def qradar_ips_local_destination_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get local destination IPS from QRadar service.
+    Args:
+        client (Client): Client to perform API calls to QRadar service.
+        args (Dict[str, Any): XSOAR arguments.
+
+    Returns:
+        (CommandResults).
+    """
+    response = perform_ips_command_request(client, args, is_destination_addresses=True)
+    outputs = sanitize_outputs(response, LOCAL_DESTINATION_IPS_OLD_NEW_MAP)
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Local Destination IPs', outputs),
+        outputs_prefix='QRadar.LocalDestinationIP',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
 def qradar_reset_last_run_command() -> str:
     """
     Puts the reset flag inside integration context.
@@ -2627,15 +2740,15 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     """
     remote_args = GetRemoteDataArgs(args)
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
-
-    offense = client.offenses_list(offense_id=remote_args.remote_incident_id)
+    offense_id = remote_args.remote_incident_id
+    offense = client.offenses_list(offense_id=offense_id)
     offense_last_update = get_time_parameter(offense.get('last_persisted_time'))
 
     # versions below 6.1 compatibility
     last_update = get_time_parameter(args.get('lastUpdate'))
     if last_update and last_update > offense_last_update:
         demisto.debug('Nothing new in the ticket')
-        return GetRemoteDataResponse({'id': remote_args.remote_incident_id, 'in_mirror_error': ''}, [])
+        return GetRemoteDataResponse({'id': offense_id, 'in_mirror_error': ''}, [])
 
     demisto.debug(f'Updating offense. Offense last update was {offense_last_update}')
     entries = []
@@ -2643,12 +2756,25 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         demisto.debug(f'Offense is closed: {offense}')
         if closing_reason := offense.get('closing_reason_id', ''):
             closing_reason = client.closing_reasons_list(closing_reason).get('text')
+        offense_close_time = offense.get('close_time', '')
+        closed_offense_notes = client.offense_notes_list(offense_id, f'items={DEFAULT_RANGE_VALUE}',
+                                                         filter_=f'create_time >= {offense_close_time}')
+        # In QRadar UI, when you close a reason, a note is added with the reason and more details. Try to get note
+        # if exists, else fallback to closing reason only, as closing QRadar through an API call does not create a note.
+        close_reason_with_note = next((note.get('note_text') for note in closed_offense_notes if
+                                       note.get('note_text').startswith('This offense was closed with reason:')),
+                                      closing_reason)
+        if not close_reason_with_note:
+            print_debug_msg(f'Could not find closing reason or closing note for offense with offense id {offense_id}')
+            close_reason_with_note = 'Unknown closing reason from QRadar'
+        else:
+            close_reason_with_note = f'From QRadar: {close_reason_with_note}'
 
         entries.append({
             'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
-                'closeReason': f'From QRadar: {closing_reason}'
+                'closeReason': close_reason_with_note
             },
             'ContentsFormat': EntryFormat.JSON
         })
@@ -2822,6 +2948,12 @@ def main() -> None:
 
         elif command == 'qradar-get-custom-properties':
             return_results(qradar_get_custom_properties_command(client, args))
+
+        elif command == 'qradar-ips-source-get':
+            return_results(qradar_ips_source_get_command(client, args))
+
+        elif command == 'qradar-ips-local-destination-get':
+            return_results(qradar_ips_local_destination_get_command(client, args))
 
         elif command == 'qradar-reset-last-run':
             return_results(qradar_reset_last_run_command())

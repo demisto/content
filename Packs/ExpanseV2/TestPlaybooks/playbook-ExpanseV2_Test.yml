@@ -2805,7 +2805,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9995
+          "y": 10340
         }
       }
     note: false
@@ -3483,7 +3483,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+      - "67"
     scriptarguments:
       common_name:
         simple: ${inputs.common_name}
@@ -3502,12 +3502,90 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: be7d7607-6614-49f7-85b6-2c3c4d46d7a0
+    type: regular
+    task:
+      id: be7d7607-6614-49f7-85b6-2c3c4d46d7a0
+      version: -1
+      name: expanse-get-cloud-resources
+      description: Retrieve cloud resources from Expanse.
+      script: ExpanseV2|||expanse-get-cloud-resources
+      type: regular
+      iscommand: true
+      brand: ExpanseV2
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      business_unit_names: {}
+      business_units: {}
+      domain: {}
+      ip: {}
+      last_observed_date: {}
+      limit:
+        simple: "1"
+      provider_names: {}
+      providers: {}
+      regions: {}
+      tag_names: {}
+      tags: {}
+      types: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: 468baed7-35f8-4f1a-89d4-0d66d00488ae
+    type: condition
+    task:
+      id: 468baed7-35f8-4f1a-89d4-0d66d00488ae
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Expanse.CloudResource
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 10010,
+        "height": 10330,
         "width": 380,
         "x": 50,
         "y": 50
@@ -3523,7 +3601,7 @@ inputs:
   playbookInputQuery: null
 - key: common_name
   value:
-    simple: shack.com
+    simple: api-dev.radioshack.com
   required: false
   description: A partial certificate common name
   playbookInputQuery: null

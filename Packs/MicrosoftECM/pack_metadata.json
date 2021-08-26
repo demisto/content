@@ -2,7 +2,7 @@
     "name": "Microsoft Endpoint Configuration Manager",
     "description": "The configuration manager provides the overall Configuration Management (CM) infrastructure and environment to the product development team (formerly known as SCCM).",
     "support": "xsoar",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,5 +12,10 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": ["ecm", "ms ecm", "sccm", "ms sccm"]
+    "keywords": [
+        "ecm",
+        "ms ecm",
+        "sccm",
+        "ms sccm"
+    ]
 }

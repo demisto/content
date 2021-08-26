@@ -20,7 +20,7 @@
 <strong>Use system proxy settings</strong>: Select whether to communicate via the system proxy server or not.<br><strong>Cortex XSOAR engine</strong>: If relevant, select the engine that acts as a proxy to the server.<br>Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks.<br>For more information on Cortex XSOAR engines see:<br><a href="https://support.demisto.com/hc/en-us/articles/226274727-Settings-Integrations-Engines">https://demisto.zendesk.com/hc/en-us/articles/226274727-Settings-Integrations-Engines</a><br><strong>Require users to enter additional password:</strong> Select whether you’d like an additional step where users are required to authenticate themselves with a password.</div>
 </div>
 </li>
-<li>Press the ‘Test’ button to validate connection.<br>If you are experiencing issues with the service configuration, please contact Cortex XSOAR support at <a href="mailto:support@demisto.com">support@demisto.com</a>
+<li>Press the ‘Test’ button to validate connection.
 </li>
 <li>After completing the test successfully, press the ‘Done’ button.</li>
 </ol>

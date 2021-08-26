@@ -39,6 +39,8 @@
 		"Use Case",
 		"New",
 		"Trending",
-		"Relationship"
+		"Relationship",
+		"Elasticsearch",
+		"Iron Bank"
 	]
 }

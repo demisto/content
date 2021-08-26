@@ -10,8 +10,8 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, lo
     get_content_git_client, get_recent_commits_data
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index, \
-    update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config, \
-    upload_id_set, check_if_index_is_updated, print_packs_summary, get_packs_summary
+    update_index_folder, clean_non_existing_packs, upload_index_to_storage, create_corepacks_config, \
+    check_if_index_is_updated, print_packs_summary, get_packs_summary
 from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, CONTENT_ROOT_PATH
 from demisto_sdk.commands.common.tools import str2bool
 
@@ -66,53 +66,113 @@ def update_private_index(private_index_path: str, unified_index_path: str):
         shutil.copy(path_to_pack_on_unified_index, path_to_pack_on_private_index)
 
 
+def add_private_pack(private_packs, private_pack_metadata, changed_pack_id):
+    """Add a new or existing private pack to the list of private packs,
+    that will later be added to index.json.
+
+    Args:
+        private_packs (list): The current list of private packs, not including the one to be added.
+        private_pack_metadata (dict): The metadata of the private pack.
+        changed_pack_id (str): The ID of the pack that was added / modified in the current private build.
+
+    Returns:
+        private_packs (list): The modified list of private packs, including the added pack.
+    """
+    if private_pack_metadata:
+        private_packs.append({
+            'id': changed_pack_id,
+            'price': int(private_pack_metadata.get('price')),
+            'vendorId': private_pack_metadata.get('vendorId', ""),
+            'partnerId': private_pack_metadata.get('partnerId', ""),
+            'partnerName': private_pack_metadata.get('partnerName', ""),
+            'contentCommitHash': private_pack_metadata.get('contentCommitHash', "")
+        })
+    return private_packs
+
+
+def add_changed_private_pack(private_packs, extract_destination_path, changed_pack_id):
+    """Add the changed private pack (new or modified) to the list of private packs.
+    The modified pack's data needs to be taken from the artifacts, as it may not exist in the index or be out of date.
+
+    Args:
+        private_packs (list): The current list of private packs, not including the one to be added.
+        extract_destination_path (str): The path to which the artifacts' zip was extracted.
+        changed_pack_id (str): The ID of the pack that was added / modified in the current private build.
+
+    Returns:
+        private_packs (list): The modified list of private packs, including the added pack.
+    """
+
+    changed_pack_metadata_path = os.path.join(extract_destination_path, changed_pack_id, "pack_metadata.json")
+    logging.info(f'Getting changed pack metadata from the artifacts, in path: {changed_pack_metadata_path}')
+    try:
+        with open(changed_pack_metadata_path, 'r') as metadata_file:
+            changed_pack_metadata = json.load(metadata_file)
+        private_packs = add_private_pack(private_packs, changed_pack_metadata, changed_pack_id)
+    except FileNotFoundError:
+        logging.info(f'Metadata of changed pack {changed_pack_id} not found.')
+
+    return private_packs
+
+
+def add_existing_private_packs_from_index(metadata_files, changed_pack_id):
+    """
+
+    Args:
+        metadata_files (list): The metadata files of private packs that exist in the private index.
+        changed_pack_id (str): The ID of the pack that was added / modified in the current private build.
+
+    Returns:
+        private_packs (list): The modified list of private packs, including the added pack.
+    """
+    private_packs = []
+    for metadata_file_path in metadata_files:
+        # Adding all the existing private packs, already found in the index
+        logging.info(f'Getting existing metadata files from the index, in path: {metadata_file_path}')
+        try:
+            with open(metadata_file_path, 'r') as metadata_file:
+                metadata = json.load(metadata_file)
+
+            pack_id = metadata.get('id')
+            if pack_id != changed_pack_id:
+                # The new / modified pack will be added later
+                private_packs = add_private_pack(private_packs, metadata, pack_id)
+
+        except ValueError:
+            logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
+
+    return private_packs
+
+
+def get_existing_private_packs_metadata_paths(private_index_path):
+    try:
+        logging.info(f'searching metadata files in: {private_index_path}')
+        metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
+    except Exception:
+        logging.exception(f'Could not find metadata files in {private_index_path}.')
+        metadata_files = []
+
+    if not metadata_files:
+        logging.warning(f'No metadata files found in [{private_index_path}]')
+
+    return metadata_files
+
+
 def get_private_packs(private_index_path: str, pack_names: set = set(),
                       extract_destination_path: str = '') -> list:
-    """
-    Gets a list of private packs.
+    """Gets a list of private packs, that will later be added to index.json.
 
     :param private_index_path: Path to where the private index is located.
     :param pack_names: Collection of pack names.
     :param extract_destination_path: Path to where the files should be extracted to.
     :return: List of dicts containing pack metadata information.
     """
-    try:
-        logging.info(f'searching metadata files in: {private_index_path}')
-        metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
-    except Exception:
-        logging.exception(f'Could not find metadata files in {private_index_path}.')
-        return []
 
-    if not metadata_files:
-        logging.warning(f'No metadata files found in [{private_index_path}]')
-
-    private_packs = []
-    for metadata_file_path in metadata_files:
-        logging.info(f'scanning metadata file: {metadata_file_path}')
-        try:
-            with open(metadata_file_path, 'r') as metadata_file:
-                metadata = json.load(metadata_file)
-
-            pack_id = metadata.get('id')
-            is_changed_private_pack = pack_id in pack_names
-
-            if is_changed_private_pack:  # Should take metadata from artifacts.
-                new_metadata_file_path = os.path.join(extract_destination_path, pack_id, "pack_metadata.json")
-                logging.info(f'reloading metadata using {new_metadata_file_path}')
-                with open(new_metadata_file_path, 'r') as metadata_file:
-                    metadata = json.load(metadata_file)
-
-            if metadata:
-                private_packs.append({
-                    'id': pack_id,
-                    'price': metadata.get('price'),
-                    'vendorId': metadata.get('vendorId', ""),
-                    'partnerId': metadata.get('partnerId', ""),
-                    'partnerName': metadata.get('partnerName', ""),
-                    'contentCommitHash': metadata.get('contentCommitHash', "")
-                })
-        except ValueError:
-            logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
+    private_metadata_paths = get_existing_private_packs_metadata_paths(private_index_path)
+    # In the private build, there is always exactly one modified pack
+    changed_pack_id = list(pack_names)[0] if len(pack_names) > 0 else ''
+    private_packs = add_existing_private_packs_from_index(private_metadata_paths, changed_pack_id)
+    private_packs = add_changed_private_pack(private_packs, extract_destination_path, changed_pack_id)
 
     return private_packs
 
@@ -213,7 +273,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
 
     pack_was_modified = not is_infra_run
 
-    task_status, user_metadata = pack.load_user_metadata()
+    task_status = pack.load_user_metadata()
     if not task_status:
         pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name
         pack.cleanup()
@@ -237,11 +297,10 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    task_status = pack.format_metadata(user_metadata=user_metadata,
-                                       index_folder_path=index_folder_path,
-                                       packs_dependencies_mapping=packs_dependencies_mapping,
-                                       build_number=build_number, commit_hash=current_commit_hash,
-                                       pack_was_modified=pack_was_modified, statistics_handler=None)
+    task_status, _ = pack.format_metadata(index_folder_path=index_folder_path,
+                                          packs_dependencies_mapping=packs_dependencies_mapping,
+                                          build_number=build_number, commit_hash=current_commit_hash,
+                                          pack_was_modified=pack_was_modified, statistics_handler=None)
 
     if not task_status:
         pack.status = PackStatus.FAILED_METADATA_PARSING.name
@@ -352,7 +411,6 @@ def option_handler():
                               "For more information go to: "
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
-    parser.add_argument('-i', '--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
     parser.add_argument('-p', '--pack_names',
                         help=("Target packs to upload to gcs. Optional values are: `All`, "
@@ -413,7 +471,6 @@ def main():
     service_account = upload_config.service_account
     target_packs = upload_config.pack_names
     build_number = upload_config.ci_build_number
-    id_set_path = upload_config.id_set_path
     packs_dependencies_mapping = load_json(upload_config.pack_dependencies) if upload_config.pack_dependencies else {}
     storage_base_path = upload_config.storage_base_path
     is_private_build = upload_config.encryption_key and upload_config.encryption_key != ''
@@ -478,7 +535,8 @@ def main():
     # upload core packs json to bucket
 
     if should_upload_core_packs(storage_bucket_name):
-        upload_core_packs_config(default_storage_bucket, build_number, index_folder_path)
+        create_corepacks_config(default_storage_bucket, build_number, index_folder_path,
+                                artifacts_dir=os.path.dirname(packs_artifacts_path))
     # finished iteration over content packs
     if is_private_build:
         delete_public_packs_from_index(index_folder_path)
@@ -489,9 +547,6 @@ def main():
     else:
         upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
                                 current_commit_hash, index_generation, landing_page_sections=landing_page_sections)
-
-    # upload id_set.json to bucket
-    upload_id_set(default_storage_bucket, id_set_path)
 
     # get the lists of packs divided by their status
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)

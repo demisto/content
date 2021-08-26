@@ -65,7 +65,7 @@ def test_create_user_command(mocker):
     mocker.patch.object(client, 'create_user', return_value=SALESFORCE_CREATE_USER_OUTPUT)
     mocker.patch.object(client, 'get_user_id_and_activity_by_mail', return_value=(None, None))
 
-    iam_user_profile = create_user_command(client, args, 'mapper_out', True, True)
+    iam_user_profile = create_user_command(client, args, 'mapper_out', True, True, True)
     outputs = get_outputs_from_user_profile(iam_user_profile)
 
     assert outputs.get('action') == IAMActions.CREATE_USER
@@ -118,7 +118,7 @@ def test_create_user_command__user_already_exists(mocker):
     mocker.patch.object(client, 'get_user_id_and_activity_by_mail', return_value=("mock@mock.com", ""))
     mocker.patch.object(client, 'update_user', return_value="")
 
-    iam_user_profile = create_user_command(client, args, 'mapper_out', True, True)
+    iam_user_profile = create_user_command(client, args, 'mapper_out', True, True, True)
     outputs = get_outputs_from_user_profile(iam_user_profile)
 
     assert outputs.get('action') == IAMActions.UPDATE_USER
@@ -134,7 +134,7 @@ def test_update_user_command__non_existing_user(mocker):
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=SALESFORCE_CREATE_USER_OUTPUT)
 
-    iam_user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True,
+    iam_user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True, is_enable_enabled=True,
                                            is_create_user_enabled=True, create_if_not_exists=True)
     outputs = get_outputs_from_user_profile(iam_user_profile)
 
@@ -153,7 +153,7 @@ def test_update_user_command__command_is_disabled(mocker):
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'update_user')
 
-    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=False,
+    user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=False, is_enable_enabled=False,
                                        is_create_user_enabled=False, create_if_not_exists=False)
     outputs = get_outputs_from_user_profile(user_profile)
 

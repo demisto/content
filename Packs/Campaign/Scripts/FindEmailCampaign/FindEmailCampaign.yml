@@ -86,7 +86,8 @@ args:
   secret: false
 - default: false
   defaultValue: '0.8'
-  description: Threshold by which to consider incidents as similar. The range of values is 0-1.
+  description: Threshold by which to consider incidents as similar. The range of values
+    is 0-1.
   isArray: false
   name: threshold
   required: false
@@ -125,6 +126,16 @@ args:
   - ''
   required: false
   secret: false
+- default: false
+  defaultValue: 'false'
+  description: Include the current incident in EmailCampaign path in context.
+  isArray: false
+  name: includeSelf
+  required: false
+  secret: false
+  predefined:
+  - 'true'
+  - 'false'
 comment: Find a campaign of emails based on their textual similarity.
 commonfields:
   id: FindEmailCampaign
@@ -167,6 +178,24 @@ outputs:
   description: The values of the mututal indicators of the incidents involved in the
     campaign.
   type: Unknown
+- contextPath: EmailCampaign.fieldsToDisplay
+  description: List of fields to display in the linked list table.
+  type: Unknown
+- contextPath: EmailCampaign.firstIncidentDate
+  description: The occurrence date of the oldest incident in the campaign.
+  type: unknown
+- contextPath: incident.emailcampaignsummary
+  description: Markdown table with email campaign summary.
+  type: string
+- contextPath: incident.emailcampaignsnippets
+  description: Markdown table with email content summary.
+  type: string
+- contextPath: incident.emailcampaignmutualindicators
+  description: Markdown table with relevant indicators.
+  type: string
+- contextPath: incident.emailcampaigncanvas
+  description: Link to the campaign canvas.
+  type: string
 script: '-'
 subtype: python3
 system: false
@@ -175,7 +204,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.19770
+dockerimage: demisto/sklearn:1.0.0.22342
 tests:
 - No tests (auto formatted)
 runonce: true
