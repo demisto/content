@@ -1916,8 +1916,8 @@ def tags_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.TagsList',
-        outputs_key_field='',
+        outputs_prefix='LogRhythm.Tag',
+        outputs_key_field='number',
         outputs=response,
         raw_response=response
     )
@@ -1984,8 +1984,8 @@ def entities_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.EntitiesList',
-        outputs_key_field='',
+        outputs_prefix='LogRhythm.Entity',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )
@@ -2010,7 +2010,7 @@ def hosts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.HostsList',
+        outputs_prefix='LogRhythm.Host',
         outputs_key_field='id',
         outputs=response,
         raw_response=response
@@ -2034,8 +2034,8 @@ def users_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.HostsList',
-        outputs_key_field='',
+        outputs_prefix='LogRhythm.User',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )
@@ -2056,8 +2056,8 @@ def lists_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.ListsGet',
-        outputs_key_field='',
+        outputs_prefix='LogRhythm.List',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )

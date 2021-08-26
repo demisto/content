@@ -1789,22 +1789,22 @@ script:
       isArray: false
     outputs:
     - type: Number
-      contextPath: LogrhythmV2.TagsList..number
+      contextPath: LogRhythm.Tag.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.TagsList..text
+      contextPath: LogRhythm.Tag.text
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.TagsList..dateCreated
+      contextPath: LogRhythm.Tag.dateCreated
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.TagsList..createdBy.number
+      contextPath: LogRhythm.Tag.createdBy.number
       description: ''
     - type: String
-      contextPath: LogrhythmV2.TagsList..createdBy.name
+      contextPath: LogRhythm.Tag.createdBy.name
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.TagsList..createdBy.disabled
+      contextPath: LogRhythm.Tag.createdBy.disabled
       description: ''
   - name: lr-case-collaborators-list
     description: ''
@@ -1889,22 +1889,22 @@ script:
       isArray: false
     outputs:
     - type: Number
-      contextPath: LogrhythmV2.EntitiesList..id
+      contextPath: LogRhythm.Entity.id
       description: ''
     - type: String
-      contextPath: LogrhythmV2.EntitiesList..name
+      contextPath: LogRhythm.Entity.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.EntitiesList..fullName
+      contextPath: LogRhythm.Entity.fullName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.EntitiesList..recordStatusName
+      contextPath: LogRhythm.Entity.recordStatusName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.EntitiesList..shortDesc
+      contextPath: LogRhythm.Entity.shortDesc
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.EntitiesList..dateUpdated
+      contextPath: LogRhythm.Entity.dateUpdated
       description: ''
   - name: lr-hosts-list
     description: ''
@@ -1942,64 +1942,64 @@ script:
       isArray: false
     outputs:
     - type: Number
-      contextPath: LogrhythmV2.HostsList..id
+      contextPath: LogRhythm.Host.id
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.HostsList..entity.id
+      contextPath: LogRhythm.Host.entity.id
       description: ''
     - type: String
-      contextPath: LogrhythmV2.HostsList..entity.name
+      contextPath: LogRhythm.Host.entity.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.HostsList..name
+      contextPath: LogRhythm.Host.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.HostsList..riskLevel
+      contextPath: LogRhythm.Host.riskLevel
       description: ''
     - type: String
-      contextPath: LogrhythmV2.HostsList..threatLevel
+      contextPath: LogRhythm.Host.threatLevel
       description: ''
     - type: String
-      contextPath: LogrhythmV2.HostsList..threatLevelComments
+      contextPath: LogRhythm.Host.threatLevelComments
       description: ''
     - type: String
-      contextPath: LogrhythmV2.HostsList..recordStatusName
+      contextPath: LogRhythm.Host.recordStatusName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.HostsList..hostZone
+      contextPath: LogRhythm.Host.hostZone
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.HostsList..location.id
+      contextPath: LogRhythm.Host.location.id
       description: ''
     - type: String
-      contextPath: LogrhythmV2.HostsList..os
+      contextPath: LogRhythm.Host.os
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.HostsList..useEventlogCredentials
+      contextPath: LogRhythm.Host.useEventlogCredentials
       description: ''
     - type: String
-      contextPath: LogrhythmV2.HostsList..osType
+      contextPath: LogRhythm.Host.osType
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.HostsList..dateUpdated
+      contextPath: LogRhythm.Host.dateUpdated
       description: ''
     - type: String
-      contextPath: LogrhythmV2.HostsList..shortDesc
+      contextPath: LogRhythm.Host.shortDesc
       description: ''
     - type: String
-      contextPath: LogrhythmV2.HostsList..osVersion
+      contextPath: LogRhythm.Host.osVersion
       description: ''
     - type: String
-      contextPath: LogrhythmV2.HostsList..hostIdentifiers.type
+      contextPath: LogRhythm.Host.hostIdentifiers.type
       description: ''
     - type: String
-      contextPath: LogrhythmV2.HostsList..hostIdentifiers.value
+      contextPath: LogRhythm.Host.hostIdentifiers.value
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.HostsList..hostIdentifiers.dateAssigned
+      contextPath: LogRhythm.Host.hostIdentifiers.dateAssigned
       description: ''
     - type: String
-      contextPath: LogrhythmV2.HostsList..eventlogPassword
+      contextPath: LogRhythm.Host.eventlogPassword
       description: ''
   - name: lr-users-list
     description: ''
@@ -2030,7 +2030,46 @@ script:
       description: ''
       required: false
       isArray: false
-    outputs: []
+    outputs:
+    - contextPath: LogRhythm.User.firstName
+      description: ''
+      type: String
+    - contextPath: LogRhythm.User.lastName
+      description: ''
+      type: String
+    - contextPath: LogRhythm.User.userType
+      description: ''
+      type: String
+    - contextPath: LogRhythm.User.fullName
+      description: ''
+      type: String
+    - contextPath: LogRhythm.User.objectPermissions.readAccess
+      description: ''
+      type: String
+    - contextPath: LogRhythm.User.objectPermissions.writeAccess
+      description: ''
+      type: String
+    - contextPath: LogRhythm.User.objectPermissions.entity.id
+      description: ''
+      type: Number
+    - contextPath: LogRhythm.User.objectPermissions.entity.name
+      description: ''
+      type: String
+    - contextPath: LogRhythm.User.objectPermissions.owner.id
+      description: ''
+      type: Number
+    - contextPath: LogRhythm.User.objectPermissions.owner.name
+      description: ''
+      type: String
+    - contextPath: LogRhythm.User.id
+      description: ''
+      type: Number
+    - contextPath: LogRhythm.User.recordStatusName
+      description: ''
+      type: String
+    - contextPath: LogRhythm.User.dateUpdated
+      description: ''
+      type: Date
   - name: lr-lists-get
     description: ''
     arguments:
@@ -2071,73 +2110,73 @@ script:
       - false
     outputs:
     - type: String
-      contextPath: LogrhythmV2.ListsGet..listType
+      contextPath: LogRhythm.List.listType
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListsGet..status
+      contextPath: LogRhythm.List.status
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListsGet..name
+      contextPath: LogRhythm.List.name
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListsGet..shortDescription
+      contextPath: LogRhythm.List.shortDescription
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListsGet..useContext
+      contextPath: LogRhythm.List.useContext
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListsGet..autoImportOption.enabled
+      contextPath: LogRhythm.List.autoImportOption.enabled
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListsGet..autoImportOption.usePatterns
+      contextPath: LogRhythm.List.autoImportOption.usePatterns
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListsGet..autoImportOption.replaceExisting
+      contextPath: LogRhythm.List.autoImportOption.replaceExisting
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListsGet..id
+      contextPath: LogRhythm.List.id
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListsGet..guid
+      contextPath: LogRhythm.List.guid
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.ListsGet..dateCreated
+      contextPath: LogRhythm.List.dateCreated
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.ListsGet..dateUpdated
+      contextPath: LogRhythm.List.dateUpdated
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListsGet..readAccess
+      contextPath: LogRhythm.List.readAccess
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListsGet..writeAccess
+      contextPath: LogRhythm.List.writeAccess
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListsGet..restrictedRead
+      contextPath: LogRhythm.List.restrictedRead
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListsGet..entityName
+      contextPath: LogRhythm.List.entityName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListsGet..entryCount
+      contextPath: LogRhythm.List.entryCount
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListsGet..needToNotify
+      contextPath: LogRhythm.List.needToNotify
       description: ''
     - type: Boolean
-      contextPath: LogrhythmV2.ListsGet..doesExpire
+      contextPath: LogRhythm.List.doesExpire
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListsGet..owner
+      contextPath: LogRhythm.List.owner
       description: ''
     - type: String
-      contextPath: LogrhythmV2.ListsGet..longDescription
+      contextPath: LogRhythm.List.longDescription
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.ListsGet..timeToLiveSeconds
+      contextPath: LogRhythm.List.timeToLiveSeconds
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.ListsGet..revisitDate
+      contextPath: LogRhythm.List.revisitDate
       description: ''
   - name: lr-list-summary-create-update
     description: ''
