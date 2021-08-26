@@ -959,7 +959,7 @@ def get_content_pack_name_of_test(tests: set, id_set: Optional[Dict] = None) -> 
             test_playbook_name = list(test_playbook_object.keys())[0]
             test_playbook_data = list(test_playbook_object.values())[0]
             if test_playbook_name in tests:
-                pack_name = test_playbook_data.get('name')
+                pack_name = test_playbook_data.get('pack')
                 if pack_name:
                     content_packs.add(pack_name)
                     if len(tests) == len(content_packs):
@@ -1003,6 +1003,7 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
          set: The filtered tests set
     """
     ignored_tests_set = set()
+    logging.info(f'Tests: {tests}')
     content_packs = get_content_pack_name_of_test(tests, id_set)
     for pack in content_packs:
         ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
@@ -1075,7 +1076,9 @@ def filter_tests(tests: set, id_set: json, is_nightly=False) -> set:
         (set): Set of tests without ignored, non supported and deprecated-packs tests.
     """
     tests_with_no_dummy_strings = {test for test in tests if 'no test' not in test.lower()}
+    logging.info(f'Tests with no dummies - {tests_with_no_dummy_strings}')
     tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set)
+    logging.info(f'Tests without ignored - {tests_without_ignored}')
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
 
     if is_nightly:
