@@ -187,8 +187,6 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         :type status_code: ``int``
         :param: status_code: The request codes to accept as OK.
 
-        #Todo add timeout
-
         :return: Returns the http request response json
         :rtype: ``dict``
     """

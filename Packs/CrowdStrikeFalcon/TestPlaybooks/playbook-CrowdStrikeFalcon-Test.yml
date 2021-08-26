@@ -45,11 +45,8 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      add_to_context: {}
       brand_name:
         simple: CrowdstrikeFalcon
-      expect_data: {}
-      instance_name: {}
     separatecontext: false
     view: |-
       {
@@ -63,6 +60,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 00b81917-eb40-4e80-8f9c-adea9a5e0b12
@@ -81,7 +80,6 @@ tasks:
     scriptarguments:
       filter:
         simple: created_timestamp:>'2020-03-05T15:25:00Z'
-      ids: {}
     separatecontext: false
     view: |-
       {
@@ -825,7 +823,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "22"
+      - "25"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -906,7 +904,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3520
+          "y": 6495
         }
       }
     note: false
@@ -929,7 +927,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "25"
+      - "42"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -946,7 +944,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3695
+          "y": 6670
         }
       }
     note: false
@@ -979,7 +977,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3870
+          "y": 3520
         }
       }
     note: false
@@ -1016,7 +1014,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4395
+          "y": 4045
         }
       }
     note: false
@@ -1048,7 +1046,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4045
+          "y": 3695
         }
       }
     note: false
@@ -1093,7 +1091,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4220
+          "y": 3870
         }
       }
     note: false
@@ -1171,7 +1169,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4570
+          "y": 4220
         }
       }
     note: false
@@ -1219,7 +1217,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4745
+          "y": 4395
         }
       }
     note: false
@@ -1311,7 +1309,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4920
+          "y": 4570
         }
       }
     note: false
@@ -1341,7 +1339,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5095
+          "y": 4745
         }
       }
     note: false
@@ -1418,7 +1416,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5270
+          "y": 4920
         }
       }
     note: false
@@ -1453,7 +1451,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5445
+          "y": 5095
         }
       }
     note: false
@@ -1525,7 +1523,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5620
+          "y": 5270
         }
       }
     note: false
@@ -1560,7 +1558,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5795
+          "y": 5445
         }
       }
     note: false
@@ -1594,7 +1592,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5970
+          "y": 5620
         }
       }
     note: false
@@ -1628,7 +1626,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6145
+          "y": 5795
         }
       }
     note: false
@@ -1705,7 +1703,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6320
+          "y": 5970
         }
       }
     note: false
@@ -1736,7 +1734,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6495
+          "y": 6145
         }
       }
     note: false
@@ -1760,7 +1758,7 @@ tasks:
       brand: CrowdstrikeFalcon
     nexttasks:
       '#none#':
-      - "42"
+      - "22"
     scriptarguments:
       ids:
         simple: ${CrowdStrike.Incidents.incident_id}
@@ -1771,7 +1769,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6670
+          "y": 6320
         }
       }
     note: false
