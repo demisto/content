@@ -1,42 +1,62 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
+import pytest
 import json
-import io
+
+from CommonServerPython import DemistoException
+from Packs.MISPFeed.Integrations.MISPFeed.MISPFeed import clean_user_query
 
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
-
-
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+def test_clean_user_query_success():
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    Given
+        - A json string query
+    When
+        - query is good
+    Then
+        - create a dict from json string
+    """
+    querystr = '{"returnFormat": "json", "type": {"OR": ["ip-src"]}, "tags": {"OR": ["tlp:%"]}}'
+    params = clean_user_query(querystr)
+    assert len(params) == 3
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+def test_clean_user_query_bad_query():
+    """
+    Given
+        - A json string query
+    When
+        - json syntax is incorrect
+    Then
+        - raise a DemistoException
+    """
+    with pytest.raises(DemistoException):
+        querystr = '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]'
+        clean_user_query(querystr)
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+
+def test_clean_user_query_change_format():
+    """
+    Given
+        - A json parsed result from qualys
+    When
+        - query has a unsupported return format
+    Then
+        - change return format to json
+    """
+    querystr = '{"returnFormat": "xml", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
+    params = clean_user_query(querystr)
+    assert params["returnFormat"] == "json"
+
+
+def test_clean_user_query_remove_timestamp():
+    """
+    Given
+        - A json parsed result from qualys
+    When
+        - query has timestamp parameter
+    Then
+        - Return query without the timestamp parameter
+    """
+    good_query = '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
+    querystr = '{"returnFormat": "json", "timestamp": "1617875568", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
+    params = clean_user_query(querystr)
+    assert good_query == json.dumps(params)

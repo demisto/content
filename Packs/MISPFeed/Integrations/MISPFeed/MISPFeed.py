@@ -242,11 +242,17 @@ def test_module(client: Client) -> str:
 def fetch_indicators(client: Client,
                      tags: List[str],
                      attribute_type: List[str],
+                     query: Optional[str],
                      tlp_color: Optional[str],
                      limit: int = -1) -> List[Dict]:
-    params_dict = build_params_dict(tags, attribute_type)
+    if query:
+        params_dict = clean_user_query(query)
+    else:
+        params_dict = build_params_dict(tags, attribute_type)
+
     indicators_iterator = client.search_query(params_dict)
     indicators = []
+
     if limit > 0:
         indicators_iterator = indicators_iterator[:limit]
 
@@ -341,8 +347,10 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     limit = int(args.get('limit', '10'))
     tlp_color = params.get('tlp_color')
     tags = argToList(args.get('tags', ''))
+    query = args.get('query', None)
+
     attribute_type = argToList(args.get('attribute_type', ''))
-    indicators = fetch_indicators(client, tags, attribute_type, tlp_color, limit)
+    indicators = fetch_indicators(client, tags, attribute_type, query, tlp_color, limit)
     human_readable = "Retrieved " + str(len(indicators)) + " indicators."
     return CommandResults(
         readable_output=human_readable,
@@ -361,11 +369,12 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dic
     Returns:
         Outputs.
     """
-    # limit = int(args.get('limit', '10'))
     tlp_color = params.get('tlp_color')
     tags = argToList(params.get('attribute_tags', ''))
     attribute_types = argToList(params.get('attribute_types', ''))
-    indicators = fetch_indicators(client, tags, attribute_types, tlp_color)
+    query = params.get('query', None)
+
+    indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color)
     return indicators
 
 
@@ -383,6 +392,18 @@ def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[Any, s
         params["type"]["OR"] = attribute_type
     if tags:
         params["tags"]["OR"] = tags
+    return params
+
+
+def clean_user_query(query: str):
+    try:
+        params = json.loads(query)
+        params["returnFormat"] = "json"
+        params.pop("timestamp", None)
+    except Exception as err:
+        demisto.debug(str(err))
+        raise DemistoException(f'Could not parse user query. \n\nError massage: {err}')
+
     return params
 
 

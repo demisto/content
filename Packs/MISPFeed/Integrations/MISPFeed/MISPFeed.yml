@@ -94,6 +94,11 @@ configuration:
   name: attribute_types
   required: false
   type: 0
+- display: Query
+  additionalinfo: JSON query to filter MISP attributes. When query parameter is used Attribute Types and Attribute Tags parameters wont be used. You can check for the correct syntax at https://<Your MISP url>/servers/openapi#operation/restSearchAttributes
+  name: query
+  required: false
+  type: 0
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
     fetched from the feed
   display: Traffic Light Protocol Color
@@ -126,6 +131,12 @@ script:
       secret: false
     - name: attribute_type
       description: Types of the attributes to search for
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: query
+      description: JSON query to filter MISP attributes. When query argument is used attribute_type and tags arguemtns wont be used. You can check for the correct syntax at https://<Your MISP url>/servers/openapi#operation/restSearchAttributes
       isArray: false
       default: false
       required: false
