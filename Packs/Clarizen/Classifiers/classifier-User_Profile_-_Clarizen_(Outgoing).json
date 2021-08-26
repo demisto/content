@@ -30,10 +30,6 @@
 					"complex": null,
 					"simple": "lastname"
 				},
-				"Region": {
-					"complex": null,
-					"simple": "state"
-				},
 				"phone_mobile": {
 					"complex": null,
 					"simple": "mobilephone"
@@ -46,10 +42,6 @@
 					"complex": null,
 					"simple": "streetaddress"
 				},
-				"JobTitle": {
-					"complex": null,
-					"simple": "title"
-				},
 				"Username": {
 					"complex": null,
 					"simple": "username"
@@ -61,6 +53,30 @@
 				"zip": {
 					"complex": null,
 					"simple": "zipcode"
+				},
+				"DirectManager": {
+					"complex": null,
+					"simple": "manageremail"
+				},
+				"C_PrimaryLanguage": {
+					"complex": null,
+					"simple": "u_language"
+				},
+				"C_SecondaryLanguages": {
+					"complex": null,
+					"simple": "u_secondary_language"
+				},
+				"Region": {
+					"complex": null,
+					"simple": "u_clarizen_region"
+				},
+				"JobTitle": {
+					"complex": null,
+					"simple": "u_role_clarizen_job_title"
+				},
+				"C_Company": {
+					"complex": null,
+					"simple": "u_clarizen_company"
 				}
 			}
 		},
@@ -91,10 +107,6 @@
 					"complex": null,
 					"simple": "lastname"
 				},
-				"Region": {
-					"complex": null,
-					"simple": "state"
-				},
 				"phone_mobile": {
 					"complex": null,
 					"simple": "mobilephone"
@@ -107,10 +119,6 @@
 					"complex": null,
 					"simple": "streetaddress"
 				},
-				"JobTitle": {
-					"complex": null,
-					"simple": "title"
-				},
 				"Username": {
 					"complex": null,
 					"simple": "username"
@@ -122,6 +130,26 @@
 				"zip": {
 					"complex": null,
 					"simple": "zipcode"
+				},
+				"C_PrimaryLanguage": {
+					"complex": null,
+					"simple": "u_language"
+				},
+				"C_SecondaryLanguages": {
+					"complex": null,
+					"simple": "u_secondary_language"
+				},
+				"Region": {
+					"complex": null,
+					"simple": "u_clarizen_region"
+				},
+				"JobTitle": {
+					"complex": null,
+					"simple": "u_role_clarizen_job_title"
+				},
+				"C_Company": {
+					"complex": null,
+					"simple": "u_clarizen_company"
 				}
 			}
 		}

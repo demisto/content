@@ -20,10 +20,27 @@ ERROR_CODES_TO_SKIP = [
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
 
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None,  manager_email=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
         self.username = auth[0]
         self.password = auth[1]
+        self.manager_id = self.get_manager_id(manager_email)
+
+    def get_manager_id(self, manager_email: Optional[str]) -> str:
+        """ Gets the user's manager ID from manager email.
+        :type manager_email: ``str``
+        :param manager_email: user's manager email
+        :return: The user's manager ID
+        :rtype: ``str``
+        """
+
+        # Get manager ID.
+        manager_id = ''
+        if manager_email:
+            res = self.get_user(manager_email)
+            if res is not None:
+                manager_id = res.id
+        return manager_id
 
     def test(self):
         """ Tests connectivity with the application. """
@@ -94,6 +111,8 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
         uri = '/data/objects/User'
+        if self.manager_id:
+            user_data['manager_id'] = self.manager_id
 
         res = self._http_request(
             method='PUT',
@@ -126,6 +145,8 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
         uri = f'/data/objects/User/{user_id}'
+        if self.manager_id:
+            user_data['manager_id'] = self.manager_id
 
         self._http_request(
             method='POST',
@@ -334,6 +355,7 @@ def main():
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
+    manager_email = args.get('user-profile', {}).get('manageremailaddress')
 
     is_create_enabled = params.get("create_user_enabled")
     is_enable_enabled = params.get("enable_user_enabled")
@@ -356,6 +378,7 @@ def main():
         headers=headers,
         ok_codes=(200, 201),
         auth=(username, password),
+        manager_email=manager_email,
     )
 
     demisto.debug(f'Command being called is {command}')
