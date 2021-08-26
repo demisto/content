@@ -1535,7 +1535,7 @@ def alarms_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     command_results = CommandResults(
         readable_output=hr,
         outputs_prefix='LogRhythm.Alarm',
-        outputs_key_field='',
+        outputs_key_field='alarmId',
         outputs=alarms,
         raw_response=raw_response
     )
@@ -1590,7 +1590,7 @@ def alarm_history_list_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.AlarmHistoryList',
+        outputs_prefix='LogRhythm.AlarmHistory',
         outputs_key_field='',
         outputs=alarm_history,
         raw_response=raw_response
@@ -1610,10 +1610,12 @@ def alarm_events_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     else:
         hr = f'No events found for alarm {alarm_id}.'
 
+    [event.update({'alarmId': int(alarm_id)}) for event in alarm_events]
+
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.AlarmEventsList',
-        outputs_key_field='',
+        outputs_prefix='LogRhythm.AlarmEvents',
+        outputs_key_field='alarmId',
         outputs=alarm_events,
         raw_response=raw_response
     )
@@ -1625,6 +1627,7 @@ def alarm_summary_command(client: Client, args: Dict[str, Any]) -> CommandResult
     alarm_id = args.get('alarm_id')
 
     alarm_summary, raw_response = client.alarm_summary_request(alarm_id)
+    ec = alarm_summary.copy()
 
     alarm_event_summary = alarm_summary.get('alarmEventSummary')
     if alarm_event_summary:
@@ -1634,11 +1637,13 @@ def alarm_summary_command(client: Client, args: Dict[str, Any]) -> CommandResult
     else:
         hr = tableToMarkdown(f'Alarm {alarm_id} summary', alarm_summary, headerTransform=pascalToSpace)
 
+    alarm_summary['alarmId'] = int(alarm_id)
+
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogrhythmV2.AlarmSummary',
-        outputs_key_field='',
-        outputs=alarm_summary,
+        outputs_prefix='LogRhythm.AlarmSummary',
+        outputs_key_field='alarmId',
+        outputs=ec,
         raw_response=raw_response
     )
 

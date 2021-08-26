@@ -112,37 +112,25 @@ script:
       isArray: false
     outputs:
     - type: Number
-      contextPath: LogrhythmV2.AlarmsList.alarmsSearchDetails.alarmId
+      contextPath: LogRhythm.Alarm.alarmId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmsList.alarmsSearchDetails.alarmRuleName
-      description: ''
-    - type: Number
-      contextPath: LogrhythmV2.AlarmsList.alarmsSearchDetails.alarmStatus
+      contextPath: LogRhythm.Alarm.alarmDataCached
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmsList.alarmsSearchDetails.alarmDataCached
+      contextPath: LogRhythm.Alarm.alarmRuleName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmsList.alarmsSearchDetails.entityName
+      contextPath: LogRhythm.Alarm.alarmStatus
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.AlarmsList.alarmsSearchDetails.dateInserted
+      contextPath: LogRhythm.Alarm.dateInserted
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmsList.alarmsSearchDetails.associatedCases
-      description: ''
-    - type: Number
-      contextPath: LogrhythmV2.AlarmsList.alarmsCount
-      description: ''
-    - type: Number
-      contextPath: LogrhythmV2.AlarmsList.statusCode
+      contextPath: LogRhythm.Alarm.entityName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmsList.statusMessage
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.AlarmsList.responseMessage
+      contextPath: LogRhythm.Alarm.associatedCases
       description: ''
   - name: lr-alarm-update
     description: 'alarm_status or rbp are required'
@@ -220,28 +208,19 @@ script:
       isArray: false
     outputs:
     - type: Number
-      contextPath: LogrhythmV2.AlarmHistoryList.alarmHistoryDetails.alarmId
+      contextPath: LogRhythm.AlarmHistory.alarmId
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmHistoryList.alarmHistoryDetails.personId
+      contextPath: LogRhythm.AlarmHistory.personId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmHistoryList.alarmHistoryDetails.comments
+      contextPath: LogRhythm.AlarmHistory.comments
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.AlarmHistoryList.alarmHistoryDetails.dateInserted
+      contextPath: LogRhythm.AlarmHistory.dateInserted
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.AlarmHistoryList.alarmHistoryDetails.dateUpdated
-      description: ''
-    - type: Number
-      contextPath: LogrhythmV2.AlarmHistoryList.statusCode
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.AlarmHistoryList.statusMessage
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.AlarmHistoryList.responseMessage
+      contextPath: LogRhythm.AlarmHistory.dateUpdated
       description: ''
   - name: lr-alarm-events-list
     description: ''
@@ -251,449 +230,443 @@ script:
       required: true
       isArray: false
     outputs:
-    - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.account
+    - type: Number
+      contextPath: LogRhythm.AlarmEvents.alarmId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.action
+      contextPath: LogRhythm.AlarmEvents.account
+      description: ''
+    - type: String
+      contextPath: LogRhythm.AlarmEvents.action
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.amount
+      contextPath: LogRhythm.AlarmEvents.amount
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.bytesIn
+      contextPath: LogRhythm.AlarmEvents.bytesIn
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.bytesOut
+      contextPath: LogRhythm.AlarmEvents.bytesOut
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.classificationId
+      contextPath: LogRhythm.AlarmEvents.classificationId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.classificationName
+      contextPath: LogRhythm.AlarmEvents.classificationName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.classificationTypeName
+      contextPath: LogRhythm.AlarmEvents.classificationTypeName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.command
+      contextPath: LogRhythm.AlarmEvents.command
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.commonEventId
+      contextPath: LogRhythm.AlarmEvents.commonEventId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.cve
+      contextPath: LogRhythm.AlarmEvents.cve
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.commonEventName
+      contextPath: LogRhythm.AlarmEvents.commonEventName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.count
+      contextPath: LogRhythm.AlarmEvents.count
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.directionId
+      contextPath: LogRhythm.AlarmEvents.directionId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.directionName
+      contextPath: LogRhythm.AlarmEvents.directionName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.domain
+      contextPath: LogRhythm.AlarmEvents.domain
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.duration
+      contextPath: LogRhythm.AlarmEvents.duration
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.entityId
+      contextPath: LogRhythm.AlarmEvents.entityId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.entityName
+      contextPath: LogRhythm.AlarmEvents.entityName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.group
+      contextPath: LogRhythm.AlarmEvents.group
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedEntityId
+      contextPath: LogRhythm.AlarmEvents.impactedEntityId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedEntityName
+      contextPath: LogRhythm.AlarmEvents.impactedEntityName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedHostId
+      contextPath: LogRhythm.AlarmEvents.impactedHostId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedHostName
+      contextPath: LogRhythm.AlarmEvents.impactedHostName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedInterface
+      contextPath: LogRhythm.AlarmEvents.impactedInterface
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedIP
+      contextPath: LogRhythm.AlarmEvents.impactedIP
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedLocation.countryCode
+      contextPath: LogRhythm.AlarmEvents.impactedLocation.countryCode
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedLocation.name
+      contextPath: LogRhythm.AlarmEvents.impactedLocation.name
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedLocation.latitude
+      contextPath: LogRhythm.AlarmEvents.impactedLocation.latitude
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedLocation.locationId
+      contextPath: LogRhythm.AlarmEvents.impactedLocation.locationId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedLocation.locationKey
+      contextPath: LogRhythm.AlarmEvents.impactedLocation.locationKey
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedLocation.longitude
+      contextPath: LogRhythm.AlarmEvents.impactedLocation.longitude
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedLocation.parentLocationId
+      contextPath: LogRhythm.AlarmEvents.impactedLocation.parentLocationId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedLocation.recordStatus
+      contextPath: LogRhythm.AlarmEvents.impactedLocation.recordStatus
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedLocation.regionCode
+      contextPath: LogRhythm.AlarmEvents.impactedLocation.regionCode
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedLocation.type
+      contextPath: LogRhythm.AlarmEvents.impactedLocation.type
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedLocation.dateUpdated
+      contextPath: LogRhythm.AlarmEvents.impactedLocation.dateUpdated
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedMAC
+      contextPath: LogRhythm.AlarmEvents.impactedMAC
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedName
+      contextPath: LogRhythm.AlarmEvents.impactedName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedNATIP
+      contextPath: LogRhythm.AlarmEvents.impactedNATIP
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedNATPort
+      contextPath: LogRhythm.AlarmEvents.impactedNATPort
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedNetwork.beginIPRange.value
+      contextPath: LogRhythm.AlarmEvents.impactedNetwork.beginIPRange.value
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedNetwork.dateUpdated
+      contextPath: LogRhythm.AlarmEvents.impactedNetwork.dateUpdated
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedNetwork.riskThreshold
+      contextPath: LogRhythm.AlarmEvents.impactedNetwork.riskThreshold
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedNetwork.endIPRange.value
+      contextPath: LogRhythm.AlarmEvents.impactedNetwork.endIPRange.value
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedNetwork.entityId
+      contextPath: LogRhythm.AlarmEvents.impactedNetwork.entityId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedNetwork.hostZone
+      contextPath: LogRhythm.AlarmEvents.impactedNetwork.hostZone
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedNetwork.locationId
+      contextPath: LogRhythm.AlarmEvents.impactedNetwork.locationId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedNetwork.longDesc
+      contextPath: LogRhythm.AlarmEvents.impactedNetwork.longDesc
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedNetwork.name
+      contextPath: LogRhythm.AlarmEvents.impactedNetwork.name
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedNetwork.networkId
+      contextPath: LogRhythm.AlarmEvents.impactedNetwork.networkId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedNetwork.recordStatus
+      contextPath: LogRhythm.AlarmEvents.impactedNetwork.recordStatus
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedNetwork.shortDesc
+      contextPath: LogRhythm.AlarmEvents.impactedNetwork.shortDesc
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedPort
+      contextPath: LogRhythm.AlarmEvents.impactedPort
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedZone
+      contextPath: LogRhythm.AlarmEvents.impactedZone
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.itemsPacketsIn
+      contextPath: LogRhythm.AlarmEvents.itemsPacketsIn
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.itemsPacketsOut
+      contextPath: LogRhythm.AlarmEvents.itemsPacketsOut
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.logDate
+      contextPath: LogRhythm.AlarmEvents.logDate
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.login
+      contextPath: LogRhythm.AlarmEvents.login
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.logMessage
+      contextPath: LogRhythm.AlarmEvents.logMessage
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.logSourceHostId
+      contextPath: LogRhythm.AlarmEvents.logSourceHostId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.logSourceHostName
+      contextPath: LogRhythm.AlarmEvents.logSourceHostName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.logSourceName
+      contextPath: LogRhythm.AlarmEvents.logSourceName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.logSourceTypeName
+      contextPath: LogRhythm.AlarmEvents.logSourceTypeName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.messageId
+      contextPath: LogRhythm.AlarmEvents.messageId
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.mpeRuleId
+      contextPath: LogRhythm.AlarmEvents.mpeRuleId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.mpeRuleName
+      contextPath: LogRhythm.AlarmEvents.mpeRuleName
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.normalDateMax
+      contextPath: LogRhythm.AlarmEvents.normalDateMax
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.objectName
+      contextPath: LogRhythm.AlarmEvents.objectName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.objectType
+      contextPath: LogRhythm.AlarmEvents.objectType
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originEntityId
+      contextPath: LogRhythm.AlarmEvents.originEntityId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originEntityName
+      contextPath: LogRhythm.AlarmEvents.originEntityName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originHostId
+      contextPath: LogRhythm.AlarmEvents.originHostId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originHostName
+      contextPath: LogRhythm.AlarmEvents.originHostName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originInterface
+      contextPath: LogRhythm.AlarmEvents.originInterface
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originIP
+      contextPath: LogRhythm.AlarmEvents.originIP
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originLocation.countryCode
+      contextPath: LogRhythm.AlarmEvents.originLocation.countryCode
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originLocation.name
+      contextPath: LogRhythm.AlarmEvents.originLocation.name
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originLocation.latitude
+      contextPath: LogRhythm.AlarmEvents.originLocation.latitude
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originLocation.locationId
+      contextPath: LogRhythm.AlarmEvents.originLocation.locationId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originLocation.locationKey
+      contextPath: LogRhythm.AlarmEvents.originLocation.locationKey
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originLocation.longitude
+      contextPath: LogRhythm.AlarmEvents.originLocation.longitude
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originLocation.parentLocationId
+      contextPath: LogRhythm.AlarmEvents.originLocation.parentLocationId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originLocation.recordStatus
+      contextPath: LogRhythm.AlarmEvents.originLocation.recordStatus
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originLocation.regionCode
+      contextPath: LogRhythm.AlarmEvents.originLocation.regionCode
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originLocation.type
+      contextPath: LogRhythm.AlarmEvents.originLocation.type
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originLocation.dateUpdated
+      contextPath: LogRhythm.AlarmEvents.originLocation.dateUpdated
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originMAC
+      contextPath: LogRhythm.AlarmEvents.originMAC
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originName
+      contextPath: LogRhythm.AlarmEvents.originName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originNATIP
+      contextPath: LogRhythm.AlarmEvents.originNATIP
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originNATPort
+      contextPath: LogRhythm.AlarmEvents.originNATPort
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originNetwork.beginIPRange.value
+      contextPath: LogRhythm.AlarmEvents.originNetwork.beginIPRange.value
       description: ''
     - type: Date
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originNetwork.dateUpdated
+      contextPath: LogRhythm.AlarmEvents.originNetwork.dateUpdated
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originNetwork.riskThreshold
+      contextPath: LogRhythm.AlarmEvents.originNetwork.riskThreshold
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originNetwork.endIPRange.value
+      contextPath: LogRhythm.AlarmEvents.originNetwork.endIPRange.value
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originNetwork.entityId
+      contextPath: LogRhythm.AlarmEvents.originNetwork.entityId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originNetwork.hostZone
+      contextPath: LogRhythm.AlarmEvents.originNetwork.hostZone
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originNetwork.locationId
+      contextPath: LogRhythm.AlarmEvents.originNetwork.locationId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originNetwork.longDesc
+      contextPath: LogRhythm.AlarmEvents.originNetwork.longDesc
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originNetwork.name
+      contextPath: LogRhythm.AlarmEvents.originNetwork.name
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originNetwork.networkId
+      contextPath: LogRhythm.AlarmEvents.originNetwork.networkId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originNetwork.recordStatus
+      contextPath: LogRhythm.AlarmEvents.originNetwork.recordStatus
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originNetwork.shortDesc
+      contextPath: LogRhythm.AlarmEvents.originNetwork.shortDesc
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originPort
+      contextPath: LogRhythm.AlarmEvents.originPort
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originZone
+      contextPath: LogRhythm.AlarmEvents.originZone
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.parentProcessId
+      contextPath: LogRhythm.AlarmEvents.parentProcessId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.parentProcessName
+      contextPath: LogRhythm.AlarmEvents.parentProcessName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.parentProcessPath
+      contextPath: LogRhythm.AlarmEvents.parentProcessPath
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.policy
+      contextPath: LogRhythm.AlarmEvents.policy
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.priority
+      contextPath: LogRhythm.AlarmEvents.priority
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.process
+      contextPath: LogRhythm.AlarmEvents.process
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.processId
+      contextPath: LogRhythm.AlarmEvents.processId
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.protocolId
+      contextPath: LogRhythm.AlarmEvents.protocolId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.protocolName
+      contextPath: LogRhythm.AlarmEvents.protocolName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.quantity
+      contextPath: LogRhythm.AlarmEvents.quantity
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.rate
+      contextPath: LogRhythm.AlarmEvents.rate
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.reason
+      contextPath: LogRhythm.AlarmEvents.reason
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.recipient
+      contextPath: LogRhythm.AlarmEvents.recipient
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.result
+      contextPath: LogRhythm.AlarmEvents.result
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.responseCode
+      contextPath: LogRhythm.AlarmEvents.responseCode
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.sender
+      contextPath: LogRhythm.AlarmEvents.sender
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.session
+      contextPath: LogRhythm.AlarmEvents.session
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.sessionType
+      contextPath: LogRhythm.AlarmEvents.sessionType
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.serialNumber
+      contextPath: LogRhythm.AlarmEvents.serialNumber
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.serviceId
+      contextPath: LogRhythm.AlarmEvents.serviceId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.serviceName
+      contextPath: LogRhythm.AlarmEvents.serviceName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.severity
+      contextPath: LogRhythm.AlarmEvents.severity
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.status
+      contextPath: LogRhythm.AlarmEvents.status
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.size
+      contextPath: LogRhythm.AlarmEvents.size
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.subject
+      contextPath: LogRhythm.AlarmEvents.subject
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.threatId
+      contextPath: LogRhythm.AlarmEvents.threatId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.threatName
+      contextPath: LogRhythm.AlarmEvents.threatName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.url
+      contextPath: LogRhythm.AlarmEvents.url
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.userAgent
+      contextPath: LogRhythm.AlarmEvents.userAgent
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.vendorInfo
+      contextPath: LogRhythm.AlarmEvents.vendorInfo
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.vendorMsgId
+      contextPath: LogRhythm.AlarmEvents.vendorMsgId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.version
+      contextPath: LogRhythm.AlarmEvents.version
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originUserIdentityName
+      contextPath: LogRhythm.AlarmEvents.originUserIdentityName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedUserIdentityName
+      contextPath: LogRhythm.AlarmEvents.impactedUserIdentityName
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.originUserIdentityId
+      contextPath: LogRhythm.AlarmEvents.originUserIdentityId
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.impactedUserIdentityId
+      contextPath: LogRhythm.AlarmEvents.impactedUserIdentityId
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.senderIdentityId
+      contextPath: LogRhythm.AlarmEvents.senderIdentityId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.senderIdentityName
+      contextPath: LogRhythm.AlarmEvents.senderIdentityName
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.recipientIdentityId
+      contextPath: LogRhythm.AlarmEvents.recipientIdentityId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.alarmEventsDetails.recipientIdentityName
-      description: ''
-    - type: Number
-      contextPath: LogrhythmV2.AlarmEventsList.statusCode
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.statusMessage
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.AlarmEventsList.responseMessage
+      contextPath: LogRhythm.AlarmEvents.recipientIdentityName
       description: ''
   - name: lr-alarm-summary
     description: ''
@@ -704,76 +677,67 @@ script:
       isArray: false
     outputs:
     - type: Date
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.dateInserted
+      contextPath: LogRhythm.AlarmSummary.dateInserted
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.rbpMax
+      contextPath: LogRhythm.AlarmSummary.rbpMax
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.rbpAvg
+      contextPath: LogRhythm.AlarmSummary.rbpAvg
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmRuleId
+      contextPath: LogRhythm.AlarmSummary.alarmRuleId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmRuleGroup
+      contextPath: LogRhythm.AlarmSummary.alarmRuleGroup
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.briefDescription
+      contextPath: LogRhythm.AlarmSummary.briefDescription
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.additionalDetails
+      contextPath: LogRhythm.AlarmSummary.additionalDetails
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmEventSummary.msgClassId
+      contextPath: LogRhythm.AlarmSummary.alarmEventSummary.msgClassId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmEventSummary.msgClassName
+      contextPath: LogRhythm.AlarmSummary.alarmEventSummary.msgClassName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmEventSummary.commonEventId
+      contextPath: LogRhythm.AlarmSummary.alarmEventSummary.commonEventId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmEventSummary.commonEventName
+      contextPath: LogRhythm.AlarmSummary.alarmEventSummary.commonEventName
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmEventSummary.originHostId
+      contextPath: LogRhythm.AlarmSummary.alarmEventSummary.originHostId
       description: ''
     - type: Number
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmEventSummary.impactedHostId
+      contextPath: LogRhythm.AlarmSummary.alarmEventSummary.impactedHostId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmEventSummary.originUser
+      contextPath: LogRhythm.AlarmSummary.alarmEventSummary.originUser
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmEventSummary.impactedUser
+      contextPath: LogRhythm.AlarmSummary.alarmEventSummary.impactedUser
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmEventSummary.originUserIdentityId
+      contextPath: LogRhythm.AlarmSummary.alarmEventSummary.originUserIdentityId
       description: ''
     - type: Unknown
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmEventSummary.impactedUserIdentityId
+      contextPath: LogRhythm.AlarmSummary.alarmEventSummary.impactedUserIdentityId
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmEventSummary.originUserIdentityName
+      contextPath: LogRhythm.AlarmSummary.alarmEventSummary.originUserIdentityName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmEventSummary.impactedUserIdentityName
+      contextPath: LogRhythm.AlarmSummary.alarmEventSummary.impactedUserIdentityName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmEventSummary.originEntityName
+      contextPath: LogRhythm.AlarmSummary.alarmEventSummary.originEntityName
       description: ''
     - type: String
-      contextPath: LogrhythmV2.AlarmSummary.alarmSummaryDetails.alarmEventSummary.impactedEntityName
-      description: ''
-    - type: Number
-      contextPath: LogrhythmV2.AlarmSummary.statusCode
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.AlarmSummary.statusMessage
-      description: ''
-    - type: String
-      contextPath: LogrhythmV2.AlarmSummary.responseMessage
+      contextPath: LogRhythm.AlarmSummary.alarmEventSummary.impactedEntityName
       description: ''
   - name: lr-cases-list
     description: ''
