@@ -1166,7 +1166,7 @@ def send_message():
         if (auto_notifications := demisto.params().get('auto_notifications')) is not None:
             auto_notifications = argToBoolean(auto_notifications)
         else:
-            auto_notifications = True
+            auto_notifications = False
 
         if auto_notifications:
             severity_threshold: int = translate_severity(demisto.params().get('min_incident_severity', 'Low'))
