@@ -1,9 +1,12 @@
+import pytest
+
 from AWSILM import Client, main, get_group_command, create_group_command, update_group_command, delete_group_command
 from IAMApiModule import *
 import requests_mock
 
 userUri = '/scim/v2/Users/'
 groupUri = '/scim/v2/Groups/'
+RETURN_ERROR_TARGET = 'AWSILM.return_error'
 
 APP_USER_OUTPUT = {
     "id": "mock_id",
@@ -343,15 +346,11 @@ class TestGroupCommands:
     def test_get_group__id_and_display_name_empty(self, mocker):
         client = mock_client()
         args = {"scim": "{}"}
-        import demistomock as demisto
-        mock_result = mocker.patch.object(demisto, 'results')
 
-        # with requests_mock.Mocker() as m:
-        #     m.get(f'{groupUri}1234', json={'total_results': 0, 'Resources': []})
+        with pytest.raises(DemistoException) as e:
+            get_group_command(client, args)
 
-        get_group_command(client, args)
-
-        assert mock_result == "You must supply either 'id' or 'displayName' in the scim data"
+            assert str(e) == "You must supply either 'id' or 'displayName' in the scim data"
 
     def test_get_group__display_name(self, mocker):
         client = mock_client()

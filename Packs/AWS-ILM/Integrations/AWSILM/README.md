@@ -11,8 +11,6 @@ An Identity and Access Management integration template.
     | Base URL | True |
     | Tenant ID | True |
     | Authentication Token | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
     | Allow creating users | False |
     | Allow updating users | False |
     | Allow enabling users | False |
@@ -20,6 +18,8 @@ An Identity and Access Management integration template.
     | Automatically create user if not found in update command | False |
     | Incoming Mapper | True |
     | Outgoing Mapper | True |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

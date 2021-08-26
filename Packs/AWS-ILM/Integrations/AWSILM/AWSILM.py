@@ -26,7 +26,7 @@ def build_body_request_for_update_user(old_user_data, new_user_data):
 
     data = {
         "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
-        "Operations": operations
+        "Operations": operations,
     }
 
     return data
@@ -60,7 +60,7 @@ class Client(BaseClient):
         res = self._http_request(
             method='GET',
             url_suffix=userUri,
-            params=params
+            params=params,
         )
 
         if res.get('totalResults') > 0:
@@ -86,7 +86,7 @@ class Client(BaseClient):
         res = self._http_request(
             method='POST',
             url_suffix=userUri,
-            json_data=user_data
+            json_data=user_data,
         )
 
         user_id = res.get('id')
@@ -109,13 +109,13 @@ class Client(BaseClient):
         """
         old_user_data = self._http_request(
             method='GET',
-            url_suffix=userUri + user_id
+            url_suffix=userUri + user_id,
         )
 
         res = self._http_request(
             method='PATCH',
             url_suffix=userUri + user_id,
-            json_data=build_body_request_for_update_user(old_user_data, new_user_data)
+            json_data=build_body_request_for_update_user(old_user_data, new_user_data),
         )
 
         is_active = res.get('active')
@@ -141,7 +141,7 @@ class Client(BaseClient):
                 {
                     "op": "replace",
                     "path": "active",
-                    "value": "true"
+                    "value": "true",
                 }
             ]
         }
@@ -149,7 +149,7 @@ class Client(BaseClient):
         res = self._http_request(
             method='PATCH',
             url_suffix=userUri + user_id,
-            json_data=user_data
+            json_data=user_data,
         )
 
         user_id = res.get('id')
@@ -176,7 +176,7 @@ class Client(BaseClient):
                 {
                     "op": "replace",
                     "path": "active",
-                    "value": "false"
+                    "value": "false",
                 }
             ]
         }
@@ -184,7 +184,7 @@ class Client(BaseClient):
         res = self._http_request(
             method='PATCH',
             url_suffix=userUri + user_id,
-            json_data=user_data
+            json_data=user_data,
         )
 
         user_id = res.get('id')
@@ -204,14 +204,14 @@ class Client(BaseClient):
             verify=self._verify,
             headers=headers,
             params=params,
-            json=data
+            json=data,
         )
         return res
 
     def get_group_by_id(self, group_id):
         return self.http_request(
             method='GET',
-            url_suffix=groupUri + group_id
+            url_suffix=groupUri + group_id,
         )
 
     def search_group(self, group_name):
@@ -221,27 +221,27 @@ class Client(BaseClient):
         return self.http_request(
             method="GET",
             url_suffix=groupUri,
-            params=params
+            params=params,
         )
 
     def create_group(self, data):
         return self.http_request(
             method="POST",
             url_suffix=groupUri,
-            data=data
+            data=data,
         )
 
     def update_group(self, group_id, data):
         return self.http_request(
             method="PATCH",
             url_suffix=groupUri + group_id,
-            data=data
+            data=data,
         )
 
     def delete_group(self, group_id):
         return self.http_request(
             method="DELETE",
-            url_suffix=groupUri + group_id
+            url_suffix=groupUri + group_id,
         )
 
     def get_app_fields(self) -> Dict[str, Any]:
@@ -254,7 +254,7 @@ class Client(BaseClient):
         uri = '/schema'
         res = self._http_request(
             method='GET',
-            url_suffix=uri
+            url_suffix=uri,
         )
 
         fields = res.get('result', [])
@@ -359,7 +359,7 @@ class OutputContext:
             "errorMessage": errorMessage,
             "details": details,
             "displayName": displayName,
-            "members": members
+            "members": members,
         }
 
 
@@ -387,7 +387,7 @@ def get_group_command(client, args):
     group_name = scim.get('displayName')
 
     if not (group_id or group_name):
-        return_error("You must supply either 'id' or 'displayName' in the scim data")
+        raise DemistoException("You must supply either 'id' or 'displayName' in the scim data")
 
     if not group_id:
         res = client.search_group(group_name)
@@ -405,7 +405,7 @@ def get_group_command(client, args):
                     outputs_prefix=generic_iam_context.command,
                     outputs_key_field='id',
                     outputs=generic_iam_context.data,
-                    readable_output=readable_output
+                    readable_output=readable_output,
                 )
 
             else:
@@ -420,7 +420,7 @@ def get_group_command(client, args):
                     outputs_prefix=generic_iam_context.command,
                     outputs_key_field='id',
                     outputs=generic_iam_context.data,
-                    readable_output=readable_output
+                    readable_output=readable_output,
                 )
 
         else:
@@ -435,7 +435,7 @@ def get_group_command(client, args):
                 outputs_prefix=generic_iam_context.command,
                 outputs_key_field='id',
                 outputs=generic_iam_context.data,
-                readable_output=readable_output
+                readable_output=readable_output,
             )
 
     res = client.get_group_by_id(group_id)
@@ -459,7 +459,7 @@ def get_group_command(client, args):
         outputs_prefix=generic_iam_context.command,
         outputs_key_field='id',
         outputs=generic_iam_context.data,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -468,7 +468,7 @@ def create_group_command(client, args):
     group_name = scim.get('displayName')
 
     if not group_name:
-        return_error("You must supply 'displayName' of the group in the scim data")
+        raise DemistoException("You must supply 'displayName' of the group in the scim data")
 
     res = client.create_group(scim)
     res_json = res.json()
@@ -490,7 +490,7 @@ def create_group_command(client, args):
         outputs_prefix=generic_iam_context.command,
         outputs_key_field='id',
         outputs=generic_iam_context.data,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -501,13 +501,13 @@ def update_group_command(client, args):
     group_name = scim.get('displayName')
 
     if not group_id:
-        return_error("You must supply 'id' in the scim data")
+        raise DemistoException("You must supply 'id' in the scim data")
 
     member_ids_to_add = args.get('memberIdsToAdd')
     member_ids_to_delete = args.get('memberIdsToDelete')
 
     if member_ids_to_add == member_ids_to_delete is None:
-        return_error("Missing required argument: 'memberIdsToAdd' or 'memberIdsToDelete'")
+        raise DemistoException("You must supply either 'memberIdsToAdd' or 'memberIdsToDelete' in the arguments")
 
     if member_ids_to_add:
         if type(member_ids_to_add) != list:
@@ -534,7 +534,7 @@ def update_group_command(client, args):
                     outputs_prefix=generic_iam_context.command,
                     outputs_key_field='id',
                     outputs=generic_iam_context.data,
-                    readable_output=readable_output
+                    readable_output=readable_output,
                 )
 
     if member_ids_to_delete:
@@ -561,7 +561,7 @@ def update_group_command(client, args):
                     outputs_prefix=generic_iam_context.command,
                     outputs_key_field='id',
                     outputs=generic_iam_context.data,
-                    readable_output=readable_output
+                    readable_output=readable_output,
                 )
 
     if res.status_code == 204:
@@ -585,7 +585,7 @@ def update_group_command(client, args):
         outputs_prefix=generic_iam_context.command,
         outputs_key_field='id',
         outputs=generic_iam_context.data,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -595,7 +595,7 @@ def delete_group_command(client, args):
     group_name = scim.get('displayName')
 
     if not group_id:
-        return_error("The group id needs to be provided.")
+        raise DemistoException("The group id needs to be provided.")
 
     res = client.delete_group(group_id)
     if res.status_code == 204:
@@ -617,7 +617,7 @@ def delete_group_command(client, args):
         outputs_prefix=generic_iam_context.command,
         outputs_key_field='id',
         outputs=generic_iam_context.data,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -713,6 +713,9 @@ def main():
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields(client))
 
+    except DemistoException as error:
+        return_error(str(error), error)
+
     except Exception:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
@@ -720,5 +723,5 @@ def main():
 
 from IAMApiModule import * # noqa E402
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()

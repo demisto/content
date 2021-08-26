@@ -15,14 +15,6 @@ configuration:
   name: authentication_token
   type: 4
   required: true
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - defaultvalue: 'true'
   display: Allow creating users
   name: create_user_enabled
@@ -58,6 +50,14 @@ configuration:
   name: mapper_out
   required: true
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: An Identity and Access Management integration template.
 display: AWS-ILM
 name: AWS-ILM
