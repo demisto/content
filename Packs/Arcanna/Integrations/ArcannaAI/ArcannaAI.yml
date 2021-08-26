@@ -28,8 +28,24 @@ configuration:
   name: default_job_id
   required: false
   type: 0
+- defaultvalue: '"False Positive"="drop_alert", "Resolved"="escalate_alert","Other"="escalate_alert","Duplicate"="escalate_alert"'
+  display: Feature Mapping as an array to map between CLOSING REASON and Arcanna labels
+  hidden: false
+  name: feature_mapping
+  required: false
+  type: 12
+- defaultvalue: closeReason
+  display: Field use to signal to arcanna the status for closing an alert(or marking
+    as feedback for Arcanna)
+  hidden: false
+  name: closing_reason_field
+  required: false
+  type: 0
+defaultMapperIn: 'null'
+defaultMapperOut: 'null'
+defaultclassifier: 'null'
 description: Arcanna integration for using the power of AI in SOC
-display: Arcanna.AI
+display: Arcanna.AI (Partner Contribution)
 name: Arcanna.AI
 script:
   commands:
@@ -92,6 +108,9 @@ script:
     - contextPath: Arcanna.Event.error_message
       description: Arcanna error message if any
       type: String
+    - contextPath: Arcanna.Event.job_id
+      description: Arcanna Job id used for sending.
+      type: Unknown
   - arguments:
     - default: false
       description: Arcanna Job Id
@@ -154,6 +173,72 @@ script:
     - contextPath: Arcanna.Default_Job_Id
       description: Arcanna default job id
       type: Unknown
+  - arguments:
+    - default: false
+      description: Arcanna job id
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    - default: false
+      description: Arcanna event id
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - default: false
+      description: Arcanna Feedback Label
+      isArray: false
+      name: label
+      required: false
+      secret: false
+    - default: false
+      description: User providing feedback
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - default: false
+      description: Cortex closing notes if any
+      isArray: false
+      name: closing_notes
+      required: false
+      secret: false
+    - default: false
+      description: Cortex Indicator if any
+      isArray: false
+      name: indicators
+      required: false
+      secret: false
+    deprecated: false
+    description: Send Arcanna feedback for a previous inferred event
+    execution: false
+    name: arcanna-send-event-feedback
+    outputs:
+    - contextPath: Arcanna.Event.feedback_status
+      description: 'Arcanna feedback status response '
+      type: String
+  - arguments:
+    - default: false
+      description: Arcanna job_id
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    - default: false
+      description: 'Arcanna evens to be sent '
+      isArray: true
+      name: events
+      required: true
+      secret: false
+    deprecated: false
+    description: Send to Arcanna a bulk of events.
+    execution: false
+    name: arcanna-send-bulk-events
+  - deprecated: false
+    description: Returns the Feedback field set on integration
+    execution: false
+    name: arcanna-get-feedback-field
   dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: false

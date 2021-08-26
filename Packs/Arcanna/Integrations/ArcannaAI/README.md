@@ -1,5 +1,5 @@
 Arcanna integration for using the power of AI in SOC
-This integration was integrated and tested with version 1.0 and above of Arcanna.AI
+This integration was integrated and tested with version xx of Arcanna.AI
 
 ## Configure Arcanna.AI on Cortex XSOAR
 
@@ -9,11 +9,13 @@ This integration was integrated and tested with version 1.0 and above of Arcanna
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL | URL of Arcanna API | True |
+    | Server URL (e.g. https://&lt;your arcanna ai api&gt;) | URL of Arcanna API | True |
     | API Key | Api Key for Arcanna API | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Default Arcanna Job Id | Default Arcanna Job Id | False |
+    | Default Arcanna Job Id |  | False |
+    | Feature Mapping as an array to map between CLOSING REASON and Arcanna labels |  | False |
+    | Field use to signal to arcanna the status for closing an alert(or marking as feedback for Arcanna) |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -35,7 +37,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arcanna.Jobs.job_id | Int | Arcanna Job id | 
+| Arcanna.Jobs.job_id | Number | Arcanna Job id | 
 | Arcanna.Jobs.data_type | String | Arcanna Job type | 
 | Arcanna.Jobs.title | String | Arcanna Job title | 
 | Arcanna.Jobs.status | String | Arcanna job status | 
@@ -48,14 +50,12 @@ There are no input arguments for this command.
 ```json
 {
     "Arcanna": {
-        "Jobs": [
-            {
-                "data_type": "es",
-                "job_id": 1101,
-                "status": "IDLE",
-                "title": "cortex"
-            }
-        ]
+        "Jobs": {
+            "data_type": "dev",
+            "job_id": 1201,
+            "status": "STARTED",
+            "title": "dev1"
+        }
     }
 }
 ```
@@ -65,7 +65,7 @@ There are no input arguments for this command.
 >### Arcanna Jobs
 >|job_id|title|data_type|status|
 >|---|---|---|---|
->| 1101 | cortex | es | IDLE |
+>| 1201 | dev1 | dev | STARTED |
 
 
 ### arcanna-send-event
@@ -94,6 +94,13 @@ Sends a raw event to Arcanna
 | Arcanna.Event.status | String | Arcanna ingestion status | 
 | Arcanna.Event.ingest_timestamp | date | Arcanna ingestion timestamp | 
 | Arcanna.Event.error_message | String | Arcanna error message if any | 
+| Arcanna.Event.job_id | Unknown | Arcanna Job id used for sending. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
 
 
 
@@ -123,23 +130,23 @@ Retrieves Arcanna Inference result
 | Arcanna.Event.result | String | Arcanna event  result | 
 | Arcanna.Event.is_duplicated | boolean | Arcanna signalling if event is duplicated by another alert | 
 | Arcanna.Event.error_message | String | Arcanna error message if any | 
-| Arcanna.Event.status | String | arcanna event status | 
+| Arcanna.Event.status | String | Arcanna event status | 
 
 
 #### Command Example
-```!arcanna-get-event-status job_id="1102" event_id="11021484171024"```
+```!arcanna-get-event-status job_id="1201" event_id="12011938471583"```
 
 #### Context Example
 ```json
 {
     "Arcanna": {
         "Event": {
-            "confidence_level": 0.9999940395355225,
+            "confidence_level": 0.9999464750289917,
             "error_message": null,
-            "event_id": "11021484171024",
-            "ingest_timestamp": "2021-07-02T10:16:12.148417",
-            "is_duplicated": false,
-            "result": "drop_alert",
+            "event_id": "12011938471583",
+            "ingest_timestamp": "2021-08-26T12:53:47.193847Z",
+            "is_duplicated": true,
+            "result": "escalate_alert",
             "status": "OK"
         }
     }
@@ -148,7 +155,7 @@ Retrieves Arcanna Inference result
 
 #### Human Readable Output
 
->## {'event_id': '11021484171024', 'ingest_timestamp': '2021-07-02T10:16:12.148417', 'status': 'OK', 'confidence_level': 0.9999940395355225, 'result': 'drop_alert', 'is_duplicated': False, 'error_message': None}
+>## {'event_id': '12011938471583', 'ingest_timestamp': '2021-08-26T12:53:47.193847Z', 'status': 'OK', 'confidence_level': 0.9999464750289917, 'result': 'escalate_alert', 'is_duplicated': True, 'error_message': None}
 
 ### arcanna-get-default-job-id
 ***
@@ -176,14 +183,14 @@ There are no input arguments for this command.
 ```json
 {
     "Arcanna": {
-        "Default_Job_Id": "1102"
+        "Default_Job_Id": "1201"
     }
 }
 ```
 
 #### Human Readable Output
 
->## 1102
+>## 1201
 
 ### arcanna-set-default-job-id
 ***
@@ -208,17 +215,121 @@ Sets Arcanna Default Job id
 
 
 #### Command Example
-```!arcanna-set-default-job-id job_id=1102```
+```!arcanna-set-default-job-id job_id=1201```
 
 #### Context Example
 ```json
 {
     "Arcanna": {
-        "Default_Job_Id": "1102"
+        "Default_Job_Id": "1201"
     }
 }
 ```
 
 #### Human Readable Output
 
->## 1102
+>## 1201
+
+### arcanna-send-event-feedback
+***
+Send Arcanna feedback for a previous inferred event
+
+
+#### Base Command
+
+`arcanna-send-event-feedback`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | Arcanna job id. | Required | 
+| event_id | Arcanna event id. | Required | 
+| label | Arcanna Feedback Label. | Optional | 
+| username | User providing feedback. | Optional | 
+| closing_notes | Cortex closing notes if any. | Optional | 
+| indicators | Cortex Indicator if any. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Arcanna.Event.feedback_status | String | Arcanna feedback status response  | 
+
+
+#### Command Example
+```!arcanna-send-event-feedback job_id="1201" event_id="12011938471583" label="Resolved" username="dbot" closing_notes="some note"```
+
+#### Context Example
+```json
+{
+    "Arcanna": {
+        "Feedback": {
+            "status": "updated"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## {'status': 'updated'}
+
+### arcanna-send-bulk-events
+***
+Send to Arcanna a bulk of events.
+
+
+#### Base Command
+
+`arcanna-send-bulk-events`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | Arcanna job_id. | Required | 
+| events | Arcanna evens to be sent . | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### arcanna-get-feedback-field
+***
+Returns the Feedback field set on integration
+
+
+#### Base Command
+
+`arcanna-get-feedback-field`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!arcanna-get-feedback-field```
+
+#### Context Example
+```json
+{
+    "Arcanna": {
+        "FeedbackField": "closeReason"
+    }
+}
+```
+
+#### Human Readable Output
+
+>## closeReason
