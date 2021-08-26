@@ -746,7 +746,7 @@ def get_domain_command():
     for domain in domains_list:
         contents = []
         context = {}
-        headers = []
+        headers = []  # type: ignore
         domain = extract_domain_name(domain)
         whois = get_whois_for_domain(domain)
         admin = {
