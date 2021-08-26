@@ -2745,10 +2745,6 @@ def main():
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
-
-
-
-
     except Exception as e:
         return_error(str(e))
 
