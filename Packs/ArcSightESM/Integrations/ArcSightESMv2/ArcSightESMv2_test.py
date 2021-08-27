@@ -162,9 +162,6 @@ def test_get_case(mocker, requests_mock):
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'auth_token': 'token'})
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
-    mocker.patch.object(demisto, 'args', return_value={
-        'eventFieldsToStringify': 'test_int_number',
-    })
     requests_mock.get(
         PARAMS['server'] + '/www/manager-service/rest/CaseService/getResourceById',
         json={
@@ -174,7 +171,7 @@ def test_get_case(mocker, requests_mock):
                     'events': [
                         {
                             'test_object': {
-                                'test_int_number': 4,
+                                'test_big_int_number': 10000000000000001,
                             }
                         }
                     ]
@@ -186,4 +183,4 @@ def test_get_case(mocker, requests_mock):
     ArcSightESMv2.get_case_command()
     results = demisto.results.call_args[0][0]
     events = results['Contents']['events']
-    assert events[0]['test_object']['test_int_number'] == '4'
+    assert events[0]['test_object']['test_big_int_number'] == '10000000000000001'
